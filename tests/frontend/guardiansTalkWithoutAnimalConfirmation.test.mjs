@@ -19,7 +19,7 @@ test('hasGuardiansTalkWithoutAnimalIssue detects matching issue type', () => {
    );
    assert.equal(
       hasGuardiansTalkWithoutAnimalIssue([
-         { type: 'guardiansTalkLongWait' },
+         { type: 'fixedTimeItemLongWait' },
       ]),
       false
    );

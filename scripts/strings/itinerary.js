@@ -61,11 +61,11 @@ export const itinerary = {
       buildWarningWithoutAnimalMessageWithoutTime: talkName => (
          `The ${talkName} guardians talk does not match an animal on your itinerary.`
       ),
-      buildWarningLongWaitMessage: (talkName, talkTime) => (
-         `The ${talkName} guardians talk at ${talkTime} is a long wait from your other scheduled items.`
+      buildWarningLongWaitMessage: (activityName, activityTime, type) => (
+         `The ${activityName} ${type} at ${activityTime} is a long wait from your other scheduled items.`
       ),
-      buildWarningLongWaitMessageWithoutTime: talkName => (
-         `The ${talkName} guardians talk is a long wait from your other scheduled items.`
+      buildWarningLongWaitMessageWithoutTime: (activityName, type) => (
+         `The ${activityName} ${type} is a long wait from your other scheduled items.`
       ),
       proceedWithoutConflictSelectionMessage: (
          'None of these conflicting activities will be added to your itinerary.'
@@ -115,12 +115,14 @@ export const itinerary = {
       guardiansTalkRescheduleMessageWithoutTime: talkName => (
          `Adding the ${talkName} guardians talk will add it to your day and update your walking route. Your items will be rescheduled around it.`
       ),
-      guardiansTalkLongWaitTitle: 'Long Wait for Guardians Talk?',
-      guardiansTalkLongWaitMessage: (talkName, talkTime) => (
-         `The ${talkName} guardians talk at ${talkTime} is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
+      fixedTimeItemLongWaitTitle: type => (
+         `Long Wait for ${type}?`
       ),
-      guardiansTalkLongWaitMessageWithoutTime: talkName => (
-         `The ${talkName} guardians talk is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
+      fixedTimeItemLongWaitMessage: (itemName, itemTime, type) => (
+         `The ${itemName} ${type} at ${itemTime} is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
+      ),
+      fixedTimeItemLongWaitMessageWithoutTime: (itemName, type) => (
+         `The ${itemName} ${type} is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
       ),
       guardiansTalkWithoutAnimalTitle: 'Guardians Talk Without Matching Animal?',
       guardiansTalkWithoutAnimalMessage: (talkName, talkTime) => (

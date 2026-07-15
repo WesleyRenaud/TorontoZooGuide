@@ -343,15 +343,16 @@ test.describe('itineraryPanelContent', () => {
       const feedbackCalls = [];
       const confirmationCalls = [];
       const longWaitIssues = [{
-         type: 'guardiansTalkLongWait',
+         type: 'fixedTimeItemLongWait',
          items: [{
             name: 'North American River Otter',
             start_time: '2:00 PM',
+            item_type: 'guardiansTalk',
          }],
       }];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
-            errorType: MOCK_ERROR_TYPES.GUARDIANS_TALK_LONG_WAIT,
+            errorType: MOCK_ERROR_TYPES.FIXED_TIME_ITEM_LONG_WAIT,
             issues: longWaitIssues,
          }),
          setActionFeedback: (feedback) => {

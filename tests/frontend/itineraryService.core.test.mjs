@@ -104,7 +104,7 @@ test('bulkScheduleAnimals returns normalized itinerary and issues', async () => 
       if (url === '/bulk-schedule-animals') {
          assert.deepEqual(JSON.parse(options.body), {
             temp: null,
-            confirmingGuardiansTalkLongWait: false,
+            confirmingFixedTimeItemLongWait: false,
          });
          return mockJsonResponse({
             status: 'success',

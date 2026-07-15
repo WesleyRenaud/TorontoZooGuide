@@ -39,8 +39,7 @@ from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_sch
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
-from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
-from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
+from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_long_wait_reasons_from_itinerary
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -66,7 +65,7 @@ def bulk_schedule_animals(
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None,
-      confirming_guardians_talk_long_wait: bool = False,
+      confirming_fixed_time_item_long_wait: bool = False,
       animals_to_schedule: list[ ItineraryAnimalRecord ] ) -> ItinerarySaveResult:
    itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
@@ -184,11 +183,13 @@ def bulk_schedule_animals(
    itinerary = build_current_itinerary(
       fetch_saved_itinerary( conn ),
       **itinerary_context )
-   isolated_talks = isolated_guardians_talks_from_itinerary( itinerary )
+   pending_reasons = []
 
-   if isolated_talks and not confirming_guardians_talk_long_wait:
-      long_wait_reason = build_guardians_talk_long_wait_issue_from_talks(
-         isolated_talks )
+   if not confirming_fixed_time_item_long_wait:
+      pending_reasons.extend(
+         fixed_time_item_long_wait_reasons_from_itinerary( itinerary ) )
+
+   if pending_reasons:
       restore_guest_schedule_state(
          conn,
          schedule_snapshot,
@@ -196,8 +197,8 @@ def bulk_schedule_animals(
 
       return build_save_result(
          conn,
-         ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
-         reasons=( long_wait_reason, ),
+         pending_reasons[ 0 ].code,
+         reasons=tuple( pending_reasons ),
          **itinerary_context )
 
    return ItinerarySaveResult(

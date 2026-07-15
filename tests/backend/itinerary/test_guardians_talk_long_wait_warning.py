@@ -15,7 +15,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
 from api.models import Animal
 from api.models import GuardiansTalk
-from api.shared.constants import MAX_GUARDIANS_TALK_WAIT_MINUTES
+from api.shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
@@ -96,7 +96,7 @@ def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
    isolated = isolated_guardians_talks_from_itinerary( itinerary )
 
    assert [ talk.name for talk in isolated ] == [ MEERKAT_TALK ]
-   assert MAX_GUARDIANS_TALK_WAIT_MINUTES == 30
+   assert MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
 
 
 def test_isolated_guardians_talks_ignores_talk_near_other_items() -> None:
@@ -142,8 +142,8 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
    )
 
    assert not result.success
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
-   assert result.reasons[ 0 ].code == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+   assert result.reasons[ 0 ].code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert { item.name for item in result.reasons[ 0 ].items } == {
       ZEBRA_TALK,
       MEERKAT_TALK,
@@ -160,7 +160,7 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
          guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    )
 
@@ -201,14 +201,14 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
    )
 
    assert not result.success
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ MEERKAT_TALK ]
 
    confirmed = ItineraryCoordinator.schedule_itinerary_item(
       parsed_schedule_item(
          ScheduleItemKind.GUARDIANS_TALK.item_type,
          f'{ MEERKAT_TALK }||13:00' ),
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    )
 
@@ -299,7 +299,7 @@ def test_schedule_talk_warns_when_no_previously_scheduled_animals_to_pack(
    )
 
    assert not result.success
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ MEERKAT_TALK ]
 
 
@@ -320,7 +320,7 @@ def test_set_itinerary_skips_long_wait_warning_for_already_saved_talks(
          guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    )
 
@@ -380,7 +380,7 @@ def test_set_itinerary_warns_only_for_newly_added_talk_with_long_wait(
    )
 
    assert not result.success
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ MEERKAT_TALK ]
 
 
@@ -401,21 +401,21 @@ def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
          guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    ).success
 
    warning = ItineraryCoordinator.bulk_schedule_animals()
 
    assert not warning.success
-   assert warning.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert warning.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert not any(
       has_itinerary_schedule_times( animal.start_time, animal.end_time )
       for animal in warning.itinerary.animals
    )
 
    confirmed = ItineraryCoordinator.bulk_schedule_animals(
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success

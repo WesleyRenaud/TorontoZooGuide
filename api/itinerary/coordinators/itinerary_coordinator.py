@@ -101,7 +101,7 @@ class ItineraryCoordinator():
          confirming_early_admission: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False,
-         confirming_guardians_talk_long_wait: bool = False,
+         confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
@@ -120,8 +120,8 @@ class ItineraryCoordinator():
          confirming_early_admission=confirming_early_admission,
          confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
          confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ),
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait ),
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ),
          animal_coordinator=AnimalCoordinator,
@@ -140,7 +140,7 @@ class ItineraryCoordinator():
          confirming_schedule_item_not_on_itinerary: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False,
-         confirming_guardians_talk_long_wait: bool = False,
+         confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
@@ -160,8 +160,8 @@ class ItineraryCoordinator():
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule
          ),
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait
          ),
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal
@@ -173,7 +173,7 @@ class ItineraryCoordinator():
          cls,
          visit_date_temp: float | None = None,
          *,
-         confirming_guardians_talk_long_wait: bool = False ) -> ItinerarySaveResult:
+         confirming_fixed_time_item_long_wait: bool = False ) -> ItinerarySaveResult:
       conn = get_connection()
       saved_itinerary = fetch_saved_itinerary( conn )
 
@@ -184,8 +184,8 @@ class ItineraryCoordinator():
          guardians_coordinator=GuardiansCoordinator,
          wild_encounter_coordinator=WildEncounterCoordinator,
          visit_date_temp=visit_date_temp,
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ),
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait ),
          animals_to_schedule=animals_for_bulk_schedule(
             saved_itinerary,
             only_previously_scheduled=False ) )

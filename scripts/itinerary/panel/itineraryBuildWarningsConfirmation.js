@@ -1,34 +1,49 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
 import { el } from './dom.js';
+import { getFixedTimeItemsFromLongWaitIssues } from './fixedTimeItemLongWaitConfirmation.js';
 import { normalizeText } from './format.js';
-import { getPrimaryGuardiansTalkFromLongWaitIssues } from './guardiansTalkLongWaitConfirmation.js';
 import { getPrimaryGuardiansTalkFromUnscheduleIssues } from './guardiansTalkUnscheduleConfirmation.js';
 import { getPrimaryGuardiansTalkFromWithoutAnimalIssues } from './guardiansTalkWithoutAnimalConfirmation.js';
+import { getItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { APP_STRINGS } from '../../strings.js';
 import { getPrimaryWildEncounterFromUnscheduleIssues } from './wildEncounterUnscheduleConfirmation.js';
 
-export const ITINERARY_BUILD_WARNING_ISSUE_TYPES = Object.freeze([
-   'guardiansTalkWillUnscheduleItems',
-   'wildEncounterWillUnscheduleItems',
-   'guardiansTalkWithoutAnimal',
-   'guardiansTalkLongWait',
-]);
+function itineraryBuildWarningIssueTypes() {
+   const types = getItineraryErrorTypes();
 
-const BUILD_WARNING_CONFIRM_FLAGS = Object.freeze({
-   guardiansTalkWillUnscheduleItems: {
-      confirmingGuardiansTalkUnschedule: true,
-   },
-   wildEncounterWillUnscheduleItems: {
-      confirmingWildEncounterUnschedule: true,
-   },
-   guardiansTalkWithoutAnimal: {
-      confirmingGuardiansTalkWithoutAnimal: true,
-   },
-   guardiansTalkLongWait: {
-      confirmingGuardiansTalkLongWait: true,
-   },
-});
+   return [
+      types?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      types?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+      types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      types?.FIXED_TIME_ITEM_LONG_WAIT,
+   ].filter(Boolean);
+}
+
+function buildWarningConfirmFlags() {
+   const types = getItineraryErrorTypes();
+
+   return Object.fromEntries(
+      [
+         [
+            types?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+            { confirmingGuardiansTalkUnschedule: true },
+         ],
+         [
+            types?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+            { confirmingWildEncounterUnschedule: true },
+         ],
+         [
+            types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
+            { confirmingGuardiansTalkWithoutAnimal: true },
+         ],
+         [
+            types?.FIXED_TIME_ITEM_LONG_WAIT,
+            { confirmingFixedTimeItemLongWait: true },
+         ],
+      ].filter(([type]) => Boolean(type))
+   );
+}
 
 function issueType(issue) {
    return issue?.type || issue?.code || '';
@@ -36,8 +51,9 @@ function issueType(issue) {
 
 function buildGuardiansTalkUnscheduleSection(issues, strings) {
    const talk = getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
+   const type = getItineraryErrorTypes()?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 
-   if (!talk?.talkName) {
+   if (!talk?.talkName || !type) {
       return null;
    }
 
@@ -47,7 +63,7 @@ function buildGuardiansTalkUnscheduleSection(issues, strings) {
       : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
 
    return {
-      type: 'guardiansTalkWillUnscheduleItems',
+      type,
       title: strings.buildWarningScheduleOverlapTitle,
       message,
    };
@@ -55,8 +71,9 @@ function buildGuardiansTalkUnscheduleSection(issues, strings) {
 
 function buildWildEncounterUnscheduleSection(issues, strings) {
    const encounter = getPrimaryWildEncounterFromUnscheduleIssues(issues);
+   const type = getItineraryErrorTypes()?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 
-   if (!encounter?.encounterName) {
+   if (!encounter?.encounterName || !type) {
       return null;
    }
 
@@ -69,7 +86,7 @@ function buildWildEncounterUnscheduleSection(issues, strings) {
       : strings.buildWarningWildEncounterOverlapMessageWithoutTime(encounterName);
 
    return {
-      type: 'wildEncounterWillUnscheduleItems',
+      type,
       title: strings.buildWarningScheduleOverlapTitle,
       message,
    };
@@ -77,8 +94,9 @@ function buildWildEncounterUnscheduleSection(issues, strings) {
 
 function buildGuardiansTalkWithoutAnimalSection(issues, strings) {
    const talk = getPrimaryGuardiansTalkFromWithoutAnimalIssues(issues);
+   const type = getItineraryErrorTypes()?.GUARDIANS_TALK_WITHOUT_ANIMAL;
 
-   if (!talk?.talkName) {
+   if (!talk?.talkName || !type) {
       return null;
    }
 
@@ -88,48 +106,55 @@ function buildGuardiansTalkWithoutAnimalSection(issues, strings) {
       : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
 
    return {
-      type: 'guardiansTalkWithoutAnimal',
+      type,
       title: strings.buildWarningWithoutAnimalTitle,
       message,
    };
 }
 
-function buildGuardiansTalkLongWaitSection(issues, strings) {
-   const talk = getPrimaryGuardiansTalkFromLongWaitIssues(issues);
+function buildFixedTimeItemLongWaitSections(issues, strings) {
+   const type = getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
 
-   if (!talk?.talkName) {
-      return null;
+   if (!type) {
+      return [];
    }
 
-   const talkName = normalizeText(talk.talkName);
-   const message = talk.talkTime
-      ? strings.buildWarningLongWaitMessage(talkName, talk.talkTime)
-      : strings.buildWarningLongWaitMessageWithoutTime(talkName);
+   return getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
+      const itemName = normalizeText(item.itemName);
+      const message = item.itemTime
+         ? strings.buildWarningLongWaitMessage(
+            itemName,
+            item.itemTime,
+            item.typePhrase
+         )
+         : strings.buildWarningLongWaitMessageWithoutTime(
+            itemName,
+            item.typePhrase
+         );
 
-   return {
-      type: 'guardiansTalkLongWait',
-      title: strings.buildWarningLongWaitTitle,
-      message,
-   };
+      return {
+         type,
+         title: strings.buildWarningLongWaitTitle,
+         message,
+      };
+   });
 }
 
 const BUILD_WARNING_SECTION_BUILDERS = Object.freeze([
    buildGuardiansTalkUnscheduleSection,
    buildWildEncounterUnscheduleSection,
    buildGuardiansTalkWithoutAnimalSection,
-   buildGuardiansTalkLongWaitSection,
 ]);
 
 export function getItineraryBuildWarningTypes(issues = []) {
+   const warningTypes = itineraryBuildWarningIssueTypes();
    const presentTypes = new Set(
       issues
          .map(issueType)
-         .filter((type) => ITINERARY_BUILD_WARNING_ISSUE_TYPES.includes(type))
+         .filter((type) => warningTypes.includes(type))
    );
 
-   return ITINERARY_BUILD_WARNING_ISSUE_TYPES.filter(
-      (type) => presentTypes.has(type)
-   );
+   return warningTypes.filter((type) => presentTypes.has(type));
 }
 
 export function hasMultipleItineraryBuildWarnings(issues = []) {
@@ -137,10 +162,12 @@ export function hasMultipleItineraryBuildWarnings(issues = []) {
 }
 
 export function buildConfirmedOptionsFromBuildWarnings(issues = []) {
+   const confirmFlags = buildWarningConfirmFlags();
+
    return getItineraryBuildWarningTypes(issues).reduce(
       (flags, type) => ({
          ...flags,
-         ...BUILD_WARNING_CONFIRM_FLAGS[type],
+         ...confirmFlags[type],
       }),
       {}
    );
@@ -149,9 +176,12 @@ export function buildConfirmedOptionsFromBuildWarnings(issues = []) {
 export function buildItineraryBuildWarningSections(issues = []) {
    const strings = APP_STRINGS.itinerary.confirmation;
 
-   return BUILD_WARNING_SECTION_BUILDERS
-      .map((buildSection) => buildSection(issues, strings))
-      .filter(Boolean);
+   return [
+      ...BUILD_WARNING_SECTION_BUILDERS
+         .map((buildSection) => buildSection(issues, strings))
+         .filter(Boolean),
+      ...buildFixedTimeItemLongWaitSections(issues, strings),
+   ];
 }
 
 function createBuildWarningsContent(sections) {

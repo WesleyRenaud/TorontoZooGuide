@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..bulk.simulate_bulk_reschedule_for_long_wait import isolated_guardians_talks_after_adding_talk_with_simulated_bulk
 from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_saved_itinerary
@@ -22,7 +21,7 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
+from ...warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_reason_after_adding_with_simulated_bulk
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from ...warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
 from ...warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
@@ -89,7 +88,7 @@ def schedule_guardians_talk_itinerary_item(
       *,
       itinerary_context: dict[ str, Any ],
       confirming_guardians_talk_unschedule: bool,
-      confirming_guardians_talk_long_wait: bool,
+      confirming_fixed_time_item_long_wait: bool,
       confirming_guardians_talk_without_animal: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
@@ -133,16 +132,16 @@ def schedule_guardians_talk_itinerary_item(
          build_guardians_talk_without_animal_issue_from_talks(
             [ guardians_talk_diff ] ) )
 
-   if not confirming_guardians_talk_long_wait:
-      isolated_talks = isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
-         conn,
-         guardians_talk_diff,
-         itinerary_context=itinerary_context )
+   if not confirming_fixed_time_item_long_wait:
+      long_wait_reason = (
+         guardians_talk_long_wait_reason_after_adding_with_simulated_bulk(
+            conn,
+            guardians_talk_diff,
+            itinerary_context=itinerary_context )
+      )
 
-      if isolated_talks:
-         pending_reasons.append(
-            build_guardians_talk_long_wait_issue_from_talks(
-               isolated_talks ) )
+      if long_wait_reason is not None:
+         pending_reasons.append( long_wait_reason )
 
    if pending_reasons:
       return build_save_result(

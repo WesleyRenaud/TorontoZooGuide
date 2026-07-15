@@ -7,9 +7,16 @@ import {
    hasMultipleItineraryBuildWarnings,
    showItineraryBuildWarningsConfirmation,
 } from '../../scripts/itinerary/panel/itineraryBuildWarningsConfirmation.js';
+import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
+
+updateItineraryErrorTypesFromConfig({
+   errorTypes: MOCK_ERROR_TYPES,
+   suppressedErrorTypes: [],
+});
 
 const overlapAndWithoutAnimalIssues = [
    {
@@ -80,8 +87,22 @@ test('buildItineraryBuildWarningSections covers encounter and no-time copy', () 
          items: [{ name: 'Amur Tiger' }],
       },
       {
-         type: 'guardiansTalkLongWait',
-         items: [{ name: 'Amur Tiger' }],
+         type: 'fixedTimeItemLongWait',
+         items: [
+            {
+               name: 'Amur Tiger',
+               item_type: 'guardiansTalk',
+            },
+            {
+               name: 'Indian Rhino',
+               start_time: '1:00 PM',
+               item_type: 'guardiansTalk',
+            },
+            {
+               name: 'Capybara',
+               item_type: 'wildEncounter',
+            },
+         ],
       },
    ]);
 
@@ -91,13 +112,17 @@ test('buildItineraryBuildWarningSections covers encounter and no-time copy', () 
          'guardiansTalkWillUnscheduleItems',
          'wildEncounterWillUnscheduleItems',
          'guardiansTalkWithoutAnimal',
-         'guardiansTalkLongWait',
+         'fixedTimeItemLongWait',
+         'fixedTimeItemLongWait',
+         'fixedTimeItemLongWait',
       ]
    );
    assert.match(sections[0].message, /Amur Tiger guardians talk overlaps/);
    assert.match(sections[1].message, /Capybara wild encounter overlaps/);
    assert.match(sections[2].message, /does not match an animal on your itinerary\.$/);
-   assert.match(sections[3].message, /is a long wait from your other scheduled items\.$/);
+   assert.match(sections[3].message, /Amur Tiger guardians talk is a long wait/);
+   assert.match(sections[4].message, /Indian Rhino guardians talk at 1:00 PM is a long wait/);
+   assert.match(sections[5].message, /Capybara wild encounter is a long wait/);
 });
 
 test('showItineraryBuildWarningsConfirmation shows all warnings in one popup', () => {
@@ -133,6 +158,65 @@ test('showItineraryBuildWarningsConfirmation shows all warnings in one popup', (
    document.querySelector('.tzg-popup-confirm')?.click();
 
    assert.equal(confirmed, true);
+});
+
+test('buildItineraryBuildWarningSections covers timed wild encounter overlap copy', () => {
+   const sections = buildItineraryBuildWarningSections([
+      {
+         type: 'wildEncounterWillUnscheduleItems',
+         items: [{
+            name: 'Capybara',
+            start_time: '2:30 PM',
+         }],
+      },
+   ]);
+
+   assert.equal(sections.length, 1);
+   assert.match(
+      sections[0].message,
+      /Capybara wild encounter at 2:30 PM overlaps scheduled items/
+   );
+});
+
+test('buildItineraryBuildWarningSections skips empty warning modules', () => {
+   assert.deepEqual(
+      buildItineraryBuildWarningSections([
+         { type: 'guardiansTalkWillUnscheduleItems', items: [] },
+         { type: 'wildEncounterWillUnscheduleItems', items: [] },
+         { type: 'guardiansTalkWithoutAnimal', items: [] },
+         { type: 'fixedTimeItemLongWait', items: [] },
+      ]),
+      []
+   );
+});
+
+test('buildItineraryBuildWarningSections skips long wait when error type is unset', () => {
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: {
+         ...MOCK_ERROR_TYPES,
+         FIXED_TIME_ITEM_LONG_WAIT: '',
+      },
+      suppressedErrorTypes: [],
+   });
+
+   try {
+      assert.deepEqual(
+         buildItineraryBuildWarningSections([{
+            type: 'fixedTimeItemLongWait',
+            items: [{
+               name: 'Amur Tiger',
+               item_type: 'guardiansTalk',
+            }],
+         }]),
+         []
+      );
+   }
+   finally {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+   }
 });
 
 test('showItineraryBuildWarningsConfirmation cancels when no sections', () => {

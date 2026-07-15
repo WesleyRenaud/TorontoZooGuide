@@ -36,8 +36,8 @@ class ItineraryController():
          data.get( 'confirmingGuardiansTalkUnschedule' ) )
       confirming_wild_encounter_unschedule = bool(
          data.get( 'confirmingWildEncounterUnschedule' ) )
-      confirming_guardians_talk_long_wait = bool(
-         data.get( 'confirmingGuardiansTalkLongWait' ) )
+      confirming_fixed_time_item_long_wait = bool(
+         data.get( 'confirmingFixedTimeItemLongWait' ) )
       confirming_guardians_talk_without_animal = bool(
          data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
 
@@ -59,8 +59,8 @@ class ItineraryController():
             confirming_guardians_talk_unschedule ),
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule ),
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ),
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait ),
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) )
 
@@ -94,8 +94,8 @@ class ItineraryController():
          data.get( 'confirmingGuardiansTalkUnschedule' ) )
       confirming_wild_encounter_unschedule = bool(
          data.get( 'confirmingWildEncounterUnschedule' ) )
-      confirming_guardians_talk_long_wait = bool(
-         data.get( 'confirmingGuardiansTalkLongWait' ) )
+      confirming_fixed_time_item_long_wait = bool(
+         data.get( 'confirmingFixedTimeItemLongWait' ) )
       confirming_guardians_talk_without_animal = bool(
          data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
 
@@ -110,8 +110,8 @@ class ItineraryController():
             confirming_guardians_talk_unschedule ),
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule ),
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ),
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait ),
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) )
 
@@ -128,13 +128,14 @@ class ItineraryController():
       data = handler._read_json_body()
 
       temp = data.get( 'temp' )
-      confirming_guardians_talk_long_wait = bool(
-         data.get( 'confirmingGuardiansTalkLongWait' ) )
+      confirming_fixed_time_item_long_wait = bool(
+         data.get( 'confirmingFixedTimeItemLongWait' ) )
 
       save_result = ItineraryCoordinator.bulk_schedule_animals(
          visit_date_temp=temp,
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ) )
+         confirming_fixed_time_item_long_wait=(
+            confirming_fixed_time_item_long_wait ),
+ )
 
       response = itinerary_result_to_dict(
          save_result,

@@ -127,7 +127,7 @@ def set_itinerary(
       confirming_early_admission: bool = False,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
-      confirming_guardians_talk_long_wait: bool = False,
+      confirming_fixed_time_item_long_wait: bool = False,
       confirming_guardians_talk_without_animal: bool = False ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
@@ -181,7 +181,7 @@ def set_itinerary(
       confirming_early_admission=confirming_early_admission,
       confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
       confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
-      confirming_guardians_talk_long_wait=confirming_guardians_talk_long_wait,
+      confirming_fixed_time_item_long_wait=confirming_fixed_time_item_long_wait,
       confirming_guardians_talk_without_animal=(
          confirming_guardians_talk_without_animal ),
       overriding_conflicting_guardians_talks=(

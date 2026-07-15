@@ -5,13 +5,12 @@ from dataclasses import replace
 from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
 from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added_guardians_talks_with_long_waits
+from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added_fixed_time_item_long_wait_reason
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
 from ..warnings.early_admission_warning import early_admission_warning_is_required
-from ..warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
-from ..warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_warning_is_required_for_validated_itinerary
+from ..warnings.fixed_time_item_long_wait_warning import validated_itinerary_has_unscheduled_listed_items
 from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
 from ..warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required
 from ..warnings.guardians_talk_without_animal_warning import newly_added_guardians_talks_without_matching_animal
@@ -27,7 +26,7 @@ def check_set_itinerary_save_warnings(
       confirming_early_admission: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
-      confirming_guardians_talk_long_wait: bool,
+      confirming_fixed_time_item_long_wait: bool,
       confirming_guardians_talk_without_animal: bool,
       overriding_conflicting_guardians_talks: bool ) -> tuple[
          SetItineraryContext,
@@ -126,22 +125,20 @@ def check_set_itinerary_save_warnings(
          build_guardians_talk_without_animal_issue_from_talks(
             missing_animal_talks ) )
 
-   if guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
-         context.validated_itinerary,
-         confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ),
-         saved_itinerary=context.saved_itinerary ):
-      long_wait_talks = newly_added_guardians_talks_with_long_waits(
+   if (
+         not confirming_fixed_time_item_long_wait
+         and not validated_itinerary_has_unscheduled_listed_items(
+            context.validated_itinerary )
+   ):
+      long_wait_reason = newly_added_fixed_time_item_long_wait_reason(
          context.conn,
          context.validated_itinerary,
          visit_date=context.save_input.date,
          itinerary_context=context.itinerary_controller_kwargs,
          saved_itinerary=context.saved_itinerary )
 
-      if long_wait_talks:
-         pending_reasons.append(
-            build_guardians_talk_long_wait_issue_from_talks(
-               long_wait_talks ) )
+      if long_wait_reason is not None:
+         pending_reasons.append( long_wait_reason )
 
    if pending_reasons:
       return (

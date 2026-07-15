@@ -627,7 +627,7 @@ test('normalizes schedule itinerary item response', async () => {
          confirmingScheduleItemNotOnItinerary: false,
          confirmingGuardiansTalkUnschedule: false,
          confirmingWildEncounterUnschedule: false,
-         confirmingGuardiansTalkLongWait: false,
+         confirmingFixedTimeItemLongWait: false,
          confirmingGuardiansTalkWithoutAnimal: false,
       });
 
@@ -647,7 +647,7 @@ test('normalizes bulk schedule animals response', async () => {
       assert.equal(url, '/bulk-schedule-animals');
       assert.deepEqual(JSON.parse(options.body), {
          temp: true,
-         confirmingGuardiansTalkLongWait: false,
+         confirmingFixedTimeItemLongWait: false,
       });
 
       return mockJsonResponse({

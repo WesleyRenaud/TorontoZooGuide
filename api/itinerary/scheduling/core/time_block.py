@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
+from ...data_access.validated_itinerary import ValidatedItinerary
 from ....models import Itinerary
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
@@ -68,10 +70,35 @@ def append_block_from_schedule_times(
 
 
 def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBlock ]:
+   return _collect_time_blocks(
+      animals=itinerary.animals,
+      attractions=itinerary.attractions,
+      events=itinerary.events,
+      guardians_talks=itinerary.guardians_talks,
+      wild_encounters=itinerary.wild_encounters )
+
+
+def collect_time_blocks_from_validated_itinerary(
+      validated_itinerary: ValidatedItinerary ) -> list[ TimeBlock ]:
+   return _collect_time_blocks(
+      animals=validated_itinerary.animals,
+      attractions=validated_itinerary.attractions,
+      events=validated_itinerary.events,
+      guardians_talks=validated_itinerary.guardians_talks,
+      wild_encounters=validated_itinerary.wild_encounters )
+
+
+def _collect_time_blocks(
+      *,
+      animals: list[ Any ],
+      attractions: list[ Any ],
+      events: list[ Any ],
+      guardians_talks: list[ Any ],
+      wild_encounters: list[ Any ] ) -> list[ TimeBlock ]:
    blocks: list[ TimeBlock ] = []
 
-   for animal in itinerary.animals:
-      if animal.covered_by_talk:
+   for animal in animals:
+      if getattr( animal, 'covered_by_talk', False ):
          continue
 
       append_block_from_schedule_times(
@@ -79,34 +106,34 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
          animal.start_time,
          animal.end_time )
 
-   for attraction in itinerary.attractions:
+   for attraction in attractions:
       append_block_from_schedule_times(
          blocks,
          attraction.start_time,
          attraction.end_time )
 
-   for event in itinerary.events:
+   for event in events:
       append_block_from_schedule_times(
          blocks,
          event.start_time,
          event.end_time )
 
-   for guardians_talk in itinerary.guardians_talks:
-      if guardians_talk.is_deleted:
+   for item in guardians_talks:
+      if getattr( item, 'is_deleted', False ):
          continue
 
       append_block_from_schedule_times(
          blocks,
-         guardians_talk.start_time,
-         guardians_talk.end_time )
+         item.start_time,
+         item.end_time )
 
-   for wild_encounter in itinerary.wild_encounters:
-      if wild_encounter.is_deleted:
+   for item in wild_encounters:
+      if getattr( item, 'is_deleted', False ):
          continue
 
       append_block_from_schedule_times(
          blocks,
-         wild_encounter.start_time,
-         wild_encounter.end_time )
+         item.start_time,
+         item.end_time )
 
    return blocks

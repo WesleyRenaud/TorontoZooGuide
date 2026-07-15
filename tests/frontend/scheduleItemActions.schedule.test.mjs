@@ -84,7 +84,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
             confirmingScheduleItemNotOnItinerary: false,
             confirmingGuardiansTalkUnschedule: false,
             confirmingWildEncounterUnschedule: false,
-            confirmingGuardiansTalkLongWait: false,
+            confirmingFixedTimeItemLongWait: false,
             confirmingGuardiansTalkWithoutAnimal: false,
          },
       }]
