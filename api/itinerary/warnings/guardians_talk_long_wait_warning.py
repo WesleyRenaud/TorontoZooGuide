@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models import GuardiansTalk
 from ...models import Itinerary
@@ -11,6 +12,7 @@ from ..scheduling.core.time_block import collect_time_blocks_from_itinerary
 from ..scheduling.core.time_block import time_block_from_schedule_times
 from ..scheduling.core.time_block import time_block_gap_seconds
 from ..scheduling.core.time_block import TimeBlock
+from ..scheduling.unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import MAX_GUARDIANS_TALK_WAIT_MINUTES
 from ...shared.enums import ItineraryErrorType
@@ -203,15 +205,24 @@ def validated_itinerary_has_unscheduled_listed_items(
 def guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
       validated_itinerary: ValidatedItinerary,
       *,
-      confirming_guardians_talk_long_wait: bool ) -> bool:
+      confirming_guardians_talk_long_wait: bool,
+      saved_itinerary: SavedItinerary | None = None ) -> bool:
    if confirming_guardians_talk_long_wait:
       return False
 
    if validated_itinerary_has_unscheduled_listed_items( validated_itinerary ):
       return False
 
+   isolated_talks = isolated_guardians_talks_from_validated_itinerary(
+      validated_itinerary )
+
+   if saved_itinerary is None:
+      return bool( isolated_talks )
+
    return bool(
-      isolated_guardians_talks_from_validated_itinerary( validated_itinerary ) )
+      newly_added_active_guardians_talks(
+         saved_itinerary,
+         isolated_talks ) )
 
 
 def build_guardians_talk_long_wait_issue_from_talks(
