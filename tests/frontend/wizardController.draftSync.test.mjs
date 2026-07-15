@@ -161,18 +161,20 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(popupConfigs.length, 1);
    });
 
-   test('does not notify onDone when finalize completes successfully', async () => {
+   test('does not notify page onDone when finalize completes successfully', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const doneCalls = [];
       let finishHandler = null;
+      const selectedAnimals = syncedSelection();
       const savedItinerary = {
          date: '2026-06-15',
-         animals: [],
+         animals: selectedAnimals,
          isActive: true,
       };
 
       await openItineraryWizard({
          mountEl,
+         startAt: 'animals',
          onDone: (itinerary) => {
             doneCalls.push(itinerary);
          },
@@ -189,8 +191,8 @@ test.describe('openItineraryWizard draft sync', () => {
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [
                {
-                  stepKey: 'wildEncounters',
-                  selectionKey: 'wildEncounters',
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
                   factory: ({ onFinish }) => {
                      finishHandler = onFinish;
                      return { show() {} };
@@ -206,7 +208,7 @@ test.describe('openItineraryWizard draft sync', () => {
          },
       });
 
-      finishHandler?.([]);
+      finishHandler?.(selectedAnimals);
 
       await new Promise((resolve) => {
          setTimeout(resolve, 0);
