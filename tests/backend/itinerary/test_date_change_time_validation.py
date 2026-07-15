@@ -123,7 +123,8 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.arrival_time is None
+   assert itinerary.departure_time is None
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
@@ -217,7 +218,8 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.departure_time == '9:43 AM'
+   assert itinerary.arrival_time is None
+   assert itinerary.departure_time is None
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals

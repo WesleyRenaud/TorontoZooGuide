@@ -9,6 +9,8 @@ from ..data_access.save_itinerary import save_validated_itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
+from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
+from ..scheduling.sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
 from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .set_itinerary_context import build_set_itinerary_current_itinerary
 from .set_itinerary_context import SetItineraryContext
@@ -56,19 +58,45 @@ def commit_set_itinerary(
          context.conn,
          saved_itinerary_before_clear=context.saved_itinerary,
          **context.itinerary_controller_kwargs )
+      itinerary = reschedule_result.itinerary
+      seed_visit_times_to_scheduled_endpoints_if_complete(
+         context.conn,
+         itinerary )
+      clear_visit_times_if_became_incomplete(
+         context.conn,
+         previous_itinerary=context.current_itinerary,
+         current_itinerary=build_set_itinerary_current_itinerary(
+            context.conn,
+            context.itinerary_controller_kwargs ) )
+      itinerary = build_set_itinerary_current_itinerary(
+         context.conn,
+         context.itinerary_controller_kwargs )
       result = ItinerarySaveResult(
          status=reschedule_result.status,
          reasons=reschedule_result.reasons,
          adjustments=context.adjustments,
          suppressed_warnings=context.suppressed_warnings,
-         itinerary=reschedule_result.itinerary )
+         itinerary=itinerary )
    else:
+      itinerary = build_set_itinerary_current_itinerary(
+         context.conn,
+         context.itinerary_controller_kwargs )
+      seed_visit_times_to_scheduled_endpoints_if_complete(
+         context.conn,
+         itinerary )
+      clear_visit_times_if_became_incomplete(
+         context.conn,
+         previous_itinerary=context.current_itinerary,
+         current_itinerary=build_set_itinerary_current_itinerary(
+            context.conn,
+            context.itinerary_controller_kwargs ) )
+      itinerary = build_set_itinerary_current_itinerary(
+         context.conn,
+         context.itinerary_controller_kwargs )
       result = ItinerarySaveResult(
          adjustments=context.adjustments,
          suppressed_warnings=context.suppressed_warnings,
-         itinerary=build_set_itinerary_current_itinerary(
-            context.conn,
-            context.itinerary_controller_kwargs ) )
+         itinerary=itinerary )
 
    persist_itinerary_walk_route(
       context.conn,

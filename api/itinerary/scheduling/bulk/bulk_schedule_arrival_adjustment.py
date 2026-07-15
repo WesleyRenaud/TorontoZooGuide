@@ -1,19 +1,21 @@
 from __future__ import annotations
 
-from ...data_access.itinerary import fetch_itinerary_animal_rows
+from ..core.time_block import earliest_scheduled_start_seconds
 from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...domain.itinerary_adjustment import ItineraryAdjustment
 from ...domain.itinerary_adjustment import ItineraryAdjustmentType
+from ....models import Itinerary
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 
 
 def adjust_arrival_after_bulk_schedule(
       conn: Connection,
+      itinerary: Itinerary,
       *,
       schedule_anchor_seconds: int,
       previous_arrival_time: str | None ) -> ItineraryAdjustment | None:
-   earliest_start_seconds = _earliest_scheduled_animal_start_seconds( conn )
+   earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
 
    if earliest_start_seconds is None:
       return None
@@ -21,7 +23,7 @@ def adjust_arrival_after_bulk_schedule(
    previous_arrival_seconds = DateValues.time_value_in_seconds(
       previous_arrival_time )
 
-   if not _should_sync_arrival_to_earliest_animal(
+   if not _should_sync_arrival_to_earliest_item(
          earliest_start_seconds=earliest_start_seconds,
          schedule_anchor_seconds=schedule_anchor_seconds,
          previous_arrival_seconds=previous_arrival_seconds ):
@@ -45,7 +47,7 @@ def adjust_arrival_after_bulk_schedule(
       reason='bulkScheduleConsecutivePacking' )
 
 
-def _should_sync_arrival_to_earliest_animal(
+def _should_sync_arrival_to_earliest_item(
       *,
       earliest_start_seconds: int,
       schedule_anchor_seconds: int,
@@ -59,21 +61,3 @@ def _should_sync_arrival_to_earliest_animal(
    return (
       earliest_start_seconds > schedule_anchor_seconds
       and earliest_start_seconds > previous_arrival_seconds )
-
-
-def _earliest_scheduled_animal_start_seconds(
-      conn: Connection ) -> int | None:
-   earliest_start_seconds: int | None = None
-
-   for animal_row in fetch_itinerary_animal_rows( conn ):
-      start_seconds = DateValues.time_value_in_seconds( animal_row.start_time )
-
-      if start_seconds is None:
-         continue
-
-      if (
-            earliest_start_seconds is None
-            or start_seconds < earliest_start_seconds ):
-         earliest_start_seconds = start_seconds
-
-   return earliest_start_seconds

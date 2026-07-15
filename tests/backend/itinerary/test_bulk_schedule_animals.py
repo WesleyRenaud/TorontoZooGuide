@@ -163,7 +163,14 @@ def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
    assert penguin.start_time is not None
    assert penguin.end_time is not None
    assert lion.start_time != '09:00'
-   assert result.itinerary.arrival_time == '9:00 AM'
+
+   earliest_start_seconds = min(
+      DateValues.time_value_in_seconds( lion.start_time ),
+      DateValues.time_value_in_seconds( penguin.start_time ),
+   )
+   assert result.itinerary.arrival_time == (
+      DateValues.schedule_time_key_from_seconds( earliest_start_seconds )
+   )
 
    lion_end_seconds = DateValues.time_value_in_seconds( lion.end_time )
    penguin_end_seconds = DateValues.time_value_in_seconds( penguin.end_time )

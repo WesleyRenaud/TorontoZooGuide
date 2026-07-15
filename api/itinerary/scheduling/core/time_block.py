@@ -78,6 +78,24 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
       wild_encounters=itinerary.wild_encounters )
 
 
+def earliest_scheduled_start_seconds( itinerary: Itinerary ) -> int | None:
+   time_blocks = collect_time_blocks_from_itinerary( itinerary )
+
+   if not time_blocks:
+      return None
+
+   return min( time_block.start_seconds for time_block in time_blocks )
+
+
+def latest_scheduled_end_seconds( itinerary: Itinerary ) -> int | None:
+   time_blocks = collect_time_blocks_from_itinerary( itinerary )
+
+   if not time_blocks:
+      return None
+
+   return max( time_block.end_seconds for time_block in time_blocks )
+
+
 def collect_time_blocks_from_validated_itinerary(
       validated_itinerary: ValidatedItinerary ) -> list[ TimeBlock ]:
    return _collect_time_blocks(

@@ -3,12 +3,12 @@ from __future__ import annotations
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
-from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
+from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -33,22 +33,15 @@ from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stop
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
+from ..sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
+from ..sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
 from ....types import Connection
-from ....types import ScheduleTimeKey
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_long_wait_reasons_from_itinerary
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-
-
-def has_itinerary_schedule_times(
-      start_time: ScheduleTimeKey,
-      end_time: ScheduleTimeKey ) -> bool:
-   return bool(
-      DateValues.normalize_schedule_time_key( start_time )
-      and DateValues.normalize_schedule_time_key( end_time ) )
 
 
 def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool:
@@ -94,6 +87,10 @@ def bulk_schedule_animals(
       conn,
       saved_itinerary )
 
+   previous_itinerary = build_current_itinerary(
+      saved_itinerary,
+      **itinerary_context )
+
    clear_all_itinerary_schedules( conn )
 
    saved_itinerary = fetch_saved_itinerary( conn )
@@ -133,6 +130,16 @@ def bulk_schedule_animals(
       loop_pins )
 
    if not loop_units and not covered_by_pin:
+      itinerary = build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context )
+      sync_visit_times_to_scheduled_endpoints_if_complete( conn, itinerary )
+      clear_visit_times_if_became_incomplete(
+         conn,
+         previous_itinerary=previous_itinerary,
+         current_itinerary=build_current_itinerary(
+            fetch_saved_itinerary( conn ),
+            **itinerary_context ) )
       persist_itinerary_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
@@ -156,14 +163,6 @@ def bulk_schedule_animals(
    apply_covered_by_talk_schedules( conn, covered_by_pin )
 
    adjustments: tuple[ ItineraryAdjustment, ... ] = ()
-   arrival_adjustment = adjust_arrival_after_bulk_schedule(
-      conn,
-      schedule_anchor_seconds=start_state.schedule_anchor_seconds,
-      previous_arrival_time=schedule_snapshot.arrival_time )
-
-   if arrival_adjustment is not None:
-      adjustments = ( arrival_adjustment, )
-
    reasons: tuple[ ItineraryResultReason, ... ] = ()
 
    if remaining_animals:
@@ -172,11 +171,30 @@ def bulk_schedule_animals(
             remaining_animals ),
       )
    else:
-      ensure_departure_after_bulk_schedule(
+      itinerary_after_pack = build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context )
+      arrival_adjustment = adjust_arrival_after_bulk_schedule(
+         conn,
+         itinerary_after_pack,
+         schedule_anchor_seconds=start_state.schedule_anchor_seconds,
+         previous_arrival_time=schedule_snapshot.arrival_time )
+
+      if arrival_adjustment is not None:
+         adjustments = ( arrival_adjustment, )
+
+      sync_visit_times_to_scheduled_endpoints_if_complete(
          conn,
          build_current_itinerary(
             fetch_saved_itinerary( conn ),
             **itinerary_context ) )
+
+   clear_visit_times_if_became_incomplete(
+      conn,
+      previous_itinerary=previous_itinerary,
+      current_itinerary=build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 

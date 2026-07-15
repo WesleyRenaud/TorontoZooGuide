@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ..core.time_block import collect_time_blocks_from_itinerary
+from ..core.time_block import earliest_scheduled_start_seconds
+from ..core.time_block import latest_scheduled_end_seconds
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...data_access.itinerary_time import set_itinerary_departure_time
@@ -17,7 +18,7 @@ def was_first_scheduled_item(
    if removed_block is None:
       return False
 
-   earliest_start_seconds = _earliest_scheduled_start_seconds( itinerary )
+   earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
 
    if earliest_start_seconds is None:
       return False
@@ -31,7 +32,7 @@ def was_last_scheduled_item(
    if removed_block is None:
       return False
 
-   latest_end_seconds = _latest_scheduled_end_seconds( itinerary )
+   latest_end_seconds = latest_scheduled_end_seconds( itinerary )
 
    if latest_end_seconds is None:
       return False
@@ -44,7 +45,7 @@ def update_arrival_to_earliest_scheduled_start(
       itinerary: Itinerary,
       *,
       previous_arrival_time: str | None ) -> ItineraryAdjustment | None:
-   earliest_start_seconds = _earliest_scheduled_start_seconds( itinerary )
+   earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
 
    if earliest_start_seconds is None:
       return None
@@ -70,7 +71,7 @@ def update_departure_to_latest_scheduled_end(
       itinerary: Itinerary,
       *,
       previous_departure_time: str | None ) -> ItineraryAdjustment | None:
-   latest_end_seconds = _latest_scheduled_end_seconds( itinerary )
+   latest_end_seconds = latest_scheduled_end_seconds( itinerary )
 
    if latest_end_seconds is None:
       return None
@@ -89,21 +90,3 @@ def update_departure_to_latest_scheduled_end(
       previous_value=previous_departure_time,
       value=adjusted_departure_time,
       reason='scheduleItemRemoved' )
-
-
-def _earliest_scheduled_start_seconds( itinerary: Itinerary ) -> int | None:
-   time_blocks = collect_time_blocks_from_itinerary( itinerary )
-
-   if not time_blocks:
-      return None
-
-   return min( time_block.start_seconds for time_block in time_blocks )
-
-
-def _latest_scheduled_end_seconds( itinerary: Itinerary ) -> int | None:
-   time_blocks = collect_time_blocks_from_itinerary( itinerary )
-
-   if not time_blocks:
-      return None
-
-   return max( time_block.end_seconds for time_block in time_blocks )
