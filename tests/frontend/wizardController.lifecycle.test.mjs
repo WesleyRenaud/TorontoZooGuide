@@ -304,14 +304,18 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date', 'regions']);
    });
 
-   test('regions finish saves a date-only itinerary', async () => {
+   test('regions finish skips save when only the visit date changed', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let saveHandler = null;
       let regionsFinishHandler = null;
       const finishCalls = [];
+      const doneCalls = [];
 
       await openItineraryWizard({
          mountEl,
+         onDone: () => {
+            doneCalls.push('done');
+         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -341,11 +345,15 @@ test.describe('openItineraryWizard lifecycle', () => {
       });
 
       saveHandler?.('2026-06-15');
-      await regionsFinishHandler?.(null);
+      regionsFinishHandler?.(null);
 
-      assert.equal(finishCalls.length, 1);
-      assert.equal(finishCalls[0].draft.date, '2026-06-15');
-      assert.deepEqual(finishCalls[0].draft.animals, []);
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.equal(finishCalls.length, 0);
+      assert.deepEqual(doneCalls, []);
+      assert.equal(mountEl.children.length, 0);
    });
 
    test('selection prev handlers return to the previous step', async () => {
@@ -437,46 +445,68 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date']);
    });
 
-   test('finish does not call onDone after save because itineraryUpdated handles refresh', async () => {
+   test('finish after selection changes does not call page onDone because itineraryUpdated handles refresh', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const doneCalls = [];
       let finishHandler = null;
+      const selectedAnimals = syncedSelection();
 
       await openItineraryWizard({
          mountEl,
+         startAt: 'animals',
          onDone: () => {
             doneCalls.push('done');
          },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => createItineraryWizardState({}),
-            createDateStepController: ({ onFinish }) => {
-               finishHandler = onFinish;
-               return { show() {} };
-            },
-            selectionStepConfigs: [],
+            createWizardState: () => createItineraryWizardState({
+               date: '2026-06-15',
+               animals: [],
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+            }),
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [
+               {
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
+                  factory: ({ onFinish }) => {
+                     finishHandler = onFinish;
+                     return { show() {} };
+                  },
+               },
+            ],
             finalizeWizard: async (_draft, _mountEl, { onDone }) => {
-               onDone?.({ date: '2026-06-15' });
-               return { date: '2026-06-15' };
+               onDone?.({ date: '2026-06-15', animals: selectedAnimals });
+               return { date: '2026-06-15', animals: selectedAnimals };
             },
             showConfirmPopup: () => {},
             syncAnimalDraft: () => {},
          },
       });
 
-      await finishHandler?.('2026-06-15');
+      finishHandler?.(selectedAnimals);
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
 
       assert.deepEqual(doneCalls, []);
    });
 
-   test('date finish saves a date-only itinerary', async () => {
+   test('date finish skips save when only the visit date changed', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;
       const finishCalls = [];
+      const doneCalls = [];
 
       await openItineraryWizard({
          mountEl,
+         onDone: () => {
+            doneCalls.push('done');
+         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -497,7 +527,8 @@ test.describe('openItineraryWizard lifecycle', () => {
 
       await finishHandler?.('2026-06-15');
 
-      assert.equal(finishCalls.length, 1);
-      assert.equal(finishCalls[0].draft.date, '2026-06-15');
+      assert.equal(finishCalls.length, 0);
+      assert.deepEqual(doneCalls, []);
+      assert.equal(mountEl.children.length, 0);
    });
 });

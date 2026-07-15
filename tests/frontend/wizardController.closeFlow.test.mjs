@@ -178,10 +178,11 @@ test.describe('openItineraryWizard close flow', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const finishCalls = [];
       let finishHandler = null;
+      const selectedAnimals = syncedSelection();
 
       await openItineraryWizard({
          mountEl,
-         startAt: 'wildEncounters',
+         startAt: 'animals',
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -195,8 +196,8 @@ test.describe('openItineraryWizard close flow', () => {
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [
                {
-                  stepKey: 'wildEncounters',
-                  selectionKey: 'wildEncounters',
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
                   factory: ({ onFinish }) => {
                      finishHandler = onFinish;
                      return { show() {} };
@@ -212,14 +213,14 @@ test.describe('openItineraryWizard close flow', () => {
          },
       });
 
-      finishHandler?.(['Great Barrier Reef']);
+      finishHandler?.(selectedAnimals);
 
       await new Promise((resolve) => {
          setTimeout(resolve, 0);
       });
 
       assert.equal(finishCalls.length, 1);
-      assert.deepEqual(finishCalls[0].wildEncounters, ['Great Barrier Reef']);
+      assert.deepEqual(finishCalls[0].animals, selectedAnimals);
    });
 
    test('cancelling finish restores selection storage so close does not prompt to save', async () => {
@@ -291,5 +292,135 @@ test.describe('openItineraryWizard close flow', () => {
 
       assert.equal(popupConfigs.length, 0);
       assert.equal(mountEl.children.length, 0);
+   });
+});
+
+test.describe('openItineraryWizard finish flow', () => {
+   installDomTestHooks({
+      before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+      },
+      after: () => {
+         delete globalThis.localStorage;
+      },
+   });
+
+   test('skips save when finishing without selection changes', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const finalizeCalls = [];
+      const doneCalls = [];
+      let finishHandler = null;
+      const existingAnimals = syncedSelection();
+
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
+      await openItineraryWizard({
+         mountEl,
+         startAt: 'animals',
+         onDone: () => {
+            doneCalls.push('done');
+         },
+         deps: {
+            loadItinerary: async () => ({
+               date: '2026-06-15',
+               animals: existingAnimals,
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+               isActive: true,
+            }),
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: (existing) => createItineraryWizardState(existing),
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [
+               {
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
+                  factory: ({ onFinish }) => {
+                     finishHandler = onFinish;
+                     return {
+                        show() {},
+                        getSelectionSnapshot: async () => existingAnimals,
+                        shouldSkipClosingSelectionSync: () => false,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async (draft) => {
+               finalizeCalls.push(draft);
+               return draft;
+            },
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      finishHandler?.(existingAnimals);
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.equal(finalizeCalls.length, 0);
+      assert.deepEqual(doneCalls, []);
+      assert.equal(mountEl.children.length, 0);
+   });
+
+   test('saves when finishing after selection changes', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const finalizeCalls = [];
+      let finishHandler = null;
+      const existingAnimals = syncedSelection();
+      const nextAnimals = [
+         ...existingAnimals,
+         { species: 'Cheetah', exhibit: 'Africa Savanna' },
+      ];
+
+      await openItineraryWizard({
+         mountEl,
+         startAt: 'animals',
+         deps: {
+            loadItinerary: async () => ({
+               date: '2026-06-15',
+               animals: existingAnimals,
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+               isActive: true,
+            }),
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: (existing) => createItineraryWizardState(existing),
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [
+               {
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
+                  factory: ({ onFinish }) => {
+                     finishHandler = onFinish;
+                     return {
+                        show() {},
+                        getSelectionSnapshot: async () => nextAnimals,
+                        shouldSkipClosingSelectionSync: () => false,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async (draft) => {
+               finalizeCalls.push(draft);
+               return draft;
+            },
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      finishHandler?.(nextAnimals);
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.equal(finalizeCalls.length, 1);
+      assert.equal(finalizeCalls[0].animals.length, 2);
    });
 });

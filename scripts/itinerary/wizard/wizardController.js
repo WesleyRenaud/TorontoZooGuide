@@ -9,10 +9,12 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from '../itineraryService.js';
+import { ITINERARY_ITEM_KEYS } from '../itineraryShape.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
 import { buildWizardDraft } from './wizardDraft.js';
+import { shouldBlockEmptyFinish } from './wizardFinalizeDecisions.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 import {
    buildSelectionStepHandlers,
@@ -97,9 +99,40 @@ export async function openItineraryWizard({
       wizard.consumePendingValidation();
    }
 
+   function applyFinishOverride(override = {}) {
+      if (override.date != null) {
+         applyWizardDate(override.date);
+      }
+
+      ITINERARY_ITEM_KEYS.forEach((selectionKey) => {
+         if (!Object.prototype.hasOwnProperty.call(override, selectionKey)) {
+            return;
+         }
+
+         updateSelection(selectionKey, override[selectionKey]);
+      });
+   }
+
    async function finish(override = {}, options = {}) {
+      await syncActiveStepDraft();
+      applyFinishOverride(override);
+
+      if (
+         !wizard.hasUnsavedChanges()
+         && !shouldBlockEmptyFinish(
+            buildWizardDraft(wizardState),
+            wizard.allowEmptyFinish(options.allowEmpty)
+         )
+      ) {
+         // Same as a successful save: clear the overlay only. Do not call page
+         // onDone (refreshPanel) — that remounts the day planner and jumps scroll.
+         clearWizard(mountEl);
+         handleFinishDone();
+         return existing;
+      }
+
       const result = await finalizeWizard(
-         buildWizardDraft(wizardState, override),
+         buildWizardDraft(wizardState),
          mountEl,
          {
             allowEmpty: wizard.allowEmptyFinish(options.allowEmpty),
