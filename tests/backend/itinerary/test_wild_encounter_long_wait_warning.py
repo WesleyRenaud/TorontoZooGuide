@@ -159,10 +159,6 @@ def test_schedule_encounter_warns_when_far_from_existing_scheduled_items(
       LION_KEY,
       start_time='11:00',
    ).success
-   assert schedule_itinerary_item(
-      ScheduleItemKind.WILD_ENCOUNTER.item_type,
-      wild_encounter_wire( WILD_ENCOUNTER, start_time='10:00' ),
-   ).success
 
    result = schedule_itinerary_item(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,

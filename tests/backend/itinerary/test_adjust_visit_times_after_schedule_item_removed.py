@@ -94,10 +94,6 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
    ).success
 
    assert schedule_itinerary_item(
-      ScheduleItemKind.GUARDIANS_TALK.item_type,
-      f'{ GUARDIANS_TALK }||10:00',
-   ).success
-   assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       LION_KEY,
       start_time='11:00',

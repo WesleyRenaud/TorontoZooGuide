@@ -10,6 +10,7 @@ from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
+from ..scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.enums import ItineraryEventType
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -132,3 +133,16 @@ def find_saved_itinerary_schedule_item_row(
       )
 
    return None
+
+
+def saved_schedule_item_is_already_scheduled(
+      saved_itinerary: SavedItinerary,
+      schedule_item_key: ScheduleItemKey ) -> bool:
+   row = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      schedule_item_key )
+
+   if row is None:
+      return False
+
+   return has_itinerary_schedule_times( row.start_time, row.end_time )

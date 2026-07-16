@@ -96,7 +96,10 @@ def schedule_wild_encounter_itinerary_item(
          **itinerary_context )
 
    if _saved_wild_encounter_exists( saved_itinerary, wild_encounter_key ):
-      return build_success_result( conn, **itinerary_context )
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
+         **itinerary_context )
 
    wild_encounter_diff = _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary,

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
 from ...data_access.itinerary import fetch_saved_itinerary
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
@@ -47,6 +48,16 @@ def schedule_listed_itinerary_item(
 
    if membership_error is not None:
       return membership_error
+
+   if saved_schedule_item_is_already_scheduled(
+         saved_itinerary,
+         schedule_item_key ):
+      return with_suppressed_warnings(
+         build_save_result(
+            conn,
+            ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
+            **itinerary_context ),
+         suppressed_warnings )
 
    target = resolve_listed_schedule_target( conn, schedule_item_key )
 

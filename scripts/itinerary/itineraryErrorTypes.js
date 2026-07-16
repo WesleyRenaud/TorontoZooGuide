@@ -97,6 +97,10 @@ export function resolveItineraryErrorMessage(
       return strings.itemNotOnItinerary;
    }
 
+   if (errorType === itineraryErrorTypes?.ITEM_ALREADY_SCHEDULED) {
+      return strings.itemAlreadyScheduled;
+   }
+
    if (errorType === itineraryErrorTypes?.TIME_OUT_OF_BOUNDS) {
       return strings.timeOutOfBounds;
    }

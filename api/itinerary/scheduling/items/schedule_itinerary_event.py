@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_default_duration import fetch_event_default_duration_seconds
 from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedule
@@ -34,6 +35,14 @@ def schedule_itinerary_event(
 
    if isinstance( prepared_window, ItinerarySaveResult ):
       return prepared_window
+
+   if saved_schedule_item_is_already_scheduled(
+         saved_itinerary,
+         event_type ):
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
+         **itinerary_context )
 
    duration_seconds = effective_duration_seconds(
       time_options.duration_minutes,
