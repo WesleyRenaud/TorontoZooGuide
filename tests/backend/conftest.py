@@ -7,6 +7,7 @@ from datetime import date, datetime, tzinfo
 from io import BytesIO
 import json
 from pathlib import Path
+import shutil
 import sqlite3
 from typing import Any
 
@@ -17,7 +18,8 @@ from api.connection import close_connection
 from api.connection import open_connection
 from api.request_connection import clear_connection
 from api.request_connection import set_connection
-from api.seed.runner import main as seed_database
+from api.seed.runner import apply_schema
+from api.seed.runner import apply_seed_data
 from api.types import Connection, Cursor, Row
 
 
@@ -38,10 +40,18 @@ class DbControllers:
       self._closed = True
 
 
+@pytest.fixture( scope='session' )
+def seeded_template_db_path( tmp_path_factory: pytest.TempPathFactory ) -> Path:
+   path = tmp_path_factory.mktemp( 'seeded-db' ) / 'animals.db'
+   apply_schema( db_path=str( path ) )
+   apply_seed_data( db_path=str( path ) )
+   return path
+
+
 @pytest.fixture
-def db_path( tmp_path: Path ) -> Path:
+def db_path( tmp_path: Path, seeded_template_db_path: Path ) -> Path:
    path = tmp_path / 'animals.db'
-   seed_database( db_path=str( path ) )
+   shutil.copy2( seeded_template_db_path, path )
    return path
 
 
