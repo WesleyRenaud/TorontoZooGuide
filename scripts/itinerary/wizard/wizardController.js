@@ -40,15 +40,13 @@ function clearWizard(mountEl) {
    mountEl?.replaceChildren();
 }
 
-function closeWizard(mountEl, onDone) {
+function closeWizard(mountEl) {
    clearWizard(mountEl);
-   onDone?.();
 }
 
 export async function openItineraryWizard({
    mountEl,
    startAt = WIZARD_DEFAULT_START_STEP,
-   onDone,
    deps = {},
 } = {}) {
    const {
@@ -124,8 +122,8 @@ export async function openItineraryWizard({
             wizard.allowEmptyFinish(options.allowEmpty)
          )
       ) {
-         // Same as a successful save: clear the overlay only. Do not call page
-         // onDone (refreshPanel) — that remounts the day planner and jumps scroll.
+         // Clear the overlay only. Do not remount the day planner — that jumps
+         // scroll. Saved itinerary content is already on the page.
          clearWizard(mountEl);
          handleFinishDone();
          return existing;
@@ -152,7 +150,7 @@ export async function openItineraryWizard({
 
    function discardAndClose() {
       wizard.discardChanges();
-      closeWizard(mountEl, onDone);
+      closeWizard(mountEl);
    }
 
    function applyWizardDate(date) {
@@ -203,7 +201,9 @@ export async function openItineraryWizard({
       await syncActiveStepDraft();
 
       if (!wizard.hasUnsavedChanges()) {
-         closeWizard(mountEl, onDone);
+         // Clear the overlay only. Remounting the day planner jumps scroll;
+         // saved itinerary content is already on the page.
+         closeWizard(mountEl);
          return;
       }
 
