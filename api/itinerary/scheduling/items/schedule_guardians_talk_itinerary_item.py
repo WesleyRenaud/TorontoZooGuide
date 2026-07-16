@@ -98,7 +98,10 @@ def schedule_guardians_talk_itinerary_item(
          **itinerary_context )
 
    if _saved_guardians_talk_exists( saved_itinerary, guardians_talk_key ):
-      return build_success_result( conn, **itinerary_context )
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
+         **itinerary_context )
 
    guardians_talk_diff = _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary,

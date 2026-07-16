@@ -188,11 +188,6 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
       LION_KEY,
       start_time='10:30',
    ).success
-   assert schedule_itinerary_item(
-      ScheduleItemKind.GUARDIANS_TALK.item_type,
-      f'{ ZEBRA_TALK }||10:00',
-      confirming_guardians_talk_without_animal=True,
-   ).success
 
    result = schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
@@ -284,11 +279,6 @@ def test_schedule_talk_warns_when_no_previously_scheduled_animals_to_pack(
          guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
       ],
       wild_encounters=[],
-      confirming_guardians_talk_without_animal=True,
-   ).success
-   assert schedule_itinerary_item(
-      ScheduleItemKind.GUARDIANS_TALK.item_type,
-      f'{ ZEBRA_TALK }||10:00',
       confirming_guardians_talk_without_animal=True,
    ).success
 

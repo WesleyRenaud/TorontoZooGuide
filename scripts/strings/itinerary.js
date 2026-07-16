@@ -175,6 +175,7 @@ export const itinerary = {
          'That time is not available. Select another start time and try again.'
       ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
+      itemAlreadyScheduled: 'This item is already scheduled.',
       timeOutOfBounds: 'One or more visit times are outside operating hours for this date.',
       activityNotOnDaySchedule: (
          'That talk or encounter is not scheduled on your visit day.'

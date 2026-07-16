@@ -393,3 +393,77 @@ def test_schedule_itinerary_item_requires_visit_date(
 
    assert not result.success
    assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def test_schedule_already_scheduled_animal_returns_item_already_scheduled(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   first = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   )
+
+   assert first.success
+   lion_before = first.itinerary.animals[ 0 ]
+   assert lion_before.start_time == '10:00 AM'
+
+   second = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+   )
+
+   assert not second.success
+   assert second.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
+   lion_after = second.itinerary.animals[ 0 ]
+   assert lion_after.start_time == lion_before.start_time
+   assert lion_after.end_time == lion_before.end_time
+
+
+def test_schedule_already_scheduled_lunch_returns_item_already_scheduled(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   first = schedule_itinerary_item(
+      item_type=ItineraryEventType.LUNCH.value,
+      key='',
+      start_time='12:00',
+   )
+
+   assert first.success
+   lunch_before = first.itinerary.events[ 0 ]
+   assert lunch_before.start_time is not None
+
+   second = schedule_itinerary_item(
+      item_type=ItineraryEventType.LUNCH.value,
+      key='',
+   )
+
+   assert not second.success
+   assert second.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
+   lunch_after = second.itinerary.events[ 0 ]
+   assert lunch_after.start_time == lunch_before.start_time
+   assert lunch_after.end_time == lunch_before.end_time

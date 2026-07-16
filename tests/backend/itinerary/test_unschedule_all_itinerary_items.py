@@ -92,9 +92,6 @@ def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encou
       wild_encounters=[],
    ).success
 
-   assert schedule_itinerary_item(
-      'guardians_talks',
-      f'{ GUARDIANS_TALK }||14:00' ).success
    assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
@@ -124,9 +121,6 @@ def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encou
       wild_encounters=[ wild_encounter_key(  WILD_ENCOUNTER, start_time='15:00'  ) ],
    ).success
 
-   assert schedule_itinerary_item(
-      'wild_encounters',
-      wild_encounter_key(  WILD_ENCOUNTER, start_time='15:00'  ).to_wire() ).success
    assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
@@ -200,10 +194,6 @@ def test_unschedule_all_itinerary_items_returns_error_when_only_guardians_talk_i
       guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='14:00' ) ],
       wild_encounters=[],
    ).success
-
-   assert schedule_itinerary_item(
-      'guardians_talks',
-      f'{ GUARDIANS_TALK }||14:00' ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
