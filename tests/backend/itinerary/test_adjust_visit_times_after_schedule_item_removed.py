@@ -182,3 +182,75 @@ def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
    assert result.itinerary.arrival_time == before.arrival_time
    assert result.itinerary.departure_time == before.departure_time
    assert result.adjustments == ()
+
+
+def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      start_time='10:00',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      CHEETAH_KEY,
+      start_time='10:15',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      PENGUIN_KEY,
+      start_time='10:30',
+      duration_minutes=15,
+   ).success
+
+   scheduled = ItineraryCoordinator.get_itinerary()
+   penguin_before = next(
+      animal
+      for animal in scheduled.animals
+      if animal.species == 'African Penguin' )
+   assert penguin_before.end_time is not None
+   assert ItineraryCoordinator.set_departure_time(
+      penguin_before.end_time,
+      confirming_short_visit=True,
+   ).success
+
+   before = ItineraryCoordinator.get_itinerary()
+   assert before.departure_time == penguin_before.end_time
+
+   result = unschedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      CHEETAH_KEY,
+   )
+
+   assert result.success
+   penguin_after = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == 'African Penguin' )
+   assert penguin_after.end_time is not None
+   assert DateValues.time_value_is_before(
+      penguin_after.end_time,
+      penguin_before.end_time )
+   assert result.itinerary.departure_time == penguin_after.end_time
+   assert any(
+      adjustment.type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
+      for adjustment in result.adjustments
+   )
