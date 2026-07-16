@@ -157,9 +157,15 @@ def _process_schedule_window(
          cursor_seconds=window_state.cursor_seconds,
          slot_sink=slot_sink )
 
+   packing_window = _non_pinned_packing_window(
+      schedule_window,
+      remaining_units=remaining_units,
+      pinned_loop_ids=pinned_loop_ids,
+      pinned_earliest_start_cache=pinned_earliest_start_cache,
+      cursor_seconds=window_state.cursor_seconds )
    packed_units = pack_loops_into_schedule_window(
       walk_graph,
-      schedule_window,
+      packing_window,
       prepared_units=_units_excluding_pinned_loops(
          remaining_units,
          pinned_loop_ids ),
@@ -169,7 +175,7 @@ def _process_schedule_window(
 
    if packed_units:
       window_state.cursor_seconds = _schedule_start_seconds_for_packed_units(
-         schedule_window,
+         packing_window,
          packed_units=packed_units,
          cursor_seconds=window_state.cursor_seconds )
 
@@ -221,6 +227,34 @@ def _process_schedule_window(
          slot_sink=slot_sink )
 
    return True
+
+
+def _non_pinned_packing_window(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      pinned_loop_ids: set[ str ],
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      cursor_seconds: int,
+   ) -> ItineraryScheduleWindow:
+   """Cap packing so other loops cannot steal a pinned loop's before-pin window."""
+   if not pinned_loop_ids:
+      return schedule_window
+
+   reserved_start_seconds = _earliest_pinned_loop_wait_seconds(
+      remaining_units,
+      pinned_loop_ids,
+      pinned_earliest_start_cache=pinned_earliest_start_cache,
+      cursor_seconds=cursor_seconds )
+
+   if (
+         reserved_start_seconds is None
+         or reserved_start_seconds >= schedule_window.end_seconds ):
+      return schedule_window
+
+   return replace(
+      schedule_window,
+      end_seconds=reserved_start_seconds )
 
 
 def _pack_non_pinned_loops_before_pinned_deadline(

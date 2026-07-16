@@ -155,7 +155,9 @@ def _schedule_animals_around_loop_pins(
    if schedule_cursor_seconds > window_end_seconds:
       raise LoopUnitSchedulePersistError( animals )
 
-   return schedule_cursor_seconds, []
+   return schedule_cursor_seconds, _still_unscheduled_animals(
+      animals,
+      scheduled_animal_ids=scheduled_animal_ids )
 
 
 def _schedule_animal_segment_step(
