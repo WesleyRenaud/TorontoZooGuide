@@ -309,7 +309,7 @@ test('buildItineraryScheduleItemRowIds can include scheduled items only', () => 
    assert.equal(ids.wildEncounterIds.has('African Rainforest||2:00 PM'), true);
 });
 
-test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks and encounters', () => {
+test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled guest and fixed-time items', () => {
    const rows = [
       {
          name: 'Amur Tiger',
@@ -331,10 +331,25 @@ test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks 
          exhibit: 'Savanna',
          scheduleItemKind: 'animals',
       },
+      {
+         species: 'Giant Panda',
+         exhibit: 'Bamboo',
+         scheduleItemKind: 'animals',
+      },
+      {
+         name: 'Conservation Carousel',
+         scheduleItemKind: 'attractions',
+      },
+      {
+         name: 'Kids Zoo',
+         scheduleItemKind: 'attractions',
+      },
    ];
 
    assert.deepEqual(
       filterScheduleItemRowsExcludingScheduledOccurrences(rows, {
+         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '1:00 PM' }],
+         attractions: [{ name: 'Conservation Carousel', start_time: '11:00 AM' }],
          guardiansTalks: [{ name: 'Amur Tiger', start_time: '1:30 PM' }],
          wildEncounters: [{ name: 'African Rainforest', start_time: '2:00 PM' }],
       }),
@@ -345,9 +360,13 @@ test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks 
             scheduleItemKind: 'guardians_talks',
          },
          {
-            species: 'Tiger',
-            exhibit: 'Savanna',
+            species: 'Giant Panda',
+            exhibit: 'Bamboo',
             scheduleItemKind: 'animals',
+         },
+         {
+            name: 'Kids Zoo',
+            scheduleItemKind: 'attractions',
          },
       ]
    );
@@ -388,11 +407,6 @@ test('filterScheduleItemRowsForScheduleModule applies module-specific occurrence
    assert.deepEqual(
       filterScheduleItemRowsForScheduleModule(rows, itinerary),
       [
-         {
-            species: 'Tiger',
-            exhibit: 'Savanna',
-            scheduleItemKind: 'animals',
-         },
          {
             species: 'Giant Panda',
             exhibit: 'Bamboo',

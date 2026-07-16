@@ -246,6 +246,8 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
       rows = [],
       itinerary = {}) {
    const {
+      animalIds,
+      attractionIds,
       guardiansTalkIds,
       wildEncounterIds,
    } = buildItineraryScheduleItemRowIds(itinerary, { scheduledOnly: true });
@@ -253,12 +255,20 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
    return rows.filter((row) => {
       const kind = getScheduleItemRowKind(row);
 
+      if (kind === ScheduleItemKind.ATTRACTION.itemType) {
+         return !attractionIds.has(getScheduleItemRowId(row));
+      }
+
       if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
          return !guardiansTalkIds.has(getScheduleItemRowId(row));
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
          return !wildEncounterIds.has(getWildEncounterId(row));
+      }
+
+      if (kind === ScheduleItemKind.ANIMAL.itemType) {
+         return !animalIds.has(getScheduleItemRowId(row));
       }
 
       return true;
