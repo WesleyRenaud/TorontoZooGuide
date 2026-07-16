@@ -18,12 +18,11 @@ function hasEmbeddedMap() {
    return Boolean(document.getElementById('mapInner'));
 }
 
-function createWizardOpener(mountEl, onDone) {
+function createWizardOpener(mountEl) {
    return ({ startAt = null } = {}) => {
       openItineraryWizard({
          mountEl,
          startAt,
-         onDone,
       });
    };
 }
@@ -161,7 +160,7 @@ export function initItineraryPage() {
       openWizard,
       options
    );
-   const openWizard = createWizardOpener(mountEl, refreshPanel);
+   const openWizard = createWizardOpener(mountEl);
 
    blockMapWheelWhileWizardOpen(mountEl);
    bindWizardEvents(openWizard);

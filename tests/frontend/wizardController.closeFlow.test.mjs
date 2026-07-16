@@ -127,15 +127,13 @@ test.describe('openItineraryWizard close flow', () => {
 
    test('discarding from the save prompt closes the wizard', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       let closeHandler = null;
       let popupConfig = null;
 
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -170,7 +168,6 @@ test.describe('openItineraryWizard close flow', () => {
       await closeHandler?.();
       popupConfig?.onCancel?.();
 
-      assert.deepEqual(doneCalls, ['done']);
       assert.equal(mountEl.children.length, 0);
    });
 
@@ -308,7 +305,6 @@ test.describe('openItineraryWizard finish flow', () => {
    test('skips save when finishing without selection changes', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const finalizeCalls = [];
-      const doneCalls = [];
       let finishHandler = null;
       const existingAnimals = syncedSelection();
 
@@ -317,9 +313,6 @@ test.describe('openItineraryWizard finish flow', () => {
       await openItineraryWizard({
          mountEl,
          startAt: 'animals',
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => ({
                date: '2026-06-15',
@@ -362,7 +355,6 @@ test.describe('openItineraryWizard finish flow', () => {
       });
 
       assert.equal(finalizeCalls.length, 0);
-      assert.deepEqual(doneCalls, []);
       assert.equal(mountEl.children.length, 0);
    });
 

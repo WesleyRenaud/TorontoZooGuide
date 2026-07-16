@@ -60,18 +60,16 @@ test.describe('openItineraryWizard lifecycle', () => {
 
    test('closes immediately when there are no unsaved changes', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       let closeHandler = null;
       const dateController = {
          show() {},
          getDate: () => null,
       };
 
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -89,7 +87,6 @@ test.describe('openItineraryWizard lifecycle', () => {
 
       await closeHandler?.();
 
-      assert.deepEqual(doneCalls, ['done']);
       assert.equal(mountEl.children.length, 0);
    });
 
@@ -203,7 +200,6 @@ test.describe('openItineraryWizard lifecycle', () => {
 
    test('closes without prompting after revisiting regions on an unchanged itinerary', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       const popupConfigs = [];
       let saveHandler = null;
       let closeHandler = null;
@@ -212,11 +208,10 @@ test.describe('openItineraryWizard lifecycle', () => {
          { species: 'Red Panda', exhibit: 'Eurasia Wilds' },
       ];
 
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => ({
                isActive: true,
@@ -259,8 +254,8 @@ test.describe('openItineraryWizard lifecycle', () => {
       saveHandler?.(visitDate);
       await closeHandler?.();
 
-      assert.deepEqual(doneCalls, ['done']);
       assert.equal(popupConfigs.length, 0);
+      assert.equal(mountEl.children.length, 0);
    });
 
    test('date save advances to the regions step', async () => {
@@ -309,13 +304,11 @@ test.describe('openItineraryWizard lifecycle', () => {
       let saveHandler = null;
       let regionsFinishHandler = null;
       const finishCalls = [];
-      const doneCalls = [];
+
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -352,7 +345,6 @@ test.describe('openItineraryWizard lifecycle', () => {
       });
 
       assert.equal(finishCalls.length, 0);
-      assert.deepEqual(doneCalls, []);
       assert.equal(mountEl.children.length, 0);
    });
 
@@ -445,18 +437,17 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date']);
    });
 
-   test('finish after selection changes does not call page onDone because itineraryUpdated handles refresh', async () => {
+   test('finish after selection changes clears the wizard overlay', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       let finishHandler = null;
       const selectedAnimals = syncedSelection();
+      const finalizeCalls = [];
+
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
       await openItineraryWizard({
          mountEl,
          startAt: 'animals',
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -478,9 +469,10 @@ test.describe('openItineraryWizard lifecycle', () => {
                   },
                },
             ],
-            finalizeWizard: async (_draft, _mountEl, { onDone }) => {
-               onDone?.({ date: '2026-06-15', animals: selectedAnimals });
-               return { date: '2026-06-15', animals: selectedAnimals };
+            finalizeWizard: async (draft, mount) => {
+               finalizeCalls.push(draft);
+               mount.replaceChildren();
+               return draft;
             },
             showConfirmPopup: () => {},
             syncAnimalDraft: () => {},
@@ -493,20 +485,19 @@ test.describe('openItineraryWizard lifecycle', () => {
          setTimeout(resolve, 0);
       });
 
-      assert.deepEqual(doneCalls, []);
+      assert.equal(finalizeCalls.length, 1);
+      assert.equal(mountEl.children.length, 0);
    });
 
    test('date finish skips save when only the visit date changed', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;
       const finishCalls = [];
-      const doneCalls = [];
+
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -528,7 +519,6 @@ test.describe('openItineraryWizard lifecycle', () => {
       await finishHandler?.('2026-06-15');
 
       assert.equal(finishCalls.length, 0);
-      assert.deepEqual(doneCalls, []);
       assert.equal(mountEl.children.length, 0);
    });
 });

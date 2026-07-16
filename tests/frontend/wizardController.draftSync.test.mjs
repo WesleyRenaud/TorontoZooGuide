@@ -24,16 +24,14 @@ test.describe('openItineraryWizard draft sync', () => {
    });
    test('does not prompt when closing after a date-only draft sync', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       const popupConfigs = [];
       let closeHandler = null;
       const selectedDate = makeNoonDate(2026, 5, 15);
 
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
       await openItineraryWizard({
          mountEl,
-         onDone: () => {
-            doneCalls.push('done');
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => selectedDate,
@@ -62,8 +60,8 @@ test.describe('openItineraryWizard draft sync', () => {
 
       await closeHandler?.();
 
-      assert.deepEqual(doneCalls, ['done']);
       assert.equal(popupConfigs.length, 0);
+      assert.equal(mountEl.children.length, 0);
    });
 
    test('skips date draft sync when the picker date already matches the wizard', async () => {
@@ -161,9 +159,8 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(popupConfigs.length, 1);
    });
 
-   test('does not notify page onDone when finalize completes successfully', async () => {
+   test('finalize onDone consumes pending validation and clears the overlay', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const doneCalls = [];
       let finishHandler = null;
       const selectedAnimals = syncedSelection();
       const savedItinerary = {
@@ -171,13 +168,13 @@ test.describe('openItineraryWizard draft sync', () => {
          animals: selectedAnimals,
          isActive: true,
       };
+      let finishOnDoneCalls = 0;
+
+      mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
       await openItineraryWizard({
          mountEl,
          startAt: 'animals',
-         onDone: (itinerary) => {
-            doneCalls.push(itinerary);
-         },
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -199,8 +196,10 @@ test.describe('openItineraryWizard draft sync', () => {
                   },
                },
             ],
-            finalizeWizard: async (_draft, _mountEl, options) => {
+            finalizeWizard: async (_draft, mount, options) => {
+               mount.replaceChildren();
                options.onDone?.(savedItinerary);
+               finishOnDoneCalls += 1;
                return savedItinerary;
             },
             showConfirmPopup: () => {},
@@ -214,6 +213,7 @@ test.describe('openItineraryWizard draft sync', () => {
          setTimeout(resolve, 0);
       });
 
-      assert.deepEqual(doneCalls, []);
+      assert.equal(finishOnDoneCalls, 1);
+      assert.equal(mountEl.children.length, 0);
    });
 });
