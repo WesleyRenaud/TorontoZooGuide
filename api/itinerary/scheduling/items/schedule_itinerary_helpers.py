@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import Any
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..core.find_next_available_slot import find_available_slot_before_or_after_bounds
 from ..core.resolve_schedule_slot import resolve_schedule_slot
 from ..core.scheduling_anchor import scheduling_anchor_seconds_covering_fixed_zoo_starts
 from ..core.scheduling_anchor import scheduling_day_end_seconds
@@ -28,6 +30,12 @@ from ...validation.itinerary_arrival_time_validation import earliest_arrival_tim
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
+
+
+@dataclass( frozen=True )
+class PreparedScheduleWindow:
+   saved_itinerary: SavedItinerary
+   window: tuple[ int, int ]
 
 
 def build_itinerary_context(
@@ -84,28 +92,12 @@ def persist_itinerary_walk_route(
    rebuild_and_persist_itinerary_walk_route( conn, **itinerary_context )
 
 
-def resolve_schedule_window(
-      conn: Connection,
-      saved_itinerary: SavedItinerary,
-      **itinerary_context: Any ) -> tuple[ int, int ] | ItinerarySaveResult:
-   result = prepare_schedule_window(
-      conn,
-      saved_itinerary,
-      **itinerary_context )
-
-   if isinstance( result, ItinerarySaveResult ):
-      return result
-
-   _, window = result
-   return window
-
-
 def prepare_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
       *,
       ensure_arrival_at_zoo_open: bool = False,
-      **itinerary_context: Any ) -> tuple[ SavedItinerary, tuple[ int, int ] ] | ItinerarySaveResult:
+      **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
    visit_date = fetch_itinerary_date( conn )
 
    if visit_date is None:
@@ -141,13 +133,17 @@ def prepare_schedule_window(
          ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
          **itinerary_context )
 
-   return saved_itinerary, ( anchor_seconds, day_end_seconds )
+   return PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=( anchor_seconds, day_end_seconds ) )
 
 
 def prepare_zoo_hours_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
-      **itinerary_context: Any ) -> tuple[ SavedItinerary, tuple[ int, int ] ] | ItinerarySaveResult:
+      *,
+      ensure_arrival_at_zoo_open: bool = True,
+      **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
    visit_date = fetch_itinerary_date( conn )
 
    if visit_date is None:
@@ -158,11 +154,14 @@ def prepare_zoo_hours_schedule_window(
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
    allow_early_admission = _early_admission_scheduling_is_allowed( conn )
-   saved_itinerary = _ensure_arrival_at_zoo_open(
-      conn,
-      saved_itinerary,
-      zoo_hours_record,
-      allow_early_admission=allow_early_admission )
+
+   if ensure_arrival_at_zoo_open:
+      saved_itinerary = _ensure_arrival_at_zoo_open(
+         conn,
+         saved_itinerary,
+         zoo_hours_record,
+         allow_early_admission=allow_early_admission )
+
    window = zoo_hours_schedule_window_seconds(
       zoo_hours_record,
       fixed_zoo_start_times=(
@@ -175,7 +174,9 @@ def prepare_zoo_hours_schedule_window(
          ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
          **itinerary_context )
 
-   return saved_itinerary, window
+   return PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=window )
 
 
 def zoo_hours_schedule_window_seconds(
@@ -256,6 +257,89 @@ def resolve_slot_times(
          **itinerary_context )
 
    return slot, None
+
+
+def resolve_slot_times_allowing_visit_extension(
+      conn: Connection,
+      saved_itinerary: SavedItinerary,
+      visit_window: tuple[ int, int ],
+      duration_seconds: int,
+      *,
+      start_time: ScheduleTimeKey | None,
+      itinerary_context: dict[ str, Any ],
+   ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+   """Prefer the guest visit window; if full, search zoo hours near existing schedule."""
+   slot, slot_error = resolve_slot_times(
+      conn,
+      saved_itinerary,
+      visit_window,
+      duration_seconds,
+      start_time=start_time,
+      itinerary_context=itinerary_context )
+
+   if slot_error is None:
+      return slot, None
+
+   if slot_error.status not in (
+         ItineraryErrorType.NO_AVAILABLE_SLOT,
+         ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE ):
+      return None, slot_error
+
+   zoo_hours_window = prepare_zoo_hours_schedule_window(
+      conn,
+      saved_itinerary,
+      ensure_arrival_at_zoo_open=False,
+      **itinerary_context )
+
+   if isinstance( zoo_hours_window, ItinerarySaveResult ):
+      return None, slot_error
+
+   if zoo_hours_window.window == visit_window:
+      return None, slot_error
+
+   if start_time is not None:
+      return resolve_slot_times(
+         conn,
+         saved_itinerary,
+         zoo_hours_window.window,
+         duration_seconds,
+         start_time=start_time,
+         itinerary_context=itinerary_context )
+
+   slot = _resolve_extension_slot_before_or_after_visit(
+      saved_itinerary,
+      visit_window=visit_window,
+      zoo_hours_window=zoo_hours_window.window,
+      duration_seconds=duration_seconds,
+      itinerary_context=itinerary_context )
+
+   if slot is None:
+      return None, slot_error
+
+   return slot, None
+
+
+def _resolve_extension_slot_before_or_after_visit(
+      saved_itinerary: SavedItinerary,
+      *,
+      visit_window: tuple[ int, int ],
+      zoo_hours_window: tuple[ int, int ],
+      duration_seconds: int,
+      itinerary_context: dict[ str, Any ],
+   ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+   """After the visit window is full, try duration before arrival, then after departure."""
+   itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
+   blockers = collect_time_blocks_from_itinerary( itinerary )
+   day_start_seconds, day_end_seconds = zoo_hours_window
+   arrival_seconds, departure_seconds = visit_window
+
+   return find_available_slot_before_or_after_bounds(
+      blockers,
+      duration_seconds,
+      day_start_seconds=day_start_seconds,
+      day_end_seconds=day_end_seconds,
+      before_end_seconds=arrival_seconds,
+      after_start_seconds=departure_seconds )
 
 
 def effective_duration_seconds(
