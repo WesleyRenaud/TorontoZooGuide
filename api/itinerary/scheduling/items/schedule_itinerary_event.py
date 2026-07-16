@@ -5,6 +5,7 @@ from typing import Any
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_default_duration import fetch_event_default_duration_seconds
 from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedule
+from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from ....models.itinerary_event import ItineraryEvent
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -12,8 +13,8 @@ from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import persist_itinerary_walk_route
-from .schedule_itinerary_helpers import resolve_schedule_window
-from .schedule_itinerary_helpers import resolve_slot_times
+from .schedule_itinerary_helpers import prepare_schedule_window
+from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItineraryEventType
 from ....types import Connection
@@ -26,13 +27,13 @@ def schedule_itinerary_event(
       time_options: ParsedScheduleTimeOptions,
       itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
-   window = resolve_schedule_window(
+   prepared_window = prepare_schedule_window(
       conn,
       saved_itinerary,
       **itinerary_context )
 
-   if isinstance( window, ItinerarySaveResult ):
-      return window
+   if isinstance( prepared_window, ItinerarySaveResult ):
+      return prepared_window
 
    duration_seconds = effective_duration_seconds(
       time_options.duration_minutes,
@@ -44,10 +45,10 @@ def schedule_itinerary_event(
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
 
-   slot, slot_error = resolve_slot_times(
+   slot, slot_error = resolve_slot_times_allowing_visit_extension(
       conn,
       saved_itinerary,
-      window,
+      prepared_window.window,
       duration_seconds,
       start_time=time_options.start_time,
       itinerary_context=itinerary_context )
@@ -69,6 +70,14 @@ def schedule_itinerary_event(
 
    finally:
       cur.close()
+
+   cover_visit_times_for_scheduled_activity(
+      conn,
+      start_time=start_time_key,
+      end_time=end_time,
+      current_arrival_time=saved_itinerary.arrival_time,
+      current_departure_time=saved_itinerary.departure_time,
+      itinerary_context=itinerary_context )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 

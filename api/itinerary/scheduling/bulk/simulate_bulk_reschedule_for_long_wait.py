@@ -234,15 +234,15 @@ def pack_animals_into_itinerary_in_memory(
    if not animals_to_schedule:
       return itinerary
 
-   schedule_window = prepare_zoo_hours_schedule_window(
+   prepared_window = prepare_zoo_hours_schedule_window(
       conn,
       fetch_saved_itinerary( conn ),
       **itinerary_context )
 
-   if isinstance( schedule_window, ItinerarySaveResult ):
+   if isinstance( prepared_window, ItinerarySaveResult ):
       return None
 
-   _, ( anchor_seconds, day_end_seconds ) = schedule_window
+   anchor_seconds, day_end_seconds = prepared_window.window
    packing_itinerary = _itinerary_with_cleared_animal_times( itinerary )
    blockers = collect_time_blocks_from_itinerary( packing_itinerary )
    walk_graph = load_walk_graph()

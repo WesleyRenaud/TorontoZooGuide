@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
+from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from .listed_schedule_target import apply_listed_schedule
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_item_key import ListedScheduleItemKey
@@ -74,6 +76,16 @@ def commit_listed_schedule(
 
    finally:
       cur.close()
+
+   saved_itinerary = fetch_saved_itinerary( conn )
+   cover_visit_times_for_scheduled_activity(
+      conn,
+      start_time=start_time,
+      end_time=end_time,
+      current_arrival_time=saved_itinerary.arrival_time,
+      current_departure_time=saved_itinerary.departure_time,
+      itinerary_context=itinerary_context,
+      seed_if_complete=False )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 

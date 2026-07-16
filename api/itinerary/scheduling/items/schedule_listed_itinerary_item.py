@@ -11,8 +11,8 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_item_key import ListedScheduleItemKey
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import effective_duration_seconds
-from .schedule_itinerary_helpers import resolve_schedule_window
-from .schedule_itinerary_helpers import resolve_slot_times
+from .schedule_itinerary_helpers import prepare_schedule_window
+from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ...warnings.itinerary_suppressed_warnings import with_suppressed_warnings
@@ -28,13 +28,13 @@ def schedule_listed_itinerary_item(
       confirming_schedule_item_not_on_itinerary: bool,
       ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
-   window = resolve_schedule_window(
+   prepared_window = prepare_schedule_window(
       conn,
       saved_itinerary,
       **itinerary_context )
 
-   if isinstance( window, ItinerarySaveResult ):
-      return window
+   if isinstance( prepared_window, ItinerarySaveResult ):
+      return prepared_window
 
    suppressed_warnings, membership_error = prepare_schedule_item_on_itinerary(
       conn,
@@ -60,10 +60,10 @@ def schedule_listed_itinerary_item(
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
 
-   slot, slot_error = resolve_slot_times(
+   slot, slot_error = resolve_slot_times_allowing_visit_extension(
       conn,
       saved_itinerary,
-      window,
+      prepared_window.window,
       duration_seconds,
       start_time=time_options.start_time,
       itinerary_context=itinerary_context )

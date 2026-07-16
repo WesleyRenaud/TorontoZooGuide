@@ -74,15 +74,15 @@ def bulk_schedule_animals(
          **itinerary_context )
 
    saved_itinerary = fetch_saved_itinerary( conn )
-   schedule_window = prepare_zoo_hours_schedule_window(
+   prepared_window = prepare_zoo_hours_schedule_window(
       conn,
       saved_itinerary,
       **itinerary_context )
 
-   if isinstance( schedule_window, ItinerarySaveResult ):
-      return schedule_window
+   if isinstance( prepared_window, ItinerarySaveResult ):
+      return prepared_window
 
-   saved_itinerary, window = schedule_window
+   saved_itinerary = prepared_window.saved_itinerary
    schedule_snapshot, walk_route_snapshot = snapshot_guest_schedule_state(
       conn,
       saved_itinerary )
@@ -95,7 +95,7 @@ def bulk_schedule_animals(
 
    saved_itinerary = fetch_saved_itinerary( conn )
 
-   anchor_seconds, day_end_seconds = window
+   anchor_seconds, day_end_seconds = prepared_window.window
    itinerary = build_current_itinerary(
       saved_itinerary,
       **itinerary_context )
