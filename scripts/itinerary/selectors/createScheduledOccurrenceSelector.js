@@ -1,6 +1,5 @@
 import {
    migrateStoredSelectionItems,
-   normalizeStoredId,
    normalizeStoredLink,
    normalizeStoredString,
 } from './base/storedSelection.js';
@@ -40,9 +39,10 @@ function createStoredOccurrenceFromObject(item, {
    buildImageSrc,
    includeLink = false,
    readStoredFields,
+   getId,
 } = {}) {
    const name = normalizeStoredString(item.name);
-   const id = normalizeStoredId(item.id, name);
+   const id = normalizeStoredString(getId(item));
 
    if (!id) {
       return null;
@@ -80,11 +80,12 @@ function createStoredOccurrenceFromObject(item, {
    return storedOccurrence;
 }
 
-function createOccurrenceMigration({
+export function createScheduledOccurrenceMigration({
    emptyStoredFields,
    buildImageSrc,
    includeLink = false,
    readStoredFields,
+   getId,
 } = {}) {
    return (items) => migrateStoredSelectionItems(items, {
       fromString: (item) => createStoredOccurrenceFromString(item, {
@@ -95,6 +96,7 @@ function createOccurrenceMigration({
          buildImageSrc,
          includeLink,
          readStoredFields,
+         getId,
       }),
    });
 }
@@ -169,11 +171,12 @@ export function createScheduledOccurrenceSelectorController({
       buildOccurrenceDetailImageSrc(imageDirectory, name)
    );
 
-   const migrateSelected = createOccurrenceMigration({
+   const migrateSelected = createScheduledOccurrenceMigration({
       emptyStoredFields,
       buildImageSrc,
       includeLink: typeof getLink === 'function',
       readStoredFields,
+      getId,
    });
 
    const makeSelection = (row) => createOccurrenceSelection(row, {
