@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
 
-
-class ItineraryAdjustmentType( str, Enum ):
-   ARRIVAL_TIME_ADJUSTED = 'arrivalTimeAdjusted'
-   DEPARTURE_TIME_ADJUSTED = 'departureTimeAdjusted'
+from .itinerary_adjustment_reason import ItineraryAdjustmentReason
+from .itinerary_adjustment_type import ItineraryAdjustmentType
 
 
 @dataclass( frozen=True )
@@ -15,7 +12,7 @@ class ItineraryAdjustment:
    field: str
    previous_value: str | None
    value: str | None
-   reason: str
+   reason: ItineraryAdjustmentReason
 
 
    def to_dict( self ) -> dict[ str, str | None ]:
@@ -24,5 +21,5 @@ class ItineraryAdjustment:
          'field': self.field,
          'previous_value': self.previous_value,
          'value': self.value,
-         'reason': self.reason,
+         'reason': self.reason.value,
       }

@@ -6,7 +6,8 @@ from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
-from ..domain.itinerary_adjustment import ItineraryAdjustmentType
+from ..domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from ..domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
 from ..validation.itinerary_arrival_time_validation import earliest_arrival_time
@@ -48,7 +49,7 @@ def _arrival_adjustment_for_restrictive_hours(
       field='arrivalTime',
       previous_value=save_input.arrival_time,
       value=adjusted_arrival_time,
-      reason='arrivalOutsideAdmissionHours' )
+      reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS )
 
 
 def _departure_adjustment_for_restrictive_hours(
@@ -83,7 +84,7 @@ def _departure_adjustment_for_restrictive_hours(
       field='departureTime',
       previous_value=save_input.departure_time,
       value=adjusted_departure_time,
-      reason='departureOutsideOperatingHours' )
+      reason=ItineraryAdjustmentReason.DEPARTURE_OUTSIDE_OPERATING_HOURS )
 
 
 def adjust_set_itinerary_for_restrictive_hours(

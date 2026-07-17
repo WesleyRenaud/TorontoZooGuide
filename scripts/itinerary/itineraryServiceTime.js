@@ -118,10 +118,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
    );
 
    normalizedItinerary.saveIssues = result.issues;
-   applyItineraryDiffToValidation(
-      normalizedItinerary,
-      timeDiff,
-      { adjustments: result.adjustments ?? [] });
+   applyItineraryDiffToValidation(normalizedItinerary, timeDiff);
 
    return normalizedItinerary;
 }
