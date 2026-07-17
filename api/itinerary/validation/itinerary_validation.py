@@ -328,6 +328,9 @@ def itinerary_needs_schedule_reschedule(
       validated_itinerary: ValidatedItinerary,
       *,
       requested_departure_time: ScheduleTimeKey ) -> bool:
+   # Match schedule-item: rebuild when a new talk/encounter overlaps guest
+   # schedules. Removals alone do not. Visit-window edits only rebuild when
+   # they cut off already-scheduled guest items (e.g. date-change arrival).
    if new_guardians_talks_overlapping_saved_schedule(
          saved_itinerary,
          validated_itinerary ):
@@ -338,34 +341,65 @@ def itinerary_needs_schedule_reschedule(
          validated_itinerary ):
       return True
 
-   if (
-         saved_itinerary.arrival_time != validated_itinerary.arrival_time
-         or saved_itinerary.departure_time != requested_departure_time ):
-      return True
+   if not _visit_window_changed(
+         saved_itinerary,
+         arrival_time=validated_itinerary.arrival_time,
+         departure_time=requested_departure_time ):
+      return False
 
-   saved_talk_names = {
-      talk.talk_name
-      for talk in saved_itinerary.guardians_talk_rows
-      if not talk.is_deleted
-   }
-   validated_talk_names = {
-      talk.name
-      for talk in validated_itinerary.guardians_talks
-      if not talk.is_deleted
-   }
+   return _visit_window_cuts_off_saved_schedules(
+      saved_itinerary,
+      arrival_time=validated_itinerary.arrival_time,
+      departure_time=requested_departure_time )
 
-   if saved_talk_names - validated_talk_names:
-      return True
 
-   saved_encounter_names = {
-      encounter.wild_encounter
-      for encounter in saved_itinerary.wild_encounter_rows
-      if not encounter.is_deleted
-   }
-   validated_encounter_names = {
-      encounter.name
-      for encounter in validated_itinerary.wild_encounters
-      if not encounter.is_deleted
-   }
+def _visit_window_changed(
+      saved_itinerary: SavedItinerary,
+      *,
+      arrival_time: ScheduleTimeKey,
+      departure_time: ScheduleTimeKey ) -> bool:
+   return (
+      saved_itinerary.arrival_time != arrival_time
+      or saved_itinerary.departure_time != departure_time
+   )
 
-   return bool( saved_encounter_names - validated_encounter_names )
+
+def _visit_window_cuts_off_saved_schedules(
+      saved_itinerary: SavedItinerary,
+      *,
+      arrival_time: ScheduleTimeKey,
+      departure_time: ScheduleTimeKey ) -> bool:
+   # Talks and encounters are omitted: if still offered on the new day they keep
+   # the same zoo-hours slot (so they stay inside the visit window), and if not
+   # offered they are dropped during validation rather than left cut off.
+   for animal in saved_itinerary.animal_rows:
+      if schedule_time_occurs_outside_visit_window(
+            animal.start_time,
+            animal.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ):
+         return True
+
+   for attraction in saved_itinerary.attraction_rows:
+      if schedule_time_occurs_outside_visit_window(
+            attraction.start_time,
+            attraction.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ):
+         return True
+
+   for event in saved_itinerary.event_rows:
+      if event.event_type in (
+            ItineraryEventType.ARRIVAL,
+            ItineraryEventType.DEPARTURE ):
+         continue
+
+      if schedule_time_occurs_outside_visit_window(
+            event.start_time,
+            event.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ):
+         return True
+
+   return False
+
