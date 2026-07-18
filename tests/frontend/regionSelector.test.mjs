@@ -129,7 +129,7 @@ test('region selector rebuilds animals after re-selecting an exhibit in the UI',
 
    const resultsEl = mountEl.querySelector('.itin-region-results');
 
-   clickExhibitToggle(resultsEl, 'Africa Savanna');
+   // Hydrate deselects incomplete exhibits; one toggle re-selects the exhibit.
    clickExhibitToggle(resultsEl, 'Africa Savanna');
 
    assert.equal(controller.shouldSkipClosingSelectionSync(), false);
@@ -229,11 +229,6 @@ test('region selector finish skips rebuild when stored animals match selected ex
 });
 
 test('region selector finish rebuilds animals when exhibits are selected without stored animals', async () => {
-   localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
-
    mockRegionSelectorFetch({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
@@ -251,6 +246,9 @@ test('region selector finish rebuilds animals when exhibits are selected without
    });
 
    await controller.show();
+
+   // Stale exhibit selection without itinerary animals is pruned on hydrate; select again.
+   clickExhibitToggle(mountEl.querySelector('.itin-region-results'), 'Africa Savanna');
    assert.equal(controller.shouldSkipClosingSelectionSync(), false);
 
    mountEl.querySelector('.itin-finish')?.click();

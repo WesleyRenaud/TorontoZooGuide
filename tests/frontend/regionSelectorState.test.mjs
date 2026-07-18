@@ -61,7 +61,7 @@ test('getAnimalsByExhibit falls back to today when no visit date is stored', asy
    await state.buildUpdatedAnimalsFromSelection();
 });
 
-test('buildUpdatedAnimalsFromSelection keeps removed animals out of exhibit refresh', async () => {
+test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete exhibit deselect', async () => {
    localStorage.setItem(
       ANIMALS_KEY,
       JSON.stringify([
@@ -109,12 +109,52 @@ test('buildUpdatedAnimalsFromSelection keeps removed animals out of exhibit refr
 
    const state = createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
-   state.hydrateSelectionsFromStorage();
+   await state.hydrateSelectionsFromStorage();
+
+   assert.deepEqual(
+      [...state.getSelectedExhibitNamesSet()],
+      []
+   );
 
    const animals = await state.buildUpdatedAnimalsFromSelection();
    const species = animals.map((animal) => animal.species).sort();
 
-   assert.deepEqual(species, ['African Lion', 'Masai Giraffe']);
+   assert.deepEqual(species, ['African Lion']);
+});
+
+test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+            { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+         ],
+      }),
+   });
+
+   const state = createRegionSelectorState();
+   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   await state.hydrateSelectionsFromStorage();
+
+   assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      []
+   );
 });
 
 test('re-selecting an exhibit re-hydrates previously removed animals', async () => {
@@ -148,9 +188,9 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
 
    const state = createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
-   state.hydrateSelectionsFromStorage();
+   await state.hydrateSelectionsFromStorage();
 
-   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+   assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
    assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
    const animals = await state.buildUpdatedAnimalsFromSelection();
@@ -181,7 +221,7 @@ test('deselecting a bulk exhibit removes its animals from the draft', async () =
 
    const state = createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
-   state.hydrateSelectionsFromStorage();
+   await state.hydrateSelectionsFromStorage();
    assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
    const animals = await state.buildUpdatedAnimalsFromSelection();
@@ -207,7 +247,11 @@ test('deselecting a bulk exhibit keeps manually added animals from other exhibit
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({ animals: [] }),
+      text: async () => JSON.stringify({
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+         ],
+      }),
    });
 
    const state = createRegionSelectorState();
@@ -215,7 +259,7 @@ test('deselecting a bulk exhibit keeps manually added animals from other exhibit
       { name: 'Africa', exhibits: ['Africa Savanna'] },
       { name: 'Indo-Malaya', exhibits: ['Indo-Malaya'] },
    ]);
-   state.hydrateSelectionsFromStorage();
+   await state.hydrateSelectionsFromStorage();
    assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
    const animals = await state.buildUpdatedAnimalsFromSelection();

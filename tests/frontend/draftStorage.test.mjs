@@ -126,6 +126,38 @@ test('syncItineraryAnimalDraftFromItinerary preserves existing exhibit selection
    );
 });
 
+test('removeAnimalFromItineraryAnimalDraft keeps exhibit selection while animals remain', () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   removeAnimalFromItineraryAnimalDraft(
+      'animals',
+      'Watusi Cattle||Africa Savanna'
+   );
+
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(ANIMALS_KEY)).map((animal) => ({
+         species: animal.species,
+         exhibit: animal.exhibit,
+      })),
+      [{ species: 'African Lion', exhibit: 'Africa Savanna' }]
+   );
+   // Incomplete coverage is evaluated when the region builder opens.
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      ['Africa Savanna']
+   );
+});
+
 test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty', () => {
    localStorage.setItem(
       ANIMALS_KEY,

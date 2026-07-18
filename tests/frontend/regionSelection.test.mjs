@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import {
    buildSelectedAnimalKey,
    buildSelectedAnimalKeyFromWire,
+   draftAnimalsCoverCatalogAnimals,
    getExhibitNamesFromAnimals,
    mergeAnimals,
    normalizeSelectedAnimal,
@@ -136,4 +137,25 @@ test('selectedExhibitsNeedAnimalRebuild detects stale exhibit selection without 
       ),
       true
    );
+});
+
+test('draftAnimalsCoverCatalogAnimals requires every catalog animal on the draft', () => {
+   const draft = [
+      { species: 'African Lion', exhibit: 'Africa Savanna' },
+      { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+   ];
+   const catalog = [
+      { species: 'African Lion', exhibit: 'Africa Savanna' },
+      { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+   ];
+
+   assert.equal(draftAnimalsCoverCatalogAnimals(draft, catalog), true);
+   assert.equal(
+      draftAnimalsCoverCatalogAnimals(
+         [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+         catalog
+      ),
+      false
+   );
+   assert.equal(draftAnimalsCoverCatalogAnimals(draft, []), true);
 });
