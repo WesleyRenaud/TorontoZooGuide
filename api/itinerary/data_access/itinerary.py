@@ -141,18 +141,18 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
          date_value=None,
          arrival_time=None,
          departure_time=None,
-         animal_rows=(),
-         attraction_rows=(),
-         guardians_talk_rows=(),
-         wild_encounter_rows=(),
-         event_rows=() )
+         animal_rows=[],
+         attraction_rows=[],
+         guardians_talk_rows=[],
+         wild_encounter_rows=[],
+         event_rows=[] )
 
    return SavedItinerary(
       date_value=date_record.itinerary_date,
       arrival_time=date_record.arrival_time,
       departure_time=date_record.departure_time,
-      animal_rows=tuple( fetch_itinerary_animal_rows( conn ) ),
-      attraction_rows=tuple( fetch_itinerary_attraction_rows( conn ) ),
-      guardians_talk_rows=tuple( fetch_itinerary_guardians_talk_rows( conn ) ),
-      wild_encounter_rows=tuple( fetch_itinerary_wild_encounter_rows( conn ) ),
-      event_rows=tuple( fetch_itinerary_event_rows( conn ) ) )
+      animal_rows=fetch_itinerary_animal_rows( conn ),
+      attraction_rows=fetch_itinerary_attraction_rows( conn ),
+      guardians_talk_rows=fetch_itinerary_guardians_talk_rows( conn ),
+      wild_encounter_rows=fetch_itinerary_wild_encounter_rows( conn ),
+      event_rows=fetch_itinerary_event_rows( conn ) )

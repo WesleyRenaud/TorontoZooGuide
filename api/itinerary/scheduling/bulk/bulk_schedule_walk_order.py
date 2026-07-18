@@ -93,21 +93,21 @@ def sort_animals_by_nearest_neighbor(
 def _viewing_node_ids(
       species: str,
       exhibit: str,
-      enclosure_name: str | None ) -> tuple[ str, ... ]:
+      enclosure_name: str | None ) -> list[ str ]:
    walk_node_id = walk_node_id_for_viewing_spot(
       species,
       exhibit,
       enclosure_name )
 
    if walk_node_id is None:
-      return ()
+      return []
 
-   return ( walk_node_id, )
+   return [ walk_node_id ]
 
 
 def _min_distance_to_viewing_nodes(
       distances: dict[ str, float ],
-      viewing_node_ids: tuple[ str, ... ] ) -> float | None:
+      viewing_node_ids: list[ str ] ) -> float | None:
    shortest_distance_px: float | None = None
 
    for node_id in viewing_node_ids:
@@ -127,7 +127,7 @@ def _min_distance_to_viewing_nodes(
 def _bulk_schedule_walk_sort_key_from_distances(
       distances: dict[ str, float ],
       animal_row: ItineraryAnimalRecord,
-      viewing_node_ids: tuple[ str, ... ] ) -> tuple[ float, str, str, str ]:
+      viewing_node_ids: list[ str ] ) -> tuple[ float, str, str, str ]:
    distance_px = _min_distance_to_viewing_nodes(
       distances,
       viewing_node_ids )

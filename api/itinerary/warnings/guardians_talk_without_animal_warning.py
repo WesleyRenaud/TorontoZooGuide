@@ -110,7 +110,7 @@ def guardians_talk_without_animal_warning_is_required_for_talk(
 def build_guardians_talk_without_animal_issue_from_talks(
       talks: list[ GuardiansTalkDiff ],
       ) -> ItineraryResultReason:
-   issue_items = tuple(
+   issue_items = [
       ItinerarySaveIssueItem(
          name=talk.name,
          start_time=talk.start_time,
@@ -119,7 +119,7 @@ def build_guardians_talk_without_animal_issue_from_talks(
          location=ValueConversion.as_trimmed_string( getattr( talk, 'location', None ) ),
       )
       for talk in talks
-   )
+   ]
 
    return ItineraryResultReason(
       code=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,

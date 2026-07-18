@@ -63,7 +63,7 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
    assert len( result.adjustments ) == 1
    assert result.adjustments[ 0 ].type.value == 'arrivalTimeAdjusted'
    assert result.adjustments[ 0 ].previous_value == '9:00 AM'

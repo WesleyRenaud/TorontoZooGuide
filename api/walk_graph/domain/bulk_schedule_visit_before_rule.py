@@ -8,4 +8,4 @@ from .viewing_spot_reference import ViewingSpotReference
 @dataclass( frozen=True )
 class BulkScheduleVisitBeforeRule:
    visit_first: ViewingSpotReference
-   visit_before: tuple[ ViewingSpotReference, ... ]
+   visit_before: list[ ViewingSpotReference ]

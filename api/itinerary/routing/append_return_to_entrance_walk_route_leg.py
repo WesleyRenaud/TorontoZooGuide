@@ -34,7 +34,7 @@ def append_return_to_entrance_walk_route_leg(
          to_item_key=entrance_stop.item_key,
          from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
          to_schedule_item_kind=entrance_stop.schedule_item_kind,
-         node_ids=tuple( return_leg_node_ids ) ) )
+         node_ids=return_leg_node_ids ) )
    append_walk_route_leg_node_ids( route_node_ids, return_leg_node_ids )
    route_stops.append(
       ItineraryWalkRouteStop.from_itinerary_stop(

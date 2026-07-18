@@ -21,8 +21,8 @@ class WalkGraphSpur:
 
 
 def walk_graph_spur_index_for_viewing_node_ids(
-      spurs: tuple[ WalkGraphSpur, ... ],
-      viewing_node_ids: tuple[ str, ... ] ) -> int | None:
+      spurs: list[ WalkGraphSpur ],
+      viewing_node_ids: list[ str ] ) -> int | None:
    best_index: int | None = None
    best_overlap = 0
 
@@ -58,17 +58,17 @@ def is_walk_graph_spur_active(
 
 
 @lru_cache( maxsize=1 )
-def walk_graph_spurs() -> tuple[ WalkGraphSpur, ... ]:
+def walk_graph_spurs() -> list[ WalkGraphSpur ]:
    from .data_access.load_walk_graph import load_walk_graph
 
    return walk_graph_spurs_for_graph( load_walk_graph() )
 
 
-def walk_graph_spurs_for_graph( graph: WalkGraph ) -> tuple[ WalkGraphSpur, ... ]:
+def walk_graph_spurs_for_graph( graph: WalkGraph ) -> list[ WalkGraphSpur ]:
    return _walk_graph_spurs_from_graph( graph )
 
 
-def _walk_graph_spurs_from_graph( graph: WalkGraph ) -> tuple[ WalkGraphSpur, ... ]:
+def _walk_graph_spurs_from_graph( graph: WalkGraph ) -> list[ WalkGraphSpur ]:
    adjacency = build_walk_graph_adjacency( graph )
    entrance_node_id = str( graph[ 'entrance_node_id' ] )
    max_spur_node_count = int( len( adjacency ) * MAX_SPUR_NODE_FRACTION )
@@ -89,7 +89,7 @@ def _walk_graph_spurs_from_graph( graph: WalkGraph ) -> tuple[ WalkGraphSpur, ..
             spur_node_ids=spur_node_ids,
             attachment_node_id=attachment_node_id )
 
-   return tuple( _merge_subset_walk_graph_spurs( spur_regions ) )
+   return _merge_subset_walk_graph_spurs( spur_regions )
 
 
 def _append_walk_graph_spur_region(

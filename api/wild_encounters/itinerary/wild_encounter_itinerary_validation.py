@@ -22,7 +22,7 @@ def build_wild_encounter_diff_for_visit_day(
 
 
 def validate_wild_encounters_for_itinerary(
-      wild_encounters_to_include: tuple[ WildEncounterScheduleItemKey, ... ] | None,
+      wild_encounters_to_include: list[ WildEncounterScheduleItemKey ] | None,
       day_schedule: list[ WildEncounter ],
    ) -> list[ WildEncounterDiff ]:
    diffs: list[ WildEncounterDiff ] = []

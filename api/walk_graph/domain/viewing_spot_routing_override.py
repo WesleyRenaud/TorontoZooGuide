@@ -13,7 +13,7 @@ class ViewingSpotRoutingOverride:
    override_id: str
    viewing_spot: ViewingSpotReference
    scheduling_walk_node_id: str
-   visit_before: tuple[ ViewingSpotReference, ... ]
+   visit_before: list[ ViewingSpotReference ]
 
 
 def viewing_spot_routing_override_from_json(
@@ -25,6 +25,7 @@ def viewing_spot_routing_override_from_json(
       viewing_spot=viewing_spot_reference_from_json(
          payload[ 'viewing_spot' ] ),
       scheduling_walk_node_id=str( payload[ 'scheduling_walk_node_id' ] ),
-      visit_before=tuple(
+      visit_before=[
          viewing_spot_reference_from_json( row )
-         for row in payload.get( 'visit_before', [] ) ) )
+         for row in payload.get( 'visit_before', [] )
+      ] )

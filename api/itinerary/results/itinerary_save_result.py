@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..domain.itinerary_adjustment import ItineraryAdjustment
 from .itinerary_result_reason import ItineraryResultReason
@@ -11,10 +11,10 @@ from ...shared.enums import ItineraryErrorType
 @dataclass( frozen=True )
 class ItinerarySaveResult:
    itinerary: Itinerary
-   reasons: tuple[ ItineraryResultReason, ... ] = ()
-   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
+   reasons: list[ ItineraryResultReason ] = field( default_factory=list )
+   adjustments: list[ ItineraryAdjustment ] = field( default_factory=list )
    status: ItineraryErrorType = ItineraryErrorType.SUCCESS
-   suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
+   suppressed_warnings: list[ ItineraryErrorType ] = field( default_factory=list )
 
 
    @property

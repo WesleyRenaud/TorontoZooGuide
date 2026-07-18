@@ -219,15 +219,15 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
 
 
 HYENA_TALK = 'Spotted Hyena'
-MULTI_REGION_NAMES = (
+MULTI_REGION_NAMES = [
    'Africa',
    'Indo-Malaya',
    'Tundra Trek',
-)
+]
 
 
 def _selected_exhibits_for_regions(
-      region_names: tuple[ str, ... ] ) -> list[ str ]:
+      region_names: list[ str ] ) -> list[ str ]:
    from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 
    selected_exhibits: list[ str ] = []
@@ -277,7 +277,7 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    talk = next(
       guardians_talk

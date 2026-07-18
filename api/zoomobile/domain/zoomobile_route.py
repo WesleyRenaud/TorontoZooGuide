@@ -84,5 +84,5 @@ def build_zoomobile_route_response(
    return ZoomobileRoute(
       route=route,
       route_source=route_source,
-      zoomobile_stations=tuple( zoomobile_stations ),
+      zoomobile_stations=zoomobile_stations,
    )

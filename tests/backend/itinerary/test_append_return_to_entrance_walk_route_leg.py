@@ -82,7 +82,7 @@ def test_append_return_to_entrance_walk_route_leg_appends_shortest_path_back() -
 
    assert len( legs ) == 1
    assert legs[ 0 ].to_item_key == ENTRANCE_ITEM_KEY
-   assert legs[ 0 ].node_ids == tuple( expected_node_ids )
+   assert legs[ 0 ].node_ids == expected_node_ids
    assert route_stops[ -1 ].item_key == ENTRANCE_ITEM_KEY
    assert route_stops[ -1 ].walk_node_id == entrance_node_id
    assert route_node_ids == list( expected_node_ids )

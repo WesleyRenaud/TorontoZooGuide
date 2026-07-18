@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_schedule_time_order_validation import departure_follows_arrival
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
@@ -25,10 +23,10 @@ def earliest_arrival_time(
 
 def earliest_allowed_arrival_minutes(
       zoo_hours_record: ZooHoursRecord,
-      fixed_zoo_start_times: Iterable[ ScheduleTimeKey ] = () ) -> int | None:
+      fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None ) -> int | None:
    earliest_minutes = earliest_arrival_minutes( zoo_hours_record )
 
-   for start_time in fixed_zoo_start_times:
+   for start_time in fixed_zoo_start_times or []:
       start_minutes = DateValues.time_value_in_minutes( start_time )
 
       if start_minutes is None:
@@ -45,7 +43,7 @@ def arrival_time_is_valid_for_zoo_hours(
       zoo_hours_record: ZooHoursRecord,
       *,
       departure_time: ScheduleTimeKey,
-      fixed_zoo_start_times: Iterable[ ScheduleTimeKey ] = () ) -> ItineraryErrorType:
+      fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None ) -> ItineraryErrorType:
    arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
    earliest_minutes = earliest_allowed_arrival_minutes(
       zoo_hours_record,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .drinking_fountain_record import DrinkingFountainRecord
 from ...types import Row
 
@@ -13,7 +11,7 @@ def map_drinking_fountain_record( row: Row ) -> DrinkingFountainRecord:
 
 
 
-def map_drinking_fountain_records( rows: Iterable[ Row ] ) -> list[ DrinkingFountainRecord ]:
+def map_drinking_fountain_records( rows: list[ Row ] ) -> list[ DrinkingFountainRecord ]:
    return [
       map_drinking_fountain_record( row )
       for row in rows

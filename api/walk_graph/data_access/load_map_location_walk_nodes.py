@@ -8,9 +8,10 @@ from .paths import MAP_LOCATION_WALK_NODE_PATHS
 
 
 def load_map_location_walk_nodes(
-      paths: tuple[ Path, ... ] = MAP_LOCATION_WALK_NODE_PATHS,
+      paths: list[ Path ] | None = None,
    ) -> list[ MapLocationWalkNode ]:
    rows: list[ MapLocationWalkNode ] = []
+   paths = list( MAP_LOCATION_WALK_NODE_PATHS ) if paths is None else paths
 
    for path in paths:
       for row in json.loads( path.read_text( encoding='utf-8' ) ):

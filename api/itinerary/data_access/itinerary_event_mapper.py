@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_event_record import ItineraryEventRecord
 from ...shared.enums import ItineraryEventType
 from ...types import Row
@@ -15,7 +13,7 @@ def map_itinerary_event_record( row: Row ) -> ItineraryEventRecord:
 
 
 def map_itinerary_event_records(
-      rows: Iterable[ Row ] ) -> list[ ItineraryEventRecord ]:
+      rows: list[ Row ] ) -> list[ ItineraryEventRecord ]:
    return [
       map_itinerary_event_record( row )
       for row in rows

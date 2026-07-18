@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_walk_route_leg_record import ItineraryWalkRouteLegRecord
 from ..routing.walk_route_leg import WalkRouteLeg
 from ..routing.walk_route_point import WalkRoutePoint
@@ -24,7 +22,7 @@ def map_itinerary_walk_route_leg_record( row: Row ) -> ItineraryWalkRouteLegReco
 
 
 def map_itinerary_walk_route_leg_records(
-      rows: Iterable[ Row ] ) -> list[ ItineraryWalkRouteLegRecord ]:
+      rows: list[ Row ] ) -> list[ ItineraryWalkRouteLegRecord ]:
    return [
       map_itinerary_walk_route_leg_record( row )
       for row in rows
@@ -33,7 +31,7 @@ def map_itinerary_walk_route_leg_records(
 
 def map_itinerary_walk_route_leg(
       record: ItineraryWalkRouteLegRecord,
-      points: tuple[ WalkRoutePoint, ... ] ) -> WalkRouteLeg:
+      points: list[ WalkRoutePoint ] ) -> WalkRouteLeg:
    return WalkRouteLeg(
       from_item_key=record.from_item_key,
       to_item_key=record.to_item_key,
@@ -46,8 +44,9 @@ def map_itinerary_walk_route_leg(
 
 
 def map_itinerary_walk_route_legs(
-      records: Iterable[ ItineraryWalkRouteLegRecord ],
-      points: tuple[ WalkRoutePoint, ... ] ) -> tuple[ WalkRouteLeg, ... ]:
-   return tuple(
+      records: list[ ItineraryWalkRouteLegRecord ],
+      points: list[ WalkRoutePoint ] ) -> list[ WalkRouteLeg ]:
+   return [
       map_itinerary_walk_route_leg( record, points )
-      for record in records )
+      for record in records
+   ]

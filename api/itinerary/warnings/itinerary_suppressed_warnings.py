@@ -29,23 +29,25 @@ def record_if_error_suppressed(
 
 def with_suppressed_warnings(
       result: ItinerarySaveResult,
-      suppressed_warnings: tuple[ ItineraryErrorType, ... ] ) -> ItinerarySaveResult:
+      suppressed_warnings: list[ ItineraryErrorType ] ) -> ItinerarySaveResult:
    if not suppressed_warnings:
       return result
 
-   combined = tuple(
-      dict.fromkeys( ( *result.suppressed_warnings, *suppressed_warnings ) ) )
+   combined = [
+      *dict.fromkeys( ( *result.suppressed_warnings, *suppressed_warnings ) ),
+   ]
 
    return replace( result, suppressed_warnings=combined )
 
 
 def with_time_set_suppressed_warnings(
       result: ItineraryTimeSetResult,
-      suppressed_warnings: tuple[ ItineraryErrorType, ... ] ) -> ItineraryTimeSetResult:
+      suppressed_warnings: list[ ItineraryErrorType ] ) -> ItineraryTimeSetResult:
    if not suppressed_warnings:
       return result
 
-   combined = tuple(
-      dict.fromkeys( ( *result.suppressed_warnings, *suppressed_warnings ) ) )
+   combined = [
+      *dict.fromkeys( ( *result.suppressed_warnings, *suppressed_warnings ) ),
+   ]
 
    return replace( result, suppressed_warnings=combined )

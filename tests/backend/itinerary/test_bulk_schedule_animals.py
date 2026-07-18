@@ -33,7 +33,7 @@ def test_bulk_schedule_animals_schedules_animals_in_travel_efficient_order(
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
    assert result.itinerary.arrival_time == '9:30 AM'
 
    cheetah = next(
@@ -118,7 +118,7 @@ def test_bulk_schedule_animals_sets_departure_to_last_animal_end_when_departure_
    result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
-   assert result.reasons == ()
+   assert result.reasons == []
    assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
    assert result.itinerary.departure_time == '9:38 AM'
 
@@ -149,7 +149,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
    result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
-   assert result.reasons == ()
+   assert result.reasons == []
 
    lion = next(
       animal for animal in result.itinerary.animals
@@ -214,7 +214,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
    assert {
       animal.species
       for animal in result.itinerary.animals

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_attraction_record import ItineraryAttractionRecord
 from ...types import Row
 
@@ -15,7 +13,7 @@ def map_itinerary_attraction_record( row: Row ) -> ItineraryAttractionRecord:
       end_time=row[ 'END_TIME' ] )
 
 
-def map_itinerary_attraction_records( rows: Iterable[ Row ] ) -> list[ ItineraryAttractionRecord ]:
+def map_itinerary_attraction_records( rows: list[ Row ] ) -> list[ ItineraryAttractionRecord ]:
    return [
       map_itinerary_attraction_record( row )
       for row in rows

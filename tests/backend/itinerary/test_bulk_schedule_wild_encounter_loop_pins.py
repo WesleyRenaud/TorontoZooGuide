@@ -278,7 +278,7 @@ def test_bulk_schedule_does_not_overlap_loop_pin_wild_encounter(
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    encounter = next(
       wild_encounter

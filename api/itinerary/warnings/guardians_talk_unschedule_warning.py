@@ -50,9 +50,10 @@ def new_guardians_talks_overlapping_saved_schedule(
 
 def build_guardians_talk_unschedule_issue(
       guardians_talks: list[ GuardiansTalkDiff ] ) -> ItineraryResultReason:
-   issue_items = tuple(
+   issue_items = [
       ItinerarySaveIssueItem.from_guardians_talk_diff( guardians_talk )
-      for guardians_talk in guardians_talks )
+      for guardians_talk in guardians_talks
+   ]
 
    return ItineraryResultReason(
       code=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,

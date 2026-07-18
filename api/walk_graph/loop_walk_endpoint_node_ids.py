@@ -21,16 +21,16 @@ def loop_walk_endpoint_node_ids(
 
 
 def loop_walk_endpoint_orientations(
-      loop: MasterRouteLoop ) -> tuple[ tuple[ str | None, str | None ], ... ]:
+      loop: MasterRouteLoop ) -> list[ tuple[ str | None, str | None ] ]:
    forward_endpoints = loop_walk_endpoint_node_ids( loop )
 
    if not is_two_way_loop_traversal( loop.traversal ):
-      return ( forward_endpoints, )
+      return [ forward_endpoints ]
 
-   return (
+   return [
       forward_endpoints,
       ( forward_endpoints[ 1 ], forward_endpoints[ 0 ] ),
-   )
+   ]
 
 
 def _walk_node_id_for_viewing_spot_reference(

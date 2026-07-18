@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .attraction_record import AttractionRecord
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from .attraction_schedule_record import AttractionScheduleRecord
@@ -21,7 +19,7 @@ def map_attraction_record( row: Row ) -> AttractionRecord:
       weekend_holiday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 
 
-def map_attraction_records( rows: Iterable[ Row ] ) -> list[ AttractionRecord ]:
+def map_attraction_records( rows: list[ Row ] ) -> list[ AttractionRecord ]:
    return [
       map_attraction_record( row )
       for row in rows
@@ -44,7 +42,7 @@ def map_attraction_schedule_record( row: Row ) -> AttractionScheduleRecord:
       schedule_message=row[ 'SCHEDULE_MESSAGE' ] )
 
 
-def map_attraction_schedule_records( rows: Iterable[ Row ] ) -> list[ AttractionScheduleRecord ]:
+def map_attraction_schedule_records( rows: list[ Row ] ) -> list[ AttractionScheduleRecord ]:
    return [
       map_attraction_schedule_record( row )
       for row in rows
@@ -60,7 +58,7 @@ def map_attraction_schedule_override_record( row: Row ) -> AttractionScheduleOve
       override_message=row[ 'OVERRIDE_MESSAGE' ] )
 
 
-def map_attraction_schedule_override_records( rows: Iterable[ Row ] ) -> list[ AttractionScheduleOverrideRecord ]:
+def map_attraction_schedule_override_records( rows: list[ Row ] ) -> list[ AttractionScheduleOverrideRecord ]:
    return [
       map_attraction_schedule_override_record( row )
       for row in rows

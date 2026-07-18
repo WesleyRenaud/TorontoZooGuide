@@ -34,7 +34,7 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
    bulk_result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert bulk_result.success
-   assert bulk_result.reasons == ()
+   assert bulk_result.reasons == []
 
    latest_animal_end = max(
       (
@@ -70,7 +70,7 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
 
    assert remove_result.success
    assert remove_result.itinerary.departure_time == latest_animal_end
-   assert remove_result.adjustments == ()
+   assert remove_result.adjustments == []
 
 
 def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
@@ -123,7 +123,7 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
       if animal.species == 'African Lion' )
    assert lion_after.start_time is not None
    assert remove_result.itinerary.arrival_time == lion_after.start_time
-   assert remove_result.adjustments == ()
+   assert remove_result.adjustments == []
 
 
 def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
@@ -170,7 +170,7 @@ def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
    assert result.success
    assert result.itinerary.arrival_time == before.arrival_time
    assert result.itinerary.departure_time == before.departure_time
-   assert result.adjustments == ()
+   assert result.adjustments == []
 
 
 def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
@@ -239,4 +239,4 @@ def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
       penguin_after.end_time,
       penguin_before.end_time )
    assert result.itinerary.departure_time == penguin_after.end_time
-   assert result.adjustments == ()
+   assert result.adjustments == []

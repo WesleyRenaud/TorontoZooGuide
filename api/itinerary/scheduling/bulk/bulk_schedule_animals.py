@@ -162,14 +162,14 @@ def bulk_schedule_animals(
 
    apply_covered_by_talk_schedules( conn, covered_by_pin )
 
-   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
-   reasons: tuple[ ItineraryResultReason, ... ] = ()
+   adjustments: list[ ItineraryAdjustment ] = []
+   reasons: list[ ItineraryResultReason ] = []
 
    if remaining_animals:
-      reasons = (
+      reasons = [
          build_bulk_schedule_animals_not_enough_time_issue(
             remaining_animals ),
-      )
+      ]
    else:
       itinerary_after_pack = build_current_itinerary(
          fetch_saved_itinerary( conn ),
@@ -181,7 +181,7 @@ def bulk_schedule_animals(
          previous_arrival_time=schedule_snapshot.arrival_time )
 
       if arrival_adjustment is not None:
-         adjustments = ( arrival_adjustment, )
+         adjustments = [ arrival_adjustment ]
 
       sync_visit_times_to_scheduled_endpoints_if_complete(
          conn,
@@ -216,7 +216,7 @@ def bulk_schedule_animals(
       return build_save_result(
          conn,
          pending_reasons[ 0 ].code,
-         reasons=tuple( pending_reasons ),
+         reasons=pending_reasons,
          **itinerary_context )
 
    return ItinerarySaveResult(

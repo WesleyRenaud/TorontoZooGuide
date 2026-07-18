@@ -100,7 +100,7 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    lion = next(
       animal for animal in result.itinerary.animals

@@ -10,7 +10,7 @@ ENTRANCE_ITEM_KEY = 'entrance'
 
 @dataclass( frozen=True )
 class ItineraryStop:
-   walk_node_ids: tuple[ str, ... ]
+   walk_node_ids: list[ str ]
    schedule_item_kind: ScheduleItemKind
    item_key: str
    meeting_spot: str | None = None

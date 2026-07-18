@@ -9,9 +9,9 @@ from .walk_route_point import WalkRoutePoint
 
 @dataclass( frozen=True )
 class ItineraryWalkRoute:
-   stops: tuple[ ItineraryWalkRouteStop, ... ]
-   legs: tuple[ WalkRouteLeg, ... ]
-   points: tuple[ WalkRoutePoint, ... ]
+   stops: list[ ItineraryWalkRouteStop ]
+   legs: list[ WalkRouteLeg ]
+   points: list[ WalkRoutePoint ]
 
    def to_dict( self ) -> dict[ str, object ]:
       return {
@@ -23,6 +23,6 @@ class ItineraryWalkRoute:
 
 def empty_itinerary_walk_route() -> ItineraryWalkRoute:
    return ItineraryWalkRoute(
-      stops=(),
-      legs=(),
-      points=() )
+      stops=[],
+      legs=[],
+      points=[] )

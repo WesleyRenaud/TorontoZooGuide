@@ -180,7 +180,7 @@ def test_bulk_schedule_animals_packs_through_zoo_close_despite_early_departure(
    result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
-   assert result.reasons == ()
+   assert result.reasons == []
    assert all(
       animal.start_time is not None and animal.end_time is not None
       for animal in result.itinerary.animals

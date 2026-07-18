@@ -23,13 +23,13 @@ def test_north_loop_side_cluster_contains_expected_loops() -> None:
       for cluster in master_route.loop_side_clusters
       if cluster.cluster_id == 'north' )
 
-   assert north_cluster.loop_ids == (
+   assert north_cluster.loop_ids == [
       'australasia',
       'discovery_zone',
       'eurasia',
       'tundra_trek_mayan_temple',
       'americas_pavilion',
-   )
+   ]
 
 
 def test_south_loop_side_cluster_contains_expected_loops() -> None:
@@ -39,11 +39,11 @@ def test_south_loop_side_cluster_contains_expected_loops() -> None:
       for cluster in master_route.loop_side_clusters
       if cluster.cluster_id == 'south' )
 
-   assert south_cluster.loop_ids == (
+   assert south_cluster.loop_ids == [
       'africa_savanna_canadian_domain',
       'african_rainforest_giraffe',
       'indo_malaya',
-   )
+   ]
 
 
 def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:

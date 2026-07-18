@@ -17,10 +17,10 @@ def test_loop_walk_endpoint_orientations_include_both_directions_for_two_way_loo
    indo_malaya_loop = default_master_route_loop_by_id()[ 'indo_malaya' ]
    australasia_loop = default_master_route_loop_by_id()[ 'australasia' ]
 
-   assert loop_walk_endpoint_orientations( indo_malaya_loop ) == (
+   assert loop_walk_endpoint_orientations( indo_malaya_loop ) == [
       ( 'v-0226', 'v-0068' ),
       ( 'v-0068', 'v-0226' ),
-   )
-   assert loop_walk_endpoint_orientations( australasia_loop ) == (
+   ]
+   assert loop_walk_endpoint_orientations( australasia_loop ) == [
       ( 'v-1131', 'v-1061' ),
-   )
+   ]

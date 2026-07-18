@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .animal_viewability_record import AnimalViewabilityRecord
 from ...shared.enums import AnimalViewingScope
 from ...shared.value_conversion import ValueConversion
@@ -53,7 +51,7 @@ def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:
       exhibit_day_seasonal_availability_multiplier=row[ 'EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER' ] )
 
 
-def map_animal_viewability_rows( rows: Iterable[ Row ] ) -> list[ AnimalViewabilityRecord ]:
+def map_animal_viewability_rows( rows: list[ Row ] ) -> list[ AnimalViewabilityRecord ]:
    return [
       map_animal_viewability_row( row )
       for row in rows

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ...types import ScheduleTimeKey
@@ -49,7 +47,7 @@ def fixed_zoo_schedule_start_times_from_save_input(
 
 
 def merge_fixed_zoo_schedule_start_times(
-      *groups: Iterable[ ScheduleTimeKey ] ) -> list[ ScheduleTimeKey ]:
+      *groups: list[ ScheduleTimeKey ] ) -> list[ ScheduleTimeKey ]:
    merged: list[ ScheduleTimeKey ] = []
 
    for group in groups:

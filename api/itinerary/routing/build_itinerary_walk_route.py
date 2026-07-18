@@ -65,7 +65,7 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
             to_item_key=next_stop.item_key,
             from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
             to_schedule_item_kind=next_stop.schedule_item_kind,
-            node_ids=tuple( leg_node_ids ) ) )
+            node_ids=leg_node_ids ) )
       append_walk_route_leg_node_ids( route_node_ids, leg_node_ids )
       route_stops.append(
          ItineraryWalkRouteStop.from_itinerary_stop(
@@ -87,8 +87,8 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
          route_node_ids=route_node_ids )
 
    return ItineraryWalkRoute(
-      stops=tuple( route_stops ),
-      legs=tuple( legs ),
+      stops=route_stops,
+      legs=legs,
       points=_walk_route_points_from_node_ids(
          route_node_ids,
          nodes_by_id ) )
@@ -137,7 +137,7 @@ def _walk_graph_nodes_by_id(
 
 def _walk_route_points_from_node_ids(
       node_ids: list[ str ],
-      nodes_by_id: dict[ str, WalkGraphNode ] ) -> tuple[ WalkRoutePoint, ... ]:
+      nodes_by_id: dict[ str, WalkGraphNode ] ) -> list[ WalkRoutePoint ]:
    points: list[ WalkRoutePoint ] = []
 
    for node_id in node_ids:
@@ -148,4 +148,4 @@ def _walk_route_points_from_node_ids(
 
       points.append( WalkRoutePoint.from_walk_graph_node( node ) )
 
-   return tuple( points )
+   return points

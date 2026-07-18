@@ -353,7 +353,7 @@ def _prefix_unit_sort_key(
       from_node_id: str,
       terminal_side_cluster_id: str | None,
       adjacency: WalkGraphAdjacency,
-      prefer_side_cluster_loop_order: bool ) -> tuple[ float, ... ]:
+      prefer_side_cluster_loop_order: bool ) -> tuple[ float, float, str ]:
    return _prepared_unit_sort_key(
       walk_graph,
       prepared_unit,
@@ -370,7 +370,7 @@ def _open_window_unit_sort_key(
       from_node_id: str,
       previous_side_cluster_id: str | None,
       adjacency: WalkGraphAdjacency,
-      prefer_side_cluster_loop_order: bool ) -> tuple[ float, ... ]:
+      prefer_side_cluster_loop_order: bool ) -> tuple[ float, float, str ]:
    return _prepared_unit_sort_key(
       walk_graph,
       prepared_unit,
@@ -387,7 +387,7 @@ def _prepared_unit_sort_key(
       from_node_id: str,
       adjacency: WalkGraphAdjacency,
       prefer_side_cluster_loop_order: bool,
-      reference_side_cluster_id: str | None ) -> tuple[ float, ... ]:
+      reference_side_cluster_id: str | None ) -> tuple[ float, float, str ]:
    travel_distance = _travel_distance_to_unit_entry(
       walk_graph,
       from_node_id=from_node_id,
@@ -499,14 +499,13 @@ def _prepared_units_share_loop(
 
 
 def _prepared_unit_orientations(
-      prepared_unit: PreparedLoopScheduleUnit ) -> tuple[
-         PreparedLoopScheduleUnit,
-         ... ]:
-   return tuple(
+      prepared_unit: PreparedLoopScheduleUnit ) -> list[ PreparedLoopScheduleUnit ]:
+   return [
       _prepared_unit_with_loop_schedule_unit(
          prepared_unit,
          loop_unit )
-      for loop_unit in loop_schedule_unit_orientations( prepared_unit.unit ) )
+      for loop_unit in loop_schedule_unit_orientations( prepared_unit.unit )
+   ]
 
 
 def _prepared_unit_with_best_approach_orientation(
@@ -597,8 +596,8 @@ def _anchor_walk_node_id(
 
 def _total_viewing_duration_seconds(
       conn: Connection,
-      animals: tuple[ ItineraryAnimalRecord, ... ] ) -> int | None:
-   durations = fetch_viewing_durations( conn, list( animals ) )
+      animals: list[ ItineraryAnimalRecord ] ) -> int | None:
+   durations = fetch_viewing_durations( conn, animals )
 
    if durations is None:
       return None

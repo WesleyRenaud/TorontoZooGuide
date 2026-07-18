@@ -24,7 +24,7 @@ def prepare_schedule_item_on_itinerary(
       *,
       itinerary_context: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      ) -> tuple[ tuple[ ItineraryErrorType, ... ], ItinerarySaveResult | None ]:
+      ) -> tuple[ list[ ItineraryErrorType ], ItinerarySaveResult | None ]:
    suppressed_warnings: list[ ItineraryErrorType ] = []
 
    if schedule_item_not_on_itinerary_warning_is_required(
@@ -35,17 +35,16 @@ def prepare_schedule_item_on_itinerary(
             confirming_schedule_item_not_on_itinerary
          ),
          suppressed_warnings=suppressed_warnings ):
-      warning_tuple = tuple( suppressed_warnings )
       return (
-         warning_tuple,
+         suppressed_warnings,
          build_save_result(
             conn,
             ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            suppressed_warnings=warning_tuple,
+            suppressed_warnings=suppressed_warnings,
             **itinerary_context ),
       )
 
-   return ( tuple( suppressed_warnings ), None )
+   return ( suppressed_warnings, None )
 
 
 def commit_listed_schedule(

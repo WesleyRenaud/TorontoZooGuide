@@ -25,7 +25,7 @@ def resolve_entrance_itinerary_stop() -> ItineraryStop:
    return ItineraryStop(
       schedule_item_kind=ScheduleItemKind.ENTRANCE,
       item_key=ENTRANCE_ITEM_KEY,
-      walk_node_ids=( entrance_node[ 'id' ], ),
+      walk_node_ids=[ entrance_node[ 'id' ] ],
       x_coord=entrance_node[ 'x' ],
       y_coord=entrance_node[ 'y' ] )
 
@@ -43,7 +43,7 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
          animal.x_coord,
          animal.y_coord,
          animal.enclosure_name )
-      walk_node_ids = ( walk_node_id, ) if walk_node_id != None else ()
+      walk_node_ids = [ walk_node_id ] if walk_node_id != None else []
 
       stops.append(
          ItineraryStop(
@@ -134,10 +134,10 @@ def _stop_from_map_location(
       y_coord: float | None,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> ItineraryStop:
-   walk_node_ids: tuple[ str, ... ] = ()
+   walk_node_ids: list[ str ] = []
 
    if map_location is not None:
-      walk_node_ids = ( map_location.walk_node_id, )
+      walk_node_ids = [ map_location.walk_node_id ]
 
    return ItineraryStop(
       schedule_item_kind=schedule_item_kind,

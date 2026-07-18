@@ -35,10 +35,10 @@ class LoopScheduleSlotSink:
 
       if self.persist and not _persist_loop_group_slots(
             conn,
-            tuple( animal_slots ) ):
+            animal_slots ):
          return False
 
-      _append_slots_to_blockers( blockers, tuple( animal_slots ) )
+      _append_slots_to_blockers( blockers, animal_slots )
       return True
 
 
@@ -129,7 +129,7 @@ def save_loop_slots(
 
 def _append_slots_to_blockers(
       blockers: list[ TimeBlock ],
-      slots: tuple[ LoopScheduleSlot, ... ] ) -> None:
+      slots: list[ LoopScheduleSlot ] ) -> None:
    for _, start_time, end_time in slots:
       scheduled_block = time_block_from_schedule_times(
          start_time,
@@ -141,7 +141,7 @@ def _append_slots_to_blockers(
 
 def _persist_loop_group_slots(
       conn: Connection,
-      scheduled_slots: tuple[ LoopScheduleSlot, ... ] ) -> bool:
+      scheduled_slots: list[ LoopScheduleSlot ] ) -> bool:
    cur = conn.cursor()
 
    try:

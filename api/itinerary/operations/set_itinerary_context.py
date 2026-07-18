@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
@@ -31,8 +31,8 @@ class SetItineraryContext:
    saved_itinerary: SavedItinerary | None
    unschedule_requirements: ItineraryUnscheduleRequirements
    itinerary_controller_kwargs: dict[ str, Any ]
-   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
-   suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
+   adjustments: list[ ItineraryAdjustment ] = field( default_factory=list )
+   suppressed_warnings: list[ ItineraryErrorType ] = field( default_factory=list )
 
 
 def itinerary_controller_kwargs(
@@ -64,10 +64,10 @@ def build_set_itinerary_error_result(
       status: ItineraryErrorType,
       itinerary_controller_kwargs: dict[ str, Any ],
       *,
-      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = () ) -> ItinerarySaveResult:
+      suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       status=status,
-      suppressed_warnings=suppressed_warnings,
+      suppressed_warnings=suppressed_warnings or [],
       itinerary=build_set_itinerary_current_itinerary(
          conn,
          itinerary_controller_kwargs ) )

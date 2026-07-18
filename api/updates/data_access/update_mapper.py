@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...models import Update
 from ...types import Row
 
@@ -16,7 +14,7 @@ def map_update_record( row: Row ) -> Update:
 
 
 
-def map_update_records( rows: Iterable[ Row ] ) -> list[ Update ]:
+def map_update_records( rows: list[ Row ] ) -> list[ Update ]:
    return [
       map_update_record( row )
       for row in rows

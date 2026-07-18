@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from datetime import date, datetime, time, timedelta
 from typing import Any
 
@@ -287,7 +286,7 @@ class DateValues:
 
    @staticmethod
    def normalize_unique_schedule_times(
-         values: Sequence[ TimeInput ] ) -> list[ str ]:
+         values: list[ TimeInput ] ) -> list[ str ]:
       unique_times: list[ str ] = []
       seen_seconds: set[ int ] = set()
 
@@ -315,7 +314,7 @@ class DateValues:
 
    @staticmethod
    def normalize_unique_itinerary_schedule_times(
-         values: Sequence[ TimeInput ] ) -> list[ str ]:
+         values: list[ TimeInput ] ) -> list[ str ]:
       return DateValues.normalize_unique_schedule_times( values )
 
 
@@ -487,7 +486,7 @@ class CalendarDates:
 
 
    @staticmethod
-   def schedule_includes_weekday( weekday_index: int, monday_through_sunday: Sequence[ Any ] ) -> bool:
+   def schedule_includes_weekday( weekday_index: int, monday_through_sunday: list[ Any ] ) -> bool:
       if weekday_index < 0 or weekday_index > 6:
          return False
 

@@ -9,7 +9,7 @@ from ...shared.enums import ItinerarySaveIssueItemType
 
 def build_bulk_schedule_animals_not_enough_time_issue(
       animals: list[ ItineraryAnimalRecord ] ) -> ItineraryResultReason:
-   issue_items = tuple(
+   issue_items = [
       ItinerarySaveIssueItem(
          name=animal.species,
          start_time=None,
@@ -17,7 +17,8 @@ def build_bulk_schedule_animals_not_enough_time_issue(
          item_type=ItinerarySaveIssueItemType.ANIMAL,
          location=animal.exhibit,
       )
-      for animal in animals )
+      for animal in animals
+   ]
 
    return ItineraryResultReason(
       code=ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME,

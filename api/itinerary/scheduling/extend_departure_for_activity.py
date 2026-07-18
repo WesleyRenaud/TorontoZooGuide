@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import Any
 
 from ..data_access.itinerary import fetch_saved_itinerary
@@ -15,7 +14,7 @@ from ...types import ScheduleTimeKey
 
 def arrival_time_covering_schedule_starts(
       arrival_time: ScheduleTimeKey,
-      schedule_start_times: Iterable[ ScheduleTimeKey ],
+      schedule_start_times: list[ ScheduleTimeKey ],
    ) -> ScheduleTimeKey:
    if arrival_time is None:
       return None
@@ -31,7 +30,7 @@ def arrival_time_covering_schedule_starts(
 
 def departure_time_covering_schedule_ends(
       departure_time: ScheduleTimeKey,
-      schedule_end_times: Iterable[ ScheduleTimeKey ],
+      schedule_end_times: list[ ScheduleTimeKey ],
    ) -> ScheduleTimeKey:
    if departure_time is None:
       return None

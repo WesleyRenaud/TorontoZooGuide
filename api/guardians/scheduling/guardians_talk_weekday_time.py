@@ -16,8 +16,8 @@ WEEKDAY_FLAG_FIELDS = (
 
 
 def guardians_talk_weekday_flags(
-      schedule_record: GuardiansTalkScheduleRecord ) -> tuple[ bool, ... ]:
-   return (
+      schedule_record: GuardiansTalkScheduleRecord ) -> list[ bool ]:
+   return [
       schedule_record.monday,
       schedule_record.tuesday,
       schedule_record.wednesday,
@@ -25,7 +25,7 @@ def guardians_talk_weekday_flags(
       schedule_record.friday,
       schedule_record.saturday,
       schedule_record.sunday,
-   )
+   ]
 
 
 def guardians_talk_includes_weekday(

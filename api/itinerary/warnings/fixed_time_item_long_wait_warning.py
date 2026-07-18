@@ -129,7 +129,7 @@ def fixed_time_item_long_wait_reasons_from_itinerary(
    return [
       ItineraryResultReason(
          code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-         items=tuple( issue_items ) ),
+         items=issue_items ),
    ]
 
 
@@ -194,10 +194,10 @@ def _long_wait_issue_from_items(
       items: list[ Any ] ) -> ItineraryResultReason:
    return ItineraryResultReason(
       code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-      items=tuple(
+      items=[
          fixed_time_long_wait_issue_item( item_type, item )
          for item in items
-      ) )
+      ] )
 
 
 def fixed_time_long_wait_issue_item(

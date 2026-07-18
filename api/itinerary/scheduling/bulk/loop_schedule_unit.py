@@ -16,7 +16,7 @@ from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewin
 @dataclass( frozen=True )
 class LoopScheduleUnit:
    loop_id: str | None
-   animals: tuple[ ItineraryAnimalRecord, ... ]
+   animals: list[ ItineraryAnimalRecord ]
    entry_walk_node_id: str | None
    exit_walk_node_id: str | None
    side_cluster_id: str | None
@@ -28,7 +28,7 @@ def loop_schedule_unit_reversed(
       unit: LoopScheduleUnit ) -> LoopScheduleUnit:
    return LoopScheduleUnit(
       loop_id=unit.loop_id,
-      animals=tuple( reversed( unit.animals ) ),
+      animals=list( reversed( unit.animals ) ),
       entry_walk_node_id=unit.exit_walk_node_id,
       exit_walk_node_id=unit.entry_walk_node_id,
       side_cluster_id=unit.side_cluster_id,
@@ -38,11 +38,11 @@ def loop_schedule_unit_reversed(
 
 
 def loop_schedule_unit_orientations(
-      unit: LoopScheduleUnit ) -> tuple[ LoopScheduleUnit, ... ]:
+      unit: LoopScheduleUnit ) -> list[ LoopScheduleUnit ]:
    if not is_two_way_loop_traversal( unit.traversal ):
-      return ( unit, )
+      return [ unit ]
 
-   return ( unit, loop_schedule_unit_reversed( unit ) )
+   return [ unit, loop_schedule_unit_reversed( unit ) ]
 
 
 def build_loop_schedule_units(
@@ -86,7 +86,7 @@ def _loop_schedule_unit_from_group(
 
    return LoopScheduleUnit(
       loop_id=loop_id,
-      animals=tuple( animals_in_loop_order ),
+      animals=animals_in_loop_order,
       entry_walk_node_id=entry_walk_node_id,
       exit_walk_node_id=exit_walk_node_id,
       side_cluster_id=loop_side_cluster_ids.get( loop_id ),
@@ -167,7 +167,7 @@ def _unmapped_loop_schedule_unit(
 
    return LoopScheduleUnit(
       loop_id=None,
-      animals=tuple( animals ),
+      animals=animals,
       entry_walk_node_id=_walk_node_id_for_animal( first_animal ),
       exit_walk_node_id=_walk_node_id_for_animal( last_animal ),
       side_cluster_id=None,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .gift_shop_record import GiftShopRecord
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
@@ -19,7 +17,7 @@ def map_gift_shop_record( row: Row ) -> GiftShopRecord:
       weekend_holiday_multiplier=row[ 'GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 
 
-def map_gift_shop_records( rows: Iterable[ Row ] ) -> list[ GiftShopRecord ]:
+def map_gift_shop_records( rows: list[ Row ] ) -> list[ GiftShopRecord ]:
    return [
       map_gift_shop_record( row )
       for row in rows
@@ -42,7 +40,7 @@ def map_gift_shop_schedule_record( row: Row ) -> GiftShopScheduleRecord:
       schedule_message=row[ 'SCHEDULE_MESSAGE' ] )
 
 
-def map_gift_shop_schedule_records( rows: Iterable[ Row ] ) -> list[ GiftShopScheduleRecord ]:
+def map_gift_shop_schedule_records( rows: list[ Row ] ) -> list[ GiftShopScheduleRecord ]:
    return [
       map_gift_shop_schedule_record( row )
       for row in rows
@@ -58,7 +56,7 @@ def map_gift_shop_schedule_override_record( row: Row ) -> GiftShopScheduleOverri
       override_message=row[ 'OVERRIDE_MESSAGE' ] )
 
 
-def map_gift_shop_schedule_override_records( rows: Iterable[ Row ] ) -> list[ GiftShopScheduleOverrideRecord ]:
+def map_gift_shop_schedule_override_records( rows: list[ Row ] ) -> list[ GiftShopScheduleOverrideRecord ]:
    return [
       map_gift_shop_schedule_override_record( row )
       for row in rows

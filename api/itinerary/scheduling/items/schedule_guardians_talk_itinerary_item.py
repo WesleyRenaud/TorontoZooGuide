@@ -149,7 +149,7 @@ def schedule_guardians_talk_itinerary_item(
       return build_save_result(
          conn,
          pending_reasons[ 0 ].code,
-         reasons=tuple( pending_reasons ),
+         reasons=pending_reasons,
          **itinerary_context )
 
    insert_error = _insert_scheduled_guardians_talk(

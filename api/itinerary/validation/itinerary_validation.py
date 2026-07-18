@@ -100,7 +100,7 @@ def validate_itinerary_animals(
 
 def validate_itinerary_attractions(
       attraction_coordinator: type[ AttractionCoordinator ],
-      attractions: tuple[ str, ... ],
+      attractions: list[ str ],
       new_visit_date: date,
       *,
       arrival_time: ScheduleTimeKey,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ...types import Row
 
@@ -27,7 +25,7 @@ def map_guardians_talk_schedule_record( row: Row ) -> GuardiansTalkScheduleRecor
 
 
 def map_guardians_talk_schedule_records(
-      rows: Iterable[ Row ] ) -> list[ GuardiansTalkScheduleRecord ]:
+      rows: list[ Row ] ) -> list[ GuardiansTalkScheduleRecord ]:
    return [
       map_guardians_talk_schedule_record( row )
       for row in rows
