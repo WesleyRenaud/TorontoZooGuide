@@ -17,6 +17,7 @@ RECORD_FIELDS = [
    'x_coord',
    'y_coord',
    'default_itinerary_duration_minutes',
+   'is_zoomobile_only',
 ]
 
 DB_COLUMNS = [
@@ -28,6 +29,7 @@ DB_COLUMNS = [
    'X_COORD',
    'Y_COORD',
    'DEFAULT_ITINERARY_DURATION_MINUTES',
+   'IS_ZOOMOBILE_ONLY',
 ]
 
 DATA_FILE = 'enclosure_viewing.json'
