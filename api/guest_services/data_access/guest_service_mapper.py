@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...models import GuestService
 from ...types import Row
 
@@ -14,7 +12,7 @@ def map_guest_service_record( row: Row ) -> GuestService:
 
 
 
-def map_guest_service_records( rows: Iterable[ Row ] ) -> list[ GuestService ]:
+def map_guest_service_records( rows: list[ Row ] ) -> list[ GuestService ]:
    return [
       map_guest_service_record( row )
       for row in rows

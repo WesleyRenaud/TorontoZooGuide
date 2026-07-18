@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any, Self
 
@@ -64,7 +63,7 @@ class GuardiansTalkScheduleItemKey:
    @classmethod
    def from_wires(
          cls,
-         wires: Iterable[ str ] | None,
+         wires: list[ str ] | None,
       ) -> list[ Self ]:
       keys: list[ Self ] = []
 

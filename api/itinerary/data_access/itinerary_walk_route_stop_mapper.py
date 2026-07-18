@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_walk_route_stop_record import ItineraryWalkRouteStopRecord
 from ..routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...shared.enums import ScheduleItemKind
@@ -19,7 +17,7 @@ def map_itinerary_walk_route_stop_record( row: Row ) -> ItineraryWalkRouteStopRe
 
 
 def map_itinerary_walk_route_stop_records(
-      rows: Iterable[ Row ] ) -> list[ ItineraryWalkRouteStopRecord ]:
+      rows: list[ Row ] ) -> list[ ItineraryWalkRouteStopRecord ]:
    return [
       map_itinerary_walk_route_stop_record( row )
       for row in rows
@@ -37,7 +35,8 @@ def map_itinerary_walk_route_stop(
 
 
 def map_itinerary_walk_route_stops(
-      records: Iterable[ ItineraryWalkRouteStopRecord ] ) -> tuple[ ItineraryWalkRouteStop, ... ]:
-   return tuple(
+      records: list[ ItineraryWalkRouteStopRecord ] ) -> list[ ItineraryWalkRouteStop ]:
+   return [
       map_itinerary_walk_route_stop( record )
-      for record in records )
+      for record in records
+   ]

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...shared.enums import ItineraryErrorType
@@ -9,7 +9,7 @@ from ...shared.enums import ItineraryErrorType
 @dataclass( frozen=True )
 class ItineraryResultReason:
    code: ItineraryErrorType
-   items: tuple[ ItinerarySaveIssueItem, ... ] = ()
+   items: list[ ItinerarySaveIssueItem ] = field( default_factory=list )
 
 
    def to_dict( self ) -> dict[ str, object ]:

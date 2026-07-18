@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
@@ -58,13 +57,13 @@ def build_save_result(
       conn: Connection,
       status: ItineraryErrorType,
       *,
-      reasons: tuple[ ItineraryResultReason, ... ] = (),
-      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = (),
+      reasons: list[ ItineraryResultReason ] | None = None,
+      suppressed_warnings: list[ ItineraryErrorType ] | None = None,
       **itinerary_context: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       status=status,
-      reasons=reasons,
-      suppressed_warnings=suppressed_warnings,
+      reasons=reasons or [],
+      suppressed_warnings=suppressed_warnings or [],
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_context ) )
@@ -73,12 +72,12 @@ def build_save_result(
 def build_success_result(
       conn: Connection,
       *,
-      adjustments: tuple[ ItineraryAdjustment, ... ] = (),
-      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = (),
+      adjustments: list[ ItineraryAdjustment ] | None = None,
+      suppressed_warnings: list[ ItineraryErrorType ] | None = None,
       **itinerary_context: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
-      adjustments=adjustments,
-      suppressed_warnings=suppressed_warnings,
+      adjustments=adjustments or [],
+      suppressed_warnings=suppressed_warnings or [],
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_context ) )
@@ -182,7 +181,7 @@ def prepare_zoo_hours_schedule_window(
 def zoo_hours_schedule_window_seconds(
       zoo_hours_record: ZooHoursRecord | None,
       *,
-      fixed_zoo_start_times: Iterable[ ScheduleTimeKey ] = (),
+      fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None,
       allow_early_admission: bool = False ) -> tuple[ int, int ] | None:
    anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
       zoo_hours_record,

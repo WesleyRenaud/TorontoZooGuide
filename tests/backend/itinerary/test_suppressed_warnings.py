@@ -64,10 +64,10 @@ def test_with_suppressed_warnings_merges_unique_warning_types() -> None:
          ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       ) )
 
-   assert merged.suppressed_warnings == (
+   assert merged.suppressed_warnings == [
       ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-   )
+   ]
 
 
 def test_with_time_set_suppressed_warnings_returns_original_when_empty() -> None:
@@ -87,7 +87,7 @@ def test_with_time_set_suppressed_warnings_merges_unique_warning_types() -> None
          ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       ) )
 
-   assert merged.suppressed_warnings == (
+   assert merged.suppressed_warnings == [
       ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-   )
+   ]

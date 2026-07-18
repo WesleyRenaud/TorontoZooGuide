@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
@@ -11,7 +9,7 @@ from ...types import DateInput, TimeInput
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
-def map_named_strings( names: Iterable[ str ] | None ) -> list[ str ]:
+def map_named_strings( names: list[ str ] | None ) -> list[ str ]:
    mapped: list[ str ] = []
 
    for name in names or []:
@@ -24,7 +22,7 @@ def map_named_strings( names: Iterable[ str ] | None ) -> list[ str ]:
 
 
 def map_guardians_talk_inputs(
-      guardians_talks: Iterable[ dict[ str, str | None ] ] | None ) -> list[ ItineraryGuardiansTalkInput ]:
+      guardians_talks: list[ dict[ str, str | None ] ] | None ) -> list[ ItineraryGuardiansTalkInput ]:
    mapped: list[ ItineraryGuardiansTalkInput ] = []
 
    for item in guardians_talks or []:
@@ -42,7 +40,7 @@ def map_guardians_talk_inputs(
 
 
 def map_animal_inputs(
-      animals: Iterable[ dict[ str, str | None ] ] | None ) -> list[ ItineraryAnimalInput ]:
+      animals: list[ dict[ str, str | None ] ] | None ) -> list[ ItineraryAnimalInput ]:
    mapped: list[ ItineraryAnimalInput ] = []
 
    for animal in animals or []:
@@ -62,11 +60,11 @@ def map_itinerary_save_input(
       date: DateInput,
       arrival_time: TimeInput,
       departure_time: TimeInput,
-      animals: Iterable[ dict[ str, str | None ] ] | None,
-      attractions: Iterable[ str ] | None,
-      guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
-      wild_encounters: Iterable[ WildEncounterScheduleItemKey ] | None,
-      selected_exhibits: Iterable[ str ] | None = None ) -> ItinerarySaveInput:
+      animals: list[ dict[ str, str | None ] ] | None,
+      attractions: list[ str ] | None,
+      guardians_talks: list[ dict[ str, str | None ] ] | None,
+      wild_encounters: list[ WildEncounterScheduleItemKey ] | None,
+      selected_exhibits: list[ str ] | None = None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
       date=DateValues.parse_date_value( date ),

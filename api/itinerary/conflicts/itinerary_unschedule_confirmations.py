@@ -19,22 +19,20 @@ from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_ove
 
 @dataclass( frozen=True )
 class ItineraryUnscheduleRequirements:
-   talks: tuple[ GuardiansTalkDiff, ... ]
-   encounters: tuple[ WildEncounterDiff, ... ]
+   talks: list[ GuardiansTalkDiff ]
+   encounters: list[ WildEncounterDiff ]
 
 
 def find_itinerary_unschedule_requirements(
       saved_itinerary: SavedItinerary,
       validated_itinerary: ValidatedItinerary ) -> ItineraryUnscheduleRequirements:
    return ItineraryUnscheduleRequirements(
-      talks=tuple(
-         new_guardians_talks_overlapping_saved_schedule(
-            saved_itinerary,
-            validated_itinerary ) ),
-      encounters=tuple(
-         new_wild_encounters_overlapping_saved_schedule(
-            saved_itinerary,
-            validated_itinerary ) ),
+      talks=new_guardians_talks_overlapping_saved_schedule(
+         saved_itinerary,
+         validated_itinerary ),
+      encounters=new_wild_encounters_overlapping_saved_schedule(
+         saved_itinerary,
+         validated_itinerary ),
    )
 
 
@@ -51,21 +49,21 @@ def unschedule_confirmation_warning(
          and not confirming_guardians_talk_unschedule ):
       pending_reasons.append(
          build_guardians_talk_unschedule_issue(
-            list( requirements.talks ) ) )
+            requirements.talks ) )
 
    if (
          requirements.encounters
          and not confirming_wild_encounter_unschedule ):
       pending_reasons.append(
          build_wild_encounter_unschedule_issue(
-            list( requirements.encounters ) ) )
+            requirements.encounters ) )
 
    if not pending_reasons:
       return None
 
    return ItinerarySaveResult(
       status=pending_reasons[ 0 ].code,
-      reasons=tuple( pending_reasons ),
+      reasons=pending_reasons,
       itinerary=itinerary )
 
 
@@ -73,8 +71,8 @@ def apply_confirmed_itinerary_unschedule_changes(
       validated_itinerary: ValidatedItinerary,
       requirements: ItineraryUnscheduleRequirements ) -> ValidatedItinerary:
    activity_blocks = [
-      *guardians_talk_time_blocks( list( requirements.talks ) ),
-      *wild_encounter_time_blocks( list( requirements.encounters ) ),
+      *guardians_talk_time_blocks( requirements.talks ),
+      *wild_encounter_time_blocks( requirements.encounters ),
    ]
 
    if not activity_blocks:

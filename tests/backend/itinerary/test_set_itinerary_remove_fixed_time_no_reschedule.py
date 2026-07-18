@@ -160,7 +160,7 @@ def test_set_itinerary_removing_first_talk_updates_arrival_to_next_start(
       if animal.species == 'African Lion' )
    assert lion_after.start_time == '11:00 AM'
    assert result.itinerary.arrival_time == lion_after.start_time
-   assert result.adjustments == ()
+   assert result.adjustments == []
 
 
 def test_set_itinerary_later_arrival_without_cutoff_preserves_animal_schedules(

@@ -65,7 +65,7 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    demoiselle_crane = next(
       animal for animal in result.itinerary.animals
@@ -124,7 +124,7 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    demoiselle_crane = next(
       animal for animal in result.itinerary.animals
@@ -178,7 +178,7 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
    result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
-   assert result.reasons == ()
+   assert result.reasons == []
 
    demoiselle_crane = next(
       animal for animal in result.itinerary.animals

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...types import Row
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
 
@@ -28,7 +26,7 @@ def map_wild_encounter_schedule_record( row: Row ) -> WildEncounterScheduleRecor
 
 
 
-def map_wild_encounter_schedule_records( rows: Iterable[ Row ] ) -> list[ WildEncounterScheduleRecord ]:
+def map_wild_encounter_schedule_records( rows: list[ Row ] ) -> list[ WildEncounterScheduleRecord ]:
    return [
       map_wild_encounter_schedule_record( row )
       for row in rows

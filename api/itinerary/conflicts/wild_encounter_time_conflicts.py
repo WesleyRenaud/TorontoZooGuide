@@ -124,10 +124,10 @@ def sort_scheduled_items_for_issue(
 def build_schedule_time_conflict_issue(
       scheduled_items: list[ ScheduledItem ] ) -> ItineraryResultReason:
    sorted_items = sort_scheduled_items_for_issue( scheduled_items )
-   issue_items = tuple(
+   issue_items = [
       scheduled_item_to_issue_item( scheduled_item )
       for scheduled_item in sorted_items
-   )
+   ]
 
    return ItineraryResultReason(
       code=ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
@@ -136,14 +136,14 @@ def build_schedule_time_conflict_issue(
 
 def find_schedule_time_conflict_issues(
       guardians_talks: list[ GuardiansTalkDiff ],
-      wild_encounters: list[ WildEncounterDiff ] ) -> tuple[ ItineraryResultReason, ... ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> list[ ItineraryResultReason ]:
    scheduled_items = active_scheduled_items( guardians_talks, wild_encounters )
    conflict_groups = find_schedule_time_conflict_groups( scheduled_items )
 
    if not conflict_groups:
-      return ()
+      return []
 
-   return tuple(
+   return [
       build_schedule_time_conflict_issue( group )
       for group in conflict_groups
-   )
+   ]

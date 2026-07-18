@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Iterable
+from collections.abc import Callable, Hashable
 from typing import Any, Protocol, TypeVar
 
 from .calendar_dates import DateValues
@@ -16,7 +16,7 @@ T = TypeVar( 'T', bound=_MapScheduleOccurrence )
 
 
 def unique_sorted_schedule_times(
-      times: Iterable[ ScheduleTimeKey ] ) -> list[ str ]:
+      times: list[ ScheduleTimeKey ] ) -> list[ str ]:
    unique_times: dict[ int, str ] = {}
 
    for time_value in times:

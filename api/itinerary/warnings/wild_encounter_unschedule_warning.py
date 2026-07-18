@@ -30,9 +30,10 @@ def new_wild_encounters_overlapping_saved_schedule(
 
 def build_wild_encounter_unschedule_issue(
       wild_encounters: list[ WildEncounterDiff ] ) -> ItineraryResultReason:
-   issue_items = tuple(
+   issue_items = [
       ItinerarySaveIssueItem.from_wild_encounter_diff( wild_encounter )
-      for wild_encounter in wild_encounters )
+      for wild_encounter in wild_encounters
+   ]
 
    return ItineraryResultReason(
       code=ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,

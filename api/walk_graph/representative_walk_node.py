@@ -7,7 +7,7 @@ from .shortest_path import shortest_path_distances
 def representative_walk_node_id_from_candidates(
       graph: WalkGraph,
       from_node_id: str,
-      candidate_node_ids: tuple[ str, ... ] ) -> str | None:
+      candidate_node_ids: list[ str ] ) -> str | None:
    if not candidate_node_ids:
       return None
 
@@ -23,7 +23,7 @@ def representative_walk_node_id_from_candidates(
 
 def _closest_walk_node_from_distances(
       distances: dict[ str, float ],
-      candidate_node_ids: tuple[ str, ... ] ) -> str | None:
+      candidate_node_ids: list[ str ] ) -> str | None:
    walk_node_id: str | None = None
    shortest_distance_px: float | None = None
 

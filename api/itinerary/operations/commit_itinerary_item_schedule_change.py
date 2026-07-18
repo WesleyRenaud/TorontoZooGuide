@@ -107,5 +107,5 @@ def commit_itinerary_item_schedule_change(
 
    return build_success_result(
       conn,
-      adjustments=(),
+      adjustments=[],
       **itinerary_context )

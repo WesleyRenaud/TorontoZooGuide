@@ -79,7 +79,7 @@ def test_bulk_schedule_animals_reverses_eurasia_loop_after_temple_for_shorter_wa
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    tamarin = next(
       animal for animal in result.itinerary.animals

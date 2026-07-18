@@ -22,7 +22,7 @@ class MasterRouteLoop:
    loop_id: str
    name: str
    traversal: MasterRouteTraversal
-   viewing_spots: tuple[ ViewingSpotReference, ... ]
+   viewing_spots: list[ ViewingSpotReference ]
 
 
 def master_route_loop_from_json(
@@ -31,6 +31,7 @@ def master_route_loop_from_json(
       loop_id=str( payload[ 'id' ] ),
       name=str( payload[ 'name' ] ),
       traversal=str( payload[ 'traversal' ] ),
-      viewing_spots=tuple(
+      viewing_spots=[
          viewing_spot_reference_from_json( row )
-         for row in payload[ 'viewing_spots' ] ) )
+         for row in payload[ 'viewing_spots' ]
+      ] )

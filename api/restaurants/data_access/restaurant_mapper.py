@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .restaurant_record import RestaurantRecord
 from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from .restaurant_schedule_record import RestaurantScheduleRecord
@@ -21,7 +19,7 @@ def map_restaurant_record( row: Row ) -> RestaurantRecord:
       weekend_holiday_multiplier=row[ 'RESTAURANT_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 
 
-def map_restaurant_records( rows: Iterable[ Row ] ) -> list[ RestaurantRecord ]:
+def map_restaurant_records( rows: list[ Row ] ) -> list[ RestaurantRecord ]:
    return [
       map_restaurant_record( row )
       for row in rows
@@ -44,7 +42,7 @@ def map_restaurant_schedule_record( row: Row ) -> RestaurantScheduleRecord:
       schedule_message=row[ 'SCHEDULE_MESSAGE' ] )
 
 
-def map_restaurant_schedule_records( rows: Iterable[ Row ] ) -> list[ RestaurantScheduleRecord ]:
+def map_restaurant_schedule_records( rows: list[ Row ] ) -> list[ RestaurantScheduleRecord ]:
    return [
       map_restaurant_schedule_record( row )
       for row in rows
@@ -60,7 +58,7 @@ def map_restaurant_schedule_override_record( row: Row ) -> RestaurantScheduleOve
       override_message=row[ 'OVERRIDE_MESSAGE' ] )
 
 
-def map_restaurant_schedule_override_records( rows: Iterable[ Row ] ) -> list[ RestaurantScheduleOverrideRecord ]:
+def map_restaurant_schedule_override_records( rows: list[ Row ] ) -> list[ RestaurantScheduleOverrideRecord ]:
    return [
       map_restaurant_schedule_override_record( row )
       for row in rows

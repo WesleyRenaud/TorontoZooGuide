@@ -21,7 +21,7 @@ def append_walk_route_leg_node_ids(
 
 
 def inclusive_point_slices_for_walk_route_legs(
-      legs: tuple[ WalkRouteLeg, ... ] ) -> list[ tuple[ int, int ] ]:
+      legs: list[ WalkRouteLeg ] ) -> list[ tuple[ int, int ] ]:
    """Return inclusive (from, to) indices into the route polyline for each leg.
 
    The polyline concatenates leg paths and stores each join node once, so leg
@@ -39,11 +39,11 @@ def inclusive_point_slices_for_walk_route_legs(
 
 
 def walk_route_node_ids_for_point_slice(
-      points: tuple[ WalkRoutePoint, ... ],
+      points: list[ WalkRoutePoint ],
       *,
       from_point_sequence: int,
-      to_point_sequence: int ) -> tuple[ str, ... ]:
-   return tuple(
+      to_point_sequence: int ) -> list[ str ]:
+   return [
       point.node_id
       for point in points[ from_point_sequence:to_point_sequence + 1 ]
-   )
+   ]

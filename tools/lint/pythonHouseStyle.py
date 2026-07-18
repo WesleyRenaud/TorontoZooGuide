@@ -116,6 +116,134 @@ def annotation_uses_disallowed_object( annotation: ast.expr | None ) -> bool:
    return False
 
 
+DISALLOWED_HOMOGENEOUS_COLLECTION_NAMES = frozenset( { 'Iterable', 'Sequence' } )
+
+
+def annotation_type_name( node: ast.expr ) -> str | None:
+   if isinstance( node, ast.Name ):
+      return node.id
+
+   if isinstance( node, ast.Attribute ):
+      return node.attr
+
+   return None
+
+
+def is_ellipsis_node( node: ast.expr ) -> bool:
+   return isinstance( node, ast.Constant ) and node.value is Ellipsis
+
+
+def is_variadic_tuple_annotation( node: ast.expr ) -> bool:
+   if not isinstance( node, ast.Subscript ):
+      return False
+
+   if annotation_type_name( node.value ) not in { 'tuple', 'Tuple' }:
+      return False
+
+   slice_node = node.slice
+
+   if not isinstance( slice_node, ast.Tuple ) or len( slice_node.elts ) < 2:
+      return False
+
+   return is_ellipsis_node( slice_node.elts[ -1 ] )
+
+
+def disallowed_homogeneous_collection_message( node: ast.expr ) -> str | None:
+   if isinstance( node, ast.Subscript ):
+      subscript_name = annotation_type_name( node.value )
+
+      if subscript_name in DISALLOWED_HOMOGENEOUS_COLLECTION_NAMES:
+         return (
+            f'Do not use "{ subscript_name }" for homogeneous collections; '
+            'use list[T] instead.' )
+
+      if is_variadic_tuple_annotation( node ):
+         return (
+            'Do not use "tuple[T, ...]" for homogeneous collections; '
+            'use list[T] instead (fixed-arity tuples like tuple[int, int] are allowed).' )
+
+      return None
+
+   type_name = annotation_type_name( node )
+
+   if type_name in DISALLOWED_HOMOGENEOUS_COLLECTION_NAMES:
+      return (
+         f'Do not use "{ type_name }" for homogeneous collections; '
+         'use list[T] instead.' )
+
+   return None
+
+
+def iter_disallowed_homogeneous_collection_nodes(
+      annotation: ast.expr | None ) -> list[ ast.expr ]:
+   if annotation is None:
+      return []
+
+   subscript_values = {
+      child.value
+      for child in ast.walk( annotation )
+      if isinstance( child, ast.Subscript )
+   }
+   disallowed_nodes: list[ ast.expr ] = []
+
+   for child in ast.walk( annotation ):
+      if not isinstance( child, ast.expr ):
+         continue
+
+      if child in subscript_values:
+         continue
+
+      if disallowed_homogeneous_collection_message( child ) is not None:
+         disallowed_nodes.append( child )
+
+   return disallowed_nodes
+
+
+def report_disallowed_homogeneous_collections(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      annotation: ast.expr | None ) -> None:
+   for node in iter_disallowed_homogeneous_collection_nodes( annotation ):
+      message = disallowed_homogeneous_collection_message( node )
+
+      if message is None:
+         continue
+
+      add_violation(
+         violations,
+         path,
+         node.lineno or 1,
+         ( node.col_offset or 0 ) + 1,
+         message )
+
+
+def check_disallowed_collection_imports(
+      path: Path,
+      tree: ast.AST ) -> list[ tuple[ str, int, int, str ] ]:
+   violations: list[ tuple[ str, int, int, str ] ] = []
+
+   for node in ast.walk( tree ):
+      if not isinstance( node, ( ast.Import, ast.ImportFrom ) ):
+         continue
+
+      for alias in node.names:
+         imported_name = alias.name.rsplit( '.', 1 )[ -1 ]
+
+         if imported_name not in DISALLOWED_HOMOGENEOUS_COLLECTION_NAMES:
+            continue
+
+         add_violation(
+            violations,
+            path,
+            node.lineno,
+            ( node.col_offset or 0 ) + 1,
+            (
+               f'Do not import "{ imported_name }" for collection typing; '
+               'use list[T] instead.' ) )
+
+   return violations
+
+
 def check_typing_annotations(
       path: Path,
       file_text: str ) -> list[ tuple[ str, int, int, str ] ]:
@@ -125,8 +253,13 @@ def check_typing_annotations(
       return []
 
    violations: list[ tuple[ str, int, int, str ] ] = []
+   violations.extend( check_disallowed_collection_imports( path, tree ) )
 
    for node in ast.walk( tree ):
+      if isinstance( node, ast.AnnAssign ):
+         report_disallowed_homogeneous_collections( violations, path, node.annotation )
+         continue
+
       if not isinstance( node, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
          continue
 
@@ -159,21 +292,35 @@ def check_typing_annotations(
                   f'Do not use "object" as a type for "{ arg.arg }"; '
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
 
-      if node.args.vararg and node.args.vararg.annotation is None:
-         add_violation(
-            violations,
-            path,
-            node.args.vararg.lineno or node.lineno,
-            ( node.args.vararg.col_offset or 0 ) + 1,
-            f'Missing type annotation for "*{ node.args.vararg.arg }".' )
+         report_disallowed_homogeneous_collections( violations, path, arg.annotation )
 
-      if node.args.kwarg and node.args.kwarg.annotation is None:
-         add_violation(
-            violations,
-            path,
-            node.args.kwarg.lineno or node.lineno,
-            ( node.args.kwarg.col_offset or 0 ) + 1,
-            f'Missing type annotation for "**{ node.args.kwarg.arg }".' )
+      if node.args.vararg is not None:
+         if node.args.vararg.annotation is None:
+            add_violation(
+               violations,
+               path,
+               node.args.vararg.lineno or node.lineno,
+               ( node.args.vararg.col_offset or 0 ) + 1,
+               f'Missing type annotation for "*{ node.args.vararg.arg }".' )
+         else:
+            report_disallowed_homogeneous_collections(
+               violations,
+               path,
+               node.args.vararg.annotation )
+
+      if node.args.kwarg is not None:
+         if node.args.kwarg.annotation is None:
+            add_violation(
+               violations,
+               path,
+               node.args.kwarg.lineno or node.lineno,
+               ( node.args.kwarg.col_offset or 0 ) + 1,
+               f'Missing type annotation for "**{ node.args.kwarg.arg }".' )
+         else:
+            report_disallowed_homogeneous_collections(
+               violations,
+               path,
+               node.args.kwarg.annotation )
 
       if node.name == '__init__':
          if node.returns is None:
@@ -183,6 +330,16 @@ def check_typing_annotations(
                node.lineno,
                1,
                'Missing return type annotation for "__init__" (use "-> None").' )
+         elif annotation_uses_disallowed_object( node.returns ):
+            add_violation(
+               violations,
+               path,
+               node.returns.lineno or node.lineno,
+               ( node.returns.col_offset or 0 ) + 1,
+               (
+                  f'Do not use "object" as the return type for "{ node.name }"; '
+                  'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
+         report_disallowed_homogeneous_collections( violations, path, node.returns )
       elif node.returns is None:
          add_violation(
             violations,
@@ -190,15 +347,18 @@ def check_typing_annotations(
             node.lineno,
             1,
             f'Missing return type annotation for "{ node.name }".' )
-      elif annotation_uses_disallowed_object( node.returns ):
-         add_violation(
-            violations,
-            path,
-            node.returns.lineno or node.lineno,
-            ( node.returns.col_offset or 0 ) + 1,
-            (
-               f'Do not use "object" as the return type for "{ node.name }"; '
-               'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
+      else:
+         if annotation_uses_disallowed_object( node.returns ):
+            add_violation(
+               violations,
+               path,
+               node.returns.lineno or node.lineno,
+               ( node.returns.col_offset or 0 ) + 1,
+               (
+                  f'Do not use "object" as the return type for "{ node.name }"; '
+                  'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
+
+         report_disallowed_homogeneous_collections( violations, path, node.returns )
 
    return violations
 

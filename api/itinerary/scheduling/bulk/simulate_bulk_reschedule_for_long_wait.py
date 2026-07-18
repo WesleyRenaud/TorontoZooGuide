@@ -171,7 +171,7 @@ def newly_added_fixed_time_item_long_wait_reason(
 
    return ItineraryResultReason(
       code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-      items=tuple( issue_items ) )
+      items=issue_items )
 
 
 def _has_newly_added_isolated_fixed_time_items(

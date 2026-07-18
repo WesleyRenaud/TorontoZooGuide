@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...models import Defibrillator
 from ...types import Row
 
@@ -13,7 +11,7 @@ def map_defibrillator_record( row: Row ) -> Defibrillator:
 
 
 
-def map_defibrillator_records( rows: Iterable[ Row ] ) -> list[ Defibrillator ]:
+def map_defibrillator_records( rows: list[ Row ] ) -> list[ Defibrillator ]:
    return [
       map_defibrillator_record( row )
       for row in rows

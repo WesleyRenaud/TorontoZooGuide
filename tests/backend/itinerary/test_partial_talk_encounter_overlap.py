@@ -72,7 +72,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
    )
 
    assert result.success is True
-   assert result.reasons == ()
+   assert result.reasons == []
 
    talk_schedule = db.conn.execute(
       """   SELECT START_TIME, END_TIME

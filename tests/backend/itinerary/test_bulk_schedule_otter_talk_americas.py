@@ -18,16 +18,16 @@ from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
 
 OTTER_TALK = 'North American River Otter'
-REGIONS = (
+REGIONS = [
    'Africa',
    'Americas',
    'Australasia',
    'Canadian Domain',
    'Tundra Trek',
-)
+]
 
 
-def _selected_exhibits_for_regions( region_names: tuple[ str, ... ] ) -> list[ str ]:
+def _selected_exhibits_for_regions( region_names: list[ str ] ) -> list[ str ]:
    selected_exhibits: list[ str ] = []
 
    for region in ExhibitCoordinator.get_regions_with_exhibits():

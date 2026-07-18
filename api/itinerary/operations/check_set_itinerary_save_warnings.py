@@ -51,14 +51,13 @@ def check_set_itinerary_save_warnings(
             confirming_early_admission=confirming_early_admission,
             suppressed_warnings=suppressed_warnings )
    ):
-      warning_tuple = tuple( suppressed_warnings )
       return (
-         replace( context, suppressed_warnings=warning_tuple ),
+         replace( context, suppressed_warnings=suppressed_warnings ),
          build_set_itinerary_error_result(
             context.conn,
             ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
             controller_kwargs,
-            suppressed_warnings=warning_tuple ),
+            suppressed_warnings=suppressed_warnings ),
       )
 
    if (
@@ -71,18 +70,16 @@ def check_set_itinerary_save_warnings(
             confirming_short_visit=confirming_short_visit,
             suppressed_warnings=suppressed_warnings )
    ):
-      warning_tuple = tuple( suppressed_warnings )
       return (
-         replace( context, suppressed_warnings=warning_tuple ),
+         replace( context, suppressed_warnings=suppressed_warnings ),
          build_set_itinerary_error_result(
             context.conn,
             ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
             controller_kwargs,
-            suppressed_warnings=warning_tuple ),
+            suppressed_warnings=suppressed_warnings ),
       )
 
-   warning_tuple = tuple( suppressed_warnings )
-   updated_context = replace( context, suppressed_warnings=warning_tuple )
+   updated_context = replace( context, suppressed_warnings=suppressed_warnings )
 
    schedule_conflict_warning = schedule_time_conflict_warning(
       context.validated_itinerary.guardians_talks,
@@ -94,7 +91,9 @@ def check_set_itinerary_save_warnings(
    if schedule_conflict_warning is not None:
       return (
          updated_context,
-         with_suppressed_warnings( schedule_conflict_warning, warning_tuple ),
+         with_suppressed_warnings(
+            schedule_conflict_warning,
+            suppressed_warnings ),
       )
 
    pending_reasons = []
@@ -146,10 +145,10 @@ def check_set_itinerary_save_warnings(
          with_suppressed_warnings(
             ItinerarySaveResult(
                status=pending_reasons[ 0 ].code,
-               reasons=tuple( pending_reasons ),
+               reasons=pending_reasons,
                itinerary=context.current_itinerary,
             ),
-            warning_tuple ),
+            suppressed_warnings ),
       )
 
    return ( updated_context, None )

@@ -9,7 +9,7 @@ from .zoomobile_station import ZoomobileStation
 class ZoomobileRoute:
    route: str
    route_source: str
-   zoomobile_stations: tuple[ ZoomobileStation, ... ]
+   zoomobile_stations: list[ ZoomobileStation ]
 
 
    def to_dict( self ) -> dict[ str, object ]:

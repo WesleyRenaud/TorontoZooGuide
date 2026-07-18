@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...shared.value_conversion import ValueConversion
 from ...types import Row
@@ -15,7 +13,7 @@ def map_itinerary_guardians_talk_record( row: Row ) -> ItineraryGuardiansTalkRec
       is_deleted=ValueConversion.as_boolean( row[ 'IS_DELETED' ] ) )
 
 
-def map_itinerary_guardians_talk_records( rows: Iterable[ Row ] ) -> list[ ItineraryGuardiansTalkRecord ]:
+def map_itinerary_guardians_talk_records( rows: list[ Row ] ) -> list[ ItineraryGuardiansTalkRecord ]:
    return [
       map_itinerary_guardians_talk_record( row )
       for row in rows

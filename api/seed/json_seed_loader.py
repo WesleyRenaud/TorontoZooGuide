@@ -21,21 +21,21 @@ def seed_data_dir( dirname: str ) -> Path:
 def load_json_records(
       path: Path,
       *,
-      fields: list[ str ] ) -> list[ tuple[ Any, ... ] ]:
+      fields: list[ str ] ) -> list[ list[ Any ] ]:
    with path.open( encoding='utf-8' ) as seed_file:
       records = json.load( seed_file )
 
    if not isinstance( records, list ):
       raise ValueError( f'Expected a JSON array in { path }.' )
 
-   rows: list[ tuple[ Any, ... ] ] = []
+   rows: list[ list[ Any ] ] = []
 
    for index, record in enumerate( records ):
       if not isinstance( record, dict ):
          raise ValueError( f'Expected record { index } in { path } to be an object.' )
 
       try:
-         rows.append( tuple( record[ field ] for field in fields ) )
+         rows.append( [ record[ field ] for field in fields ] )
       except KeyError as error:
          raise ValueError(
             f'Missing { error } on record { index } in { path }.' ) from error
@@ -43,14 +43,14 @@ def load_json_records(
    return rows
 
 
-def load_json_rows( path: Path ) -> list[ tuple[ Any, ... ] ]:
+def load_json_rows( path: Path ) -> list[ list[ Any ] ]:
    with path.open( encoding='utf-8' ) as seed_file:
       rows = json.load( seed_file )
 
    if not isinstance( rows, list ):
       raise ValueError( f'Expected a JSON array in { path }.' )
 
-   return [ tuple( row ) for row in rows ]
+   return [ list( row ) for row in rows ]
 
 
 def _load_day_curve_payload( path: Path ) -> dict[ str, Any ]:
@@ -66,7 +66,7 @@ def _load_day_curve_payload( path: Path ) -> dict[ str, Any ]:
 def _entity_values(
       path: Path,
       payload: dict[ str, Any ],
-      entity_fields: tuple[ str, ... ] ) -> tuple[ Any, ... ]:
+      entity_fields: list[ str ] ) -> list[ Any ]:
    values: list[ Any ] = []
 
    for field in entity_fields:
@@ -77,29 +77,32 @@ def _entity_values(
 
       values.append( value )
 
-   return tuple( values )
+   return values
 
 
 def load_day_curve_file(
       path: Path,
       *,
-      entity_fields: tuple[ str, ... ] = (),
-      day_fields: tuple[ str, ... ] ) -> list[ tuple[ Any, ... ] ]:
+      entity_fields: list[ str ] | None = None,
+      day_fields: list[ str ] ) -> list[ list[ Any ] ]:
    payload = _load_day_curve_payload( path )
-   entity_values = _entity_values( path, payload, entity_fields )
+   entity_values = _entity_values(
+      path,
+      payload,
+      entity_fields or [] )
    days = payload.get( 'days' )
 
    if not isinstance( days, list ):
       raise ValueError( f'Expected a days array in { path }.' )
 
-   rows: list[ tuple[ Any, ... ] ] = []
+   rows: list[ list[ Any ] ] = []
 
    for index, day in enumerate( days ):
       if not isinstance( day, dict ):
          raise ValueError( f'Expected day { index } in { path } to be an object.' )
 
       try:
-         day_values = tuple( day[ field ] for field in day_fields )
+         day_values = [ day[ field ] for field in day_fields ]
       except KeyError as error:
          raise ValueError(
             f'Missing { error } on day { index } in { path }.' ) from error
@@ -112,9 +115,9 @@ def load_day_curve_file(
 def load_day_curve_directory(
       directory: Path,
       *,
-      entity_fields: tuple[ str, ... ] = (),
-      day_fields: tuple[ str, ... ] ) -> list[ tuple[ Any, ... ] ]:
-   rows: list[ tuple[ Any, ... ] ] = []
+      entity_fields: list[ str ] | None = None,
+      day_fields: list[ str ] ) -> list[ list[ Any ] ]:
+   rows: list[ list[ Any ] ] = []
 
    for path in sorted( directory.glob( '*.json' ) ):
       rows.extend( load_day_curve_file(
@@ -130,7 +133,7 @@ def insert_rows(
       *,
       table: str,
       columns: list[ str ],
-      rows: list[ tuple[ Any, ... ] ] ) -> None:
+      rows: list[ list[ Any ] ] ) -> None:
    if not rows:
       return
 
@@ -182,8 +185,8 @@ def insert_day_curve_file(
       table: str,
       columns: list[ str ],
       path: Path,
-      entity_fields: tuple[ str, ... ] = (),
-      day_fields: tuple[ str, ... ] ) -> None:
+      entity_fields: list[ str ] | None = None,
+      day_fields: list[ str ] ) -> None:
    insert_rows(
       cursor,
       table=table,
@@ -200,8 +203,8 @@ def insert_day_curve_directory(
       table: str,
       columns: list[ str ],
       directory: Path,
-      entity_fields: tuple[ str, ... ] = (),
-      day_fields: tuple[ str, ... ] ) -> None:
+      entity_fields: list[ str ] | None = None,
+      day_fields: list[ str ] ) -> None:
    insert_rows(
       cursor,
       table=table,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...types import Row
 from .wild_encounter_meeting_spot_loop_pin_record import WildEncounterMeetingSpotLoopPinRecord
 
@@ -15,7 +13,7 @@ def map_wild_encounter_meeting_spot_loop_pin_record(
 
 
 def map_wild_encounter_meeting_spot_loop_pin_records(
-      rows: Iterable[ Row ],
+      rows: list[ Row ],
    ) -> list[ WildEncounterMeetingSpotLoopPinRecord ]:
    return [
       map_wild_encounter_meeting_spot_loop_pin_record( row )
@@ -24,7 +22,7 @@ def map_wild_encounter_meeting_spot_loop_pin_records(
 
 
 def index_wild_encounter_meeting_spot_loop_pin_records_by_name(
-      records: Iterable[ WildEncounterMeetingSpotLoopPinRecord ],
+      records: list[ WildEncounterMeetingSpotLoopPinRecord ],
    ) -> dict[ str, WildEncounterMeetingSpotLoopPinRecord ]:
    pins_by_name: dict[ str, WildEncounterMeetingSpotLoopPinRecord ] = {}
 

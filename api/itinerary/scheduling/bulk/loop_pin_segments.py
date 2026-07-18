@@ -11,7 +11,7 @@ from ....walk_graph.master_route import viewing_spot_key_from_reference
 
 @dataclass( frozen=True )
 class LoopPinAnimalSegment:
-   animals: tuple[ ItineraryAnimalRecord, ... ]
+   animals: list[ ItineraryAnimalRecord ]
    end_before_seconds: int
    anchor_at_end: bool
 
@@ -46,7 +46,7 @@ def loop_pin_schedule_steps(
       if before_pin_animals:
          steps.append(
             LoopPinAnimalSegment(
-               animals=tuple( before_pin_animals ),
+               animals=before_pin_animals,
                end_before_seconds=loop_pin.start_seconds,
                anchor_at_end=True,
             ) )
@@ -58,7 +58,7 @@ def loop_pin_schedule_steps(
    if after_last_pin_animals:
       steps.append(
          LoopPinAnimalSegment(
-            animals=tuple( after_last_pin_animals ),
+            animals=after_last_pin_animals,
             end_before_seconds=window_end_seconds,
             anchor_at_end=False,
          ) )

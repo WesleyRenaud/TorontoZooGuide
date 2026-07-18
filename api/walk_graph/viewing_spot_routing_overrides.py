@@ -17,7 +17,7 @@ def viewing_spot_routing_override_for(
       ( species, exhibit, enclosure_name ) )
 
 
-def bulk_schedule_visit_before_rules() -> tuple[ BulkScheduleVisitBeforeRule, ... ]:
+def bulk_schedule_visit_before_rules() -> list[ BulkScheduleVisitBeforeRule ]:
    rules: list[ BulkScheduleVisitBeforeRule ] = []
 
    for override in viewing_spot_routing_overrides():
@@ -29,20 +29,20 @@ def bulk_schedule_visit_before_rules() -> tuple[ BulkScheduleVisitBeforeRule, ..
             visit_first=override.viewing_spot,
             visit_before=override.visit_before ) )
 
-   return tuple( rules )
+   return rules
 
 
 @lru_cache( maxsize=1 )
-def viewing_spot_routing_overrides() -> tuple[ ViewingSpotRoutingOverride, ... ]:
+def viewing_spot_routing_overrides() -> list[ ViewingSpotRoutingOverride ]:
    if not VIEWING_SPOT_ROUTING_OVERRIDES_DIR.is_dir():
-      return ()
+      return []
 
    overrides: list[ ViewingSpotRoutingOverride ] = []
 
    for path in sorted( VIEWING_SPOT_ROUTING_OVERRIDES_DIR.glob( '*.json' ) ):
       overrides.append( viewing_spot_routing_override_from_json( path ) )
 
-   return tuple( overrides )
+   return overrides
 
 
 @lru_cache( maxsize=1 )

@@ -41,5 +41,5 @@ def test_bulk_schedule_animals_with_no_unscheduled_animals(
 
    assert not result.success
    assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
-   assert result.reasons == ()
+   assert result.reasons == []
    assert result.itinerary.animals == []

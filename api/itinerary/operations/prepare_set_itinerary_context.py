@@ -28,7 +28,7 @@ def prepare_set_itinerary_context(
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None,
       itinerary_controller_kwargs: dict[ str, Any ],
-      adjustments: tuple[ ItineraryAdjustment, ... ] = () ) -> SetItineraryContext:
+      adjustments: list[ ItineraryAdjustment ] | None = None ) -> SetItineraryContext:
    validated_itinerary = validate_itinerary_for_save(
       conn,
       save_input,
@@ -58,7 +58,7 @@ def prepare_set_itinerary_context(
          saved_itinerary,
          validated_itinerary )
       if saved_itinerary is not None
-      else ItineraryUnscheduleRequirements( talks=(), encounters=() ) )
+      else ItineraryUnscheduleRequirements( talks=[], encounters=[] ) )
 
    return SetItineraryContext(
       conn=conn,
@@ -69,4 +69,4 @@ def prepare_set_itinerary_context(
       saved_itinerary=saved_itinerary,
       unschedule_requirements=unschedule_requirements,
       itinerary_controller_kwargs=itinerary_controller_kwargs,
-      adjustments=adjustments )
+      adjustments=adjustments or [] )

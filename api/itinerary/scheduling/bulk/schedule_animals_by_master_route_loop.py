@@ -449,7 +449,7 @@ def _keep_partial_pinned_loop_progress(
    replacement = PreparedLoopScheduleUnit(
       unit=replace(
          prepared_unit.unit,
-         animals=tuple( unscheduled_animals ) ),
+         animals=unscheduled_animals ),
       duration_seconds=sum( durations ) )
 
    for index, candidate in enumerate( remaining_units ):

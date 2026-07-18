@@ -27,7 +27,7 @@ class StubControllerNamespace:
 class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, ZoomobileStubMixin, EventsStubMixin, LocationsStubMixin, UpdatesStubMixin, ItineraryStubMixin, ZooHoursStubMixin ):
    instances: list[ StubZooControllers ] = []
    default_success: bool = True
-   controller_attributes: tuple[ str, ... ] = (
+   controller_attributes: list[ str ] = [
       'animals',
       'exhibits',
       'pavilions',
@@ -47,7 +47,7 @@ class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, Zoomobil
       'updates',
       'itinerary',
       'zoo_hours',
-   )
+   ]
 
 
    def __init__( self, conn: Connection | None = None ) -> None:

@@ -109,7 +109,7 @@ def test_bulk_schedule_animals_keeps_master_route_loop_on_one_side_of_wild_encou
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.reasons == ()
+   assert result.reasons == []
 
    loop_animals = [
       animal for animal in result.itinerary.animals

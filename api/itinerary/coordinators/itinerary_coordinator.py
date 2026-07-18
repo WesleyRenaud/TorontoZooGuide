@@ -55,7 +55,7 @@ class ItineraryCoordinator():
    def _time_set_result(
          cls,
          conn: Connection,
-         suppressed_warnings: tuple[ ItineraryErrorType, ... ] = () ) -> ItineraryTimeSetResult:
+         suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> ItineraryTimeSetResult:
       saved_itinerary = fetch_saved_itinerary( conn )
 
       clear_schedules_outside_visit_window(
@@ -64,7 +64,7 @@ class ItineraryCoordinator():
          departure_time=saved_itinerary.departure_time )
 
       return ItineraryTimeSetResult(
-         suppressed_warnings=suppressed_warnings,
+         suppressed_warnings=suppressed_warnings or [],
          itinerary=cls._current_itinerary( conn ) )
 
 
@@ -277,7 +277,7 @@ class ItineraryCoordinator():
             suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
             status=ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-            suppressed_warnings=tuple( suppressed_warnings ) )
+            suppressed_warnings=suppressed_warnings )
 
       if short_visit_warning_is_required(
             conn,
@@ -287,13 +287,13 @@ class ItineraryCoordinator():
             suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
             status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-            suppressed_warnings=tuple( suppressed_warnings ) )
+            suppressed_warnings=suppressed_warnings )
 
       set_itinerary_arrival_time( conn, normalized_arrival_time )
 
       return cls._time_set_result(
          conn,
-         suppressed_warnings=tuple( suppressed_warnings ) )
+         suppressed_warnings=suppressed_warnings )
 
 
    @classmethod
@@ -333,13 +333,13 @@ class ItineraryCoordinator():
             suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
             status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-            suppressed_warnings=tuple( suppressed_warnings ) )
+            suppressed_warnings=suppressed_warnings )
 
       set_itinerary_departure_time( conn, normalized_departure_time )
 
       return cls._time_set_result(
          conn,
-         suppressed_warnings=tuple( suppressed_warnings ) )
+         suppressed_warnings=suppressed_warnings )
 
 
    @classmethod

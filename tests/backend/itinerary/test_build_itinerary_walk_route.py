@@ -98,9 +98,9 @@ def test_build_itinerary_walk_route_returns_empty_path_without_scheduled_stops(
 
    walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
 
-   assert walk_route.legs == ()
-   assert walk_route.points == ()
-   assert walk_route.stops == ()
+   assert walk_route.legs == []
+   assert walk_route.points == []
+   assert walk_route.stops == []
 
 
 def test_build_itinerary_walk_route_builds_polyline_for_scheduled_animal(

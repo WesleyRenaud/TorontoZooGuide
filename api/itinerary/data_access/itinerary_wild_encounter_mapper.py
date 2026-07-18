@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...shared.value_conversion import ValueConversion
 from ...types import Row
@@ -15,7 +13,7 @@ def map_itinerary_wild_encounter_record( row: Row ) -> ItineraryWildEncounterRec
       is_deleted=ValueConversion.as_boolean( row[ 'IS_DELETED' ] ) )
 
 
-def map_itinerary_wild_encounter_records( rows: Iterable[ Row ] ) -> list[ ItineraryWildEncounterRecord ]:
+def map_itinerary_wild_encounter_records( rows: list[ Row ] ) -> list[ ItineraryWildEncounterRecord ]:
    return [
       map_itinerary_wild_encounter_record( row )
       for row in rows

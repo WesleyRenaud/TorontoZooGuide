@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from .guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
 from ...types import Row
 
@@ -13,7 +11,7 @@ def map_guardians_talk_cancellation_record( row: Row ) -> GuardiansTalkCancellat
 
 
 def map_guardians_talk_cancellation_records(
-      rows: Iterable[ Row ] ) -> list[ GuardiansTalkCancellationRecord ]:
+      rows: list[ Row ] ) -> list[ GuardiansTalkCancellationRecord ]:
    return [
       map_guardians_talk_cancellation_record( row )
       for row in rows

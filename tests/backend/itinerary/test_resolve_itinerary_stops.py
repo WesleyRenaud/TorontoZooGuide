@@ -47,7 +47,7 @@ def test_resolve_itinerary_stops_includes_entrance_and_animal_walk_nodes(
 
    assert stops[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert stops[ 0 ].item_key == ENTRANCE_ITEM_KEY
-   assert stops[ 0 ].walk_node_ids == ( 'v-0001', )
+   assert stops[ 0 ].walk_node_ids == [ 'v-0001' ]
    assert stops[ 0 ].x_coord == 61.414
    assert stops[ 0 ].y_coord == 91.366
 
@@ -122,7 +122,7 @@ def test_partition_itinerary_schedule_windows_splits_around_fixed_encounter(
    assert windows[ 0 ].end_seconds == DateValues.time_value_in_seconds( '11:00 AM' )
    assert windows[ 0 ].anchor_stop is not None
    assert windows[ 0 ].anchor_stop.item_key == 'Guardians of White Rhinos'
-   assert windows[ 0 ].anchor_stop.walk_node_ids == ( 'v-0644', )
+   assert windows[ 0 ].anchor_stop.walk_node_ids == [ 'v-0644' ]
    assert windows[ 1 ].start_seconds == DateValues.time_value_in_seconds( '11:45 AM' )
    assert windows[ 1 ].end_seconds == day_end_seconds
    assert windows[ 1 ].anchor_stop is None

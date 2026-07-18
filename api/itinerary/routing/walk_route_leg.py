@@ -11,7 +11,7 @@ class WalkRouteLeg:
    to_item_key: str
    from_schedule_item_kind: ScheduleItemKind
    to_schedule_item_kind: ScheduleItemKind
-   node_ids: tuple[ str, ... ]
+   node_ids: list[ str ]
 
    def to_dict( self ) -> dict[ str, object ]:
       return {
@@ -19,5 +19,5 @@ class WalkRouteLeg:
          'to_item_key': self.to_item_key,
          'from_schedule_item_kind': self.from_schedule_item_kind.value,
          'to_schedule_item_kind': self.to_schedule_item_kind.value,
-         'node_ids': list( self.node_ids ),
+         'node_ids': self.node_ids,
       }

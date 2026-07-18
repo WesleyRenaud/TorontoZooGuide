@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
@@ -18,11 +18,11 @@ class SavedItinerary:
    date_value: DateInput | None
    arrival_time: ScheduleTimeKey
    departure_time: ScheduleTimeKey
-   animal_rows: tuple[ ItineraryAnimalRecord, ... ]
-   attraction_rows: tuple[ ItineraryAttractionRecord, ... ]
-   guardians_talk_rows: tuple[ ItineraryGuardiansTalkRecord, ... ]
-   wild_encounter_rows: tuple[ ItineraryWildEncounterRecord, ... ]
-   event_rows: tuple[ ItineraryEventRecord, ... ] = ()
+   animal_rows: list[ ItineraryAnimalRecord ]
+   attraction_rows: list[ ItineraryAttractionRecord ]
+   guardians_talk_rows: list[ ItineraryGuardiansTalkRecord ]
+   wild_encounter_rows: list[ ItineraryWildEncounterRecord ]
+   event_rows: list[ ItineraryEventRecord ] = field( default_factory=list )
 
 
    def is_empty( self ) -> bool:

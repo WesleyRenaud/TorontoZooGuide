@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from ...types import Row
 from .wild_encounter_record import WildEncounterRecord
 
@@ -17,7 +15,7 @@ def map_wild_encounter_record( row: Row ) -> WildEncounterRecord:
 
 
 
-def map_wild_encounter_records( rows: Iterable[ Row ] ) -> list[ WildEncounterRecord ]:
+def map_wild_encounter_records( rows: list[ Row ] ) -> list[ WildEncounterRecord ]:
    return [
       map_wild_encounter_record( row )
       for row in rows

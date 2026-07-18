@@ -21,7 +21,7 @@ CoveredAnimalPin = tuple[ ItineraryAnimalRecord, LoopSchedulePin ]
 
 @dataclass( frozen=True )
 class RestoredTalkCoveredAnimals:
-   animals: tuple[ ItineraryAnimalRecord, ... ]
+   animals: list[ ItineraryAnimalRecord ]
    replacement_end_seconds: int | None
 
 
@@ -160,7 +160,7 @@ def restore_covered_animals_after_talk_removed(
          replacement_end_seconds or talk_block.start_seconds )
 
    return RestoredTalkCoveredAnimals(
-      animals=tuple( restored ),
+      animals=restored,
       replacement_end_seconds=replacement_end_seconds )
 
 

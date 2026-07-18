@@ -93,10 +93,10 @@ def adjust_set_itinerary_for_restrictive_hours(
       *,
       old_visit_date: str | None ) -> tuple[
          ItinerarySaveInput,
-         tuple[ ItineraryAdjustment, ... ],
+         list[ ItineraryAdjustment ],
       ]:
    if old_visit_date == save_input.date.isoformat():
-      return ( save_input, () )
+      return ( save_input, [] )
 
    zoo_hours_record = fetch_zoo_hours_record(
       conn,
@@ -128,4 +128,4 @@ def adjust_set_itinerary_for_restrictive_hours(
          updated_input,
          departure_time=departure_adjustment.value )
 
-   return ( updated_input, tuple( adjustments ) )
+   return ( updated_input, adjustments )
