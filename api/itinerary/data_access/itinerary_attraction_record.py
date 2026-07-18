@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 from .itinerary_name_key import itinerary_name_key
 from ...types import ScheduleTimeKey
+from ...walk_graph.domain.master_route_stop_key import attraction_master_route_stop_key
+from ...walk_graph.domain.master_route_stop_key import AttractionMasterRouteStopKey
 
 
 @dataclass( frozen=True )
@@ -17,3 +19,7 @@ class ItineraryAttractionRecord:
 
    def name_key( self ) -> str:
       return itinerary_name_key( self.attraction )
+
+
+   def master_route_stop_key( self ) -> AttractionMasterRouteStopKey:
+      return attraction_master_route_stop_key( self.attraction )

@@ -28,9 +28,9 @@ def _animal_record(
 
 def _prepared_loop_unit(
       *,
-      animals: list[ ItineraryAnimalRecord ],
+      stops: list[ ItineraryAnimalRecord ],
       duration_seconds: int ) -> PreparedLoopScheduleUnit:
-   loop_unit = build_loop_schedule_units( [ animals ] )[ 0 ]
+   loop_unit = build_loop_schedule_units( [ stops ] )[ 0 ]
 
    return PreparedLoopScheduleUnit(
       unit=loop_unit,
@@ -59,7 +59,7 @@ def test_pack_loops_into_schedule_window_places_south_terminal_before_africa_anc
    assert window_end_seconds is not None
 
    australasia_unit = _prepared_loop_unit(
-      animals=[
+      stops=[
          _animal_record(
             species='Kookaburra',
             exhibit='Australasia Pavilion',
@@ -69,7 +69,7 @@ def test_pack_loops_into_schedule_window_places_south_terminal_before_africa_anc
       duration_seconds=120,
    )
    indo_unit = _prepared_loop_unit(
-      animals=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
+      stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
       duration_seconds=300,
    )
 
@@ -100,7 +100,7 @@ def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_a
    assert window_end_seconds is not None
 
    australasia_unit = _prepared_loop_unit(
-      animals=[
+      stops=[
          _animal_record(
             species='Kookaburra',
             exhibit='Australasia Pavilion',
@@ -110,7 +110,7 @@ def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_a
       duration_seconds=120,
    )
    indo_unit = _prepared_loop_unit(
-      animals=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
+      stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
       duration_seconds=300,
    )
 
@@ -140,7 +140,7 @@ def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anch
    assert window_end_seconds is not None
 
    australasia_unit = _prepared_loop_unit(
-      animals=[
+      stops=[
          _animal_record(
             species='Kookaburra',
             exhibit='Australasia Pavilion',
@@ -150,7 +150,7 @@ def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anch
       duration_seconds=120,
    )
    indo_unit = _prepared_loop_unit(
-      animals=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
+      stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
       duration_seconds=300,
    )
 
@@ -205,7 +205,7 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
 
    prepared_units = [
       _prepared_loop_unit(
-         animals=[
+         stops=[
             _animal_record(
                species='Golden Lion Tamarin',
                exhibit='Americas Pavilion',
@@ -215,15 +215,15 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
          duration_seconds=600,
       ),
       _prepared_loop_unit(
-         animals=[ _animal_record( species='Highland Cattle', exhibit='Eurasia Wilds' ) ],
+         stops=[ _animal_record( species='Highland Cattle', exhibit='Eurasia Wilds' ) ],
          duration_seconds=600,
       ),
       _prepared_loop_unit(
-         animals=[ _animal_record( species='Amur Tiger', exhibit='Eurasia Wilds' ) ],
+         stops=[ _animal_record( species='Amur Tiger', exhibit='Eurasia Wilds' ) ],
          duration_seconds=300,
       ),
       _prepared_loop_unit(
-         animals=[
+         stops=[
             _animal_record(
                species='Capybara',
                exhibit='Americas Outdoor Mayan Temple Ruins',
@@ -261,7 +261,7 @@ def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approa
    assert window_end_seconds is not None
 
    temple_unit = _prepared_loop_unit(
-      animals=[
+      stops=[
          _animal_record(
             species='Capybara',
             exhibit='Americas Outdoor Mayan Temple Ruins',
@@ -270,7 +270,7 @@ def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approa
       duration_seconds=600,
    )
    eurasia_unit = _prepared_loop_unit(
-      animals=[
+      stops=[
          _animal_record(
             species='Highland Cattle',
             exhibit='Eurasia Wilds',
@@ -299,7 +299,7 @@ def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approa
    assert packed_units[ 0 ].unit.loop_id == 'eurasia'
    assert packed_units[ 0 ].unit.entry_walk_node_id == 'v-0955'
    assert packed_units[ 0 ].unit.exit_walk_node_id == 'v-1018'
-   assert [ animal.species for animal in packed_units[ 0 ].unit.animals ] == [
+   assert [ animal.species for animal in packed_units[ 0 ].unit.stops ] == [
       'West Caucasian Tur',
       'Highland Cattle',
    ]

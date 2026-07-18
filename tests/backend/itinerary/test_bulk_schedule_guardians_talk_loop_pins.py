@@ -16,7 +16,7 @@ from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_iti
 from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
-from api.itinerary.scheduling.bulk.schedule_loop_unit_with_pins import viewing_spot_index_for_animal_in_loop
+from api.itinerary.scheduling.bulk.loop_pin_segments import viewing_spot_index_for_stop_in_loop
 from api.models import Animal
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -31,7 +31,7 @@ AFRICA_SAVANNA = 'Africa Savanna'
 def _animal_viewing_spot_index(
       loop_id: str,
       animal: Animal ) -> int | None:
-   return viewing_spot_index_for_animal_in_loop(
+   return viewing_spot_index_for_stop_in_loop(
       loop_id,
       ItineraryAnimalRecord(
          species=animal.species,

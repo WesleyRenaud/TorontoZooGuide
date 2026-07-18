@@ -108,7 +108,7 @@ def _viewing_spot_index(
    master_route_loop = default_master_route_loop_by_id()[ loop_id ]
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
-      # TODO: Handle attraction stops when enclosure pin lookup supports them.
+      # Guardians-talk enclosure pins resolve against animal stops only.
       if not is_animal_route_stop( viewing_spot ):
          continue
 

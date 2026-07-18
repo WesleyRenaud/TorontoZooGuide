@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from .loop_schedule_stop import LoopScheduleStop
 
 
 class LoopUnitSchedulePersistError( Exception ):
-   def __init__( self, animals: list[ ItineraryAnimalRecord ] ) -> None:
-      self.animals = animals
+   def __init__( self, stops: list[ LoopScheduleStop ] ) -> None:
+      self.stops = stops
       super().__init__()

@@ -4,8 +4,10 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LI
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
+from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from api.itinerary.validation.itinerary_schedule_time_order_validation import departure_follows_arrival
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -150,12 +152,16 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       ( 'African Lion', None, None ),
       ( 'Cheetah', None, None ),
    ]
-   assert [
-      ( attraction.name, attraction.start_time, attraction.end_time )
+   carousel = next(
+      attraction
       for attraction in itinerary.attractions
-   ] == [
-      ( CAROUSEL, None, None ),
-   ]
+      if attraction.name == CAROUSEL )
+   assert has_itinerary_schedule_times(
+      carousel.start_time,
+      carousel.end_time )
+   assert not DateValues.time_value_is_before(
+      carousel.start_time,
+      '10:15 AM' )
    assert [
       ( encounter.name, encounter.start_time, encounter.end_time )
       for encounter in itinerary.wild_encounters

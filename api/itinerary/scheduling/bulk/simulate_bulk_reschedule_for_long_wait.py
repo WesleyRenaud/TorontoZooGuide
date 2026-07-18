@@ -17,6 +17,7 @@ from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import time_block_from_schedule_times
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...data_access.saved_itinerary import SavedItinerary
@@ -308,10 +309,18 @@ def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:
       cleared_animal.covered_by_talk = False
       cleared_animals.append( cleared_animal )
 
+   cleared_attractions = []
+
+   for attraction in itinerary.attractions:
+      cleared_attraction = copy( attraction )
+      cleared_attraction.start_time = None
+      cleared_attraction.end_time = None
+      cleared_attractions.append( cleared_attraction )
+
    return build_itinerary(
       date=itinerary.date,
       animals=cleared_animals,
-      attractions=list( itinerary.attractions ),
+      attractions=cleared_attractions,
       guardians_talks=list( itinerary.guardians_talks ),
       wild_encounters=list( itinerary.wild_encounters ),
       events=list( itinerary.events ),
@@ -324,8 +333,6 @@ def _build_itinerary_from_proposed_items(
       *,
       visit_date: date,
       itinerary_context: dict[ str, Any ] ) -> Itinerary:
-   from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
-
    animal_rows = [
       ItineraryAnimalRecord(
          species=animal.species,
@@ -402,13 +409,27 @@ def _apply_slots_to_itinerary_animals(
       viewing_spot_key( animal ): animal
       for animal in itinerary.animals
    }
+   attractions_by_name = {
+      attraction.name: attraction
+      for attraction in itinerary.attractions
+   }
 
-   for animal_row, start_time, end_time in slots:
+   for stop, start_time, end_time in slots:
+      if isinstance( stop, ItineraryAttractionRecord ):
+         attraction = attractions_by_name.get( stop.attraction )
+
+         if attraction is None:
+            continue
+
+         attraction.start_time = start_time
+         attraction.end_time = end_time
+         continue
+
       animal = animals_by_spot.get(
          viewing_spot_key_from_values(
-            animal_row.species,
-            animal_row.exhibit,
-            animal_row.enclosure_name ) )
+            stop.species,
+            stop.exhibit,
+            stop.enclosure_name ) )
 
       if animal is None:
          continue

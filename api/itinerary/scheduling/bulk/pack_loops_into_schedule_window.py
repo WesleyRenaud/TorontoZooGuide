@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import loop_schedule_unit_orientations
 from .loop_schedule_unit import loop_schedule_unit_reversed
 from .loop_schedule_unit import LoopScheduleUnit
@@ -29,7 +30,7 @@ def prepare_loop_schedule_units(
    prepared_units: list[ PreparedLoopScheduleUnit ] = []
 
    for unit in units:
-      duration_seconds = _total_viewing_duration_seconds( conn, unit.animals )
+      duration_seconds = _total_viewing_duration_seconds( conn, unit.stops )
 
       if duration_seconds is None:
          return None
@@ -596,7 +597,7 @@ def _anchor_walk_node_id(
 
 def _total_viewing_duration_seconds(
       conn: Connection,
-      animals: list[ ItineraryAnimalRecord ] ) -> int | None:
+      animals: list[ LoopScheduleStop ] ) -> int | None:
    durations = fetch_viewing_durations( conn, animals )
 
    if durations is None:

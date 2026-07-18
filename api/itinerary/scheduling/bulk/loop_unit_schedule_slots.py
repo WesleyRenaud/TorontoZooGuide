@@ -5,16 +5,19 @@ from dataclasses import field
 
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
-from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
+from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
+from .loop_schedule_stop import LoopScheduleStop
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ....types import ScheduleTimeKey
 
 
 LoopScheduleSlot = tuple[
-   ItineraryAnimalRecord,
+   LoopScheduleStop,
    ScheduleTimeKey,
    ScheduleTimeKey,
 ]
@@ -30,37 +33,25 @@ class LoopScheduleSlotSink:
          self,
          conn: Connection,
          blockers: list[ TimeBlock ],
-         animal_slots: list[ LoopScheduleSlot ] ) -> bool:
-      self.slots.extend( animal_slots )
+         stop_slots: list[ LoopScheduleSlot ] ) -> bool:
+      self.slots.extend( stop_slots )
 
       if self.persist and not _persist_loop_group_slots(
             conn,
-            animal_slots ):
+            stop_slots ):
          return False
 
-      _append_slots_to_blockers( blockers, animal_slots )
+      _append_slots_to_blockers( blockers, stop_slots )
       return True
 
 
 def fetch_viewing_durations(
       conn: Connection,
-      animals: list[ ItineraryAnimalRecord ] ) -> list[ int ] | None:
+      stops: list[ LoopScheduleStop ] ) -> list[ int ] | None:
    durations: list[ int ] = []
 
-   for animal_row in animals:
-      stored_block = time_block_from_schedule_times(
-         animal_row.start_time,
-         animal_row.end_time )
-
-      if stored_block is not None:
-         duration_seconds = (
-            stored_block.end_seconds - stored_block.start_seconds )
-      else:
-         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
-            conn,
-            animal_row.species,
-            animal_row.exhibit,
-            animal_row.enclosure_name )
+   for stop in stops:
+      duration_seconds = duration_seconds_for_loop_schedule_stop( conn, stop )
 
       if duration_seconds is None:
          return None
@@ -70,15 +61,43 @@ def fetch_viewing_durations(
    return durations
 
 
+def duration_seconds_for_loop_schedule_stop(
+      conn: Connection,
+      stop: LoopScheduleStop ) -> int | None:
+   stored_block = time_block_from_schedule_times(
+      stop.start_time,
+      stop.end_time )
+
+   if stored_block is not None:
+      return stored_block.end_seconds - stored_block.start_seconds
+
+   return default_duration_seconds_for_loop_schedule_stop( conn, stop )
+
+
+def default_duration_seconds_for_loop_schedule_stop(
+      conn: Connection,
+      stop: LoopScheduleStop ) -> int | None:
+   if isinstance( stop, ItineraryAttractionRecord ):
+      return fetch_attraction_default_duration_seconds(
+         conn,
+         stop.attraction )
+
+   return fetch_enclosure_viewing_default_duration_seconds(
+      conn,
+      stop.species,
+      stop.exhibit,
+      stop.enclosure_name )
+
+
 def assign_contiguous_slots(
-      animals: list[ ItineraryAnimalRecord ],
+      stops: list[ LoopScheduleStop ],
       durations: list[ int ],
       *,
       start_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ]:
    slots: list[ LoopScheduleSlot ] = []
    slot_cursor_seconds = start_seconds
 
-   for animal_row, duration_seconds in zip( animals, durations ):
+   for stop, duration_seconds in zip( stops, durations ):
       start_time = DateValues.schedule_time_key_from_seconds(
          slot_cursor_seconds )
       end_seconds = slot_cursor_seconds + duration_seconds
@@ -87,14 +106,14 @@ def assign_contiguous_slots(
       if start_time is None or end_time is None:
          return [], start_seconds
 
-      slots.append( ( animal_row, start_time, end_time ) )
+      slots.append( ( stop, start_time, end_time ) )
       slot_cursor_seconds = end_seconds
 
    return slots, slot_cursor_seconds
 
 
 def assign_contiguous_slots_ending_by(
-      animals: list[ ItineraryAnimalRecord ],
+      stops: list[ LoopScheduleStop ],
       durations: list[ int ],
       *,
       end_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ] | None:
@@ -104,27 +123,27 @@ def assign_contiguous_slots_ending_by(
    if start_seconds < 0:
       return None
 
-   animal_slots, segment_end_cursor_seconds = assign_contiguous_slots(
-      animals,
+   stop_slots, segment_end_cursor_seconds = assign_contiguous_slots(
+      stops,
       durations,
       start_seconds=start_seconds )
 
    if segment_end_cursor_seconds > end_seconds:
       return None
 
-   return animal_slots, segment_end_cursor_seconds
+   return stop_slots, segment_end_cursor_seconds
 
 
 def save_loop_slots(
       conn: Connection,
       blockers: list[ TimeBlock ],
-      animal_slots: list[ LoopScheduleSlot ],
+      stop_slots: list[ LoopScheduleSlot ],
       *,
       slot_sink: LoopScheduleSlotSink | None = None ) -> bool:
    if slot_sink is None:
       slot_sink = LoopScheduleSlotSink()
 
-   return slot_sink.save( conn, blockers, animal_slots )
+   return slot_sink.save( conn, blockers, stop_slots )
 
 
 def _append_slots_to_blockers(
@@ -145,14 +164,23 @@ def _persist_loop_group_slots(
    cur = conn.cursor()
 
    try:
-      for animal_row, start_time, end_time in scheduled_slots:
-         if not update_itinerary_animal_schedule(
+      for stop, start_time, end_time in scheduled_slots:
+         if isinstance( stop, ItineraryAttractionRecord ):
+            persisted = update_itinerary_attraction_schedule(
                cur,
-               species=animal_row.species,
-               exhibit=animal_row.exhibit,
-               enclosure_name=animal_row.enclosure_name,
+               name=stop.attraction,
                start_time=start_time,
-               end_time=end_time ):
+               end_time=end_time )
+         else:
+            persisted = update_itinerary_animal_schedule(
+               cur,
+               species=stop.species,
+               exhibit=stop.exhibit,
+               enclosure_name=stop.enclosure_name,
+               start_time=start_time,
+               end_time=end_time )
+
+         if not persisted:
             conn.rollback()
             return False
 

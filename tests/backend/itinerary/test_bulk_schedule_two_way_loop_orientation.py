@@ -167,7 +167,7 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
       'tundra_trek_mayan_temple',
       'eurasia',
    ]
-   assert [ animal.species for animal in packed_units[ 1 ].unit.animals ] == [
+   assert [ animal.species for animal in packed_units[ 1 ].unit.stops ] == [
       'West Caucasian Tur',
       'Highland Cattle',
    ]
