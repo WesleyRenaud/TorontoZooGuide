@@ -93,7 +93,7 @@ test('detects stale stored itinerary dates', () => {
    assert.equal(isStoredItineraryStale(), false);
 });
 
-test('syncItineraryAnimalDraftFromItinerary mirrors animals and exhibits', () => {
+test('syncItineraryAnimalDraftFromItinerary mirrors animals without inventing exhibit selection', () => {
    syncItineraryAnimalDraftFromItinerary({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
@@ -102,10 +102,28 @@ test('syncItineraryAnimalDraftFromItinerary mirrors animals and exhibits', () =>
    });
 
    const storedAnimals = JSON.parse(localStorage.getItem(ANIMALS_KEY));
-   const storedExhibits = JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY));
 
    assert.equal(storedAnimals.length, 2);
-   assert.deepEqual(storedExhibits.sort(), ['Africa Savanna', 'Eurasia Wilds']);
+   assert.equal(localStorage.getItem(SELECTED_EXHIBITS_KEY), null);
+});
+
+test('syncItineraryAnimalDraftFromItinerary preserves existing exhibit selection', () => {
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   syncItineraryAnimalDraftFromItinerary({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'Cheetah', exhibit: 'Africa Savanna' },
+      ],
+   });
+
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      ['Africa Savanna']
+   );
 });
 
 test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty', () => {

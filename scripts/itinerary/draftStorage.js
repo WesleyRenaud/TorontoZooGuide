@@ -12,6 +12,7 @@ import {
 import {
    addRemovedAnimalKey,
    clearRemovedAnimalKeys,
+   loadSelectedNames,
    saveSelectedNames,
 } from './selectors/regionSelector/regionStorage.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
@@ -173,7 +174,14 @@ function writeItineraryAnimalDraft(animals = []) {
       .filter(Boolean);
 
    saveArray(ANIMALS_KEY, draftAnimals);
-   saveSelectedNames(SELECTED_EXHIBITS_KEY, getExhibitNamesFromAnimals(draftAnimals));
+}
+
+function pruneSelectedExhibitsWithoutAnimals(animals = []) {
+   const presentExhibits = new Set(getExhibitNamesFromAnimals(animals));
+   const nextSelectedExhibits = loadSelectedNames(SELECTED_EXHIBITS_KEY)
+      .filter((exhibitName) => presentExhibits.has(exhibitName));
+
+   saveSelectedNames(SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
 }
 
 export function syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
@@ -199,4 +207,5 @@ export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
       .filter((animal) => animal && buildSelectedAnimalKey(animal) !== removeKey);
 
    writeItineraryAnimalDraft(remainingAnimals);
+   pruneSelectedExhibitsWithoutAnimals(remainingAnimals);
 }
