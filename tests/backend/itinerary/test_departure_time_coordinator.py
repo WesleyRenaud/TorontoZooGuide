@@ -32,7 +32,7 @@ def test_set_itinerary_departure_time_must_be_within_zoo_operating_hours(
    assert itinerary.departure_time == '6:00 PM'
 
 
-def test_set_itinerary_departure_time_requires_opening_not_early_admission(
+def test_set_itinerary_departure_time_allows_early_admission_window(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -49,6 +49,12 @@ def test_set_itinerary_departure_time_requires_opening_not_early_admission(
 
    itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.departure_time == '7:00 PM'
+
+   assert ItineraryCoordinator.set_departure_time(
+      '09:15',
+      confirming_short_visit=True ).success
+   itinerary = ItineraryCoordinator.get_itinerary()
+   assert itinerary.departure_time == '9:15 AM'
 
    assert ItineraryCoordinator.set_departure_time(
       '09:30',

@@ -45,6 +45,33 @@ def test_departure_time_is_valid_for_zoo_hours(
       arrival_time=None ) == ItineraryErrorType.SUCCESS
 
 
+def test_departure_time_allows_early_admission_window(
+      db: DbControllers ) -> None:
+   conn = db.conn
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   zoo_hours_record = fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
+
+   assert departure_time_is_valid_for_zoo_hours(
+      '09:08',
+      zoo_hours_record,
+      arrival_time='09:00' ) == ItineraryErrorType.SUCCESS
+   assert departure_time_is_valid_for_zoo_hours(
+      '08:59',
+      zoo_hours_record,
+      arrival_time='09:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+
+
 def test_set_departure_time_unschedules_items_after_departure(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
