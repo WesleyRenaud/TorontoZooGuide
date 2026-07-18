@@ -12,7 +12,7 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('hasUnsavedChanges ignores visit date-only edits', () => {
+test('hasUnsavedChanges is true after selecting only a visit date', () => {
    const wizard = createItineraryWizardState({
       date: '',
       animals: [],
@@ -25,7 +25,7 @@ test('hasUnsavedChanges ignores visit date-only edits', () => {
 
    wizard.applyValidationResult('2026-06-15', null);
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
 test('hasUnsavedChanges is true when selections differ from initial', () => {
@@ -78,6 +78,20 @@ test('hasUnsavedChanges ignores revisiting the same visit date on a saved itiner
    wizard.applyValidationResult('2026-06-15', null);
 
    assert.equal(wizard.hasUnsavedChanges(), false);
+});
+
+test('hasUnsavedChanges is true when only the visit date changes on a saved itinerary', () => {
+   const wizard = createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'Red Panda', exhibit: 'Eurasia Wilds' }],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.applyValidationResult('2026-06-20', null);
+
+   assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
 test('hasUnsavedChanges stays false after revisiting date and animals without edits', () => {

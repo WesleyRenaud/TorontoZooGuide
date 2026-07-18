@@ -299,7 +299,7 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date', 'regions']);
    });
 
-   test('regions finish skips save when only the visit date changed', async () => {
+   test('regions finish saves when only the visit date changed', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let saveHandler = null;
       let regionsFinishHandler = null;
@@ -328,8 +328,9 @@ test.describe('openItineraryWizard lifecycle', () => {
                   },
                },
             ],
-            finalizeWizard: async (draft, _mountEl, options) => {
+            finalizeWizard: async (draft, mountEl, options) => {
                finishCalls.push({ draft, options });
+               mountEl.replaceChildren();
                return draft;
             },
             showConfirmPopup: () => {},
@@ -344,7 +345,8 @@ test.describe('openItineraryWizard lifecycle', () => {
          setTimeout(resolve, 0);
       });
 
-      assert.equal(finishCalls.length, 0);
+      assert.equal(finishCalls.length, 1);
+      assert.equal(finishCalls[0].draft.date, '2026-06-15');
       assert.equal(mountEl.children.length, 0);
    });
 
@@ -489,7 +491,7 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.equal(mountEl.children.length, 0);
    });
 
-   test('date finish skips save when only the visit date changed', async () => {
+   test('date finish saves when only the visit date changed', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;
       const finishCalls = [];
@@ -507,8 +509,9 @@ test.describe('openItineraryWizard lifecycle', () => {
                return { show() {} };
             },
             selectionStepConfigs: [],
-            finalizeWizard: async (draft, _mountEl, options) => {
+            finalizeWizard: async (draft, mountEl, options) => {
                finishCalls.push({ draft, options });
+               mountEl.replaceChildren();
                return draft;
             },
             showConfirmPopup: () => {},
@@ -518,7 +521,8 @@ test.describe('openItineraryWizard lifecycle', () => {
 
       await finishHandler?.('2026-06-15');
 
-      assert.equal(finishCalls.length, 0);
+      assert.equal(finishCalls.length, 1);
+      assert.equal(finishCalls[0].draft.date, '2026-06-15');
       assert.equal(mountEl.children.length, 0);
    });
 });

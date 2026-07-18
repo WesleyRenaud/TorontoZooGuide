@@ -198,7 +198,17 @@ export async function openItineraryWizard({
    }
 
    async function handleClose() {
-      await syncActiveStepDraft();
+      if (isWizardDateStep(activeStepKey)) {
+         // Only sync the picker when a visit date was already committed
+         // (Next/Finish). Syncing the default earliest date into an empty
+         // draft would look like an unsaved change on open → close.
+         if (wizardState.date) {
+            syncDateStepDraft();
+         }
+      }
+      else {
+         await syncSelectionStepDraft(activeStepKey);
+      }
 
       if (!wizard.hasUnsavedChanges()) {
          // Clear the overlay only. Remounting the day planner jumps scroll;

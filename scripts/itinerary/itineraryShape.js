@@ -200,13 +200,6 @@ function areItineraryDraftSaveItemSelectionsEqual(
    );
 }
 
-export function areItineraryDraftItemSelectionsEqual(left, right) {
-   return areItineraryDraftSaveItemSelectionsEqual(
-      toSetItineraryPayload(left),
-      toSetItineraryPayload(right),
-   );
-}
-
 export function areItineraryDraftsSemanticallyEqual(left, right) {
    const leftSave = toSetItineraryPayload(left);
    const rightSave = toSetItineraryPayload(right);
