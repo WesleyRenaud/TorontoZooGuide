@@ -220,3 +220,62 @@ def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_
       for animal in result.itinerary.animals
       if has_itinerary_schedule_times( animal.start_time, animal.end_time )
    } == { 'African Lion', 'African Penguin' }
+
+
+def test_bulk_schedule_animals_preserves_custom_animal_duration(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   scheduled = schedule_itinerary_item(
+      item_type='animals',
+      key=LION_KEY,
+      start_time='10:00',
+      duration_minutes=20 )
+
+   assert scheduled.success
+   lion_before = next(
+      animal for animal in scheduled.itinerary.animals
+      if animal.species == 'African Lion' )
+   custom_duration_seconds = (
+      DateValues.time_value_in_seconds( lion_before.end_time )
+      - DateValues.time_value_in_seconds( lion_before.start_time )
+   )
+   assert custom_duration_seconds == 20 * 60
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+
+   lion = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Lion' )
+   penguin = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Penguin' )
+
+   lion_duration_seconds = (
+      DateValues.time_value_in_seconds( lion.end_time )
+      - DateValues.time_value_in_seconds( lion.start_time )
+   )
+   penguin_duration_seconds = (
+      DateValues.time_value_in_seconds( penguin.end_time )
+      - DateValues.time_value_in_seconds( penguin.start_time )
+   )
+
+   assert lion_duration_seconds == custom_duration_seconds
+   # Unscheduled companion still gets the enclosure default (5 minutes).
+   assert penguin_duration_seconds == 5 * 60
