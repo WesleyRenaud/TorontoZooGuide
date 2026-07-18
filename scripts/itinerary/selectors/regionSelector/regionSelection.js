@@ -155,6 +155,27 @@ export function getExhibitNamesFromAnimals(animals = []) {
    )];
 }
 
+export function draftAnimalsCoverCatalogAnimals(
+   draftAnimals = [],
+   catalogAnimals = []
+) {
+   if (!catalogAnimals.length) {
+      return true;
+   }
+
+   const draftKeys = new Set(
+      draftAnimals
+         .map((animal) => buildSelectedAnimalKey(normalizeSelectedAnimal(animal)))
+         .filter(Boolean)
+   );
+
+   return catalogAnimals.every((animal) => {
+      const key = buildSelectedAnimalKey(normalizeSelectedAnimal(animal));
+
+      return Boolean(key) && draftKeys.has(key);
+   });
+}
+
 export function omitRemovedAnimals(animals = [], removedKeys = new Set()) {
    return animals.filter((animal) => {
       const key = buildSelectedAnimalKey(animal);

@@ -6,6 +6,7 @@ import {
 } from '../../draftStorage.js';
 import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
 import {
+   draftAnimalsCoverCatalogAnimals,
    getRegionExhibits,
    isRegionFullySelected,
    makeSelectedAnimal,
@@ -89,16 +90,12 @@ export function createRegionSelectorState() {
       return regions.slice();
    }
 
-   function hydrateSelectionsFromStorage() {
+   async function hydrateSelectionsFromStorage() {
       selectedExhibitNames.clear();
       selectedRegionNames.clear();
       bulkManagedExhibitNames.clear();
 
       const storedExhibits = new Set(loadSelectedNames(SELECTED_EXHIBITS_KEY));
-
-      storedExhibits.forEach((exhibitName) => {
-         markExhibitBulkManaged(exhibitName);
-      });
 
       regions.forEach((region) => {
          const exhibits = getRegionExhibits(region);
@@ -110,8 +107,44 @@ export function createRegionSelectorState() {
          });
       });
 
+      await pruneIncompleteSelectedExhibits();
+
+      selectedExhibitNames.forEach((exhibitName) => {
+         markExhibitBulkManaged(exhibitName);
+      });
+
       syncAllRegionSelections();
       persistSelectionState();
+   }
+
+   async function pruneIncompleteSelectedExhibits() {
+      if (!selectedExhibitNames.size) {
+         return;
+      }
+
+      const selectedExhibits = Array.from(selectedExhibitNames);
+      const draftAnimals = loadArray(ANIMALS_KEY)
+         .map(normalizeSelectedAnimal)
+         .filter(Boolean);
+      const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+      const catalogAnimals = await getAnimalsByExhibit(selectedExhibits, {
+         month,
+         day,
+         temp,
+      });
+
+      for (const exhibitName of selectedExhibits) {
+         const exhibitKey = normalizeAnimalIdentitySearchFields({
+            exhibit: exhibitName,
+         }).exhibit;
+         const catalogForExhibit = catalogAnimals.filter((animal) => (
+            normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
+         ));
+
+         if (!draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
+            selectedExhibitNames.delete(exhibitName);
+         }
+      }
    }
 
    function toggleRegion(regionName) {

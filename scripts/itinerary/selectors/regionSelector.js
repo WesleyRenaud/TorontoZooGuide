@@ -156,7 +156,7 @@ export function createItineraryRegionSelectorController({
    async function refreshRegions() {
       const context = await getItineraryDateSearchContext({ includeTemp: false });
       state.setRegions(await getExhibitsByRegion(context));
-      state.hydrateSelectionsFromStorage();
+      await state.hydrateSelectionsFromStorage();
       renderRegions();
    }
 
