@@ -5,6 +5,7 @@ from ..data_access.update import fetch_updates
 from ..data_access.update import insert_update
 from ..data_access.update import update_end_date
 from ..domain.update import filter_updates_started_on_or_before
+from ..domain.update_sort import sort_updates_for_display
 from ...models import Update
 from ..operations.update_creation import build_update_create_input
 from ..operations.update_editing import build_update_edit_input
@@ -29,16 +30,18 @@ class UpdateCoordinator():
 
       updates = fetch_updates( get_connection(), target_date )
 
-      return filter_updates_started_on_or_before(
-         updates,
-         target_date )
+      return sort_updates_for_display(
+         filter_updates_started_on_or_before(
+            updates,
+            target_date ) )
 
 
    @classmethod
    def get_unexpired_updates( cls ) -> list[ Update ]:
       as_of_date = DateValues.today_date_key()
 
-      return fetch_updates( get_connection(), as_of_date )
+      return sort_updates_for_display(
+         fetch_updates( get_connection(), as_of_date ) )
 
 
    @classmethod
