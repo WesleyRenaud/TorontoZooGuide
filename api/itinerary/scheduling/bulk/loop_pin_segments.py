@@ -5,6 +5,7 @@ from typing import Union
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...routing.loop_schedule_pin import LoopSchedulePin
+from ....walk_graph.domain.master_route_stop import is_animal_route_stop
 from ....walk_graph.master_route import default_master_route_loop_by_id
 from ....walk_graph.master_route import viewing_spot_key_from_reference
 
@@ -136,7 +137,10 @@ def viewing_spot_index_for_animal_in_loop(
    matching_indexes = [
       index
       for index, viewing_spot in enumerate( master_route_loop.viewing_spots )
-      if viewing_spot_key_from_reference( viewing_spot ) == animal_key
+      if (
+         # TODO: Resolve attraction stops for loop pins once attractions are schedulable.
+         is_animal_route_stop( viewing_spot )
+         and viewing_spot_key_from_reference( viewing_spot ) == animal_key )
    ]
 
    if not matching_indexes:

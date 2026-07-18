@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .viewing_spot_reference import viewing_spot_reference_from_json
-from .viewing_spot_reference import ViewingSpotReference
+from .master_route_stop import master_route_stop_from_json
+from .master_route_stop import MasterRouteStop
 
 
 MasterRouteTraversal = str
@@ -22,7 +22,7 @@ class MasterRouteLoop:
    loop_id: str
    name: str
    traversal: MasterRouteTraversal
-   viewing_spots: list[ ViewingSpotReference ]
+   viewing_spots: list[ MasterRouteStop ]
 
 
 def master_route_loop_from_json(
@@ -32,6 +32,6 @@ def master_route_loop_from_json(
       name=str( payload[ 'name' ] ),
       traversal=str( payload[ 'traversal' ] ),
       viewing_spots=[
-         viewing_spot_reference_from_json( row )
-         for row in payload[ 'viewing_spots' ]
+         master_route_stop_from_json( row )
+         for row in payload.get( 'viewing_spots', [] )
       ] )

@@ -6,6 +6,7 @@ from ....animals.search.animals_matching_query import viewing_spot_key_from_valu
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
+from ....walk_graph.domain.master_route_stop import is_animal_route_stop
 from ....walk_graph.master_route import default_loop_id_by_viewing_spot_key
 from ....walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
 from ....walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
@@ -123,6 +124,8 @@ def _animals_in_master_route_loop_order(
          viewing_spot.exhibit,
          viewing_spot.name ): loop_index
       for loop_index, viewing_spot in enumerate( master_route_loop.viewing_spots )
+      # TODO: Pack attraction stops into loop units once attractions are schedulable.
+      if is_animal_route_stop( viewing_spot )
    }
    animals_in_loop = [
       animal_row

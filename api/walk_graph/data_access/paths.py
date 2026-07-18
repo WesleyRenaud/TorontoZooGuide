@@ -6,7 +6,6 @@ from pathlib import Path
 API_ROOT = Path( __file__ ).resolve().parents[ 2 ]
 SEED_DATA_DIR = API_ROOT / 'seed' / 'data'
 WALK_GRAPH_PATH = SEED_DATA_DIR / 'walk_graph.json'
-VIEWING_SPOT_ROUTING_OVERRIDES_DIR = SEED_DATA_DIR / 'viewing_spot_routing_overrides'
 ENCLOSURE_VIEWING_PATH = SEED_DATA_DIR / 'enclosure_viewing.json'
 DEFAULT_MASTER_ROUTE_PATH = SEED_DATA_DIR / 'master_route' / 'default.json'
 ENCLOSURE_VIEWING_WALK_NODE_PATH = SEED_DATA_DIR / 'enclosure_viewing_walk_node.json'

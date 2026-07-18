@@ -7,6 +7,7 @@ from .data_access.paths import DEFAULT_MASTER_ROUTE_PATH
 from .domain.master_route import master_route_from_json
 from .domain.master_route import MasterRoute
 from .domain.master_route_loop import MasterRouteLoop
+from .domain.master_route_stop import is_animal_route_stop
 from .domain.viewing_spot_name_key import ViewingSpotNameKey
 from .domain.viewing_spot_reference import ViewingSpotReference
 
@@ -17,8 +18,12 @@ def master_route_index_by_viewing_spot_key(
    route_index = 0
 
    for loop in master_route.loops:
-      for viewing_spot in loop.viewing_spots:
-         viewing_spot_key = viewing_spot_key_from_reference( viewing_spot )
+      for stop in loop.viewing_spots:
+         # TODO: Include attraction stops once master-route indexing supports them.
+         if not is_animal_route_stop( stop ):
+            continue
+
+         viewing_spot_key = viewing_spot_key_from_reference( stop )
 
          if viewing_spot_key in indexes:
             continue
@@ -34,8 +39,12 @@ def loop_index_by_viewing_spot_key(
    indexes: dict[ ViewingSpotNameKey, int ] = {}
 
    for loop_index, loop in enumerate( master_route.loops ):
-      for viewing_spot in loop.viewing_spots:
-         viewing_spot_key = viewing_spot_key_from_reference( viewing_spot )
+      for stop in loop.viewing_spots:
+         # TODO: Include attraction stops once master-route indexing supports them.
+         if not is_animal_route_stop( stop ):
+            continue
+
+         viewing_spot_key = viewing_spot_key_from_reference( stop )
          indexes.setdefault( viewing_spot_key, loop_index )
 
    return indexes
@@ -67,8 +76,12 @@ def loop_id_by_viewing_spot_key(
    indexes: dict[ ViewingSpotNameKey, str ] = {}
 
    for loop in master_route.loops:
-      for viewing_spot in loop.viewing_spots:
-         viewing_spot_key = viewing_spot_key_from_reference( viewing_spot )
+      for stop in loop.viewing_spots:
+         # TODO: Include attraction stops once master-route indexing supports them.
+         if not is_animal_route_stop( stop ):
+            continue
+
+         viewing_spot_key = viewing_spot_key_from_reference( stop )
          indexes.setdefault( viewing_spot_key, loop.loop_id )
 
    return indexes
