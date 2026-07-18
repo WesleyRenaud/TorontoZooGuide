@@ -48,12 +48,16 @@ test('buildScheduleItemRequest includes optional schedule times', () => {
          durationMinutes: 20,
       }
    );
-   assert.equal(
+   assert.deepEqual(
       buildScheduleItemRequest('animals', {
          species: 'Tiger',
          exhibit: 'Savanna',
          scheduleItemKind: 'animals',
       }, [], { durationMinutes: 20 }),
-      null
+      {
+         itemType: 'animals',
+         key: 'Tiger||Savanna',
+         durationMinutes: 20,
+      }
    );
 });

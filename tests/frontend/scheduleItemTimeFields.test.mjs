@@ -74,7 +74,6 @@ test('makeScheduleItemTimeFields disables empty fields for fixed-time schedule i
       startTime: '',
       durationMinutes: null,
    });
-   assert.equal(fields.hasDurationWithoutTime(), false);
 });
 
 test('makeScheduleItemTimeFields re-enables fields after fixed-time mode is cleared', () => {
@@ -92,8 +91,24 @@ test('makeScheduleItemTimeFields re-enables fields after fixed-time mode is clea
 
    assert.equal(timeInput.disabled, false);
    assert.equal(timeInput.value, '');
-   assert.equal(durationInput.disabled, true);
+   assert.equal(durationInput.disabled, false);
    assert.equal(durationInput.value, '');
    assert.equal(timeField.classList.contains('is-disabled'), false);
    assert.equal(durationField.classList.contains('is-disabled'), false);
+});
+
+test('makeScheduleItemTimeFields allows duration without a start time', () => {
+   const fields = makeScheduleItemTimeFields({
+      timeLabel: 'Schedule time',
+      durationLabel: 'Duration',
+   });
+   const durationInput = getDurationInput(fields);
+
+   durationInput.value = '25';
+
+   assert.equal(durationInput.disabled, false);
+   assert.deepEqual(fields.getScheduleTimeOptions(), {
+      startTime: '',
+      durationMinutes: 25,
+   });
 });

@@ -260,11 +260,6 @@ export function createScheduleItemModuleController({
          return;
       }
 
-      if (scheduleTimeFields.hasDurationWithoutTime?.()) {
-         showNotice(strings.durationRequiresTime);
-         return;
-      }
-
       const selection = resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
       const scheduleOptions = scheduleTimeFields.getScheduleTimeOptions?.() ?? {};
 
