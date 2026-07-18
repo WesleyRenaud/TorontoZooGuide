@@ -62,7 +62,7 @@ def viewing_spot_index_for_talk_in_loop(
          return index
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
-      # TODO: Handle attraction stops when guardians-talk pin resolution supports them.
+      # Guardians-talk pins resolve against animal stops only.
       if not is_animal_route_stop( viewing_spot ):
          continue
 
@@ -85,7 +85,7 @@ def _viewing_spot_index_for_enclosure(
          index
          for index, viewing_spot in enumerate( master_route_loop.viewing_spots )
          if (
-            # TODO: Handle attraction stops when guardians-talk pin resolution supports them.
+            # Guardians-talk enclosure pins resolve against animal stops only.
             is_animal_route_stop( viewing_spot )
             and viewing_spot.species == species
             and viewing_spot.exhibit == exhibit

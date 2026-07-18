@@ -14,7 +14,7 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
-from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
+from .group_stops_by_master_route_loop import group_stops_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_covered_animals import apply_covered_by_talk_schedules
 from .guardians_talk_covered_animals import filter_animals_excluding_covered
@@ -23,6 +23,9 @@ from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
+from .loop_schedule_stop import animals_from_stops
+from .loop_schedule_stop import attractions_from_stops
+from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import build_loop_schedule_units
 from .restore_guest_schedule_state import restore_guest_schedule_state
 from .restore_guest_schedule_state import snapshot_guest_schedule_state
@@ -59,7 +62,8 @@ def bulk_schedule_animals(
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None,
       confirming_fixed_time_item_long_wait: bool = False,
-      animals_to_schedule: list[ ItineraryAnimalRecord ] ) -> ItinerarySaveResult:
+      animals_to_schedule: list[ ItineraryAnimalRecord ] | None = None,
+      stops_to_schedule: list[ LoopScheduleStop ] | None = None ) -> ItinerarySaveResult:
    itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
@@ -67,7 +71,10 @@ def bulk_schedule_animals(
       wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
 
-   if not animals_to_schedule:
+   if stops_to_schedule is None:
+      stops_to_schedule = list( animals_to_schedule or [] )
+
+   if not stops_to_schedule:
       return build_save_result(
          conn,
          ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
@@ -116,6 +123,8 @@ def bulk_schedule_animals(
       day_end_seconds,
       boundary_stops )
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
+   animals_to_schedule = animals_from_stops( stops_to_schedule )
+   attractions_to_pack = attractions_from_stops( stops_to_schedule )
    covered_by_pin = viewing_spot_keys_to_cover_for_loop_pins(
       conn,
       loop_pins,
@@ -123,7 +132,8 @@ def bulk_schedule_animals(
    animals_to_pack = filter_animals_excluding_covered(
       animals_to_schedule,
       covered_by_pin )
-   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_pack )
+   stops_to_pack = [ *animals_to_pack, *attractions_to_pack ]
+   sorted_loop_groups = group_stops_by_master_route_loop( stops_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
       schedule_windows,
@@ -148,10 +158,10 @@ def bulk_schedule_animals(
             fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
-   remaining_animals: list[ ItineraryAnimalRecord ] = []
+   remaining_stops: list[ LoopScheduleStop ] = []
 
    if loop_units:
-      remaining_animals, _ = schedule_animals_by_master_route_loop(
+      remaining_stops, _ = schedule_animals_by_master_route_loop(
          conn,
          loop_units,
          blockers=blockers,
@@ -165,10 +175,10 @@ def bulk_schedule_animals(
    adjustments: list[ ItineraryAdjustment ] = []
    reasons: list[ ItineraryResultReason ] = []
 
-   if remaining_animals:
+   if remaining_stops:
       reasons = [
          build_bulk_schedule_animals_not_enough_time_issue(
-            remaining_animals ),
+            remaining_stops ),
       ]
    else:
       itinerary_after_pack = build_current_itinerary(

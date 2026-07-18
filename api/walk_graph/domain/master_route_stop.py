@@ -12,7 +12,6 @@ MasterRouteStop = ViewingSpotReference | AttractionRouteStop
 
 
 def is_animal_route_stop( stop: MasterRouteStop ) -> bool:
-   # TODO: Narrow or replace once attraction stops are handled everywhere animals are.
    return stop.kind == ScheduleItemKind.ANIMAL
 
 

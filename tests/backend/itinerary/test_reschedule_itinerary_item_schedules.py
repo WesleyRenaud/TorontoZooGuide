@@ -102,7 +102,7 @@ def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
    assert has_itinerary_schedule_times( penguin.start_time, penguin.end_time )
 
 
-def test_bulk_schedule_schedules_unscheduled_animals_clears_guest_scheduled_attractions_and_events(
+def test_bulk_schedule_schedules_animals_and_attractions_and_clears_events(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -136,7 +136,7 @@ def test_bulk_schedule_schedules_unscheduled_animals_clears_guest_scheduled_attr
       attraction for attraction in result.itinerary.attractions
       if attraction.name == CAROUSEL )
 
-   assert not has_itinerary_schedule_times(
+   assert has_itinerary_schedule_times(
       carousel.start_time,
       carousel.end_time )
 

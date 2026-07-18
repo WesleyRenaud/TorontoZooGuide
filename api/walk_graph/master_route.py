@@ -2,60 +2,52 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from ..animals.search.animals_matching_query import viewing_spot_key_from_values
 from .data_access.paths import DEFAULT_MASTER_ROUTE_PATH
 from .domain.master_route import master_route_from_json
 from .domain.master_route import MasterRoute
 from .domain.master_route_loop import MasterRouteLoop
-from .domain.master_route_stop import is_animal_route_stop
-from .domain.viewing_spot_name_key import ViewingSpotNameKey
-from .domain.viewing_spot_reference import ViewingSpotReference
+from .domain.master_route_stop import master_route_stop_key
+from .domain.master_route_stop_key import MasterRouteStopKey
 
 
-def master_route_index_by_viewing_spot_key(
-      master_route: MasterRoute ) -> dict[ ViewingSpotNameKey, int ]:
-   indexes: dict[ ViewingSpotNameKey, int ] = {}
+def master_route_index_by_stop_key(
+      master_route: MasterRoute ) -> dict[ MasterRouteStopKey, int ]:
+   indexes: dict[ MasterRouteStopKey, int ] = {}
    route_index = 0
 
    for loop in master_route.loops:
       for stop in loop.viewing_spots:
-         # TODO: Include attraction stops once master-route indexing supports them.
-         if not is_animal_route_stop( stop ):
+         stop_key = master_route_stop_key( stop )
+
+         if stop_key in indexes:
             continue
 
-         viewing_spot_key = viewing_spot_key_from_reference( stop )
-
-         if viewing_spot_key in indexes:
-            continue
-
-         indexes[ viewing_spot_key ] = route_index
+         indexes[ stop_key ] = route_index
          route_index += 1
 
    return indexes
 
 
-def loop_index_by_viewing_spot_key(
-      master_route: MasterRoute ) -> dict[ ViewingSpotNameKey, int ]:
-   indexes: dict[ ViewingSpotNameKey, int ] = {}
+def loop_index_by_stop_key(
+      master_route: MasterRoute ) -> dict[ MasterRouteStopKey, int ]:
+   indexes: dict[ MasterRouteStopKey, int ] = {}
 
    for loop_index, loop in enumerate( master_route.loops ):
       for stop in loop.viewing_spots:
-         # TODO: Include attraction stops once master-route indexing supports them.
-         if not is_animal_route_stop( stop ):
-            continue
-
-         viewing_spot_key = viewing_spot_key_from_reference( stop )
-         indexes.setdefault( viewing_spot_key, loop_index )
+         indexes.setdefault( master_route_stop_key( stop ), loop_index )
 
    return indexes
 
 
-def viewing_spot_key_from_reference(
-      viewing_spot: ViewingSpotReference ) -> ViewingSpotNameKey:
-   return viewing_spot_key_from_values(
-      viewing_spot.species,
-      viewing_spot.exhibit,
-      viewing_spot.name )
+def loop_id_by_stop_key(
+      master_route: MasterRoute ) -> dict[ MasterRouteStopKey, str ]:
+   indexes: dict[ MasterRouteStopKey, str ] = {}
+
+   for loop in master_route.loops:
+      for stop in loop.viewing_spots:
+         indexes.setdefault( master_route_stop_key( stop ), loop.loop_id )
+
+   return indexes
 
 
 @lru_cache( maxsize=1 )
@@ -64,37 +56,18 @@ def default_master_route() -> MasterRoute:
 
 
 @lru_cache( maxsize=1 )
-def default_master_route_index_by_viewing_spot_key() -> dict[
-      ViewingSpotNameKey,
-      int,
-   ]:
-   return master_route_index_by_viewing_spot_key( default_master_route() )
-
-
-def loop_id_by_viewing_spot_key(
-      master_route: MasterRoute ) -> dict[ ViewingSpotNameKey, str ]:
-   indexes: dict[ ViewingSpotNameKey, str ] = {}
-
-   for loop in master_route.loops:
-      for stop in loop.viewing_spots:
-         # TODO: Include attraction stops once master-route indexing supports them.
-         if not is_animal_route_stop( stop ):
-            continue
-
-         viewing_spot_key = viewing_spot_key_from_reference( stop )
-         indexes.setdefault( viewing_spot_key, loop.loop_id )
-
-   return indexes
+def default_master_route_index_by_stop_key() -> dict[ MasterRouteStopKey, int ]:
+   return master_route_index_by_stop_key( default_master_route() )
 
 
 @lru_cache( maxsize=1 )
-def default_loop_id_by_viewing_spot_key() -> dict[ ViewingSpotNameKey, str ]:
-   return loop_id_by_viewing_spot_key( default_master_route() )
+def default_loop_index_by_stop_key() -> dict[ MasterRouteStopKey, int ]:
+   return loop_index_by_stop_key( default_master_route() )
 
 
 @lru_cache( maxsize=1 )
-def default_loop_index_by_viewing_spot_key() -> dict[ ViewingSpotNameKey, int ]:
-   return loop_index_by_viewing_spot_key( default_master_route() )
+def default_loop_id_by_stop_key() -> dict[ MasterRouteStopKey, str ]:
+   return loop_id_by_stop_key( default_master_route() )
 
 
 def loop_side_cluster_id_by_loop_id(

@@ -45,13 +45,13 @@ def test_build_loop_schedule_units_assigns_loop_id_side_cluster_and_walk_endpoin
    assert australasia_unit.side_cluster_id == 'north'
    assert australasia_unit.entry_walk_node_id == 'v-1139'
    assert australasia_unit.exit_walk_node_id == 'v-1139'
-   assert [ animal.species for animal in australasia_unit.animals ] == [ 'Kookaburra' ]
+   assert [ animal.species for animal in australasia_unit.stops ] == [ 'Kookaburra' ]
 
    assert indo_unit.loop_id == 'indo_malaya'
    assert indo_unit.side_cluster_id == 'south'
    assert indo_unit.entry_walk_node_id == 'v-0226'
    assert indo_unit.exit_walk_node_id == 'v-0226'
-   assert [ animal.species for animal in indo_unit.animals ] == [ 'Cheetah' ]
+   assert [ animal.species for animal in indo_unit.stops ] == [ 'Cheetah' ]
 
 
 def test_build_loop_schedule_units_uses_itinerary_animals_for_partial_loop_endpoints() -> None:
@@ -113,7 +113,7 @@ def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
 
    assert reversed_unit.entry_walk_node_id == 'v-0955'
    assert reversed_unit.exit_walk_node_id == 'v-1018'
-   assert [ animal.species for animal in reversed_unit.animals ] == [
+   assert [ animal.species for animal in reversed_unit.stops ] == [
       'West Caucasian Tur',
       'Highland Cattle',
    ]
@@ -138,7 +138,7 @@ def test_build_loop_schedule_units_orders_animals_by_loop_viewing_spot_index() -
 
    assert len( loop_units ) == 1
    assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ animal.species for animal in loop_units[ 0 ].animals ] == [
+   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [
       'African Penguin',
       'Cheetah',
    ]

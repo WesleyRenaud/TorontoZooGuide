@@ -123,18 +123,18 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.arrival_time is None
-   assert itinerary.departure_time is None
+   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.departure_time is not None
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '9:30 AM', '9:38 AM' ),
-      ( 'Cheetah', '9:38 AM', '9:43 AM' ),
+      ( 'African Lion', '9:45 AM', '9:53 AM' ),
+      ( 'Cheetah', '9:53 AM', '9:58 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
-   assert itinerary.attractions[ 0 ].start_time is None
-   assert itinerary.attractions[ 0 ].end_time is None
+   assert itinerary.attractions[ 0 ].start_time is not None
+   assert itinerary.attractions[ 0 ].end_time is not None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
    assert itinerary.events == []
@@ -218,17 +218,18 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.arrival_time is None
-   assert itinerary.departure_time is None
+   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.departure_time is not None
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '9:30 AM', '9:38 AM' ),
-      ( 'Cheetah', '9:38 AM', '9:43 AM' ),
+      ( 'African Lion', '9:45 AM', '9:53 AM' ),
+      ( 'Cheetah', '9:53 AM', '9:58 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
-   assert itinerary.attractions[ 0 ].start_time is None
-   assert itinerary.attractions[ 0 ].end_time is None
+   assert itinerary.attractions[ 0 ].start_time is not None
+   assert itinerary.attractions[ 0 ].end_time is not None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
+   assert itinerary.events == []

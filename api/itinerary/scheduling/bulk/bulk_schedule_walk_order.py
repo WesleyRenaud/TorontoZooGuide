@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from .sort_animals_by_master_route import sort_animals_by_master_route
+from .sort_stops_by_master_route import sort_stops_by_master_route
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
@@ -38,7 +38,7 @@ def walk_travel_distance_px(
 
 def sort_animals_for_bulk_schedule(
       animal_rows: list[ ItineraryAnimalRecord ] ) -> list[ ItineraryAnimalRecord ]:
-   return sort_animals_by_master_route( animal_rows )
+   return sort_stops_by_master_route( animal_rows )
 
 
 def sort_animals_by_nearest_neighbor(

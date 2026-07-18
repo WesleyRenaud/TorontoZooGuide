@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from ..core.time_block import TimeBlock
-from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .loop_pin_segments import animals_before_first_loop_pin
 from .loop_pin_segments import loop_pin_schedule_steps
-from .loop_pin_segments import LoopPinAnimalSegment
 from .loop_pin_segments import LoopPinGapStep
+from .loop_pin_segments import LoopPinStopSegment
+from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
 from .loop_unit_schedule_slots import assign_contiguous_slots_ending_by
@@ -27,16 +27,16 @@ def schedule_prepared_loop_unit_with_pins(
       window_end_seconds: int,
       cursor_seconds: int,
       slot_sink: LoopScheduleSlotSink | None = None,
-   ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
+   ) -> tuple[ list[ LoopScheduleStop ], int ]:
    loop_id = prepared_unit.unit.loop_id
 
    if loop_id is None or not loop_pins:
-      return list( prepared_unit.unit.animals ), cursor_seconds
+      return list( prepared_unit.unit.stops ), cursor_seconds
 
    unit_pins = unit_loop_pins( loop_id, loop_pins )
 
    if not unit_pins:
-      return list( prepared_unit.unit.animals ), cursor_seconds
+      return list( prepared_unit.unit.stops ), cursor_seconds
 
    try:
       new_cursor_seconds, still_unscheduled = _schedule_animals_around_loop_pins(
@@ -49,7 +49,7 @@ def schedule_prepared_loop_unit_with_pins(
          cursor_seconds=cursor_seconds,
          slot_sink=slot_sink )
    except LoopUnitSchedulePersistError as error:
-      return error.animals, cursor_seconds
+      return error.stops, cursor_seconds
 
    return still_unscheduled, new_cursor_seconds
 
@@ -71,7 +71,7 @@ def pinned_loop_earliest_start_seconds(
 
    first_pin = unit_pins[ 0 ]
    before_pin_animals = animals_before_first_loop_pin(
-      list( prepared_unit.unit.animals ),
+      list( prepared_unit.unit.stops ),
       loop_id=loop_id,
       loop_pins=unit_pins )
 
@@ -110,8 +110,8 @@ def _schedule_animals_around_loop_pins(
       window_end_seconds: int,
       cursor_seconds: int,
       slot_sink: LoopScheduleSlotSink | None = None,
-   ) -> tuple[ int, list[ ItineraryAnimalRecord ] ]:
-   animals = list( prepared_unit.unit.animals )
+   ) -> tuple[ int, list[ LoopScheduleStop ] ]:
+   animals = list( prepared_unit.unit.stops )
    loop_id = prepared_unit.unit.loop_id
 
    if loop_id is None:
@@ -162,10 +162,10 @@ def _schedule_animals_around_loop_pins(
 
 def _schedule_animal_segment_step(
       conn: Connection,
-      schedule_step: LoopPinAnimalSegment,
+      schedule_step: LoopPinStopSegment,
       *,
       blockers: list[ TimeBlock ],
-      animals: list[ ItineraryAnimalRecord ],
+      animals: list[ LoopScheduleStop ],
       loop_pins: list[ LoopSchedulePin ],
       schedule_cursor_seconds: int,
       scheduled_animal_ids: set[ int ],
@@ -179,7 +179,7 @@ def _schedule_animal_segment_step(
 
    unscheduled_animals = [
       animal_row
-      for animal_row in schedule_step.animals
+      for animal_row in schedule_step.stops
       if id( animal_row ) not in scheduled_animal_ids
    ]
 
@@ -203,7 +203,7 @@ def _schedule_animal_segment_step(
 
 
 def _should_skip_animal_segment_step(
-      schedule_step: LoopPinAnimalSegment,
+      schedule_step: LoopPinStopSegment,
       *,
       loop_pins: list[ LoopSchedulePin ],
       schedule_cursor_seconds: int,
@@ -221,8 +221,8 @@ def _schedule_animal_segment(
       conn: Connection,
       *,
       blockers: list[ TimeBlock ],
-      animals: list[ ItineraryAnimalRecord ],
-      animal_group: list[ ItineraryAnimalRecord ],
+      animals: list[ LoopScheduleStop ],
+      animal_group: list[ LoopScheduleStop ],
       start_seconds: int,
       segment_end_seconds: int,
       backward_anchor: bool,
@@ -281,20 +281,12 @@ def _schedule_animal_segment(
 
 
 def _still_unscheduled_animals(
-      animals: list[ ItineraryAnimalRecord ],
+      animals: list[ LoopScheduleStop ],
       *,
       scheduled_animal_ids: set[ int ],
-   ) -> list[ ItineraryAnimalRecord ]:
+   ) -> list[ LoopScheduleStop ]:
    return [
       animal_row
       for animal_row in animals
       if id( animal_row ) not in scheduled_animal_ids
    ]
-
-
-def viewing_spot_index_for_animal_in_loop(
-      loop_id: str,
-      animal_row: ItineraryAnimalRecord ) -> int | None:
-   from .loop_pin_segments import viewing_spot_index_for_animal_in_loop as lookup
-
-   return lookup( loop_id, animal_row )
