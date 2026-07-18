@@ -92,6 +92,56 @@ def test_schedule_itinerary_animal_uses_early_admission_when_warning_suppressed(
    assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
 
 
+def test_set_itinerary_keeps_early_admission_seeded_departure_when_adding_exhibit_animals(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+   assert ItineraryCoordinator.suppress_itinerary_warning(
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP.value ).success
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY ).success
+
+   scheduled = ItineraryCoordinator.get_itinerary()
+   lion = next(
+      animal
+      for animal in scheduled.animals
+      if animal.species == 'African Lion' )
+
+   assert scheduled.arrival_time == '9:00 AM'
+   assert scheduled.departure_time == lion.end_time
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time=scheduled.arrival_time,
+      departure_time=scheduled.departure_time,
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+      confirming_short_visit=True,
+   )
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert {
+      animal.species
+      for animal in result.itinerary.animals
+   } == { 'African Lion', 'African Penguin' }
+
+
 def test_schedule_itinerary_animal_accepts_explicit_early_admission_start_when_suppressed(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
