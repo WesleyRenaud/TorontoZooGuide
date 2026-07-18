@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from .enclosure_viewing_walk_node_lookup import walk_node_for_viewing_spot
 from .enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
-from .viewing_spot_routing_overrides import viewing_spot_routing_override_for
 
 
 def walk_node_id_for_viewing_spot(
@@ -20,28 +19,6 @@ def walk_node_id_for_viewing_spot(
    return walk_node_id_for_viewing_spot_coordinates(
       species,
       exhibit,
-      x_coord,
-      y_coord )
-
-
-def scheduling_walk_node_id_for_viewing_spot(
-      species: str,
-      exhibit: str,
-      enclosure_name: str | None,
-      x_coord: float | None = None,
-      y_coord: float | None = None ) -> str | None:
-   override = viewing_spot_routing_override_for(
-      species,
-      exhibit,
-      enclosure_name )
-
-   if override is not None:
-      return override.scheduling_walk_node_id
-
-   return walk_node_id_for_viewing_spot(
-      species,
-      exhibit,
-      enclosure_name,
       x_coord,
       y_coord )
 

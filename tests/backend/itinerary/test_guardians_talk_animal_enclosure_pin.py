@@ -14,6 +14,7 @@ from api.itinerary.scheduling.bulk.guardians_talk_covered_animals import viewing
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
+from api.walk_graph.domain.master_route_stop import is_animal_route_stop
 from api.walk_graph.master_route import default_master_route_loop_by_id
 from conftest import DbControllers
 
@@ -107,6 +108,10 @@ def _viewing_spot_index(
    master_route_loop = default_master_route_loop_by_id()[ loop_id ]
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
+      # TODO: Handle attraction stops when enclosure pin lookup supports them.
+      if not is_animal_route_stop( viewing_spot ):
+         continue
+
       if (
             viewing_spot.species == species
             and viewing_spot.exhibit == exhibit

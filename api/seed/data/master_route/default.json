@@ -8,229 +8,370 @@
       "traversal": "one_way",
       "viewing_spots": [
         {
-          "species": "Demoiselle Crane",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Demoiselle Crane",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Kookaburra",
-          "exhibit": "Australasia Pavilion",
-          "name": "Demoiselle Crane Enclosure"
+          "kind": "animal",
+          "key": [
+            "Kookaburra",
+            "Australasia Pavilion",
+            "Demoiselle Crane Enclosure"
+          ]
         },
         {
-          "species": "Black Tree Monitor",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black Tree Monitor",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Blue-Girdled Angelfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Blue-Girdled Angelfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Brush-Tailed Bettong",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Brush-Tailed Bettong",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Clown Triggerfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Clown Triggerfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crested Pigeon",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crested Pigeon",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crimson Rosella",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crimson Rosella",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Eastern Rosella",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Eastern Rosella",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Emerald Tree Boa",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Emerald Tree Boa",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Flame Angelfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Flame Angelfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Fly River Turtle",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Fly River Turtle",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Galah",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Galah",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green Tree Python",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green Tree Python",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green-Winged Dove",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green-Winged Dove",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Komodo Dragon",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Komodo Dragon",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Kookaburra",
-          "exhibit": "Australasia Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Kookaburra",
+            "Australasia Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Lau Banded Iguana",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lau Banded Iguana",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Lionfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lionfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Live Coral Reefs",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Live Coral Reefs",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Longnose Butterflyfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Longnose Butterflyfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "MacLeay's Spectres",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "MacLeay's Spectres",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Malagasy Rainbowfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Malagasy Rainbowfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Mimic Surgeonfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Mimic Surgeonfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Moon Jellyfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Moon Jellyfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Nicobar Pigeon",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Nicobar Pigeon",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Pennant Coral Fish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Pennant Coral Fish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Pied Imperial Pigeon",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Pied Imperial Pigeon",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Pot-Bellied Seahorse",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Pot-Bellied Seahorse",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red Claw Yabby",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red Claw Yabby",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red-Bellied Short-Necked Turtle",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Bellied Short-Necked Turtle",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red-Tailed Black Cockatoo",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Tailed Black Cockatoo",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Short-Beaked Echidna",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Short-Beaked Echidna",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Solomon Island Leaf Frog",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Solomon Island Leaf Frog",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Solomon Island Monkey-Tailed Skink",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Solomon Island Monkey-Tailed Skink",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Southern Hairy-Nosed Wombat",
-          "exhibit": "Australasia Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Southern Hairy-Nosed Wombat",
+            "Australasia Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Stimson's Python",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Stimson's Python",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Tawny Frogmouth",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tawny Frogmouth",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Thorny Devil Stick Insect",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Thorny Devil Stick Insect",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Threadfin Butterflyfish",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Threadfin Butterflyfish",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Victoria Crowned Pigeon",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Victoria Crowned Pigeon",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "White's Tree Frog",
-          "exhibit": "Australasia Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "White's Tree Frog",
+            "Australasia Pavilion",
+            null
+          ]
         },
         {
-          "species": "Southern Hairy-Nosed Wombat",
-          "exhibit": "Australasia Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Southern Hairy-Nosed Wombat",
+            "Australasia Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Western Grey Kangaroo",
-          "exhibit": "Australasia Outdoor",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Western Grey Kangaroo",
+            "Australasia Outdoor",
+            null
+          ]
         },
         {
-          "species": "Amur Tiger",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "attraction",
+          "key": [
+            "Kangaroo Walk-Thru"
+          ]
+        },
+        {
+          "kind": "animal",
+          "key": [
+            "Amur Tiger",
+            "Eurasia Wilds",
+            null
+          ]
         }
       ]
     },
@@ -240,54 +381,103 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "Highland Cattle",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Highland Cattle",
+            "Eurasia Wilds",
+            null
+          ]
         },
         {
-          "species": "Bactrian Camel",
-          "exhibit": "Eurasia Wilds",
-          "name": "Shelter Habitat"
+          "kind": "animal",
+          "key": [
+            "Bactrian Camel",
+            "Eurasia Wilds",
+            "Shelter Habitat"
+          ]
         },
         {
-          "species": "Bactrian Camel",
-          "exhibit": "Eurasia Wilds",
-          "name": "Grass Habitat"
+          "kind": "animal",
+          "key": [
+            "Bactrian Camel",
+            "Eurasia Wilds",
+            "Grass Habitat"
+          ]
         },
         {
-          "species": "Domestic Yak",
-          "exhibit": "Eurasia Wilds",
-          "name": "Eurasia Drive Thru"
+          "kind": "animal",
+          "key": [
+            "Domestic Yak",
+            "Eurasia Wilds",
+            "Eurasia Drive Thru"
+          ]
         },
         {
-          "species": "Asian Wild Horse",
-          "exhibit": "Eurasia Wilds",
-          "name": "Eurasia Drive Thru"
+          "kind": "animal",
+          "key": [
+            "Asian Wild Horse",
+            "Eurasia Wilds",
+            "Eurasia Drive Thru"
+          ]
         },
         {
-          "species": "Steller's Sea Eagle",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Steller's Sea Eagle",
+            "Eurasia Wilds",
+            null
+          ]
         },
         {
-          "species": "Snow Leopard",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Snow Leopard",
+            "Eurasia Wilds",
+            null
+          ]
         },
         {
-          "species": "West Caucasian Tur",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "West Caucasian Tur",
+            "Eurasia Wilds",
+            null
+          ]
         },
         {
-          "species": "Asian Wild Horse",
-          "exhibit": "Eurasia Wilds",
-          "name": "Shady Acres"
+          "kind": "animal",
+          "key": [
+            "Asian Wild Horse",
+            "Eurasia Wilds",
+            "Shady Acres"
+          ]
         },
         {
-          "species": "Mouflon",
-          "exhibit": "Eurasia Wilds",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Mouflon",
+            "Eurasia Wilds",
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eurasia_attractions",
+      "name": "Eurasia Attractions",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Greenhouse"
+          ]
+        },
+        {
+          "kind": "attraction",
+          "key": [
+            "Wildlife Health & Science Centre"
+          ]
         }
       ]
     },
@@ -297,54 +487,109 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "Polar Bear",
-          "exhibit": "Tundra Trek",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Polar Bear",
+            "Tundra Trek",
+            null
+          ]
         },
         {
-          "species": "Northern Bald Eagle",
-          "exhibit": "Tundra Trek",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Northern Bald Eagle",
+            "Tundra Trek",
+            null
+          ]
         },
         {
-          "species": "Caribou",
-          "exhibit": "Tundra Trek",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Caribou",
+            "Tundra Trek",
+            null
+          ]
         },
         {
-          "species": "Capybara",
-          "exhibit": "Americas Outdoor Mayan Temple Ruins",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Capybara",
+            "Americas Outdoor Mayan Temple Ruins",
+            null
+          ]
         },
         {
-          "species": "American Flamingo",
-          "exhibit": "Americas Outdoor Mayan Temple Ruins",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "American Flamingo",
+            "Americas Outdoor Mayan Temple Ruins",
+            null
+          ]
         },
         {
-          "species": "Red-Legged Seriema",
-          "exhibit": "Americas Outdoor Mayan Temple Ruins",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Legged Seriema",
+            "Americas Outdoor Mayan Temple Ruins",
+            null
+          ]
         },
         {
-          "species": "Turkey Vulture",
-          "exhibit": "Americas Outdoor Mayan Temple Ruins",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Turkey Vulture",
+            "Americas Outdoor Mayan Temple Ruins",
+            null
+          ]
         },
         {
-          "species": "Black-Handed Spider Monkey",
-          "exhibit": "Americas Outdoor Mayan Temple Ruins",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black-Handed Spider Monkey",
+            "Americas Outdoor Mayan Temple Ruins",
+            null
+          ]
         },
         {
-          "species": "Lesser Snow Goose",
-          "exhibit": "Tundra Trek",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lesser Snow Goose",
+            "Tundra Trek",
+            null
+          ]
         },
         {
-          "species": "Arctic Wolf",
-          "exhibit": "Tundra Trek",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Arctic Wolf",
+            "Tundra Trek",
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tundra_attractions",
+      "name": "Tundra Attractions",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "TundraAir Ride"
+          ]
+        },
+        {
+          "kind": "attraction",
+          "key": [
+            "Face Painting, Caricatures and Henna!"
+          ]
+        },
+        {
+          "kind": "attraction",
+          "key": [
+            "Virtual Reality (VR) Theatre!"
+          ]
         }
       ]
     },
@@ -354,324 +599,516 @@
       "traversal": "one_way",
       "viewing_spots": [
         {
-          "species": "Golden Lion Tamarin",
-          "exhibit": "Americas Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Golden Lion Tamarin",
+            "Americas Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Two-Toed Sloth",
-          "exhibit": "Americas Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Two-Toed Sloth",
+            "Americas Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "White-Faced Saki",
-          "exhibit": "Americas Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "White-Faced Saki",
+            "Americas Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "North American River Otter",
-          "exhibit": "Americas Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "North American River Otter",
+            "Americas Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "American Alligator",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "American Alligator",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "American Eel",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "American Eel",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "American Lobster",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "American Lobster",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Axolotl",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Axolotl",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Bark Scorpion",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Bark Scorpion",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black-Footed Ferret",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black-Footed Ferret",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black-Widow Spider",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black-Widow Spider",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Blanding's Turtle",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Blanding's Turtle",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Blue And Yellow Macaw",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Blue And Yellow Macaw",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Blue Poison Dart Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Blue Poison Dart Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Boa Constrictor",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Boa Constrictor",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Brazilian Giant Cockroach",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Brazilian Giant Cockroach",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Brazilian Salmon Pink Bird-Eating Tarantula",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Butterfly Goodeid",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Butterfly Goodeid",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crested Tinamou",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crested Tinamou",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Cuvier's Smooth-Fronted Caiman",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Cuvier's Smooth-Fronted Caiman",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Desert Grassland Whiptail",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Desert Grassland Whiptail",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Dyeing Poison Dart Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Dyeing Poison Dart Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Eastern Loggerhead Shrike",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Eastern Loggerhead Shrike",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Eastern Lubber Grasshopper",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Eastern Lubber Grasshopper",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Eyelash Viper",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Eyelash Viper",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Ferocious Water Bug",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Ferocious Water Bug",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Golden Lion Tamarin",
-          "exhibit": "Americas Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Golden Lion Tamarin",
+            "Americas Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Great Horned Owl",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Great Horned Owl",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green And Black Poison Dart Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green And Black Poison Dart Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green Surf Anemone",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green Surf Anemone",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green-Winged Macaw",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green-Winged Macaw",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Guatemalan Beaded Lizard",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Guatemalan Beaded Lizard",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Jamaican Boa",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Jamaican Boa",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Leather Sea Star",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Leather Sea Star",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Lemur Leaf Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lemur Leaf Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Longnose Dace",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Longnose Dace",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Massasauga Rattlesnake",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Massasauga Rattlesnake",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Mexican Blind Cavefish",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Mexican Blind Cavefish",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Midland Painted Turtle",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Midland Painted Turtle",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "North American River Otter",
-          "exhibit": "Americas Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "North American River Otter",
+            "Americas Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Opal-Rumped Tanager",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Opal-Rumped Tanager",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Painted Anemone",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Painted Anemone",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Panamanian Golden Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Panamanian Golden Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Plumose Anemone",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Plumose Anemone",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Plush-Crested Jay",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Plush-Crested Jay",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Puerto Rican Crested Toad",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Puerto Rican Crested Toad",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Pumpkinseed Sunfish",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Pumpkinseed Sunfish",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red Island Bird-Eating Tarantula",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red Island Bird-Eating Tarantula",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red-Crested Finch",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Crested Finch",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Reticulate Gila Monster",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Reticulate Gila Monster",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Round Goby",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Round Goby",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Rufous-Collared Sparrow",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Rufous-Collared Sparrow",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "San-Esteban Island Chuckwalla",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "San-Esteban Island Chuckwalla",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Snapping Turtle",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Snapping Turtle",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Spot Prawn",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spot Prawn",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Spotted River Stingray",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spotted River Stingray",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Spotted Turtle",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spotted Turtle",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Timber Rattlesnake",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Timber Rattlesnake",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Turquoise Tanager",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Turquoise Tanager",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Two-Toed Sloth",
-          "exhibit": "Americas Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Two-Toed Sloth",
+            "Americas Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Western Blacknose Dace",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Western Blacknose Dace",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "White-Faced Saki",
-          "exhibit": "Americas Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "White-Faced Saki",
+            "Americas Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Yellow-Banded Poison Dart Frog",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Yellow-Banded Poison Dart Frog",
+            "Americas Pavilion",
+            null
+          ]
         },
         {
-          "species": "Zebra Finch",
-          "exhibit": "Americas Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Zebra Finch",
+            "Americas Pavilion",
+            null
+          ]
         }
       ]
     },
@@ -681,174 +1118,276 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "African Penguin",
-          "exhibit": "Africa Savanna",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "African Penguin",
+            "Africa Savanna",
+            "Indoor"
+          ]
         },
         {
-          "species": "White-Breasted Cormorant",
-          "exhibit": "Africa Savanna",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "White-Breasted Cormorant",
+            "Africa Savanna",
+            "Indoor"
+          ]
         },
         {
-          "species": "African Penguin",
-          "exhibit": "Africa Savanna",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "African Penguin",
+            "Africa Savanna",
+            "Outdoor"
+          ]
         },
         {
-          "species": "White-Breasted Cormorant",
-          "exhibit": "Africa Savanna",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "White-Breasted Cormorant",
+            "Africa Savanna",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Watusi Cattle",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Watusi Cattle",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Spotted Hyena",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spotted Hyena",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Grevy's Zebra",
-          "exhibit": "Canadian Domain",
-          "name": "Savanna Grasslands"
+          "kind": "animal",
+          "key": [
+            "Grevy's Zebra",
+            "Canadian Domain",
+            "Savanna Grasslands"
+          ]
         },
         {
-          "species": "Raccoon",
-          "exhibit": "Canadian Domain",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Raccoon",
+            "Canadian Domain",
+            null
+          ]
         },
         {
-          "species": "Cougar",
-          "exhibit": "Canadian Domain",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Cougar",
+            "Canadian Domain",
+            null
+          ]
         },
         {
-          "species": "Wood Bison",
-          "exhibit": "Canadian Domain",
-          "name": "Male Herd"
+          "kind": "animal",
+          "key": [
+            "Wood Bison",
+            "Canadian Domain",
+            "Male Herd"
+          ]
         },
         {
-          "species": "Grizzly Bear",
-          "exhibit": "Canadian Domain",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Grizzly Bear",
+            "Canadian Domain",
+            null
+          ]
         },
         {
-          "species": "Northern Bald Eagle",
-          "exhibit": "Canadian Domain",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Northern Bald Eagle",
+            "Canadian Domain",
+            null
+          ]
         },
         {
-          "species": "Wood Bison",
-          "exhibit": "Canadian Domain",
-          "name": "Female Herd"
+          "kind": "animal",
+          "key": [
+            "Wood Bison",
+            "Canadian Domain",
+            "Female Herd"
+          ]
         },
         {
-          "species": "Red Panda",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red Panda",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Common Eland",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Common Eland",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "African Lion",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "African Lion",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Ostrich",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Ostrich",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Olive Baboon",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Olive Baboon",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Grevy's Zebra",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Grevy's Zebra",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Marabou Stork",
-          "exhibit": "Africa Savanna",
-          "name": "Grevy's Zebra Enclosure"
+          "kind": "animal",
+          "key": [
+            "Marabou Stork",
+            "Africa Savanna",
+            "Grevy's Zebra Enclosure"
+          ]
         },
         {
-          "species": "Cheetah",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Cheetah",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Southern White Rhinoceros",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Southern White Rhinoceros",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Greater Kudu",
-          "exhibit": "Africa Savanna",
-          "name": "White Rhino Viewing"
+          "kind": "animal",
+          "key": [
+            "Greater Kudu",
+            "Africa Savanna",
+            "White Rhino Viewing"
+          ]
         },
         {
-          "species": "Marabou Stork",
-          "exhibit": "Africa Savanna",
-          "name": "White Rhino Viewing"
+          "kind": "animal",
+          "key": [
+            "Marabou Stork",
+            "Africa Savanna",
+            "White Rhino Viewing"
+          ]
         },
         {
-          "species": "Ostrich",
-          "exhibit": "Africa Savanna",
-          "name": "White Rhino Viewing"
+          "kind": "animal",
+          "key": [
+            "Ostrich",
+            "Africa Savanna",
+            "White Rhino Viewing"
+          ]
         },
         {
-          "species": "Southern Ground Hornbill",
-          "exhibit": "Africa Savanna",
-          "name": "White Rhino Viewing"
+          "kind": "animal",
+          "key": [
+            "Southern Ground Hornbill",
+            "Africa Savanna",
+            "White Rhino Viewing"
+          ]
         },
         {
-          "species": "White-Headed Vulture",
-          "exhibit": "Africa Savanna",
-          "name": "White Rhino Viewing"
+          "kind": "animal",
+          "key": [
+            "White-Headed Vulture",
+            "Africa Savanna",
+            "White Rhino Viewing"
+          ]
         },
         {
-          "species": "Greater Kudu",
-          "exhibit": "Africa Savanna",
-          "name": "Kesho Park Offshoot"
+          "kind": "animal",
+          "key": [
+            "Greater Kudu",
+            "Africa Savanna",
+            "Kesho Park Offshoot"
+          ]
         },
         {
-          "species": "Marabou Stork",
-          "exhibit": "Africa Savanna",
-          "name": "Kesho Park Offshoot"
+          "kind": "animal",
+          "key": [
+            "Marabou Stork",
+            "Africa Savanna",
+            "Kesho Park Offshoot"
+          ]
         },
         {
-          "species": "Ostrich",
-          "exhibit": "Africa Savanna",
-          "name": "Kesho Park Offshoot"
+          "kind": "animal",
+          "key": [
+            "Ostrich",
+            "Africa Savanna",
+            "Kesho Park Offshoot"
+          ]
         },
         {
-          "species": "Southern Ground Hornbill",
-          "exhibit": "Africa Savanna",
-          "name": "Kesho Park Offshoot"
+          "kind": "animal",
+          "key": [
+            "Southern Ground Hornbill",
+            "Africa Savanna",
+            "Kesho Park Offshoot"
+          ]
         },
         {
-          "species": "White-Headed Vulture",
-          "exhibit": "Africa Savanna",
-          "name": "Kesho Park Offshoot"
+          "kind": "animal",
+          "key": [
+            "White-Headed Vulture",
+            "Africa Savanna",
+            "Kesho Park Offshoot"
+          ]
         },
         {
-          "species": "River Hippopotamus",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "River Hippopotamus",
+            "Africa Savanna",
+            null
+          ]
         },
         {
-          "species": "Warthog",
-          "exhibit": "Africa Savanna",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Warthog",
+            "Africa Savanna",
+            null
+          ]
         }
       ]
     },
@@ -858,209 +1397,345 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "Masai Giraffe",
-          "exhibit": "Africa Savanna",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Masai Giraffe",
+            "Africa Savanna",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Masai Giraffe",
-          "exhibit": "Africa Savanna",
-          "name": "Giraffe House"
+          "kind": "animal",
+          "key": [
+            "Masai Giraffe",
+            "Africa Savanna",
+            "Giraffe House"
+          ]
         },
         {
-          "species": "Red River Hog",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red River Hog",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Aldabra Tortoise",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Ring-Tailed Lemur Enclosure"
+          "kind": "animal",
+          "key": [
+            "Aldabra Tortoise",
+            "African Rainforest Pavilion",
+            "Ring-Tailed Lemur Enclosure"
+          ]
         },
         {
-          "species": "Gaboon Viper",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Gaboon Viper",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Grey-Necked Crowned Crane",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Grey-Necked Crowned Crane",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Ring-Tailed Lemur",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Ring-Tailed Lemur",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Royal Python",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Royal Python",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "African Spoonbill",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "African Spoonbill",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Nile Soft-Shelled Turtle",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Nile Soft-Shelled Turtle",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Pygmy Hippopotamus",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Pygmy Hippopotamus",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Radiated Tortoise",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Radiated Tortoise",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Sacred Ibis",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Sacred Ibis",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "South African Shelduck",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "South African Shelduck",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Straw Coloured Fruit Bat",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Straw Coloured Fruit Bat",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "African Clawed Frog",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "African Clawed Frog",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black Crake",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black Crake",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Blue-Bellied Roller",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Blue-Bellied Roller",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Hamerkop",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Hamerkop",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Lake Malawi Cichlids",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lake Malawi Cichlids",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Lau Banded Iguana",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Lau Banded Iguana",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Leopard Ctenopoma",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Leopard Ctenopoma",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Mantella (Poison Frog)",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Mantella (Poison Frog)",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Naked Mole Rat",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Naked Mole Rat",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Ngege",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Ngege",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Slender-Tailed Meerkat",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Slender-Tailed Meerkat",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "South African Crested Porcupine",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "South African Crested Porcupine",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Speckled Mousebird",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Speckled Mousebird",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Spider Tortoise",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spider Tortoise",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Tomato Frog",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tomato Frog",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Veiled Chameleon",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Veiled Chameleon",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Violaceous Plantain Eater",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Violaceous Plantain Eater",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "West African Dwarf Crocodile",
-          "exhibit": "African Rainforest Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "West African Dwarf Crocodile",
+            "African Rainforest Pavilion",
+            null
+          ]
         },
         {
-          "species": "Greater Kudu",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Savanna Overlook"
+          "kind": "animal",
+          "key": [
+            "Greater Kudu",
+            "African Rainforest Pavilion",
+            "Savanna Overlook"
+          ]
         },
         {
-          "species": "Marabou Stork",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Savanna Overlook"
+          "kind": "animal",
+          "key": [
+            "Marabou Stork",
+            "African Rainforest Pavilion",
+            "Savanna Overlook"
+          ]
         },
         {
-          "species": "Ostrich",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Savanna Overlook"
+          "kind": "animal",
+          "key": [
+            "Ostrich",
+            "African Rainforest Pavilion",
+            "Savanna Overlook"
+          ]
         },
         {
-          "species": "Southern Ground Hornbill",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Savanna Overlook"
+          "kind": "animal",
+          "key": [
+            "Southern Ground Hornbill",
+            "African Rainforest Pavilion",
+            "Savanna Overlook"
+          ]
         },
         {
-          "species": "White-Headed Vulture",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Savanna Overlook"
+          "kind": "animal",
+          "key": [
+            "White-Headed Vulture",
+            "African Rainforest Pavilion",
+            "Savanna Overlook"
+          ]
         },
         {
-          "species": "Western Lowland Gorilla",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Western Lowland Gorilla",
+            "African Rainforest Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Western Lowland Gorilla",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Western Lowland Gorilla",
+            "African Rainforest Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Aldabra Tortoise",
-          "exhibit": "African Rainforest Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Aldabra Tortoise",
+            "African Rainforest Pavilion",
+            "Outdoor"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gorilla_climb",
+      "name": "Gorilla Climb Ropes Course",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Gorilla Climb Ropes Course"
+          ]
         }
       ]
     },
@@ -1070,254 +1745,417 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "Cheetah",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Cheetah",
+            "Indo-Malaya Outdoor",
+            null
+          ]
         },
         {
-          "species": "Asian Brown Tortoise",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Asian Brown Tortoise",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Bighead Carp",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Bighead Carp",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black Carp",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black Carp",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black-Breasted Leaf Turtle",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black-Breasted Leaf Turtle",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Black-Throated Laughing Thrush",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Black-Throated Laughing Thrush",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Burmese Star Tortoise",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Burmese Star Tortoise",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Cattle Egret",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Cattle Egret",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Concave Casqued Hornbill",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Concave Casqued Hornbill",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crested Wood Partridge",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crested Wood Partridge",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crocodile Lizard",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crocodile Lizard",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Crocodile Newt",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Crocodile Newt",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Edward's Pheasant",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Edward's Pheasant",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Giant Gourami",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Giant Gourami",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Grass Carp",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Grass Carp",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Green Crested Basilisk",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Green Crested Basilisk",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Hamilton's Pond Turtle",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Hamilton's Pond Turtle",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Iridescent Shark Catfish",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Iridescent Shark Catfish",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Luzon Bleeding-Heart Dove",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Luzon Bleeding-Heart Dove",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Malayan Bonytongue",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Malayan Bonytongue",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Malaysian Painted Turtle",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Malaysian Painted Turtle",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Mekong Barb",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Mekong Barb",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Monocled Cobra",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Monocled Cobra",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Nicobar Pigeon",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Nicobar Pigeon",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Palawan Peacock-Pheasant",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Palawan Peacock-Pheasant",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red-Lined Torpedo Barb",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Lined Torpedo Barb",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Reticulated Python",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Reticulated Python",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Spiny Turtle",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Spiny Turtle",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Sumatran Orangutan",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Sumatran Orangutan",
+            "Indo-Malaya Pavilion",
+            "Indoor"
+          ]
         },
         {
-          "species": "Tentacled Snake",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tentacled Snake",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Tinfoil Barb",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tinfoil Barb",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Tomistoma",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tomistoma",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Tri-Coloured Shark",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Tri-Coloured Shark",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "White-Handed Gibbon",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "White-Handed Gibbon",
+            "Indo-Malaya Pavilion",
+            null
+          ]
         },
         {
-          "species": "Sumatran Orangutan",
-          "exhibit": "Indo-Malaya Pavilion",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Sumatran Orangutan",
+            "Indo-Malaya Pavilion",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Asian Giant Millipede",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Asian Giant Millipede",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Clouded Leopard",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Clouded Leopard",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Giant Gourami",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Giant Gourami",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Gooty Sapphire Ornamental Tarantula",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Gooty Sapphire Ornamental Tarantula",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Malayan Walking Stick",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Malayan Walking Stick",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Malaysian Stick Insect Jungle Wood Nymph",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Malaysian Stick Insect Jungle Wood Nymph",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Red-Tailed Green Ratsnake",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Red-Tailed Green Ratsnake",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Wrinkled Hornbill",
-          "exhibit": "Malayan Woods Pavilion",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Wrinkled Hornbill",
+            "Malayan Woods Pavilion",
+            null
+          ]
         },
         {
-          "species": "Greater One-Horned Rhinoceros",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Greater One-Horned Rhinoceros",
+            "Indo-Malaya Outdoor",
+            "Outdoor"
+          ]
         },
         {
-          "species": "West Caucasian Tur",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": "Zoomobile Habitat"
+          "kind": "animal",
+          "key": [
+            "West Caucasian Tur",
+            "Indo-Malaya Outdoor",
+            "Zoomobile Habitat"
+          ]
         },
         {
-          "species": "Babirusa",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Babirusa",
+            "Indo-Malaya Outdoor",
+            "Indoor"
+          ]
         },
         {
-          "species": "Greater One-Horned Rhinoceros",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": "Indoor"
+          "kind": "animal",
+          "key": [
+            "Greater One-Horned Rhinoceros",
+            "Indo-Malaya Outdoor",
+            "Indoor"
+          ]
         },
         {
-          "species": "Asian Brown Tortoise",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Asian Brown Tortoise",
+            "Indo-Malaya Outdoor",
+            null
+          ]
         },
         {
-          "species": "Babirusa",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": "Outdoor"
+          "kind": "animal",
+          "key": [
+            "Babirusa",
+            "Indo-Malaya Outdoor",
+            "Outdoor"
+          ]
         },
         {
-          "species": "Indian Peafowl",
-          "exhibit": "Indo-Malaya Outdoor",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Indian Peafowl",
+            "Indo-Malaya Outdoor",
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conservation_carousel",
+      "name": "Conservation Carousel",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Conservation Carousel"
+          ]
         }
       ]
     },
@@ -1327,49 +2165,102 @@
       "traversal": "one_way",
       "viewing_spots": [
         {
-          "species": "Domestic Goat",
-          "exhibit": "Goat World",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Domestic Goat",
+            "Goat World",
+            null
+          ]
         },
         {
-          "species": "African Spurred Tortoise",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "African Spurred Tortoise",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Common Raven",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Common Raven",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Eurasian Eagle Owl",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Eurasian Eagle Owl",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Great Horned Owl",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Great Horned Owl",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Guinea Pig",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Guinea Pig",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Harris's Hawk",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Harris's Hawk",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Marabou Stork",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Marabou Stork",
+            "Kids Zoo",
+            null
+          ]
         },
         {
-          "species": "Rabbit",
-          "exhibit": "Kids Zoo",
-          "name": null
+          "kind": "animal",
+          "key": [
+            "Rabbit",
+            "Kids Zoo",
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "id": "splash_island",
+      "name": "Splash Island",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Splash Island"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zoomobile",
+      "name": "Zoomobile",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Zoomobile"
+          ]
         }
       ]
     }
@@ -1380,8 +2271,11 @@
       "loop_ids": [
         "australasia",
         "discovery_zone",
+        "splash_island",
         "eurasia",
+        "eurasia_attractions",
         "tundra_trek_mayan_temple",
+        "tundra_attractions",
         "americas_pavilion"
       ]
     },
@@ -1390,7 +2284,10 @@
       "loop_ids": [
         "africa_savanna_canadian_domain",
         "african_rainforest_giraffe",
-        "indo_malaya"
+        "gorilla_climb",
+        "indo_malaya",
+        "conservation_carousel",
+        "zoomobile"
       ]
     }
   ]

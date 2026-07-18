@@ -8,6 +8,7 @@ from ...models import GuardiansTalk
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
 from ...walk_graph.domain.master_route_loop import MasterRouteLoop
+from ...walk_graph.domain.master_route_stop import is_animal_route_stop
 from ...walk_graph.master_route import default_master_route_loop_by_id
 
 
@@ -61,6 +62,10 @@ def viewing_spot_index_for_talk_in_loop(
          return index
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
+      # TODO: Handle attraction stops when guardians-talk pin resolution supports them.
+      if not is_animal_route_stop( viewing_spot ):
+         continue
+
       if (
             viewing_spot.species == talk_name
             and viewing_spot.exhibit == talk_location ):
@@ -80,7 +85,9 @@ def _viewing_spot_index_for_enclosure(
          index
          for index, viewing_spot in enumerate( master_route_loop.viewing_spots )
          if (
-            viewing_spot.species == species
+            # TODO: Handle attraction stops when guardians-talk pin resolution supports them.
+            is_animal_route_stop( viewing_spot )
+            and viewing_spot.species == species
             and viewing_spot.exhibit == exhibit
             and viewing_spot.name == enclosure_name )
       ),
