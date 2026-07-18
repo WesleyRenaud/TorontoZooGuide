@@ -12,6 +12,7 @@ from ..scheduling.reschedule_itinerary_item_schedules import reschedule_itinerar
 from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
 from ..scheduling.sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
 from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
+from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import update_visit_times_after_removed_fixed_time_activities
 from .set_itinerary_context import build_set_itinerary_current_itinerary
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
@@ -81,6 +82,14 @@ def commit_set_itinerary(
       itinerary = build_set_itinerary_current_itinerary(
          context.conn,
          context.itinerary_controller_kwargs )
+
+      if context.saved_itinerary is not None:
+         update_visit_times_after_removed_fixed_time_activities(
+            context.conn,
+            context.saved_itinerary,
+            context.current_itinerary,
+            itinerary )
+
       seed_visit_times_to_scheduled_endpoints_if_complete(
          context.conn,
          itinerary )

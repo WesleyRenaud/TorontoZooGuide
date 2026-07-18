@@ -4,7 +4,7 @@ from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
 from ..itinerary.data_access.itinerary_status import fetch_itinerary_statuses
 from ..itinerary.data_access.itinerary_status import fetch_suppressed_status_values
-from ..itinerary.domain.itinerary_adjustment import ItineraryAdjustmentType
+from ..itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ..types import Connection
 
 

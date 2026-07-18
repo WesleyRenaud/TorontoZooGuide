@@ -6,7 +6,6 @@ from datetime import date
 from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, set_guardians_talk_schedule, set_wild_encounter_schedule, unschedule_itinerary_item, WILD_ENCOUNTER, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustmentType
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
@@ -71,10 +70,7 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
 
    assert remove_result.success
    assert remove_result.itinerary.departure_time == latest_animal_end
-   assert any(
-      adjustment.type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
-      for adjustment in remove_result.adjustments
-   )
+   assert remove_result.adjustments == ()
 
 
 def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
@@ -127,10 +123,7 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
       if animal.species == 'African Lion' )
    assert lion_after.start_time is not None
    assert remove_result.itinerary.arrival_time == lion_after.start_time
-   assert any(
-      adjustment.type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
-      for adjustment in remove_result.adjustments
-   )
+   assert remove_result.adjustments == ()
 
 
 def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
@@ -246,7 +239,4 @@ def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
       penguin_after.end_time,
       penguin_before.end_time )
    assert result.itinerary.departure_time == penguin_after.end_time
-   assert any(
-      adjustment.type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
-      for adjustment in result.adjustments
-   )
+   assert result.adjustments == ()

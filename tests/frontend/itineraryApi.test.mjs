@@ -114,7 +114,7 @@ function mockItineraryConfigResponse(overrides = {}) {
          itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
          itinerary_adjustment_types: overrides.adjustmentTypes ?? {
             ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-         DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
          },
          itinerary_statuses: overrides.statuses ?? [],
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],

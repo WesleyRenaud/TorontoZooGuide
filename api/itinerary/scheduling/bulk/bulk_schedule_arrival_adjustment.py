@@ -3,7 +3,8 @@ from __future__ import annotations
 from ..core.time_block import earliest_scheduled_start_seconds
 from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...domain.itinerary_adjustment import ItineraryAdjustment
-from ...domain.itinerary_adjustment import ItineraryAdjustmentType
+from ...domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from ...domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ....models import Itinerary
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
@@ -44,7 +45,7 @@ def adjust_arrival_after_bulk_schedule(
       field='arrivalTime',
       previous_value=previous_arrival_time,
       value=adjusted_arrival_time,
-      reason='bulkScheduleConsecutivePacking' )
+      reason=ItineraryAdjustmentReason.BULK_SCHEDULE_CONSECUTIVE_PACKING )
 
 
 def _should_sync_arrival_to_earliest_item(
