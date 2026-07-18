@@ -3,12 +3,16 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from ....animals.search.animals_matching_query import viewing_spot_key_from_values
+from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_cover_and_schedule
 from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ....guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
+from ....models import AnimalDiff
+from ....models import GuardiansTalkDiff
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
@@ -162,6 +166,57 @@ def restore_covered_animals_after_talk_removed(
    return RestoredTalkCoveredAnimals(
       animals=restored,
       replacement_end_seconds=replacement_end_seconds )
+
+
+def uncover_animals_for_unavailable_talks(
+      conn: Connection,
+      animals: list[ AnimalDiff ],
+      guardians_talks: list[ GuardiansTalkDiff ],
+   ) -> list[ AnimalDiff ]:
+   animals_by_spot = {
+      viewing_spot_key_from_values(
+         animal.species,
+         animal.exhibit,
+         animal.enclosure_name ): animal
+      for animal in animals
+   }
+
+   for talk in guardians_talks:
+      if not talk.is_deleted:
+         continue
+
+      talk_block = time_block_from_schedule_times(
+         talk.start_time,
+         talk.end_time )
+
+      if talk_block is None:
+         continue
+
+      for link in fetch_guardians_talk_animal_links( conn, talk.name ):
+         existing = animals_by_spot.get( link.viewing_spot_key() )
+
+         if existing is None or not existing.covered_by_talk:
+            continue
+
+         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
+            conn,
+            existing.species,
+            existing.exhibit,
+            existing.enclosure_name )
+
+         if duration_seconds is None:
+            existing.covered_by_talk = False
+            existing.start_time = None
+            existing.end_time = None
+            continue
+
+         existing.covered_by_talk = False
+         existing.start_time = DateValues.schedule_time_key_from_seconds(
+            talk_block.start_seconds )
+         existing.end_time = DateValues.schedule_time_key_from_seconds(
+            talk_block.start_seconds + duration_seconds )
+
+   return animals
 
 
 def filter_animals_excluding_covered(
