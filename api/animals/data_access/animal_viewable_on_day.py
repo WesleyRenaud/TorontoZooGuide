@@ -27,6 +27,7 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
                   v.SEASONALLY_OFF_DISPLAY_MESSAGE,
                   v.X_COORD,
                   v.Y_COORD,
+                  v.IS_ZOOMOBILE_ONLY,
                   s.IS_OFF_DISPLAY,
                   s.VIEWING_SCOPE,
                   s.OFF_DISPLAY_MESSAGE,

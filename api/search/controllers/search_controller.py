@@ -27,6 +27,7 @@ class SearchController():
       temp = data.get( 'temp' )
 
       include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
+      for_itinerary = bool( data.get( 'forItinerary' ) )
       include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
       include_closed_restrooms = bool( data.get( 'includeClosedRestrooms' ) )
       include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
@@ -48,6 +49,7 @@ class SearchController():
          year=year,
          temp=temp,
          include_off_display_animals=include_off_display_animals,
+         for_itinerary=for_itinerary,
          include_closed_restaurants=include_closed_restaurants,
          include_closed_restrooms=include_closed_restrooms,
          include_closed_attractions=include_closed_attractions,

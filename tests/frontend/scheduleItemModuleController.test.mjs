@@ -165,11 +165,13 @@ test('runSearch fetches rows and ignores stale responses', async () => {
       {
          query: 'tiger',
          includeAnimals: true,
+         forItinerary: true,
          temp: null,
       },
       {
          query: 'tiger',
          includeAnimals: true,
+         forItinerary: true,
          temp: null,
       },
    ]);

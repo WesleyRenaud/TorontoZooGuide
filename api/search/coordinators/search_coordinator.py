@@ -41,6 +41,7 @@ class SearchCoordinator():
          year: VisitYear,
          temp: float | None,
          include_off_display_animals: bool,
+         for_itinerary: bool,
          include_closed_restaurants: bool,
          include_closed_restrooms: bool,
          include_closed_attractions: bool,
@@ -64,7 +65,8 @@ class SearchCoordinator():
                month=month,
                year=year,
                temp=temp,
-               include_off_display_animals=include_off_display_animals ) or []
+               include_off_display_animals=include_off_display_animals,
+               for_itinerary=for_itinerary ) or []
          )
 
       if include_pavilions:

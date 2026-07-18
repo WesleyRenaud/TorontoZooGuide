@@ -53,6 +53,7 @@ def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRe
       'animal_day_seasonal_multiplier': None,
       'exhibit_day_seasonal_availability_multiplier': None,
       'include_all_viewing_spots': None,
+      'is_zoomobile_only': False,
    }
    values.update( overrides )
 

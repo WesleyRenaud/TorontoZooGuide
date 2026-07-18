@@ -24,6 +24,7 @@ test('getAnimalsByExhibit receives month and day from stored visit date', async 
          const body = JSON.parse(options.body);
          assert.equal(body.month, 'AUG');
          assert.equal(body.day, 12);
+         assert.equal(body.forItinerary, true);
          assert.ok(Array.isArray(body.exhibitsToInclude));
 
          return { animals: [] };

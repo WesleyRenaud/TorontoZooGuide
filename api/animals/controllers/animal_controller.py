@@ -17,6 +17,8 @@ class AnimalController():
          year=data.get( 'year' ),
          temp=data.get( 'temp' ),
          include_off_display_animals=data.get( 'includeOffDisplayAnimals' ) or False,
+         for_itinerary=bool(
+            data.get( 'forItinerary' ) ),
          threshold=0 )
 
       handler._write_json( {
@@ -62,6 +64,8 @@ class AnimalController():
          year=data.get( 'year' ),
          temp=data.get( 'temp' ),
          include_off_display_animals=False,
+         for_itinerary=bool(
+            data.get( 'forItinerary' ) ),
          threshold=0,
          exhibits_to_include=data.get( 'exhibitsToInclude' ) or [] )
 

@@ -12,6 +12,7 @@ from ..data_access.animal_visibility_schedule import delete_animal_visibility_sc
 from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
 from ..domain.animal_viewability import build_viewable_animals_on_day
 from ..domain.animal_viewability import resolve_animal_viewability_context
+from ..domain.filter_animal_records_for_itinerary import filter_animal_records_for_itinerary
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..itinerary.itinerary_animals import build_itinerary_animals
 from ...models import Animal
@@ -33,6 +34,7 @@ class AnimalCoordinator():
          year: VisitYear,
          temp: float | None = None,
          include_off_display_animals: bool = False,
+         for_itinerary: bool = False,
          threshold: int = 0,
          exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
 
@@ -48,6 +50,9 @@ class AnimalCoordinator():
          context.calendar_month,
          context.day_of_month,
          exhibits_to_include=exhibits_to_include )
+
+      if for_itinerary:
+         animal_records = filter_animal_records_for_itinerary( animal_records )
 
       return build_viewable_animals_on_day(
          animal_records,
@@ -234,13 +239,15 @@ class AnimalCoordinator():
          month: MonthInput,
          year: VisitYear,
          temp: float | None = None,
-         include_off_display_animals: bool = False ) -> list[ Animal ]:
+         include_off_display_animals: bool = False,
+         for_itinerary: bool = False ) -> list[ Animal ]:
 
       animals = cls.get_animals_viewable_on_day(
          day=day,
          month=month,
          year=year,
          temp=temp,
-         include_off_display_animals=include_off_display_animals )
+         include_off_display_animals=include_off_display_animals,
+         for_itinerary=for_itinerary )
 
       return build_animals_matching_query( animals, query )

@@ -29,6 +29,7 @@ test('buildScheduleItemSearchPayload limits search to animals', () => {
       {
          query: 'panda',
          includeAnimals: true,
+         forItinerary: true,
       }
    );
 });
@@ -97,6 +98,7 @@ test('placeholder search includes searchable schedule item kinds', () => {
       includeAttractions: true,
       includeGuardiansTalks: true,
       includeWildEncounters: true,
+      forItinerary: true,
    });
 });
 

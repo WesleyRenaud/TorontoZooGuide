@@ -28,6 +28,7 @@ function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {
       query,
       includeAnimals: true,
       includeOffDisplayAnimals,
+      forItinerary: true,
    };
 }
 

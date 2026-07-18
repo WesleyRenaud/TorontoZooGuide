@@ -131,6 +131,7 @@ export function createRegionSelectorState() {
          month,
          day,
          temp,
+         forItinerary: true,
       });
 
       for (const exhibitName of selectedExhibits) {
@@ -232,6 +233,7 @@ export function createRegionSelectorState() {
          month,
          day,
          temp,
+         forItinerary: true,
       });
       const selectedAnimals = omitRemovedAnimals(
          fullAnimals.map(makeSelectedAnimal).filter(Boolean),

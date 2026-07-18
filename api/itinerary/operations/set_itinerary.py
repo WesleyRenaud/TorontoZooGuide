@@ -62,6 +62,7 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
       year=save_input.year(),
       temp=visit_date_temp,
       include_off_display_animals=False,
+      for_itinerary=True,
       threshold=0,
       exhibits_to_include=list( save_input.selected_exhibits ) )
 
