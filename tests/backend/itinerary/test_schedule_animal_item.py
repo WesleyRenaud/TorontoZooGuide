@@ -31,6 +31,40 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
    assert len( result.itinerary.animals ) == 1
    assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
    assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
+   assert result.itinerary.arrival_time == result.itinerary.animals[ 0 ].start_time
+   assert result.itinerary.departure_time == result.itinerary.animals[ 0 ].end_time
+
+
+def test_schedule_singular_animal_on_date_only_itinerary_seeds_arrival_and_departure(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   before = ItineraryCoordinator.get_itinerary()
+
+   assert before.arrival_time is None
+   assert before.departure_time is None
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      confirming_schedule_item_not_on_itinerary=True )
+
+   assert result.success
+   assert len( result.itinerary.animals ) == 1
+   animal = result.itinerary.animals[ 0 ]
+   assert animal.start_time == '9:30 AM'
+   assert animal.end_time == '9:38 AM'
+   assert result.itinerary.arrival_time == animal.start_time
+   assert result.itinerary.departure_time == animal.end_time
 
 
 def test_schedule_itinerary_animal_uses_early_admission_when_warning_suppressed(

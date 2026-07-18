@@ -84,8 +84,7 @@ def commit_listed_schedule(
       end_time=end_time,
       current_arrival_time=saved_itinerary.arrival_time,
       current_departure_time=saved_itinerary.departure_time,
-      itinerary_context=itinerary_context,
-      seed_if_complete=False )
+      itinerary_context=itinerary_context )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 
