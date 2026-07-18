@@ -51,10 +51,6 @@ export function buildScheduleItemRequest(
 ) {
    const { startTime = '', durationMinutes = null } = scheduleOptions;
 
-   if (durationMinutes != null && !startTime) {
-      return null;
-   }
-
    const timePayload = {
       ...(startTime ? { startTime } : {}),
       ...(durationMinutes != null ? { durationMinutes } : {}),

@@ -247,7 +247,6 @@ export const itinerary = {
       timePlaceholder: '--:-- --',
       durationLabel: 'Duration',
       durationPlaceholder: 'Minutes (optional)',
-      durationRequiresTime: 'Enter a time before setting a duration.',
       emptyResults: 'No matching items found.',
       selectItem: 'Select item',
       itemSelected: 'Selected',

@@ -37,9 +37,6 @@ def parse_schedule_time_options(
    if duration_minutes is not None and parsed_duration is None:
       return ItineraryErrorType.SAVE_FAILED
 
-   if parsed_duration is not None and normalized_start is None:
-      return ItineraryErrorType.SAVE_FAILED
-
    return ParsedScheduleTimeOptions(
       start_time=normalized_start,
       duration_minutes=parsed_duration,

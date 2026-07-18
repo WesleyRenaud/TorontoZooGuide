@@ -363,7 +363,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
    assert saved_row.is_added is False
 
 
-def test_schedule_itinerary_item_rejects_duration_without_time(
+def test_schedule_itinerary_item_honors_duration_without_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -381,8 +381,9 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
       key=ANIMAL_KEY,
       duration_minutes=20 )
 
-   assert not result.success
-   assert result.status == ItineraryErrorType.SAVE_FAILED
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
+   assert result.itinerary.animals[ 0 ].end_time == '9:50 AM'
 
 
 def test_schedule_itinerary_item_requires_visit_date(

@@ -34,8 +34,6 @@ export function makeScheduleItemTimeFields(strings = {}) {
    durationInput.min = '1';
    durationInput.step = '1';
    durationInput.placeholder = strings.durationPlaceholder ?? '';
-   durationInput.disabled = true;
-   durationInput.setAttribute('aria-disabled', 'true');
 
    function clearTimeFieldValues() {
       selectedStartTime = '';
@@ -61,20 +59,10 @@ export function makeScheduleItemTimeFields(strings = {}) {
    }
 
    function syncDurationFieldState() {
-      if (isFixedTimeMode) {
-         durationInput.disabled = true;
-         durationInput.setAttribute('aria-disabled', 'true');
-         return;
-      }
+      const disabled = isFixedTimeMode;
 
-      const hasStartTime = Boolean(selectedStartTime);
-
-      durationInput.disabled = !hasStartTime;
-      durationInput.setAttribute('aria-disabled', String(!hasStartTime));
-
-      if (!hasStartTime) {
-         durationInput.value = '';
-      }
+      durationInput.disabled = disabled;
+      durationInput.setAttribute('aria-disabled', String(disabled));
    }
 
    function commitPickerTime(_selectedDates, dateStr, instance) {
@@ -86,7 +74,6 @@ export function makeScheduleItemTimeFields(strings = {}) {
 
       selectedStartTime = readPickerTimeValue(pickerInstance, dateStr, timeInput);
       timeInput.value = selectedStartTime;
-      syncDurationFieldState();
    }
 
    function resolveSelectedStartTime() {
@@ -99,6 +86,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
 
    timeField.append(timeLabel, timeInput);
    durationField.append(durationLabel, durationInput);
+   syncDurationFieldState();
 
    initTimePicker(timeInput, {
       allowInput: false,
@@ -109,16 +97,6 @@ export function makeScheduleItemTimeFields(strings = {}) {
          instance.calendarContainer.classList.add('schedule-item-time-picker');
          syncTimeInputDisabledState();
       },
-   });
-
-   durationInput.addEventListener('input', () => {
-      if (isFixedTimeMode) {
-         return;
-      }
-
-      if (!selectedStartTime) {
-         durationInput.value = '';
-      }
    });
 
    function setFixedTimeScheduleMode({ enabled = false } = {}) {
@@ -146,14 +124,6 @@ export function makeScheduleItemTimeFields(strings = {}) {
             startTime,
             durationMinutes,
          };
-      },
-      hasDurationWithoutTime() {
-         if (isFixedTimeMode) {
-            return false;
-         }
-
-         return !resolveSelectedStartTime()
-            && parseDurationMinutes(durationInput.value) !== null;
       },
       reset() {
          setFixedTimeScheduleMode({ enabled: false });

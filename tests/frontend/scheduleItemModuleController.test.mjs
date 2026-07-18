@@ -9,7 +9,6 @@ import { createDomNode } from './helpers/domNodeMock.mjs';
 const EVENT_TYPES = ['lunch', 'break'];
 const STRINGS = {
    emptyResults: 'No results',
-   durationRequiresTime: 'Duration requires a start time',
 };
 
 const ANIMAL_ROW = {
@@ -177,25 +176,38 @@ test('runSearch fetches rows and ignores stale responses', async () => {
    assert.deepEqual(refs.resultsEl.latestRows, [ANIMAL_ROW]);
 });
 
-test('handleSchedule blocks duration without a start time', async () => {
+test('handleSchedule allows duration without a start time', async () => {
    const refs = createRefs({ selection: 'lunch' });
-   const notices = [];
+   const scheduledOptions = [];
    const controller = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => true,
-         getScheduleTimeOptions: () => ({}),
+         getScheduleTimeOptions: () => ({
+            startTime: '',
+            durationMinutes: 30,
+         }),
       },
       deps: {
-         showNotice: (message) => {
-            notices.push(message);
+         scheduleSelectedItem: async (
+            _itinerary,
+            _selection,
+            _selectedRow,
+            _eventTypes,
+            scheduleOptions
+         ) => {
+            scheduledOptions.push(scheduleOptions);
+            return { errorType: 'success' };
          },
+         itinerarySuccess: (errorType) => errorType === 'success',
       },
    });
 
    await controller.handleSchedule();
 
-   assert.deepEqual(notices, [STRINGS.durationRequiresTime]);
+   assert.deepEqual(scheduledOptions, [{
+      startTime: '',
+      durationMinutes: 30,
+   }]);
 });
 
 test('handleSchedule dismisses the popup after a successful schedule', async () => {
@@ -208,7 +220,6 @@ test('handleSchedule dismisses the popup after a successful schedule', async () 
          scheduled = true;
       },
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({
             startTime: '12:00 PM',
             durationMinutes: 30,
@@ -439,7 +450,6 @@ test('handleSchedule shows resolved error notices and generic failures', async (
    const controller = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({}),
       },
       deps: {
@@ -460,7 +470,6 @@ test('handleSchedule shows resolved error notices and generic failures', async (
    const failingController = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({}),
       },
       deps: {
@@ -484,7 +493,6 @@ test('handleSchedule returns silently for not-on-itinerary confirmations', async
    const controller = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({}),
       },
       deps: {
@@ -509,7 +517,6 @@ test('handleSchedule ignores duplicate submissions while one is in flight', asyn
    const controller = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({}),
       },
       deps: {
@@ -601,7 +608,6 @@ test('bindEvents wires schedule and search input handlers', async () => {
    const controller = createController({
       refs,
       scheduleTimeFields: {
-         hasDurationWithoutTime: () => false,
          getScheduleTimeOptions: () => ({}),
       },
       deps: {
