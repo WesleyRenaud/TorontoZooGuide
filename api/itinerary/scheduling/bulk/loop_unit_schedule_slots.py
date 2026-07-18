@@ -48,11 +48,19 @@ def fetch_viewing_durations(
    durations: list[ int ] = []
 
    for animal_row in animals:
-      duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
-         conn,
-         animal_row.species,
-         animal_row.exhibit,
-         animal_row.enclosure_name )
+      stored_block = time_block_from_schedule_times(
+         animal_row.start_time,
+         animal_row.end_time )
+
+      if stored_block is not None:
+         duration_seconds = (
+            stored_block.end_seconds - stored_block.start_seconds )
+      else:
+         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
+            conn,
+            animal_row.species,
+            animal_row.exhibit,
+            animal_row.enclosure_name )
 
       if duration_seconds is None:
          return None

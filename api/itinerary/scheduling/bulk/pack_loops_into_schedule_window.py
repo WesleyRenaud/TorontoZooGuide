@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from .loop_schedule_unit import loop_schedule_unit_orientations
 from .loop_schedule_unit import loop_schedule_unit_reversed
 from .loop_schedule_unit import LoopScheduleUnit
+from .loop_unit_schedule_slots import fetch_viewing_durations
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....types import Connection
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
@@ -598,18 +598,9 @@ def _anchor_walk_node_id(
 def _total_viewing_duration_seconds(
       conn: Connection,
       animals: tuple[ ItineraryAnimalRecord, ... ] ) -> int | None:
-   total_duration_seconds = 0
+   durations = fetch_viewing_durations( conn, list( animals ) )
 
-   for animal_row in animals:
-      duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
-         conn,
-         animal_row.species,
-         animal_row.exhibit,
-         animal_row.enclosure_name )
+   if durations is None:
+      return None
 
-      if duration_seconds is None:
-         return None
-
-      total_duration_seconds += duration_seconds
-
-   return total_duration_seconds
+   return sum( durations )
