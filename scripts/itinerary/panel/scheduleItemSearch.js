@@ -142,6 +142,7 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
       return {
          query: normalizedQuery,
          includeAnimals: true,
+         forItinerary: true,
       };
    }
 
@@ -173,6 +174,7 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
          includeAttractions: true,
          includeGuardiansTalks: true,
          includeWildEncounters: true,
+         forItinerary: true,
       };
    }
 

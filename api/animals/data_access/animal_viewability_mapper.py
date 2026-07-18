@@ -48,7 +48,8 @@ def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:
       closed_start=row[ 'CLOSED_START' ],
       closed_end=row[ 'CLOSED_END' ],
       animal_day_seasonal_multiplier=row[ 'ANIMAL_DAY_SEASONAL_MULTIPLIER' ],
-      exhibit_day_seasonal_availability_multiplier=row[ 'EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER' ] )
+      exhibit_day_seasonal_availability_multiplier=row[ 'EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER' ],
+      is_zoomobile_only=ValueConversion.as_boolean( row[ 'IS_ZOOMOBILE_ONLY' ] ) )
 
 
 def map_animal_viewability_rows( rows: list[ Row ] ) -> list[ AnimalViewabilityRecord ]:

@@ -48,3 +48,4 @@ class AnimalViewabilityRecord:
    animal_day_seasonal_multiplier: SeasonalMultiplier
    exhibit_day_seasonal_availability_multiplier: SeasonalMultiplier
    include_all_viewing_spots: bool | None = None
+   is_zoomobile_only: bool = False
