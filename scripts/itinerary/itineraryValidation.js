@@ -1,4 +1,7 @@
-import { likelihoodToFraction } from '../likelihood/likelihoodValues.js';
+import {
+   likelihoodToFraction,
+   likelihoodToPercent,
+} from '../likelihood/likelihoodValues.js';
 import { normalizeNonNegativeNumber } from './panel/format.js';
 import { buildSpeciesExhibitKey } from './speciesExhibitKey.js';
 import {
@@ -77,22 +80,30 @@ function hasStoredOldLikelihood(item) {
    return item.old_likelihood != null;
 }
 
-function isRemovedForValidation(item) {
+function isRemovedForValidation(item, animalMinLikelihood) {
+   const after = likelihoodToPercent(item.likelihood);
+
    return (
       hasStoredOldLikelihood(item)
-      && likelihoodToFraction(item.likelihood) === 0
+      && after != null
+      && animalMinLikelihood != null
+      && after < animalMinLikelihood
    );
 }
 
-function buildRemovedAnimals(animals = []) {
+function buildRemovedAnimals(animals = [], animalMinLikelihood) {
    return animals
-      .filter(isRemovedForValidation)
+      .filter((animal) => isRemovedForValidation(animal, animalMinLikelihood))
       .map(withVisibilityFields);
 }
 
-function buildReducedVisibilityAnimals(animals = [], visibilityChangeThreshold) {
+function buildReducedVisibilityAnimals(
+   animals = [],
+   visibilityChangeThreshold,
+   animalMinLikelihood
+) {
    return animals
-      .filter((animal) => !isRemovedForValidation(animal))
+      .filter((animal) => !isRemovedForValidation(animal, animalMinLikelihood))
       .filter((animal) => {
          const before = likelihoodToFraction(animal.old_likelihood);
          const after = likelihoodToFraction(animal.likelihood);
@@ -123,9 +134,9 @@ function buildAddedAnimals(animals = []) {
    return animals.filter((animal) => animal.is_added === true);
 }
 
-function buildRemovedAttractions(attractions = []) {
+function buildRemovedAttractions(attractions = [], animalMinLikelihood) {
    return attractions
-      .filter(isRemovedForValidation)
+      .filter((attraction) => isRemovedForValidation(attraction, animalMinLikelihood))
       .map(withVisibilityFields);
 }
 
@@ -135,17 +146,26 @@ function buildRemovedScheduledItems(items = []) {
 
 export function buildItineraryValidationState(
    itinerary = {},
-   { animalVisibilityChangeThreshold } = {}
+   {
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
+   } = {}
 ) {
    const visibilityChangeThreshold = normalizeNonNegativeNumber(
       animalVisibilityChangeThreshold
+   );
+   const animalMinLikelihood = normalizeNonNegativeNumber(
+      itineraryAnimalMinLikelihood
    );
    const visibilityAnimals = aggregateAnimalsForVisibilityComparison(
       itinerary.animals
    );
    const removed = {
-      animals: buildRemovedAnimals(visibilityAnimals),
-      attractions: buildRemovedAttractions(itinerary.attractions),
+      animals: buildRemovedAnimals(visibilityAnimals, animalMinLikelihood),
+      attractions: buildRemovedAttractions(
+         itinerary.attractions,
+         animalMinLikelihood
+      ),
       guardiansTalks: buildRemovedScheduledItems(itinerary.guardiansTalks),
       wildEncounters: buildRemovedScheduledItems(itinerary.wildEncounters),
    };
@@ -155,7 +175,8 @@ export function buildItineraryValidationState(
    const reducedVisibility = {
       animals: buildReducedVisibilityAnimals(
          visibilityAnimals,
-         visibilityChangeThreshold
+         visibilityChangeThreshold,
+         animalMinLikelihood
       ),
    };
    const improvedVisibility = {

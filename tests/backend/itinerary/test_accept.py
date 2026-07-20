@@ -97,6 +97,31 @@ def test_accept_itinerary_removes_zero_likelihood_and_deleted_items( db: DbContr
    ] == [ 'Kangaroo' ]
 
 
+def test_accept_itinerary_removes_animals_below_min_likelihood_without_override(
+      db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'African Lion', 'Africa Savanna', 80, 0 ),
+               ( 'Spotted Hyena', 'Africa Savanna', 70, 35 ),
+               ( 'African Penguin', 'Africa Savanna', 90, 40 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryCoordinator.accept_itinerary()
+
+   assert [
+      row[ 'SPECIES' ]
+      for row in db.conn.execute(
+         'SELECT SPECIES FROM ItineraryAnimal ORDER BY SPECIES;' )
+   ] == [ 'African Penguin' ]
+
+
 def test_accept_itinerary_removes_zero_likelihood_animals_without_override(
       db: DbControllers ) -> None:
    db.conn.execute(

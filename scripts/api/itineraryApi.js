@@ -144,6 +144,7 @@ function normalizeItineraryConfig(config) {
    const normalizedStatuses = normalizeItineraryStatuses(source.itinerary_statuses);
    const normalizedConfig = {
       animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
+      itineraryAnimalMinLikelihood: source.itinerary_animal_min_likelihood,
       eventTypes: asArray(source.itinerary_event_types)
          .map(asTrimmedString)
          .filter(Boolean),

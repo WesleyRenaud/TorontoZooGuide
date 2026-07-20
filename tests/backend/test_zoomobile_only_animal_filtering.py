@@ -4,6 +4,7 @@ from test_animal_viewability_logic import make_animal_viewability_record
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.domain.filter_animal_records_for_itinerary import filter_animal_records_for_itinerary
+from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from conftest import DbControllers
 
 
@@ -54,7 +55,8 @@ def test_get_animals_viewable_on_day_excludes_seeded_zoomobile_only_viewings(
       month='June',
       year=2026,
       temp=22,
-      for_itinerary=True )
+      for_itinerary=True,
+      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD )
 
    map_keys = {
       ( animal.species, animal.enclosure_name )
@@ -73,3 +75,40 @@ def test_get_animals_viewable_on_day_excludes_seeded_zoomobile_only_viewings(
    assert ( 'Asian Wild Horse', 'Eurasia Drive Thru' ) not in itinerary_keys
    assert ( 'West Caucasian Tur', 'Zoomobile Habitat' ) not in itinerary_keys
    assert ( 'Asian Wild Horse', 'Shady Acres' ) in itinerary_keys
+
+
+def test_include_off_display_animals_includes_below_min_likelihood(
+      db: DbControllers ) -> None:
+   without_off_display = AnimalCoordinator.get_animals_viewable_on_day(
+      day=31,
+      month='October',
+      year=2026,
+      temp=12,
+      for_itinerary=True,
+      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      exhibits_to_include=[ 'Africa Savanna' ] )
+   with_off_display = AnimalCoordinator.get_animals_viewable_on_day(
+      day=31,
+      month='October',
+      year=2026,
+      temp=12,
+      for_itinerary=True,
+      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      include_off_display_animals=True,
+      exhibits_to_include=[ 'Africa Savanna' ] )
+
+   without_species = { animal.species for animal in without_off_display }
+   with_species = { animal.species for animal in with_off_display }
+   below_min = {
+      animal.species
+      for animal in with_off_display
+      if animal.likelihood < ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   }
+
+   assert 'Warthog' not in without_species
+   assert 'Warthog' in with_species
+   assert below_min
+   assert all(
+      animal.likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+      for animal in without_off_display
+   )

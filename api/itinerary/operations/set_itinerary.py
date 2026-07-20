@@ -16,6 +16,7 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .prepare_set_itinerary_context import prepare_set_itinerary_context
 from ..results.itinerary_save_result import ItinerarySaveResult
 from .set_itinerary_context import itinerary_controller_kwargs
+from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...shared.value_conversion import ValueConversion
 from ...types import Connection, DateInput, TimeInput
 from .validate_set_itinerary_zoo_hours import validate_set_itinerary_zoo_hours
@@ -63,7 +64,7 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
       temp=visit_date_temp,
       include_off_display_animals=False,
       for_itinerary=True,
-      threshold=0,
+      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       exhibits_to_include=list( save_input.selected_exhibits ) )
 
    return [

@@ -39,7 +39,7 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload(
          'temp': 22,
          'include_off_display_animals': False,
          'for_itinerary': False,
-         'threshold': 0,
+         'threshold': None,
          'exhibits_to_include': [ 'Africa Savanna' ]
       }
    )
@@ -71,7 +71,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response(
          'temp': 22,
          'include_off_display_animals': True,
          'for_itinerary': False,
-         'threshold': 0
+         'threshold': None,
       }
    )
    assert StubZooControllers.instances[ 0 ].closed is True

@@ -178,7 +178,7 @@ def build_viewable_animals_on_day(
       temp: float,
       sigma: int,
       include_off_display_animals: bool = False,
-      threshold: int = 0 ) -> list[ Animal ]:
+      threshold: int | None = None ) -> list[ Animal ]:
    built_animals = [
       build_viewable_animal_from_record(
          animal_record,
@@ -192,9 +192,13 @@ def build_viewable_animals_on_day(
    animals: list[ Animal ] = []
 
    for animal in visible_animals:
-      if (
-            animal.likelihood > threshold
-            or ( include_off_display_animals and animal.likelihood == 0 ) ):
+      meets_likelihood_threshold = (
+         animal.likelihood > 0
+         if threshold is None
+         else animal.likelihood >= threshold
+      )
+
+      if include_off_display_animals or meets_likelihood_threshold:
          animals.append( animal )
 
    return animals
