@@ -4,11 +4,14 @@ from dataclasses import replace
 from datetime import date
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
+from ...animals.search.animals_matching_query import species_exhibit_key
+from ...animals.search.animals_matching_query import species_exhibit_key_from_values
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
+from ..data_access.itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_attraction_save_carryover import itinerary_attraction_save_carryover
 from ..data_access.itinerary_event_record import ItineraryEventRecord
@@ -19,19 +22,74 @@ from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_win
 from ..domain.itinerary_visit_window import schedule_time_occurs_outside_visit_window
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians.itinerary.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from ...models import Animal
 from ...models import AnimalDiff
 from ...models import AttractionDiff
 from ...models import GuardiansTalkDiff
 from ...models import WildEncounterDiff
 from ...models.itinerary_event import ItineraryEvent
+from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
+from ...shared.enums import EnclosureType
 from ...shared.enums import ItineraryEventType
+from ...shared.value_conversion import ValueConversion
 from ...types import Connection, DateKey, ScheduleTimeKey
 from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
 from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_overlapping_saved_schedule
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...wild_encounters.itinerary.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+
+
+def _preferred_habitat_for_removed_animal(
+      animal_coordinator: type[ AnimalCoordinator ],
+      *,
+      visit_date: date,
+      visit_date_temp: float | None,
+      removed: ItineraryAnimalSaveCarryover ) -> Animal | None:
+   if not EnclosureType.is_outdoor( removed.enclosure_name ):
+      return None
+
+   indoor_habitats = [
+      animal
+      for animal in animal_coordinator.get_animals_viewable_on_day(
+         day=visit_date.day,
+         month=visit_date.month,
+         year=visit_date.year,
+         temp=visit_date_temp,
+         include_off_display_animals=True,
+         threshold=0,
+         exhibits_to_include=[ removed.exhibit ] )
+      if (
+         species_exhibit_key( animal )
+         == species_exhibit_key_from_values( removed.species, removed.exhibit )
+         and EnclosureType.is_indoor( animal.enclosure_type ) )
+   ]
+
+   if len( indoor_habitats ) != 1:
+      return None
+
+   return indoor_habitats[ 0 ]
+
+
+def _animal_diff_from_carryover(
+      carryover: ItineraryAnimalSaveCarryover,
+      *,
+      enclosure_name: str | None,
+      new_likelihood: int | None,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey ) -> AnimalDiff:
+   return AnimalDiff(
+      species=carryover.species,
+      exhibit=carryover.exhibit,
+      enclosure_name=enclosure_name,
+      old_likelihood=carryover.old_likelihood,
+      new_likelihood=new_likelihood,
+      is_added=carryover.is_added,
+      covered_by_talk=carryover.covered_by_talk,
+      start_time=start_time,
+      end_time=end_time,
+   )
 
 
 def validate_itinerary_animals(
@@ -46,12 +104,25 @@ def validate_itinerary_animals(
       saved_animal_rows: list[ ItineraryAnimalRecord ] | None = None,
       visit_date_is_changing: bool = False ) -> list[ AnimalDiff ]:
    diffs: list[ AnimalDiff ] = []
+   removed_habitats: list[ tuple[
+      ItineraryAnimalSaveCarryover,
+      ScheduleTimeKey,
+      ScheduleTimeKey,
+   ] ] = []
 
    for animal in animals:
       carryover = itinerary_animal_save_carryover(
          saved_animal_rows,
          animal,
          old_visit_date=old_visit_date )
+      start_time, end_time = (
+         ( carryover.start_time, carryover.end_time )
+         if visit_date_is_changing
+         else cleared_schedule_times_for_visit_window(
+            carryover.start_time,
+            carryover.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ) )
 
       saved_animals = animal_coordinator.get_animals_for_saved_itinerary(
          day=new_visit_date.day,
@@ -67,32 +138,56 @@ def validate_itinerary_animals(
                new_likelihood=None ) ],
       )
 
-      new_likelihood = (
-         None
-         if not saved_animals
-         else max( ( a.likelihood or 0 ) for a in saved_animals ) )
-      start_time, end_time = (
-         ( carryover.start_time, carryover.end_time )
-         if visit_date_is_changing
-         else cleared_schedule_times_for_visit_window(
-            carryover.start_time,
-            carryover.end_time,
-            arrival_time=arrival_time,
-            departure_time=departure_time ) )
+      if not saved_animals:
+         # Habitat is not viewable on this day. Pool outdoor removals so they
+         # can be replaced with the indoor habitat below.
+         removed_habitats.append( ( carryover, start_time, end_time ) )
+         continue
 
       diffs.append(
-         AnimalDiff(
-            species=carryover.species,
-            exhibit=carryover.exhibit,
+         _animal_diff_from_carryover(
+            carryover,
             enclosure_name=carryover.enclosure_name,
-            old_likelihood=carryover.old_likelihood,
-            new_likelihood=new_likelihood,
-            is_added=carryover.is_added,
-            covered_by_talk=carryover.covered_by_talk,
+            new_likelihood=max(
+               ( a.likelihood or 0 ) for a in saved_animals ),
             start_time=start_time,
-            end_time=end_time,
-         )
-      )
+            end_time=end_time ) )
+
+   for carryover, start_time, end_time in removed_habitats:
+      preferred = _preferred_habitat_for_removed_animal(
+         animal_coordinator,
+         visit_date=new_visit_date,
+         visit_date_temp=new_visit_date_temp,
+         removed=carryover )
+
+      if preferred is None:
+         diffs.append(
+            _animal_diff_from_carryover(
+               carryover,
+               enclosure_name=carryover.enclosure_name,
+               new_likelihood=None,
+               start_time=start_time,
+               end_time=end_time ) )
+         continue
+
+      enclosure_name = ValueConversion.as_nullable_string(
+         preferred.enclosure_name )
+      already_present = any(
+         diff.species == carryover.species
+         and diff.exhibit == carryover.exhibit
+         and diff.enclosure_name == enclosure_name
+         for diff in diffs )
+
+      if already_present:
+         continue
+
+      diffs.append(
+         _animal_diff_from_carryover(
+            carryover,
+            enclosure_name=enclosure_name,
+            new_likelihood=preferred.likelihood or 0,
+            start_time=start_time,
+            end_time=end_time ) )
 
    return diffs
 
@@ -274,16 +369,19 @@ def validate_itinerary_for_save(
       arrival_time=arrival_time,
       departure_time=departure_time,
       animals=(
-         validate_itinerary_animals(
-            animal_coordinator,
-            animals=save_input.animals,
-            new_visit_date=save_input.date,
-            arrival_time=arrival_time,
-            departure_time=departure_time,
-            new_visit_date_temp=new_visit_date_temp,
-            old_visit_date=old_visit_date,
-            saved_animal_rows=saved_itinerary.animal_rows,
-            visit_date_is_changing=visit_date_is_changing )
+         uncover_animals_for_unavailable_talks(
+            conn,
+            validate_itinerary_animals(
+               animal_coordinator,
+               animals=save_input.animals,
+               new_visit_date=save_input.date,
+               arrival_time=arrival_time,
+               departure_time=departure_time,
+               new_visit_date_temp=new_visit_date_temp,
+               old_visit_date=old_visit_date,
+               saved_animal_rows=saved_itinerary.animal_rows,
+               visit_date_is_changing=visit_date_is_changing ),
+            guardians_talk_diffs )
          if save_input.animals
          else [] ),
       attractions=(

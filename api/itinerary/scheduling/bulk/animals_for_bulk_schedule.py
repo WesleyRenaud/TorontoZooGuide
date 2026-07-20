@@ -57,3 +57,41 @@ def stops_for_bulk_schedule(
          saved_itinerary,
          only_previously_scheduled=only_previously_scheduled ),
    ]
+
+
+def stops_for_bulk_schedule_matching_previous(
+      saved_itinerary_before_clear: SavedItinerary | None,
+      saved_itinerary_after_save: SavedItinerary ) -> list[ LoopScheduleStop ]:
+   # previously scheduled species may have a new enclosure after validate
+   # (outdoor Aldabra → indoor). Pack the post-save row, not the removed spot —
+   # persisting the old enclosure fails and aborts the rest of the loop group.
+   if saved_itinerary_before_clear is None:
+      return []
+
+   previously_scheduled_species_exhibits = {
+      animal_row.species_exhibit_key()
+      for animal_row in saved_itinerary_before_clear.animal_rows
+      if has_itinerary_schedule_times(
+         animal_row.start_time,
+         animal_row.end_time )
+   }
+   previously_scheduled_attractions = {
+      attraction_row.name_key()
+      for attraction_row in saved_itinerary_before_clear.attraction_rows
+      if has_itinerary_schedule_times(
+         attraction_row.start_time,
+         attraction_row.end_time )
+   }
+
+   return [
+      *(
+         animal_row
+         for animal_row in saved_itinerary_after_save.animal_rows
+         if animal_row.species_exhibit_key() in previously_scheduled_species_exhibits
+      ),
+      *(
+         attraction_row
+         for attraction_row in saved_itinerary_after_save.attraction_rows
+         if attraction_row.name_key() in previously_scheduled_attractions
+      ),
+   ]
