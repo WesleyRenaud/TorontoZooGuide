@@ -44,6 +44,7 @@ PARTIAL_RUNTIME_TABLES = {
    'WildEncounterSchedule': 'WILD_ENCOUNTER TEXT',
    'WildEncounterCancellation': 'WILD_ENCOUNTER TEXT',
    'ItineraryDate': 'ITINERARY_DATE DATE',
+   'ItineraryExhibit': 'EXHIBIT TEXT',
    'ItineraryAnimal': 'SPECIES TEXT',
    'ItineraryGuardiansTalk': 'TALK_NAME TEXT',
    'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT',
@@ -228,6 +229,9 @@ EXPECTED_RUNTIME_COLUMNS = {
       'ITINERARY_DATE',
       'ARRIVAL_TIME',
       'DEPARTURE_TIME',
+   },
+   'ItineraryExhibit': {
+      'EXHIBIT',
    },
    'ItineraryAnimal': {
       'SPECIES',

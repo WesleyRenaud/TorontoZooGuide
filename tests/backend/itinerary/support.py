@@ -5,6 +5,7 @@ from datetime import date
 
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -14,6 +15,9 @@ from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.shared.calendar_dates import DateValues
+from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from api.types import DateInput
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
@@ -45,6 +49,41 @@ CHEETAH_INDO_MALAYA_ITINERARY_ENTRY = {
    'species': 'Cheetah',
    'exhibit': 'Indo-Malaya Outdoor',
 }
+
+
+def itinerary_animals_for_exhibits(
+      exhibits: list[ str ],
+      *,
+      visit_date: DateInput,
+      visit_date_temp: float | None = None ) -> list[ dict[ str, str | None ] ]:
+   parsed_date = DateValues.parse_date_value( visit_date )
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
+      day=parsed_date.day,
+      month=parsed_date.month,
+      year=parsed_date.year,
+      temp=visit_date_temp,
+      include_off_display_animals=False,
+      for_itinerary=True,
+      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      exhibits_to_include=exhibits )
+
+   animal_inputs: list[ dict[ str, str | None ] ] = []
+
+   for animal in animals:
+      if animal.exhibit == None:
+         continue
+
+      entry: dict[ str, str | None ] = {
+         'species': animal.species,
+         'exhibit': animal.exhibit,
+      }
+
+      if animal.enclosure_name:
+         entry[ 'enclosure_name' ] = animal.enclosure_name
+
+      animal_inputs.append( entry )
+
+   return animal_inputs
 
 
 def guardians_talk_save_entry(

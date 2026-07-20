@@ -187,6 +187,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
       'date': '2026-06-15',
       'arrival_time': None,
       'departure_time': None,
+      'selected_exhibits': [],
       'animals': [
          {
             'species': 'Amur Tiger',

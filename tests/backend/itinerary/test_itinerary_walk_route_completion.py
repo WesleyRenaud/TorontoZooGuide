@@ -10,6 +10,7 @@ from api.models import Attraction
 def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_animals_and_attractions() -> None:
    itinerary = build_itinerary(
       date='2026-06-20',
+      selected_exhibits=[],
       animals=[
          Animal(
             species='African Lion',
@@ -35,6 +36,7 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_animals_and_a
 def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_scheduled() -> None:
    itinerary = build_itinerary(
       date='2026-06-20',
+      selected_exhibits=[],
       animals=[
          Animal(
             species='African Lion',
@@ -61,6 +63,7 @@ def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_sch
 def test_should_append_return_to_entrance_only_when_all_guest_items_are_scheduled() -> None:
    partial_itinerary = build_itinerary(
       date='2026-06-20',
+      selected_exhibits=[],
       animals=[
          Animal(
             species='African Lion',
@@ -79,6 +82,7 @@ def test_should_append_return_to_entrance_only_when_all_guest_items_are_schedule
       departure_time='5:00 PM' )
    complete_itinerary = build_itinerary(
       date='2026-06-20',
+      selected_exhibits=[],
       animals=[
          Animal(
             species='African Lion',

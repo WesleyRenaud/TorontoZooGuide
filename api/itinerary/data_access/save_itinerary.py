@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from .itinerary_exhibit import save_itinerary_exhibits
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
@@ -148,7 +149,8 @@ def save_itinerary_events( cur: Cursor, events: list[ ItineraryEvent ] ) -> None
 def save_validated_itinerary(
       conn: Connection,
       visit_date: date,
-      validated_itinerary: ValidatedItinerary ) -> bool:
+      validated_itinerary: ValidatedItinerary,
+      selected_exhibits: list[ str ] | None = None ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -157,6 +159,7 @@ def save_validated_itinerary(
          visit_date,
          validated_itinerary.arrival_time,
          validated_itinerary.departure_time )
+      save_itinerary_exhibits( cur, selected_exhibits or [] )
       save_itinerary_animals( cur, validated_itinerary.animals )
       save_itinerary_attractions( cur, validated_itinerary.attractions )
       save_itinerary_guardians_talks( cur, validated_itinerary.guardians_talks )

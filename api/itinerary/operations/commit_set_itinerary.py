@@ -52,7 +52,8 @@ def commit_set_itinerary(
    save_validated_itinerary(
       context.conn,
       context.save_input.date,
-      validated_itinerary )
+      validated_itinerary,
+      selected_exhibits=context.save_input.selected_exhibits )
 
    if context.validated_itinerary.needs_schedule_reschedule:
       reschedule_result = reschedule_itinerary_items_after_fixed_time_activity_add(

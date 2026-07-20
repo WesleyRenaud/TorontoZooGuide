@@ -60,18 +60,18 @@ def map_itinerary_save_input(
       date: DateInput,
       arrival_time: TimeInput,
       departure_time: TimeInput,
-      animals: list[ dict[ str, str | None ] ] | None,
-      attractions: list[ str ] | None,
-      guardians_talks: list[ dict[ str, str | None ] ] | None,
-      wild_encounters: list[ WildEncounterScheduleItemKey ] | None,
-      selected_exhibits: list[ str ] | None = None ) -> ItinerarySaveInput:
+      selected_exhibits: list[ str ] | None = None,
+      animals: list[ dict[ str, str | None ] ] | None = None,
+      attractions: list[ str ] | None = None,
+      guardians_talks: list[ dict[ str, str | None ] ] | None = None,
+      wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
       date=DateValues.parse_date_value( date ),
       arrival_time=DateValues.normalize_itinerary_schedule_time( arrival_time ),
       departure_time=DateValues.normalize_itinerary_schedule_time( departure_time ),
+      selected_exhibits=map_named_strings( selected_exhibits ),
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
       guardians_talks=map_guardians_talk_inputs( guardians_talks ),
-      wild_encounters=list( wild_encounters or [] ),
-      selected_exhibits=map_named_strings( selected_exhibits ) )
+      wild_encounters=list( wild_encounters or [] ) )

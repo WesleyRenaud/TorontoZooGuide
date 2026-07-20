@@ -14,11 +14,11 @@ class ItinerarySaveInput:
    date: date
    arrival_time: ScheduleTimeKey
    departure_time: ScheduleTimeKey
-   animals: list[ ItineraryAnimalInput ]
-   attractions: list[ str ]
-   guardians_talks: list[ ItineraryGuardiansTalkInput ]
-   wild_encounters: list[ WildEncounterScheduleItemKey ]
    selected_exhibits: list[ str ] = field( default_factory=list )
+   animals: list[ ItineraryAnimalInput ] = field( default_factory=list )
+   attractions: list[ str ] = field( default_factory=list )
+   guardians_talks: list[ ItineraryGuardiansTalkInput ] = field( default_factory=list )
+   wild_encounters: list[ WildEncounterScheduleItemKey ] = field( default_factory=list )
 
 
    def month( self ) -> int:

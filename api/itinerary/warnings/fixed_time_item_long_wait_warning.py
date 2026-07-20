@@ -322,6 +322,7 @@ def _itinerary_with_fixed_time_items(
       wild_encounters: list[ WildEncounter ] | None = None ) -> Itinerary:
    return build_itinerary(
       date=itinerary.date,
+      selected_exhibits=list( itinerary.selected_exhibits ),
       animals=list( itinerary.animals ),
       attractions=list( itinerary.attractions ),
       guardians_talks=(

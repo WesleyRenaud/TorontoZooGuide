@@ -18,6 +18,7 @@ import {
    asNullableString,
    asObject,
    asTrimmedString,
+   asTrimmedStringList,
 } from './normalizeValues.js';
 import {
    ScheduleItemKind,
@@ -87,6 +88,7 @@ function normalizeItineraryModel(itinerary) {
       date: asTrimmedString(source.date),
       arrivalTime: asTrimmedString(source.arrival_time),
       departureTime: asTrimmedString(source.departure_time),
+      selectedExhibits: asTrimmedStringList(source.selected_exhibits),
       ...normalizeItineraryCollections(source),
       events: normalizeItineraryEvents(source.events),
    };

@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry, wild_encounter_key
+from itinerary.support import itinerary_animals_for_exhibits
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
@@ -77,7 +78,9 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
 
    initial_result = ItineraryCoordinator.set_itinerary(
       date=VISIT_DATE,
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         selected_exhibits,
+         visit_date=VISIT_DATE ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
@@ -103,7 +106,9 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
 
    build_result = ItineraryCoordinator.set_itinerary(
       date=VISIT_DATE,
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         selected_exhibits,
+         visit_date=VISIT_DATE ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
@@ -138,7 +143,9 @@ def test_one_shot_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
 
    result = ItineraryCoordinator.set_itinerary(
       date=VISIT_DATE,
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         selected_exhibits,
+         visit_date=VISIT_DATE ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
@@ -233,7 +240,9 @@ def test_busy_itinerary_build_keeps_kangaroo_when_expired_schedule_row_also_exis
 
    result = ItineraryCoordinator.set_itinerary(
       date=VISIT_DATE,
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         selected_exhibits,
+         visit_date=VISIT_DATE ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[

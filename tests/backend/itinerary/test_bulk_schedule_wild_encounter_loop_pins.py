@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from itinerary.support import itinerary_animals_for_exhibits
 from itinerary.support import wild_encounter_key
 from wild_encounter_schedule_support import wire_schedule_rows
 
@@ -169,7 +170,9 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ AFRICA_SAVANNA ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[],
       wild_encounters=[ wild_encounter_key( GRIZZLY_BEAR_ENCOUNTER, start_time='13:00' ) ],
@@ -266,7 +269,9 @@ def test_bulk_schedule_does_not_overlap_loop_pin_wild_encounter(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ AFRICA_SAVANNA ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[],
       wild_encounters=[ wild_encounter_key( GRIZZLY_BEAR_ENCOUNTER, start_time='13:00' ) ],

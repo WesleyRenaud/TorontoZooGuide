@@ -8,6 +8,7 @@ from .itinerary_date_mapper import map_itinerary_date_record
 from .itinerary_date_record import ItineraryDateRecord
 from .itinerary_event_mapper import map_itinerary_event_records
 from .itinerary_event_record import ItineraryEventRecord
+from .itinerary_exhibit import fetch_itinerary_exhibits
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
@@ -141,6 +142,7 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
          date_value=None,
          arrival_time=None,
          departure_time=None,
+         selected_exhibits=[],
          animal_rows=[],
          attraction_rows=[],
          guardians_talk_rows=[],
@@ -151,6 +153,7 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
       date_value=date_record.itinerary_date,
       arrival_time=date_record.arrival_time,
       departure_time=date_record.departure_time,
+      selected_exhibits=fetch_itinerary_exhibits( conn ),
       animal_rows=fetch_itinerary_animal_rows( conn ),
       attraction_rows=fetch_itinerary_attraction_rows( conn ),
       guardians_talk_rows=fetch_itinerary_guardians_talk_rows( conn ),
