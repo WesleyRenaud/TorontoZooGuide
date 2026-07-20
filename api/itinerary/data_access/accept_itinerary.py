@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_animal_input import ItineraryAnimalInput
+from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...types import Connection, Cursor
 
 
@@ -32,10 +33,10 @@ def remove_declined_itinerary_animals(
       f"""   DELETE FROM ItineraryAnimal
              WHERE OLD_LIKELIHOOD IS NOT NULL
                 AND NEW_LIKELIHOOD IS NOT NULL
-                AND NEW_LIKELIHOOD = 0
+                AND NEW_LIKELIHOOD < ?
                 { exclusion_clause };
       """,
-      exclusion_params )
+      ( ITINERARY_ANIMAL_MIN_LIKELIHOOD, *exclusion_params ) )
 
 
 def clear_added_itinerary_animals( cur: Cursor ) -> None:

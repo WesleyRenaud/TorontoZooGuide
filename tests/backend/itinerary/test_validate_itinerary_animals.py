@@ -8,6 +8,7 @@ from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInpu
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
 from api.itinerary.validation.itinerary_validation import validate_itinerary_animals
+from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from conftest import DbControllers
 
 
@@ -53,6 +54,39 @@ def test_validate_animals_removes_unavailable_entries(
       for d in result
       if d.species == 'African Penguin'
    ] == [ ( 'African Penguin', True ) ]
+
+
+def test_validate_animals_on_date_change_keeps_below_min_likelihood_until_accept(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 1, 15 ) )
+
+   result = validate_itinerary_animals(
+      AnimalCoordinator,
+      animals=[
+         ItineraryAnimalInput(
+            species='Spotted Hyena',
+            exhibit='Africa Savanna' ),
+         ItineraryAnimalInput(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Giraffe House' ),
+         ItineraryAnimalInput(
+            species='African Lion',
+            exhibit='Africa Savanna' ),
+      ],
+      new_visit_date=date( 2026, 1, 15 ),
+      arrival_time='09:30',
+      departure_time='17:00',
+      new_visit_date_temp=-10,
+      old_visit_date='2026-06-15',
+      visit_date_is_changing=True )
+
+   by_species = { diff.species: diff for diff in result }
+   assert 'Spotted Hyena' in by_species
+   assert by_species[ 'Spotted Hyena' ].new_likelihood < ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   assert by_species[ 'Masai Giraffe' ].new_likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   assert by_species[ 'African Lion' ].new_likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
 
 
 def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(

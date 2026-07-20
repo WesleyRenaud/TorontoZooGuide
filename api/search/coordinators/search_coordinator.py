@@ -17,6 +17,7 @@ from ...pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from ...restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from ...restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from ...types import MonthInput, VisitDay, VisitYear
+from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
@@ -66,7 +67,11 @@ class SearchCoordinator():
                year=year,
                temp=temp,
                include_off_display_animals=include_off_display_animals,
-               for_itinerary=for_itinerary ) or []
+               for_itinerary=for_itinerary,
+               threshold=(
+                  ITINERARY_ANIMAL_MIN_LIKELIHOOD
+                  if for_itinerary
+                  else None ) ) or []
          )
 
       if include_pavilions:

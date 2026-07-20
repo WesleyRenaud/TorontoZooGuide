@@ -32,6 +32,7 @@ const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
 function normalizedItineraryConfig(overrides = {}) {
    return {
       animalVisibilityChangeThreshold: overrides.animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood: overrides.itineraryAnimalMinLikelihood,
       eventTypes: overrides.eventTypes ?? [],
       visitBoundaryEventTypes: overrides.visitBoundaryEventTypes ?? {
          arrival: 'arrival',
@@ -105,6 +106,8 @@ function mockItineraryConfigResponse(overrides = {}) {
       itinerary_config: {
          animal_visibility_change_threshold:
             overrides.animalVisibilityChangeThreshold,
+         itinerary_animal_min_likelihood:
+            overrides.itineraryAnimalMinLikelihood,
          itinerary_event_types: overrides.eventTypes ?? [],
          itinerary_visit_boundary_event_types:
             overrides.visitBoundaryEventTypes ?? {
@@ -498,6 +501,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
       },
       ...mockItineraryConfigResponse({
          animalVisibilityChangeThreshold: 25,
+         itineraryAnimalMinLikelihood: 40,
          eventTypes: [
             'arrival',
             'breakfast',
@@ -526,6 +530,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
       itineraryPath: normalizedItineraryPath(),
       itineraryConfig: normalizedItineraryConfig({
          animalVisibilityChangeThreshold: 25,
+         itineraryAnimalMinLikelihood: 40,
          eventTypes: [
             'arrival',
             'breakfast',

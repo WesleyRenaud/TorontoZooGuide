@@ -13,6 +13,7 @@ import { mockJsonResponse } from './helpers/fetchMock.mjs';
 
 const BACKEND_ITINERARY_CONFIG = {
    animal_visibility_change_threshold: 20,
+   itinerary_animal_min_likelihood: 40,
    itinerary_event_types: [
       'arrival',
       'breakfast',

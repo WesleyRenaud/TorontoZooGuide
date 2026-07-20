@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.animal_coordinator import AnimalCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...shared.enums import AnimalViewingScope
 from ...shared.typed_dict import to_dict_with_type
 
@@ -17,9 +18,11 @@ class AnimalController():
          year=data.get( 'year' ),
          temp=data.get( 'temp' ),
          include_off_display_animals=data.get( 'includeOffDisplayAnimals' ) or False,
-         for_itinerary=bool(
-            data.get( 'forItinerary' ) ),
-         threshold=0 )
+         for_itinerary=bool( data.get( 'forItinerary' ) ),
+         threshold=(
+            ITINERARY_ANIMAL_MIN_LIKELIHOOD
+            if bool( data.get( 'forItinerary' ) )
+            else None ) )
 
       handler._write_json( {
          'animals': [ animal.to_dict() for animal in animals ],
@@ -64,9 +67,11 @@ class AnimalController():
          year=data.get( 'year' ),
          temp=data.get( 'temp' ),
          include_off_display_animals=False,
-         for_itinerary=bool(
-            data.get( 'forItinerary' ) ),
-         threshold=0,
+         for_itinerary=bool( data.get( 'forItinerary' ) ),
+         threshold=(
+            ITINERARY_ANIMAL_MIN_LIKELIHOOD
+            if bool( data.get( 'forItinerary' ) )
+            else None ),
          exhibits_to_include=data.get( 'exhibitsToInclude' ) or [] )
 
       handler._write_json( {

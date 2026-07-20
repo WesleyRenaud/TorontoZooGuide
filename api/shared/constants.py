@@ -10,6 +10,7 @@ from ..types import Connection
 
 OPEN_ENDED_SQL_DATE = '9999-12-31'
 ANIMAL_VISIBILITY_CHANGE_THRESHOLD = 20
+ITINERARY_ANIMAL_MIN_LIKELIHOOD = 40
 MIN_ITINERARY_VISIT_DURATION_MINUTES = 120
 MAX_FIXED_TIME_ITEM_WAIT_MINUTES = 30
 SCHEDULE_SLOT_STEP_SECONDS = 30
@@ -28,6 +29,7 @@ def itinerary_config_to_dict(
          int | list[ str ] | dict[ str, str ] | list[ dict[ str, bool | str ] ],
       ] = {
       'animal_visibility_change_threshold': ANIMAL_VISIBILITY_CHANGE_THRESHOLD,
+      'itinerary_animal_min_likelihood': ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       'itinerary_event_types': [
          event_type.value for event_type in ItineraryEventType
       ],

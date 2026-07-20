@@ -35,7 +35,7 @@ class AnimalCoordinator():
          temp: float | None = None,
          include_off_display_animals: bool = False,
          for_itinerary: bool = False,
-         threshold: int = 0,
+         threshold: int | None = None,
          exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
 
       exhibits_to_include = exhibits_to_include or []
@@ -240,7 +240,8 @@ class AnimalCoordinator():
          year: VisitYear,
          temp: float | None = None,
          include_off_display_animals: bool = False,
-         for_itinerary: bool = False ) -> list[ Animal ]:
+         for_itinerary: bool = False,
+         threshold: int | None = None ) -> list[ Animal ]:
 
       animals = cls.get_animals_viewable_on_day(
          day=day,
@@ -248,6 +249,7 @@ class AnimalCoordinator():
          year=year,
          temp=temp,
          include_off_display_animals=include_off_display_animals,
-         for_itinerary=for_itinerary )
+         for_itinerary=for_itinerary,
+         threshold=threshold )
 
       return build_animals_matching_query( animals, query )
