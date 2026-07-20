@@ -184,8 +184,17 @@ function pruneSelectedExhibitsWithoutAnimals(animals = []) {
    saveSelectedNames(SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
 }
 
+function syncSelectedExhibitsFromItinerary(itinerary = {}) {
+   if (!Array.isArray(itinerary.selectedExhibits)) {
+      return;
+   }
+
+   saveSelectedNames(SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
+}
+
 export function syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
    writeItineraryAnimalDraft(itinerary.animals ?? []);
+   syncSelectedExhibitsFromItinerary(itinerary);
    clearRemovedAnimalKeys();
 }
 

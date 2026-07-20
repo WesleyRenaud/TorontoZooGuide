@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from itinerary.support import itinerary_animals_for_exhibits
+
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from api.shared.calendar_dates import DateValues
@@ -18,7 +20,9 @@ def _scheduled_animal_order(
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ 'Africa Savanna' ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],

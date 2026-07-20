@@ -17,6 +17,7 @@ from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncou
 def empty_itinerary() -> Itinerary:
    return Itinerary(
       date='',
+      selected_exhibits=[],
       animals=[],
       attractions=[],
       guardians_talks=[],
@@ -28,6 +29,7 @@ def empty_itinerary() -> Itinerary:
 
 def build_itinerary(
       date: DateInput,
+      selected_exhibits: list[ str ],
       animals: list[ Animal ],
       attractions: list[ Attraction ],
       guardians_talks: list[ GuardiansTalk ],
@@ -38,6 +40,7 @@ def build_itinerary(
 
    return Itinerary(
       date=date,
+      selected_exhibits=selected_exhibits,
       animals=animals,
       attractions=attractions,
       guardians_talks=guardians_talks,
@@ -91,6 +94,7 @@ def build_current_itinerary(
 
    return build_itinerary(
       date=saved_itinerary.date_value,
+      selected_exhibits=saved_itinerary.selected_exhibits,
       animals=animals,
       attractions=attractions,
       guardians_talks=guardians_talks,

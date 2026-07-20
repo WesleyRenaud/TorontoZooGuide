@@ -32,6 +32,7 @@ from . import itinerary_attraction
 from . import itinerary_date
 from . import itinerary_event
 from . import itinerary_event_default
+from . import itinerary_exhibit
 from . import itinerary_guardians_talk
 from . import itinerary_status
 from . import itinerary_status_suppression
@@ -122,6 +123,7 @@ runtime_tables = [
    drinking_fountain_status,
    itinerary_status_suppression,
    itinerary_date,
+   itinerary_exhibit,
    itinerary_animal,
    itinerary_attraction,
    itinerary_guardians_talk,

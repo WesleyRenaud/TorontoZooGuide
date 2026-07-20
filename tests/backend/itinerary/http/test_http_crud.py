@@ -15,11 +15,11 @@ def test_itinerary_endpoints_return_success_payloads(
          'date': '2026-06-15',
          'arrivalTime': '09:30',
          'departureTime': '17:00',
+         'selectedExhibits': [ ANIMAL_EXHIBIT ],
          'animals': [],
          'attractions': [],
          'guardiansTalks': [],
          'wildEncounters': [],
-         'selectedExhibits': [ ANIMAL_EXHIBIT ]
       }
    )
    get_handler = make_handler( '/get-itinerary' )
@@ -45,11 +45,11 @@ def test_itinerary_endpoints_return_success_payloads(
          'date': '2026-06-15',
          'arrival_time': '09:30',
          'departure_time': '17:00',
+         'selected_exhibits': [ ANIMAL_EXHIBIT ],
          'animals': [],
          'attractions': [],
          'guardians_talks': [],
          'wild_encounters': [],
-         'selected_exhibits': [ ANIMAL_EXHIBIT ],
          'visit_date_temp': None,
          'overriding_conflicting_guardians_talks': False,
          'confirming_short_visit': False,

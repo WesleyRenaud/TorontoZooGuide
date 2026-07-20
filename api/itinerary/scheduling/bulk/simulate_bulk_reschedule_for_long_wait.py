@@ -319,6 +319,7 @@ def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:
 
    return build_itinerary(
       date=itinerary.date,
+      selected_exhibits=list( itinerary.selected_exhibits ),
       animals=cleared_animals,
       attractions=cleared_attractions,
       guardians_talks=list( itinerary.guardians_talks ),
@@ -393,6 +394,7 @@ def _build_itinerary_from_proposed_items(
 
    return build_itinerary(
       date=visit_date,
+      selected_exhibits=[],
       animals=animals,
       attractions=attractions,
       guardians_talks=guardians_talks,

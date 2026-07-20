@@ -5,6 +5,7 @@ from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
 from itinerary.support import guardians_talk_wire
+from itinerary.support import itinerary_animals_for_exhibits
 from itinerary.support import unschedule_itinerary_item
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
@@ -51,7 +52,9 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         _selected_exhibits_for_africa_savanna(),
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='11:00' ) ],
       wild_encounters=[],
@@ -124,7 +127,9 @@ def _schedule_africa_savanna_with_zebra_talk(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         _selected_exhibits_for_africa_savanna(),
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time=talk_time ) ],
       wild_encounters=[],

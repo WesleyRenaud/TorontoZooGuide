@@ -4,6 +4,8 @@ import { createItineraryConfirmationCancelledResult } from '../itineraryConfirma
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
+import { loadSelectedNames } from '../selectors/regionSelector/regionStorage.js';
+import { SELECTED_EXHIBITS_KEY } from '../storageKeys.js';
 import { APP_STRINGS } from '../../strings.js';
 import {
    shouldBlockEmptyFinish,
@@ -40,6 +42,7 @@ function saveFinalItinerary(
 ) {
    return saveItineraryFn(finalItinerary, {
       overridingConflictingGuardiansTalks,
+      selectedExhibits: loadSelectedNames(SELECTED_EXHIBITS_KEY),
    });
 }
 

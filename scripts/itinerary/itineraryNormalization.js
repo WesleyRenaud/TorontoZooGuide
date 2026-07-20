@@ -24,6 +24,7 @@ function normalizeItinerarySource(itinerary) {
       date: source.date,
       arrivalTime: source.arrivalTime,
       departureTime: source.departureTime,
+      selectedExhibits: source.selectedExhibits,
       animals: normalizeItineraryItems(source.animals),
       attractions: normalizeItineraryItems(source.attractions),
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),

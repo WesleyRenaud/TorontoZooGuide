@@ -20,12 +20,12 @@ class ItineraryController():
       date = data.get( 'date' )
       arrival_time = data.get( 'arrivalTime' )
       departure_time = data.get( 'departureTime' )
+      selected_exhibits = data.get( 'selectedExhibits' )
       animals = data.get( 'animals' )
       attractions = data.get( 'attractions' )
       guardians_talks = data.get( 'guardiansTalks' )
       wild_encounters = WildEncounterScheduleItemKey.from_wires(
          data.get( 'wildEncounters' ) )
-      selected_exhibits = data.get( 'selectedExhibits' )
       temp = data.get( 'temp' )
       overriding_conflicting_guardians_talks = bool(
          data.get( 'overridingConflictingGuardiansTalks' ) )
@@ -45,11 +45,11 @@ class ItineraryController():
          date=date,
          arrival_time=arrival_time,
          departure_time=departure_time,
+         selected_exhibits=selected_exhibits,
          animals=animals,
          attractions=attractions,
          guardians_talks=guardians_talks,
          wild_encounters=wild_encounters,
-         selected_exhibits=selected_exhibits,
          visit_date_temp=temp,
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),

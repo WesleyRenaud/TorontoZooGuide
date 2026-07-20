@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
+from itinerary.support import itinerary_animals_for_exhibits
 from itinerary.support import schedule_itinerary_item
 from wild_encounter_schedule_support import wire_schedule_rows
 
@@ -83,7 +84,9 @@ def test_bulk_schedule_reserves_before_otter_talk_for_americas_pavilion(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         _selected_exhibits_for_regions( REGIONS ),
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[],
@@ -150,7 +153,9 @@ def test_adding_otter_talk_after_bulk_keeps_americas_pavilion_scheduled(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         _selected_exhibits_for_regions( REGIONS ),
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],

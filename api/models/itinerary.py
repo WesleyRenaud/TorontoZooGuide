@@ -13,6 +13,7 @@ class Itinerary:
    def __init__(
          self,
          date: str,
+         selected_exhibits: list[ str ] | None = None,
          animals: list[ Animal ] | None = None,
          attractions: list[ Attraction ] | None = None,
          guardians_talks: list[ GuardiansTalk ] | None = None,
@@ -21,6 +22,7 @@ class Itinerary:
          arrival_time: ScheduleTimeKey = None,
          departure_time: ScheduleTimeKey = None ) -> None:
       self.date = date
+      self.selected_exhibits = selected_exhibits or []
       self.animals = animals or []
       self.attractions = attractions or []
       self.guardians_talks = guardians_talks or []
@@ -35,6 +37,7 @@ class Itinerary:
          'date': self.date,
          'arrival_time': self.arrival_time,
          'departure_time': self.departure_time,
+         'selected_exhibits': list( self.selected_exhibits ),
          'animals': [
             to_dict_with_type( a, 'animal' ) for a in self.animals
          ],
@@ -49,5 +52,5 @@ class Itinerary:
          ],
          'events': [
             to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
-         ]
+         ],
       }

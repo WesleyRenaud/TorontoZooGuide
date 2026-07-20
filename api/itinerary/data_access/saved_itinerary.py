@@ -18,10 +18,11 @@ class SavedItinerary:
    date_value: DateInput | None
    arrival_time: ScheduleTimeKey
    departure_time: ScheduleTimeKey
-   animal_rows: list[ ItineraryAnimalRecord ]
-   attraction_rows: list[ ItineraryAttractionRecord ]
-   guardians_talk_rows: list[ ItineraryGuardiansTalkRecord ]
-   wild_encounter_rows: list[ ItineraryWildEncounterRecord ]
+   selected_exhibits: list[ str ] = field( default_factory=list )
+   animal_rows: list[ ItineraryAnimalRecord ] = field( default_factory=list )
+   attraction_rows: list[ ItineraryAttractionRecord ] = field( default_factory=list )
+   guardians_talk_rows: list[ ItineraryGuardiansTalkRecord ] = field( default_factory=list )
+   wild_encounter_rows: list[ ItineraryWildEncounterRecord ] = field( default_factory=list )
    event_rows: list[ ItineraryEventRecord ] = field( default_factory=list )
 
 

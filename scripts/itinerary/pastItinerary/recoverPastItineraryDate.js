@@ -40,6 +40,10 @@ export function recoverPastItineraryDate({
          const savedItinerary = await saveItineraryFn({
             ...normalizeDraft(itinerary),
             date: typeof dateIso === 'string' ? dateIso : toIso(dateIso),
+         }, {
+            selectedExhibits: Array.isArray(itinerary.selectedExhibits)
+               ? itinerary.selectedExhibits
+               : [],
          });
 
          if (!savedItinerary) {

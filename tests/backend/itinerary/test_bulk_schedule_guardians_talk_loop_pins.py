@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
+from itinerary.support import itinerary_animals_for_exhibits
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -132,7 +133,9 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ AFRICA_SAVANNA ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK, start_time='11:00' ) ],
       wild_encounters=[],
@@ -264,7 +267,9 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         _selected_exhibits_for_regions( MULTI_REGION_NAMES ),
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( HYENA_TALK, start_time='13:00' ) ],
       wild_encounters=[],
@@ -322,7 +327,9 @@ def test_bulk_schedule_covers_african_lion_animal_when_talk_is_woven(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ AFRICA_SAVANNA ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK, start_time='11:00' ) ],
       wild_encounters=[],
@@ -366,7 +373,9 @@ def test_unschedule_woven_talk_restores_enclosure_at_default_duration_and_shifts
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
-      animals=[],
+      animals=itinerary_animals_for_exhibits(
+         [ AFRICA_SAVANNA ],
+         visit_date='2026-06-20' ),
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK, start_time='11:00' ) ],
       wild_encounters=[],
