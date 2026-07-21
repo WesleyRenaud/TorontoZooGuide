@@ -183,8 +183,8 @@ test('region selector routes close and prev actions', async () => {
       onClose: () => {
          closeCalls.push('close');
       },
-      onPrev: () => {
-         prevCalls.push('prev');
+      onPrev: (animals) => {
+         prevCalls.push(animals);
       },
    });
 
@@ -192,9 +192,62 @@ test('region selector routes close and prev actions', async () => {
 
    mountEl.querySelector('.itin-close')?.click();
    mountEl.querySelector('.itin-prev')?.click();
+   await flushAsyncWork();
 
    assert.deepEqual(closeCalls, ['close']);
-   assert.deepEqual(prevCalls, ['prev']);
+   assert.deepEqual(prevCalls, [null]);
+});
+
+test('region selector prev rebuilds animals after toggling an exhibit', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   mockRegionSelectorFetch({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'American Beaver', exhibit: 'Americas Outdoor Mayan Temple Ruins' },
+      ],
+      regions: [
+         {
+            name: 'Africa',
+            exhibits: ['Africa Savanna'],
+         },
+         {
+            name: 'Americas',
+            exhibits: ['Americas Outdoor Mayan Temple Ruins'],
+         },
+      ],
+   });
+
+   const mountEl = createDomNode('div');
+   let prevPayload;
+
+   const controller = createItineraryRegionSelectorController({
+      mountEl,
+      onPrev: (animals) => {
+         prevPayload = animals;
+      },
+   });
+
+   await controller.show();
+
+   const resultsEl = mountEl.querySelector('.itin-region-results');
+   clickExhibitToggle(resultsEl, 'Americas Outdoor Mayan Temple Ruins');
+
+   mountEl.querySelector('.itin-prev')?.click();
+   await flushAsyncWork();
+
+   assert.ok(Array.isArray(prevPayload));
+   assert.deepEqual(
+      prevPayload.map((animal) => animal.species).sort(),
+      ['African Lion', 'American Beaver']
+   );
 });
 
 test('region selector finish skips rebuild when stored animals match selected exhibits', async () => {
@@ -207,7 +260,11 @@ test('region selector finish skips rebuild when stored animals match selected ex
       JSON.stringify(['Africa Savanna'])
    );
 
-   mockRegionSelectorFetch();
+   mockRegionSelectorFetch({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ],
+   });
 
    const mountEl = createDomNode('div');
    const finishCalls = [];
@@ -226,6 +283,46 @@ test('region selector finish skips rebuild when stored animals match selected ex
    await flushAsyncWork();
 
    assert.deepEqual(finishCalls, [null]);
+});
+
+test('region selector finish rebuilds animals when catalog grew for selected exhibits', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   mockRegionSelectorFetch({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+      ],
+   });
+
+   const mountEl = createDomNode('div');
+   const finishCalls = [];
+
+   const controller = createItineraryRegionSelectorController({
+      mountEl,
+      onFinish: (animals) => {
+         finishCalls.push(animals);
+      },
+   });
+
+   await controller.show();
+   assert.equal(controller.shouldSkipClosingSelectionSync(), false);
+
+   mountEl.querySelector('.itin-finish')?.click();
+   await flushAsyncWork();
+
+   assert.equal(finishCalls.length, 1);
+   assert.deepEqual(
+      finishCalls[0].map((animal) => animal.species).sort(),
+      ['African Lion', 'Watusi Cattle']
+   );
 });
 
 test('region selector finish rebuilds animals when exhibits are selected without stored animals', async () => {

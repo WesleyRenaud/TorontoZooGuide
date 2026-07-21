@@ -6,6 +6,7 @@ import {
 } from '../../draftStorage.js';
 import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
 import {
+   buildSelectedAnimalKey,
    draftAnimalsCoverCatalogAnimals,
    getRegionExhibits,
    isRegionFullySelected,
@@ -50,6 +51,7 @@ export function createRegionSelectorState() {
    const selectedRegionNames = new Set();
    const selectedExhibitNames = new Set();
    const bulkManagedExhibitNames = new Set();
+   let selectedExhibitsNeedCatalogRebuild = false;
 
    function markExhibitBulkManaged(exhibitName) {
       const { exhibit: normalizedExhibitName } = normalizeAnimalIdentitySearchFields({
@@ -118,6 +120,8 @@ export function createRegionSelectorState() {
    }
 
    async function pruneIncompleteSelectedExhibits() {
+      selectedExhibitsNeedCatalogRebuild = false;
+
       if (!selectedExhibitNames.size) {
          return;
       }
@@ -126,6 +130,7 @@ export function createRegionSelectorState() {
       const draftAnimals = loadArray(ANIMALS_KEY)
          .map(normalizeSelectedAnimal)
          .filter(Boolean);
+      const removedKeys = loadRemovedAnimalKeys();
       const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
       const catalogAnimals = await getAnimalsByExhibit(selectedExhibits, {
          month,
@@ -142,9 +147,25 @@ export function createRegionSelectorState() {
             normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
          ));
 
-         if (!draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
-            selectedExhibitNames.delete(exhibitName);
+         if (draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
+            continue;
          }
+
+         const catalogHasRemovedAnimal = catalogForExhibit.some((animal) => {
+            const animalKey = buildSelectedAnimalKey(animal);
+
+            return animalKey && removedKeys.has(animalKey);
+         });
+
+         if (catalogHasRemovedAnimal) {
+            // User removed animals from a bulk-selected exhibit.
+            selectedExhibitNames.delete(exhibitName);
+            continue;
+         }
+
+         // Catalog grew (e.g. visit date changed) while the exhibit stayed
+         // selected — keep the toggle and rebuild animals before leaving.
+         selectedExhibitsNeedCatalogRebuild = true;
       }
    }
 
@@ -225,6 +246,7 @@ export function createRegionSelectorState() {
          .filter(Boolean);
 
       if (!selectedExhibits.length) {
+         selectedExhibitsNeedCatalogRebuild = false;
          return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
       }
 
@@ -267,6 +289,7 @@ export function createRegionSelectorState() {
 
       const mergedAnimals = mergeAnimals(preservedAnimals, selectedAnimals);
       saveArray(ANIMALS_KEY, mergedAnimals);
+      selectedExhibitsNeedCatalogRebuild = false;
 
       return mergedAnimals;
    }
@@ -283,5 +306,6 @@ export function createRegionSelectorState() {
       buildUpdatedAnimalsFromSelection,
       getRegions,
       getSelectedExhibitNamesSet: () => selectedExhibitNames,
+      selectedExhibitsNeedCatalogRebuild: () => selectedExhibitsNeedCatalogRebuild,
    };
 }

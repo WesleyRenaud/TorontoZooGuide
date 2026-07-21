@@ -304,15 +304,25 @@ test.describe('openItineraryWizard lifecycle', () => {
       let saveHandler = null;
       let regionsFinishHandler = null;
       const finishCalls = [];
+      const existingAnimals = [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ];
 
       mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
       await openItineraryWizard({
          mountEl,
          deps: {
-            loadItinerary: async () => null,
+            loadItinerary: async () => ({
+               isActive: true,
+               date: '2026-06-01',
+               animals: existingAnimals,
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+            }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => createItineraryWizardState({}),
+            createWizardState: (existing = {}) => createItineraryWizardState(existing),
             createDateStepController: ({ onSave }) => {
                saveHandler = onSave;
                return { show() {} };
@@ -324,7 +334,10 @@ test.describe('openItineraryWizard lifecycle', () => {
                   preserveOnInvalid: true,
                   factory: ({ onFinish }) => {
                      regionsFinishHandler = onFinish;
-                     return { show() {} };
+                     return {
+                        show() {},
+                        shouldSkipClosingSelectionSync: () => true,
+                     };
                   },
                },
             ],
@@ -347,6 +360,10 @@ test.describe('openItineraryWizard lifecycle', () => {
 
       assert.equal(finishCalls.length, 1);
       assert.equal(finishCalls[0].draft.date, '2026-06-15');
+      assert.deepEqual(
+         finishCalls[0].draft.animals.map((animal) => animal.species),
+         ['African Lion']
+      );
       assert.equal(mountEl.children.length, 0);
    });
 

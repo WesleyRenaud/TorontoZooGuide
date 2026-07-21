@@ -31,7 +31,7 @@ from ...models.itinerary_event import ItineraryEvent
 from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
-from ...shared.enums import EnclosureType
+from .selected_exhibit_date_change_animals import apply_selected_exhibit_animals_on_date_change
 from ...shared.enums import ItineraryEventType
 from ...shared.value_conversion import ValueConversion
 from ...types import Connection, DateKey, ScheduleTimeKey
@@ -47,10 +47,9 @@ def _preferred_habitat_for_removed_animal(
       visit_date: date,
       visit_date_temp: float | None,
       removed: ItineraryAnimalSaveCarryover ) -> Animal | None:
-   if not EnclosureType.is_outdoor( removed.enclosure_name ):
-      return None
-
-   indoor_habitats = [
+   # Single-habitat visibility already leaves at most one preferred spot
+   # (outdoor↔indoor). Reuse that as the replacement either direction.
+   preferred_habitats = [
       animal
       for animal in animal_coordinator.get_animals_viewable_on_day(
          day=visit_date.day,
@@ -62,14 +61,13 @@ def _preferred_habitat_for_removed_animal(
          exhibits_to_include=[ removed.exhibit ] )
       if (
          species_exhibit_key( animal )
-         == species_exhibit_key_from_values( removed.species, removed.exhibit )
-         and EnclosureType.is_indoor( animal.enclosure_type ) )
+         == species_exhibit_key_from_values( removed.species, removed.exhibit ) )
    ]
 
-   if len( indoor_habitats ) != 1:
+   if len( preferred_habitats ) != 1:
       return None
 
-   return indoor_habitats[ 0 ]
+   return preferred_habitats[ 0 ]
 
 
 def _animal_diff_from_carryover(
@@ -139,8 +137,8 @@ def validate_itinerary_animals(
       )
 
       if not saved_animals:
-         # Habitat is not viewable on this day. Pool outdoor removals so they
-         # can be replaced with the indoor habitat below.
+         # Habitat is not viewable on this day. Pool removals so they can be
+         # replaced with the preferred single-habitat spot below.
          removed_habitats.append( ( carryover, start_time, end_time ) )
          continue
 
@@ -365,24 +363,37 @@ def validate_itinerary_for_save(
          departure_time,
          fixed_time_activity_end_times )
 
+   validated_animals = validate_itinerary_animals(
+      animal_coordinator,
+      animals=save_input.animals,
+      new_visit_date=save_input.date,
+      arrival_time=arrival_time,
+      departure_time=departure_time,
+      new_visit_date_temp=new_visit_date_temp,
+      old_visit_date=old_visit_date,
+      saved_animal_rows=saved_itinerary.animal_rows,
+      visit_date_is_changing=visit_date_is_changing )
+
+   if visit_date_is_changing:
+      validated_animals = apply_selected_exhibit_animals_on_date_change(
+         animal_coordinator,
+         existing_animals=validated_animals,
+         selected_exhibits=save_input.selected_exhibits,
+         previously_selected_exhibits=saved_itinerary.selected_exhibits,
+         saved_animal_rows=saved_itinerary.animal_rows,
+         visit_date=save_input.date,
+         old_visit_date=old_visit_date,
+         visit_date_temp=new_visit_date_temp )
+
    validated_itinerary = ValidatedItinerary(
       arrival_time=arrival_time,
       departure_time=departure_time,
       animals=(
          uncover_animals_for_unavailable_talks(
             conn,
-            validate_itinerary_animals(
-               animal_coordinator,
-               animals=save_input.animals,
-               new_visit_date=save_input.date,
-               arrival_time=arrival_time,
-               departure_time=departure_time,
-               new_visit_date_temp=new_visit_date_temp,
-               old_visit_date=old_visit_date,
-               saved_animal_rows=saved_itinerary.animal_rows,
-               visit_date_is_changing=visit_date_is_changing ),
+            validated_animals,
             guardians_talk_diffs )
-         if save_input.animals
+         if validated_animals
          else [] ),
       attractions=(
          validate_itinerary_attractions(
