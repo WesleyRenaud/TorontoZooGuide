@@ -36,15 +36,6 @@
     "snap_distance_px": 29.49
   },
   {
-    "species": "African Spoonbill",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 44.546,
-    "y": 66.138,
-    "walk_node_id": "v-0258",
-    "snap_distance_px": 6.537
-  },
-  {
     "species": "African Spurred Tortoise",
     "exhibit": "Kids Zoo",
     "enclosure_type": "Outdoor",
@@ -1843,15 +1834,6 @@
     "y": 64.211,
     "walk_node_id": "v-0255",
     "snap_distance_px": 10.829
-  },
-  {
-    "species": "South African Shelduck",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 44.546,
-    "y": 66.138,
-    "walk_node_id": "v-0258",
-    "snap_distance_px": 6.537
   },
   {
     "species": "Southern Ground Hornbill",

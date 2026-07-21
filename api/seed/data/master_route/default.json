@@ -1463,14 +1463,6 @@
         {
           "kind": "animal",
           "key": [
-            "African Spoonbill",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Nile Soft-Shelled Turtle",
             "African Rainforest Pavilion",
             null
@@ -1496,14 +1488,6 @@
           "kind": "animal",
           "key": [
             "Sacred Ibis",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "South African Shelduck",
             "African Rainforest Pavilion",
             null
           ]

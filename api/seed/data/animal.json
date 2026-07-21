@@ -42,20 +42,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "African Spoonbill",
-    "latin_name": "Platalea Alba",
-    "min_temperature": null,
-    "general_viewing_tips": "The African spoonbills can be found in a mixed-species habitat, shared with the sacred ibis and South African shelduck,          near the pygmy hippos, and softshell turtle.",
-    "seasonal_viewing_tips": null,
-    "identification": "The African spoonbill is a large white wading bird easily recognized by its long, flattened, spoon-shaped bill. Adults          stand about 80–90 cm tall with a wingspan reaching 1.3 meters. The plumage is entirely white, contrasted by a pinkish face          and legs. During the breeding season, adults develop a yellow patch on the chest. Males and females are similar i          appearance.",
-    "habitat_and_range": "This species is widespread across sub-Saharan Africa and Madagascar, inhabiting shallow wetlands, floodplains, marshes,          lake edges, and slow-moving rivers. Although not restricted to rainforests, African spoonbills frequently use forested          wetlands and river systems within rainforest regions.",
-    "diet_and_feeding": "African spoonbills feed primarily on small fish, aquatic insects, crustaceans, and mollusks. They forage by sweeping their          bill side to side through shallow water, snapping it shut when prey is detected by touch. This feeding method allows them          to hunt effectively even in muddy or low-visibility water.",
-    "behaviour_and_social_life": "Spoonbills are generally social birds, often seen feeding in small groups or mixed-species flocks with herons and storks.          They are mostly quiet but may produce low grunts at nesting colonies. When not feeding, they rest communally in trees or on          sandbanks.",
-    "adaptations": "The species’ most notable adaptation is its sensitive, spoon-shaped bill, which enables tactile feeding without relying on          sight. Long legs allow efficient wading through shallow wetlands, while broad wings provide energy-efficient soaring          between feeding sites. Their white plumage may help reduce heat absorption in open, sunlit wetlands.",
-    "reproduction_and_life_cycle": "African spoonbills nest in colonies, often in trees, reeds, or on islands protected from predators. Females lay 2–5 eggs,          which are incubated by both parents for about 24–26 days. Chicks fledge after several weeks but remain dependent on adults          for a short time afterward. The species can live 20 years or more in the wild and managed care.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "African Spurred Tortoise",
     "latin_name": "Centrochelys Sulcata",
     "min_temperature": 14,
@@ -2369,7 +2355,7 @@
     "species": "Sacred Ibis",
     "latin_name": "Threskiornis Aethiopicus",
     "min_temperature": null,
-    "general_viewing_tips": "The sacred ibis can be found in a shared exhibit with other waterfowl--the African spoonbill, and South African shelduck,          near the soft-shelled turtle and pygmy hippos.",
+    "general_viewing_tips": "The sacred ibis can be found near the soft-shelled turtle and pygmy hippos.",
     "seasonal_viewing_tips": null,
     "identification": "The sacred ibis is a medium-sized wading bird, measuring 65–75 cm in length with a wingspan of 112–124 cm. It has a white          body contrasted with black head, neck, and legs, and a long, downward-curved bill adapted for probing mud and shallow water.          Eyes are dark, and the bird has bare skin on the head and face, which may help reduce parasite buildup. Its legs are long          and slender, allowing it to wade efficiently in wetlands.",
     "habitat_and_range": "Sacred ibises are native to sub-Saharan Africa and parts of the Nile Valley, inhabiting wetlands, marshes, riverbanks, and          shallow lakes. They favor areas with muddy substrates for foraging and trees or reed beds for nesting. Although they often          live near water, they are also capable of foraging in flooded grasslands and cultivated areas.",
@@ -2490,20 +2476,6 @@
     "adaptations": "The most notable adaptation is their quills, which provide an effective deterrent against predators. Quills are modified          hairs, some with barbed tips that can become embedded in attackers. Their strong, robust claws and teeth allow efficient          burrowing and root extraction. Nocturnal habits reduce heat stress and predation risk, while keen senses of smell and          hearing help detect food and danger. Their slow metabolism and ability to digest tough plant material allow survival in          resource-variable environments.",
     "reproduction_and_life_cycle": "Porcupines are monogamous, often forming long-term pairs. Females give birth to 1–3 well-developed young after a gestation          of about 90–112 days. The young are born with soft quills that harden within a few days, and they remain dependent on the          mother for several weeks. Sexual maturity is reached around 2 years, and these porcupines can live 15–18 years in the wild          and slightly longer in captivity.",
     "animals_at_the_zoo": "The zoo is home to a male porcupine named Mr. P."
-  },
-  {
-    "species": "South African Shelduck",
-    "latin_name": "Tadorna Cana",
-    "min_temperature": null,
-    "general_viewing_tips": "The South African shelduck can be found in a shared exhibit with other waterfowl--the African spoonbill, and sacred ibis,          near the soft-shelled turtle and pygmy hippos.",
-    "seasonal_viewing_tips": null,
-    "identification": "The South African shelduck is a medium-sized waterfowl, measuring 54–58 cm in length with a wingspan of 90–100 cm. Males          have a chestnut-brown body with white wing patches, a dark green head, and a white neck collar, while females are slightly          duller with less pronounced colouration. Both sexes have bright red bills and legs, making them easily identifiable.          Juveniles are duller and take several months to develop adult plumage.",
-    "habitat_and_range": "This species is native to southern Africa, including South Africa, Namibia, Botswana, and Zimbabwe, inhabiting freshwater          lakes, rivers, estuaries, and marshes. They are semi-migratory, often moving seasonally between inland wetlands and coastal          areas depending on water availability and breeding needs.",
-    "diet_and_feeding": "South African shelducks are omnivorous, feeding on aquatic invertebrates, insects, small crustaceans, seeds, and plant          matter. They typically forage by dabbling or grazing along shorelines, occasionally tipping forward in shallow water to          access submerged food. Foraging often occurs in pairs or small groups, and they may form larger flocks during non-breeding          seasons.",
-    "behaviour_and_social_life": "Shelducks are social birds, forming monogamous pairs during the breeding season and joining larger flocks outside of          reproduction. They are diurnal, with activity peaks during the morning and late afternoon. Flight is strong and direct, and          birds often communicate through loud, honking calls used for mate communication, flock cohesion, or warning of potential          threats.",
-    "adaptations": "South African shelducks have adaptations for both terrestrial and aquatic life. Their partially webbed feet allow efficient          swimming and wading, while strong wings facilitate long-distance flight during seasonal movements. The bill is adapted for          dabbling and grazing, allowing a flexible diet. Their social flocking behaviour increases predator detection and foraging          efficiency.",
-    "reproduction_and_life_cycle": "Breeding occurs during the southern hemisphere spring and early summer, with females laying 8–12 eggs in burrows, tree          cavities, or abandoned nests of other birds. Both parents help defend the nest, though the female primarily incubates for          28–30 days. Chicks are precocial and leave the nest shortly after hatching, capable of feeding themselves under parental          supervision. Lifespan in the wild is typically 10–12 years, with longer survival in managed care.",
-    "animals_at_the_zoo": null
   },
   {
     "species": "Southern Ground Hornbill",
