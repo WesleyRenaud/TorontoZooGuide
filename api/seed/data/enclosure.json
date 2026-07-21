@@ -1183,13 +1183,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "African Spoonbill",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Nile Soft-Shelled Turtle",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1212,13 +1205,6 @@
   },
   {
     "species": "Sacred Ibis",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "South African Shelduck",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
