@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..animals.search.animals_matching_query import viewing_spot_key_from_values
 from ..types import ScheduleTimeKey
 
 
@@ -24,6 +25,13 @@ class AnimalDiff:
       self.covered_by_talk = covered_by_talk
       self.start_time = start_time
       self.end_time = end_time
+
+
+   def viewing_spot_key( self ) -> tuple[ str, str, str | None ]:
+      return viewing_spot_key_from_values(
+         self.species,
+         self.exhibit,
+         self.enclosure_name )
 
 
    def to_dict( self ) -> dict[ str, object ]:

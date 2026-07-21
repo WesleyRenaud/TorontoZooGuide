@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from ....animals.search.animals_matching_query import viewing_spot_key_from_values
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -174,10 +173,7 @@ def uncover_animals_for_unavailable_talks(
       guardians_talks: list[ GuardiansTalkDiff ],
    ) -> list[ AnimalDiff ]:
    animals_by_spot = {
-      viewing_spot_key_from_values(
-         animal.species,
-         animal.exhibit,
-         animal.enclosure_name ): animal
+      animal.viewing_spot_key(): animal
       for animal in animals
    }
 

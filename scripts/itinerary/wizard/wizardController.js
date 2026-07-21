@@ -107,6 +107,11 @@ export async function openItineraryWizard({
             return;
          }
 
+         // null means the active step skipped rebuilding (unchanged selection).
+         if (override[selectionKey] == null) {
+            return;
+         }
+
          updateSelection(selectionKey, override[selectionKey]);
       });
    }

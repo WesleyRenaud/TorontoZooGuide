@@ -103,6 +103,7 @@ function buildReducedVisibilityAnimals(
    animalMinLikelihood
 ) {
    return animals
+      .filter((animal) => animal.is_added !== true)
       .filter((animal) => !isRemovedForValidation(animal, animalMinLikelihood))
       .filter((animal) => {
          const before = likelihoodToFraction(animal.old_likelihood);
@@ -118,6 +119,7 @@ function buildReducedVisibilityAnimals(
 
 function buildImprovedVisibilityAnimals(animals = [], visibilityChangeThreshold) {
    return animals
+      .filter((animal) => animal.is_added !== true)
       .filter((animal) => {
          const before = likelihoodToFraction(animal.old_likelihood);
          const after = likelihoodToFraction(animal.likelihood);
@@ -131,7 +133,9 @@ function buildImprovedVisibilityAnimals(animals = [], visibilityChangeThreshold)
 }
 
 function buildAddedAnimals(animals = []) {
-   return animals.filter((animal) => animal.is_added === true);
+   return animals
+      .filter((animal) => animal.is_added === true)
+      .map(withVisibilityFields);
 }
 
 function buildRemovedAttractions(attractions = [], animalMinLikelihood) {

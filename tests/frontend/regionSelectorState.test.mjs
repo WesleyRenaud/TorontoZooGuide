@@ -147,6 +147,11 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
       }),
    });
 
+   removeAnimalFromItineraryAnimalDraft(
+      'animals',
+      'Watusi Cattle||Africa Savanna'
+   );
+
    const state = createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
@@ -156,6 +161,54 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
       JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
       []
    );
+});
+
+test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new date', async () => {
+   localStorage.setItem(DATE_KEY, '2026-10-17');
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+            { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
+         ],
+      }),
+   });
+
+   const state = createRegionSelectorState();
+   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   await state.hydrateSelectionsFromStorage();
+
+   assert.deepEqual(
+      [...state.getSelectedExhibitNamesSet()],
+      ['Africa Savanna']
+   );
+   assert.equal(state.selectedExhibitsNeedCatalogRebuild(), true);
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      ['Africa Savanna']
+   );
+
+   const animals = await state.buildUpdatedAnimalsFromSelection();
+
+   assert.deepEqual(
+      animals.map((animal) => animal.species).sort(),
+      ['African Lion', 'Watusi Cattle']
+   );
+   assert.equal(state.selectedExhibitsNeedCatalogRebuild(), false);
 });
 
 test('re-selecting an exhibit re-hydrates previously removed animals', async () => {

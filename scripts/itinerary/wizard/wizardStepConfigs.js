@@ -71,6 +71,11 @@ export function buildSelectionStepHandlers({
          }
          : undefined,
       onFinish: (value) => {
+         if (value == null) {
+            void finish();
+            return;
+         }
+
          void finish({ [selectionKey]: value });
       },
    };

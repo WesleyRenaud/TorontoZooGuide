@@ -138,8 +138,15 @@ test('buildItineraryValidationState reports animals added from selected exhibits
          {
             species: 'White Rhino',
             exhibit: 'Africa Savanna',
+            old_likelihood: 20,
             likelihood: 80,
             is_added: true,
+         },
+         {
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+            old_likelihood: 50,
+            likelihood: 90,
          },
       ],
    }, {
@@ -148,8 +155,22 @@ test('buildItineraryValidationState reports animals added from selected exhibits
    });
 
    assert.deepEqual(
-      validation.added.animals.map((animal) => animal.species),
-      ['White Rhino']
+      validation.added.animals.map((animal) => ({
+         species: animal.species,
+         likelihoodBefore: animal.likelihoodBefore,
+         likelihoodAfter: animal.likelihoodAfter,
+      })),
+      [
+         {
+            species: 'White Rhino',
+            likelihoodBefore: 20,
+            likelihoodAfter: 80,
+         },
+      ]
+   );
+   assert.deepEqual(
+      validation.improvedVisibility.animals.map((animal) => animal.species),
+      ['African Lion']
    );
    assert.equal(validation.hasChanges, true);
 });

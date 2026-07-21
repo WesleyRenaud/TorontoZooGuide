@@ -121,8 +121,13 @@ export function createItineraryRegionSelectorController({
          onClose?.();
       });
 
-      elements?.prevButtonEl?.addEventListener('click', () => {
-         onPrev?.();
+      elements?.prevButtonEl?.addEventListener('click', async () => {
+         if (shouldSkipClosingSelectionSync()) {
+            onPrev?.(null);
+            return;
+         }
+
+         await commitSelection(onPrev);
       });
 
       elements?.nextButtonEl?.addEventListener('click', async () => {
@@ -190,6 +195,10 @@ export function createItineraryRegionSelectorController({
 
    function shouldSkipClosingSelectionSync() {
       if (selectionChangedSinceShow) {
+         return false;
+      }
+
+      if (state.selectedExhibitsNeedCatalogRebuild()) {
          return false;
       }
 
