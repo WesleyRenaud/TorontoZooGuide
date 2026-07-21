@@ -4,9 +4,9 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.search.animals_matching_query import species_exhibit_key_from_values
 from ...animals.search.animals_matching_query import viewing_spot_key
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ...models import Animal
 from ...models import AnimalDiff
-from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...shared.value_conversion import ValueConversion
