@@ -65,18 +65,30 @@ test('isFixedTimeScheduleItemKind applies to guardians talks and wild encounters
    assert.equal(isFixedTimeScheduleItemKind('lunch'), false);
 });
 
-test('usesScheduledTimelineEventCard delegates to isFixedTimeScheduleItemKind', () => {
+test('usesScheduledTimelineEventCard covers fixed-time items and attractions', () => {
    assert.equal(
       usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.itemType),
-      isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.itemType)
+      true
    );
    assert.equal(
       usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.kind),
-      isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.kind)
+      true
+   );
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.itemType),
+      true
+   );
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.kind),
+      true
    );
    assert.equal(
       usesScheduledTimelineEventCard(ScheduleItemKind.ANIMAL.itemType),
-      isFixedTimeScheduleItemKind(ScheduleItemKind.ANIMAL.itemType)
+      false
+   );
+   assert.equal(
+      isFixedTimeScheduleItemKind(ScheduleItemKind.ATTRACTION.itemType),
+      false
    );
 });
 

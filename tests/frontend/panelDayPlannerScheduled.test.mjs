@@ -196,6 +196,78 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
+   test('scheduled attraction renders as timeline event card with unschedule and remove', () => {
+      const unscheduleCalls = [];
+      const removeCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            attractions: [
+               {
+                  name: 'Zoomobile',
+                  subtitle: 'Ride the rails',
+                  location: 'Main Entrance',
+                  price: 'Free with admission',
+                  start_time: '2:30 PM',
+                  end_time: '3:00 PM',
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
+         }
+      );
+      const zoomobileEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Zoomobile')
+      ));
+      const eventCard = zoomobileEvent?.querySelector('.itinerary-day-event-card');
+      const menuItems = [
+         ...(eventCard?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
+
+      assert.ok(zoomobileEvent);
+      assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
+      assert.match(allTextFor(zoomobileEvent), /Location: Main Entrance/);
+      assert.match(allTextFor(zoomobileEvent), /Price: Free with admission/);
+      assert.match(
+         imageSrcFor(zoomobileEvent),
+         /images\/details\/attractions\/zoomobile\.png$/
+      );
+      assert.equal(zoomobileEvent.querySelector('.itinerary-day-scheduled-pill'), null);
+      assert.equal(menuItems.length, 2);
+      assert.equal(menuItems[0]?.textContent, 'Unschedule');
+      assert.equal(menuItems[1]?.textContent, 'Remove');
+
+      menuItems[0].click();
+
+      assert.deepEqual(unscheduleCalls, [{
+         itemType: 'attractions',
+         key: 'Zoomobile',
+      }]);
+      assert.deepEqual(removeCalls, []);
+
+      menuItems[1].click();
+
+      assert.deepEqual(removeCalls, [{
+         itemType: 'attractions',
+         key: 'Zoomobile',
+      }]);
+   });
+
 
    test('pre-open wild encounter keeps its start slot before zoo open', () => {
       const planner = makeDayPlannerPreview(

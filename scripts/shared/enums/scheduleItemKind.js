@@ -77,7 +77,10 @@ export function isFixedTimeScheduleItemKind(itemType) {
 }
 
 export function usesScheduledTimelineEventCard(scheduleItemKind) {
-   return isFixedTimeScheduleItemKind(scheduleItemKind);
+   return (
+      isFixedTimeScheduleItemKind(scheduleItemKind)
+      || scheduleItemKindFromItemType(scheduleItemKind) === ScheduleItemKind.ATTRACTION
+   );
 }
 
 export function scheduleItemModuleItemTypeForKind(kind) {
