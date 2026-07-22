@@ -21,6 +21,7 @@ from ...routing.loop_schedule_pin import LoopSchedulePin
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from .schedule_loop_unit_with_pins import pinned_loop_earliest_start_seconds
 from .schedule_loop_unit_with_pins import schedule_prepared_loop_unit_with_pins
+from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ....walk_graph.domain.walk_graph import WalkGraph
 
@@ -58,6 +59,11 @@ def schedule_animals_by_master_route_loop(
       conn,
       prepared_units,
       schedule_windows )
+   held_pinned_loop_ids = {
+      loop_pin.loop_id
+      for schedule_window in schedule_windows
+      for loop_pin in schedule_window.loop_pins
+   }
 
    while remaining_units and window_index < len( schedule_windows ):
       window_index = _window_index_after_cursor(
@@ -69,6 +75,11 @@ def schedule_animals_by_master_route_loop(
          break
 
       schedule_window = schedule_windows[ window_index ]
+
+      if (
+            schedule_window.start_walk_node_id is not None
+            and window_state.cursor_seconds <= schedule_window.start_seconds ):
+         window_state.current_node_id = schedule_window.start_walk_node_id
 
       if not _window_has_available_time(
             schedule_window,
@@ -82,7 +93,9 @@ def schedule_animals_by_master_route_loop(
          conn,
          remaining_units=remaining_units,
          schedule_window=schedule_window,
+         later_schedule_windows=schedule_windows[ window_index + 1 : ],
          pinned_loop_ids=pinned_loop_ids,
+         held_pinned_loop_ids=held_pinned_loop_ids,
          pinned_earliest_start_cache=pinned_earliest_start_cache,
          blockers=blockers,
          walk_graph=walk_graph,
@@ -122,7 +135,9 @@ def _process_schedule_window(
       *,
       remaining_units: list[ PreparedLoopScheduleUnit ],
       schedule_window: ItineraryScheduleWindow,
+      later_schedule_windows: list[ ItineraryScheduleWindow ],
       pinned_loop_ids: set[ str ],
+      held_pinned_loop_ids: set[ str ],
       pinned_earliest_start_cache: dict[ int, int | None ],
       blockers: list[ TimeBlock ],
       walk_graph: WalkGraph,
@@ -158,10 +173,26 @@ def _process_schedule_window(
          cursor_seconds=window_state.cursor_seconds,
          slot_sink=slot_sink )
 
+   if _should_defer_free_packing_until_after_anchor(
+         schedule_window,
+         later_schedule_windows=later_schedule_windows,
+         remaining_units=remaining_units,
+         held_pinned_loop_ids=held_pinned_loop_ids,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         cursor_seconds=window_state.cursor_seconds ):
+      return True
+
+   packing_hold_loop_ids = set( held_pinned_loop_ids )
+
+   if schedule_window.opens_after_fixed_time_stop:
+      packing_hold_loop_ids |= _side_cluster_successor_loop_ids(
+         remaining_units,
+         held_pinned_loop_ids )
+
    packing_window = _non_pinned_packing_window(
       schedule_window,
       remaining_units=remaining_units,
-      pinned_loop_ids=pinned_loop_ids,
+      pinned_loop_ids=held_pinned_loop_ids,
       pinned_earliest_start_cache=pinned_earliest_start_cache,
       cursor_seconds=window_state.cursor_seconds )
    packed_units = pack_loops_into_schedule_window(
@@ -169,7 +200,7 @@ def _process_schedule_window(
       packing_window,
       prepared_units=_units_excluding_pinned_loops(
          remaining_units,
-         pinned_loop_ids ),
+         packing_hold_loop_ids ),
       cursor_seconds=window_state.cursor_seconds,
       current_node_id=window_state.current_node_id,
       departure_side_cluster_id=window_state.departure_side_cluster_id )
@@ -230,6 +261,71 @@ def _process_schedule_window(
    return True
 
 
+def _should_defer_free_packing_until_after_anchor(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      later_schedule_windows: list[ ItineraryScheduleWindow ],
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      held_pinned_loop_ids: set[ str ],
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      cursor_seconds: int ) -> bool:
+   """Prefer a later post-event gap when free loops fully fit there.
+
+   Morning packing against an upcoming fixed event is skipped when those same
+   non-pinned loops can fill the gap after that event before a later pin.
+   """
+   if schedule_window.opens_after_fixed_time_stop:
+      return False
+
+   if schedule_window.anchor_stop is None:
+      return False
+
+   anchor_end_seconds = DateValues.time_value_in_seconds(
+      schedule_window.anchor_stop.end_time )
+
+   if anchor_end_seconds is None:
+      return False
+
+   free_units = _units_excluding_pinned_loops(
+      remaining_units,
+      held_pinned_loop_ids )
+
+   if not free_units:
+      return False
+
+   free_duration_seconds = sum(
+      prepared_unit.duration_seconds
+      for prepared_unit in free_units )
+
+   for later_window in later_schedule_windows:
+      if later_window.start_seconds != anchor_end_seconds:
+         continue
+
+      if not later_window.opens_after_fixed_time_stop:
+         continue
+
+      if not later_window.loop_pins:
+         continue
+
+      gap_start_seconds = max( cursor_seconds, later_window.start_seconds )
+      reserved_start_seconds = _earliest_pinned_loop_wait_seconds(
+         remaining_units,
+         {
+            loop_pin.loop_id
+            for loop_pin in later_window.loop_pins
+         },
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         cursor_seconds=gap_start_seconds )
+
+      if reserved_start_seconds is None:
+         continue
+
+      return (
+         gap_start_seconds + free_duration_seconds <= reserved_start_seconds )
+
+   return False
+
+
 def _non_pinned_packing_window(
       schedule_window: ItineraryScheduleWindow,
       *,
@@ -271,9 +367,16 @@ def _pack_non_pinned_loops_before_pinned_deadline(
       remaining_animals: list[ LoopScheduleStop ],
       slot_sink: LoopScheduleSlotSink | None = None,
    ) -> tuple[ int, bool ]:
+   exclude_loop_ids = set( pinned_loop_ids )
+
+   if schedule_window.opens_after_fixed_time_stop:
+      exclude_loop_ids |= _side_cluster_successor_loop_ids(
+         remaining_units,
+         pinned_loop_ids )
+
    non_pinned_units = _units_excluding_pinned_loops(
       remaining_units,
-      pinned_loop_ids )
+      exclude_loop_ids )
 
    if not non_pinned_units:
       return window_state.cursor_seconds, False
@@ -306,7 +409,13 @@ def _pack_non_pinned_loops_before_pinned_deadline(
    total_duration_seconds = sum(
       prepared_unit.duration_seconds
       for prepared_unit in packed_units )
-   schedule_start_seconds = pinned_deadline_seconds - total_duration_seconds
+
+   if schedule_window.opens_after_fixed_time_stop:
+      schedule_start_seconds = window_start_seconds
+      next_cursor_seconds = window_start_seconds + total_duration_seconds
+   else:
+      schedule_start_seconds = pinned_deadline_seconds - total_duration_seconds
+      next_cursor_seconds = pinned_deadline_seconds
 
    for prepared_unit in packed_units:
       try:
@@ -334,7 +443,7 @@ def _pack_non_pinned_loops_before_pinned_deadline(
 
       window_state.departure_side_cluster_id = prepared_unit.unit.side_cluster_id
 
-   return pinned_deadline_seconds, False
+   return next_cursor_seconds, False
 
 
 def _build_pinned_earliest_start_cache(
@@ -488,6 +597,42 @@ def _units_excluding_pinned_loops(
    ]
 
 
+def _side_cluster_successor_loop_ids(
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      pinned_loop_ids: set[ str ],
+   ) -> set[ str ]:
+   """Hold the next same-cluster loop until a pinned neighbor finishes.
+
+   Forward south-cluster order is savanna then giraffe. After a fixed event,
+   with a savanna pin, giraffe should follow Warthog instead of packing in the
+   pre-pin gap. Morning right-align before the first pin still allows giraffe.
+   """
+   successor_loop_ids: set[ str ] = set()
+
+   for prepared_unit in prepared_units:
+      loop_id = prepared_unit.unit.loop_id
+      side_cluster_id = prepared_unit.unit.side_cluster_id
+      loop_index = prepared_unit.unit.loop_index_in_side_cluster
+
+      if (
+            loop_id is None
+            or loop_id not in pinned_loop_ids
+            or side_cluster_id is None
+            or loop_index is None ):
+         continue
+
+      successor_index = loop_index + 1
+
+      for candidate in prepared_units:
+         if (
+               candidate.unit.side_cluster_id == side_cluster_id
+               and candidate.unit.loop_index_in_side_cluster == successor_index
+               and candidate.unit.loop_id is not None ):
+            successor_loop_ids.add( candidate.unit.loop_id )
+
+   return successor_loop_ids
+
+
 def _ready_pinned_loop_units(
       prepared_units: list[ PreparedLoopScheduleUnit ],
       pinned_loop_ids: set[ str ],
@@ -569,7 +714,9 @@ def _schedule_start_seconds_for_packed_units(
       schedule_window,
       cursor_seconds=cursor_seconds )
 
-   if schedule_window.anchor_stop is None:
+   if (
+         schedule_window.anchor_stop is None
+         or schedule_window.opens_after_fixed_time_stop ):
       return window_start_seconds
 
    total_duration_seconds = sum(
