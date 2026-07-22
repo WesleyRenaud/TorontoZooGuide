@@ -36,6 +36,7 @@ export function createItinerarySelectorController({
    getImageSrc = () => null,
    getInfoLink = () => null,
    onTitleClick = null,
+   shouldEnableTitleClick = null,
 
    makeSelection = row => ({ id: getId(row) }),
 
@@ -78,6 +79,7 @@ export function createItinerarySelectorController({
          getImageSrc,
          getInfoLink: onTitleClick ? () => null : getInfoLink,
          onTitleClick,
+         shouldEnableTitleClick,
       });
 
    function getSelectionSnapshot() {

@@ -5,6 +5,7 @@ import { renderSearchResults } from '../../scripts/search/resultsView.js';
 import {
    createDomNode,
    installDocument,
+   installTestWindow,
    teardownDocument,
 } from './helpers/domMock.mjs';
 
@@ -58,7 +59,6 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
       '../images/details/animals/african-savanna/african-lion.png'
    );
 
-   const animalTitle = findDescendant(animalRow, 'animal-result-species');
    assert.ok(findDescendant(animalRow, 'species-link'));
 
    const attractionRow = resultsEl.children[1];
@@ -72,7 +72,39 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
    );
 
    const attractionTitle = findDescendant(attractionRow, 'animal-result-species');
-   assert.equal(attractionTitle?.className.includes('species-link'), false);
+   assert.equal(attractionTitle?.querySelector('.species-link'), null);
+});
+
+test('renderSearchResults links attraction titles when info_link is present', () => {
+   installDocument();
+   installTestWindow();
+
+   const opened = [];
+   globalThis.window.open = (url) => {
+      opened.push(url);
+   };
+
+   const resultsEl = createDomNode('div', 'animal-search-results');
+
+   renderSearchResults(resultsEl, [
+      {
+         type: 'attraction',
+         name: 'Conservation Carousel',
+         free_with_admission: true,
+         info_link: 'https://www.torontozoo.com/tickets/carousel',
+      },
+   ]);
+
+   const row = resultsEl.children[0];
+   const title = findDescendant(row, 'animal-result-species');
+   const titleLink = title?.querySelector('.species-link');
+
+   assert.ok(titleLink);
+   assert.equal(titleLink.textContent, 'Conservation Carousel');
+   assert.equal(findDescendant(row, 'tooltip-link'), null);
+
+   titleLink.click();
+   assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
 });
 
 test('renderSearchResults links wild encounter titles when url is present', () => {
