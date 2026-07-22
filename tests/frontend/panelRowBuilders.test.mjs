@@ -427,8 +427,8 @@ test.describe('itinerary panel row builders', () => {
    
       assert.equal(textFor(row, '.itin-panel-name'), 'Conservation Carousel');
       assert.equal(
-         row.querySelector('.itin-panel-name')?.className.includes('species-link'),
-         false
+         row.querySelector('.itin-panel-name')?.querySelector('.species-link'),
+         null
       );
       assert.equal(
          imageSrcFor(row),
@@ -705,23 +705,26 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(imageSrcFor(row), '');
    });
    
-   test('buildAttractionRows renders a more-info link when infoLink is present', () => {
+   test('buildAttractionRows links attraction title when infoLink is present', () => {
       const opened = [];
-   
+
       globalThis.window.open = (url) => {
          opened.push(url);
       };
-   
+
       const [row] = buildAttractionRows([
          {
             name: 'Conservation Carousel',
             info_link: 'https://www.torontozoo.com/tickets/carousel',
          },
       ]);
-      const link = row.querySelector('.itin-panel-link');
-   
-      assert.ok(link);
-      link.click();
+      const titleLink = row.querySelector('.itin-panel-name')?.querySelector('.species-link');
+
+      assert.ok(titleLink);
+      assert.equal(titleLink.textContent, 'Conservation Carousel');
+      assert.equal(row.querySelector('.itin-panel-link'), null);
+
+      titleLink.click();
       assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
    });
 });

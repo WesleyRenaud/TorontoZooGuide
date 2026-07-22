@@ -60,7 +60,15 @@ export function createItineraryAttractionSelectorController({
       getTitle: getAttractionTitle,
       getSubtitle: getAttractionSubtitle,
       getImageSrc: buildAttractionImageSrc,
-      getInfoLink: getAttractionInfoLink,
+      getInfoLink: () => null,
+      onTitleClick: (row) => {
+         const link = getAttractionInfoLink(row);
+
+         if (link) {
+            window.open(link, '_blank');
+         }
+      },
+      shouldEnableTitleClick: (row) => Boolean(getAttractionInfoLink(row)),
 
       makeSelection: makeAttractionSelection,
 

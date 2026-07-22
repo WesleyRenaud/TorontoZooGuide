@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import { normalizeStoredLink } from '../../itinerary/selectors/base/storedSelection.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const attractionRenderer = {
@@ -8,6 +9,7 @@ export const attractionRenderer = {
    createCard(a, index) {
       const name = a.name || APP_STRINGS.entityLabels.attraction;
       const normalizedName = normalizeAssetKey(name);
+      const infoLink = normalizeStoredLink(a.info_link);
 
       return createTooltipCard({
          index,
@@ -16,7 +18,14 @@ export const attractionRenderer = {
             alt: name,
             fallbackSrc: `images/icons/attractions/${normalizedName}-open.png`,
          },
-         title: { text: name },
+         title: {
+            text: name,
+            className: infoLink ? 'species-link' : '',
+            dataset: {
+               index,
+               externalHref: infoLink,
+            },
+         },
          details: [
             a.free_with_admission
                ? APP_STRINGS.search.freeWithAdmission
@@ -26,13 +35,6 @@ export const attractionRenderer = {
                : '',
             a.description ? APP_STRINGS.tooltips.description(a.description) : '',
          ],
-         links: a.info_link
-            ? [{
-               href: a.info_link,
-               text: a.hyperlink_text || APP_STRINGS.common.moreInfo,
-               className: 'gift-shop-link',
-            }]
-            : [],
       });
    },
 };

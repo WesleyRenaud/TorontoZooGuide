@@ -35,6 +35,14 @@ function openWildEncounterLink(row) {
    }
 }
 
+function openAttractionInfoLink(row) {
+   const link = getAttractionInfoLink(row);
+
+   if (link) {
+      window.open(link, '_blank');
+   }
+}
+
 const ROW_LEFT_RENDERERS = {
    animal: createDefaultSelectorRowLeftRenderer({
       getTitle: getAnimalTitleLine,
@@ -51,7 +59,9 @@ const ROW_LEFT_RENDERERS = {
       getTitle: getAttractionTitle,
       getSubtitle: getAttractionSubtitle,
       getImageSrc: buildAttractionImageSrc,
-      getInfoLink: getAttractionInfoLink,
+      getInfoLink: () => null,
+      onTitleClick: openAttractionInfoLink,
+      shouldEnableTitleClick: (row) => Boolean(getAttractionInfoLink(row)),
    }),
    wildEncounter: createSearchImageRowRenderer({
       presentation: SEARCH_RESULT_PRESENTATIONS.wildEncounter,

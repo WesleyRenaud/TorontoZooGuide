@@ -108,12 +108,14 @@ export function buildAttractionRows(
          buildApproximateStartTimeFieldLine(attraction),
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
-      getLink: (attraction) => attraction.infoLink,
-      extendRowProps: (attraction) => buildRowScheduleActionProps(
-         ScheduleItemKind.ATTRACTION.itemType,
-         attraction,
-         { onUnscheduleItem, onScheduleItem, onRemoveItem }
-      ),
+      extendRowProps: (attraction) => ({
+         ...buildTitleLinkRowProps(attraction.infoLink),
+         ...buildRowScheduleActionProps(
+            ScheduleItemKind.ATTRACTION.itemType,
+            attraction,
+            { onUnscheduleItem, onScheduleItem, onRemoveItem }
+         ),
+      }),
    });
 }
 
