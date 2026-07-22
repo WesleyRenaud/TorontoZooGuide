@@ -4,6 +4,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.group_animals_by_master_route_loop import group_animals_by_master_route_loop
+from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
@@ -28,7 +29,7 @@ def _animal_record(
 
 def _prepared_loop_unit(
       *,
-      stops: list[ ItineraryAnimalRecord ],
+      stops: list[ LoopScheduleStop ],
       duration_seconds: int ) -> PreparedLoopScheduleUnit:
    loop_unit = build_loop_schedule_units( [ stops ] )[ 0 ]
 

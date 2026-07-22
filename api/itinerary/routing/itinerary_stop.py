@@ -19,3 +19,10 @@ class ItineraryStop:
    is_fixed_time: bool = False
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
+
+
+   def primary_walk_node_id( self ) -> str | None:
+      if not self.walk_node_ids:
+         return None
+
+      return self.walk_node_ids[ 0 ]
