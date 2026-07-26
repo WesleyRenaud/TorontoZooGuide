@@ -1,78 +1,88 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Mapping
 from dataclasses import dataclass
 
+from ....attractions.data_access.attraction_animal import fetch_attraction_animal_links
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_cover_and_schedule
 from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ....guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
 from ....models import AnimalDiff
-from ....models import GuardiansTalkDiff
-from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ....types import Cursor
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 
 
-CoveredAnimalTalk = tuple[ ItineraryAnimalRecord, LoopSchedulePin ]
+CoveredAnimalAttraction = tuple[ ItineraryAnimalRecord, str ]
 
 
 @dataclass( frozen=True )
-class RestoredTalkCoveredAnimals:
+class RestoredAttractionCoveredAnimals:
    animals: list[ ItineraryAnimalRecord ]
    replacement_end_seconds: int | None
 
 
-def viewing_spot_keys_to_cover_for_loop_pins(
+def viewing_spot_keys_to_cover_for_attractions(
       conn: Connection,
-      loop_pins: list[ LoopSchedulePin ],
+      attraction_names: list[ str ],
       animal_rows: list[ ItineraryAnimalRecord ],
-   ) -> dict[ ViewingSpotNameKey, CoveredAnimalTalk ]:
+   ) -> dict[ ViewingSpotNameKey, CoveredAnimalAttraction ]:
    animal_by_key = {
       animal_row.viewing_spot_key(): animal_row
       for animal_row in animal_rows
    }
-   covered: dict[ ViewingSpotNameKey, CoveredAnimalTalk ] = {}
+   covered: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ] = {}
 
-   for loop_pin in loop_pins:
-      talk_name = loop_pin.stop.item_key
-
-      for link in fetch_guardians_talk_animal_links( conn, talk_name ):
+   for attraction_name in attraction_names:
+      for link in fetch_attraction_animal_links( conn, attraction_name ):
          spot_key = link.viewing_spot_key()
          animal_row = animal_by_key.get( spot_key )
 
          if animal_row is None:
             continue
 
-         covered[ spot_key ] = ( animal_row, loop_pin )
+         covered[ spot_key ] = ( animal_row, attraction_name )
 
    return covered
 
 
-def apply_covered_by_talk_schedules(
+def apply_covered_by_attraction_schedules(
       conn: Connection,
-      covered_by_talk: dict[ ViewingSpotNameKey, CoveredAnimalTalk ],
+      covered_by_attraction: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ],
    ) -> None:
-   if not covered_by_talk:
+   if not covered_by_attraction:
       return
 
+   attraction_by_name = {
+      attraction_row.attraction: attraction_row
+      for attraction_row in fetch_saved_itinerary( conn ).attraction_rows
+   }
    cur = conn.cursor()
 
    try:
-      for animal_row, loop_pin in covered_by_talk.values():
+      for animal_row, attraction_name in covered_by_attraction.values():
+         attraction_row = attraction_by_name.get( attraction_name )
+
+         if (
+               attraction_row is None
+               or attraction_row.start_time is None
+               or attraction_row.end_time is None ):
+            continue
+
          update_itinerary_animal_cover_and_schedule(
             cur,
             species=animal_row.species,
             exhibit=animal_row.exhibit,
             enclosure_name=animal_row.enclosure_name,
             covered_by_talk=True,
-            start_time=loop_pin.stop.start_time,
-            end_time=loop_pin.stop.end_time )
+            start_time=attraction_row.start_time,
+            end_time=attraction_row.end_time )
 
       conn.commit()
 
@@ -80,43 +90,14 @@ def apply_covered_by_talk_schedules(
       cur.close()
 
 
-def uncover_animals_for_talk(
+def restore_covered_animals_after_attraction_removed(
       cur: Cursor,
       conn: Connection,
       *,
-      talk_name: str,
+      attraction_name: str,
+      attraction_block: TimeBlock,
       animal_rows: list[ ItineraryAnimalRecord ],
-   ) -> list[ ItineraryAnimalRecord ]:
-   animal_by_key = {
-      animal_row.viewing_spot_key(): animal_row
-      for animal_row in animal_rows
-   }
-   uncovered: list[ ItineraryAnimalRecord ] = []
-
-   for link in fetch_guardians_talk_animal_links( conn, talk_name ):
-      animal_row = animal_by_key.get( link.viewing_spot_key() )
-
-      if animal_row is None or not animal_row.covered_by_talk:
-         continue
-
-      clear_itinerary_animal_schedule(
-         cur,
-         species=animal_row.species,
-         exhibit=animal_row.exhibit,
-         enclosure_name=animal_row.enclosure_name )
-      uncovered.append( animal_row )
-
-   return uncovered
-
-
-def restore_covered_animals_after_talk_removed(
-      cur: Cursor,
-      conn: Connection,
-      *,
-      talk_name: str,
-      talk_block: TimeBlock,
-      animal_rows: list[ ItineraryAnimalRecord ],
-   ) -> RestoredTalkCoveredAnimals:
+   ) -> RestoredAttractionCoveredAnimals:
    animal_by_key = {
       animal_row.viewing_spot_key(): animal_row
       for animal_row in animal_rows
@@ -124,7 +105,7 @@ def restore_covered_animals_after_talk_removed(
    restored: list[ ItineraryAnimalRecord ] = []
    replacement_end_seconds: int | None = None
 
-   for link in fetch_guardians_talk_animal_links( conn, talk_name ):
+   for link in fetch_attraction_animal_links( conn, attraction_name ):
       animal_row = animal_by_key.get( link.viewing_spot_key() )
 
       if animal_row is None or not animal_row.covered_by_talk:
@@ -145,9 +126,9 @@ def restore_covered_animals_after_talk_removed(
          continue
 
       start_time = DateValues.schedule_time_key_from_seconds(
-         talk_block.start_seconds )
+         attraction_block.start_seconds )
       end_time = DateValues.schedule_time_key_from_seconds(
-         talk_block.start_seconds + duration_seconds )
+         attraction_block.start_seconds + duration_seconds )
 
       update_itinerary_animal_cover_and_schedule(
          cur,
@@ -159,39 +140,39 @@ def restore_covered_animals_after_talk_removed(
          end_time=end_time )
       restored.append( animal_row )
       replacement_end_seconds = max(
-         talk_block.start_seconds + duration_seconds,
-         replacement_end_seconds or talk_block.start_seconds )
+         attraction_block.start_seconds + duration_seconds,
+         replacement_end_seconds or attraction_block.start_seconds )
 
-   return RestoredTalkCoveredAnimals(
+   return RestoredAttractionCoveredAnimals(
       animals=restored,
       replacement_end_seconds=replacement_end_seconds )
 
 
-def uncover_animals_for_unavailable_talks(
+def uncover_animals_for_removed_attractions(
       conn: Connection,
       animals: list[ AnimalDiff ],
-      guardians_talks: list[ GuardiansTalkDiff ],
+      removed_attraction_rows: list[ ItineraryAttractionRecord ],
    ) -> list[ AnimalDiff ]:
    animals_by_spot = {
       animal.viewing_spot_key(): animal
       for animal in animals
    }
 
-   for talk in guardians_talks:
-      if not talk.is_deleted:
-         continue
+   for attraction_row in removed_attraction_rows:
+      attraction_block = time_block_from_schedule_times(
+         attraction_row.start_time,
+         attraction_row.end_time )
 
-      talk_block = time_block_from_schedule_times(
-         talk.start_time,
-         talk.end_time )
-
-      if talk_block is None:
-         continue
-
-      for link in fetch_guardians_talk_animal_links( conn, talk.name ):
+      for link in fetch_attraction_animal_links( conn, attraction_row.attraction ):
          existing = animals_by_spot.get( link.viewing_spot_key() )
 
          if existing is None or not existing.covered_by_talk:
+            continue
+
+         if attraction_block is None:
+            existing.covered_by_talk = False
+            existing.start_time = None
+            existing.end_time = None
             continue
 
          duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
@@ -208,19 +189,19 @@ def uncover_animals_for_unavailable_talks(
 
          existing.covered_by_talk = False
          existing.start_time = DateValues.schedule_time_key_from_seconds(
-            talk_block.start_seconds )
+            attraction_block.start_seconds )
          existing.end_time = DateValues.schedule_time_key_from_seconds(
-            talk_block.start_seconds + duration_seconds )
+            attraction_block.start_seconds + duration_seconds )
 
    return animals
 
 
-def filter_animals_excluding_covered(
-      animals: list[ ItineraryAnimalRecord ],
-      covered_keys: Collection[ ViewingSpotNameKey ],
-   ) -> list[ ItineraryAnimalRecord ]:
-   return [
-      animal
-      for animal in animals
-      if animal.viewing_spot_key() not in covered_keys
-   ]
+def merge_covered_viewing_spot_keys(
+      *covered_maps: Mapping[ ViewingSpotNameKey, object ],
+   ) -> set[ ViewingSpotNameKey ]:
+   merged: set[ ViewingSpotNameKey ] = set()
+
+   for covered_map in covered_maps:
+      merged.update( covered_map )
+
+   return merged

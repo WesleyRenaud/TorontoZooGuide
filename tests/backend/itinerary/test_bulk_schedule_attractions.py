@@ -58,7 +58,7 @@ def test_bulk_schedule_packs_attraction_only_loop(
    assert splash.end_time is not None
 
 
-def test_bulk_schedule_packs_woven_kangaroo_walk_thru_between_animals(
+def test_bulk_schedule_covers_kangaroo_when_walk_thru_is_selected(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -87,10 +87,12 @@ def test_bulk_schedule_packs_woven_kangaroo_walk_thru_between_animals(
       for animal in result.itinerary.animals
       if animal.species == 'Amur Tiger' )
 
-   assert kangaroo.start_time is not None
+   assert kangaroo.covered_by_talk is True
+   assert kangaroo.start_time == walk_thru.start_time
+   assert kangaroo.end_time == walk_thru.end_time
    assert walk_thru.start_time is not None
    assert tiger.start_time is not None
-   assert kangaroo.start_time < walk_thru.start_time < tiger.start_time
+   assert walk_thru.start_time < tiger.start_time
 
 
 def test_bulk_schedule_repacks_attractions_after_clear(

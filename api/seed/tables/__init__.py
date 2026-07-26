@@ -5,6 +5,7 @@ from . import animal_viewing_alert
 from . import animal_visibility_schedule
 from . import app_setting
 from . import attraction
+from . import attraction_animal
 from . import attraction_day_seasonal_availability_multiplier
 from . import attraction_opening_schedule
 from . import attraction_schedule_override
@@ -81,6 +82,7 @@ static_tables = [
    itinerary_event_default,
    itinerary_status,
    attraction,
+   attraction_animal,
    attraction_day_seasonal_availability_multiplier,
    zoomobile_station,
    zoomobile_day_route,

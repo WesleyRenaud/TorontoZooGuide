@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
+from .attraction_covered_animals import apply_covered_by_attraction_schedules
+from .attraction_covered_animals import merge_covered_viewing_spot_keys
+from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
@@ -125,13 +128,23 @@ def bulk_schedule_animals(
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
    animals_to_schedule = animals_from_stops( stops_to_schedule )
    attractions_to_pack = attractions_from_stops( stops_to_schedule )
-   covered_by_pin = viewing_spot_keys_to_cover_for_loop_pins(
+   covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
       conn,
       loop_pins,
       animals_to_schedule )
+   covered_by_attraction = viewing_spot_keys_to_cover_for_attractions(
+      conn,
+      [
+         attraction_row.attraction
+         for attraction_row in attractions_to_pack
+      ],
+      animals_to_schedule )
+   covered_keys = merge_covered_viewing_spot_keys(
+      covered_by_talk,
+      covered_by_attraction )
    animals_to_pack = filter_animals_excluding_covered(
       animals_to_schedule,
-      covered_by_pin )
+      covered_keys )
    stops_to_pack = [ *animals_to_pack, *attractions_to_pack ]
    sorted_loop_groups = group_stops_by_master_route_loop( stops_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
@@ -139,7 +152,7 @@ def bulk_schedule_animals(
       schedule_windows,
       loop_pins )
 
-   if not loop_units and not covered_by_pin:
+   if not loop_units and not covered_keys:
       itinerary = build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_context )
@@ -170,7 +183,8 @@ def bulk_schedule_animals(
          walk_graph=walk_graph,
          start_node_id=start_state.start_node_id )
 
-   apply_covered_by_talk_schedules( conn, covered_by_pin )
+   apply_covered_by_talk_schedules( conn, covered_by_talk )
+   apply_covered_by_attraction_schedules( conn, covered_by_attraction )
 
    adjustments: list[ ItineraryAdjustment ] = []
    reasons: list[ ItineraryResultReason ] = []
