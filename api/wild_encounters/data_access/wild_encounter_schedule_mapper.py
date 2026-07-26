@@ -12,6 +12,7 @@ def map_wild_encounter_schedule_record( row: Row ) -> WildEncounterScheduleRecor
       maximum_duration=row[ 'MAXIMUM_DURATION' ],
       x_coord=row[ 'X_COORD' ],
       y_coord=row[ 'Y_COORD' ],
+      region=row[ 'REGION' ],
       schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
       schedule_end_date=row[ 'SCHEDULE_END_DATE' ],
       monday=row[ 'MONDAY' ],

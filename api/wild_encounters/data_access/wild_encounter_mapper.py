@@ -11,7 +11,8 @@ def map_wild_encounter_record( row: Row ) -> WildEncounterRecord:
       link=row[ 'LINK' ],
       maximum_duration=row[ 'MAXIMUM_DURATION' ],
       x_coord=row[ 'X_COORD' ],
-      y_coord=row[ 'Y_COORD' ] )
+      y_coord=row[ 'Y_COORD' ],
+      region=row[ 'REGION' ] )
 
 
 

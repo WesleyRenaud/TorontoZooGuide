@@ -14,6 +14,10 @@ import {
    ScheduleItemKind,
    usesScheduledTimelineEventCard,
 } from '../../../shared/enums/scheduleItemKind.js';
+import {
+   applyRegionColorsToElement,
+   resolveRegionColorSlugForScheduledItem,
+} from '../../../shared/regionColors.js';
 
 export function makeTimelineRow(timeLabel) {
    const timeCell = el('div', 'itinerary-day-time');
@@ -67,7 +71,8 @@ function makeScheduledItemBlock(
    itemRow,
    maximumDuration,
    offsetFraction = 0,
-   menuOptions = {}
+   menuOptions = {},
+   item = null
 ) {
    const block = el('div', 'itinerary-day-event');
    const slotSpan = maximumDuration / TIMELINE_SLOT_MINUTES;
@@ -83,6 +88,10 @@ function makeScheduledItemBlock(
    }
 
    itemRow.classList.add('itinerary-day-event-card');
+   applyRegionColorsToElement(
+      itemRow,
+      resolveRegionColorSlugForScheduledItem(item)
+   );
    attachScheduledEventCardMenu(itemRow, menuOptions);
    block.appendChild(itemRow);
 
@@ -190,7 +199,8 @@ export function appendScheduledItems(
                   scheduledItem,
                   scheduleHandlers,
                   strings
-               )
+               ),
+               scheduledItem.item
             )
          );
          return;

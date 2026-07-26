@@ -14,5 +14,6 @@ class AttractionRecord:
    hyperlink_text: str
    x_coord: Coordinate
    y_coord: Coordinate
+   region: str
    weekday_multiplier: SeasonalMultiplier
    weekend_holiday_multiplier: SeasonalMultiplier

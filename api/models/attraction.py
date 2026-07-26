@@ -14,6 +14,7 @@ class Attraction:
          hyperlink_text: str | None = None,
          x_coord: float | None = None,
          y_coord: float | None = None,
+         region: str | None = None,
          is_closed: bool = False,
          closed_message: str | None = None,
          likelihood: int | None = None,
@@ -28,6 +29,7 @@ class Attraction:
       self.hyperlink_text = hyperlink_text
       self.x_coord = x_coord
       self.y_coord = y_coord
+      self.region = region
       self.is_closed = is_closed
       self.closed_message = closed_message
       self.likelihood = likelihood
@@ -46,6 +48,7 @@ class Attraction:
          'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
+         'region': self.region,
          'is_closed': ValueConversion.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood,

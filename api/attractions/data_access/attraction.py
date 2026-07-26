@@ -42,6 +42,7 @@ def fetch_attraction_records(
                   a.HYPERLINK_TEXT,
                   a.X_COORD,
                   a.Y_COORD,
+                  a.REGION,
                   COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
                   COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
                FROM Attraction a
@@ -75,6 +76,7 @@ def fetch_attraction_record_for_calendar_day(
                   a.HYPERLINK_TEXT,
                   a.X_COORD,
                   a.Y_COORD,
+                  a.REGION,
                   COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
                   COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
                FROM Attraction a

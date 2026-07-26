@@ -212,7 +212,7 @@ test.describe('itinerary day planner preview scheduled', () => {
                {
                   name: 'Zoomobile',
                   subtitle: 'Ride the rails',
-                  location: 'Main Entrance',
+                  region: 'Front Courtyard',
                   price: 'Free with admission',
                   start_time: '2:30 PM',
                   end_time: '3:00 PM',
@@ -241,7 +241,8 @@ test.describe('itinerary day planner preview scheduled', () => {
 
       assert.ok(zoomobileEvent);
       assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
-      assert.match(allTextFor(zoomobileEvent), /Location: Main Entrance/);
+      assert.match(allTextFor(zoomobileEvent), /Location: Front Courtyard/);
+      assert.ok(eventCard?.classList.contains('itinerary-day-scheduled-pill--region-front-courtyard'));
       assert.match(allTextFor(zoomobileEvent), /Price: Free with admission/);
       assert.match(
          imageSrcFor(zoomobileEvent),

@@ -13,6 +13,7 @@ class WildEncounterScheduleRecord:
    maximum_duration: int | None
    x_coord: Coordinate
    y_coord: Coordinate
+   region: str
    schedule_start_date: DateKey
    schedule_end_date: DateKey | None
    monday: bool

@@ -15,6 +15,8 @@ export const REGION_COLOR_SLUGS = Object.freeze({
    'Tundra Trek': 'tundra-trek',
    'Eurasia Wilds': 'eurasia-wilds',
    Australasia: 'australasia',
+   'Front Courtyard': 'front-courtyard',
+   'Wildlife Science Campus': 'wildlife-science-campus',
 });
 
 // Keep in sync with api/seed/data/exhibit.json.
@@ -62,13 +64,25 @@ export function resolveRegionColorSlugForExhibit(exhibitName = '') {
 }
 
 export function resolveRegionColorSlugForScheduledItem(item = null) {
-   const exhibit = asTrimmedString(item?.exhibit);
+   const region = asTrimmedString(item?.region);
 
-   if (!exhibit) {
-      return '';
+   if (region) {
+      return resolveRegionColorSlug(region);
    }
 
-   return resolveRegionColorSlugForExhibit(exhibit);
+   const exhibit = asTrimmedString(item?.exhibit);
+
+   if (exhibit) {
+      return resolveRegionColorSlugForExhibit(exhibit);
+   }
+
+   const location = asTrimmedString(item?.location);
+
+   if (location) {
+      return resolveRegionColorSlugForExhibit(location);
+   }
+
+   return '';
 }
 
 export function applyRegionColorsToElement(element, regionSlug = '') {

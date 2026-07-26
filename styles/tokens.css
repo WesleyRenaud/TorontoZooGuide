@@ -67,6 +67,10 @@
    --color-region-eurasia-wilds-text: #797A41;
    --color-region-australasia-bg: #CCC5E1;
    --color-region-australasia-text: #69599F;
+   --color-region-front-courtyard-bg: #E4E4E4;
+   --color-region-front-courtyard-text: #5C5C5C;
+   --color-region-wildlife-science-campus-bg: #F3C9D4;
+   --color-region-wildlife-science-campus-text: #9A4560;
 
    /* ── Typography ── */
    --font-family-base: 'Poppins', sans-serif;

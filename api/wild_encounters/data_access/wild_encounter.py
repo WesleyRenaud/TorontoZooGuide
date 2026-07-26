@@ -43,7 +43,8 @@ def fetch_wild_encounter_records( conn: Connection ) -> list[ WildEncounterRecor
                   w.LINK,
                   w.MAXIMUM_DURATION,
                   m.X_COORD,
-                  m.Y_COORD
+                  m.Y_COORD,
+                  m.REGION
                FROM WildEncounter w
                JOIN WildEncounterMeetingSpot m
                   ON w.MEETING_SPOT = m.NAME;

@@ -33,10 +33,17 @@ test('resolveRegionColorSlug maps regions to shared token slugs', () => {
       resolveRegionColorSlugForExhibit('Canadian Domain'),
       REGION_COLOR_SLUGS['Canadian Domain']
    );
-   assert.equal(resolveRegionColorSlug('Front Courtyard'), '');
+   assert.equal(
+      resolveRegionColorSlug('Front Courtyard'),
+      REGION_COLOR_SLUGS['Front Courtyard']
+   );
+   assert.equal(
+      resolveRegionColorSlug('Wildlife Science Campus'),
+      'wildlife-science-campus'
+   );
 });
 
-test('resolveRegionColorSlugForScheduledItem uses animal exhibit only', () => {
+test('resolveRegionColorSlugForScheduledItem uses region, exhibit, then talk location', () => {
    assert.equal(
       resolveRegionColorSlugForScheduledItem({
          species: 'African Lion',
@@ -46,8 +53,28 @@ test('resolveRegionColorSlugForScheduledItem uses animal exhibit only', () => {
    );
    assert.equal(
       resolveRegionColorSlugForScheduledItem({
+         name: 'Zoomobile',
+         region: 'Front Courtyard',
+      }),
+      'front-courtyard'
+   );
+   assert.equal(
+      resolveRegionColorSlugForScheduledItem({
+         name: 'Greenhouse',
+         region: 'Wildlife Science Campus',
+      }),
+      'wildlife-science-campus'
+   );
+   assert.equal(
+      resolveRegionColorSlugForScheduledItem({
+         name: 'Komodo Dragon',
+         location: 'Australasia Pavilion',
+      }),
+      'australasia'
+   );
+   assert.equal(
+      resolveRegionColorSlugForScheduledItem({
          name: 'African Lion',
-         location: 'Africa Savanna',
       }),
       ''
    );

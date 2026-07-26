@@ -2876,6 +2876,16 @@ nav ul li a:hover {
    --itinerary-scheduled-pill-region-text: var(--color-region-australasia-text);
 }
 
+.itinerary-day-scheduled-pill--region-front-courtyard {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-front-courtyard-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-front-courtyard-text);
+}
+
+.itinerary-day-scheduled-pill--region-wildlife-science-campus {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-wildlife-science-campus-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-wildlife-science-campus-text);
+}
+
 .itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--grouped {
    min-height: 0;
    padding: 10px 12px 10px 14px;
@@ -3149,6 +3159,48 @@ nav ul li a:hover {
    box-sizing: border-box;
    padding: 18px 22px;
    align-items: flex-start;
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored {
+   background: var(--itinerary-scheduled-pill-region-bg);
+   color: var(--itinerary-scheduled-pill-region-text);
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itin-panel-name,
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itin-panel-meta,
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itin-panel-link {
+   color: var(--itinerary-scheduled-pill-region-text);
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itin-panel-link:hover {
+   color: var(--itinerary-scheduled-pill-region-text);
+   opacity: 0.82;
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itinerary-day-open-pill-menu-btn {
+   background: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 10%,
+      transparent
+   );
+   border-color: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 28%,
+      transparent
+   );
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itinerary-day-open-pill-menu-btn:hover,
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itinerary-day-open-pill-menu-btn:focus-visible {
+   background: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 18%,
+      transparent
+   );
+}
+
+.itin-panel-item.itinerary-day-event-card.itinerary-day-scheduled-pill--region-colored .itinerary-day-open-pill-menu-dot {
+   background: var(--itinerary-scheduled-pill-region-text);
 }
 
 .itin-panel-item.itinerary-day-event-card--with-menu {

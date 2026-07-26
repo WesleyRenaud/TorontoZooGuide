@@ -4,69 +4,79 @@
     "x_coord": 53.338,
     "y_coord": 47.237,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Africa"
   },
   {
     "name": "Wild Encounter - Africa Meeting Spot",
     "x_coord": 40.044,
     "y_coord": 69,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Africa"
   },
   {
     "name": "Wild Encounter - Discovery Zone Meeting Spot",
     "x_coord": 65.885,
     "y_coord": 77.803,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Discovery Zone"
   },
   {
     "name": "Wild Encounter - Eurasia Meeting Spot",
     "x_coord": 77.23,
     "y_coord": 63.73,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Eurasia Wilds"
   },
   {
     "name": "Wild Encounter - Mayan Temple Meeting Spot",
     "x_coord": 75.819,
     "y_coord": 42.75,
     "loop_id": "tundra_trek_mayan_temple",
-    "loop_viewing_spot_index": 3
+    "loop_viewing_spot_index": 3,
+    "region": "Americas"
   },
   {
     "name": "Wild Encounter - Eurasia Zoomobile Station Meeting Spot",
     "x_coord": 75.943,
     "y_coord": 90.577,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Eurasia Wilds"
   },
   {
     "name": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
     "x_coord": 59.812,
     "y_coord": 85.689,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Front Courtyard"
   },
   {
     "name": "Wild Encounter - First Nations Art Garden Meeting Spot",
     "x_coord": 70.329,
     "y_coord": 53.162,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Americas"
   },
   {
     "name": "Wild Encounter - Canadian Domain Meeting Spot",
     "x_coord": 35.584,
     "y_coord": 20.07,
     "loop_id": "africa_savanna_canadian_domain",
-    "loop_viewing_spot_index": 6
+    "loop_viewing_spot_index": 6,
+    "region": "Canadian Domain"
   },
   {
     "name": "Wild Encounter - Amur Tiger Habitat Meeting Spot",
     "x_coord": 73.465,
     "y_coord": 75.658,
     "loop_id": null,
-    "loop_viewing_spot_index": null
+    "loop_viewing_spot_index": null,
+    "region": "Eurasia Wilds"
   }
 ]
