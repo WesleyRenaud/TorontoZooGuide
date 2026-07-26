@@ -8,6 +8,9 @@ from typing import Any
 from ....animals.search.animals_matching_query import viewing_spot_key
 from ....animals.search.animals_matching_query import viewing_spot_key_from_values
 from .animals_for_bulk_schedule import animals_for_bulk_schedule
+from .attraction_covered_animals import CoveredAnimalAttraction
+from .attraction_covered_animals import merge_covered_viewing_spot_keys
+from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
 from .bulk_schedule_animals import has_itinerary_schedule_times
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
@@ -25,7 +28,7 @@ from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary import build_itinerary
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
-from .guardians_talk_covered_animals import CoveredAnimalPin
+from .guardians_talk_covered_animals import CoveredAnimalTalk
 from .guardians_talk_covered_animals import filter_animals_excluding_covered
 from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
@@ -260,13 +263,23 @@ def pack_animals_into_itinerary_in_memory(
       day_end_seconds,
       boundary_stops )
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
-   covered_by_pin = viewing_spot_keys_to_cover_for_loop_pins(
+   covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
       conn,
       loop_pins,
       animals_to_schedule )
+   covered_by_attraction = viewing_spot_keys_to_cover_for_attractions(
+      conn,
+      [
+         attraction.name
+         for attraction in packing_itinerary.attractions
+      ],
+      animals_to_schedule )
+   covered_keys = merge_covered_viewing_spot_keys(
+      covered_by_talk,
+      covered_by_attraction )
    animals_to_pack = filter_animals_excluding_covered(
       animals_to_schedule,
-      covered_by_pin )
+      covered_keys )
    sorted_loop_groups = group_animals_by_master_route_loop( animals_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
@@ -286,7 +299,10 @@ def pack_animals_into_itinerary_in_memory(
          slot_sink=slot_sink )
       _apply_slots_to_itinerary_animals( packing_itinerary, slot_sink.slots )
 
-   _apply_covered_to_itinerary_animals( packing_itinerary, covered_by_pin )
+   _apply_talk_covered_to_itinerary_animals( packing_itinerary, covered_by_talk )
+   _apply_attraction_covered_to_itinerary_animals(
+      packing_itinerary,
+      covered_by_attraction )
 
    return packing_itinerary
 
@@ -440,16 +456,16 @@ def _apply_slots_to_itinerary_animals(
       animal.end_time = end_time
 
 
-def _apply_covered_to_itinerary_animals(
+def _apply_talk_covered_to_itinerary_animals(
       itinerary: Itinerary,
-      covered_by_pin: dict[ ViewingSpotNameKey, CoveredAnimalPin ],
+      covered_by_talk: dict[ ViewingSpotNameKey, CoveredAnimalTalk ],
    ) -> None:
    animals_by_spot = {
       viewing_spot_key( animal ): animal
       for animal in itinerary.animals
    }
 
-   for animal_row, loop_pin in covered_by_pin.values():
+   for animal_row, loop_pin in covered_by_talk.values():
       animal = animals_by_spot.get( animal_row.viewing_spot_key() )
 
       if animal is None:
@@ -457,4 +473,32 @@ def _apply_covered_to_itinerary_animals(
 
       animal.start_time = loop_pin.stop.start_time
       animal.end_time = loop_pin.stop.end_time
+      animal.covered_by_talk = True
+
+
+def _apply_attraction_covered_to_itinerary_animals(
+      itinerary: Itinerary,
+      covered_by_attraction: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ],
+   ) -> None:
+   animals_by_spot = {
+      viewing_spot_key( animal ): animal
+      for animal in itinerary.animals
+   }
+   attraction_by_name = {
+      attraction.name: attraction
+      for attraction in itinerary.attractions
+   }
+
+   for animal_row, attraction_name in covered_by_attraction.values():
+      animal = animals_by_spot.get( animal_row.viewing_spot_key() )
+      attraction = attraction_by_name.get( attraction_name )
+
+      if animal is None or attraction is None:
+         continue
+
+      if attraction.start_time is None or attraction.end_time is None:
+         continue
+
+      animal.start_time = attraction.start_time
+      animal.end_time = attraction.end_time
       animal.covered_by_talk = True

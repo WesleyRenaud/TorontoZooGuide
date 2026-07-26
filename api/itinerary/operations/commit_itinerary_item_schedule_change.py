@@ -3,12 +3,14 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
+from ..attraction_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..domain.itinerary import build_current_itinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ..scheduling.bulk.attraction_covered_animals import restore_covered_animals_after_attraction_removed
 from ..scheduling.bulk.guardians_talk_covered_animals import restore_covered_animals_after_talk_removed
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
@@ -52,7 +54,7 @@ def commit_itinerary_item_schedule_change(
    removed_last_item = was_last_scheduled_item(
       itinerary_before,
       removed_block )
-   restored_talk_covered_animals = None
+   restored_covered_animals = None
    cur = conn.cursor()
 
    try:
@@ -60,23 +62,32 @@ def commit_itinerary_item_schedule_change(
          if (
                isinstance( schedule_item_key, GuardiansTalkScheduleItemKey )
                and removed_block is not None ):
-            restored_talk_covered_animals = restore_covered_animals_after_talk_removed(
+            restored_covered_animals = restore_covered_animals_after_talk_removed(
                cur,
                conn,
                talk_name=schedule_item_key.name,
                talk_block=removed_block,
                animal_rows=saved_itinerary.animal_rows )
+         elif (
+               isinstance( schedule_item_key, AttractionScheduleItemKey )
+               and removed_block is not None ):
+            restored_covered_animals = restore_covered_animals_after_attraction_removed(
+               cur,
+               conn,
+               attraction_name=schedule_item_key.name,
+               attraction_block=removed_block,
+               animal_rows=saved_itinerary.animal_rows )
 
          if (
-               restored_talk_covered_animals is not None
-               and restored_talk_covered_animals.replacement_end_seconds is not None
+               restored_covered_animals is not None
+               and restored_covered_animals.replacement_end_seconds is not None
                and removed_block is not None ):
             shift_guest_scheduled_items_after_unschedule(
                conn,
                cur,
                anchor_end_seconds=removed_block.end_seconds,
                shift_seconds=(
-                  restored_talk_covered_animals.replacement_end_seconds
+                  restored_covered_animals.replacement_end_seconds
                   - removed_block.end_seconds ),
                freed_block=removed_block )
          else:

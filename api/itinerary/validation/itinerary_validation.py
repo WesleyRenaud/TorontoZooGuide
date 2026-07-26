@@ -28,6 +28,7 @@ from ...models import AttractionDiff
 from ...models import GuardiansTalkDiff
 from ...models import WildEncounterDiff
 from ...models.itinerary_event import ItineraryEvent
+from ..scheduling.bulk.attraction_covered_animals import uncover_animals_for_removed_attractions
 from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
@@ -385,16 +386,26 @@ def validate_itinerary_for_save(
          old_visit_date=old_visit_date,
          visit_date_temp=new_visit_date_temp )
 
+   if validated_animals:
+      validated_animals = uncover_animals_for_unavailable_talks(
+         conn,
+         validated_animals,
+         guardians_talk_diffs )
+      kept_attraction_names = save_input.attractions or []
+      removed_attraction_rows = [
+         attraction_row
+         for attraction_row in saved_itinerary.attraction_rows
+         if attraction_row.attraction not in kept_attraction_names
+      ]
+      validated_animals = uncover_animals_for_removed_attractions(
+         conn,
+         validated_animals,
+         removed_attraction_rows )
+
    validated_itinerary = ValidatedItinerary(
       arrival_time=arrival_time,
       departure_time=departure_time,
-      animals=(
-         uncover_animals_for_unavailable_talks(
-            conn,
-            validated_animals,
-            guardians_talk_diffs )
-         if validated_animals
-         else [] ),
+      animals=validated_animals if validated_animals else [],
       attractions=(
          validate_itinerary_attractions(
             attraction_coordinator,
