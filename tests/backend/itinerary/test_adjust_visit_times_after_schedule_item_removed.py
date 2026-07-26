@@ -126,7 +126,7 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
    assert remove_result.adjustments == []
 
 
-def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
+def test_unschedule_middle_animal_clears_visit_times_when_day_becomes_incomplete(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -162,18 +162,21 @@ def test_unschedule_middle_animal_does_not_change_arrival_or_departure(
    ).success
 
    before = ItineraryCoordinator.get_itinerary()
+   assert before.arrival_time == '9:30 AM'
+   assert before.departure_time == '5:00 PM'
+
    result = unschedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       CHEETAH_KEY,
    )
 
    assert result.success
-   assert result.itinerary.arrival_time == before.arrival_time
-   assert result.itinerary.departure_time == before.departure_time
+   assert result.itinerary.arrival_time is None
+   assert result.itinerary.departure_time is None
    assert result.adjustments == []
 
 
-def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
+def test_unschedule_middle_animal_clears_pinned_departure_when_day_becomes_incomplete(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -230,13 +233,6 @@ def test_unschedule_middle_animal_updates_departure_when_pinned_to_latest_end(
    )
 
    assert result.success
-   penguin_after = next(
-      animal
-      for animal in result.itinerary.animals
-      if animal.species == 'African Penguin' )
-   assert penguin_after.end_time is not None
-   assert DateValues.time_value_is_before(
-      penguin_after.end_time,
-      penguin_before.end_time )
-   assert result.itinerary.departure_time == penguin_after.end_time
+   assert result.itinerary.arrival_time is None
+   assert result.itinerary.departure_time is None
    assert result.adjustments == []

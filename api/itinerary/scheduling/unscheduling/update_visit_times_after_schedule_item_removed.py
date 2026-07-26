@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..core.guest_item_schedule_status import itinerary_has_unscheduled_guest_items
 from ..core.time_block import earliest_scheduled_start_seconds
 from ..core.time_block import latest_scheduled_end_seconds
 from ..core.time_block import time_block_from_schedule_times
@@ -135,6 +136,9 @@ def update_visit_times_after_schedule_item_removed(
       *,
       removed_first_item: bool,
       removed_last_item: bool ) -> None:
+   if itinerary_has_unscheduled_guest_items( itinerary_after ):
+      return
+
    previous_latest_end_seconds = latest_scheduled_end_seconds( itinerary_before )
    previous_departure_seconds = DateValues.time_value_in_seconds(
       itinerary_before.departure_time )
