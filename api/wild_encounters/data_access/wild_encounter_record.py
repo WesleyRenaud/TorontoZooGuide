@@ -13,3 +13,4 @@ class WildEncounterRecord:
    maximum_duration: int | None
    x_coord: Coordinate
    y_coord: Coordinate
+   region: str

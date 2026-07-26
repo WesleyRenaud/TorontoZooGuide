@@ -14,6 +14,7 @@ RECORD_FIELDS = [
    'y_coord',
    'loop_id',
    'loop_viewing_spot_index',
+   'region',
 ]
 
 DB_COLUMNS = [
@@ -22,6 +23,7 @@ DB_COLUMNS = [
    'Y_COORD',
    'LOOP_ID',
    'LOOP_VIEWING_SPOT_INDEX',
+   'REGION',
 ]
 
 DATA_FILE = 'wild_encounter_meeting_spot.json'

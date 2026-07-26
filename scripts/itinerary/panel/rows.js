@@ -103,7 +103,7 @@ export function buildAttractionRows(
       getName: (attraction) => attraction.name,
       getMetaLines: (attraction) => [
          attraction.subtitle,
-         buildFieldLine('Location', attraction.location),
+         buildFieldLine('Location', attraction.region),
          buildFieldLine('Price', attraction.price),
          buildApproximateStartTimeFieldLine(attraction),
       ],

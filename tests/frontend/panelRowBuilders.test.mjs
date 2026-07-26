@@ -419,7 +419,7 @@ test.describe('itinerary panel row builders', () => {
          {
             name: 'Conservation Carousel',
             subtitle: 'Carousels are timeless and fun for all ages!',
-            location: 'Front Courtyard',
+            region: 'Front Courtyard',
             price: 'Extra charge',
             removalReason: 'The Conservation Carousel is temporarily closed.',
          },
@@ -435,6 +435,7 @@ test.describe('itinerary panel row builders', () => {
          'images/details/attractions/conservation-carousel.png'
       );
       assert.equal(textFor(row, '.itin-panel-meta'), 'Carousels are timeless and fun for all ages!');
+      assert.match(allTextFor(row), /Location: Front Courtyard/);
       assert.equal(
          textFor(row, '.itin-panel-alert'),
          'Not available on this date: The Conservation Carousel is temporarily closed.'

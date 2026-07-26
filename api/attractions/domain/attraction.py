@@ -150,6 +150,7 @@ def build_attraction(
       hyperlink_text=attraction_record.hyperlink_text,
       x_coord=attraction_record.x_coord,
       y_coord=attraction_record.y_coord,
+      region=attraction_record.region,
       is_closed=likelihood <= 0,
       closed_message=closed_message,
       likelihood=likelihood )

@@ -230,7 +230,23 @@ test.describe('itinerary panel format and schedule', () => {
       assert.equal(normalizeAttraction({
          name: '  Conservation Carousel  ',
          info_link: '  https://www.torontozoo.com/tickets/carousel  ',
+         region: '  Front Courtyard  ',
       }).infoLink, 'https://www.torontozoo.com/tickets/carousel');
+      assert.deepEqual(
+         normalizeAttraction({
+            name: 'Zoomobile',
+            region: 'Front Courtyard',
+         }),
+         {
+            name: 'Zoomobile',
+            subtitle: '',
+            region: 'Front Courtyard',
+            location: '',
+            price: '',
+            infoLink: null,
+            removalReason: null,
+         }
+      );
       assert.equal(normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
       assert.deepEqual(
          normalizeTalk({

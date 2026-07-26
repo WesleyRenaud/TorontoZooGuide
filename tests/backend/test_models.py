@@ -39,14 +39,34 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
    ).to_dict()[ 'is_closed' ] is True
 
    assert GiftShop( name='Shop', location='Gate', is_closed=0 ).to_dict()[ 'is_closed' ] is False
-   assert Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'free_with_admission' ] is True
+   assert Attraction(
+      name='Ride',
+      free_with_admission=1,
+      region='Front Courtyard',
+   ).to_dict()[ 'free_with_admission' ] is True
+   assert Attraction(
+      name='Ride',
+      free_with_admission=1,
+      region='Front Courtyard',
+   ).to_dict()[ 'region' ] == 'Front Courtyard'
    assert Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'is_deleted' ] is False
    assert Restroom( title='Restroom', x_coord=3, y_coord=4 ).to_dict()[ 'title' ] == 'Restroom'
    assert ZoomobileStation( name='Station' ).to_dict()[ 'name' ] == 'Station'
    assert ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
    assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
    assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_deleted' ] is False
-   assert WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_available' ] is True
+   assert WildEncounter(
+      name='Encounter',
+      meeting_spot='Spot',
+      link='https://example.test',
+      region='Africa',
+   ).to_dict()[ 'is_available' ] is True
+   assert WildEncounter(
+      name='Encounter',
+      meeting_spot='Spot',
+      link='https://example.test',
+      region='Africa',
+   ).to_dict()[ 'region' ] == 'Africa'
    assert WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_deleted' ] is False
    assert DrinkingFountain( x_coord=1, y_coord=2, is_closed=1, likelihood=0.0 ).to_dict() == {
       'x_coord': 1,
@@ -263,6 +283,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'end_time': None,
             'x_coord': None,
             'y_coord': None,
+            'region': None,
             'is_available': False,
             'unavailable_message': 'Unavailable.',
             'is_deleted': False,

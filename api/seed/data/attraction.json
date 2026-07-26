@@ -7,7 +7,8 @@
     "hyperlink_text": "PRICING & DETAILS",
     "x_coord": 56.068,
     "y_coord": 83.343,
-    "default_itinerary_duration_minutes": 30
+    "default_itinerary_duration_minutes": 30,
+    "region": "Front Courtyard"
   },
   {
     "name": "Conservation Carousel",
@@ -17,7 +18,8 @@
     "hyperlink_text": "TICKETS & DETAILS",
     "x_coord": 58.475,
     "y_coord": 75.904,
-    "default_itinerary_duration_minutes": 15
+    "default_itinerary_duration_minutes": 15,
+    "region": "Front Courtyard"
   },
   {
     "name": "Greenhouse",
@@ -27,7 +29,8 @@
     "hyperlink_text": "LEARN MORE",
     "x_coord": 82.835,
     "y_coord": 54.277,
-    "default_itinerary_duration_minutes": 15
+    "default_itinerary_duration_minutes": 15,
+    "region": "Wildlife Science Campus"
   },
   {
     "name": "Wildlife Health & Science Centre",
@@ -37,7 +40,8 @@
     "hyperlink_text": "LEARN MORE",
     "x_coord": 84.459,
     "y_coord": 50.743,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "region": "Wildlife Science Campus"
   },
   {
     "name": "Kangaroo Walk-Thru",
@@ -47,7 +51,8 @@
     "hyperlink_text": "LEARN MORE",
     "x_coord": 74.985,
     "y_coord": 70.331,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "region": "Australasia"
   },
   {
     "name": "Virtual Reality (VR) Theatre!",
@@ -57,7 +62,8 @@
     "hyperlink_text": "PRICING & DETAILS",
     "x_coord": 71.786,
     "y_coord": 59.947,
-    "default_itinerary_duration_minutes": 20
+    "default_itinerary_duration_minutes": 20,
+    "region": "Tundra Trek"
   },
   {
     "name": "TundraAir Ride",
@@ -67,7 +73,8 @@
     "hyperlink_text": "PRICING & DETAILS",
     "x_coord": 75.152,
     "y_coord": 60.212,
-    "default_itinerary_duration_minutes": 15
+    "default_itinerary_duration_minutes": 15,
+    "region": "Tundra Trek"
   },
   {
     "name": "Gorilla Climb Ropes Course",
@@ -77,7 +84,8 @@
     "hyperlink_text": "PRICING & DETAILS",
     "x_coord": 50.023,
     "y_coord": 58.884,
-    "default_itinerary_duration_minutes": 40
+    "default_itinerary_duration_minutes": 40,
+    "region": "Africa"
   },
   {
     "name": "Splash Island",
@@ -87,7 +95,8 @@
     "hyperlink_text": "LEARN MORE",
     "x_coord": 67.797,
     "y_coord": 72.648,
-    "default_itinerary_duration_minutes": 60
+    "default_itinerary_duration_minutes": 60,
+    "region": "Discovery Zone"
   },
   {
     "name": "Face Painting, Caricatures and Henna!",
@@ -97,6 +106,7 @@
     "hyperlink_text": "LEARN MORE",
     "x_coord": 73.669,
     "y_coord": 59.054,
-    "default_itinerary_duration_minutes": 20
+    "default_itinerary_duration_minutes": 20,
+    "region": "Tundra Trek"
   }
 ]

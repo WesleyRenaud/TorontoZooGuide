@@ -15,6 +15,7 @@ def map_attraction_record( row: Row ) -> AttractionRecord:
       hyperlink_text=row[ 'HYPERLINK_TEXT' ],
       x_coord=row[ 'X_COORD' ],
       y_coord=row[ 'Y_COORD' ],
+      region=row[ 'REGION' ],
       weekday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ],
       weekend_holiday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 

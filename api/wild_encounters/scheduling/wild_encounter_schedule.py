@@ -108,6 +108,7 @@ def build_wild_encounter_schedule_for_target_date(
             end_time=encounter_end_time,
             x_coord=record.x_coord,
             y_coord=record.y_coord,
+            region=record.region,
             is_available=is_available,
             unavailable_message=unavailable_message ) )
 

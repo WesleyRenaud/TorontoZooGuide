@@ -12,7 +12,8 @@ def wild_encounter_record_to_model( record: WildEncounterRecord ) -> WildEncount
       link=record.link,
       maximum_duration=record.maximum_duration,
       x_coord=record.x_coord,
-      y_coord=record.y_coord )
+      y_coord=record.y_coord,
+      region=record.region )
 
 
 

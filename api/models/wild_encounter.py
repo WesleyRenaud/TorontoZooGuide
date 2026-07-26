@@ -15,6 +15,7 @@ class WildEncounter:
          end_time: ScheduleTimeKey = None,
          x_coord: float | None = None,
          y_coord: float | None = None,
+         region: str | None = None,
          is_available: bool = True,
          unavailable_message: str | None = None,
          is_deleted: bool = False ) -> None:
@@ -26,6 +27,7 @@ class WildEncounter:
       self.end_time = end_time
       self.x_coord = x_coord
       self.y_coord = y_coord
+      self.region = region
       self.is_available = is_available
       self.unavailable_message = unavailable_message
       self.is_deleted = is_deleted
@@ -41,6 +43,7 @@ class WildEncounter:
          'end_time': self.end_time,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
+         'region': self.region,
          'is_available': ValueConversion.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
          'is_deleted': ValueConversion.as_boolean( self.is_deleted )
