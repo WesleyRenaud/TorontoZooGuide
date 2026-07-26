@@ -177,6 +177,88 @@ test('saveItinerary confirms before saving a guardians talk without a matching a
    assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
+test('saveItinerary confirms before saving an attraction without a matching animal', async () => {
+   const requests = [];
+   const itineraryConfig = {
+      itinerary_error_types: {
+         SUCCESS: 'success',
+         ATTRACTION_WITHOUT_ANIMAL: 'attractionWithoutAnimal',
+      },
+      suppressed_error_types: [],
+   };
+
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: itineraryConfig.itinerary_error_types,
+      suppressedErrorTypes: itineraryConfig.suppressed_error_types,
+   });
+
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingAttractionWithoutAnimal
+      );
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            status: isConfirmed ? 'success' : 'attractionWithoutAnimal',
+            reasons: isConfirmed ? [] : [{
+               code: 'attractionWithoutAnimal',
+               items: [{
+                  name: 'Kangaroo Walk-Thru',
+                  item_type: 'attraction',
+               }],
+            }],
+            itinerary_config: itineraryConfig,
+            itinerary: {
+               date: '2026-06-20',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const savePromise = saveItinerary({
+      date: '2026-06-20',
+      animals: [],
+      attractions: ['Kangaroo Walk-Thru'],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const popupMessage = document.querySelector('.tzg-popup-message');
+
+   assert.equal(
+      popupMessage?.textContent,
+      'The Kangaroo Walk-Thru attraction does not match an animal on your itinerary. Do you still want to keep it on your plan?'
+   );
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   await savePromise;
+
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingAttractionWithoutAnimal, undefined);
+   assert.equal(requests[1].body.confirmingAttractionWithoutAnimal, true);
+});
+
 test('saveItinerary confirms before saving a guardians talk that unschedules items', async () => {
    const requests = [];
    const itineraryConfig = {

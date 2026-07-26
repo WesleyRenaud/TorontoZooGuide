@@ -40,6 +40,8 @@ class ItineraryController():
          data.get( 'confirmingFixedTimeItemLongWait' ) )
       confirming_guardians_talk_without_animal = bool(
          data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
+      confirming_attraction_without_animal = bool(
+         data.get( 'confirmingAttractionWithoutAnimal' ) )
 
       save_result = ItineraryCoordinator.set_itinerary(
          date=date,
@@ -62,7 +64,9 @@ class ItineraryController():
          confirming_fixed_time_item_long_wait=(
             confirming_fixed_time_item_long_wait ),
          confirming_guardians_talk_without_animal=(
-            confirming_guardians_talk_without_animal ) )
+            confirming_guardians_talk_without_animal ),
+         confirming_attraction_without_animal=(
+            confirming_attraction_without_animal ) )
 
       response = itinerary_result_to_dict(
          save_result,

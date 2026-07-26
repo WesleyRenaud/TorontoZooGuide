@@ -18,6 +18,7 @@ class ItineraryErrorType( str, Enum ):
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS = 'guardiansTalkWillUnscheduleItems'
    FIXED_TIME_ITEM_LONG_WAIT = 'fixedTimeItemLongWait'
    GUARDIANS_TALK_WITHOUT_ANIMAL = 'guardiansTalkWithoutAnimal'
+   ATTRACTION_WITHOUT_ANIMAL = 'attractionWithoutAnimal'
    WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS = 'wildEncounterWillUnscheduleItems'
    GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT = 'guardiansTalkWildEncounterTimeConflict'
    WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict'
