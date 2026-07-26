@@ -16,6 +16,7 @@ from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
 from ..scheduling.items.schedule_itinerary_helpers import build_success_result
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
+from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import apply_guest_schedule_shift_for_unschedule
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import shift_guest_scheduled_items_after_unschedule
@@ -113,6 +114,12 @@ def commit_itinerary_item_schedule_change(
       itinerary_after,
       removed_first_item=removed_first_item,
       removed_last_item=removed_last_item )
+   clear_visit_times_if_became_incomplete(
+      conn,
+      previous_itinerary=itinerary_before,
+      current_itinerary=build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 
