@@ -1,6 +1,7 @@
 import { setItineraryRequest } from '../api/itineraryApi.js';
 import {
    isItinerarySuccess,
+   requiresAttractionWithoutAnimalConfirmation,
    requiresFixedTimeItemLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
@@ -16,6 +17,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
+import { showAttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
 import { showFixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showGuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
@@ -150,6 +152,19 @@ async function requestSetItineraryWithConfirmations(
          buildConfirmedPayload: () => ({
             ...payload,
             confirmingGuardiansTalkWithoutAnimal: true,
+         }),
+      });
+   }
+
+   if (requiresAttractionWithoutAnimalConfirmation(initialResult.errorType)) {
+      return requestSetItineraryConfirmation({
+         showConfirmation: showAttractionWithoutAnimalConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            confirmingAttractionWithoutAnimal: true,
          }),
       });
    }

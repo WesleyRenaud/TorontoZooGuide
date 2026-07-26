@@ -9,6 +9,9 @@ from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
+from ..warnings.attraction_without_animal_warning import attraction_without_animal_warning_is_required
+from ..warnings.attraction_without_animal_warning import build_attraction_without_animal_issue_from_attractions
+from ..warnings.attraction_without_animal_warning import newly_added_attractions_without_matching_animal
 from ..warnings.early_admission_warning import early_admission_warning_is_required
 from ..warnings.fixed_time_item_long_wait_warning import validated_itinerary_has_unscheduled_listed_items
 from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
@@ -28,6 +31,7 @@ def check_set_itinerary_save_warnings(
       confirming_wild_encounter_unschedule: bool,
       confirming_fixed_time_item_long_wait: bool,
       confirming_guardians_talk_without_animal: bool,
+      confirming_attraction_without_animal: bool,
       overriding_conflicting_guardians_talks: bool ) -> tuple[
          SetItineraryContext,
          ItinerarySaveResult | None,
@@ -123,6 +127,20 @@ def check_set_itinerary_save_warnings(
       pending_reasons.append(
          build_guardians_talk_without_animal_issue_from_talks(
             missing_animal_talks ) )
+
+   if attraction_without_animal_warning_is_required(
+         context.validated_itinerary,
+         context.conn,
+         confirming_attraction_without_animal=(
+            confirming_attraction_without_animal ),
+         saved_itinerary=context.saved_itinerary ):
+      missing_animal_attractions = newly_added_attractions_without_matching_animal(
+         context.validated_itinerary,
+         context.conn,
+         saved_itinerary=context.saved_itinerary )
+      pending_reasons.append(
+         build_attraction_without_animal_issue_from_attractions(
+            missing_animal_attractions ) )
 
    if (
          not confirming_fixed_time_item_long_wait

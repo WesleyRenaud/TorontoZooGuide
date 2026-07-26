@@ -1,3 +1,7 @@
+import {
+   attractionWithoutAnimalMessage,
+   getPrimaryAttractionFromWithoutAnimalIssues,
+} from './attractionWithoutAnimalConfirmation.js';
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
 import { el } from './dom.js';
@@ -16,6 +20,7 @@ function itineraryBuildWarningIssueTypes() {
       types?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       types?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
       types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      types?.ATTRACTION_WITHOUT_ANIMAL,
       types?.FIXED_TIME_ITEM_LONG_WAIT,
    ].filter(Boolean);
 }
@@ -36,6 +41,10 @@ function buildWarningConfirmFlags() {
          [
             types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
             { confirmingGuardiansTalkWithoutAnimal: true },
+         ],
+         [
+            types?.ATTRACTION_WITHOUT_ANIMAL,
+            { confirmingAttractionWithoutAnimal: true },
          ],
          [
             types?.FIXED_TIME_ITEM_LONG_WAIT,
@@ -112,6 +121,21 @@ function buildGuardiansTalkWithoutAnimalSection(issues, strings) {
    };
 }
 
+function buildAttractionWithoutAnimalSection(issues, strings) {
+   const attraction = getPrimaryAttractionFromWithoutAnimalIssues(issues);
+   const type = getItineraryErrorTypes()?.ATTRACTION_WITHOUT_ANIMAL;
+
+   if (!attraction?.attractionName || !type) {
+      return null;
+   }
+
+   return {
+      type,
+      title: strings.buildWarningWithoutAnimalTitle,
+      message: attractionWithoutAnimalMessage(attraction, { strings }),
+   };
+}
+
 function buildFixedTimeItemLongWaitSections(issues, strings) {
    const type = getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
 
@@ -144,6 +168,7 @@ const BUILD_WARNING_SECTION_BUILDERS = Object.freeze([
    buildGuardiansTalkUnscheduleSection,
    buildWildEncounterUnscheduleSection,
    buildGuardiansTalkWithoutAnimalSection,
+   buildAttractionWithoutAnimalSection,
 ]);
 
 export function getItineraryBuildWarningTypes(issues = []) {

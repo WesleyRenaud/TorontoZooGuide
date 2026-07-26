@@ -131,6 +131,16 @@ export const itinerary = {
       guardiansTalkWithoutAnimalMessageWithoutTime: talkName => (
          `The ${talkName} guardians talk does not match an animal on your itinerary. Do you still want to keep it on your plan?`
       ),
+      attractionWithoutAnimalTitle: 'Attraction Without Matching Animal?',
+      attractionWithoutAnimalBody: (attractionName, attractionTime) => (
+         `The ${attractionName} attraction at ${attractionTime} does not match an animal on your itinerary.`
+      ),
+      attractionWithoutAnimalBodyWithoutTime: attractionName => (
+         `The ${attractionName} attraction does not match an animal on your itinerary.`
+      ),
+      attractionWithoutAnimalConfirmPrompt: (
+         ' Do you still want to keep it on your plan?'
+      ),
       updatePlanConfirm: 'Update Plan',
       wildEncounterRescheduleTitle: 'Add Wild Encounter?',
       wildEncounterRescheduleMessage: (encounterName, encounterTime) => (

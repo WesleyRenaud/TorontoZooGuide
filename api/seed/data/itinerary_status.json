@@ -48,6 +48,10 @@
     "is_suppressable": 0
   },
   {
+    "status": "attractionWithoutAnimal",
+    "is_suppressable": 0
+  },
+  {
     "status": "wildEncounterWillUnscheduleItems",
     "is_suppressable": 0
   },
