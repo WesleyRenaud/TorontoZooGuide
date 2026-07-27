@@ -6,6 +6,7 @@ from .attraction_covered_animals import merge_covered_viewing_spot_keys
 from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
+from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
@@ -207,6 +208,10 @@ def bulk_schedule_animals(
       if arrival_adjustment is not None:
          adjustments = [ arrival_adjustment ]
 
+      itinerary_after_arrival = build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context )
+      ensure_departure_after_bulk_schedule( conn, itinerary_after_arrival )
       sync_visit_times_to_scheduled_endpoints_if_complete(
          conn,
          build_current_itinerary(

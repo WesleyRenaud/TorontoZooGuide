@@ -13,6 +13,7 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -185,4 +186,9 @@ def test_bulk_schedule_animals_packs_through_zoo_close_despite_early_departure(
       animal.start_time is not None and animal.end_time is not None
       for animal in result.itinerary.animals
    )
-   assert result.itinerary.departure_time is not None
+   latest_end_seconds = max(
+      DateValues.time_value_in_seconds( animal.end_time )
+      for animal in result.itinerary.animals
+   )
+   assert DateValues.time_value_in_seconds(
+      result.itinerary.departure_time ) == latest_end_seconds
