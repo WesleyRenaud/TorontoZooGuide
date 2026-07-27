@@ -16,6 +16,7 @@ from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
 from .group_stops_by_master_route_loop import group_stops_by_master_route_loop
@@ -31,7 +32,6 @@ from .loop_schedule_stop import animals_from_stops
 from .loop_schedule_stop import attractions_from_stops
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import build_loop_schedule_units
-from .restore_guest_schedule_state import restore_guest_schedule_state
 from .restore_guest_schedule_state import snapshot_guest_schedule_state
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -47,7 +47,6 @@ from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_sch
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
-from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_long_wait_reasons_from_itinerary
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -55,6 +54,15 @@ def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool
    return not has_itinerary_schedule_times(
       animal_row.start_time,
       animal_row.end_time )
+
+
+def itinerary_has_items_to_rebuild(
+      saved_itinerary: SavedItinerary ) -> bool:
+   return bool(
+      saved_itinerary.animal_rows
+      or saved_itinerary.attraction_rows
+      or saved_itinerary.guardians_talk_rows
+      or saved_itinerary.wild_encounter_rows )
 
 
 def bulk_schedule_animals(
@@ -78,13 +86,17 @@ def bulk_schedule_animals(
    if stops_to_schedule is None:
       stops_to_schedule = list( animals_to_schedule or [] )
 
-   if not stops_to_schedule:
+   saved_itinerary = fetch_saved_itinerary( conn )
+
+   # Rebuild may have no animal/attraction stops when the day only has talks or
+   # encounters. Fail only when the itinerary itself has no items.
+   if not stops_to_schedule and not itinerary_has_items_to_rebuild(
+         saved_itinerary ):
       return build_save_result(
          conn,
          ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
          **itinerary_context )
 
-   saved_itinerary = fetch_saved_itinerary( conn )
    prepared_window = prepare_zoo_hours_schedule_window(
       conn,
       saved_itinerary,
@@ -94,7 +106,7 @@ def bulk_schedule_animals(
       return prepared_window
 
    saved_itinerary = prepared_window.saved_itinerary
-   schedule_snapshot, walk_route_snapshot = snapshot_guest_schedule_state(
+   schedule_snapshot, _walk_route_snapshot = snapshot_guest_schedule_state(
       conn,
       saved_itinerary )
 
@@ -230,23 +242,6 @@ def bulk_schedule_animals(
    itinerary = build_current_itinerary(
       fetch_saved_itinerary( conn ),
       **itinerary_context )
-   pending_reasons = []
-
-   if not confirming_fixed_time_item_long_wait:
-      pending_reasons.extend(
-         fixed_time_item_long_wait_reasons_from_itinerary( itinerary ) )
-
-   if pending_reasons:
-      restore_guest_schedule_state(
-         conn,
-         schedule_snapshot,
-         walk_route_snapshot )
-
-      return build_save_result(
-         conn,
-         pending_reasons[ 0 ].code,
-         reasons=pending_reasons,
-         **itinerary_context )
 
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,

@@ -338,6 +338,46 @@ def test_set_itinerary_skips_long_wait_warning_for_already_saved_talks(
    }
 
 
+def test_bulk_schedule_skips_long_wait_warning_for_already_saved_talks(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ),
+      ],
+      wild_encounters=[],
+      confirming_fixed_time_item_long_wait=True,
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      start_time='09:30',
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert [ talk.name for talk in result.itinerary.guardians_talks ] == [ ZEBRA_TALK ]
+   assert all(
+      has_itinerary_schedule_times( animal.start_time, animal.end_time )
+      for animal in result.itinerary.animals
+   )
+
+
 def test_set_itinerary_warns_only_for_newly_added_talk_with_long_wait(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
@@ -372,44 +412,3 @@ def test_set_itinerary_warns_only_for_newly_added_talk_with_long_wait(
    assert not result.success
    assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ MEERKAT_TALK ]
-
-
-def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-   _set_zebra_and_meerkat_schedules()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[
-         guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
-         guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
-      ],
-      wild_encounters=[],
-      confirming_fixed_time_item_long_wait=True,
-      confirming_guardians_talk_without_animal=True,
-   ).success
-
-   warning = ItineraryCoordinator.bulk_schedule_animals()
-
-   assert not warning.success
-   assert warning.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
-   assert not any(
-      has_itinerary_schedule_times( animal.start_time, animal.end_time )
-      for animal in warning.itinerary.animals
-   )
-
-   confirmed = ItineraryCoordinator.bulk_schedule_animals(
-      confirming_fixed_time_item_long_wait=True,
-   )
-
-   assert confirmed.success
-   assert any(
-      has_itinerary_schedule_times( animal.start_time, animal.end_time )
-      for animal in confirmed.itinerary.animals
-   )

@@ -332,7 +332,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildEmptyItineraryPanelContent shows long-wait confirmation after rebuild', async () => {
+   test('buildEmptyItineraryPanelContent rebuilds without long-wait confirmation for existing items', async () => {
       updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -342,18 +342,9 @@ test.describe('itineraryPanelContent', () => {
       let refreshed = false;
       const feedbackCalls = [];
       const confirmationCalls = [];
-      const longWaitIssues = [{
-         type: 'fixedTimeItemLongWait',
-         items: [{
-            name: 'North American River Otter',
-            start_time: '2:00 PM',
-            item_type: 'guardiansTalk',
-         }],
-      }];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
-            errorType: MOCK_ERROR_TYPES.FIXED_TIME_ITEM_LONG_WAIT,
-            issues: longWaitIssues,
+            issues: [],
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -372,10 +363,12 @@ test.describe('itineraryPanelContent', () => {
 
       await getPlannerOptions()?.onRebuildScheduleClick?.();
 
-      assert.equal(refreshed, false);
-      assert.deepEqual(feedbackCalls, []);
-      assert.equal(confirmationCalls.length, 1);
-      assert.deepEqual(confirmationCalls[0].issues, longWaitIssues);
+      assert.equal(refreshed, true);
+      assert.equal(confirmationCalls.length, 0);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'success',
+         message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
+      }]);
    });
 
    test('buildItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
