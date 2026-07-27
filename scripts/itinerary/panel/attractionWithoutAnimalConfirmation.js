@@ -15,34 +15,40 @@ export function hasAttractionWithoutAnimalIssue(issues = []) {
 }
 
 export function getAttractionNamesFromWithoutAnimalIssues(issues = []) {
-   return issues
+   return getAttractionsFromWithoutAnimalIssues(issues)
+      .map((attraction) => attraction.attractionName);
+}
+
+export function getAttractionsFromWithoutAnimalIssues(issues = []) {
+   const attractionsByName = new Map();
+
+   issues
       .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
-      .flatMap((issue) => (issue.items ?? [])
-         .map((item) => (item?.name ?? '').trim())
-         .filter(Boolean));
+      .flatMap((issue) => issue.items ?? [])
+      .forEach((item) => {
+         const attractionName = normalizeText(item?.name);
+
+         if (!attractionName) {
+            return;
+         }
+
+         const attractionTime = formatClockTime(item?.start_time);
+
+         attractionsByName.set(
+            attractionName,
+            attractionTime
+               ? { attractionName, attractionTime }
+               : { attractionName }
+         );
+      });
+
+   return [...attractionsByName.values()];
 }
 
 export function getPrimaryAttractionFromWithoutAnimalIssues(issues = []) {
-   const [attractionName] = getAttractionNamesFromWithoutAnimalIssues(issues);
+   const [attraction] = getAttractionsFromWithoutAnimalIssues(issues);
 
-   if (!attractionName) {
-      return null;
-   }
-
-   const attractionItem = issues
-      .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
-      .flatMap((issue) => issue.items ?? [])
-      .find((item) => (item?.name ?? '').trim() === attractionName);
-
-   const attractionTime = formatClockTime(
-      attractionItem?.start_time ?? attractionItem?.startTime
-   );
-
-   if (!attractionTime) {
-      return { attractionName };
-   }
-
-   return { attractionName, attractionTime };
+   return attraction ?? null;
 }
 
 export function attractionWithoutAnimalMessage(
@@ -74,11 +80,14 @@ export function showAttractionWithoutAnimalConfirmation({
    mountEl = getItineraryOverlayMountEl() ?? document.body,
 } = {}) {
    const strings = APP_STRINGS.itinerary.confirmation;
-   const attraction = getPrimaryAttractionFromWithoutAnimalIssues(issues);
+   const attractions = getAttractionsFromWithoutAnimalIssues(issues);
 
-   if (!attraction?.attractionName) {
+   // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
+   if (attractions.length !== 1) {
       return;
    }
+
+   const [attraction] = attractions;
 
    showItineraryConfirmPopup({
       title: strings.attractionWithoutAnimalTitle,

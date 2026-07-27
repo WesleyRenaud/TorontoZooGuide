@@ -48,6 +48,57 @@ test('hasMultipleItineraryBuildWarnings detects multiple warning types', () => {
    );
 });
 
+test('hasMultipleItineraryBuildWarnings detects multiple long-wait items', () => {
+   assert.equal(
+      hasMultipleItineraryBuildWarnings([{
+         type: 'fixedTimeItemLongWait',
+         items: [
+            {
+               name: 'Western Grey Kangaroo',
+               start_time: '11:00 AM',
+               item_type: 'guardiansTalk',
+            },
+            {
+               name: 'Aldabra Tortoise',
+               start_time: '2:00 PM',
+               item_type: 'guardiansTalk',
+            },
+         ],
+      }]),
+      true
+   );
+   assert.equal(
+      hasMultipleItineraryBuildWarnings([{
+         type: 'fixedTimeItemLongWait',
+         items: [{
+            name: 'Western Grey Kangaroo',
+            start_time: '11:00 AM',
+            item_type: 'guardiansTalk',
+         }],
+      }]),
+      false
+   );
+});
+
+test('hasMultipleItineraryBuildWarnings detects multiple without-animal talks', () => {
+   assert.equal(
+      hasMultipleItineraryBuildWarnings([{
+         type: 'guardiansTalkWithoutAnimal',
+         items: [
+            {
+               name: 'Western Grey Kangaroo',
+               start_time: '11:00 AM',
+            },
+            {
+               name: 'African Lion',
+               start_time: '2:00 PM',
+            },
+         ],
+      }]),
+      true
+   );
+});
+
 test('buildConfirmedOptionsFromBuildWarnings sets all matching flags', () => {
    assert.deepEqual(
       buildConfirmedOptionsFromBuildWarnings(overlapAndWithoutAnimalIssues),
@@ -158,6 +209,107 @@ test('showItineraryBuildWarningsConfirmation shows all warnings in one popup', (
    document.querySelector('.tzg-popup-confirm')?.click();
 
    assert.equal(confirmed, true);
+});
+
+test('showItineraryBuildWarningsConfirmation lists multiple long-wait items', () => {
+   let confirmed = false;
+
+   showItineraryBuildWarningsConfirmation({
+      issues: [{
+         type: 'fixedTimeItemLongWait',
+         items: [
+            {
+               name: 'Western Grey Kangaroo',
+               start_time: '11:00 AM',
+               item_type: 'guardiansTalk',
+            },
+            {
+               name: 'Aldabra Tortoise',
+               start_time: '2:00 PM',
+               item_type: 'guardiansTalk',
+            },
+         ],
+      }],
+      onConfirm: () => {
+         confirmed = true;
+      },
+   });
+
+   const titles = [...document.querySelectorAll('.itin-build-warning-module-title')]
+      .map((el) => el.textContent);
+   const messages = [...document.querySelectorAll('.itin-build-warning-module-message')]
+      .map((el) => el.textContent);
+
+   assert.equal(
+      document.querySelector('.itin-top-title')?.textContent,
+      'Your Itinerary Has the Following Issues:'
+   );
+   assert.deepEqual(titles, ['Long wait', 'Long wait']);
+   assert.match(
+      messages[0],
+      /Western Grey Kangaroo guardians talk at 11:00 AM is a long wait/
+   );
+   assert.match(
+      messages[1],
+      /Aldabra Tortoise guardians talk at 2:00 PM is a long wait/
+   );
+   assert.doesNotMatch(messages.join(' '), /\?/);
+   assert.equal(document.querySelector('.tzg-popup-message'), null);
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   assert.equal(confirmed, true);
+});
+
+test('showItineraryBuildWarningsConfirmation lists each without-animal talk', () => {
+   showItineraryBuildWarningsConfirmation({
+      issues: [
+         {
+            type: 'guardiansTalkWithoutAnimal',
+            items: [
+               {
+                  name: 'Western Grey Kangaroo',
+                  start_time: '11:00 AM',
+               },
+               {
+                  name: 'African Lion',
+                  start_time: '2:00 PM',
+               },
+            ],
+         },
+         {
+            type: 'fixedTimeItemLongWait',
+            items: [
+               {
+                  name: 'Western Grey Kangaroo',
+                  start_time: '11:00 AM',
+                  item_type: 'guardiansTalk',
+               },
+               {
+                  name: 'African Lion',
+                  start_time: '2:00 PM',
+                  item_type: 'guardiansTalk',
+               },
+            ],
+         },
+      ],
+   });
+
+   const titles = [...document.querySelectorAll('.itin-build-warning-module-title')]
+      .map((el) => el.textContent);
+   const messages = [...document.querySelectorAll('.itin-build-warning-module-message')]
+      .map((el) => el.textContent);
+
+   assert.deepEqual(titles, [
+      'No matching animal',
+      'No matching animal',
+      'Long wait',
+      'Long wait',
+   ]);
+   assert.match(messages[0], /Western Grey Kangaroo guardians talk at 11:00 AM/);
+   assert.match(messages[1], /African Lion guardians talk at 2:00 PM/);
+   assert.match(messages[2], /Western Grey Kangaroo guardians talk at 11:00 AM is a long wait/);
+   assert.match(messages[3], /African Lion guardians talk at 2:00 PM is a long wait/);
 });
 
 test('buildItineraryBuildWarningSections covers timed wild encounter overlap copy', () => {

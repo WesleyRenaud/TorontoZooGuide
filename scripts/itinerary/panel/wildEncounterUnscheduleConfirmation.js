@@ -12,7 +12,7 @@ export function getWildEncounterNamesFromUnscheduleIssues(issues = []) {
    return issues
       .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => (issue.items ?? [])
-         .map((item) => (item?.name ?? '').trim())
+         .map((item) => normalizeText(item?.name))
          .filter(Boolean));
 }
 
@@ -26,11 +26,9 @@ export function getPrimaryWildEncounterFromUnscheduleIssues(issues = []) {
    const encounterItem = issues
       .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => issue.items ?? [])
-      .find((item) => (item?.name ?? '').trim() === encounterName);
+      .find((item) => normalizeText(item?.name) === encounterName);
 
-   const encounterTime = formatClockTime(
-      encounterItem?.start_time ?? encounterItem?.startTime
-   );
+   const encounterTime = formatClockTime(encounterItem?.start_time);
 
    if (!encounterTime) {
       return { encounterName };
