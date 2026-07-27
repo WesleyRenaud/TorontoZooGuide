@@ -258,11 +258,11 @@ def test_set_itinerary_warns_only_for_newly_added_encounter_with_long_wait(
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ RHINO_ENCOUNTER ]
 
 
-def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
+def test_bulk_schedule_skips_long_wait_warning_for_already_saved_encounters(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   _set_rainforest_and_rhino_schedules()
+   _set_encounter_schedule( RHINO_ENCOUNTER, encounter_time='12:00' )
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
@@ -272,27 +272,25 @@ def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[
-         wild_encounter_key( WILD_ENCOUNTER, start_time='10:00' ),
-         wild_encounter_key( RHINO_ENCOUNTER, start_time='13:00' ),
+         wild_encounter_key( RHINO_ENCOUNTER, start_time='12:00' ),
       ],
       confirming_fixed_time_item_long_wait=True,
    ).success
 
-   warning = ItineraryCoordinator.bulk_schedule_animals()
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      start_time='09:30',
+   ).success
 
-   assert not warning.success
-   assert warning.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
-   assert not any(
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert [ encounter.name for encounter in result.itinerary.wild_encounters ] == [
+      RHINO_ENCOUNTER,
+   ]
+   assert all(
       has_itinerary_schedule_times( animal.start_time, animal.end_time )
-      for animal in warning.itinerary.animals
-   )
-
-   confirmed = ItineraryCoordinator.bulk_schedule_animals(
-      confirming_fixed_time_item_long_wait=True,
-   )
-
-   assert confirmed.success
-   assert any(
-      has_itinerary_schedule_times( animal.start_time, animal.end_time )
-      for animal in confirmed.itinerary.animals
+      for animal in result.itinerary.animals
    )
