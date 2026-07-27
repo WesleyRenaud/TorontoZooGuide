@@ -284,8 +284,8 @@
     "location": "Australasia Outdoor",
     "x": 74.771,
     "y": 69.317,
-    "walk_node_id": "v-1103",
-    "snap_distance_px": 23.412
+    "walk_node_id": "v-1211",
+    "snap_distance_px": 12.593
   },
   {
     "kind": "guardians_talk",
