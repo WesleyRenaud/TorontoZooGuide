@@ -39,10 +39,10 @@
     "kind": "attraction",
     "name": "Kangaroo Walk-Thru",
     "location": "",
-    "x": 74.985,
-    "y": 70.331,
-    "walk_node_id": "v-1102",
-    "snap_distance_px": 45.341
+    "x": 73.816,
+    "y": 71.34,
+    "walk_node_id": "v-1216",
+    "snap_distance_px": 0.012
   },
   {
     "kind": "attraction",
