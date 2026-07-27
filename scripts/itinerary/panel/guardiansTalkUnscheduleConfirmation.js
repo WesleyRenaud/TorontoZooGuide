@@ -12,7 +12,7 @@ export function getGuardiansTalkNamesFromUnscheduleIssues(issues = []) {
    return issues
       .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => (issue.items ?? [])
-         .map((item) => (item?.name ?? '').trim())
+         .map((item) => normalizeText(item?.name))
          .filter(Boolean));
 }
 
@@ -26,11 +26,9 @@ export function getPrimaryGuardiansTalkFromUnscheduleIssues(issues = []) {
    const talkItem = issues
       .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => issue.items ?? [])
-      .find((item) => (item?.name ?? '').trim() === talkName);
+      .find((item) => normalizeText(item?.name) === talkName);
 
-   const talkTime = formatClockTime(
-      talkItem?.start_time ?? talkItem?.startTime
-   );
+   const talkTime = formatClockTime(talkItem?.start_time);
 
    if (!talkTime) {
       return { talkName };

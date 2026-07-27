@@ -15,34 +15,40 @@ export function hasGuardiansTalkWithoutAnimalIssue(issues = []) {
 }
 
 export function getGuardiansTalkNamesFromWithoutAnimalIssues(issues = []) {
-   return issues
+   return getGuardiansTalksFromWithoutAnimalIssues(issues)
+      .map((talk) => talk.talkName);
+}
+
+export function getGuardiansTalksFromWithoutAnimalIssues(issues = []) {
+   const talksByName = new Map();
+
+   issues
       .filter((issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
-      .flatMap((issue) => (issue.items ?? [])
-         .map((item) => (item?.name ?? '').trim())
-         .filter(Boolean));
+      .flatMap((issue) => issue.items ?? [])
+      .forEach((item) => {
+         const talkName = normalizeText(item?.name);
+
+         if (!talkName) {
+            return;
+         }
+
+         const talkTime = formatClockTime(item?.start_time);
+
+         talksByName.set(
+            talkName,
+            talkTime
+               ? { talkName, talkTime }
+               : { talkName }
+         );
+      });
+
+   return [...talksByName.values()];
 }
 
 export function getPrimaryGuardiansTalkFromWithoutAnimalIssues(issues = []) {
-   const [talkName] = getGuardiansTalkNamesFromWithoutAnimalIssues(issues);
+   const [talk] = getGuardiansTalksFromWithoutAnimalIssues(issues);
 
-   if (!talkName) {
-      return null;
-   }
-
-   const talkItem = issues
-      .filter((issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
-      .flatMap((issue) => issue.items ?? [])
-      .find((item) => (item?.name ?? '').trim() === talkName);
-
-   const talkTime = formatClockTime(
-      talkItem?.start_time ?? talkItem?.startTime
-   );
-
-   if (!talkTime) {
-      return { talkName };
-   }
-
-   return { talkName, talkTime };
+   return talk ?? null;
 }
 
 export function showGuardiansTalkWithoutAnimalConfirmation({
@@ -52,12 +58,14 @@ export function showGuardiansTalkWithoutAnimalConfirmation({
    mountEl = getItineraryOverlayMountEl() ?? document.body,
 } = {}) {
    const strings = APP_STRINGS.itinerary.confirmation;
-   const talk = getPrimaryGuardiansTalkFromWithoutAnimalIssues(issues);
+   const talks = getGuardiansTalksFromWithoutAnimalIssues(issues);
 
-   if (!talk?.talkName) {
+   // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
+   if (talks.length !== 1) {
       return;
    }
 
+   const [talk] = talks;
    const talkName = normalizeText(talk.talkName);
    const message = talk.talkTime
       ? strings.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)

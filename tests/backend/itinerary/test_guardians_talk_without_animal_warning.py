@@ -141,6 +141,46 @@ def test_set_itinerary_warns_when_talk_has_no_matching_animal(
    ]
 
 
+def test_set_itinerary_warns_for_each_talk_without_matching_animal(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+   _set_talk_schedule(
+      LION_TALK,
+      location='Africa Savanna',
+      talk_time='14:00' )
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ),
+         guardians_talk_save_entry( LION_TALK, start_time='14:00' ),
+      ],
+      wild_encounters=[],
+   )
+
+   assert not result.success
+   without_animal_reasons = [
+      reason
+      for reason in result.reasons
+      if reason.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   ]
+
+   assert len( without_animal_reasons ) == 1
+   assert [ item.name for item in without_animal_reasons[ 0 ].items ] == [
+      ZEBRA_TALK,
+      LION_TALK,
+   ]
+
+
 def test_set_itinerary_skips_without_animal_warning_for_already_saved_talk(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

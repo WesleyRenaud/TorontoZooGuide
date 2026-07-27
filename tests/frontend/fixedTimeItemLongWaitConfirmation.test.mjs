@@ -27,21 +27,6 @@ const talkLongWaitIssue = {
    }],
 };
 
-const multiLongWaitIssue = {
-   type: 'fixedTimeItemLongWait',
-   items: [
-      {
-         name: 'Amur Tiger',
-         start_time: '11:00 AM',
-         item_type: 'guardiansTalk',
-      },
-      {
-         name: 'Capybara',
-         item_type: 'wildEncounter',
-      },
-   ],
-};
-
 test('hasFixedTimeItemLongWaitIssue detects matching issue type', () => {
    assert.equal(
       hasFixedTimeItemLongWaitIssue([talkLongWaitIssue]),
@@ -135,36 +120,28 @@ test('showFixedTimeItemLongWaitConfirmation shows a single item message', () => 
    assert.equal(confirmed, true);
 });
 
-test('showFixedTimeItemLongWaitConfirmation lists multiple items', () => {
-   let confirmed = false;
-
+test('showFixedTimeItemLongWaitConfirmation no-ops for multiple items', () => {
    showFixedTimeItemLongWaitConfirmation({
-      issues: [multiLongWaitIssue],
+      issues: [{
+         type: 'fixedTimeItemLongWait',
+         items: [
+            {
+               name: 'Amur Tiger',
+               start_time: '11:00 AM',
+               item_type: 'guardiansTalk',
+            },
+            {
+               name: 'Capybara',
+               item_type: 'wildEncounter',
+            },
+         ],
+      }],
       onConfirm: () => {
-         confirmed = true;
+         throw new Error('should not confirm');
       },
    });
 
-   const titles = [...document.querySelectorAll('.itin-build-warning-module-title')]
-      .map((el) => el.textContent);
-   const messages = [...document.querySelectorAll('.itin-build-warning-module-message')]
-      .map((el) => el.textContent);
-
-   assert.equal(
-      document.querySelector('.itin-top-title')?.textContent,
-      APP_STRINGS.itinerary.confirmation.saveIssuesTitle
-   );
-   assert.deepEqual(titles, [
-      `Long Wait for ${APP_STRINGS.entityLabels.guardiansTalk}?`,
-      `Long Wait for ${APP_STRINGS.entityLabels.wildEncounter}?`,
-   ]);
-   assert.match(messages[0], /Amur Tiger guardians talk at 11:00 AM is a long wait/);
-   assert.match(messages[1], /Capybara wild encounter is a long wait/);
-   assert.equal(document.querySelector('.tzg-popup-message'), null);
-
-   document.querySelector('.tzg-popup-confirm')?.click();
-
-   assert.equal(confirmed, true);
+   assert.equal(document.querySelector('.tzg-popup'), null);
 });
 
 test('showFixedTimeItemLongWaitConfirmation no-ops without named items', () => {
