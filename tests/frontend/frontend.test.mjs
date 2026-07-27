@@ -82,6 +82,7 @@ import './itineraryService.save.test.mjs';
 import './guardiansTalkWithoutAnimalConfirmation.test.mjs';
 import './attractionWithoutAnimalConfirmation.test.mjs';
 import './fixedTimeItemLongWaitConfirmation.test.mjs';
+import './filterDraftExcludingWarningFixedTimeItems.test.mjs';
 import './itineraryBuildWarningsConfirmation.test.mjs';
 import './itineraryService.time.confirmations.test.mjs';
 import './itineraryService.time.dispatch.test.mjs';

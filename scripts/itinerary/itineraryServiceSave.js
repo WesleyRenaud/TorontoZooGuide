@@ -1,4 +1,5 @@
 import { setItineraryRequest } from '../api/itineraryApi.js';
+import { createItineraryConfirmationCancelledResult } from './itineraryConfirmationResult.js';
 import {
    isItinerarySuccess,
    requiresAttractionWithoutAnimalConfirmation,
@@ -65,15 +66,13 @@ function requestSetItineraryConfirmation({
             resolve(confirmedResult);
          },
          onCancel: () => {
-            resolve({
-               cancelled: true,
-               diffBaseline,
-            });
+            resolve(createItineraryConfirmationCancelledResult({
+               issues: initialResult.issues,
+            }));
          },
       });
    });
 }
-
 async function requestSetItineraryWithConfirmations(
    payload,
    diffBaseline = null,
@@ -216,7 +215,7 @@ export async function saveItinerary(
    const confirmationResult = await requestSetItineraryWithConfirmations(basePayload);
 
    if (confirmationResult.cancelled) {
-      return null;
+      return confirmationResult;
    }
 
    const { result, diffBaseline } = confirmationResult;

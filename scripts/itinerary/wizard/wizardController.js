@@ -2,6 +2,7 @@ import {
    clearItinerarySelectionStorage,
    syncItineraryAnimalDraftFromItinerary,
 } from '../draftStorage.js';
+import { filterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
 import { isItineraryConfirmationCancelled } from '../itineraryConfirmationResult.js';
@@ -10,6 +11,7 @@ import {
    isItineraryEmpty,
 } from '../itineraryService.js';
 import { ITINERARY_ITEM_KEYS } from '../itineraryShape.js';
+import { SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS } from '../panel/sectionConfigs.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
@@ -144,9 +146,14 @@ export async function openItineraryWizard({
       );
 
       if (isItineraryConfirmationCancelled(result)) {
-         // Selector storage still holds the pending pick; restore the last saved
-         // draft so close does not sync it back and prompt to save.
-         wizard.discardChanges();
+         const nextSelections = filterDraftExcludingWarningFixedTimeItems(
+            wizardState,
+            result.issues
+         );
+
+         SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS.forEach((selectionKey) => {
+            updateSelection(selectionKey, nextSelections[selectionKey]);
+         });
          showStep(activeStepKey);
       }
 

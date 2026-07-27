@@ -220,24 +220,24 @@ test.describe('openItineraryWizard close flow', () => {
       assert.deepEqual(finishCalls[0].animals, selectedAnimals);
    });
 
-   test('cancelling finish restores selection storage so close does not prompt to save', async () => {
+   test('cancelling finish leaves animal selections when issues have no talks', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupConfigs = [];
       const stepShows = [];
       let finishHandler = null;
       let closeHandler = null;
       let wizard = null;
-      let selectionSnapshot = [{ name: "Grevy's Zebra" }];
+      let selectionSnapshot = [{ species: 'African Lion', exhibit: 'Africa Savanna' }];
 
       await openItineraryWizard({
          mountEl,
-         startAt: 'guardiansTalks',
+         startAt: 'animals',
          deps: {
             loadItinerary: async () => ({
                date: '2026-06-15',
-               animals: [],
+               animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
                attractions: [],
-               guardiansTalks: [{ name: "Grevy's Zebra" }],
+               guardiansTalks: [],
                wildEncounters: [],
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
@@ -248,15 +248,15 @@ test.describe('openItineraryWizard close flow', () => {
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [
                {
-                  stepKey: 'guardiansTalks',
-                  selectionKey: 'guardiansTalks',
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
                   factory: ({ onFinish, onClose }) => {
                      finishHandler = onFinish;
                      closeHandler = onClose;
                      return {
                         show() {
-                           stepShows.push('guardiansTalks');
-                           selectionSnapshot = [...wizard.state.guardiansTalks];
+                           stepShows.push('animals');
+                           selectionSnapshot = [...wizard.state.animals];
                         },
                         getSelectionSnapshot: async () => selectionSnapshot,
                         shouldSkipClosingSelectionSync: () => false,
@@ -264,7 +264,7 @@ test.describe('openItineraryWizard close flow', () => {
                   },
                },
             ],
-            finalizeWizard: async () => ({ cancelled: true }),
+            finalizeWizard: async () => ({ cancelled: true, issues: [] }),
             showConfirmPopup: (config) => {
                popupConfigs.push(config);
             },
@@ -273,8 +273,8 @@ test.describe('openItineraryWizard close flow', () => {
       });
 
       selectionSnapshot = [
-         { name: "Grevy's Zebra" },
-         { name: 'Slender-Tailed Meerkat' },
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'Cheetah', exhibit: 'Africa Savanna' },
       ];
       finishHandler?.(selectionSnapshot);
 
@@ -282,13 +282,96 @@ test.describe('openItineraryWizard close flow', () => {
          setTimeout(resolve, 0);
       });
 
-      assert.equal(wizard.hasUnsavedChanges(), false);
+      assert.equal(wizard.state.animals.length, 2);
       assert.ok(stepShows.length >= 2);
 
       await closeHandler?.();
 
-      assert.equal(popupConfigs.length, 0);
-      assert.equal(mountEl.children.length, 0);
+      assert.equal(popupConfigs.length, 1);
+      assert.equal(
+         popupConfigs[0].title,
+         APP_STRINGS.itinerary.confirmation.saveChangesTitle
+      );
+   });
+
+   test('cancelling a long-wait warning removes only the warning talks', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      let finishHandler = null;
+      let wizard = null;
+      let applyDate = null;
+
+      await openItineraryWizard({
+         mountEl,
+         startAt: 'guardiansTalks',
+         deps: {
+            loadItinerary: async () => null,
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 6, 28),
+            createWizardState: (existing) => {
+               wizard = createItineraryWizardState(existing ?? {
+                  date: '',
+                  animals: [],
+                  attractions: [],
+                  guardiansTalks: [],
+                  wildEncounters: [],
+               });
+               return wizard;
+            },
+            createDateStepController: ({ onSave }) => {
+               applyDate = onSave;
+               return { show() {} };
+            },
+            selectionStepConfigs: [
+               {
+                  stepKey: 'guardiansTalks',
+                  selectionKey: 'guardiansTalks',
+                  factory: ({ onFinish }) => {
+                     finishHandler = onFinish;
+                     return {
+                        show() {},
+                        getSelectionSnapshot: async () => wizard.state.guardiansTalks,
+                        shouldSkipClosingSelectionSync: () => false,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async (draft) => {
+               assert.equal(draft.date, '2026-07-28');
+               assert.equal(draft.guardiansTalks.length, 2);
+               return {
+                  cancelled: true,
+                  issues: [{
+                     type: 'fixedTimeItemLongWait',
+                     items: [{
+                        name: 'Western Grey Kangaroo',
+                        item_type: 'guardiansTalk',
+                        start_time: '11:00 AM',
+                        end_time: '11:30 AM',
+                     }],
+                  }],
+               };
+            },
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      applyDate?.('2026-07-28');
+      wizard.updateSelection('guardiansTalks', [
+         { name: 'Western Grey Kangaroo', start_time: '11:00 AM' },
+         { name: 'Aldabra Tortoise', start_time: '2:00 PM' },
+      ]);
+
+      finishHandler?.(wizard.state.guardiansTalks);
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.equal(wizard.state.date, '2026-07-28');
+      assert.deepEqual(
+         wizard.state.guardiansTalks.map((talk) => talk.name),
+         ['Aldabra Tortoise']
+      );
    });
 });
 

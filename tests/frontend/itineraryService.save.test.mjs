@@ -337,7 +337,7 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
-test('saveItinerary returns null when guardians talk reschedule is cancelled', async () => {
+test('saveItinerary returns cancelled when guardians talk reschedule is cancelled', async () => {
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -387,7 +387,18 @@ test('saveItinerary returns null when guardians talk reschedule is cancelled', a
 
    const result = await savePromise;
 
-   assert.equal(result, null);
+   assert.deepEqual(result, {
+      cancelled: true,
+      issues: [{
+         code: 'guardiansTalkWillUnscheduleItems',
+         type: 'guardiansTalkWillUnscheduleItems',
+         items: [{
+            name: 'Arctic Wolf',
+            item_type: 'guardiansTalk',
+            start_time: '11:00',
+         }],
+      }],
+   });
 });
 
 test('saveItinerary confirms before saving a wild encounter that unschedules items', async () => {
