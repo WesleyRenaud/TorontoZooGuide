@@ -37,20 +37,6 @@ function timePairIsOrdered(startTime, endTime) {
    );
 }
 
-function timeIsWithinBounds(timeValue, openTime, closeTime) {
-   const timeMinutes = parseClockTimeMinutes(timeValue);
-   const openMinutes = parseClockTimeMinutes(openTime);
-   const closeMinutes = parseClockTimeMinutes(closeTime);
-
-   return (
-      timeMinutes != null
-      && openMinutes != null
-      && closeMinutes != null
-      && timeMinutes >= openMinutes
-      && timeMinutes <= closeMinutes
-   );
-}
-
 export function createAttractionHoursScheduleController({
    showButtonEl,
    panelEl,
@@ -71,6 +57,9 @@ export function createAttractionHoursScheduleController({
    activatePanel,
    loadAttractions = loadAttractionOptions,
    loadTimeBounds = getAttractionHoursScheduleTimeBounds,
+   saveSchedule = setAttractionHoursSchedule,
+   replaceScheduleOverlaps = replaceAttractionHoursScheduleOverlaps,
+   trimScheduleOverlaps = trimAttractionHoursScheduleOverlaps,
 } = {}) {
    const formFieldEls = [
       attractionEl,
@@ -81,8 +70,6 @@ export function createAttractionHoursScheduleController({
       weekendHolidayStartTimeEl,
       weekendHolidayEndTimeEl,
    ];
-
-   let timeBounds = null;
 
    function getFormValues() {
       return {
@@ -123,40 +110,6 @@ export function createAttractionHoursScheduleController({
          return APP_STRINGS.validation.attractionHoursWeekendHolidayOrder;
       }
 
-      if (timeBounds?.weekday) {
-         if (
-            !timeIsWithinBounds(
-               values.weekdayStartTime,
-               timeBounds.weekday.openTime,
-               timeBounds.weekday.closeTime
-            )
-            || !timeIsWithinBounds(
-               values.weekdayEndTime,
-               timeBounds.weekday.openTime,
-               timeBounds.weekday.closeTime
-            )
-         ) {
-            return APP_STRINGS.validation.attractionHoursWeekdayBounds;
-         }
-      }
-
-      if (timeBounds?.weekendHoliday) {
-         if (
-            !timeIsWithinBounds(
-               values.weekendHolidayStartTime,
-               timeBounds.weekendHoliday.openTime,
-               timeBounds.weekendHoliday.closeTime
-            )
-            || !timeIsWithinBounds(
-               values.weekendHolidayEndTime,
-               timeBounds.weekendHoliday.openTime,
-               timeBounds.weekendHoliday.closeTime
-            )
-         ) {
-            return APP_STRINGS.validation.attractionHoursWeekendHolidayBounds;
-         }
-      }
-
       return validateOptionalDateRange(
          values.scheduleStartDate,
          values.scheduleEndDate
@@ -168,8 +121,6 @@ export function createAttractionHoursScheduleController({
    }
 
    function applyTimeBounds(bounds) {
-      timeBounds = bounds;
-
       applyScheduleTimePickerBounds(
          weekdayStartTimePicker,
          bounds?.weekday
@@ -247,11 +198,11 @@ export function createAttractionHoursScheduleController({
       const resolution = await showOpeningScheduleOverlapDialog();
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-         return replaceAttractionHoursScheduleOverlaps(payload);
+         return replaceScheduleOverlaps(payload);
       }
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-         return trimAttractionHoursScheduleOverlaps(payload);
+         return trimScheduleOverlaps(payload);
       }
 
       return null;
@@ -278,7 +229,7 @@ export function createAttractionHoursScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const result = await setAttractionHoursSchedule(values);
+         const result = await saveSchedule(values);
 
          if (result?.success) {
             handleSubmitSuccess(result);

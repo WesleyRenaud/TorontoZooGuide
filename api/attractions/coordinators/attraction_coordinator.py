@@ -67,8 +67,7 @@ class AttractionCoordinator():
       return build_attractions(
          attraction_records=fetch_attraction_records(
             get_connection(),
-            month=context.normalized_month,
-            day=context.normalized_day ),
+            visit_date=context.target_date ),
          schedule_records=fetch_attraction_schedule_records( get_connection() ),
          schedule_override_records=fetch_attraction_schedule_override_records(
             get_connection() ),
@@ -127,8 +126,7 @@ class AttractionCoordinator():
       attraction_record = fetch_attraction_record_for_calendar_day(
          get_connection(),
          attraction_name=attraction_name,
-         month=visit_date.month,
-         day=visit_date.day )
+         visit_date=visit_date )
 
       if attraction_record == None:
          return None

@@ -18,6 +18,8 @@ function normalizeAttractionRow(row) {
       part_of_seasonal_attraction: asBoolean(source.part_of_seasonal_attraction),
       is_closed: asBoolean(source.is_closed),
       info_link: asNullableString(source.info_link),
+      open_time: asNullableString(source.open_time),
+      close_time: asNullableString(source.close_time),
    };
 }
 

@@ -33,6 +33,8 @@ test('searchZoo normalizes search responses', async () => {
                part_of_seasonal_attraction: false,
                is_closed: false,
                info_link: null,
+               open_time: ' 10:00 AM ',
+               close_time: ' 4:00 PM ',
             },
          ],
       }));
@@ -54,6 +56,8 @@ test('searchZoo normalizes search responses', async () => {
             part_of_seasonal_attraction: false,
             is_closed: false,
             info_link: null,
+            open_time: '10:00 AM',
+            close_time: '4:00 PM',
          },
       ],
       zoomobile_stations: [],
