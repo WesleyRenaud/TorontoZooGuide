@@ -588,6 +588,30 @@ class CalendarDates:
 
 
    @staticmethod
+   def is_weekend_or_holiday( d: date ) -> bool:
+      return (
+         d.weekday() >= 5
+         or CalendarDates.is_holiday( d=d )
+      )
+
+
+   @staticmethod
+   def next_weekday_date( d: date ) -> date:
+      while CalendarDates.is_weekend_or_holiday( d=d ):
+         d += timedelta( days=1 )
+
+      return d
+
+
+   @staticmethod
+   def next_weekend_or_holiday_date( d: date ) -> date:
+      while not CalendarDates.is_weekend_or_holiday( d=d ):
+         d += timedelta( days=1 )
+
+      return d
+
+
+   @staticmethod
    def get_family_day( year: VisitYear ) -> date:
       d = date( year, 2, 1 )
 

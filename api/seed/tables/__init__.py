@@ -7,6 +7,7 @@ from . import app_setting
 from . import attraction
 from . import attraction_animal
 from . import attraction_day_seasonal_availability_multiplier
+from . import attraction_hours_schedule
 from . import attraction_opening_schedule
 from . import attraction_schedule_override
 from . import defibrillator
@@ -115,6 +116,7 @@ runtime_tables = [
    gift_shop_schedule_override,
    app_setting,
    attraction_opening_schedule,
+   attraction_hours_schedule,
    attraction_schedule_override,
    zoomobile_route_schedule,
    zoomobile_station_status,

@@ -16,4 +16,14 @@ ATTRACTION_ROUTES: dict[ str, PostRouteHandler ] = {
    '/trim-attraction-opening-schedule-overlaps': (
       AttractionController.trim_attraction_opening_schedule_overlaps
    ),
+   '/get-attraction-hours-schedule-time-bounds': (
+      AttractionController.get_attraction_hours_schedule_time_bounds
+   ),
+   '/set-attraction-hours-schedule': AttractionController.set_attraction_hours_schedule,
+   '/replace-attraction-hours-schedule-overlaps': (
+      AttractionController.replace_attraction_hours_schedule_overlaps
+   ),
+   '/trim-attraction-hours-schedule-overlaps': (
+      AttractionController.trim_attraction_hours_schedule_overlaps
+   ),
 }

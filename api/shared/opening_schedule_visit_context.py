@@ -25,9 +25,7 @@ def resolve_opening_schedule_visit_context(
       day=day,
       year=year )
    weekday = target_date.weekday()
-   is_weekend_or_holiday = (
-      weekday >= 5
-      or CalendarDates.is_holiday( d=target_date ) )
+   is_weekend_or_holiday = CalendarDates.is_weekend_or_holiday( d=target_date )
 
    return OpeningScheduleVisitContext(
       normalized_month=target_date.month,

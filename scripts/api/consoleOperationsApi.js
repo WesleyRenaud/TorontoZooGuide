@@ -160,6 +160,22 @@ export function setAttractionClosureOverride(payload) {
    return postJson('/set-attraction-closure-override', payload);
 }
 
+export function getAttractionHoursScheduleTimeBounds(payload = {}) {
+   return postJson('/get-attraction-hours-schedule-time-bounds', payload);
+}
+
+export function setAttractionHoursSchedule(payload) {
+   return postJson('/set-attraction-hours-schedule', payload);
+}
+
+export function replaceAttractionHoursScheduleOverlaps(payload) {
+   return postJson('/replace-attraction-hours-schedule-overlaps', payload);
+}
+
+export function trimAttractionHoursScheduleOverlaps(payload) {
+   return postJson('/trim-attraction-hours-schedule-overlaps', payload);
+}
+
 export function setZoomobileStationOpen(payload) {
    return postJson('/set-zoomobile-station-open', payload);
 }

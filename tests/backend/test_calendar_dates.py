@@ -277,6 +277,20 @@ def test_is_holiday_rejects_regular_days() -> None:
    assert CalendarDates.is_holiday( date( 2026, 6, 15 ) ) is False
 
 
+def test_next_weekday_date_advances_from_weekend() -> None:
+   assert CalendarDates.next_weekday_date( date( 2026, 6, 20 ) ) == date( 2026, 6, 22 )
+   assert CalendarDates.next_weekday_date( date( 2026, 6, 15 ) ) == date( 2026, 6, 15 )
+
+
+def test_next_weekend_or_holiday_date_advances_from_weekday() -> None:
+   assert CalendarDates.next_weekend_or_holiday_date(
+      date( 2026, 6, 15 ) ) == date( 2026, 6, 20 )
+   assert CalendarDates.next_weekend_or_holiday_date(
+      date( 2026, 6, 20 ) ) == date( 2026, 6, 20 )
+   assert CalendarDates.next_weekend_or_holiday_date(
+      date( 2026, 7, 1 ) ) == date( 2026, 7, 1 )
+
+
 @pytest.mark.parametrize(
    'value, expected',
    [

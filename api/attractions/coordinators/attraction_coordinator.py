@@ -7,6 +7,7 @@ from ..data_access.attraction import fetch_attraction_record_for_calendar_day
 from ..data_access.attraction import fetch_attraction_records
 from ..data_access.attraction import fetch_attraction_schedule_override_records
 from ..data_access.attraction import fetch_attraction_schedule_records
+from ..data_access.attraction_hours_schedule import save_attraction_hours_schedule
 from ..data_access.attraction_schedule import save_attraction_opening_schedule
 from ..data_access.attraction_schedule import save_attraction_schedule_override
 from ..domain.attraction import build_attractions
@@ -16,14 +17,21 @@ from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttrac
 from ..itinerary.itinerary_attractions import build_itinerary_attractions
 from ...models import Attraction
 from ...request_connection import get_connection
+from ..scheduling.attraction_hours_schedule import AttractionHoursSchedule
+from ..scheduling.attraction_hours_schedule_conflict_resolution import save_attraction_hours_schedule_replacing_overlaps
+from ..scheduling.attraction_hours_schedule_conflict_resolution import save_attraction_hours_schedule_trimming_overlaps
+from ..scheduling.attraction_hours_schedule_time_bounds import attraction_hours_schedule_times_are_within_bounds
+from ..scheduling.attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBounds
+from ..scheduling.attraction_hours_schedule_time_bounds import fetch_attraction_hours_schedule_time_bounds
 from ..scheduling.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_replacing_overlaps
 from ..scheduling.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_trimming_overlaps
 from ..search.attractions_matching_query import build_attractions_matching_query
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ..status.attraction_hours_schedule_status import build_attraction_hours_schedule
 from ..status.attraction_status import build_attraction_closed_schedule
 from ..status.attraction_status import build_attraction_closure_override
 from ..status.attraction_status import build_attraction_opening_schedule
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import DateInput, MonthInput, TimeInput, VisitDay, VisitYear
 
 
 _mutations = AmenityCoordinatorMutations(
@@ -243,3 +251,120 @@ class AttractionCoordinator():
          sunday,
          holidays_only,
          message )
+
+
+   @classmethod
+   def get_attraction_hours_schedule_time_bounds(
+         cls,
+         start_date: DateInput = None,
+         end_date: DateInput = None ) -> AttractionHoursScheduleTimeBounds:
+      return fetch_attraction_hours_schedule_time_bounds(
+         get_connection(),
+         start_date=start_date,
+         end_date=end_date )
+
+
+   @classmethod
+   def _build_attraction_hours_schedule(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         weekday_start_time: TimeInput,
+         weekday_end_time: TimeInput,
+         weekend_holiday_start_time: TimeInput,
+         weekend_holiday_end_time: TimeInput ) -> AttractionHoursSchedule:
+      schedule = build_attraction_hours_schedule(
+         attraction,
+         start_date,
+         end_date,
+         weekday_start_time,
+         weekday_end_time,
+         weekend_holiday_start_time,
+         weekend_holiday_end_time )
+      bounds = fetch_attraction_hours_schedule_time_bounds(
+         get_connection(),
+         start_date=schedule.start_date,
+         end_date=schedule.end_date )
+
+      if not attraction_hours_schedule_times_are_within_bounds(
+            bounds,
+            weekday_start_time=schedule.weekday_start_time,
+            weekday_end_time=schedule.weekday_end_time,
+            weekend_holiday_start_time=schedule.weekend_holiday_start_time,
+            weekend_holiday_end_time=schedule.weekend_holiday_end_time ):
+         raise ValueError(
+            'Attraction hours must fall within regular zoo hours for the '
+            'selected date range.' )
+
+      return schedule
+
+
+   @classmethod
+   def set_attraction_hours_schedule(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         weekday_start_time: TimeInput,
+         weekday_end_time: TimeInput,
+         weekend_holiday_start_time: TimeInput,
+         weekend_holiday_end_time: TimeInput ) -> bool:
+      schedule = cls._build_attraction_hours_schedule(
+         attraction,
+         start_date,
+         end_date,
+         weekday_start_time,
+         weekday_end_time,
+         weekend_holiday_start_time,
+         weekend_holiday_end_time )
+
+      return save_attraction_hours_schedule( get_connection(), schedule )
+
+
+   @classmethod
+   def replace_attraction_hours_schedule_overlaps(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         weekday_start_time: TimeInput,
+         weekday_end_time: TimeInput,
+         weekend_holiday_start_time: TimeInput,
+         weekend_holiday_end_time: TimeInput ) -> bool:
+      schedule = cls._build_attraction_hours_schedule(
+         attraction,
+         start_date,
+         end_date,
+         weekday_start_time,
+         weekday_end_time,
+         weekend_holiday_start_time,
+         weekend_holiday_end_time )
+
+      return save_attraction_hours_schedule_replacing_overlaps(
+         get_connection(),
+         schedule )
+
+
+   @classmethod
+   def trim_attraction_hours_schedule_overlaps(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         weekday_start_time: TimeInput,
+         weekday_end_time: TimeInput,
+         weekend_holiday_start_time: TimeInput,
+         weekend_holiday_end_time: TimeInput ) -> bool:
+      schedule = cls._build_attraction_hours_schedule(
+         attraction,
+         start_date,
+         end_date,
+         weekday_start_time,
+         weekday_end_time,
+         weekend_holiday_start_time,
+         weekend_holiday_end_time )
+
+      return save_attraction_hours_schedule_trimming_overlaps(
+         get_connection(),
+         schedule )

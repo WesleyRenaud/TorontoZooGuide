@@ -28,3 +28,44 @@ def fetch_zoo_hours_record( conn: Connection, operating_date: DateKey ) -> ZooHo
 
    finally:
       cur.close()
+
+
+def fetch_zoo_hours_records_between(
+      conn: Connection,
+      start_date: DateKey,
+      end_date: DateKey | None = None ) -> list[ ZooHoursRecord ]:
+   cur = conn.cursor()
+
+   try:
+      if end_date is None:
+         rows = cur.execute(
+            """   SELECT
+                     OPERATING_DATE,
+                     EARLY_ADMISSION_TIME,
+                     OPEN_TIME,
+                     LAST_ADMISSION_TIME,
+                     CLOSE_TIME
+                  FROM ZooHours
+                  WHERE OPERATING_DATE >= ?
+                  ORDER BY OPERATING_DATE;
+            """,
+            ( start_date, ) ).fetchall()
+      else:
+         rows = cur.execute(
+            """   SELECT
+                     OPERATING_DATE,
+                     EARLY_ADMISSION_TIME,
+                     OPEN_TIME,
+                     LAST_ADMISSION_TIME,
+                     CLOSE_TIME
+                  FROM ZooHours
+                  WHERE OPERATING_DATE >= ?
+                     AND OPERATING_DATE <= ?
+                  ORDER BY OPERATING_DATE;
+            """,
+            ( start_date, end_date ) ).fetchall()
+
+      return [ map_zoo_hours_record( row ) for row in rows ]
+
+   finally:
+      cur.close()

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.attraction_coordinator import AttractionCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.calendar_dates import DateValues
 
 
 class AttractionController():
@@ -246,6 +247,172 @@ class AttractionController():
       if not success:
          response[ 'error' ] = (
             f'Could not trim opening schedule overlaps for "{ attraction }".'
+         )
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def _attraction_hours_schedule_payload( data: dict ) -> dict:
+      return {
+         'attraction': data.get( 'attraction' ),
+         'start_date': data.get( 'scheduleStartDate' ),
+         'end_date': data.get( 'scheduleEndDate' ),
+         'weekday_start_time': data.get( 'weekdayStartTime' ),
+         'weekday_end_time': data.get( 'weekdayEndTime' ),
+         'weekend_holiday_start_time': data.get( 'weekendHolidayStartTime' ),
+         'weekend_holiday_end_time': data.get( 'weekendHolidayEndTime' ),
+      }
+
+
+   @staticmethod
+   def _attraction_hours_schedule_response(
+         data: dict,
+         *,
+         success: bool,
+         error: str | None = None,
+         error_type: str | None = None ) -> dict:
+      response = {
+         'success': success,
+         'attraction': data.get( 'attraction' ),
+         'scheduleStartDate': data.get( 'scheduleStartDate' ),
+         'scheduleEndDate': data.get( 'scheduleEndDate' ),
+         'weekdayStartTime': data.get( 'weekdayStartTime' ),
+         'weekdayEndTime': data.get( 'weekdayEndTime' ),
+         'weekendHolidayStartTime': data.get( 'weekendHolidayStartTime' ),
+         'weekendHolidayEndTime': data.get( 'weekendHolidayEndTime' ),
+      }
+
+      if error:
+         response[ 'error' ] = error
+
+      if error_type:
+         response[ 'errorType' ] = error_type
+
+      return response
+
+
+   @staticmethod
+   def get_attraction_hours_schedule_time_bounds(
+         handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      try:
+         bounds = AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
+            start_date=data.get( 'scheduleStartDate' ),
+            end_date=data.get( 'scheduleEndDate' ) )
+      except ValueError as error:
+         handler._write_json( {
+            'success': False,
+            'error': str( error ),
+         } )
+         return
+
+      handler._write_json( {
+         'success': True,
+         'weekday': {
+            'openTime': DateValues.normalize_schedule_time(
+               bounds.weekday.open_time ),
+            'closeTime': DateValues.normalize_schedule_time(
+               bounds.weekday.close_time ),
+            'operatingDate': bounds.weekday.operating_date,
+         },
+         'weekendHoliday': {
+            'openTime': DateValues.normalize_schedule_time(
+               bounds.weekend_holiday.open_time ),
+            'closeTime': DateValues.normalize_schedule_time(
+               bounds.weekend_holiday.close_time ),
+            'operatingDate': bounds.weekend_holiday.operating_date,
+         },
+      } )
+
+
+   @staticmethod
+   def set_attraction_hours_schedule( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+      payload = AttractionController._attraction_hours_schedule_payload( data )
+
+      try:
+         success = AttractionCoordinator.set_attraction_hours_schedule( **payload )
+      except ValueError as error:
+         handler._write_json(
+            AttractionController._attraction_hours_schedule_response(
+               data,
+               success=False,
+               error=str( error ),
+               error_type='invalidAttractionHours' ) )
+         return
+
+      response = AttractionController._attraction_hours_schedule_response(
+         data,
+         success=success )
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not set attraction hours for "{ payload[ "attraction" ] }".'
+         )
+         response[ 'errorType' ] = 'overlappingSchedule'
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def replace_attraction_hours_schedule_overlaps(
+         handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+      payload = AttractionController._attraction_hours_schedule_payload( data )
+
+      try:
+         success = AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
+            **payload )
+      except ValueError as error:
+         handler._write_json(
+            AttractionController._attraction_hours_schedule_response(
+               data,
+               success=False,
+               error=str( error ),
+               error_type='invalidAttractionHours' ) )
+         return
+
+      response = AttractionController._attraction_hours_schedule_response(
+         data,
+         success=success )
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not replace attraction hours overlaps for '
+            f'"{ payload[ "attraction" ] }".'
+         )
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def trim_attraction_hours_schedule_overlaps(
+         handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+      payload = AttractionController._attraction_hours_schedule_payload( data )
+
+      try:
+         success = AttractionCoordinator.trim_attraction_hours_schedule_overlaps(
+            **payload )
+      except ValueError as error:
+         handler._write_json(
+            AttractionController._attraction_hours_schedule_response(
+               data,
+               success=False,
+               error=str( error ),
+               error_type='invalidAttractionHours' ) )
+         return
+
+      response = AttractionController._attraction_hours_schedule_response(
+         data,
+         success=success )
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not trim attraction hours overlaps for '
+            f'"{ payload[ "attraction" ] }".'
          )
 
       handler._write_json( response )
