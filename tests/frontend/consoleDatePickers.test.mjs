@@ -8,6 +8,40 @@ import {
 } from '../../scripts/datePickers/consoleDatePickers.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 
+function createMockPickerInstance(inputEl, overrides = {}) {
+   return {
+      close() {
+         this.isOpen = false;
+      },
+      isOpen: true,
+      config: {
+         dateFormat: 'h:i K',
+         time_24hr: false,
+      },
+      selectedDates: [],
+      hourElement: { value: '12' },
+      minuteElement: { value: '00' },
+      amPM: { textContent: 'PM' },
+      calendarContainer: createDomNode('div'),
+      formatDate(date) {
+         const hours = date.getHours();
+         const minutes = String(date.getMinutes()).padStart(2, '0');
+         const isPm = hours >= 12;
+         const displayHour = hours % 12 || 12;
+
+         return `${displayHour}:${minutes} ${isPm ? 'PM' : 'AM'}`;
+      },
+      setDate(time) {
+         inputEl.value = time;
+         this.selectedDates = [ new Date() ];
+      },
+      set(property, value) {
+         this[property] = value;
+      },
+      ...overrides,
+   };
+}
+
 function createFlatpickrSpy() {
    const calls = [];
 
@@ -16,17 +50,19 @@ function createFlatpickrSpy() {
       initFlatpickrFn: (inputEl, options) => {
          calls.push({ inputEl, options });
 
-         return {
-            close() {},
-            set(property, value) {
-               this[property] = value;
-            },
-            setDate() {
-               inputEl.value = '';
-            },
-         };
+         const instance = createMockPickerInstance(inputEl);
+         options.onReady?.([], '', instance);
+         return instance;
       },
    };
+}
+
+function dispatchKeydown(target, key) {
+   target.listeners.keydown?.({
+      key,
+      preventDefault() {},
+      stopImmediatePropagation() {},
+   });
 }
 
 test('initTimePicker wires console time picker defaults', () => {
@@ -39,6 +75,39 @@ test('initTimePicker wires console time picker defaults', () => {
    assert.equal(calls[0].options.enableTime, true);
    assert.equal(calls[0].options.noCalendar, true);
    assert.equal(calls[0].options.dateFormat, 'h:i K');
+});
+
+test('initTimePicker populates the field from the open picker on Enter', () => {
+   const inputEl = createDomNode('input');
+   const { initFlatpickrFn } = createFlatpickrSpy();
+   const picker = initTimePicker(inputEl, {}, initFlatpickrFn);
+
+   dispatchKeydown(inputEl, 'Enter');
+
+   assert.equal(inputEl.value, '12:00 PM');
+   assert.equal(picker.isOpen, false);
+});
+
+test('initTimePicker populates the field from calendar Enter when the input is empty', () => {
+   const inputEl = createDomNode('input');
+   const { initFlatpickrFn } = createFlatpickrSpy();
+   const picker = initTimePicker(inputEl, {}, initFlatpickrFn);
+
+   dispatchKeydown(picker.calendarContainer, 'Enter');
+
+   assert.equal(inputEl.value, '12:00 PM');
+   assert.equal(picker.isOpen, false);
+});
+
+test('initTimePicker keeps typed input on Enter', () => {
+   const inputEl = createDomNode('input');
+   const { initFlatpickrFn } = createFlatpickrSpy();
+
+   initTimePicker(inputEl, {}, initFlatpickrFn);
+   inputEl.value = '2:30 PM';
+   dispatchKeydown(inputEl, 'Enter');
+
+   assert.equal(inputEl.value, '2:30 PM');
 });
 
 test('initDateRangePickers binds end-date minDate to the start input', () => {
