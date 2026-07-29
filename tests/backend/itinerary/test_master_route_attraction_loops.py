@@ -23,6 +23,7 @@ def test_default_master_route_loops_fit_attractions_in_route_order() -> None:
       'gorilla_climb',
       'indo_malaya',
       'conservation_carousel',
+      'face_painting_front_gates',
       'discovery_zone',
       'splash_island',
       'zoomobile',
@@ -49,7 +50,7 @@ def test_default_master_route_includes_attraction_loops() -> None:
       if is_attraction_route_stop( stop )
    ] == [
       'TundraAir Ride',
-      'Face Painting, Caricatures and Henna!',
+      'Face Painting, Caricatures and Henna! - Tundra Trek',
       'Virtual Reality (VR) Theatre!',
    ]
    assert isinstance(
@@ -60,6 +61,8 @@ def test_default_master_route_includes_attraction_loops() -> None:
       'Gorilla Climb Ropes Course' )
    assert loops_by_id[ 'conservation_carousel' ].viewing_spots[ 0 ].name == (
       'Conservation Carousel' )
+   assert loops_by_id[ 'face_painting_front_gates' ].viewing_spots[ 0 ].name == (
+      'Face Painting, Caricatures and Henna! - Front Gates' )
    assert loops_by_id[ 'zoomobile' ].viewing_spots[ 0 ].name == 'Zoomobile'
 
 

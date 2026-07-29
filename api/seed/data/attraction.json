@@ -99,7 +99,18 @@
     "region": "Discovery Zone"
   },
   {
-    "name": "Face Painting, Caricatures and Henna!",
+    "name": "Face Painting, Caricatures and Henna! - Front Gates",
+    "free_with_admission": 0,
+    "description": "Transform into your favorite animal with our talented face painters and caricature artists!",
+    "info_link": "https://www.torontozoo.com/tz/facepainting",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 58.332,
+    "y_coord": 77.766,
+    "default_itinerary_duration_minutes": 20,
+    "region": "Front Courtyard"
+  },
+  {
+    "name": "Face Painting, Caricatures and Henna! - Tundra Trek",
     "free_with_admission": 0,
     "description": "Transform into your favorite animal with our talented face painters and caricature artists!",
     "info_link": "https://www.torontozoo.com/tz/facepainting",

@@ -225,7 +225,7 @@ test('attraction hours submit sends current field values to the backend', async 
    const savedPayloads = [];
    const statusEl = createStatusEl();
    const controller = createController({
-      attractionEl: createField('Face Painting, Caricatures and Henna!'),
+      attractionEl: createField('Face Painting, Caricatures and Henna! - Front Gates'),
       startDateEl: createField('2026-07-29'),
       endDateEl: createField('2026-09-07'),
       weekdayStartTimeEl: createField('11:00 AM'),
@@ -246,7 +246,7 @@ test('attraction hours submit sends current field values to the backend', async 
 
    assert.deepEqual(savedPayloads, [
       {
-         attraction: 'Face Painting, Caricatures and Henna!',
+         attraction: 'Face Painting, Caricatures and Henna! - Front Gates',
          scheduleStartDate: '2026-07-29',
          scheduleEndDate: '2026-09-07',
          weekdayStartTime: '11:00 AM',

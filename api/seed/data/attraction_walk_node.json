@@ -10,7 +10,16 @@
   },
   {
     "kind": "attraction",
-    "name": "Face Painting, Caricatures and Henna!",
+    "name": "Face Painting, Caricatures and Henna! - Front Gates",
+    "location": "",
+    "x": 58.332,
+    "y": 77.766,
+    "walk_node_id": "v-0016",
+    "snap_distance_px": 7.203
+  },
+  {
+    "kind": "attraction",
+    "name": "Face Painting, Caricatures and Henna! - Tundra Trek",
     "location": "",
     "x": 73.669,
     "y": 59.054,
