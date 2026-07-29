@@ -48,6 +48,7 @@ def test_south_loop_side_cluster_contains_expected_loops() -> None:
       'gorilla_climb',
       'indo_malaya',
       'conservation_carousel',
+      'face_painting_front_gates',
       'zoomobile',
    ]
 
@@ -67,7 +68,8 @@ def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:
    assert loop_indexes[ 'gorilla_climb' ] == 2
    assert loop_indexes[ 'indo_malaya' ] == 3
    assert loop_indexes[ 'conservation_carousel' ] == 4
-   assert loop_indexes[ 'zoomobile' ] == 5
+   assert loop_indexes[ 'face_painting_front_gates' ] == 5
+   assert loop_indexes[ 'zoomobile' ] == 6
 
 
 def test_default_loop_side_cluster_id_by_loop_id_maps_each_loop() -> None:
@@ -84,4 +86,5 @@ def test_default_loop_side_cluster_id_by_loop_id_maps_each_loop() -> None:
    assert loop_side_cluster_ids[ 'african_rainforest_giraffe' ] == 'south'
    assert loop_side_cluster_ids[ 'gorilla_climb' ] == 'south'
    assert loop_side_cluster_ids[ 'conservation_carousel' ] == 'south'
+   assert loop_side_cluster_ids[ 'face_painting_front_gates' ] == 'south'
    assert loop_side_cluster_ids[ 'zoomobile' ] == 'south'

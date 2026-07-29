@@ -582,7 +582,7 @@
         {
           "kind": "attraction",
           "key": [
-            "Face Painting, Caricatures and Henna!"
+            "Face Painting, Caricatures and Henna! - Tundra Trek"
           ]
         },
         {
@@ -2144,6 +2144,19 @@
       ]
     },
     {
+      "id": "face_painting_front_gates",
+      "name": "Face Painting Front Gates",
+      "traversal": "one_way",
+      "viewing_spots": [
+        {
+          "kind": "attraction",
+          "key": [
+            "Face Painting, Caricatures and Henna! - Front Gates"
+          ]
+        }
+      ]
+    },
+    {
       "id": "discovery_zone",
       "name": "Discovery Zone",
       "traversal": "one_way",
@@ -2271,6 +2284,7 @@
         "gorilla_climb",
         "indo_malaya",
         "conservation_carousel",
+        "face_painting_front_gates",
         "zoomobile"
       ]
     }
