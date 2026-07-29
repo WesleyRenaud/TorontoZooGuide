@@ -7,6 +7,7 @@ import { createRemoveViewingAlertController } from '../animals/controllers/remov
 import { createRemoveVisibilityScheduleController } from '../animals/controllers/removeVisibilitySchedule.js';
 import { createAttractionClosedController } from '../attractions/controllers/attractionClosed.js';
 import { createAttractionClosureOverrideController } from '../attractions/controllers/attractionClosureOverride.js';
+import { createAttractionHoursScheduleController } from '../attractions/controllers/attractionHoursSchedule.js';
 import { createAttractionOpeningScheduleController } from '../attractions/controllers/attractionOpeningSchedule.js';
 import { createDrinkingFountainsClosedController } from '../drinkingFountains/controllers/drinkingFountainsClosed.js';
 import { createDrinkingFountainsOpenController } from '../drinkingFountains/controllers/drinkingFountainsOpen.js';
@@ -133,6 +134,10 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createAttractionOpeningScheduleController,
       getRefs: refs => refs.attractions.openingSchedule,
+   },
+   {
+      createController: createAttractionHoursScheduleController,
+      getRefs: refs => refs.attractions.hoursSchedule,
    },
    {
       createController: createZoomobileStationClosedController,

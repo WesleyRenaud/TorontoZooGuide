@@ -1,0 +1,341 @@
+import {
+   getAttractionHoursScheduleTimeBounds,
+   replaceAttractionHoursScheduleOverlaps,
+   setAttractionHoursSchedule,
+   trimAttractionHoursScheduleOverlaps,
+} from '../../../api/consoleOperationsApi.js';
+import { asTrimmedString } from '../../../api/normalizeValues.js';
+import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
+import {
+   OPENING_SCHEDULE_OVERLAP_RESOLUTION,
+   resultHasOpeningScheduleOverlap,
+} from '../../forms/openingScheduleOverlap.js';
+import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
+import {
+   hideConsolePanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../helpers/controllerUtils.js';
+import { parseClockTimeMinutes } from '../../../itinerary/panel/dayPlannerSchedule.js';
+import { populateAttractionDropdown } from '../../options/dropdowns.js';
+import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+function getFieldValue(fieldEl) {
+   return asTrimmedString(fieldEl?.value);
+}
+
+function timePairIsOrdered(startTime, endTime) {
+   const startMinutes = parseClockTimeMinutes(startTime);
+   const endMinutes = parseClockTimeMinutes(endTime);
+
+   return (
+      startMinutes != null
+      && endMinutes != null
+      && startMinutes < endMinutes
+   );
+}
+
+function timeIsWithinBounds(timeValue, openTime, closeTime) {
+   const timeMinutes = parseClockTimeMinutes(timeValue);
+   const openMinutes = parseClockTimeMinutes(openTime);
+   const closeMinutes = parseClockTimeMinutes(closeTime);
+
+   return (
+      timeMinutes != null
+      && openMinutes != null
+      && closeMinutes != null
+      && timeMinutes >= openMinutes
+      && timeMinutes <= closeMinutes
+   );
+}
+
+export function createAttractionHoursScheduleController({
+   showButtonEl,
+   panelEl,
+   cancelButtonEl,
+   submitButtonEl,
+   statusEl,
+   attractionEl,
+   startDateEl,
+   endDateEl,
+   weekdayStartTimeEl,
+   weekdayEndTimeEl,
+   weekendHolidayStartTimeEl,
+   weekendHolidayEndTimeEl,
+   weekdayStartTimePicker = null,
+   weekdayEndTimePicker = null,
+   weekendHolidayStartTimePicker = null,
+   weekendHolidayEndTimePicker = null,
+   activatePanel,
+   loadAttractions = loadAttractionOptions,
+   loadTimeBounds = getAttractionHoursScheduleTimeBounds,
+} = {}) {
+   const formFieldEls = [
+      attractionEl,
+      startDateEl,
+      endDateEl,
+      weekdayStartTimeEl,
+      weekdayEndTimeEl,
+      weekendHolidayStartTimeEl,
+      weekendHolidayEndTimeEl,
+   ];
+
+   let timeBounds = null;
+
+   function getFormValues() {
+      return {
+         attraction: getFieldValue(attractionEl),
+         scheduleStartDate: getFieldValue(startDateEl),
+         scheduleEndDate: getFieldValue(endDateEl),
+         weekdayStartTime: getFieldValue(weekdayStartTimeEl),
+         weekdayEndTime: getFieldValue(weekdayEndTimeEl),
+         weekendHolidayStartTime: getFieldValue(weekendHolidayStartTimeEl),
+         weekendHolidayEndTime: getFieldValue(weekendHolidayEndTimeEl),
+      };
+   }
+
+   function validateForm(values) {
+      if (!values.attraction) {
+         return APP_STRINGS.validation.entityRequired(
+            APP_STRINGS.entityLabels.attraction
+         );
+      }
+
+      if (
+         !values.weekdayStartTime
+         || !values.weekdayEndTime
+         || !values.weekendHolidayStartTime
+         || !values.weekendHolidayEndTime
+      ) {
+         return APP_STRINGS.validation.attractionHoursTimesRequired;
+      }
+
+      if (!timePairIsOrdered(values.weekdayStartTime, values.weekdayEndTime)) {
+         return APP_STRINGS.validation.attractionHoursWeekdayOrder;
+      }
+
+      if (!timePairIsOrdered(
+         values.weekendHolidayStartTime,
+         values.weekendHolidayEndTime
+      )) {
+         return APP_STRINGS.validation.attractionHoursWeekendHolidayOrder;
+      }
+
+      if (timeBounds?.weekday) {
+         if (
+            !timeIsWithinBounds(
+               values.weekdayStartTime,
+               timeBounds.weekday.openTime,
+               timeBounds.weekday.closeTime
+            )
+            || !timeIsWithinBounds(
+               values.weekdayEndTime,
+               timeBounds.weekday.openTime,
+               timeBounds.weekday.closeTime
+            )
+         ) {
+            return APP_STRINGS.validation.attractionHoursWeekdayBounds;
+         }
+      }
+
+      if (timeBounds?.weekendHoliday) {
+         if (
+            !timeIsWithinBounds(
+               values.weekendHolidayStartTime,
+               timeBounds.weekendHoliday.openTime,
+               timeBounds.weekendHoliday.closeTime
+            )
+            || !timeIsWithinBounds(
+               values.weekendHolidayEndTime,
+               timeBounds.weekendHoliday.openTime,
+               timeBounds.weekendHoliday.closeTime
+            )
+         ) {
+            return APP_STRINGS.validation.attractionHoursWeekendHolidayBounds;
+         }
+      }
+
+      return validateOptionalDateRange(
+         values.scheduleStartDate,
+         values.scheduleEndDate
+      );
+   }
+
+   function resetForm() {
+      resetFormFields(formFieldEls);
+   }
+
+   function applyTimeBounds(bounds) {
+      timeBounds = bounds;
+
+      applyScheduleTimePickerBounds(
+         weekdayStartTimePicker,
+         bounds?.weekday
+      );
+      applyScheduleTimePickerBounds(
+         weekdayEndTimePicker,
+         bounds?.weekday
+      );
+      applyScheduleTimePickerBounds(
+         weekendHolidayStartTimePicker,
+         bounds?.weekendHoliday
+      );
+      applyScheduleTimePickerBounds(
+         weekendHolidayEndTimePicker,
+         bounds?.weekendHoliday
+      );
+   }
+
+   async function refreshTimeBounds() {
+      const values = getFormValues();
+      const boundsResult = await loadTimeBounds({
+         scheduleStartDate: values.scheduleStartDate,
+         scheduleEndDate: values.scheduleEndDate,
+      });
+
+      if (boundsResult?.success) {
+         applyTimeBounds({
+            weekday: boundsResult.weekday,
+            weekendHoliday: boundsResult.weekendHoliday,
+         });
+         return true;
+      }
+
+      applyTimeBounds(null);
+      setStatus(
+         statusEl,
+         boundsResult?.error
+            || APP_STRINGS.loadErrors.attractionHoursTimeBounds,
+         'is-error'
+      );
+      return false;
+   }
+
+   async function show() {
+      setStatus(statusEl, '');
+
+      try {
+         const attractions = await loadAttractions();
+         populateAttractionDropdown(attractionEl, attractions);
+         resetForm();
+         await refreshTimeBounds();
+         activatePanel?.(panelEl);
+      }
+      catch {
+         setStatus(
+            statusEl,
+            APP_STRINGS.loadErrors.entityOptions(
+               APP_STRINGS.entityLabels.attractions
+            ),
+            'is-error'
+         );
+         activatePanel?.(panelEl);
+      }
+   }
+
+   function hide() {
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
+   }
+
+   async function resolveOverlapConflict(payload) {
+      const resolution = await showOpeningScheduleOverlapDialog();
+
+      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+         return replaceAttractionHoursScheduleOverlaps(payload);
+      }
+
+      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+         return trimAttractionHoursScheduleOverlaps(payload);
+      }
+
+      return null;
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         APP_STRINGS.status.attractionHoursScheduleSaved(result.attraction),
+         'is-success'
+      );
+      resetForm();
+   }
+
+   async function submit() {
+      const values = getFormValues();
+      const validationError = validateForm(values);
+
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
+         return;
+      }
+
+      setStatus(statusEl, '');
+
+      try {
+         const result = await setAttractionHoursSchedule(values);
+
+         if (result?.success) {
+            handleSubmitSuccess(result);
+            return;
+         }
+
+         if (resultHasOpeningScheduleOverlap(result)) {
+            const resolved = await resolveOverlapConflict(values);
+
+            if (resolved?.success) {
+               handleSubmitSuccess(resolved);
+               return;
+            }
+
+            if (!resolved) {
+               return;
+            }
+
+            setStatus(
+               statusEl,
+               resolved.error || APP_STRINGS.common.genericFailed,
+               'is-error'
+            );
+            return;
+         }
+
+         setStatus(
+            statusEl,
+            result?.error || APP_STRINGS.common.genericFailed,
+            'is-error'
+         );
+      }
+      catch {
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+      }
+   }
+
+   showButtonEl?.addEventListener('click', () => {
+      void show();
+   });
+   cancelButtonEl?.addEventListener('click', hide);
+   submitButtonEl?.addEventListener('click', () => {
+      void submit();
+   });
+   startDateEl?.addEventListener('change', () => {
+      void refreshTimeBounds();
+   });
+   endDateEl?.addEventListener('change', () => {
+      void refreshTimeBounds();
+   });
+
+   return {
+      show,
+      hide,
+      submit,
+      validateForm,
+      getFormValues,
+      refreshTimeBounds,
+   };
+}

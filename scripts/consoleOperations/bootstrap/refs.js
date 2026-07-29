@@ -178,6 +178,18 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
+      hoursSchedule: {
+         operationName: 'attractionHoursSchedule',
+         fieldSuffixes: {
+            attractionEl: 'Attraction',
+            startDateEl: 'StartDate',
+            endDateEl: 'EndDate',
+            weekdayStartTimeEl: 'WeekdayStartTime',
+            weekdayEndTimeEl: 'WeekdayEndTime',
+            weekendHolidayStartTimeEl: 'WeekendHolidayStartTime',
+            weekendHolidayEndTimeEl: 'WeekendHolidayEndTime',
+         },
+      },
    },
    zoomobile: {
       stationClosed: {

@@ -47,6 +47,7 @@ export const loadErrors = {
    exhibits: 'Failed to load exhibits.',
    locations: 'Failed to load locations.',
    options: 'Failed to load options.',
+   attractionHoursTimeBounds: 'Failed to load zoo hours bounds for attraction hours.',
    restrooms: 'Failed to load restrooms.',
    updates: 'Failed to load updates.',
    wildEncounters: 'Failed to load Wild Encounters.',
@@ -57,6 +58,10 @@ export const placeholders = {
    date: 'Select a date',
    dailyEndTime: 'Select a daily end time',
    dailyStartTime: 'Select a daily start time',
+   weekdayEndTime: 'Select a weekday end time',
+   weekdayStartTime: 'Select a weekday start time',
+   weekendHolidayEndTime: 'Select a weekend/holiday end time',
+   weekendHolidayStartTime: 'Select a weekend/holiday start time',
    endDate: 'Select an end date',
    encounterTimes: 'Select encounter times',
    selectWildEncounterFirst: 'Select a wild encounter first',
@@ -104,6 +109,7 @@ export const textareas = {
 export const panelTitles = {
    attractionClosed: 'Set attraction as closed',
    attractionClosureOverride: 'Create attraction closure override',
+   attractionHoursSchedule: 'Set attraction hours',
    attractionOpeningSchedule: 'Set attraction opening schedule',
    cancelGuardiansTalkOccurrence: 'Cancel Meet the Guardians talk occurrence',
    cancelWildEncounterOccurrence: 'Cancel Wild Encounter occurrence',
@@ -150,6 +156,7 @@ export const status = {
    guardiansTalkScheduleSaved: result => `${result.talk} in ${result.location} schedule was saved.`,
    open: name => `${name} was set as open.`,
    openingScheduleSaved: name => `${name} opening schedule was saved.`,
+   attractionHoursScheduleSaved: name => `${name} attraction hours were saved.`,
    explicitlyOpen: name => `${name} was set as explicitly open.`,
    scheduleEnded: name => `${name} schedule was ended.`,
    scheduleSaved: name => `${name} schedule was saved.`,
@@ -193,4 +200,19 @@ export const validation = {
    oneDay: 'At least one day must be selected.',
    oneChange: 'Enter at least one change.',
    weeklyAvailability: 'At least one day or holidays must be selected.',
+   attractionHoursTimesRequired: (
+      'Weekday and weekend/holiday start and end times are required.'
+   ),
+   attractionHoursWeekdayOrder: (
+      'Weekday start time must be before weekday end time.'
+   ),
+   attractionHoursWeekendHolidayOrder: (
+      'Weekend/holiday start time must be before weekend/holiday end time.'
+   ),
+   attractionHoursWeekdayBounds: (
+      'Weekday hours must fall within regular zoo hours.'
+   ),
+   attractionHoursWeekendHolidayBounds: (
+      'Weekend/holiday hours must fall within regular zoo hours.'
+   ),
 };

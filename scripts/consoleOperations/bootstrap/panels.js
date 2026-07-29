@@ -6,6 +6,7 @@ import { createViewingAlertPanel } from '../animals/panels/viewingAlertPanel.js'
 import { createVisibilitySchedulePanel } from '../animals/panels/visibilitySchedulePanel.js';
 import { createAttractionClosedPanel } from '../attractions/panels/attractionClosedPanel.js';
 import { createAttractionClosureOverridePanel } from '../attractions/panels/attractionClosureOverridePanel.js';
+import { createAttractionHoursSchedulePanel } from '../attractions/panels/attractionHoursSchedulePanel.js';
 import { createAttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
 import { createDrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
 import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
@@ -67,6 +68,7 @@ const PANEL_CREATORS = {
       createAttractionClosedPanel,
       createAttractionClosureOverridePanel,
       createAttractionOpeningSchedulePanel,
+      createAttractionHoursSchedulePanel,
    ],
    zoomobile: [
       createZoomobileStationClosedPanel,

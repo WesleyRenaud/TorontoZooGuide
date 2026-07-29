@@ -165,6 +165,15 @@ EXPECTED_RUNTIME_COLUMNS = {
       'HOLIDAYS_ONLY',
       'SCHEDULE_MESSAGE',
    },
+   'AttractionHoursSchedule': {
+      'ATTRACTION',
+      'SCHEDULE_START_DATE',
+      'SCHEDULE_END_DATE',
+      'WEEKDAY_START_TIME',
+      'WEEKDAY_END_TIME',
+      'WEEKEND_HOLIDAY_START_TIME',
+      'WEEKEND_HOLIDAY_END_TIME',
+   },
    'AttractionScheduleOverride': {
       'ATTRACTION',
       'OVERRIDE_START_DATE',

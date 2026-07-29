@@ -121,9 +121,8 @@ def get_attraction_likelihood_and_message_for_date(
       weekday=target_date.weekday(),
       seasonal_multiplier=get_attraction_day_seasonal_availability_multiplier(
          attraction_record=attraction_record,
-         is_weekend_or_holiday=(
-            target_date.weekday() >= 5
-            or CalendarDates.is_holiday( d=target_date ) ) ),
+         is_weekend_or_holiday=CalendarDates.is_weekend_or_holiday(
+            d=target_date ) ),
       build_closed_schedule_message=lambda schedule_record: build_closed_attraction_schedule_message(
          attraction_name=attraction_record.name,
          schedule_record=schedule_record ),

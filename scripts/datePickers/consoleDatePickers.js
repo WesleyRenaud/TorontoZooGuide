@@ -26,6 +26,21 @@ export function initTimePicker(inputEl, options = {}, initFlatpickrFn = initFlat
    });
 }
 
+export function applyScheduleTimePickerBounds(picker, bounds = null) {
+   if (!picker) {
+      return;
+   }
+
+   if (!bounds?.openTime || !bounds?.closeTime) {
+      picker.set('minTime', null);
+      picker.set('maxTime', null);
+      return;
+   }
+
+   picker.set('minTime', bounds.openTime);
+   picker.set('maxTime', bounds.closeTime);
+}
+
 function bindEndDateMinDate(
    startDateEl,
    endDatePicker,
@@ -97,5 +112,47 @@ export function initScheduleDateTimePickers(
       endDatePicker,
       dailyStartTimePicker,
       dailyEndTimePicker,
+   };
+}
+
+export function initAttractionHoursSchedulePickers({
+   startDateEl,
+   endDateEl,
+   weekdayStartTimeEl,
+   weekdayEndTimeEl,
+   weekendHolidayStartTimeEl,
+   weekendHolidayEndTimeEl,
+} = {}, {
+   initFlatpickrFn = initFlatpickr,
+} = {}) {
+   const { startPicker, endPicker } = initDateRangePickers(
+      startDateEl,
+      endDateEl,
+      { initFlatpickrFn }
+   );
+
+   return {
+      startPicker,
+      endPicker,
+      weekdayStartTimePicker: initTimePicker(
+         weekdayStartTimeEl,
+         {},
+         initFlatpickrFn
+      ),
+      weekdayEndTimePicker: initTimePicker(
+         weekdayEndTimeEl,
+         {},
+         initFlatpickrFn
+      ),
+      weekendHolidayStartTimePicker: initTimePicker(
+         weekendHolidayStartTimeEl,
+         {},
+         initFlatpickrFn
+      ),
+      weekendHolidayEndTimePicker: initTimePicker(
+         weekendHolidayEndTimeEl,
+         {},
+         initFlatpickrFn
+      ),
    };
 }

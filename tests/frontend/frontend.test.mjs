@@ -130,6 +130,7 @@ import './removedItemsPopupSectionSpecs.test.mjs';
 import './removedItemsPopupContent.test.mjs';
 import './removedItemsPopup.test.mjs';
 import './scheduleTimeConflictConfirmation.test.mjs';
+import './attractionHoursSchedule.test.mjs';
 import './panelFormat.test.mjs';
 import './panelDayPlannerMarkers.test.mjs';
 import './panelDayPlannerScheduled.test.mjs';

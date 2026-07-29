@@ -1,4 +1,5 @@
 import {
+   initAttractionHoursSchedulePickers,
    initDateRangePickers,
    initScheduleDateTimePickers,
    initTimePicker,
@@ -103,4 +104,11 @@ export function wireConsoleOperationDatePickers(refs) {
    DATE_PICKER_BINDINGS.dateTimes.forEach(binding => {
       initDateTimePickerBinding(refs, binding);
    });
+
+   if (refs.attractions?.hoursSchedule) {
+      Object.assign(
+         refs.attractions.hoursSchedule,
+         initAttractionHoursSchedulePickers(refs.attractions.hoursSchedule)
+      );
+   }
 }
