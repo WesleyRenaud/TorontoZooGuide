@@ -243,6 +243,8 @@ test.describe('itinerary panel format and schedule', () => {
             region: 'Front Courtyard',
             location: '',
             price: '',
+            open_time: null,
+            close_time: null,
             infoLink: null,
             removalReason: null,
          }

@@ -6,6 +6,9 @@ import {
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
+import { buildOccurrenceSubtitle } from '../../scheduledOccurrencePresentation.js';
+import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 const DEFAULT_ATTRACTION_TITLE = 'Attraction';
 const CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
@@ -43,9 +46,15 @@ export function isClosedAttraction(row) {
 }
 
 export function getAttractionSubtitle(row) {
-   return isFreeWithAdmission(row)
-      ? 'Free With Admission'
-      : 'Extra Charge';
+   return buildOccurrenceSubtitle({
+      primaryValue: isFreeWithAdmission(row)
+         ? APP_STRINGS.search.freeWithAdmission
+         : APP_STRINGS.search.extraCharge,
+      timeRange: buildScheduledOccurrenceTimeRange({
+         start_time: row?.open_time,
+         end_time: row?.close_time,
+      }),
+   });
 }
 
 export function buildAttractionImageSrc(row) {

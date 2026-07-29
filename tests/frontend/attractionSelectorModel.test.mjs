@@ -25,6 +25,22 @@ test('attraction selector model derives presentation fields', () => {
       'Extra Charge'
    );
    assert.equal(
+      getAttractionSubtitle({
+         free_with_admission: false,
+         open_time: '10:00 AM',
+         close_time: '4:00 PM',
+      }),
+      'Extra Charge  •  10:00 AM - 4:00 PM'
+   );
+   assert.equal(
+      getAttractionSubtitle({
+         free_with_admission: true,
+         open_time: '11:00 AM',
+         close_time: '5:00 PM',
+      }),
+      'Free With Admission  •  11:00 AM - 5:00 PM'
+   );
+   assert.equal(
       buildAttractionImageSrc(carouselRow),
       '../images/details/attractions/conservation-carousel.png'
    );

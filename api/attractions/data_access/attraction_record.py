@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import Coordinate, SeasonalMultiplier
+from ...types import Coordinate, ScheduleTimeKey, SeasonalMultiplier
 
 
 @dataclass( frozen=True )
@@ -17,3 +17,7 @@ class AttractionRecord:
    region: str
    weekday_multiplier: SeasonalMultiplier
    weekend_holiday_multiplier: SeasonalMultiplier
+   weekday_start_time: ScheduleTimeKey = None
+   weekday_end_time: ScheduleTimeKey = None
+   weekend_holiday_start_time: ScheduleTimeKey = None
+   weekend_holiday_end_time: ScheduleTimeKey = None

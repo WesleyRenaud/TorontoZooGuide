@@ -47,6 +47,16 @@ function createField(value = '') {
    };
 }
 
+function createStatusEl() {
+   return {
+      textContent: '',
+      classList: {
+         remove() {},
+         add() {},
+      },
+   };
+}
+
 function createController(overrides = {}) {
    return createAttractionHoursScheduleController({
       attractionEl: createField('Conservation Carousel'),
@@ -56,6 +66,7 @@ function createController(overrides = {}) {
       weekdayEndTimeEl: createField('4:00 PM'),
       weekendHolidayStartTimeEl: createField('10:00 AM'),
       weekendHolidayEndTimeEl: createField('5:00 PM'),
+      statusEl: createStatusEl(),
       loadAttractions: async () => [ 'Conservation Carousel' ],
       loadTimeBounds: async () => ( {
          success: true,
@@ -120,60 +131,15 @@ test('attraction hours form accepts a complete valid payload', () => {
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
-test('attraction hours form rejects weekday times outside zoo hours', async () => {
-   const attractionEl = { value: 'Conservation Carousel' };
-   const weekdayStartTimeEl = { value: '10:00 AM' };
-   const weekdayEndTimeEl = { value: '4:00 PM' };
-   const weekendHolidayStartTimeEl = { value: '10:00 AM' };
-   const weekendHolidayEndTimeEl = { value: '5:00 PM' };
+test('attraction hours form does not client-validate zoo hours bounds', () => {
    const controller = createController({
-      attractionEl,
-      weekdayStartTimeEl,
-      weekdayEndTimeEl,
-      weekendHolidayStartTimeEl,
-      weekendHolidayEndTimeEl,
+      weekdayStartTimeEl: createField('8:00 AM'),
+      weekdayEndTimeEl: createField('8:00 PM'),
+      weekendHolidayStartTimeEl: createField('8:00 AM'),
+      weekendHolidayEndTimeEl: createField('8:00 PM'),
    });
 
-   await controller.show();
-
-   attractionEl.value = 'Conservation Carousel';
-   weekdayStartTimeEl.value = '8:00 AM';
-   weekdayEndTimeEl.value = '4:00 PM';
-   weekendHolidayStartTimeEl.value = '10:00 AM';
-   weekendHolidayEndTimeEl.value = '5:00 PM';
-
-   assert.equal(
-      controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.attractionHoursWeekdayBounds
-   );
-});
-
-test('attraction hours form rejects weekend times outside zoo hours', async () => {
-   const attractionEl = { value: 'Conservation Carousel' };
-   const weekdayStartTimeEl = { value: '10:00 AM' };
-   const weekdayEndTimeEl = { value: '4:00 PM' };
-   const weekendHolidayStartTimeEl = { value: '10:00 AM' };
-   const weekendHolidayEndTimeEl = { value: '5:00 PM' };
-   const controller = createController({
-      attractionEl,
-      weekdayStartTimeEl,
-      weekdayEndTimeEl,
-      weekendHolidayStartTimeEl,
-      weekendHolidayEndTimeEl,
-   });
-
-   await controller.show();
-
-   attractionEl.value = 'Conservation Carousel';
-   weekdayStartTimeEl.value = '10:00 AM';
-   weekdayEndTimeEl.value = '4:00 PM';
-   weekendHolidayStartTimeEl.value = '10:00 AM';
-   weekendHolidayEndTimeEl.value = '8:00 PM';
-
-   assert.equal(
-      controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.attractionHoursWeekendHolidayBounds
-   );
+   assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
 test('attraction hours form rejects end date before start date', () => {
@@ -220,7 +186,7 @@ test('attraction hours show applies zoo hours bounds to time pickers', async () 
    );
 });
 
-test('attraction hours refreshes bounds when the schedule end date changes', async () => {
+test('attraction hours refreshes picker bounds when the schedule end date changes', async () => {
    const endDateEl = { value: '', listeners: {} };
    endDateEl.addEventListener = (eventName, handler) => {
       endDateEl.listeners[eventName] = handler;
@@ -253,7 +219,61 @@ test('attraction hours refreshes bounds when the schedule end date changes', asy
    await endDateEl.listeners.change?.();
 
    assert.deepEqual(boundCloses, [ '6:00 PM', '4:30 PM' ]);
-   assert.ok(controller);
+});
+
+test('attraction hours submit sends current field values to the backend', async () => {
+   const savedPayloads = [];
+   const statusEl = createStatusEl();
+   const controller = createController({
+      attractionEl: createField('Face Painting, Caricatures and Henna!'),
+      startDateEl: createField('2026-07-29'),
+      endDateEl: createField('2026-09-07'),
+      weekdayStartTimeEl: createField('11:00 AM'),
+      weekdayEndTimeEl: createField('4:00 PM'),
+      weekendHolidayStartTimeEl: createField('11:00 AM'),
+      weekendHolidayEndTimeEl: createField('5:00 PM'),
+      statusEl,
+      saveSchedule: async (payload) => {
+         savedPayloads.push(payload);
+         return {
+            success: true,
+            attraction: payload.attraction,
+         };
+      },
+   });
+
+   await controller.submit();
+
+   assert.deepEqual(savedPayloads, [
+      {
+         attraction: 'Face Painting, Caricatures and Henna!',
+         scheduleStartDate: '2026-07-29',
+         scheduleEndDate: '2026-09-07',
+         weekdayStartTime: '11:00 AM',
+         weekdayEndTime: '4:00 PM',
+         weekendHolidayStartTime: '11:00 AM',
+         weekendHolidayEndTime: '5:00 PM',
+      },
+   ]);
+});
+
+test('attraction hours submit surfaces backend zoo hours errors', async () => {
+   const statusEl = createStatusEl();
+   const controller = createController({
+      statusEl,
+      saveSchedule: async () => ( {
+         success: false,
+         error: 'Attraction hours must fall within regular zoo hours for the selected date range.',
+         errorType: 'invalidAttractionHours',
+      } ),
+   });
+
+   await controller.submit();
+
+   assert.equal(
+      statusEl.textContent,
+      'Attraction hours must fall within regular zoo hours for the selected date range.'
+   );
 });
 
 test('applyScheduleTimePickerBounds sets and clears picker limits', () => {

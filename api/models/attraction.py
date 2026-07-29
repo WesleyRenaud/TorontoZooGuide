@@ -21,7 +21,9 @@ class Attraction:
          is_deleted: bool = False,
          old_likelihood: int | None = None,
          start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         end_time: ScheduleTimeKey = None,
+         open_time: ScheduleTimeKey = None,
+         close_time: ScheduleTimeKey = None ) -> None:
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -37,6 +39,8 @@ class Attraction:
       self.old_likelihood = old_likelihood
       self.start_time = start_time
       self.end_time = end_time
+      self.open_time = open_time
+      self.close_time = close_time
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -56,4 +60,6 @@ class Attraction:
          'old_likelihood': self.old_likelihood,
          'start_time': self.start_time,
          'end_time': self.end_time,
+         'open_time': self.open_time,
+         'close_time': self.close_time,
       }

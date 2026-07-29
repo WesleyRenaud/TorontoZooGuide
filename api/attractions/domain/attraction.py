@@ -141,6 +141,13 @@ def build_attraction(
       schedule_override_records=schedule_override_records,
       target_date=context.target_date )
 
+   if context.is_weekend_or_holiday:
+      open_time = attraction_record.weekend_holiday_start_time
+      close_time = attraction_record.weekend_holiday_end_time
+   else:
+      open_time = attraction_record.weekday_start_time
+      close_time = attraction_record.weekday_end_time
+
    return Attraction(
       name=attraction_record.name,
       free_with_admission=attraction_record.free_with_admission,
@@ -152,7 +159,9 @@ def build_attraction(
       region=attraction_record.region,
       is_closed=likelihood <= 0,
       closed_message=closed_message,
-      likelihood=likelihood )
+      likelihood=likelihood,
+      open_time=open_time,
+      close_time=close_time )
 
 
 def build_attractions(

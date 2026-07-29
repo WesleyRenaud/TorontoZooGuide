@@ -3,6 +3,7 @@ import {
    getAnimalSubtitle,
    getAnimalTitleLine,
 } from '../itinerary/selectors/animalSelector/model.js';
+import { getAttractionSubtitle } from '../itinerary/selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
 import {
@@ -70,9 +71,7 @@ export const SEARCH_RESULT_PRESENTATIONS = {
    ),
    attraction: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.attraction,
-      (row) => row.free_with_admission
-         ? APP_STRINGS.search.freeWithAdmission
-         : APP_STRINGS.search.extraCharge
+      getAttractionSubtitle
    ),
    giftShop: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.giftShop,

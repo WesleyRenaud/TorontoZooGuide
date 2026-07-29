@@ -139,6 +139,8 @@ export function normalizeAttraction(value) {
       region: normalizeText(source.region),
       location: normalizeText(source.location),
       price: normalizeText(source.price),
+      open_time: normalizeOptionalText(source.open_time),
+      close_time: normalizeOptionalText(source.close_time),
       infoLink: normalizeOptionalText(source.infoLink ?? source.info_link),
       removalReason: normalizeOptionalText(source.removalReason),
    };

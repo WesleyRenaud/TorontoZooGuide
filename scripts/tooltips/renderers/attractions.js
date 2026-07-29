@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import { getAttractionSubtitle } from '../../itinerary/selectors/attractionSelector/model.js';
 import { normalizeStoredLink } from '../../itinerary/selectors/base/storedSelection.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -27,9 +28,7 @@ export const attractionRenderer = {
             },
          },
          details: [
-            a.free_with_admission
-               ? APP_STRINGS.search.freeWithAdmission
-               : APP_STRINGS.search.extraCharge,
+            getAttractionSubtitle(a),
             a.seasonal_schedule
                ? APP_STRINGS.tooltips.seasonalSchedule(a.seasonal_schedule)
                : '',
