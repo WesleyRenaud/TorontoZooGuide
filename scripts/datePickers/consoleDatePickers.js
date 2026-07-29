@@ -1,4 +1,8 @@
 import { initFlatpickr } from './flatpickr.js';
+import {
+   commitTimeToInput,
+   wireTimePickerEnterCommit,
+} from './timePickerEnterCommit.js';
 
 const DATE_PICKER_OPTIONS = {
    enableTime: false,
@@ -20,10 +24,32 @@ function initDatePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) 
 }
 
 export function initTimePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
-   return initFlatpickrFn(inputEl, {
+   if (!inputEl) {
+      return null;
+   }
+
+   const {
+      onEnterCommit = (time, instance) => commitTimeToInput(time, instance, inputEl),
+      onReady,
+      ...flatpickrOptions
+   } = options;
+
+   function wireEnterCommit(instance) {
+      wireTimePickerEnterCommit(inputEl, instance, onEnterCommit);
+   }
+
+   const picker = initFlatpickrFn(inputEl, {
       ...CONSOLE_TIME_PICKER_OPTIONS,
-      ...options,
+      ...flatpickrOptions,
+      onReady(selectedDates, dateStr, instance) {
+         wireEnterCommit(instance);
+         onReady?.(selectedDates, dateStr, instance);
+      },
    });
+
+   wireEnterCommit(picker);
+
+   return picker;
 }
 
 export function applyScheduleTimePickerBounds(picker, bounds = null) {

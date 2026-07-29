@@ -1,6 +1,6 @@
 import { initTimePicker } from './consoleDatePickers.js';
 import { initFlatpickr } from './flatpickr.js';
-import { readOpenPickerTime } from './readOpenPickerTime.js';
+import { resolveOpenTimePickerValue } from './timePickerEnterCommit.js';
 
 function resetPickerSelection(instance) {
    instance?.setDate?.([], false);
@@ -23,12 +23,8 @@ function createMultiTimeCommitController({
       return true;
    }
 
-   function resolveCommitTime(instance) {
-      return inputEl?.value?.trim() || readOpenPickerTime(instance);
-   }
-
    function commitResolvedTime(instance) {
-      return commitTime(resolveCommitTime(instance), instance);
+      return commitTime(resolveOpenTimePickerValue(inputEl, instance), instance);
    }
 
    function commitAfterInputSettles(instance, pendingTime) {
@@ -46,16 +42,6 @@ function createMultiTimeCommitController({
       commitTime,
       commitResolvedTime,
       commitAfterInputSettles,
-      handleEnterKey(instance, event) {
-         if (event.key !== 'Enter') {
-            return;
-         }
-
-         event.preventDefault();
-         event.stopImmediatePropagation();
-         commitResolvedTime(instance);
-         instance?.close?.();
-      },
    };
 }
 
@@ -71,10 +57,7 @@ function wireMultiTimeInputEvents(inputEl, picker, controller, {
          event.preventDefault();
          event.stopImmediatePropagation();
          picker?.close?.();
-         return;
       }
-
-      controller.handleEnterKey(picker, event);
    }, true);
 
    inputEl.addEventListener('blur', () => {
@@ -110,6 +93,10 @@ export function initMultiTimePicker(
    });
 
    const picker = initTimePicker(inputEl, {
+      onEnterCommit(time, instance) {
+         controller.commitTime(time, instance);
+         instance?.close?.();
+      },
       onClose(_selectedDates, _dateStr, instance) {
          const pendingTime = inputEl?.value?.trim() ?? '';
 
