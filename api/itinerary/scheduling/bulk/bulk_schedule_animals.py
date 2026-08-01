@@ -4,6 +4,8 @@ from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attraction_covered_animals import apply_covered_by_attraction_schedules
 from .attraction_covered_animals import merge_covered_viewing_spot_keys
 from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
+from .attraction_hours_soft_pin import attach_attraction_hours_soft_pins_to_schedule_windows
+from .attraction_hours_soft_pin import resolve_attraction_hours_soft_pins
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
 from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
@@ -14,6 +16,7 @@ from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
+from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.saved_itinerary import SavedItinerary
@@ -48,6 +51,7 @@ from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
+from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
 def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool:
@@ -164,6 +168,34 @@ def bulk_schedule_animals(
    schedule_windows = attach_loop_pins_to_schedule_windows(
       schedule_windows,
       loop_pins )
+   visit_date = fetch_itinerary_date( conn )
+   zoo_hours_record = (
+      None
+      if visit_date is None
+      else fetch_zoo_hours_record( conn, visit_date ) )
+   zoo_open_seconds = (
+      None
+      if zoo_hours_record is None
+      else DateValues.time_value_in_seconds( zoo_hours_record.open_time ) )
+   zoo_close_seconds = (
+      None
+      if zoo_hours_record is None
+      else DateValues.time_value_in_seconds( zoo_hours_record.close_time ) )
+
+   if (
+         visit_date is not None
+         and zoo_open_seconds is not None
+         and zoo_close_seconds is not None ):
+      soft_pins = resolve_attraction_hours_soft_pins(
+         conn,
+         attractions=attractions_to_pack,
+         loop_units=loop_units,
+         visit_date=visit_date,
+         zoo_open_seconds=zoo_open_seconds,
+         zoo_close_seconds=zoo_close_seconds )
+      schedule_windows = attach_attraction_hours_soft_pins_to_schedule_windows(
+         schedule_windows,
+         soft_pins )
 
    if not loop_units and not covered_keys:
       itinerary = build_current_itinerary(

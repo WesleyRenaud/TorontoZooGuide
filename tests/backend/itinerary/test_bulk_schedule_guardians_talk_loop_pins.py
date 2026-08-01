@@ -421,3 +421,98 @@ def test_unschedule_woven_talk_restores_enclosure_at_default_duration_and_shifts
 
    assert cheetah_start_after is not None
    assert cheetah_start_after == cheetah_start_before - 22 * 60
+
+
+def test_bulk_schedule_keeps_rainforest_loop_contiguous_around_turtle_talk(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   """Carousel must not insert between rainforest leftovers and savanna."""
+   from itinerary.support import CAROUSEL
+   from itinerary.support import TURTLE_TALK
+   from wild_encounter_schedule_support import wire_schedule_rows
+
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk=TURTLE_TALK,
+      location='African Rainforest Pavilion',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows(
+         '12:00',
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ),
+      message=None,
+   )
+
+   rainforest = itinerary_animals_for_exhibits(
+      [ 'African Rainforest Pavilion' ],
+      visit_date='2026-06-20' )
+   savanna = itinerary_animals_for_exhibits(
+      [ AFRICA_SAVANNA ],
+      visit_date='2026-06-20' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='11:00 AM',
+      departure_time='17:00',
+      animals=[ *rainforest, *savanna ],
+      attractions=[ CAROUSEL ],
+      guardians_talks=[
+         guardians_talk_save_entry( TURTLE_TALK, start_time='12:00' ),
+      ],
+      wild_encounters=[],
+      selected_exhibits=[ 'African Rainforest Pavilion', AFRICA_SAVANNA ],
+      confirming_early_admission=True,
+      confirming_attraction_without_animal=True,
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals(
+      confirming_fixed_time_item_long_wait=True )
+
+   assert result.success
+
+   rainforest_scheduled = [
+      animal
+      for animal in result.itinerary.animals
+      if animal.exhibit == 'African Rainforest Pavilion'
+      and animal.start_time is not None
+      and animal.end_time is not None
+   ]
+   assert rainforest_scheduled
+
+   rainforest_start = min(
+      DateValues.time_value_in_seconds( animal.start_time )
+      for animal in rainforest_scheduled )
+   rainforest_end = max(
+      DateValues.time_value_in_seconds( animal.end_time )
+      for animal in rainforest_scheduled )
+   assert rainforest_start is not None
+   assert rainforest_end is not None
+
+   carousel = next(
+      attraction
+      for attraction in result.itinerary.attractions
+      if attraction.name == CAROUSEL )
+   savanna_scheduled = [
+      animal
+      for animal in result.itinerary.animals
+      if animal.exhibit == AFRICA_SAVANNA
+      and animal.start_time is not None
+   ]
+
+   if carousel.start_time is not None and savanna_scheduled:
+      carousel_start = DateValues.time_value_in_seconds( carousel.start_time )
+      first_savanna = min(
+         DateValues.time_value_in_seconds( animal.start_time )
+         for animal in savanna_scheduled
+         if DateValues.time_value_in_seconds( animal.start_time ) is not None )
+      assert carousel_start is not None
+      assert first_savanna is not None
+      # Carousel must not sit inside the rainforest→savanna corridor.
+      assert not ( rainforest_start < carousel_start < first_savanna )

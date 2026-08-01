@@ -94,10 +94,38 @@ def assign_contiguous_slots(
       durations: list[ int ],
       *,
       start_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ]:
+   return assign_contiguous_slots_respecting_attraction_hours(
+      stops,
+      durations,
+      start_seconds=start_seconds,
+      hours_by_attraction_name=None )
+
+
+def assign_contiguous_slots_respecting_attraction_hours(
+      stops: list[ LoopScheduleStop ],
+      durations: list[ int ],
+      *,
+      start_seconds: int,
+      hours_by_attraction_name: dict[ str, tuple[ int, int ] ] | None,
+   ) -> tuple[ list[ LoopScheduleSlot ], int ]:
    slots: list[ LoopScheduleSlot ] = []
    slot_cursor_seconds = start_seconds
 
    for stop, duration_seconds in zip( stops, durations ):
+      if (
+            hours_by_attraction_name is not None
+            and isinstance( stop, ItineraryAttractionRecord ) ):
+         attraction_hours = hours_by_attraction_name.get( stop.attraction )
+
+         if attraction_hours is not None:
+            open_seconds, close_seconds = attraction_hours
+
+            if slot_cursor_seconds < open_seconds:
+               slot_cursor_seconds = open_seconds
+
+            if slot_cursor_seconds + duration_seconds > close_seconds:
+               return [], start_seconds
+
       start_time = DateValues.schedule_time_key_from_seconds(
          slot_cursor_seconds )
       end_seconds = slot_cursor_seconds + duration_seconds
