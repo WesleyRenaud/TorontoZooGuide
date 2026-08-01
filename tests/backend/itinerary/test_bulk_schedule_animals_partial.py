@@ -114,6 +114,40 @@ def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
    assert result.itinerary.departure_time is None
 
 
+def test_bulk_schedule_animals_does_not_set_arrival_when_not_enough_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   """Incomplete bulk must not seed arrival to zoo open / first packed item."""
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryCoordinator.get_itinerary().arrival_time is None
+   assert ItineraryCoordinator.get_itinerary().departure_time is None
+
+   result = _bulk_schedule_with_five_minute_zoo_hours()
+
+   assert result.success
+   assert (
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+   assert any(
+      animal.start_time is not None
+      for animal in result.itinerary.animals )
+   assert result.itinerary.arrival_time is None
+   assert result.itinerary.departure_time is None
+
+
 def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
       db: DbControllers,
       db_path: Path,
