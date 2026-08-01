@@ -152,6 +152,24 @@ def _schedule_animals_around_loop_pins(
          scheduled_animal_ids=scheduled_animal_ids,
          slot_sink=slot_sink )
 
+   # Before-pin animals skipped when arriving at/after the pin still belong in
+   # this pavilion visit — place them contiguously after the woven segments
+   # instead of leaving a partial loop that later attractions can split.
+   still_unscheduled = _still_unscheduled_animals(
+      animals,
+      scheduled_animal_ids=scheduled_animal_ids )
+
+   if still_unscheduled:
+      schedule_cursor_seconds = _schedule_remaining_animals_forward(
+         conn,
+         animals=animals,
+         animal_group=still_unscheduled,
+         blockers=blockers,
+         start_seconds=schedule_cursor_seconds,
+         window_end_seconds=window_end_seconds,
+         scheduled_animal_ids=scheduled_animal_ids,
+         slot_sink=slot_sink )
+
    if schedule_cursor_seconds > window_end_seconds:
       raise LoopUnitSchedulePersistError( animals )
 
@@ -277,6 +295,44 @@ def _schedule_animal_segment(
          slot_sink=slot_sink ):
       raise LoopUnitSchedulePersistError( animals )
 
+   return segment_end_cursor_seconds
+
+
+def _schedule_remaining_animals_forward(
+      conn: Connection,
+      *,
+      animals: list[ LoopScheduleStop ],
+      animal_group: list[ LoopScheduleStop ],
+      blockers: list[ TimeBlock ],
+      start_seconds: int,
+      window_end_seconds: int,
+      scheduled_animal_ids: set[ int ],
+      slot_sink: LoopScheduleSlotSink | None = None,
+   ) -> int:
+   durations = fetch_viewing_durations( conn, animal_group )
+
+   if durations is None:
+      raise LoopUnitSchedulePersistError( animals )
+
+   if start_seconds + sum( durations ) > window_end_seconds:
+      return start_seconds
+
+   animal_slots, segment_end_cursor_seconds = assign_contiguous_slots(
+      animal_group,
+      durations,
+      start_seconds=start_seconds )
+
+   if not animal_slots:
+      return start_seconds
+
+   if not save_loop_slots(
+         conn,
+         blockers,
+         animal_slots,
+         slot_sink=slot_sink ):
+      raise LoopUnitSchedulePersistError( animals )
+
+   scheduled_animal_ids.update( id( animal_row ) for animal_row in animal_group )
    return segment_end_cursor_seconds
 
 
