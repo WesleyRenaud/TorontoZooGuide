@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import date
+from datetime import timedelta
 
 from ..cancellations.guardians_talk_cancellation_status import build_guardians_talk_cancellation
 from ..data_access.guardians_talk import fetch_guardians_talk_locations
@@ -9,9 +10,9 @@ from ..data_access.guardians_talk import fetch_guardians_talk_names
 from ..data_access.guardians_talk import fetch_guardians_talk_names_at_location
 from ..data_access.guardians_talk import fetch_meet_the_guardians_talk_records
 from ..data_access.guardians_talk_cancellation import save_guardians_talk_cancellation
+from ..data_access.guardians_talk_occurrence import fetch_guardians_talk_occurrence_records
+from ..data_access.guardians_talk_occurrence import save_guardians_talk_occurrence
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_cancellation_records
-from ..data_access.guardians_talk_schedule import fetch_guardians_talk_occurrence_is_cancelled
-from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_occurrences
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_times
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
@@ -22,9 +23,12 @@ from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGu
 from ..itinerary.itinerary_guardians_talks import build_itinerary_guardians_talks
 from ...models import GuardiansTalk
 from ...models import ScheduledOccurrence
+from ..occurrences.guardians_talk_occurrence_status import build_guardians_talk_occurrence
+from ..occurrences.guardians_talk_occurrence_status import guardians_talk_occurrence_exists
 from ...request_connection import get_connection
+from ..scheduling.guardians_talk_day_schedule import build_guardians_talks_from_day_schedule_records
+from ..scheduling.guardians_talk_day_schedule import fetch_guardians_talk_day_schedule_records
 from ..scheduling.guardians_talk_occurrences import build_guardians_talk_occurrences
-from ..scheduling.guardians_talk_schedule import build_guardians_talk_schedule_for_target_date
 from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_replacing_overlaps
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_trimming_overlaps
@@ -36,6 +40,7 @@ from ..search.guardians_talks_matching_query import build_guardians_talks_matchi
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import SCHEDULED_OCCURRENCE_DAYS_AHEAD
+from ...shared.strings import SharedStrings
 from ...types import Connection, DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
@@ -112,19 +117,28 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          days_ahead: int = SCHEDULED_OCCURRENCE_DAYS_AHEAD ) -> list[ ScheduledOccurrence ]:
+      conn = get_connection()
       schedule_records = fetch_guardians_talk_schedule_records_for_occurrences(
-         get_connection(),
+         conn,
          talk_name=talk,
          location=location )
       cancellation_records = fetch_guardians_talk_cancellation_records(
-         get_connection(),
+         conn,
          talk_name=talk,
          location=location )
+      today = DateValues.parse_date_value( DateValues.today_date_key() )
+      occurrence_records = fetch_guardians_talk_occurrence_records(
+         conn,
+         talk_name=talk,
+         location=location,
+         start_date=today.isoformat(),
+         end_date=( today + timedelta( days=days_ahead ) ).isoformat() )
 
       return build_guardians_talk_occurrences(
          schedule_records=schedule_records,
          cancellation_records=cancellation_records,
-         days_ahead=days_ahead )
+         days_ahead=days_ahead,
+         occurrence_records=occurrence_records )
 
 
    @classmethod
@@ -270,6 +284,50 @@ class GuardiansCoordinator():
 
 
    @classmethod
+   def add_guardians_talk_occurrence(
+         cls,
+         talk: str,
+         location: str,
+         date: DateKey,
+         talk_times: list[ str ] ) -> tuple[ bool, str | None ]:
+      conn = get_connection()
+
+      for talk_time in DateValues.normalize_unique_schedule_times(
+            talk_times ):
+         occurrence = build_guardians_talk_occurrence(
+            talk=talk,
+            location=location,
+            date=date,
+            time=talk_time )
+
+         if guardians_talk_occurrence_exists(
+               conn,
+               occurrence.talk_name,
+               occurrence.location,
+               occurrence.occurrence_date,
+               occurrence.talk_time ):
+            return (
+               False,
+               SharedStrings.GuardiansTalks.occurrence_already_exists(
+                  occurrence.talk_name,
+                  occurrence.location,
+                  occurrence.occurrence_date,
+                  occurrence.talk_time ) )
+
+         if not save_guardians_talk_occurrence(
+               conn,
+               occurrence=occurrence ):
+            return (
+               False,
+               SharedStrings.GuardiansTalks.could_not_add_occurrence(
+                  talk,
+                  location,
+                  date ) )
+
+      return True, None
+
+
+   @classmethod
    def get_guardians_talks_for_saved_itinerary(
          cls,
          saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
@@ -349,29 +407,14 @@ class GuardiansCoordinator():
 
 
    @classmethod
-   def _guardians_talk_occurrence_is_cancelled(
-         cls,
-         talk_name: str,
-         location: str,
-         cancellation_date: DateKey,
-         talk_time: str | None ) -> bool:
-      return fetch_guardians_talk_occurrence_is_cancelled(
-         get_connection(),
-         talk_name,
-         location,
-         cancellation_date,
-         talk_time )
-
-
-   @classmethod
    def get_guardians_talk_schedule_for_target_date(
          cls,
          target_date: date ) -> list[ GuardiansTalk ]:
-      records = fetch_guardians_talk_schedule_records( get_connection() )
-      guardians_talks = build_guardians_talk_schedule_for_target_date(
-         records,
-         target_date,
-         cls._guardians_talk_occurrence_is_cancelled )
+      records = fetch_guardians_talk_day_schedule_records(
+         get_connection(),
+         target_date.isoformat() )
+      guardians_talks = build_guardians_talks_from_day_schedule_records(
+         records )
 
       return attach_guardians_talk_linked_animals(
          get_connection(),

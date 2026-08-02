@@ -9,16 +9,26 @@ from .calendar_dates import DateValues
 from ..models import ScheduledOccurrence
 
 
+def unique_sorted_by_key(
+      items: list[ Any ],
+      *,
+      key: Callable[ [ Any ], Any ],
+      sort_key: Callable[ [ Any ], Any ] ) -> list[ Any ]:
+   return sorted(
+      {
+         key( item ): item
+         for item in items
+      }.values(),
+      key=sort_key )
+
 def build_scheduled_occurrences(
       schedule_records: list[ Any ],
       *,
       days_ahead: int,
       get_time: Callable[ [ Any ], str | None ],
       get_weekday_flags: Callable[ [ Any ], tuple[ bool, bool, bool, bool, bool, bool, bool ] ],
-      is_cancelled: Callable[ [ str, str ], bool ] ) -> list[ ScheduledOccurrence ]:
-   if not schedule_records:
-      return []
-
+      is_cancelled: Callable[ [ str, str ], bool ],
+      extra_occurrences: list[ ScheduledOccurrence ] | None = None ) -> list[ ScheduledOccurrence ]:
    today = DateValues.parse_date_value( DateValues.today_date_key() )
    schedule_start_date = today
    schedule_end_date = today + timedelta( days=days_ahead )
@@ -63,10 +73,13 @@ def build_scheduled_occurrences(
 
          current_date += timedelta( days=1 )
 
-   occurrences.sort(
-      key=lambda occurrence: (
+   if extra_occurrences:
+      occurrences.extend( extra_occurrences )
+
+   return unique_sorted_by_key(
+      occurrences,
+      key=lambda occurrence: ( occurrence.date, occurrence.time ),
+      sort_key=lambda occurrence: (
          occurrence.date,
          occurrence.time or '',
       ) )
-
-   return occurrences

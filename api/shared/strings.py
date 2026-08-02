@@ -99,6 +99,26 @@ class SharedStrings:
          return f'The { talk_name } at { location } is not scheduled today.'
 
 
+      @staticmethod
+      def could_not_add_occurrence(
+            talk: str,
+            location: str,
+            date: str ) -> str:
+         return f'Could not add "{ talk }" at "{ location }" on { date }.'
+
+
+      @staticmethod
+      def occurrence_already_exists(
+            talk: str,
+            location: str,
+            date: str,
+            talk_time: str ) -> str:
+         return (
+            f'"{ talk }" at "{ location }" on { date } at { talk_time } '
+            f'already exists.'
+         )
+
+
    class Itinerary:
       @staticmethod
       def guardians_talk_fully_covered_by_blocker() -> str:

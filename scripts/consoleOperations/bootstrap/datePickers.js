@@ -33,6 +33,7 @@ const DATE_PICKER_BINDINGS = {
    ],
    singleDates: [
       ['guardiansTalks', 'endSchedule', 'endDateEl'],
+      ['guardiansTalks', 'addOccurrence', 'dateEl'],
       ['wildEncounters', 'endSchedule', 'endDateEl'],
       ['updates', 'end', 'endDateEl'],
       ['updates', 'edit', 'endDateEl'],
@@ -42,6 +43,10 @@ const DATE_PICKER_BINDINGS = {
          path: ['animals', 'visibilitySchedule'],
          startTimeKey: 'dailyStartTimeEl',
          endTimeKey: 'dailyEndTimeEl',
+      },
+      {
+         path: ['guardiansTalks', 'addOccurrence'],
+         timeFieldKeys: ['timeEl'],
       },
    ],
 };

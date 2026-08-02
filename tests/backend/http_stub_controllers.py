@@ -73,6 +73,7 @@ class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, Zoomobil
             'end_',
             'edit_',
             'cancel_',
+            'add_',
             'replace_',
             'trim_'
          )
@@ -80,8 +81,16 @@ class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, Zoomobil
          if not name.startswith( mutation_prefixes ):
             raise AttributeError( name )
 
-         def mutation_stub( **kwargs: Any ) -> bool:
+         def mutation_stub( **kwargs: Any ) -> Any:
             self.calls.append( ( name, kwargs ) )
+
+            if name == 'add_guardians_talk_occurrence':
+               return (
+                  ( True, None )
+                  if StubZooControllers.default_success
+                  else ( False, 'Could not add occurrence.' )
+               )
+
             return StubZooControllers.default_success
 
          return mutation_stub

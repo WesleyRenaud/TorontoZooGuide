@@ -236,6 +236,15 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             endDateEl: 'EndDate',
          },
       },
+      addOccurrence: {
+         operationName: 'addGuardiansTalkOccurrence',
+         fieldSuffixes: {
+            locationEl: 'Location',
+            talkNameEl: 'TalkName',
+            dateEl: 'Date',
+            timeEl: 'Time',
+         },
+      },
       cancelOccurrence: {
          operationName: 'cancelGuardiansTalkOccurrence',
          fieldSuffixes: {

@@ -266,3 +266,29 @@ class GuardiansController():
          )
 
       handler._write_json( response )
+
+
+   @staticmethod
+   def add_guardians_talk_occurrence( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      talk = data.get( 'talk' )
+      location = data.get( 'location' )
+      date = data.get( 'date' )
+      talk_times = data.get( 'times' )
+      success, error = GuardiansCoordinator.add_guardians_talk_occurrence(
+         talk=talk,
+         location=location,
+         date=date,
+         talk_times=talk_times )
+
+      response = {
+         'success': success,
+         'talk': talk,
+         'location': location,
+         'date': date,
+         'times': talk_times,
+         'error': error,
+      }
+
+      handler._write_json( response )

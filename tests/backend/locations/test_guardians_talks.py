@@ -4,10 +4,11 @@ from collections.abc import Callable
 from datetime import date
 
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
-from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from api.shared.strings import SharedStrings
 from conftest import DbControllers
+
 
 def test_guardians_talk_lookup_queries_return_seed_data( db: DbControllers ) -> None:
    assert GuardiansCoordinator.get_guardians_talk_locations() == [
@@ -182,5 +183,202 @@ def test_guardians_talk_schedule_accepts_multiple_times_on_one_day(
    )
 
    assert lion_times == [ '2:00 PM', '3:30 PM' ]
+
+
+def assert_added_guardians_talk_occurrence(
+      *,
+      talk: str,
+      location: str,
+      date: str,
+      talk_times: list[ str ] ) -> None:
+   assert GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk=talk,
+      location=location,
+      date=date,
+      talk_times=talk_times
+   ) == ( True, None )
+
+
+def test_guardians_talk_added_occurrence_shows_on_day_schedule(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert_added_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   )
+
+   talks = GuardiansCoordinator.get_guardians_talk_schedule(
+      month='June',
+      day=15,
+      year=2026 )
+   talk = next(
+      talk for talk in talks
+      if talk.name == 'African Lion' and talk.start_time == '11:00 AM'
+   )
+
+   assert talk.is_available is True
+   assert talk.maximum_duration == 30
+   assert talk.end_time == '11:30 AM'
+
+
+def test_guardians_talk_cancel_suppresses_added_occurrence(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert_added_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   )
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   )
+
+   talks = GuardiansCoordinator.get_guardians_talk_schedule(
+      month='June',
+      day=15,
+      year=2026 )
+
+   assert all(
+      not ( talk.name == 'African Lion' and talk.start_time == '11:00 AM' )
+      for talk in talks
+   )
+
+
+def test_guardians_talk_add_occurrence_fails_for_schedule_and_duplicate(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows(
+         '10:00',
+         monday=True,
+         tuesday=False,
+         wednesday=False,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False ),
+      message=None
+   )
+
+   assert GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '10:00 AM' ]
+   ) == (
+      False,
+      SharedStrings.GuardiansTalks.occurrence_already_exists(
+         'African Lion',
+         'Africa Savanna',
+         '2026-06-15',
+         '10:00 AM' ) )
+
+   assert_added_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   )
+   assert GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   ) == (
+      False,
+      SharedStrings.GuardiansTalks.occurrence_already_exists(
+         'African Lion',
+         'Africa Savanna',
+         '2026-06-15',
+         '11:00 AM' ) )
+
+
+def test_guardians_talk_end_schedule_keeps_added_occurrence(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows(
+         '10:00',
+         monday=True,
+         tuesday=False,
+         wednesday=False,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False ),
+      message=None
+   )
+   assert_added_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      talk_times=[ '11:00 AM' ]
+   )
+   assert GuardiansCoordinator.end_guardians_talk_schedule(
+      'African Lion',
+      'Africa Savanna',
+      '2026-06-14',
+      [ '10:00 AM' ]
+   )
+
+   talks = GuardiansCoordinator.get_guardians_talk_schedule(
+      month='June',
+      day=15,
+      year=2026 )
+
+   assert all(
+      not ( talk.name == 'African Lion' and talk.start_time == '10:00 AM' )
+      for talk in talks
+   )
+   assert any(
+      talk.name == 'African Lion' and talk.start_time == '11:00 AM'
+      for talk in talks
+   )
+
+
+def test_guardians_talk_occurrences_include_added_occurrences(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert_added_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-16',
+      talk_times=[ '4:00 PM' ]
+   )
+
+   occurrences = GuardiansCoordinator.get_guardians_talk_occurrences(
+      talk='African Lion',
+      location='Africa Savanna',
+      days_ahead=6
+   )
+
+   assert any(
+      occurrence.date == '2026-06-16' and occurrence.time == '4:00 PM'
+      for occurrence in occurrences
+   )
 
 

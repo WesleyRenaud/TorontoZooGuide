@@ -224,6 +224,10 @@ export function cancelGuardiansTalkOccurrence(payload) {
    return postJson('/cancel-guardians-talk-occurrence', payload);
 }
 
+export function addGuardiansTalkOccurrence(payload) {
+   return postJson('/add-guardians-talk-occurrence', payload);
+}
+
 export function setWildEncounterSchedule(payload) {
    return postJson('/set-wild-encounter-schedule', payload);
 }

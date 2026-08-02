@@ -5,6 +5,7 @@ import {
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { formatJoinedTimes } from '../../../shared/formatJoinedTimes.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -115,11 +116,9 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function handleSubmitSuccess(result) {
-      const cancelledTimes = (result.times ?? []).join(', ');
-
       setStatus(
          statusEl,
-         `${result.talk} in ${result.location} on ${result.date} at ${cancelledTimes} was cancelled.`,
+         `${result.talk} in ${result.location} on ${result.date} at ${formatJoinedTimes(result.times)} was cancelled.`,
          'is-success'
       );
 

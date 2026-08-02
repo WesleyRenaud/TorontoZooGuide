@@ -101,6 +101,109 @@ def fetch_guardians_talk_schedule_records_for_occurrences(
       location=location )
 
 
+def fetch_guardians_talk_schedule_records_covering_date(
+      conn: Connection,
+      *,
+      talk_name: str,
+      location: str,
+      talk_time: str,
+      occurrence_date: DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  t.NAME,
+                  t.LOCATION,
+                  t.X_COORD,
+                  t.Y_COORD,
+                  t.MAXIMUM_DURATION,
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.TALK_TIME
+               FROM MeetTheGuardiansTalk t
+               JOIN GuardiansTalkSchedule s
+                  ON t.NAME = s.TALK_NAME
+                  AND t.LOCATION = s.LOCATION
+               WHERE s.TALK_NAME = ?
+                  AND s.LOCATION = ?
+                  AND s.TALK_TIME = ?
+                  AND s.SCHEDULE_START_DATE <= ?
+                  AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?;
+         """,
+         (
+            talk_name,
+            location,
+            talk_time,
+            occurrence_date,
+            OPEN_ENDED_SQL_DATE,
+            occurrence_date,
+         ) )
+
+      return map_guardians_talk_schedule_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+def fetch_guardians_talk_day_schedule_records_from_schedule(
+      conn: Connection,
+      target_date: DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  t.NAME,
+                  t.LOCATION,
+                  t.X_COORD,
+                  t.Y_COORD,
+                  t.MAXIMUM_DURATION,
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.TALK_TIME
+               FROM MeetTheGuardiansTalk t
+               JOIN GuardiansTalkSchedule s
+                  ON t.NAME = s.TALK_NAME
+                  AND t.LOCATION = s.LOCATION
+               WHERE s.SCHEDULE_START_DATE <= ?
+                  AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?
+                  AND NOT EXISTS (
+                     SELECT 1
+                     FROM GuardiansTalkCancellation c
+                     WHERE c.TALK_NAME = s.TALK_NAME
+                        AND c.LOCATION = s.LOCATION
+                        AND c.CANCELLATION_DATE = ?
+                        AND c.TALK_TIME = s.TALK_TIME
+                  );
+         """,
+         (
+            target_date,
+            OPEN_ENDED_SQL_DATE,
+            target_date,
+            target_date,
+         ) )
+
+      return map_guardians_talk_schedule_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
 def fetch_guardians_talk_cancellation_records(
       conn: Connection,
       talk_name: str,

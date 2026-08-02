@@ -27,6 +27,7 @@ from . import gift_shop_opening_schedule
 from . import gift_shop_schedule_override
 from . import guardians_talk_animal
 from . import guardians_talk_cancellation
+from . import guardians_talk_occurrence
 from . import guardians_talk_schedule
 from . import guest_service
 from . import itinerary_animal
@@ -122,6 +123,7 @@ runtime_tables = [
    zoomobile_station_status,
    guardians_talk_schedule,
    guardians_talk_cancellation,
+   guardians_talk_occurrence,
    wild_encounter_schedule,
    wild_encounter_cancellation,
    drinking_fountain_status,

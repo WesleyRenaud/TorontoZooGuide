@@ -21,5 +21,6 @@ GUARDIANS_ROUTES: dict[ str, PostRouteHandler ] = {
       GuardiansController.trim_guardians_talk_schedule_overlaps
    ),
    '/end-guardians-talk-schedule': GuardiansController.end_guardians_talk_schedule,
+   '/add-guardians-talk-occurrence': GuardiansController.add_guardians_talk_occurrence,
    '/cancel-guardians-talk-occurrence': GuardiansController.cancel_guardians_talk_occurrence,
 }
