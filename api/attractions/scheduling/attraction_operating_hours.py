@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.attraction import fetch_attraction_record_for_calendar_day
 from ..data_access.attraction_record import AttractionRecord
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ...types import Connection
 from ...types import ScheduleTimeKey
 
 
@@ -44,6 +46,35 @@ def attraction_operating_hours_seconds(
       close_seconds = zoo_close_seconds
 
    return open_seconds, close_seconds
+
+
+def fetch_configured_attraction_operating_hours_seconds(
+      conn: Connection,
+      attraction_name: str,
+      *,
+      visit_date: date,
+      zoo_open_seconds: int,
+      zoo_close_seconds: int,
+   ) -> tuple[ int, int ] | None:
+   """Configured attraction hours for the day, or None when unset/unavailable."""
+   attraction_record = fetch_attraction_record_for_calendar_day(
+      conn,
+      attraction_name,
+      visit_date )
+
+   if attraction_record is None:
+      return None
+
+   if not attraction_has_configured_operating_hours(
+         attraction_record,
+         visit_date=visit_date ):
+      return None
+
+   return attraction_operating_hours_seconds(
+      attraction_record,
+      visit_date=visit_date,
+      zoo_open_seconds=zoo_open_seconds,
+      zoo_close_seconds=zoo_close_seconds )
 
 
 def _configured_hours_for_visit_date(

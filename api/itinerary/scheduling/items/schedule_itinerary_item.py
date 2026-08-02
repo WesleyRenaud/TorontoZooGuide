@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
+from ...attraction_item_key import AttractionScheduleItemKey
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from .parse_schedule_time_options import parse_schedule_time_options
 from ...results.itinerary_save_result import ItinerarySaveResult
+from .schedule_attraction_itinerary_item import schedule_attraction_itinerary_item
 from .schedule_guardians_talk_itinerary_item import schedule_guardians_talk_itinerary_item
 from .schedule_item_key import ScheduleItemKey
 from .schedule_itinerary_event import schedule_itinerary_event
@@ -87,6 +89,16 @@ def schedule_itinerary_item(
             confirming_wild_encounter_unschedule ),
          confirming_fixed_time_item_long_wait=(
             confirming_fixed_time_item_long_wait ) )
+
+   if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      return schedule_attraction_itinerary_item(
+         conn,
+         schedule_item_key,
+         parsed_schedule_options,
+         itinerary_context=itinerary_context,
+         confirming_schedule_item_not_on_itinerary=(
+            confirming_schedule_item_not_on_itinerary
+         ) )
 
    return schedule_listed_itinerary_item(
       conn,

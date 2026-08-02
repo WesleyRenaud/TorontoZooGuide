@@ -3,9 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import date
 
-from ....attractions.data_access.attraction import fetch_attraction_record_for_calendar_day
-from ....attractions.scheduling.attraction_operating_hours import attraction_has_configured_operating_hours
-from ....attractions.scheduling.attraction_operating_hours import attraction_operating_hours_seconds
+from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from .loop_pin_segments import viewing_spot_index_for_stop_in_loop
 from .loop_schedule_stop import LoopScheduleStop
@@ -40,24 +38,17 @@ def resolve_attraction_hours_soft_pins(
       if loop_id is None:
          continue
 
-      attraction_record = fetch_attraction_record_for_calendar_day(
+      attraction_hours = fetch_configured_attraction_operating_hours_seconds(
          conn,
          attraction_row.attraction,
-         parsed_visit_date )
-
-      if attraction_record is None:
-         continue
-
-      if not attraction_has_configured_operating_hours(
-            attraction_record,
-            visit_date=parsed_visit_date ):
-         continue
-
-      open_seconds, close_seconds = attraction_operating_hours_seconds(
-         attraction_record,
          visit_date=parsed_visit_date,
          zoo_open_seconds=zoo_open_seconds,
          zoo_close_seconds=zoo_close_seconds )
+
+      if attraction_hours is None:
+         continue
+
+      open_seconds, close_seconds = attraction_hours
 
       if open_seconds >= close_seconds:
          continue
