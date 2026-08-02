@@ -1256,17 +1256,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "San-Esteban Island Chuckwalla",
-    "exhibit": "Americas Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 68.663,
-    "y_coord": 49.679,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Snapping Turtle",
     "exhibit": "Americas Pavilion",
     "name": null,

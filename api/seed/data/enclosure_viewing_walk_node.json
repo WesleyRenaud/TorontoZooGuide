@@ -1764,15 +1764,6 @@
     "snap_distance_px": 6.537
   },
   {
-    "species": "San-Esteban Island Chuckwalla",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
-  },
-  {
     "species": "Short-Beaked Echidna",
     "exhibit": "Australasia Pavilion",
     "enclosure_type": "Indoor",
