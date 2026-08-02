@@ -6,6 +6,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
+import { formatJoinedTimes } from '../../../shared/formatJoinedTimes.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -95,11 +96,9 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    function handleSubmitSuccess(result) {
-      const cancelledTimes = (result.times ?? []).join(', ');
-
       setStatus(
          statusEl,
-         `${result.wildEncounter} on ${result.date} at ${cancelledTimes} was cancelled.`,
+         `${result.wildEncounter} on ${result.date} at ${formatJoinedTimes(result.times)} was cancelled.`,
          'is-success'
       );
 

@@ -151,6 +151,30 @@ import api.server as server
          }
       ),
       (
+         '/add-guardians-talk-occurrence',
+         {
+            'talk': 'African Lion',
+            'location': 'Africa Savanna',
+            'date': '2026-06-20',
+            'times': [ '3:00 PM' ],
+         },
+         (
+            'add_guardians_talk_occurrence',
+            {
+               'talk': 'African Lion',
+               'location': 'Africa Savanna',
+               'date': '2026-06-20',
+               'talk_times': [ '3:00 PM' ],
+            }
+         ),
+         {
+            'talk': 'African Lion',
+            'location': 'Africa Savanna',
+            'date': '2026-06-20',
+            'times': [ '3:00 PM' ],
+         }
+      ),
+      (
          '/set-wild-encounter-schedule',
          {
             'wildEncounter': 'African Rainforest',

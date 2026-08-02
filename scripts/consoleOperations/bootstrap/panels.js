@@ -15,6 +15,7 @@ import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
 import { createGiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
 import { createGiftShopOpeningSchedulePanel } from '../giftShops/panels/giftShopOpeningSchedulePanel.js';
+import { createAddGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/addGuardiansTalkOccurrencePanel.js';
 import { createCancelGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
 import { createEndGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
 import { createGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/guardiansTalkSchedulePanel.js';
@@ -78,6 +79,7 @@ const PANEL_CREATORS = {
    guardiansTalks: [
       createGuardiansTalkSchedulePanel,
       createEndGuardiansTalkSchedulePanel,
+      createAddGuardiansTalkOccurrencePanel,
       createCancelGuardiansTalkOccurrencePanel,
    ],
    wildEncounters: [

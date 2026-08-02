@@ -1,11 +1,6 @@
+import { asTrimmedString } from '../api/normalizeValues.js';
+import { formatJoinedTimes } from '../shared/formatJoinedTimes.js';
+
 export function formatMapOccurrenceTimes(item = {}) {
-   const times = Array.isArray(item.times)
-      ? item.times.filter(Boolean)
-      : [];
-
-   if (times.length > 0) {
-      return times.join(', ');
-   }
-
-   return item.start_time || '';
+   return formatJoinedTimes(item.times) || asTrimmedString(item.start_time);
 }

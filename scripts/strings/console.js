@@ -30,7 +30,6 @@ export const help = {
       'Select one or more scheduled times to cancel.'
    ),
    noScheduledEncounterTimes: 'No scheduled times for this encounter.',
-   encounterTimesAddOneAtATime: 'Add one time at a time using the picker or Enter.',
    encounterScheduleRows: 'Add each encounter time with the days it runs.',
    talkScheduleRows: 'Add each talk time with the days it runs.',
    removeEncounterScheduleRow: 'Remove this scheduled time',
@@ -107,6 +106,7 @@ export const textareas = {
 };
 
 export const panelTitles = {
+   addGuardiansTalkOccurrence: 'Add Meet the Guardians talk occurrence',
    attractionClosed: 'Set attraction as closed',
    attractionClosureOverride: 'Create attraction closure override',
    attractionHoursSchedule: 'Set attraction hours',

@@ -16,6 +16,7 @@ import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
 import { createGiftShopClosureOverrideController } from '../giftShops/controllers/giftShopClosureOverride.js';
 import { createGiftShopOpeningScheduleController } from '../giftShops/controllers/giftShopOpeningSchedule.js';
+import { createAddGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/addGuardiansTalkOccurrence.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
 import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
 import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
@@ -170,6 +171,15 @@ const CONTROLLER_BINDINGS = [
       }),
    },
    {
+      createController: createAddGuardiansTalkOccurrenceController,
+      getRefs: refs => refs.guardiansTalks.addOccurrence,
+      getExtraOptions: ({
+         addGuardiansTalkOccurrenceLocationFilterController,
+      }) => ({
+         talkLocationFilterController: addGuardiansTalkOccurrenceLocationFilterController,
+      }),
+   },
+   {
       createController: createCancelGuardiansTalkOccurrenceController,
       getRefs: refs => refs.guardiansTalks.cancelOccurrence,
       getExtraOptions: ({
@@ -274,6 +284,11 @@ export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters
             locationEl: guardiansTalks.endSchedule.locationEl,
             talkNameEl: guardiansTalks.endSchedule.talkNameEl,
          }),
+      addGuardiansTalkOccurrenceLocationFilterController:
+         createGuardiansTalkLocationFilterController({
+            locationEl: guardiansTalks.addOccurrence.locationEl,
+            talkNameEl: guardiansTalks.addOccurrence.talkNameEl,
+         }),
       cancelGuardiansTalkOccurrenceLocationFilterController:
          createGuardiansTalkLocationFilterController({
             locationEl: guardiansTalks.cancelOccurrence.locationEl,
@@ -311,6 +326,7 @@ export function wireConsoleOperationControllers({
    activatePanel,
    guardiansTalkScheduleLocationFilterController,
    endGuardiansTalkScheduleLocationFilterController,
+   addGuardiansTalkOccurrenceLocationFilterController,
    cancelGuardiansTalkOccurrenceLocationFilterController,
    cancelGuardiansTalkOccurrenceFilterController,
    guardiansTalkScheduleTimesFilterController,
@@ -325,6 +341,7 @@ export function wireConsoleOperationControllers({
       specialControllers: {
          guardiansTalkScheduleLocationFilterController,
          endGuardiansTalkScheduleLocationFilterController,
+         addGuardiansTalkOccurrenceLocationFilterController,
          cancelGuardiansTalkOccurrenceLocationFilterController,
          cancelGuardiansTalkOccurrenceFilterController,
          guardiansTalkScheduleTimesFilterController,

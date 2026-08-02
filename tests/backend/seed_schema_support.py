@@ -215,6 +215,12 @@ EXPECTED_RUNTIME_COLUMNS = {
       'CANCELLATION_DATE',
       'TALK_TIME',
    },
+   'GuardiansTalkOccurrence': {
+      'TALK_NAME',
+      'LOCATION',
+      'OCCURRENCE_DATE',
+      'TALK_TIME',
+   },
    'WildEncounterSchedule': {
       'WILD_ENCOUNTER',
       'SCHEDULE_START_DATE',

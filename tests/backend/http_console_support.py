@@ -26,7 +26,7 @@ def assert_console_mutation_success(
    for key, value in response_subset.items():
       assert result[ key ] == value
 
-   assert 'error' not in result
+   assert result.get( 'error' ) is None
 
 
 def assert_weekly_schedule_success(
