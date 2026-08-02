@@ -1,6 +1,7 @@
 import { createAnimalSpeciesResultsView } from '../autocomplete/resultsView.js';
 import { filterSpeciesMatches } from '../autocomplete/speciesMatcher.js';
 import { createAnimalSpeciesSource } from '../autocomplete/speciesSource.js';
+import { getFieldValue } from '../../helpers/controllerUtils.js';
 
 function debounce(fn, delay = 200) {
    let timer = null;
@@ -32,7 +33,7 @@ export function createAnimalSpeciesAutocompleteController({
 
    async function performSearch() {
       const query = inputEl.value.trim();
-      const exhibit = exhibitEl?.value.trim() ?? '';
+      const exhibit = getFieldValue(exhibitEl);
       const requestId = ++searchRequestId;
 
       if (!query) {

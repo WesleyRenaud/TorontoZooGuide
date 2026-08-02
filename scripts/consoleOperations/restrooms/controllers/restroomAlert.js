@@ -1,5 +1,6 @@
 import { setRestroomAlert } from '../../../api/consoleOperationsApi.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -24,9 +25,6 @@ export function createRestroomAlertController({
 } = {}) {
    const formFieldEls = [restroomEl, startDateEl, endDateEl, messageEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getFormValues() {
       return {

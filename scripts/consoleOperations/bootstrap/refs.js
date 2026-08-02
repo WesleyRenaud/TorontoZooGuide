@@ -306,6 +306,18 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
+   events: {
+      create: {
+         operationName: 'createEvent',
+         includeDateRange: true,
+         fieldSuffixes: {
+            nameEl: 'Name',
+            locationEl: 'Location',
+            descriptionEl: 'Description',
+            linkEl: 'Link',
+         },
+      },
+   },
    updates: {
       create: {
          operationName: 'createUpdate',

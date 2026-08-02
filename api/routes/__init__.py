@@ -4,6 +4,7 @@ from ..defibrillators.routes import DEFIBRILLATOR_ROUTES
 from ..drinking_fountains.routes import DRINKING_FOUNTAIN_ROUTES
 from ..emergency_intercoms.routes import EMERGENCY_INTERCOM_ROUTES
 from ..event_sites.routes import EVENT_SITE_ROUTES
+from ..events.routes import EVENT_ROUTES
 from ..exhibits.routes import EXHIBIT_ROUTES
 from .get_registry import GET_ROUTES
 from .get_registry import register_get_routes
@@ -31,6 +32,7 @@ register_post_routes( DEFIBRILLATOR_ROUTES )
 register_post_routes( DRINKING_FOUNTAIN_ROUTES )
 register_post_routes( EMERGENCY_INTERCOM_ROUTES )
 register_post_routes( EVENT_SITE_ROUTES )
+register_post_routes( EVENT_ROUTES )
 register_post_routes( EXHIBIT_ROUTES )
 register_post_routes( GIFT_SHOP_ROUTES )
 register_post_routes( ITINERARY_ROUTES )

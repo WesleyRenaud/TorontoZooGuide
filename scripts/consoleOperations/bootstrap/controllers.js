@@ -11,6 +11,7 @@ import { createAttractionHoursScheduleController } from '../attractions/controll
 import { createAttractionOpeningScheduleController } from '../attractions/controllers/attractionOpeningSchedule.js';
 import { createDrinkingFountainsClosedController } from '../drinkingFountains/controllers/drinkingFountainsClosed.js';
 import { createDrinkingFountainsOpenController } from '../drinkingFountains/controllers/drinkingFountainsOpen.js';
+import { createCreateEventController } from '../events/controllers/createEvent.js';
 import { createExhibitClosedController } from '../exhibits/controllers/exhibitClosed.js';
 import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen.js';
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
@@ -215,6 +216,10 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createDrinkingFountainsOpenController,
       getRefs: refs => refs.drinkingFountains.open,
+   },
+   {
+      createController: createCreateEventController,
+      getRefs: refs => refs.events.create,
    },
    {
       createController: createCreateUpdateController,

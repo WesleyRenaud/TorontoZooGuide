@@ -1,4 +1,5 @@
 import {
+   getFieldValue,
    hasCheckedField,
    hideConsolePanel,
    resetFormFields,
@@ -41,9 +42,6 @@ export function createRecurringScheduleFormController({
       ...dayFieldEls,
    ];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function resetForm() {
       resetFormFields(recurringFieldEls);

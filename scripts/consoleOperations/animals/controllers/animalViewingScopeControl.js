@@ -1,9 +1,6 @@
 import { getAnimalViewingScopes } from '../../../api/animalsApi.js';
+import { getFieldValue } from '../../helpers/controllerUtils.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
-
-function getFieldValue(fieldEl) {
-   return fieldEl?.value.trim() ?? '';
-}
 
 function animalHasIndoorAndOutdoorViewing(scopes = []) {
    return (

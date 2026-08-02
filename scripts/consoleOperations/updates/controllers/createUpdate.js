@@ -1,5 +1,6 @@
 import { createUpdate } from '../../../api/consoleOperationsApi.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
@@ -22,9 +23,6 @@ export function createCreateUpdateController({
 } = {}) {
    const formFieldEls = [titleEl, descriptionEl, typeEl, startDateEl, endDateEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getFormValues() {
       return {

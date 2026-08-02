@@ -5,6 +5,7 @@ from api.models import Attraction
 from api.models import Defibrillator
 from api.models import DrinkingFountain
 from api.models import EmergencyIntercom
+from api.models import Event
 from api.models import EventSite
 from api.models import GiftShop
 from api.models import GuardiansTalk
@@ -98,6 +99,21 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
    ).to_dict() == {
       'x_coord': 11,
       'y_coord': 12
+   }
+   assert Event(
+      name='Conservation Carousel Ride Night',
+      location='Front Courtyard',
+      description='Evening carousel rides for a special cause.',
+      link='https://www.torontozoo.com/events/carousel-night',
+      start_date='2026-06-15',
+      end_date='2026-06-30'
+   ).to_dict() == {
+      'name': 'Conservation Carousel Ride Night',
+      'location': 'Front Courtyard',
+      'description': 'Evening carousel rides for a special cause.',
+      'link': 'https://www.torontozoo.com/events/carousel-night',
+      'start_date': '2026-06-15',
+      'end_date': '2026-06-30'
    }
    assert EventSite(
       name='Special Events Center',

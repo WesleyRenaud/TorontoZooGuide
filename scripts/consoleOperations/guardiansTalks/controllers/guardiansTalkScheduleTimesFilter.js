@@ -3,6 +3,7 @@ import {
    resolveScheduleTimesListEl,
    updateScheduleTimesCheckboxList,
 } from '../../forms/scheduleTimesCheckboxField.js';
+import { getFieldValue } from '../../helpers/controllerUtils.js';
 
 export function createGuardiansTalkScheduleTimesFilterController({
    talkNameEl,
@@ -17,9 +18,6 @@ export function createGuardiansTalkScheduleTimesFilterController({
       return result?.times ?? [];
    },
 } = {}) {
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getTimesListEl() {
       return resolveScheduleTimesListEl(timesEl);

@@ -2,6 +2,7 @@ import {
    getGuardiansTalkLocations,
    getGuardiansTalkNamesAtLocation,
 } from '../../../api/consoleOperationsApi.js';
+import { getFieldValue } from '../../helpers/controllerUtils.js';
 import {
    populateGuardiansTalkDropdown,
    populateValueDropdown,
@@ -12,9 +13,6 @@ export function createGuardiansTalkLocationFilterController({
    locationEl,
    talkNameEl,
 } = {}) {
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getLocationName(location) {
       return typeof location === 'string'

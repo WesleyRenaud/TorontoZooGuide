@@ -29,6 +29,7 @@ const DATE_PICKER_BINDINGS = {
       ['wildEncounters', 'schedule'],
       ['drinkingFountains', 'closed'],
       ['drinkingFountains', 'open'],
+      ['events', 'create'],
       ['updates', 'create'],
    ],
    singleDates: [

@@ -1,5 +1,6 @@
 import { removeRestroomAlert } from '../../../api/consoleOperationsApi.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -21,7 +22,7 @@ export function createRemoveRestroomAlertController({
    const formFieldEls = [restroomEl];
 
    function getRestroom() {
-      return restroomEl?.value.trim() ?? '';
+      return getFieldValue(restroomEl);
    }
 
    function resetForm() {

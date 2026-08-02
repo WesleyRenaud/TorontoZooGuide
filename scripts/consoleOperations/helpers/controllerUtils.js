@@ -1,8 +1,10 @@
+import { asTrimmedString } from '../../api/normalizeValues.js';
 import {
    clearConsoleMenuButtonSelection,
    clearConsolePanelUrlParam,
 } from '../shell/panelNavigator.js';
 import { APP_STRINGS } from '../../strings.js';
+import { resolveOptionalStartDate } from '../../visitDates/visitDateRules.js';
 
 export function resetFieldValue(fieldEl) {
    if (!fieldEl) {
@@ -17,6 +19,10 @@ export function resetFieldValue(fieldEl) {
    if ('value' in fieldEl) {
       fieldEl.value = '';
    }
+}
+
+export function getFieldValue(fieldEl) {
+   return asTrimmedString(fieldEl?.value);
 }
 
 export function resetFormFields(fieldEls = []) {
@@ -68,7 +74,7 @@ export function validateOptionalDateRange(startDate, endDate) {
       return null;
    }
 
-   const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+   const effectiveStart = resolveOptionalStartDate(startDate);
    const startMs = new Date(effectiveStart).getTime();
    const endMs = new Date(endDate).getTime();
 

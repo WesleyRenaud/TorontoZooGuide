@@ -1,5 +1,6 @@
 import { setCurrentZoomobileRoute } from '../../../api/consoleOperationsApi.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
@@ -20,9 +21,6 @@ export function createZoomobileRouteController({
 } = {}) {
    const formFieldEls = [startDateEl, endDateEl, summerRouteEl, winterRouteEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getSelectedRoute() {
       if (summerRouteEl?.checked) {

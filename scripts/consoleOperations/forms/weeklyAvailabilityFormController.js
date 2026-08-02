@@ -1,4 +1,5 @@
 import {
+   getFieldValue,
    hasCheckedField,
    hideConsolePanel,
    loadOptionsAndShowPanel,
@@ -208,10 +209,10 @@ export function createWeeklyAvailabilityFormController({
 
 
    async function onSubmitClick() {
-      const entity = entityEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
+      const entity = getFieldValue(entityEl);
+      const startDate = getFieldValue(startDateEl);
+      const endDate = getFieldValue(endDateEl);
+      const message = getFieldValue(messageEl);
 
       setStatus(statusEl, '');
 

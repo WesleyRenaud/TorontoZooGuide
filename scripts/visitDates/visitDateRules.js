@@ -131,6 +131,10 @@ export function getToday() {
    );
 }
 
+export function resolveOptionalStartDate(startDate) {
+   return startDate || toISODate(getToday());
+}
+
 export function getMaxDate(daysAhead = DEFAULT_DAYS_AHEAD, referenceToday = null) {
    return createAllowedVisitDateRange(daysAhead, referenceToday).maxDate;
 }

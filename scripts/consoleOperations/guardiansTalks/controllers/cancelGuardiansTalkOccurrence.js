@@ -1,6 +1,7 @@
 import { cancelGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
@@ -25,9 +26,6 @@ export function createCancelGuardiansTalkOccurrenceController({
 } = {}) {
    const formFieldEls = [locationEl, dateEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getSelectedTimes() {
       return getSelectedScheduleTimes(timesEl);

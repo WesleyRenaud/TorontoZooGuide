@@ -104,6 +104,14 @@ EXPECTED_RUNTIME_COLUMNS = {
       'START_DATE',
       'END_DATE',
    },
+   'ZooEvent': {
+      'NAME',
+      'LOCATION',
+      'DESCRIPTION',
+      'LINK',
+      'START_DATE',
+      'END_DATE',
+   },
    'RestaurantOpeningSchedule': {
       'RESTAURANT',
       'SCHEDULE_START_DATE',

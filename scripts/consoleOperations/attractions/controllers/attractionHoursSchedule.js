@@ -4,7 +4,6 @@ import {
    setAttractionHoursSchedule,
    trimAttractionHoursScheduleOverlaps,
 } from '../../../api/consoleOperationsApi.js';
-import { asTrimmedString } from '../../../api/normalizeValues.js';
 import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
 import {
    OPENING_SCHEDULE_OVERLAP_RESOLUTION,
@@ -12,6 +11,7 @@ import {
 } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
@@ -21,10 +21,6 @@ import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
-
-function getFieldValue(fieldEl) {
-   return asTrimmedString(fieldEl?.value);
-}
 
 function timePairIsOrdered(startTime, endTime) {
    const startMinutes = parseClockTimeMinutes(startTime);

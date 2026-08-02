@@ -1,6 +1,6 @@
 import { addGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
-import { asTrimmedString } from '../../../api/normalizeValues.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
@@ -28,12 +28,12 @@ export function createAddGuardiansTalkOccurrenceController({
    }
 
    function getFormValues() {
-      const time = asTrimmedString(timeEl?.value);
+      const time = getFieldValue(timeEl);
 
       return {
-         talk: asTrimmedString(talkNameEl?.value),
-         location: asTrimmedString(locationEl?.value),
-         date: asTrimmedString(dateEl?.value),
+         talk: getFieldValue(talkNameEl),
+         location: getFieldValue(locationEl),
+         date: getFieldValue(dateEl),
          times: time ? [time] : [],
       };
    }

@@ -1,4 +1,5 @@
 import {
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -28,9 +29,6 @@ export function createEntityOpenFormController({
    const formFieldEls = [entityEl, startDateEl, endDateEl];
    const hasDateRange = Boolean(startDateEl || endDateEl);
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getFormValues() {
       return {

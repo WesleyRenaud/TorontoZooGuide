@@ -112,6 +112,10 @@ export function createUpdate(payload) {
    return postJson('/create-update', payload);
 }
 
+export function createEvent(payload) {
+   return postJson('/create-event', payload);
+}
+
 export function endUpdate(payload) {
    return postJson('/end-update', payload);
 }

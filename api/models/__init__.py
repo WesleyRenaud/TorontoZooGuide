@@ -6,6 +6,7 @@ from .date_range import DateRange
 from .defibrillator import Defibrillator
 from .drinking_fountain import DrinkingFountain
 from .emergency_intercom import EmergencyIntercom
+from .event import Event
 from .event_site import EventSite
 from .gift_shop import GiftShop
 from .guardians_talk import GuardiansTalk
@@ -37,6 +38,7 @@ __all__ = [
    'Defibrillator',
    'DrinkingFountain',
    'EmergencyIntercom',
+   'Event',
    'EventSite',
    'GiftShop',
    'GuardiansTalk',

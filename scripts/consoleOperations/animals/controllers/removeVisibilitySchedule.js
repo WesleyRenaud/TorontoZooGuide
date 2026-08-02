@@ -1,6 +1,7 @@
 import { removeAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -22,9 +23,6 @@ export function createRemoveVisibilityScheduleController({
 } = {}) {
    const formFieldEls = [speciesEl, exhibitEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getFormValues() {
       return {

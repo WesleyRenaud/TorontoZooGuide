@@ -1,0 +1,9 @@
+from __future__ import annotations
+
+from .controllers.event_controller import EventController
+from ..json_handler import PostRouteHandler
+
+
+EVENT_ROUTES: dict[ str, PostRouteHandler ] = {
+   '/create-event': EventController.create_event,
+}

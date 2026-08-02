@@ -59,6 +59,7 @@ from . import wild_encounter
 from . import wild_encounter_cancellation
 from . import wild_encounter_meeting_spot
 from . import wild_encounter_schedule
+from . import zoo_event
 from . import zoo_hours
 from . import zoo_update
 from . import zoomobile_day_route
@@ -110,6 +111,7 @@ runtime_tables = [
    exhibit_status,
    restroom_status,
    restroom_alert,
+   zoo_event,
    zoo_update,
    restaurant_opening_schedule,
    restaurant_schedule_override,
