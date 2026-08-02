@@ -8,11 +8,25 @@ from http_support_constants import WILD_ENCOUNTER_LINK
 from http_support_constants import WILD_ENCOUNTER_MEETING_SPOT
 from http_support_constants import WILD_ENCOUNTER_NAME
 
+from api.models import Event
 from api.models import GuardiansTalk
 from api.models import ScheduledOccurrence
 from api.models import WildEncounter
 
 class EventsStubMixin:
+   def get_events_for_visit_date( self, **kwargs: Any ) -> list[ Event ]:
+         self.calls.append( ( 'get_events_for_visit_date', kwargs ) )
+         return [
+            Event(
+               name='Conservation Carousel Ride Night',
+               location='Front Courtyard',
+               description='Evening carousel rides for a special cause.',
+               link='https://www.torontozoo.com/events/carousel-night',
+               start_date='2026-06-01',
+               end_date='2026-06-30' )
+         ]
+
+
    def get_guardians_talk_schedule( self, **kwargs: Any ) -> list[ GuardiansTalk ]:
          self.calls.append( ( 'get_guardians_talk_schedule', kwargs ) )
          return [ GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]

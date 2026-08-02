@@ -21,6 +21,8 @@ import {
    normalizeItineraryScheduleTime,
    normalizeScheduleTime,
    resolveOptionalStartDate,
+   formatLocalDateLong,
+   formatLocalDateRange,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
@@ -61,6 +63,18 @@ test('resolveOptionalStartDate keeps a provided start date and defaults blank to
    assert.equal(resolveOptionalStartDate('2026-06-20'), '2026-06-20');
    assert.equal(resolveOptionalStartDate(''), toISODate(getToday()));
    assert.equal(resolveOptionalStartDate(null), toISODate(getToday()));
+});
+
+test('formatLocalDateLong and formatLocalDateRange format visit-friendly date text', () => {
+   assert.equal(formatLocalDateLong('2026-06-15'), 'June 15, 2026');
+   assert.equal(formatLocalDateLong(''), '');
+   assert.equal(formatLocalDateLong('bad-date'), '');
+   assert.equal(
+      formatLocalDateRange('2026-06-15', '2026-06-30'),
+      'June 15, 2026 - June 30, 2026'
+   );
+   assert.equal(formatLocalDateRange('2026-06-15', null), 'June 15, 2026');
+   assert.equal(formatLocalDateRange('', '2026-06-30'), '');
 });
 
 test('normalizes and validates visit date range boundaries', () => {

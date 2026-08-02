@@ -181,9 +181,30 @@
                   <!-- Results -->
                   <div id="animalSearchResults" class="animal-search-results" aria-live="polite"></div>
 
-                  <section class="explore-updates" aria-labelledby="exploreUpdatesTitle" hidden>
+                  <section class="explore-updates" aria-labelledby="exploreUpdatesTab exploreEventsTab" hidden>
                      <div class="explore-updates-header">
-                        <h3 id="exploreUpdatesTitle" class="explore-updates-title">{{ site.map.updates.title }}</h3>
+                        <div class="explore-updates-tabs" role="tablist" aria-label="{{ map.updatesAndEvents }}">
+                           <button
+                              type="button"
+                              id="exploreUpdatesTab"
+                              class="explore-updates-tab is-active"
+                              role="tab"
+                              aria-selected="true"
+                              aria-controls="exploreUpdatesList"
+                           >
+                              {{ site.map.updates.title }}
+                           </button>
+                           <button
+                              type="button"
+                              id="exploreEventsTab"
+                              class="explore-updates-tab"
+                              role="tab"
+                              aria-selected="false"
+                              aria-controls="exploreUpdatesList"
+                           >
+                              {{ site.map.events.title }}
+                           </button>
+                        </div>
                         <button
                            type="button"
                            id="exploreUpdatesToggle"

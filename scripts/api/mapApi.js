@@ -96,6 +96,10 @@ export async function getEventSites() {
    return await fetchCollection('/get-event-sites', 'event_sites');
 }
 
+export async function getEvents(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-events', 'events', payload);
+}
+
 export async function getUpdates(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-updates', 'updates', payload);
 }

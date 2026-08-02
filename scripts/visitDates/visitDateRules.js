@@ -135,6 +135,37 @@ export function resolveOptionalStartDate(startDate) {
    return startDate || toISODate(getToday());
 }
 
+export function formatLocalDateLong(value) {
+   const date = value instanceof Date
+      ? value
+      : parseLocalDate(value);
+
+   if (!isValidDate(date)) {
+      return '';
+   }
+
+   return date.toLocaleDateString(undefined, {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+   });
+}
+
+export function formatLocalDateRange(startValue, endValue) {
+   const startDate = formatLocalDateLong(startValue);
+   const endDate = formatLocalDateLong(endValue);
+
+   if (!startDate) {
+      return '';
+   }
+
+   if (!endDate) {
+      return startDate;
+   }
+
+   return `${startDate} - ${endDate}`;
+}
+
 export function getMaxDate(daysAhead = DEFAULT_DAYS_AHEAD, referenceToday = null) {
    return createAllowedVisitDateRange(daysAhead, referenceToday).maxDate;
 }

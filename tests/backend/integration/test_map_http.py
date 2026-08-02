@@ -113,6 +113,48 @@ def test_get_zoo_hours_returns_operating_bounds_via_http(
    }
 
 
+def test_create_and_get_events_via_http(
+      integration_db: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   status, create_response = post_route(
+      '/create-event',
+      {
+         'name': 'Conservation Carousel Ride Night',
+         'location': 'Front Courtyard',
+         'description': 'Evening carousel rides for a special cause.',
+         'link': 'https://www.torontozoo.com/events/carousel-night',
+         'startDate': '2026-06-15',
+         'endDate': '2026-06-30',
+      },
+   )
+
+   assert status == 200
+   assert create_response[ 'success' ] is True
+
+   status, events_response = post_route(
+      '/get-events',
+      {
+         'month': 'June',
+         'day': 15,
+         'year': 2026,
+      },
+   )
+
+   assert status == 200
+   assert len( events_response[ 'events' ] ) == 1
+   assert events_response[ 'events' ][ 0 ] == {
+      'name': 'Conservation Carousel Ride Night',
+      'location': 'Front Courtyard',
+      'description': 'Evening carousel rides for a special cause.',
+      'link': 'https://www.torontozoo.com/events/carousel-night',
+      'start_date': '2026-06-15',
+      'end_date': '2026-06-30',
+   }
+
+
 def test_create_and_get_updates_via_http(
       integration_db: Path,
       freeze_database_today: Callable[ [ date ], None ],
@@ -151,3 +193,4 @@ def test_create_and_get_updates_via_http(
       'start_date': '2026-06-15',
       'end_date': None,
    }
+

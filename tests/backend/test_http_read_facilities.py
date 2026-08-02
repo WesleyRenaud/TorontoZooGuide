@@ -16,6 +16,7 @@ import pytest
       ( '/get-guest-services', {}, 'guest_services' ),
       ( '/get-picnic-sites', {}, 'picnic_sites' ),
       ( '/get-event-sites', {}, 'event_sites' ),
+      ( '/get-events', { 'month': 'June', 'day': 15, 'year': 2026 }, 'events' ),
       ( '/get-updates', { 'month': 'June', 'day': 15, 'year': 2026 }, 'updates' ),
       ( '/get-zoo-hours', { 'day': 20, 'month': 'June', 'year': 2026 }, 'hours' ),
    ]
