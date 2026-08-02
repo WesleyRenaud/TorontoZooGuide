@@ -1,114 +1,39 @@
-import { getUpdates } from '../api/mapApi.js';
-import { APP_STRINGS } from '../strings.js';
+import {
+   getEvents,
+   getUpdates,
+} from '../api/mapApi.js';
+import { createEventCard } from './exploreEventCard.js';
+import { EXPLORE_TAB } from './exploreTabs.js';
+import { createUpdateCard } from './exploreUpdateCard.js';
+import {
+   clearExploreNav,
+   getExploreHeaderEl,
+   getExploreTabEl,
+   getExploreToggleEl,
+   renderExploreNav,
+   setExploreSectionVisibility,
+   syncExploreCollapsedState,
+   syncExploreTabs,
+} from './exploreUpdatesChrome.js';
 
-function createUpdateTypeEl(update) {
-   const typeEl = document.createElement('span');
-   typeEl.className = `explore-update-type explore-update-type-${String(update.type || '')
-      .toLowerCase()
-      .replaceAll(' ', '-')}`;
-   typeEl.textContent = update.type || APP_STRINGS.labels.update;
-   return typeEl;
-}
-
-function createUpdateCard(update, isActive = false) {
-   const cardEl = document.createElement('article');
-   cardEl.className = 'explore-update-card';
-   cardEl.hidden = !isActive;
-
-   const metaEl = document.createElement('div');
-   metaEl.className = 'explore-update-meta';
-   metaEl.appendChild(createUpdateTypeEl(update));
-
-   const titleEl = document.createElement('h4');
-   titleEl.className = 'explore-update-title';
-   titleEl.textContent = update.title || APP_STRINGS.labels.update;
-
-   const descriptionEl = document.createElement('p');
-   descriptionEl.className = 'explore-update-description';
-   descriptionEl.textContent = update.description || '';
-
-   cardEl.append(metaEl, titleEl, descriptionEl);
-   return cardEl;
-}
-
-function getHeaderEl(listEl) {
-   return listEl.closest('.explore-updates')?.querySelector('.explore-updates-header') ?? null;
-}
-
-function getSectionEl(listEl) {
-   return listEl.closest('.explore-updates') ?? null;
-}
-
-function getToggleEl(listEl) {
-   return getSectionEl(listEl)?.querySelector('.explore-updates-toggle') ?? null;
-}
-
-function setSectionVisibility(listEl, isVisible) {
-   const sectionEl = getSectionEl(listEl);
-
-   if (!sectionEl) {
-      return;
-   }
-
-   sectionEl.hidden = !isVisible;
-}
-
-function createArrowButton({
-   label,
-   symbol,
-   onClick,
-} = {}) {
-   const buttonEl = document.createElement('button');
-   buttonEl.type = 'button';
-   buttonEl.className = 'explore-update-arrow';
-   buttonEl.textContent = symbol;
-   buttonEl.setAttribute('aria-label', label);
-   buttonEl.addEventListener('click', onClick);
-   return buttonEl;
-}
-
-function clearNav(headerEl) {
-   headerEl?.querySelector('.explore-update-nav')?.remove();
-}
-
-function renderNav({
-   listEl,
-   updates,
-   onStep,
-} = {}) {
-   const headerEl = getHeaderEl(listEl);
-
-   clearNav(headerEl);
-
-   if (!headerEl || updates.length <= 1) {
-      return;
-   }
-
-   const navEl = document.createElement('div');
-   navEl.className = 'explore-update-nav';
-
-   navEl.append(
-      createArrowButton({
-         label: APP_STRINGS.map.previousUpdate,
-         symbol: APP_STRINGS.common.previousSymbol,
-         onClick: () => onStep(-1),
-      }),
-      createArrowButton({
-         label: APP_STRINGS.map.nextUpdate,
-         symbol: APP_STRINGS.common.nextSymbol,
-         onClick: () => onStep(1),
-      })
-   );
-
-   headerEl.appendChild(navEl);
-}
-
-function buildUpdatesPayload(dateCtx) {
+function buildDatePayload(dateCtx) {
    return {
       month: dateCtx.month,
       day: dateCtx.day,
       year: dateCtx.year,
    };
+}
+
+function resolveActiveTab(activeTab, updates, events) {
+   if (activeTab === EXPLORE_TAB.UPDATES && !updates.length && events.length) {
+      return EXPLORE_TAB.EVENTS;
+   }
+
+   if (activeTab === EXPLORE_TAB.EVENTS && !events.length && updates.length) {
+      return EXPLORE_TAB.UPDATES;
+   }
+
+   return activeTab;
 }
 
 export function createExploreUpdates({
@@ -119,89 +44,153 @@ export function createExploreUpdates({
    }
 
    let updates = [];
+   let events = [];
+   let activeTab = EXPLORE_TAB.UPDATES;
    let currentIndex = 0;
    let isCollapsed = false;
 
-   function getSafeIndex() {
-      return Math.max(0, Math.min(updates.length - 1, currentIndex));
+   function getActiveItems() {
+      return activeTab === EXPLORE_TAB.EVENTS ? events : updates;
    }
 
-   function syncCollapsedState() {
-      const sectionEl = getSectionEl(listEl);
-      const toggleEl = getToggleEl(listEl);
-
-      sectionEl?.classList.toggle('is-collapsed', isCollapsed);
-
-      if (!toggleEl) {
-         return;
-      }
-
-      toggleEl.setAttribute(
-         'aria-label',
-         isCollapsed ? APP_STRINGS.map.showUpdates : APP_STRINGS.map.hideUpdates
-      );
-      toggleEl.setAttribute('aria-expanded', String(!isCollapsed));
+   function getSafeIndex(items) {
+      return Math.max(0, Math.min(items.length - 1, currentIndex));
    }
 
-   function renderCurrentUpdate() {
-      if (!updates.length) {
+   function renderCurrentItem() {
+      if (!updates.length && !events.length) {
          listEl.replaceChildren();
-         setSectionVisibility(listEl, false);
-         clearNav(getHeaderEl(listEl));
+         setExploreSectionVisibility(listEl, false);
+         clearExploreNav(getExploreHeaderEl(listEl));
          return;
       }
 
-      currentIndex = getSafeIndex();
-      setSectionVisibility(listEl, true);
-      listEl.replaceChildren(
-         ...updates.map((update, index) => createUpdateCard(update, index === currentIndex))
-      );
-      renderNav({
+      const items = getActiveItems();
+
+      setExploreSectionVisibility(listEl, true);
+      syncExploreTabs({
          listEl,
-         updates,
+         activeTab,
+         updatesCount: updates.length,
+         eventsCount: events.length,
+      });
+      currentIndex = items.length ? getSafeIndex(items) : 0;
+
+      // Keep cards from both tabs in the grid so section height stays stable.
+      listEl.replaceChildren(
+         ...updates.map((update, index) => createUpdateCard(
+            update,
+            activeTab === EXPLORE_TAB.UPDATES && index === currentIndex
+         )),
+         ...events.map((event, index) => createEventCard(
+            event,
+            activeTab === EXPLORE_TAB.EVENTS && index === currentIndex
+         ))
+      );
+      renderExploreNav({
+         listEl,
+         itemCount: items.length,
+         activeTab,
          onStep: step,
       });
-      syncCollapsedState();
+      syncExploreCollapsedState({
+         listEl,
+         isCollapsed,
+      });
    }
 
-   function renderUpdates(nextUpdates = []) {
+   function renderItems({
+      nextUpdates = updates,
+      nextEvents = events,
+   } = {}) {
       updates = nextUpdates;
+      events = nextEvents;
       currentIndex = 0;
-      renderCurrentUpdate();
+      activeTab = resolveActiveTab(activeTab, updates, events);
+      renderCurrentItem();
    }
 
    function step(delta) {
-      if (updates.length <= 1) {
+      const items = getActiveItems();
+
+      if (items.length <= 1) {
          return;
       }
 
-      currentIndex = (currentIndex + delta + updates.length) % updates.length;
-      renderCurrentUpdate();
+      currentIndex = (currentIndex + delta + items.length) % items.length;
+      renderCurrentItem();
+   }
+
+   function selectTab(tab) {
+      if (tab !== EXPLORE_TAB.UPDATES && tab !== EXPLORE_TAB.EVENTS) {
+         return;
+      }
+
+      if (activeTab === tab) {
+         return;
+      }
+
+      if (tab === EXPLORE_TAB.UPDATES && !updates.length) {
+         return;
+      }
+
+      if (tab === EXPLORE_TAB.EVENTS && !events.length) {
+         return;
+      }
+
+      activeTab = tab;
+      currentIndex = 0;
+      renderCurrentItem();
    }
 
    function toggleCollapsed() {
       isCollapsed = !isCollapsed;
-      syncCollapsedState();
+      syncExploreCollapsedState({
+         listEl,
+         isCollapsed,
+      });
    }
 
    async function refresh(dateCtx) {
       if (!dateCtx?.month || !dateCtx?.day) {
-         renderUpdates([]);
+         renderItems({
+            nextUpdates: [],
+            nextEvents: [],
+         });
          return;
       }
 
       try {
-         renderUpdates(await getUpdates(buildUpdatesPayload(dateCtx)));
+         const [nextUpdates, nextEvents] = await Promise.all([
+            getUpdates(buildDatePayload(dateCtx)),
+            getEvents(buildDatePayload(dateCtx)),
+         ]);
+
+         renderItems({
+            nextUpdates,
+            nextEvents,
+         });
       }
       catch (err) {
          listEl.replaceChildren();
-         setSectionVisibility(listEl, false);
-         clearNav(getHeaderEl(listEl));
+         setExploreSectionVisibility(listEl, false);
+         clearExploreNav(getExploreHeaderEl(listEl));
       }
    }
 
-   renderUpdates([]);
-   getToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
+   renderItems({
+      nextUpdates: [],
+      nextEvents: [],
+   });
+   getExploreToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
+   getExploreTabEl(listEl, EXPLORE_TAB.UPDATES)?.addEventListener(
+      'click',
+      () => selectTab(EXPLORE_TAB.UPDATES)
+   );
+   getExploreTabEl(listEl, EXPLORE_TAB.EVENTS)?.addEventListener(
+      'click',
+      () => selectTab(EXPLORE_TAB.EVENTS)
+   );
 
    return { refresh };
 }

@@ -1,12 +1,28 @@
 from __future__ import annotations
 
+from ..data_access.event import fetch_events
 from ..data_access.event import insert_event
 from ...models import Event
 from ...request_connection import get_connection
-from ...types import DateInput
+from ...shared.calendar_dates import CalendarDates
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class EventCoordinator():
+   @classmethod
+   def get_events_for_visit_date(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ Event ]:
+      target_date = CalendarDates.visit_target_date(
+         month=month,
+         day=day,
+         year=year )
+
+      return fetch_events( get_connection(), target_date )
+
+
    @classmethod
    def create_event(
          cls,

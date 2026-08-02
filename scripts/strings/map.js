@@ -16,10 +16,13 @@ export const map = {
          `Wild Encounter • ${name} + ${count} more - Meeting Spot`
       ),
    },
-   hideUpdates: 'Hide updates',
+   hideUpdates: 'Hide updates and events',
+   nextEvent: 'Next event',
    nextUpdate: 'Next update',
+   previousEvent: 'Previous event',
    previousUpdate: 'Previous update',
-   showUpdates: 'Show updates',
+   showUpdates: 'Show updates and events',
+   updatesAndEvents: 'Updates and events',
    zoomobileRoute: {
       none: 'None',
       title: 'Zoomobile route',

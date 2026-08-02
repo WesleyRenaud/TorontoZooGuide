@@ -436,12 +436,58 @@ html.home-page {
    gap: 14px;
 }
 
-.explore-updates-title {
+.explore-updates-tabs {
    grid-column: 1;
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   min-width: 0;
+   padding: 0;
+   border: 0;
+   background: transparent;
+   box-shadow: none;
+}
+
+.explore-updates-tab {
    margin: 0;
-   font-size: 3.2em;
-   font-weight: 800;
+   padding: 12px 22px;
+   border: 0;
+   border-radius: 20px;
+   background-color: var(--color-brand-accent);
    color: var(--color-white);
+   font-family: var(--font-family-base);
+   font-size: 2.4em;
+   font-weight: 800;
+   line-height: 1.1;
+   cursor: pointer;
+   white-space: nowrap;
+   box-shadow: 0 4px 10px #0000002e;
+   opacity: 0.72;
+   transition:
+      background-color 0.2s ease,
+      transform 0.15s ease,
+      box-shadow 0.2s ease,
+      opacity 0.2s ease;
+}
+
+.explore-updates-tab.is-active {
+   opacity: 1;
+   box-shadow:
+      0 0 0 3px #ffffffb8,
+      0 4px 10px #0000002e;
+}
+
+.explore-updates-tab:hover:not(:disabled):not(.is-active),
+.explore-updates-tab:focus:not(:disabled):not(.is-active) {
+   opacity: 1;
+   background-color: var(--color-brand-primary);
+   transform: translateY(-2px);
+}
+
+.explore-updates-tab:disabled {
+   opacity: 0.4;
+   cursor: default;
+   box-shadow: none;
 }
 
 .explore-updates-toggle {
@@ -599,7 +645,28 @@ html.home-page {
    font-size: 3.15em;
    font-weight: 800;
    line-height: 1.12;
-   color: #14230af2;
+   color: var(--color-brand-link);
+   overflow-wrap: anywhere;
+}
+
+.explore-event-title-link {
+   color: inherit;
+   font: inherit;
+   text-decoration: underline;
+   cursor: pointer;
+}
+
+.explore-event-title-link:hover,
+.explore-event-title-link:focus {
+   color: var(--color-brand-accent);
+}
+
+.explore-event-date-range {
+   margin: 0 0 12px;
+   font-size: 2.45em;
+   font-weight: 700;
+   line-height: 1.2;
+   color: var(--color-brand-primary);
    overflow-wrap: anywhere;
 }
 
@@ -608,7 +675,7 @@ html.home-page {
    font-size: 2.45em;
    font-weight: 600;
    line-height: 1.28;
-   color: #14230ab8;
+   color: var(--color-brand-primary-muted);
    overflow-wrap: anywhere;
 }
 

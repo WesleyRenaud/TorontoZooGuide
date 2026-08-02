@@ -6,6 +6,20 @@ from ...json_handler import JsonRequestHandler
 
 class EventController():
    @staticmethod
+   def get_events( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      events = EventCoordinator.get_events_for_visit_date(
+         month=data.get( 'month' ),
+         day=data.get( 'day' ),
+         year=data.get( 'year' ) )
+
+      handler._write_json( {
+         'events': [ event.to_dict() for event in events ],
+      } )
+
+
+   @staticmethod
    def create_event( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

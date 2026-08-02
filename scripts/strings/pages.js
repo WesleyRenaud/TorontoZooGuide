@@ -42,6 +42,9 @@ export const site = {
          includeOffDisplayAnimals: 'Include off display animals',
          showMapLabels: 'Show region/pavilion text',
       },
+      events: {
+         title: 'Events',
+      },
       updates: {
          title: 'Updates',
       },
