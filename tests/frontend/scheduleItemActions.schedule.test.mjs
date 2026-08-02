@@ -82,6 +82,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
             startTime: '1:30 PM',
             durationMinutes: 15,
             confirmingScheduleItemNotOnItinerary: false,
+            confirmingAttractionOutsideOperatingHours: false,
             confirmingGuardiansTalkUnschedule: false,
             confirmingWildEncounterUnschedule: false,
             confirmingFixedTimeItemLongWait: false,

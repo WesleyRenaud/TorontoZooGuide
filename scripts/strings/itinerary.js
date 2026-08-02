@@ -3,6 +3,7 @@ export const itinerary = {
       accept: 'Accept',
       add: 'Add',
       addSymbol: '+',
+      adjust: 'Adjust',
       build: 'Build Itinerary',
       cancel: 'Cancel',
       clear: 'Clear',
@@ -108,6 +109,11 @@ export const itinerary = {
          'This item is not on your itinerary yet. Do you want to add it and schedule a time?'
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
+      attractionOutsideOperatingHoursTitle: 'Outside Attraction Hours',
+      attractionOutsideOperatingHoursMessage: (
+         'The selected time is outside this attraction’s operating hours. '
+         + 'Adjust to the closest available time within those hours?'
+      ),
       guardiansTalkRescheduleTitle: 'Add Guardians Talk?',
       guardiansTalkRescheduleMessage: (talkName, talkTime) => (
          `Adding the ${talkName} guardians talk will put it at ${talkTime} on your day and update your walking route. Your items will be rescheduled around it.`
@@ -183,6 +189,9 @@ export const itinerary = {
       noAvailableSlot: 'No open time slot is available for this item.',
       requestedTimeNotAvailable: (
          'That time is not available. Select another start time and try again.'
+      ),
+      attractionOutsideOperatingHours: (
+         'The selected time is outside this attraction’s operating hours.'
       ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
       itemAlreadyScheduled: 'This item is already scheduled.',

@@ -141,6 +141,7 @@ class ItineraryCoordinator():
          start_time: TimeInput = None,
          duration_minutes: DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
+         confirming_attraction_outside_operating_hours: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False,
          confirming_fixed_time_item_long_wait: bool = False,
@@ -156,6 +157,9 @@ class ItineraryCoordinator():
          wild_encounter_coordinator=WildEncounterCoordinator,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
+         ),
+         confirming_attraction_outside_operating_hours=(
+            confirming_attraction_outside_operating_hours
          ),
          confirming_guardians_talk_unschedule=(
             confirming_guardians_talk_unschedule

@@ -474,3 +474,69 @@ test('scheduleSelectedItineraryItem confirms multiple build warnings together', 
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
    assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
+
+test('scheduleSelectedItineraryItem adjusts attraction outside operating hours', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingAttractionOutsideOperatingHours
+      );
+
+      return mockJsonResponse({
+         status: isConfirmed ? 'success' : 'attractionOutsideOperatingHours',
+         reasons: [],
+      });
+   };
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [],
+         attractions: [{ name: 'Splash Island' }],
+      },
+      'attractions',
+      {
+         name: 'Splash Island',
+         scheduleItemKind: 'attractions',
+      },
+      [],
+      {
+         startTime: '10:00 AM',
+      }
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const title = document.querySelector('.itin-top-title');
+   const confirmButton = document.querySelector('.tzg-popup-confirm');
+   const cancelButton = document.querySelector('.tzg-popup-cancel');
+
+   assert.equal(title?.textContent, 'Outside Attraction Hours');
+   assert.equal(confirmButton?.textContent, 'Adjust');
+   assert.equal(cancelButton?.textContent, 'Cancel');
+   confirmButton.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingAttractionOutsideOperatingHours, false);
+   assert.equal(requests[1].body.confirmingAttractionOutsideOperatingHours, true);
+   assert.equal(requests[1].body.startTime, '10:00 AM');
+});

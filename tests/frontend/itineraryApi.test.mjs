@@ -634,6 +634,7 @@ test('normalizes schedule itinerary item response', async () => {
          itemType: 'lunch',
          key: '',
          confirmingScheduleItemNotOnItinerary: false,
+         confirmingAttractionOutsideOperatingHours: false,
          confirmingGuardiansTalkUnschedule: false,
          confirmingWildEncounterUnschedule: false,
          confirmingFixedTimeItemLongWait: false,
