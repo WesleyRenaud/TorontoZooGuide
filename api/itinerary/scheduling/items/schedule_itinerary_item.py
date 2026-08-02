@@ -35,6 +35,7 @@ def schedule_itinerary_item(
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       confirming_schedule_item_not_on_itinerary: bool,
+      confirming_attraction_outside_operating_hours: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
       confirming_fixed_time_item_long_wait: bool,
@@ -98,6 +99,9 @@ def schedule_itinerary_item(
          itinerary_context=itinerary_context,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
+         ),
+         confirming_attraction_outside_operating_hours=(
+            confirming_attraction_outside_operating_hours
          ) )
 
    return schedule_listed_itinerary_item(

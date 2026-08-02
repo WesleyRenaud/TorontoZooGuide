@@ -53,6 +53,10 @@ export function requiresScheduleItemNotOnItineraryConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY;
 }
 
+export function requiresAttractionOutsideOperatingHoursConfirmation(errorType) {
+   return errorType === itineraryErrorTypes?.ATTRACTION_OUTSIDE_OPERATING_HOURS;
+}
+
 export function requiresGuardiansTalkUnscheduleConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 }
@@ -95,6 +99,10 @@ export function resolveItineraryErrorMessage(
 
    if (errorType === itineraryErrorTypes?.REQUESTED_TIME_NOT_AVAILABLE) {
       return strings.requestedTimeNotAvailable;
+   }
+
+   if (errorType === itineraryErrorTypes?.ATTRACTION_OUTSIDE_OPERATING_HOURS) {
+      return strings.attractionOutsideOperatingHours;
    }
 
    if (errorType === itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY) {

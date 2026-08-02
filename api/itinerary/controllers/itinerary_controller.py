@@ -94,6 +94,8 @@ class ItineraryController():
       duration_minutes = data.get( 'durationMinutes' )
       confirming_schedule_item_not_on_itinerary = bool(
          data.get( 'confirmingScheduleItemNotOnItinerary' ) )
+      confirming_attraction_outside_operating_hours = bool(
+         data.get( 'confirmingAttractionOutsideOperatingHours' ) )
       confirming_guardians_talk_unschedule = bool(
          data.get( 'confirmingGuardiansTalkUnschedule' ) )
       confirming_wild_encounter_unschedule = bool(
@@ -109,6 +111,9 @@ class ItineraryController():
          duration_minutes=duration_minutes,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
+         ),
+         confirming_attraction_outside_operating_hours=(
+            confirming_attraction_outside_operating_hours
          ),
          confirming_guardians_talk_unschedule=(
             confirming_guardians_talk_unschedule ),

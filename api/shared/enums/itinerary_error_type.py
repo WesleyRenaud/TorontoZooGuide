@@ -13,6 +13,7 @@ class ItineraryErrorType( str, Enum ):
    EARLY_ADMISSION_REQUIRES_MEMBERSHIP = 'earlyAdmissionRequiresMembership'
    NO_AVAILABLE_SLOT = 'noAvailableSlot'
    REQUESTED_TIME_NOT_AVAILABLE = 'requestedTimeNotAvailable'
+   ATTRACTION_OUTSIDE_OPERATING_HOURS = 'attractionOutsideOperatingHours'
    ITEM_NOT_ON_ITINERARY = 'itemNotOnItinerary'
    ITEM_ALREADY_SCHEDULED = 'itemAlreadyScheduled'
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS = 'guardiansTalkWillUnscheduleItems'

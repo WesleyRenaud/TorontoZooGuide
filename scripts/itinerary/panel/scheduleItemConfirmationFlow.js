@@ -1,4 +1,5 @@
 import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
+import { showAttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
@@ -12,6 +13,7 @@ import { createItineraryConfirmationCancelledResult } from '../itineraryConfirma
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
+   requiresAttractionOutsideOperatingHoursConfirmation,
    requiresFixedTimeItemLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWithoutAnimalConfirmation,
@@ -107,6 +109,19 @@ export async function scheduleItineraryItemWithConfirmation(
                );
             }
          },
+         resolveConfirmErrorAsSaveFailed: true,
+      });
+   }
+
+   if (requiresAttractionOutsideOperatingHoursConfirmation(initialResult.errorType)) {
+      return requestScheduleItemConfirmation({
+         showConfirmation: showAttractionOutsideOperatingHoursConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         buildConfirmedOptions: () => ({
+            confirmingAttractionOutsideOperatingHours: true,
+         }),
          resolveConfirmErrorAsSaveFailed: true,
       });
    }

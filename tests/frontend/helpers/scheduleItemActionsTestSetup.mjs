@@ -10,6 +10,7 @@ export const MOCK_ERROR_TYPES = Object.freeze({
    SCHEDULE_WINDOW_UNAVAILABLE: 'scheduleWindowUnavailable',
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
    REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
+   ATTRACTION_OUTSIDE_OPERATING_HOURS: 'attractionOutsideOperatingHours',
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
    ITEM_ALREADY_SCHEDULED: 'itemAlreadyScheduled',
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',

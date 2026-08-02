@@ -304,6 +304,7 @@ export async function scheduleItineraryItemRequest(
    request,
    {
       confirmingScheduleItemNotOnItinerary = false,
+      confirmingAttractionOutsideOperatingHours = false,
       confirmingGuardiansTalkUnschedule = false,
       confirmingWildEncounterUnschedule = false,
       confirmingFixedTimeItemLongWait = false,
@@ -314,6 +315,7 @@ export async function scheduleItineraryItemRequest(
       ...request,
       key: mapScheduleItemKeyToWire(request.itemType, request.key),
       confirmingScheduleItemNotOnItinerary,
+      confirmingAttractionOutsideOperatingHours,
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
       confirmingFixedTimeItemLongWait,
