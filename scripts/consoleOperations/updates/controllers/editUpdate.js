@@ -1,5 +1,6 @@
 import { editUpdate } from '../../../api/consoleOperationsApi.js';
 import {
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -26,9 +27,6 @@ export function createEditUpdateController({
 } = {}) {
    const formFieldEls = [updateEl, descriptionEl, typeEl, endDateEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function resetForm() {
       resetFormFields(formFieldEls);

@@ -10,7 +10,10 @@ import {
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createRecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { createWildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
-import { resetFormFields } from '../../helpers/controllerUtils.js';
+import {
+   getFieldValue,
+   resetFormFields,
+} from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -29,9 +32,6 @@ export function createWildEncounterScheduleController({
       addRowButtonEl: addScheduleRowEl,
    });
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function validateSelection({
       wildEncounter,

@@ -3,6 +3,7 @@ import {
    resolveScheduleTimesListEl,
    updateScheduleTimesCheckboxList,
 } from '../../forms/scheduleTimesCheckboxField.js';
+import { getFieldValue } from '../../helpers/controllerUtils.js';
 
 export function createWildEncounterScheduleTimesFilterController({
    wildEncounterEl,
@@ -15,9 +16,6 @@ export function createWildEncounterScheduleTimesFilterController({
       return result?.times ?? [];
    },
 } = {}) {
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getTimesListEl() {
       return resolveScheduleTimesListEl(timesEl);

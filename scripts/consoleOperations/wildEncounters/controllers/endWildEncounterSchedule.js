@@ -1,7 +1,10 @@
 import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
-import { resetFormFields } from '../../helpers/controllerUtils.js';
+import {
+   getFieldValue,
+   resetFormFields,
+} from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -13,9 +16,6 @@ export function createEndWildEncounterScheduleController({
    scheduleTimesFilterController = null,
    ...controllerOptions
 } = {}) {
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getSelectedTimes() {
       return getSelectedScheduleTimes(timesEl);

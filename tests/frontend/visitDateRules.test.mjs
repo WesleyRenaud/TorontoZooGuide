@@ -20,6 +20,7 @@ import {
    parseZooClockTimeMinutes,
    normalizeItineraryScheduleTime,
    normalizeScheduleTime,
+   resolveOptionalStartDate,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
@@ -54,6 +55,12 @@ test('formats visit dates for API and calendar display', () => {
    assert.equal(isoDateToMonFirstDow('2026-06-21'), 7);
    assert.equal(isoDateToMonFirstDow('bad-date'), 1);
    assert.equal(isoDateToMonFirstDow(), isoDateToMonFirstDow(toISODate(getToday())));
+});
+
+test('resolveOptionalStartDate keeps a provided start date and defaults blank to today', () => {
+   assert.equal(resolveOptionalStartDate('2026-06-20'), '2026-06-20');
+   assert.equal(resolveOptionalStartDate(''), toISODate(getToday()));
+   assert.equal(resolveOptionalStartDate(null), toISODate(getToday()));
 });
 
 test('normalizes and validates visit date range boundaries', () => {

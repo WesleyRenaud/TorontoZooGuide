@@ -10,6 +10,7 @@ import { createAttractionHoursSchedulePanel } from '../attractions/panels/attrac
 import { createAttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
 import { createDrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
 import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
+import { createCreateEventPanel } from '../events/panels/createEventPanel.js';
 import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
@@ -90,6 +91,9 @@ const PANEL_CREATORS = {
    drinkingFountains: [
       createDrinkingFountainsClosedPanel,
       createDrinkingFountainsOpenPanel,
+   ],
+   events: [
+      createCreateEventPanel,
    ],
    updates: [
       createCreateUpdatePanel,

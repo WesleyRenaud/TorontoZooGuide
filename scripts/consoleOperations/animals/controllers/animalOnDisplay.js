@@ -2,6 +2,7 @@ import { createAnimalViewingScopeControl } from './animalViewingScopeControl.js'
 import { setAnimalOnDisplay } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
+   getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
@@ -25,9 +26,6 @@ export function createAnimalOnDisplayController({
 } = {}) {
    const formFieldEls = [speciesEl, exhibitEl, viewingScopeEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function getFormValues() {
       return {

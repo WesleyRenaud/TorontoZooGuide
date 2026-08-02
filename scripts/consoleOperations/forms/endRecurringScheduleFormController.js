@@ -1,4 +1,5 @@
 import {
+   getFieldValue,
    hideConsolePanel,
    resetFormFields,
 } from '../helpers/controllerUtils.js';
@@ -23,9 +24,6 @@ export function createEndRecurringScheduleFormController({
 } = {}) {
    const formFieldEls = [endDateEl];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function resetForm() {
       resetFormFields(formFieldEls);

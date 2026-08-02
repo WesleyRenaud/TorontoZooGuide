@@ -8,6 +8,7 @@ export const help = {
    endScheduleToday: 'Leave blank to end the schedule today.',
    endUpdateToday: 'Leave blank to end the update today.',
    keepAlertActiveUntilRemoved: 'Leave blank to keep the alert active until manually removed.',
+   keepEventActiveWithoutEndDate: 'Leave blank to keep the event active with no end date.',
    keepClosedUntilManuallyReopened: entityName => (
       `Leave blank to keep the ${entityName} closed until it is manually reopened.`
    ),
@@ -92,6 +93,10 @@ export const textareas = {
    closureMessage: 'Enter the closure message shown to guests',
    currentDescription: 'Leave blank to keep the current description',
    drinkingFountainsClosedMessage: 'Optional message shown while drinking fountains are closed',
+   eventDescription: 'Enter the event description shown to guests',
+   eventLinkExample: 'https://www.torontozoo.com/...',
+   eventLocationExample: 'Example: Front Courtyard',
+   eventNameExample: 'Example: Conservation Carousel Ride Night',
    offDisplayReason: 'Enter the reason this animal is off display',
    optionalScheduleMessage: scheduleName => (
       `Enter an optional message for this ${scheduleName} schedule`
@@ -113,6 +118,7 @@ export const panelTitles = {
    attractionOpeningSchedule: 'Set attraction opening schedule',
    cancelGuardiansTalkOccurrence: 'Cancel Meet the Guardians talk occurrence',
    cancelWildEncounterOccurrence: 'Cancel Wild Encounter occurrence',
+   createEvent: 'Create event',
    createUpdate: 'Create update',
    drinkingFountainsClosed: 'Close drinking fountains',
    drinkingFountainsOpen: 'Open drinking fountains',
@@ -152,6 +158,7 @@ export const status = {
    closureOverrideSaved: name => `${name} closure override was saved.`,
    drinkingFountainsClosed: 'Drinking fountains were set as closed.',
    drinkingFountainsOpen: 'Drinking fountains were set as open.',
+   eventCreated: result => `${result.name} was created.`,
    guardiansTalkScheduleEnded: result => `${result.talk} in ${result.location} schedule was ended.`,
    guardiansTalkScheduleSaved: result => `${result.talk} in ${result.location} schedule was saved.`,
    open: name => `${name} was set as open.`,

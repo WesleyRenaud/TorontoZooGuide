@@ -1,3 +1,4 @@
+import { getFieldValue } from './controllerUtils.js';
 import { populateValueDropdown } from '../options/dropdowns.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -12,9 +13,6 @@ export function createOccurrenceFilterController({
 } = {}) {
    let occurrences = [];
 
-   function getFieldValue(fieldEl) {
-      return fieldEl?.value.trim() ?? '';
-   }
 
    function populateDateDropdown(dates) {
       populateValueDropdown(dateEl, dates, APP_STRINGS.placeholders.date);
