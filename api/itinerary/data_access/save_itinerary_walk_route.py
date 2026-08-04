@@ -97,9 +97,10 @@ def insert_itinerary_walk_route_legs(
                   FROM_SCHEDULE_ITEM_KIND,
                   TO_SCHEDULE_ITEM_KIND,
                   FROM_POINT_SEQUENCE,
-                  TO_POINT_SEQUENCE
+                  TO_POINT_SEQUENCE,
+                  TRAVEL_TIME_MINUTES
                )
-               VALUES ( ?, ?, ?, ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
          """,
          (
             leg_sequence,
@@ -109,5 +110,6 @@ def insert_itinerary_walk_route_legs(
             leg.to_schedule_item_kind.value,
             from_point_sequence,
             to_point_sequence,
+            leg.travel_time_minutes,
          ) )
 

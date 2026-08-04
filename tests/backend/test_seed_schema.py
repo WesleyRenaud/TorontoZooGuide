@@ -136,7 +136,8 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
                FROM_SCHEDULE_ITEM_KIND,
                TO_SCHEDULE_ITEM_KIND,
                FROM_POINT_SEQUENCE,
-               TO_POINT_SEQUENCE
+               TO_POINT_SEQUENCE,
+               TRAVEL_TIME_MINUTES
             )
             VALUES (
                0,
@@ -145,7 +146,8 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
                'entrance',
                'animal',
                0,
-               0
+               0,
+               1
             );
       """
    )

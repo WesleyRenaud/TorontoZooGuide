@@ -18,7 +18,8 @@ def map_itinerary_walk_route_leg_record( row: Row ) -> ItineraryWalkRouteLegReco
       to_schedule_item_kind=ScheduleItemKind.normalize(
          row[ 'TO_SCHEDULE_ITEM_KIND' ] ),
       from_point_sequence=int( row[ 'FROM_POINT_SEQUENCE' ] ),
-      to_point_sequence=int( row[ 'TO_POINT_SEQUENCE' ] ) )
+      to_point_sequence=int( row[ 'TO_POINT_SEQUENCE' ] ),
+      travel_time_minutes=int( row[ 'TRAVEL_TIME_MINUTES' ] ) )
 
 
 def map_itinerary_walk_route_leg_records(
@@ -40,7 +41,8 @@ def map_itinerary_walk_route_leg(
       node_ids=walk_route_node_ids_for_point_slice(
          points,
          from_point_sequence=record.from_point_sequence,
-         to_point_sequence=record.to_point_sequence ) )
+         to_point_sequence=record.to_point_sequence ),
+      travel_time_minutes=record.travel_time_minutes )
 
 
 def map_itinerary_walk_route_legs(
