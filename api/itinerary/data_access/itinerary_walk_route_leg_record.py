@@ -14,3 +14,4 @@ class ItineraryWalkRouteLegRecord:
    to_schedule_item_kind: ScheduleItemKind
    from_point_sequence: int
    to_point_sequence: int
+   travel_time_minutes: int

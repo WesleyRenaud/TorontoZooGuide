@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.shortest_path import shortest_path
 from api.walk_graph.shortest_path import shortest_path_distance
 from api.walk_graph.shortest_path import shortest_path_distances
 from api.walk_graph.shortest_path import shortest_path_node_ids
@@ -29,7 +30,7 @@ def test_shortest_path_distances_are_symmetric_for_known_nodes() -> None:
    assert reverse == pytest.approx( forward )
 
 
-def test_shortest_path_node_ids_connects_entrance_to_neighbor() -> None:
+def test_shortest_path_includes_length_matching_distance() -> None:
    graph = load_walk_graph()
    entrance_id = graph[ 'entrance_node_id' ]
    neighbor_id = graph[ 'edges' ][ 0 ][ 'from' ]
@@ -39,9 +40,10 @@ def test_shortest_path_node_ids_connects_entrance_to_neighbor() -> None:
    else:
       target_id = graph[ 'edges' ][ 0 ][ 'to' ]
 
-   path = shortest_path_node_ids( graph, entrance_id, target_id )
+   path = shortest_path( graph, entrance_id, target_id )
 
    assert path is not None
-   assert path[ 0 ] == entrance_id
-   assert path[ -1 ] == target_id
-   assert shortest_path_distances( graph, entrance_id )[ target_id ] > 0
+   assert path.node_ids[ 0 ] == entrance_id
+   assert path.node_ids[ -1 ] == target_id
+   assert path.length_px == shortest_path_distances( graph, entrance_id )[ target_id ]
+   assert shortest_path_node_ids( graph, entrance_id, target_id ) == path.node_ids

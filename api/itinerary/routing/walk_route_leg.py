@@ -12,6 +12,7 @@ class WalkRouteLeg:
    from_schedule_item_kind: ScheduleItemKind
    to_schedule_item_kind: ScheduleItemKind
    node_ids: list[ str ]
+   travel_time_minutes: int
 
    def to_dict( self ) -> dict[ str, object ]:
       return {
@@ -20,4 +21,5 @@ class WalkRouteLeg:
          'from_schedule_item_kind': self.from_schedule_item_kind.value,
          'to_schedule_item_kind': self.to_schedule_item_kind.value,
          'node_ids': self.node_ids,
+         'travel_time_minutes': self.travel_time_minutes,
       }

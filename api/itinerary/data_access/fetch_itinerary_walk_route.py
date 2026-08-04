@@ -26,7 +26,8 @@ def fetch_itinerary_walk_route_leg_rows(
                FROM_SCHEDULE_ITEM_KIND,
                TO_SCHEDULE_ITEM_KIND,
                FROM_POINT_SEQUENCE,
-               TO_POINT_SEQUENCE
+               TO_POINT_SEQUENCE,
+               TRAVEL_TIME_MINUTES
             FROM ItineraryWalkRouteLeg
             ORDER BY LEG_SEQUENCE;
       """
