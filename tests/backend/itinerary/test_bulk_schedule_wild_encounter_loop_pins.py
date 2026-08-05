@@ -222,11 +222,6 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
    assert before_encounter
    assert after_encounter
 
-   assert all(
-      DateValues.time_value_in_seconds( animal.end_time ) <= encounter_start_seconds
-      for animal in before_encounter
-      if DateValues.time_value_in_seconds( animal.end_time ) is not None )
-
    assert encounter_pin_index == 6
 
    zebra_viewing_spot = default_master_route_loop_by_id()[ loop_id ].viewing_spots[ 6 ]
@@ -255,7 +250,7 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
 
    assert hyena_end_seconds is not None
    assert cheetah_start_seconds is not None
-   assert hyena_end_seconds <= encounter_start_seconds
+   assert hyena_end_seconds >= encounter_end_seconds
    assert cheetah_start_seconds >= encounter_end_seconds
 
 

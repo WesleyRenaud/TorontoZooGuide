@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY, schedule_itinerary_item, wild_encounter_wire
+from itinerary.support import expected_departure_time_for_itinerary, LION_ITINERARY_ENTRY, schedule_itinerary_item, wild_encounter_wire
 from wild_encounter_schedule_support import wire_schedule_row
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -78,7 +78,8 @@ def test_schedule_unpinned_afternoon_encounter_does_not_bulk_reschedule(
    assert schedule_result.success
    assert schedule_result.status == ItineraryErrorType.SUCCESS
    assert schedule_result.itinerary is not None
-   assert schedule_result.itinerary.departure_time == '4:00 PM'
+   assert schedule_result.itinerary.departure_time == (
+      expected_departure_time_for_itinerary( schedule_result.itinerary ) )
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in schedule_result.itinerary.animals
@@ -120,6 +121,6 @@ def test_schedule_unpinned_afternoon_encounter_does_not_bulk_reschedule(
    assert arrival_seconds is not None
 
    assert latest_animal_end_seconds == encounter_start_seconds
-   assert earliest_animal_start_seconds == arrival_seconds
+   assert earliest_animal_start_seconds > arrival_seconds
    assert earliest_animal_start_seconds > DateValues.time_value_in_seconds(
       '12:00 PM' )

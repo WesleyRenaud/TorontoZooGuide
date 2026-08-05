@@ -3,21 +3,24 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import CAROUSEL, LION_ITINERARY_ENTRY
+from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import attractions_for_bulk_schedule
 from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import stops_for_bulk_schedule
 from api.itinerary.scheduling.bulk.group_stops_by_master_route_loop import group_stops_by_master_route_loop
 from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
 from api.itinerary.scheduling.bulk.loop_schedule_unit import walk_node_id_for_loop_schedule_stop
 from api.itinerary.scheduling.bulk.sort_stops_by_master_route import sort_stops_by_master_route
+from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
 from api.itinerary.warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from conftest import DbControllers
 
 
@@ -54,7 +57,14 @@ def test_bulk_schedule_packs_attraction_only_loop(
       attraction
       for attraction in result.itinerary.attractions
       if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '9:30 AM'
+   assert splash.start_time == schedule_time_after_seconds(
+      '9:30 AM',
+      travel_time_seconds_between_nodes(
+         load_walk_graph(),
+         load_walk_graph()[ 'entrance_node_id' ],
+         walk_node_id_for_attraction( SPLASH_ISLAND ),
+      ),
+   )
    assert splash.end_time is not None
 
 

@@ -189,8 +189,13 @@ def resolve_slot_times(
       duration_seconds: int,
       *,
       start_time: ScheduleTimeKey | None,
-      itinerary_context: dict[ str, Any ] ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+      itinerary_context: dict[ str, Any ],
+      earliest_start_seconds: int | None = None ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
    anchor_seconds, day_end_seconds = window
+
+   if earliest_start_seconds is not None:
+      anchor_seconds = max( anchor_seconds, earliest_start_seconds )
+
    itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
    slot = resolve_schedule_slot(
@@ -223,6 +228,7 @@ def resolve_slot_times_allowing_visit_extension(
       start_time: ScheduleTimeKey | None,
       itinerary_context: dict[ str, Any ],
       day_hours_window: tuple[ int, int ] | None = None,
+      earliest_start_seconds: int | None = None,
    ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
    """Prefer the guest visit window; if full, search day hours near existing schedule."""
    slot, slot_error = resolve_slot_times(
@@ -231,7 +237,8 @@ def resolve_slot_times_allowing_visit_extension(
       visit_window,
       duration_seconds,
       start_time=start_time,
-      itinerary_context=itinerary_context )
+      itinerary_context=itinerary_context,
+      earliest_start_seconds=earliest_start_seconds )
 
    if slot_error is None:
       return slot, None
@@ -262,7 +269,8 @@ def resolve_slot_times_allowing_visit_extension(
          day_hours_window,
          duration_seconds,
          start_time=start_time,
-         itinerary_context=itinerary_context )
+         itinerary_context=itinerary_context,
+         earliest_start_seconds=earliest_start_seconds )
 
    slot = _resolve_extension_slot_before_or_after_visit(
       saved_itinerary,

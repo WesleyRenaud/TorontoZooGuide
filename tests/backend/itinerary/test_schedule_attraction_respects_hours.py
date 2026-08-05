@@ -3,15 +3,29 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY, schedule_itinerary_item
+from itinerary.support import entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, LION_ITINERARY_ENTRY, schedule_itinerary_item, schedule_time_after_seconds
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
+from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 from conftest import DbControllers
 
 
 SPLASH_ISLAND = 'Splash Island'
+SPLASH_OPEN_WITH_ENTRANCE_TRAVEL = schedule_time_after_seconds(
+   '12:00 PM',
+   travel_time_seconds_between_nodes(
+      load_walk_graph(),
+      load_walk_graph()[ 'entrance_node_id' ],
+      walk_node_id_for_attraction( SPLASH_ISLAND ),
+   ),
+)
 
 
 def _hours_payload(
@@ -65,7 +79,7 @@ def test_schedule_attraction_at_default_time_uses_attraction_open(
       attraction
       for attraction in result.itinerary.attractions
       if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '12:00 PM'
+   assert splash.start_time == SPLASH_OPEN_WITH_ENTRANCE_TRAVEL
    assert splash.end_time is not None
    assert splash.end_time <= '5:00 PM'
 
@@ -97,7 +111,7 @@ def test_schedule_attraction_at_default_time_waits_for_open_after_arrival(
       attraction
       for attraction in result.itinerary.attractions
       if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '12:00 PM'
+   assert splash.start_time == SPLASH_OPEN_WITH_ENTRANCE_TRAVEL
    assert splash.end_time is not None
    assert splash.end_time <= '5:00 PM'
 
@@ -246,8 +260,12 @@ def test_schedule_attraction_extends_departure_when_visit_window_is_full(
    assert schedule_itinerary_item(
       item_type='animals',
       key='African Lion||Africa Savanna',
-      start_time='12:00 PM',
-      duration_minutes=30 ).success
+      start_time=schedule_time_after_seconds(
+         '12:00 PM',
+         entrance_travel_seconds_to_animal(
+            species='African Lion',
+            exhibit='Africa Savanna' ) ),
+      duration_minutes=8 ).success
 
    result = schedule_itinerary_item(
       item_type='attractions',
@@ -258,7 +276,17 @@ def test_schedule_attraction_extends_departure_when_visit_window_is_full(
       attraction
       for attraction in result.itinerary.attractions
       if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '12:30 PM'
+   lion_end = schedule_time_after_seconds(
+      schedule_time_after_seconds(
+         '12:00 PM',
+         entrance_travel_seconds_to_animal(
+            species='African Lion',
+            exhibit='Africa Savanna' ) ),
+      8 * 60 )
+   assert splash.start_time is not None
    assert splash.end_time is not None
    assert splash.end_time <= '5:00 PM'
-   assert result.itinerary.departure_time == splash.end_time
+   assert result.itinerary.departure_time == expected_departure_time_for_itinerary(
+      result.itinerary )
+   assert DateValues.time_value_in_seconds( splash.start_time ) >= (
+      DateValues.time_value_in_seconds( lion_end ) or 0 )

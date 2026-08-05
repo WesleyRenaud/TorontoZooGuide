@@ -280,7 +280,6 @@ def test_bulk_schedule_skips_long_wait_warning_for_already_saved_encounters(
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       LION_KEY,
-      start_time='09:30',
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 from unittest.mock import patch
 
-from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row, schedule_itinerary_item
+from itinerary.support import ANIMAL_KEY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row, schedule_itinerary_item, schedule_time_after_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.calendar_dates import DateValues
@@ -382,8 +382,14 @@ def test_schedule_itinerary_item_honors_duration_without_time(
       duration_minutes=20 )
 
    assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:50 AM'
+   expected_start = schedule_time_after_seconds(
+      '9:30 AM',
+      entrance_travel_seconds_to_animal(
+         species='African Lion',
+         exhibit='Africa Savanna' ) )
+   expected_end = schedule_time_after_seconds( expected_start, 20 * 60 )
+   assert result.itinerary.animals[ 0 ].start_time == expected_start
+   assert result.itinerary.animals[ 0 ].end_time == expected_end
 
 
 def test_schedule_itinerary_item_requires_visit_date(

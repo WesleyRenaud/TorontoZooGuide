@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import math
+
+from ...shared.duration_values import duration_minutes_to_seconds
 from ...shared.enums import ScheduleItemKind
+from ...walk_graph.domain.walk_graph import WalkGraph
+from ...walk_graph.shortest_path import shortest_path
+from ...walk_graph.shortest_path import ShortestPath
+from ...walk_graph.shortest_path import WalkGraphAdjacency
 from .walk_route_leg import WalkRouteLeg
 
 # Calibrated so entrance → Grizzly Bear (~4548 px) is ~31 minutes.
@@ -11,7 +18,37 @@ def travel_time_minutes_from_length_px( length_px: float ) -> int:
    if length_px <= 0:
       return 0
 
-   return round( length_px / WALK_PX_PER_MINUTE )
+   return math.floor( length_px / WALK_PX_PER_MINUTE )
+
+
+def travel_time_seconds_from_length_px( length_px: float ) -> int:
+   return duration_minutes_to_seconds(
+      travel_time_minutes_from_length_px( length_px ) )
+
+
+def travel_time_seconds_between_nodes(
+      walk_graph: WalkGraph,
+      from_node_id: str,
+      to_node_id: str,
+      *,
+      adjacency: WalkGraphAdjacency | None = None ) -> int:
+   path = shortest_path(
+      walk_graph,
+      from_node_id,
+      to_node_id,
+      adjacency=adjacency )
+
+   if path is None:
+      return 0
+
+   return travel_time_seconds_from_length_px( path.length_px )
+
+
+def travel_time_seconds_for_shortest_path( path: ShortestPath | None ) -> int:
+   if path is None:
+      return 0
+
+   return travel_time_seconds_from_length_px( path.length_px )
 
 
 def walk_route_leg_with_travel_time(

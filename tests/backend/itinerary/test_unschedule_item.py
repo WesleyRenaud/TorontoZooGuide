@@ -1,6 +1,26 @@
 from __future__ import annotations
 
-from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, unschedule_itinerary_item
+from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, schedule_time_after_seconds, unschedule_itinerary_item
+
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+
+LION_CHEETAH_TRAVEL_SECONDS = travel_time_seconds_between_nodes(
+   load_walk_graph(),
+   walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
+   walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+)
+CHEETAH_PENGUIN_TRAVEL_SECONDS = travel_time_seconds_between_nodes(
+   load_walk_graph(),
+   walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+   walk_node_id_for_viewing_spot( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
+)
+CHEETAH_START = schedule_time_after_seconds( '10:15 AM', LION_CHEETAH_TRAVEL_SECONDS )
+CHEETAH_END = schedule_time_after_seconds( CHEETAH_START, 15 * 60 )
+PENGUIN_START_AFTER_CHEETAH = schedule_time_after_seconds( CHEETAH_END, CHEETAH_PENGUIN_TRAVEL_SECONDS )
+PENGUIN_START_WITH_15_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 15 * 60 )
+PENGUIN_START_WITH_20_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 20 * 60 )
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -124,13 +144,13 @@ def test_unschedule_middle_animal_shifts_later_items_by_removed_duration(
    assert schedule_itinerary_item(
       'animals',
       CHEETAH_KEY,
-      start_time='10:15 AM',
+      start_time=CHEETAH_START,
       duration_minutes=15,
    ).success
    assert schedule_itinerary_item(
       'animals',
       PENGUIN_KEY,
-      start_time='10:45 AM',
+      start_time=PENGUIN_START_WITH_15_MIN_GAP,
       duration_minutes=15,
    ).success
 
@@ -150,8 +170,8 @@ def test_unschedule_middle_animal_shifts_later_items_by_removed_duration(
    assert lion.end_time == '10:15 AM'
    assert cheetah.start_time is None
    assert cheetah.end_time is None
-   assert penguin.start_time == '10:30 AM'
-   assert penguin.end_time == '10:45 AM'
+   assert penguin.start_time == '10:32 AM'
+   assert penguin.end_time == '10:47 AM'
 
 
 def test_unschedule_middle_animal_preserves_deliberate_gap_after_shift(
@@ -179,13 +199,13 @@ def test_unschedule_middle_animal_preserves_deliberate_gap_after_shift(
    assert schedule_itinerary_item(
       'animals',
       CHEETAH_KEY,
-      start_time='10:15 AM',
+      start_time=CHEETAH_START,
       duration_minutes=15,
    ).success
    assert schedule_itinerary_item(
       'animals',
       PENGUIN_KEY,
-      start_time='10:50 AM',
+      start_time=PENGUIN_START_WITH_20_MIN_GAP,
       duration_minutes=15,
    ).success
 
@@ -196,8 +216,8 @@ def test_unschedule_middle_animal_preserves_deliberate_gap_after_shift(
       row for row in saved.animal_rows
       if row.species == 'African Penguin' )
 
-   assert penguin.start_time == '10:35 AM'
-   assert penguin.end_time == '10:50 AM'
+   assert penguin.start_time == '10:37 AM'
+   assert penguin.end_time == '10:52 AM'
 
 
 def test_set_arrival_time_none_clears_arrival_time( db: DbControllers ) -> None:

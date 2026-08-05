@@ -136,7 +136,8 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
    prepared_units = prepare_loop_schedule_units(
       db.conn,
       build_loop_schedule_units(
-         group_animals_by_master_route_loop( animal_rows ) ) )
+         group_animals_by_master_route_loop( animal_rows ) ),
+      walk_graph=walk_graph )
 
    assert prepared_units is not None
 

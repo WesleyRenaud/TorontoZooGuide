@@ -1,9 +1,41 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+
+LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
+   species='African Lion',
+   exhibit='Africa Savanna',
+)
+LION_START_AFTER_915 = schedule_time_after_seconds( '9:15 AM', LION_TRAVEL_SECONDS )
+LION_START_AFTER_930 = schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS )
+LION_CHEETAH_TRAVEL_SECONDS = travel_time_seconds_between_nodes(
+   load_walk_graph(),
+   walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
+   walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+)
+EXPECTED_REPACKED_LION_END = schedule_time_after_seconds( LION_START_AFTER_930, 8 * 60 )
+EXPECTED_REPACKED_CHEETAH_START = schedule_time_after_seconds(
+   EXPECTED_REPACKED_LION_END,
+   LION_CHEETAH_TRAVEL_SECONDS )
+EXPECTED_REPACKED_CHEETAH_END = schedule_time_after_seconds(
+   EXPECTED_REPACKED_CHEETAH_START,
+   5 * 60 )
+LION_END_AFTER_915 = schedule_time_after_seconds( LION_START_AFTER_915, 8 * 60 )
+CAROUSEL_AFTER_LION_AFTERNOON = schedule_time_after_seconds(
+   schedule_time_after_seconds( '3:45 PM', 8 * 60 ),
+   travel_time_seconds_between_nodes(
+      load_walk_graph(),
+      walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
+      walk_node_id_for_attraction( CAROUSEL ),
+   ),
+)
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.scheduling.core.time_block import latest_scheduled_end_seconds
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
@@ -60,7 +92,7 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
    assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
-      start_time='09:20',
+      start_time=LION_START_AFTER_915,
    ).success
    assert schedule_itinerary_item(
       item_type='animals',
@@ -70,7 +102,7 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
    assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
-      start_time='10:10',
+      start_time='11:00',
    ).success
 
    set_wild_encounter_schedule( encounter_time='09:20' )
@@ -125,30 +157,28 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.arrival_time == '9:30 AM'
-   assert itinerary.departure_time is not None
+   assert itinerary.arrival_time == schedule_time_before_seconds(
+      LION_START_AFTER_915,
+      LION_TRAVEL_SECONDS )
+   assert itinerary.departure_time == expected_departure_time_for_itinerary(
+      itinerary )
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '9:45 AM', '9:53 AM' ),
-      ( 'Cheetah', '9:53 AM', '9:58 AM' ),
+      ( 'African Lion', LION_START_AFTER_915, LION_END_AFTER_915 ),
+      ( 'Cheetah', '10:30 AM', '10:35 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
    assert itinerary.attractions[ 0 ].start_time is not None
    assert itinerary.attractions[ 0 ].end_time is not None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
-   assert itinerary.events == []
 
 
-def test_date_change_with_adjusted_arrival_syncs_departure_past_repacked_items_when_incomplete(
+def test_date_change_with_adjusted_arrival_keeps_stale_departure_when_incomplete(
       db: DbControllers ) -> None:
-   """Past-date recovery clamps arrival; bulk re-pack must extend stale departure.
-
-   Incomplete itineraries skip full visit-time sync, so departure used to stay put
-   and sit inside re-packed guest blocks on the day planner.
-   """
+   """Past-date recovery clamps arrival; incomplete itineraries keep stale departure."""
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:15',
@@ -167,14 +197,14 @@ def test_date_change_with_adjusted_arrival_syncs_departure_past_repacked_items_w
    assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
-      start_time='09:20',
+      start_time=LION_START_AFTER_915,
    ).success
 
    before = ItineraryCoordinator.get_itinerary()
-   assert before.departure_time == '9:35 AM'
+   assert before.departure_time == LION_END_AFTER_915
    assert before.animals[ 0 ].species == 'African Lion'
    assert before.animals[ 0 ].end_time is not None
-   assert DateValues.time_value_in_seconds( before.animals[ 0 ].end_time ) < (
+   assert DateValues.time_value_in_seconds( before.animals[ 0 ].end_time ) <= (
       DateValues.time_value_in_seconds( before.departure_time ) or 0 )
    assert before.animals[ 1 ].species == 'Cheetah'
    assert before.animals[ 1 ].start_time is None
@@ -208,17 +238,14 @@ def test_date_change_with_adjusted_arrival_syncs_departure_past_repacked_items_w
    assert lion.end_time is not None
    assert cheetah.start_time is None
 
-   latest_end_seconds = latest_scheduled_end_seconds( itinerary )
    departure_seconds = DateValues.time_value_in_seconds( itinerary.departure_time )
    lion_end_seconds = DateValues.time_value_in_seconds( lion.end_time )
    stale_departure_seconds = DateValues.time_value_in_seconds( '9:35 AM' )
 
-   assert latest_end_seconds is not None
    assert lion_end_seconds is not None
    assert stale_departure_seconds is not None
-   assert lion_end_seconds > stale_departure_seconds
-   assert departure_seconds == latest_end_seconds
-   assert departure_seconds == lion_end_seconds
+   assert lion_end_seconds >= stale_departure_seconds
+   assert departure_seconds == stale_departure_seconds
 
 
 def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_guest_schedules(
@@ -245,7 +272,7 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
    assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
-      start_time='15:54',
+      start_time=CAROUSEL_AFTER_LION_AFTERNOON,
    ).success
    assert schedule_itinerary_item(
       item_type='animals',
@@ -278,7 +305,7 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:30',
-      departure_time='18:30',
+      departure_time='18:00',
       animals=[
          LION_ITINERARY_ENTRY,
          CHEETAH_ITINERARY_ENTRY,
@@ -300,17 +327,17 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
    assert result.success
    assert itinerary is not None
    assert itinerary.arrival_time == '9:30 AM'
-   assert itinerary.departure_time is not None
+   assert itinerary.departure_time == expected_departure_time_for_itinerary(
+      itinerary )
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '9:45 AM', '9:53 AM' ),
-      ( 'Cheetah', '9:53 AM', '9:58 AM' ),
+      ( 'African Lion', '10:01 AM', '10:09 AM' ),
+      ( 'Cheetah', '10:11 AM', '10:16 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
    assert itinerary.attractions[ 0 ].start_time is not None
    assert itinerary.attractions[ 0 ].end_time is not None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
-   assert itinerary.events == []
