@@ -119,7 +119,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
    assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
-      start_time='10:10',
+      start_time='11:00',
    ).success
 
    set_wild_encounter_schedule( encounter_time='09:45' )
@@ -149,8 +149,8 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', None, None ),
-      ( 'Cheetah', None, None ),
+      ( 'African Lion', '10:45 AM', '10:53 AM' ),
+      ( 'Cheetah', '10:38 AM', '10:43 AM' ),
    ]
    carousel = next(
       attraction
@@ -185,6 +185,11 @@ def test_set_arrival_time_unschedules_generic_event_before_arrival(
    assert schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
+   ).success
+
+   assert ItineraryCoordinator.set_departure_time(
+      '17:00',
+      confirming_short_visit=True,
    ).success
 
    result = ItineraryCoordinator.set_arrival_time( '10:15' )

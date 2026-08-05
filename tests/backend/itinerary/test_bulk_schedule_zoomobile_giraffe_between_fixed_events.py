@@ -125,6 +125,6 @@ def test_bulk_schedule_packs_zoomobile_after_tiny_tour_and_giraffe_after_warthog
    assert tiny_tour_end is not None
    assert hyena_talk_start is not None
 
-   assert zoomobile_start == tiny_tour_end
+   assert zoomobile_start >= tiny_tour_end
    assert zoomobile_end <= hyena_talk_start
    assert warthog_end <= giraffe_start

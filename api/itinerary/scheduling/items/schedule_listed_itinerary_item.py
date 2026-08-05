@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...animal_item_key import AnimalScheduleItemKey
+from ...attraction_item_key import AttractionScheduleItemKey
 from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
 from ...data_access.itinerary import fetch_saved_itinerary
 from .listed_schedule_item_persistence import commit_listed_schedule
@@ -10,6 +12,9 @@ from .listed_schedule_target import resolve_listed_schedule_target
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_item_key import ListedScheduleItemKey
+from .schedule_item_travel_time import earliest_schedule_start_seconds_with_travel
+from .schedule_item_travel_time import walk_node_id_for_animal
+from .schedule_item_travel_time import walk_node_id_for_attraction
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import prepare_schedule_window
@@ -71,13 +76,23 @@ def schedule_listed_itinerary_item(
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
 
+   candidate_walk_node_id = _walk_node_id_for_listed_item( schedule_item_key )
+   visit_anchor_seconds = prepared_window.window[ 0 ]
+   earliest_start_seconds = earliest_schedule_start_seconds_with_travel(
+      saved_itinerary,
+      candidate_walk_node_id=candidate_walk_node_id,
+      visit_anchor_seconds=visit_anchor_seconds,
+      itinerary_context=itinerary_context,
+      start_time=time_options.start_time )
+
    slot, slot_error = resolve_slot_times_allowing_visit_extension(
       conn,
       saved_itinerary,
       prepared_window.window,
       duration_seconds,
       start_time=time_options.start_time,
-      itinerary_context=itinerary_context )
+      itinerary_context=itinerary_context,
+      earliest_start_seconds=earliest_start_seconds )
 
    if slot_error is not None:
       return slot_error
@@ -95,3 +110,17 @@ def schedule_listed_itinerary_item(
             schedule_item_key ),
          itinerary_context=itinerary_context ),
       suppressed_warnings )
+
+
+def _walk_node_id_for_listed_item(
+      schedule_item_key: ListedScheduleItemKey ) -> str | None:
+   if isinstance( schedule_item_key, AnimalScheduleItemKey ):
+      return walk_node_id_for_animal(
+         species=schedule_item_key.species,
+         exhibit=schedule_item_key.exhibit,
+         enclosure_name=schedule_item_key.enclosure_name )
+
+   if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      return walk_node_id_for_attraction( schedule_item_key.name )
+
+   return None

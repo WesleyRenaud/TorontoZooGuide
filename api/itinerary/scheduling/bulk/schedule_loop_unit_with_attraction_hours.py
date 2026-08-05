@@ -7,13 +7,16 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots_ending_by
 from .loop_unit_schedule_slots import assign_contiguous_slots_respecting_attraction_hours
-from .loop_unit_schedule_slots import fetch_viewing_durations
+from .loop_unit_schedule_slots import duration_seconds_for_loop_schedule_stop
 from .loop_unit_schedule_slots import LoopScheduleSlotSink
+from .loop_unit_schedule_slots import prepare_loop_schedule_stops
 from .loop_unit_schedule_slots import save_loop_slots
+from .loop_unit_schedule_slots import total_occupied_seconds
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
+from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 
 
 def schedule_prepared_loop_unit_with_attraction_hours(
@@ -79,12 +82,17 @@ def attraction_hours_loop_earliest_start_seconds(
    if not before_stops:
       return first_soft_pin.open_seconds
 
-   durations = fetch_viewing_durations( conn, before_stops )
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      load_walk_graph(),
+      before_stops )
 
-   if durations is None:
+   if prepared_stops is None:
       return None
 
-   return first_soft_pin.open_seconds - sum( durations )
+   return first_soft_pin.open_seconds - sum(
+      timed_stop.duration_seconds
+      for timed_stop in prepared_stops )
 
 
 def unit_attraction_hours_soft_pins(
@@ -152,14 +160,17 @@ def _schedule_stops_around_attraction_hours(
          soft_pin.open_seconds )
 
       if before_stops:
-         before_durations = fetch_viewing_durations( conn, before_stops )
+         prepared_before_stops = prepare_loop_schedule_stops(
+            conn,
+            load_walk_graph(),
+            before_stops )
 
-         if before_durations is None:
+         if prepared_before_stops is None:
             return schedule_cursor_seconds, _still_unscheduled_stops(
                stops,
                scheduled_stop_ids=scheduled_stop_ids )
 
-         before_total_seconds = sum( before_durations )
+         before_total_seconds = total_occupied_seconds( prepared_before_stops )
          attraction_start_seconds = max(
             attraction_start_seconds,
             schedule_cursor_seconds + before_total_seconds )
@@ -171,8 +182,7 @@ def _schedule_stops_around_attraction_hours(
                scheduled_stop_ids=scheduled_stop_ids )
 
          slot_assignment = assign_contiguous_slots_ending_by(
-            before_stops,
-            before_durations,
+            prepared_before_stops,
             end_seconds=before_end_seconds )
 
          if slot_assignment is None:
@@ -242,22 +252,26 @@ def _schedule_stops_around_attraction_hours(
    ]
 
    if after_stops:
-      after_durations = fetch_viewing_durations( conn, after_stops )
+      prepared_after_stops = prepare_loop_schedule_stops(
+         conn,
+         load_walk_graph(),
+         after_stops )
 
-      if after_durations is None:
+      if prepared_after_stops is None:
          return schedule_cursor_seconds, _still_unscheduled_stops(
             stops,
             scheduled_stop_ids=scheduled_stop_ids )
 
-      if schedule_cursor_seconds + sum( after_durations ) > window_end_seconds:
+      if (
+            schedule_cursor_seconds
+            + total_occupied_seconds( prepared_after_stops ) > window_end_seconds ):
          return schedule_cursor_seconds, _still_unscheduled_stops(
             stops,
             scheduled_stop_ids=scheduled_stop_ids )
 
       after_slots, schedule_cursor_seconds = (
          assign_contiguous_slots_respecting_attraction_hours(
-            after_stops,
-            after_durations,
+            prepared_after_stops,
             start_seconds=schedule_cursor_seconds,
             hours_by_attraction_name={
                soft_pin.attraction_name: (
@@ -320,12 +334,12 @@ def _duration_seconds_or_raise(
       *,
       all_stops: list[ LoopScheduleStop ],
    ) -> int:
-   durations = fetch_viewing_durations( conn, [ stop ] )
+   duration_seconds = duration_seconds_for_loop_schedule_stop( conn, stop )
 
-   if durations is None:
+   if duration_seconds is None:
       raise LoopUnitSchedulePersistError( all_stops )
 
-   return durations[ 0 ]
+   return duration_seconds
 
 
 def _still_unscheduled_stops(

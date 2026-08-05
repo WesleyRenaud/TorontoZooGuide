@@ -17,12 +17,10 @@ from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_contex
 from ..scheduling.items.schedule_itinerary_helpers import build_success_result
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
+from ..scheduling.sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import apply_guest_schedule_shift_for_unschedule
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import shift_guest_scheduled_items_after_unschedule
-from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import update_visit_times_after_schedule_item_removed
-from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import was_first_scheduled_item
-from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import was_last_scheduled_item
 from ...types import Connection
 from ...types import Cursor
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -49,12 +47,6 @@ def commit_itinerary_item_schedule_change(
          schedule_item_key )
       if schedule_item_key is not None
       else None )
-   removed_first_item = was_first_scheduled_item(
-      itinerary_before,
-      removed_block )
-   removed_last_item = was_last_scheduled_item(
-      itinerary_before,
-      removed_block )
    restored_covered_animals = None
    cur = conn.cursor()
 
@@ -108,12 +100,9 @@ def commit_itinerary_item_schedule_change(
    itinerary_after = build_current_itinerary(
       fetch_saved_itinerary( conn ),
       **itinerary_context )
-   update_visit_times_after_schedule_item_removed(
+   sync_visit_times_to_scheduled_endpoints_if_complete(
       conn,
-      itinerary_before,
-      itinerary_after,
-      removed_first_item=removed_first_item,
-      removed_last_item=removed_last_item )
+      itinerary_after )
    clear_visit_times_if_became_incomplete(
       conn,
       previous_itinerary=itinerary_before,

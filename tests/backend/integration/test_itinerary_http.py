@@ -5,7 +5,35 @@ from datetime import date
 from pathlib import Path
 
 from http_client import post_route
-from itinerary.support import ANIMAL_KEY, CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, LION_ITINERARY_ENTRY
+from itinerary.support import ANIMAL_KEY, CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
+
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+
+
+def _travel_seconds_between_animals(
+      *,
+      from_species: str,
+      from_exhibit: str,
+      to_species: str,
+      to_exhibit: str ) -> int:
+   walk_graph = load_walk_graph()
+   from_node_id = walk_node_id_for_viewing_spot(
+      from_species,
+      from_exhibit,
+      None )
+   to_node_id = walk_node_id_for_viewing_spot(
+      to_species,
+      to_exhibit,
+      None )
+   assert from_node_id is not None
+   assert to_node_id is not None
+
+   return travel_time_seconds_between_nodes(
+      walk_graph,
+      from_node_id,
+      to_node_id )
 
 
 def _find_animal( itinerary: dict[ str, object ], *, species: str, exhibit: str ) -> dict[ str, object ]:
@@ -370,10 +398,24 @@ def test_bulk_schedule_animals_via_http(
       exhibit='Africa Savanna',
    )
 
-   assert cheetah[ 'start_time' ] == '9:30 AM'
-   assert cheetah[ 'end_time' ] == '9:35 AM'
-   assert lion[ 'start_time' ] == '9:35 AM'
-   assert lion[ 'end_time' ] == '9:43 AM'
+   assert cheetah[ 'start_time' ] == schedule_time_after_seconds(
+      '9:30 AM',
+      entrance_travel_seconds_to_animal(
+         species='Cheetah',
+         exhibit='Indo-Malaya Outdoor' ) )
+   assert cheetah[ 'end_time' ] == schedule_time_after_seconds(
+      cheetah[ 'start_time' ],
+      5 * 60 )
+   assert lion[ 'start_time' ] == schedule_time_after_seconds(
+      cheetah[ 'end_time' ],
+      _travel_seconds_between_animals(
+         from_species='Cheetah',
+         from_exhibit='Indo-Malaya Outdoor',
+         to_species='African Lion',
+         to_exhibit='Africa Savanna' ) )
+   assert lion[ 'end_time' ] == schedule_time_after_seconds(
+      lion[ 'start_time' ],
+      8 * 60 )
 
 
 def test_set_departure_time_via_http(

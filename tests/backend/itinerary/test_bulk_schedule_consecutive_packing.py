@@ -3,20 +3,43 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from itinerary.support import entrance_travel_seconds_to_animal
+from itinerary.support import expected_departure_time_for_itinerary
 from itinerary.support import guardians_talk_save_entry
 from itinerary.support import guardians_talk_wire
 from itinerary.support import itinerary_animals_for_exhibits
+from itinerary.support import schedule_time_before_seconds
 from itinerary.support import unschedule_itinerary_item
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 ZEBRA_TALK = "Grevy's Zebra"
 AFRICA_SAVANNA = 'Africa Savanna'
+
+
+def _expected_arrival_from_earliest_animal( itinerary: Itinerary ) -> str:
+   scheduled_animals = [
+      animal
+      for animal in itinerary.animals
+      if animal.start_time is not None
+      and animal.end_time is not None
+      and not animal.covered_by_talk
+   ]
+   earliest = min(
+      scheduled_animals,
+      key=lambda animal: DateValues.time_value_in_seconds( animal.start_time ) or 0 )
+   travel_seconds = entrance_travel_seconds_to_animal(
+      species=earliest.species,
+      exhibit=earliest.exhibit,
+      enclosure_name=earliest.enclosure_name )
+
+   return schedule_time_before_seconds( earliest.start_time, travel_seconds )
 
 
 def _selected_exhibits_for_africa_savanna() -> list[ str ]:
@@ -67,9 +90,9 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
    assert result.reasons == []
-   assert len( result.adjustments ) == 1
-   assert result.adjustments[ 0 ].type.value == 'arrivalTimeAdjusted'
-   assert result.adjustments[ 0 ].previous_value == '9:00 AM'
+   assert result.adjustments == []
+   assert result.itinerary.arrival_time == _expected_arrival_from_earliest_animal(
+      result.itinerary )
 
    giraffe = next(
       animal
@@ -80,19 +103,16 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       talk for talk in result.itinerary.guardians_talks
       if talk.name == ZEBRA_TALK )
 
-   original_arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
-   adjusted_arrival_seconds = DateValues.time_value_in_seconds(
+   arrival_seconds = DateValues.time_value_in_seconds(
       result.itinerary.arrival_time )
    giraffe_start_seconds = DateValues.time_value_in_seconds( giraffe.start_time )
    talk_start_seconds = DateValues.time_value_in_seconds( talk.start_time )
 
-   assert original_arrival_seconds is not None
-   assert adjusted_arrival_seconds is not None
+   assert arrival_seconds is not None
    assert giraffe_start_seconds is not None
    assert talk_start_seconds is not None
 
-   assert adjusted_arrival_seconds > original_arrival_seconds
-   assert giraffe_start_seconds == adjusted_arrival_seconds
+   assert giraffe_start_seconds >= arrival_seconds
    assert giraffe_start_seconds < talk_start_seconds
 
    scheduled_animals = [
@@ -107,17 +127,10 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       DateValues.time_value_in_seconds( animal.start_time )
       for animal in scheduled_animals )
 
-   assert earliest_start_seconds == adjusted_arrival_seconds
+   assert earliest_start_seconds >= arrival_seconds
 
-   latest_end_seconds = max(
-      [
-         DateValues.time_value_in_seconds( animal.end_time )
-         for animal in scheduled_animals
-      ]
-      + [ DateValues.time_value_in_seconds( talk.end_time ) ]
-   )
-   assert DateValues.time_value_in_seconds(
-      result.itinerary.departure_time ) == latest_end_seconds
+   assert result.itinerary.departure_time == expected_departure_time_for_itinerary(
+      result.itinerary )
 
 
 def _schedule_africa_savanna_with_zebra_talk(
@@ -138,7 +151,7 @@ def _schedule_africa_savanna_with_zebra_talk(
    ).success
 
 
-def test_bulk_schedule_pulls_arrival_earlier_after_pinned_talk_removed_and_rescheduled(
+def test_bulk_schedule_keeps_arrival_after_pinned_talk_removed_and_rescheduled(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -148,14 +161,9 @@ def test_bulk_schedule_pulls_arrival_earlier_after_pinned_talk_removed_and_resch
    with_talk = ItineraryCoordinator.bulk_schedule_animals()
 
    assert with_talk.success
-   assert len( with_talk.adjustments ) == 1
-   assert with_talk.adjustments[ 0 ].type.value == 'arrivalTimeAdjusted'
-
-   pushed_arrival_seconds = DateValues.time_value_in_seconds(
-      with_talk.itinerary.arrival_time )
-
-   assert pushed_arrival_seconds is not None
-   assert pushed_arrival_seconds > DateValues.time_value_in_seconds( '9:00 AM' )
+   assert with_talk.adjustments == []
+   assert with_talk.itinerary.arrival_time == _expected_arrival_from_earliest_animal(
+      with_talk.itinerary )
 
    assert unschedule_itinerary_item(
       item_type='guardians_talks',
@@ -165,6 +173,8 @@ def test_bulk_schedule_pulls_arrival_earlier_after_pinned_talk_removed_and_resch
    without_talk = ItineraryCoordinator.bulk_schedule_animals()
 
    assert without_talk.success
+   assert without_talk.itinerary.arrival_time == (
+      _expected_arrival_from_earliest_animal( without_talk.itinerary ) )
 
    scheduled_animals = [
       animal
@@ -180,5 +190,4 @@ def test_bulk_schedule_pulls_arrival_earlier_after_pinned_talk_removed_and_resch
 
    assert earliest_start_seconds is not None
    assert arrival_seconds is not None
-   assert arrival_seconds == earliest_start_seconds
-   assert arrival_seconds < pushed_arrival_seconds
+   assert earliest_start_seconds >= arrival_seconds

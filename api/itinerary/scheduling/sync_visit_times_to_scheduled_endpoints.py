@@ -5,6 +5,8 @@ from .core.time_block import earliest_scheduled_start_seconds
 from .core.time_block import latest_scheduled_end_seconds
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
+from .items.schedule_item_travel_time import entrance_travel_seconds_from_latest_item
+from .items.schedule_item_travel_time import entrance_travel_seconds_to_earliest_item
 from ...models import Itinerary
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
@@ -26,26 +28,21 @@ def itinerary_is_fully_scheduled( itinerary: Itinerary ) -> bool:
 def seed_visit_times_to_scheduled_endpoints_if_complete(
       conn: Connection,
       itinerary: Itinerary ) -> None:
-   """Seed unset arrival/departure from scheduled endpoints when fully scheduled."""
-   _apply_visit_times_from_scheduled_endpoints(
-      conn,
-      itinerary,
-      overwrite_existing=False )
+   """Set arrival/departure from scheduled endpoints when fully scheduled."""
+   _apply_visit_times_from_scheduled_endpoints( conn, itinerary )
 
 
 def sync_visit_times_to_scheduled_endpoints_if_complete(
       conn: Connection,
       itinerary: Itinerary ) -> None:
-   """Set arrival/departure to scheduled endpoints when fully scheduled.
+   """Set arrival/departure from scheduled endpoints when fully scheduled.
 
-   Overwrites existing visit times. Prefer
-   seed_visit_times_to_scheduled_endpoints_if_complete when preserving a
-   caller-chosen day window.
+   Arrival is the earliest item start minus floored walk time from the entrance
+   to that item. Departure is the latest scheduled end plus floored walk time
+   from that item back to the entrance. Always overwrites when the day is fully
+   scheduled so callers share one derivation.
    """
-   _apply_visit_times_from_scheduled_endpoints(
-      conn,
-      itinerary,
-      overwrite_existing=True )
+   seed_visit_times_to_scheduled_endpoints_if_complete( conn, itinerary )
 
 
 def clear_visit_times_if_became_incomplete(
@@ -72,20 +69,8 @@ def clear_visit_times_if_became_incomplete(
 
 def _apply_visit_times_from_scheduled_endpoints(
       conn: Connection,
-      itinerary: Itinerary,
-      *,
-      overwrite_existing: bool ) -> None:
+      itinerary: Itinerary ) -> None:
    if not itinerary_is_fully_scheduled( itinerary ):
-      return
-
-   needs_arrival = overwrite_existing or not DateValues.normalize_schedule_time_key(
-      itinerary.arrival_time )
-   needs_departure = (
-      overwrite_existing
-      or not DateValues.normalize_schedule_time_key( itinerary.departure_time )
-   )
-
-   if not needs_arrival and not needs_departure:
       return
 
    earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
@@ -94,13 +79,18 @@ def _apply_visit_times_from_scheduled_endpoints(
    if earliest_start_seconds is None or latest_end_seconds is None:
       return
 
-   arrival_time = DateValues.schedule_time_key_from_seconds(
-      earliest_start_seconds )
+   arrival_seconds = (
+      earliest_start_seconds
+      - entrance_travel_seconds_to_earliest_item( itinerary ) )
+   departure_seconds = (
+      latest_end_seconds
+      + entrance_travel_seconds_from_latest_item( itinerary ) )
+   arrival_time = DateValues.schedule_time_key_from_seconds( arrival_seconds )
    departure_time = DateValues.schedule_time_key_from_seconds(
-      latest_end_seconds )
+      departure_seconds )
 
-   if needs_arrival and itinerary.arrival_time != arrival_time:
+   if itinerary.arrival_time != arrival_time:
       set_itinerary_arrival_time( conn, arrival_time )
 
-   if needs_departure and itinerary.departure_time != departure_time:
+   if itinerary.departure_time != departure_time:
       set_itinerary_departure_time( conn, departure_time )

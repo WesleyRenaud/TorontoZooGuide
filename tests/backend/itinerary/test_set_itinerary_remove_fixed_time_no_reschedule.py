@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_guardians_talk_schedule, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import entrance_travel_seconds_to_animal, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, schedule_time_before_seconds, set_guardians_talk_schedule, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.models import Itinerary
@@ -149,6 +149,7 @@ def test_set_itinerary_removing_first_talk_updates_arrival_to_next_start(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_short_visit=True,
    )
 
    assert result.success
@@ -159,7 +160,12 @@ def test_set_itinerary_removing_first_talk_updates_arrival_to_next_start(
       for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
    assert lion_after.start_time == '11:00 AM'
-   assert result.itinerary.arrival_time == lion_after.start_time
+   lion_travel_seconds = entrance_travel_seconds_to_animal(
+      species='African Lion',
+      exhibit='Africa Savanna' )
+   assert result.itinerary.arrival_time == schedule_time_before_seconds(
+      lion_after.start_time,
+      lion_travel_seconds )
    assert result.adjustments == []
 
 
@@ -197,7 +203,15 @@ def test_set_itinerary_later_arrival_without_cutoff_preserves_animal_schedules(
 
    assert result.success
    assert result.itinerary is not None
-   assert result.itinerary.arrival_time == '10:00 AM'
+   lion = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Lion' )
+   lion_travel_seconds = entrance_travel_seconds_to_animal(
+      species='African Lion',
+      exhibit='Africa Savanna' )
+   assert result.itinerary.arrival_time == schedule_time_before_seconds(
+      lion.start_time,
+      lion_travel_seconds )
    assert _scheduled_animal_times( result.itinerary ) == before_times
 
 

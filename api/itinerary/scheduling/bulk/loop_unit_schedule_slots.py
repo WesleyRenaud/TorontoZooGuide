@@ -11,9 +11,13 @@ from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_de
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
 from .loop_schedule_stop import LoopScheduleStop
+from .loop_unit_travel_time import inter_stop_travel_seconds
 from ....shared.calendar_dates import DateValues
+from .timed_loop_schedule_stop import TimedLoopScheduleStop
 from ....types import Connection
 from ....types import ScheduleTimeKey
+from ....walk_graph.domain.walk_graph import WalkGraph
+from ....walk_graph.shortest_path import WalkGraphAdjacency
 
 
 LoopScheduleSlot = tuple[
@@ -45,20 +49,35 @@ class LoopScheduleSlotSink:
       return True
 
 
-def fetch_viewing_durations(
+def prepare_loop_schedule_stops(
       conn: Connection,
-      stops: list[ LoopScheduleStop ] ) -> list[ int ] | None:
-   durations: list[ int ] = []
+      walk_graph: WalkGraph,
+      stops: list[ LoopScheduleStop ],
+      *,
+      adjacency: WalkGraphAdjacency | None = None ) -> list[ TimedLoopScheduleStop ] | None:
+   travels = inter_stop_travel_seconds(
+      walk_graph,
+      stops,
+      adjacency=adjacency )
+   prepared_stops: list[ TimedLoopScheduleStop ] = []
 
-   for stop in stops:
+   for stop, travel_before_seconds in zip( stops, travels ):
       duration_seconds = duration_seconds_for_loop_schedule_stop( conn, stop )
 
       if duration_seconds is None:
          return None
 
-      durations.append( duration_seconds )
+      prepared_stops.append(
+         TimedLoopScheduleStop(
+            stop=stop,
+            duration_seconds=duration_seconds,
+            travel_before_seconds=travel_before_seconds ) )
 
-   return durations
+   return prepared_stops
+
+
+def total_occupied_seconds( stops: list[ TimedLoopScheduleStop ] ) -> int:
+   return sum( stop.occupied_seconds() for stop in stops )
 
 
 def duration_seconds_for_loop_schedule_stop(
@@ -90,20 +109,17 @@ def default_duration_seconds_for_loop_schedule_stop(
 
 
 def assign_contiguous_slots(
-      stops: list[ LoopScheduleStop ],
-      durations: list[ int ],
+      stops: list[ TimedLoopScheduleStop ],
       *,
       start_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ]:
    return assign_contiguous_slots_respecting_attraction_hours(
       stops,
-      durations,
       start_seconds=start_seconds,
       hours_by_attraction_name=None )
 
 
 def assign_contiguous_slots_respecting_attraction_hours(
-      stops: list[ LoopScheduleStop ],
-      durations: list[ int ],
+      stops: list[ TimedLoopScheduleStop ],
       *,
       start_seconds: int,
       hours_by_attraction_name: dict[ str, tuple[ int, int ] ] | None,
@@ -111,11 +127,14 @@ def assign_contiguous_slots_respecting_attraction_hours(
    slots: list[ LoopScheduleSlot ] = []
    slot_cursor_seconds = start_seconds
 
-   for stop, duration_seconds in zip( stops, durations ):
+   for timed_stop in stops:
+      slot_cursor_seconds += timed_stop.travel_before_seconds
+
       if (
             hours_by_attraction_name is not None
-            and isinstance( stop, ItineraryAttractionRecord ) ):
-         attraction_hours = hours_by_attraction_name.get( stop.attraction )
+            and isinstance( timed_stop.stop, ItineraryAttractionRecord ) ):
+         attraction_hours = hours_by_attraction_name.get(
+            timed_stop.stop.attraction )
 
          if attraction_hours is not None:
             open_seconds, close_seconds = attraction_hours
@@ -123,37 +142,34 @@ def assign_contiguous_slots_respecting_attraction_hours(
             if slot_cursor_seconds < open_seconds:
                slot_cursor_seconds = open_seconds
 
-            if slot_cursor_seconds + duration_seconds > close_seconds:
+            if slot_cursor_seconds + timed_stop.duration_seconds > close_seconds:
                return [], start_seconds
 
       start_time = DateValues.schedule_time_key_from_seconds(
          slot_cursor_seconds )
-      end_seconds = slot_cursor_seconds + duration_seconds
+      end_seconds = slot_cursor_seconds + timed_stop.duration_seconds
       end_time = DateValues.schedule_time_key_from_seconds( end_seconds )
 
       if start_time is None or end_time is None:
          return [], start_seconds
 
-      slots.append( ( stop, start_time, end_time ) )
+      slots.append( ( timed_stop.stop, start_time, end_time ) )
       slot_cursor_seconds = end_seconds
 
    return slots, slot_cursor_seconds
 
 
 def assign_contiguous_slots_ending_by(
-      stops: list[ LoopScheduleStop ],
-      durations: list[ int ],
+      stops: list[ TimedLoopScheduleStop ],
       *,
       end_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ] | None:
-   total_duration_seconds = sum( durations )
-   start_seconds = end_seconds - total_duration_seconds
+   start_seconds = end_seconds - total_occupied_seconds( stops )
 
    if start_seconds < 0:
       return None
 
    stop_slots, segment_end_cursor_seconds = assign_contiguous_slots(
       stops,
-      durations,
       start_seconds=start_seconds )
 
    if segment_end_cursor_seconds > end_seconds:

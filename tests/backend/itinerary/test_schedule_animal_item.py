@@ -3,11 +3,57 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item
+from itinerary.support import ANIMAL_KEY, expected_departure_time_for_itinerary, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item
+from itinerary.support import entrance_travel_seconds_to_animal
+from itinerary.support import schedule_time_after_seconds
+from itinerary.support import schedule_time_before_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 from conftest import DbControllers
+
+LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
+   species='African Lion',
+   exhibit='Africa Savanna' )
+
+
+def _lion_start_after( anchor_time: str ) -> str:
+   return schedule_time_after_seconds( anchor_time, LION_TRAVEL_SECONDS )
+
+
+def _lion_end_after( anchor_time: str, *, duration_seconds: int = 8 * 60 ) -> str:
+   return schedule_time_after_seconds(
+      _lion_start_after( anchor_time ),
+      duration_seconds )
+
+
+def _travel_seconds_between_animals(
+      *,
+      from_species: str,
+      from_exhibit: str,
+      from_enclosure_name: str | None,
+      to_species: str,
+      to_exhibit: str,
+      to_enclosure_name: str | None ) -> int:
+   walk_graph = load_walk_graph()
+   from_node_id = walk_node_id_for_viewing_spot(
+      from_species,
+      from_exhibit,
+      from_enclosure_name )
+   to_node_id = walk_node_id_for_viewing_spot(
+      to_species,
+      to_exhibit,
+      to_enclosure_name )
+   assert from_node_id is not None
+   assert to_node_id is not None
+   return travel_time_seconds_between_nodes(
+      walk_graph,
+      from_node_id,
+      to_node_id )
 
 
 def test_schedule_itinerary_animal_uses_open_time_without_arrival(
@@ -29,10 +75,15 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
 
    assert result.success
    assert len( result.itinerary.animals ) == 1
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
-   assert result.itinerary.arrival_time == result.itinerary.animals[ 0 ].start_time
-   assert result.itinerary.departure_time == result.itinerary.animals[ 0 ].end_time
+   expected_start = _lion_start_after( '9:30 AM' )
+   expected_end = _lion_end_after( '9:30 AM' )
+   assert result.itinerary.animals[ 0 ].start_time == expected_start
+   assert result.itinerary.animals[ 0 ].end_time == expected_end
+   assert result.itinerary.arrival_time == schedule_time_before_seconds(
+      expected_start,
+      LION_TRAVEL_SECONDS )
+   assert result.itinerary.departure_time == expected_departure_time_for_itinerary(
+      result.itinerary )
 
 
 def test_schedule_singular_animal_on_date_only_itinerary_seeds_arrival_and_departure(
@@ -61,10 +112,15 @@ def test_schedule_singular_animal_on_date_only_itinerary_seeds_arrival_and_depar
    assert result.success
    assert len( result.itinerary.animals ) == 1
    animal = result.itinerary.animals[ 0 ]
-   assert animal.start_time == '9:30 AM'
-   assert animal.end_time == '9:38 AM'
-   assert result.itinerary.arrival_time == animal.start_time
-   assert result.itinerary.departure_time == animal.end_time
+   expected_start = _lion_start_after( '9:30 AM' )
+   expected_end = _lion_end_after( '9:30 AM' )
+   assert animal.start_time == expected_start
+   assert animal.end_time == expected_end
+   assert result.itinerary.arrival_time == schedule_time_before_seconds(
+      expected_start,
+      LION_TRAVEL_SECONDS )
+   assert result.itinerary.departure_time == expected_departure_time_for_itinerary(
+      result.itinerary )
 
 
 def test_schedule_itinerary_animal_uses_early_admission_when_warning_suppressed(
@@ -88,8 +144,8 @@ def test_schedule_itinerary_animal_uses_early_admission_when_warning_suppressed(
 
    assert result.success
    assert len( result.itinerary.animals ) == 1
-   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+   assert result.itinerary.animals[ 0 ].start_time == _lion_start_after( '9:00 AM' )
+   assert result.itinerary.animals[ 0 ].end_time == _lion_end_after( '9:00 AM' )
 
 
 def test_set_itinerary_keeps_early_admission_seeded_departure_when_adding_exhibit_animals(
@@ -111,13 +167,9 @@ def test_set_itinerary_keeps_early_admission_seeded_departure_when_adding_exhibi
       key=ANIMAL_KEY ).success
 
    scheduled = ItineraryCoordinator.get_itinerary()
-   lion = next(
-      animal
-      for animal in scheduled.animals
-      if animal.species == 'African Lion' )
 
    assert scheduled.arrival_time == '9:00 AM'
-   assert scheduled.departure_time == lion.end_time
+   assert scheduled.departure_time == expected_departure_time_for_itinerary( scheduled )
 
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -157,14 +209,15 @@ def test_schedule_itinerary_animal_accepts_explicit_early_admission_start_when_s
       wild_encounters=[],
    ).success
 
+   start_time = _lion_start_after( '9:00 AM' )
    result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
-      start_time='09:00' )
+      start_time=start_time )
 
    assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+   assert result.itinerary.animals[ 0 ].start_time == start_time
+   assert result.itinerary.animals[ 0 ].end_time == _lion_end_after( '9:00 AM' )
 
 
 def test_schedule_itinerary_animal_rejects_explicit_early_admission_start_when_not_suppressed(
@@ -209,8 +262,9 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
       key=ANIMAL_KEY )
 
    assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+   assert result.itinerary.arrival_time == '9:00 AM'
+   assert result.itinerary.animals[ 0 ].start_time == _lion_start_after( '9:00 AM' )
+   assert result.itinerary.animals[ 0 ].end_time == _lion_end_after( '9:00 AM' )
 
 
 def test_date_change_reschedules_animal_before_new_admission_time(
@@ -234,7 +288,7 @@ def test_date_change_reschedules_animal_before_new_admission_time(
       key=ANIMAL_KEY )
 
    assert scheduled.success
-   assert scheduled.itinerary.animals[ 0 ].start_time == '9:00 AM'
+   assert scheduled.itinerary.animals[ 0 ].start_time == _lion_start_after( '9:00 AM' )
 
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
@@ -248,7 +302,12 @@ def test_date_change_reschedules_animal_before_new_admission_time(
 
    assert result.success
    assert result.itinerary.arrival_time == '9:30 AM'
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
+   animal_start_seconds = DateValues.time_value_in_seconds(
+      result.itinerary.animals[ 0 ].start_time )
+   open_seconds = DateValues.time_value_in_seconds( '9:30 AM' )
+   assert animal_start_seconds is not None
+   assert open_seconds is not None
+   assert animal_start_seconds >= open_seconds
    assert result.itinerary.animals[ 0 ].end_time is not None
 
 
@@ -279,16 +338,18 @@ def test_date_change_reschedules_animal_after_new_closing_time(
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:30',
-      departure_time='19:00',
+      departure_time='18:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_short_visit=True,
    )
 
    assert result.success
-   assert result.itinerary.departure_time == '9:38 AM'
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
+   assert result.itinerary.departure_time == expected_departure_time_for_itinerary(
+      result.itinerary )
+   assert result.itinerary.animals[ 0 ].start_time == _lion_start_after( '9:30 AM' )
    assert result.itinerary.animals[ 0 ].end_time is not None
 
 
@@ -327,12 +388,24 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       key=PENGUIN_KEY )
 
    assert result.success
+   lion = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Lion'
+   )
    scheduled = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Penguin'
    )
-
-   assert scheduled.start_time == '9:38 AM'
+   travel_seconds = _travel_seconds_between_animals(
+      from_species='African Lion',
+      from_exhibit='Africa Savanna',
+      from_enclosure_name=None,
+      to_species='African Penguin',
+      to_exhibit='Africa Savanna',
+      to_enclosure_name='Outdoor' )
+   assert scheduled.start_time == schedule_time_after_seconds(
+      lion.end_time,
+      travel_seconds )
 
 
 def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
@@ -364,8 +437,10 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       key=ANIMAL_KEY )
 
    assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:30:30 AM'
+   expected_start = _lion_start_after( '9:30 AM' )
+   expected_end = schedule_time_after_seconds( expected_start, 30 )
+   assert result.itinerary.animals[ 0 ].start_time == expected_start
+   assert result.itinerary.animals[ 0 ].end_time == expected_end
 
    db.conn.execute(
       """   UPDATE EnclosureViewing
@@ -379,8 +454,8 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
 
    refreshed_itinerary = ItineraryCoordinator.get_itinerary()
 
-   assert refreshed_itinerary.animals[ 0 ].start_time == '9:30 AM'
-   assert refreshed_itinerary.animals[ 0 ].end_time == '9:30:30 AM'
+   assert refreshed_itinerary.animals[ 0 ].start_time == expected_start
+   assert refreshed_itinerary.animals[ 0 ].end_time == expected_end
 
 
 def test_schedule_itinerary_animal_honors_requested_start_time(

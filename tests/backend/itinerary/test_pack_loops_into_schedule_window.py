@@ -35,7 +35,7 @@ def _prepared_loop_unit(
 
    return PreparedLoopScheduleUnit(
       unit=loop_unit,
-      duration_seconds=duration_seconds,
+      occupied_seconds=duration_seconds,
    )
 
 
@@ -134,8 +134,10 @@ def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_a
 
 def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anchored_window() -> None:
    walk_graph = load_walk_graph()
+   # Window must cover approach travel from the entrance plus Indo-Malaya dwell
+   # (6m + 5m) while still excluding Australasia as a prefix or terminal.
    window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
-   window_end_seconds = DateValues.time_value_in_seconds( '9:06 AM' )
+   window_end_seconds = DateValues.time_value_in_seconds( '9:11 AM' )
 
    assert window_start_seconds is not None
    assert window_end_seconds is not None

@@ -7,8 +7,6 @@ from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractio
 from .attraction_hours_soft_pin import attach_attraction_hours_soft_pins_to_schedule_windows
 from .attraction_hours_soft_pin import resolve_attraction_hours_soft_pins
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
-from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
@@ -21,7 +19,6 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
-from ...domain.itinerary_adjustment import ItineraryAdjustment
 from .group_stops_by_master_route_loop import group_stops_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_covered_animals import apply_covered_by_talk_schedules
@@ -35,7 +32,6 @@ from .loop_schedule_stop import animals_from_stops
 from .loop_schedule_stop import attractions_from_stops
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import build_loop_schedule_units
-from .restore_guest_schedule_state import snapshot_guest_schedule_state
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
@@ -110,9 +106,6 @@ def bulk_schedule_animals(
       return prepared_window
 
    saved_itinerary = prepared_window.saved_itinerary
-   schedule_snapshot, _walk_route_snapshot = snapshot_guest_schedule_state(
-      conn,
-      saved_itinerary )
 
    previous_itinerary = build_current_itinerary(
       saved_itinerary,
@@ -231,7 +224,6 @@ def bulk_schedule_animals(
    apply_covered_by_talk_schedules( conn, covered_by_talk )
    apply_covered_by_attraction_schedules( conn, covered_by_attraction )
 
-   adjustments: list[ ItineraryAdjustment ] = []
    reasons: list[ ItineraryResultReason ] = []
 
    if remaining_stops:
@@ -240,22 +232,6 @@ def bulk_schedule_animals(
             remaining_stops ),
       ]
    else:
-      itinerary_after_pack = build_current_itinerary(
-         fetch_saved_itinerary( conn ),
-         **itinerary_context )
-      arrival_adjustment = adjust_arrival_after_bulk_schedule(
-         conn,
-         itinerary_after_pack,
-         schedule_anchor_seconds=start_state.schedule_anchor_seconds,
-         previous_arrival_time=schedule_snapshot.arrival_time )
-
-      if arrival_adjustment is not None:
-         adjustments = [ arrival_adjustment ]
-
-      itinerary_after_arrival = build_current_itinerary(
-         fetch_saved_itinerary( conn ),
-         **itinerary_context )
-      ensure_departure_after_bulk_schedule( conn, itinerary_after_arrival )
       sync_visit_times_to_scheduled_endpoints_if_complete(
          conn,
          build_current_itinerary(
@@ -278,7 +254,6 @@ def bulk_schedule_animals(
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
       reasons=reasons,
-      adjustments=adjustments,
       itinerary=itinerary )
 
 

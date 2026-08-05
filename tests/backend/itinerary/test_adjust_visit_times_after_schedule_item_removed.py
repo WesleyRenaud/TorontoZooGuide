@@ -3,14 +3,37 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, set_guardians_talk_schedule, set_wild_encounter_schedule, unschedule_itinerary_item, WILD_ENCOUNTER, wild_encounter_wire
+from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds, set_guardians_talk_schedule, set_wild_encounter_schedule, unschedule_itinerary_item, WILD_ENCOUNTER, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 from conftest import DbControllers
 
 GUARDIANS_TALK = 'African Lion'
+LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
+   species='African Lion',
+   exhibit='Africa Savanna',
+)
+CHEETAH_START = schedule_time_after_seconds(
+   '10:15 AM',
+   travel_time_seconds_between_nodes(
+      load_walk_graph(),
+      walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
+      walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+   ),
+)
+PENGUIN_START = schedule_time_after_seconds(
+   schedule_time_after_seconds( CHEETAH_START, 15 * 60 ),
+   travel_time_seconds_between_nodes(
+      load_walk_graph(),
+      walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+      walk_node_id_for_viewing_spot( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
+   ),
+)
 
 
 def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
@@ -44,6 +67,9 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
       ),
       key=lambda end_time: DateValues.time_value_in_seconds( end_time ) or -1,
    )
+   assert DateValues.time_value_is_at_or_after(
+      expected_departure_time_for_itinerary( bulk_result.itinerary ),
+      latest_animal_end )
 
    schedule_result = schedule_itinerary_item(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,
@@ -69,7 +95,8 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
    )
 
    assert remove_result.success
-   assert remove_result.itinerary.departure_time == latest_animal_end
+   assert remove_result.itinerary.departure_time == (
+      expected_departure_time_for_itinerary( remove_result.itinerary ) )
    assert remove_result.adjustments == []
 
 
@@ -122,7 +149,9 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
       for animal in remove_result.itinerary.animals
       if animal.species == 'African Lion' )
    assert lion_after.start_time is not None
-   assert remove_result.itinerary.arrival_time == lion_after.start_time
+   assert remove_result.itinerary.arrival_time == schedule_time_before_seconds(
+      lion_after.start_time,
+      LION_TRAVEL_SECONDS )
    assert remove_result.adjustments == []
 
 
@@ -162,8 +191,21 @@ def test_unschedule_middle_animal_clears_visit_times_when_day_becomes_incomplete
    ).success
 
    before = ItineraryCoordinator.get_itinerary()
-   assert before.arrival_time == '9:30 AM'
-   assert before.departure_time == '5:00 PM'
+   lion = next(
+      animal
+      for animal in before.animals
+      if animal.species == 'African Lion' )
+   penguin = next(
+      animal
+      for animal in before.animals
+      if animal.species == 'African Penguin' )
+
+   assert lion.start_time is not None
+   assert penguin.end_time is not None
+   assert before.arrival_time == schedule_time_before_seconds(
+      lion.start_time,
+      LION_TRAVEL_SECONDS )
+   assert before.departure_time == expected_departure_time_for_itinerary( before )
 
    result = unschedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
@@ -203,13 +245,13 @@ def test_unschedule_middle_animal_clears_pinned_departure_when_day_becomes_incom
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       CHEETAH_KEY,
-      start_time='10:15',
+      start_time=CHEETAH_START,
       duration_minutes=15,
    ).success
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       PENGUIN_KEY,
-      start_time='10:30',
+      start_time=PENGUIN_START,
       duration_minutes=15,
    ).success
 

@@ -3,13 +3,14 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_wire
+from itinerary.support import entrance_travel_seconds_to_map_location, LION_ITINERARY_ENTRY, schedule_itinerary_item, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_visit_window import clear_schedules_outside_visit_window
 from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
+from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from conftest import DbControllers
 
@@ -39,12 +40,18 @@ def test_schedule_pre_open_wild_encounter_keeps_times_and_covers_arrival(
 
    assert result.success
    assert result.itinerary is not None
-   assert result.itinerary.arrival_time == '8:45 AM'
 
    encounter = next(
       saved_encounter
       for saved_encounter in result.itinerary.wild_encounters
       if saved_encounter.name == WILD_ENCOUNTER )
+   encounter_travel_seconds = entrance_travel_seconds_to_map_location(
+      MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
+      encounter.meeting_spot )
+   assert result.itinerary.arrival_time == schedule_time_before_seconds(
+      encounter.start_time,
+      encounter_travel_seconds )
+
    assert encounter.start_time == '8:45 AM'
    assert encounter.end_time == '9:30 AM'
 
@@ -68,7 +75,26 @@ def test_set_arrival_before_open_allowed_when_justified_by_wild_encounter(
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   assert ItineraryCoordinator.set_arrival_time( PRE_OPEN_ENCOUNTER_TIME ).success
+   itinerary = ItineraryCoordinator.get_itinerary()
+   encounter = next(
+      saved_encounter
+      for saved_encounter in itinerary.wild_encounters
+      if saved_encounter.name == WILD_ENCOUNTER )
+   encounter_travel_seconds = entrance_travel_seconds_to_map_location(
+      MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
+      encounter.meeting_spot )
+   assert itinerary.arrival_time == schedule_time_before_seconds(
+      encounter.start_time,
+      encounter_travel_seconds )
+
+   assert ItineraryCoordinator.set_departure_time(
+      '17:00',
+      confirming_short_visit=True,
+   ).success
+   assert ItineraryCoordinator.set_arrival_time(
+      PRE_OPEN_ENCOUNTER_TIME,
+      confirming_short_visit=True,
+   ).success
    itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.arrival_time == '8:45 AM'
    assert any(

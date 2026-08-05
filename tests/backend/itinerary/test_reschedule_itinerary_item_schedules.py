@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import CAROUSEL, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, schedule_itinerary_item
+from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, schedule_itinerary_item, schedule_time_after_seconds
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
@@ -84,7 +84,11 @@ def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
    assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
-      start_time='09:00',
+      start_time=schedule_time_after_seconds(
+         '9:00 AM',
+         entrance_travel_seconds_to_animal(
+            species='African Lion',
+            exhibit='Africa Savanna' ) ),
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()

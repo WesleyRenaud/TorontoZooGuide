@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item
+from itinerary.support import entrance_travel_seconds_to_animal, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item, schedule_time_after_seconds
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -231,7 +231,6 @@ def test_schedule_talk_skips_long_wait_when_bulk_pack_would_close_gap(
    animal_scheduled = schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       TAMARIN_KEY,
-      start_time='09:30',
    )
 
    assert animal_scheduled.success
@@ -364,7 +363,6 @@ def test_bulk_schedule_skips_long_wait_warning_for_already_saved_talks(
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
       LION_KEY,
-      start_time='09:30',
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()

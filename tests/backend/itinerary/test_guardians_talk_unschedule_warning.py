@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import schedule_itinerary_item
+from itinerary.support import entrance_travel_seconds_to_animal, schedule_itinerary_item, schedule_time_after_seconds
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -129,7 +129,7 @@ def test_set_itinerary_keeps_talk_before_arrival_and_warns_about_overlap(
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
-      arrival_time='11:21',
+      arrival_time='11:00',
       departure_time='17:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
@@ -139,7 +139,6 @@ def test_set_itinerary_keeps_talk_before_arrival_and_warns_about_overlap(
    assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
-      start_time='11:21',
    ).success
 
    result = ItineraryCoordinator.set_itinerary(

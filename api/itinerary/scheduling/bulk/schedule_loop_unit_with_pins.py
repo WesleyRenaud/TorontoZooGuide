@@ -9,12 +9,14 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
 from .loop_unit_schedule_slots import assign_contiguous_slots_ending_by
-from .loop_unit_schedule_slots import fetch_viewing_durations
 from .loop_unit_schedule_slots import LoopScheduleSlotSink
+from .loop_unit_schedule_slots import prepare_loop_schedule_stops
 from .loop_unit_schedule_slots import save_loop_slots
+from .loop_unit_schedule_slots import total_occupied_seconds
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....types import Connection
+from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 
 
 def schedule_prepared_loop_unit_with_pins(
@@ -78,12 +80,17 @@ def pinned_loop_earliest_start_seconds(
    if not before_pin_animals:
       return first_pin.start_seconds
 
-   durations = fetch_viewing_durations( conn, before_pin_animals )
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      load_walk_graph(),
+      before_pin_animals )
 
-   if durations is None:
+   if prepared_stops is None:
       return None
 
-   return first_pin.start_seconds - sum( durations )
+   return first_pin.start_seconds - sum(
+      timed_stop.duration_seconds
+      for timed_stop in prepared_stops )
 
 
 def unit_loop_pins(
@@ -246,22 +253,24 @@ def _schedule_animal_segment(
       backward_anchor: bool,
       slot_sink: LoopScheduleSlotSink | None = None,
    ) -> int:
-   durations = fetch_viewing_durations( conn, animal_group )
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      load_walk_graph(),
+      animal_group )
 
-   if durations is None:
+   if prepared_stops is None:
       raise LoopUnitSchedulePersistError( animals )
 
-   total_duration_seconds = sum( durations )
+   occupied_seconds = total_occupied_seconds( prepared_stops )
 
    if backward_anchor:
-      latest_start_seconds = segment_end_seconds - total_duration_seconds
+      latest_start_seconds = segment_end_seconds - occupied_seconds
 
       if latest_start_seconds < start_seconds:
          raise LoopUnitSchedulePersistError( animals )
 
       slot_assignment = assign_contiguous_slots_ending_by(
-         animal_group,
-         durations,
+         prepared_stops,
          end_seconds=segment_end_seconds )
 
       if slot_assignment is None:
@@ -273,12 +282,11 @@ def _schedule_animal_segment(
       if start_seconds >= segment_end_seconds:
          raise LoopUnitSchedulePersistError( animals )
 
-      if start_seconds + total_duration_seconds > segment_end_seconds:
+      if start_seconds + occupied_seconds > segment_end_seconds:
          raise LoopUnitSchedulePersistError( animals )
 
       animal_slots, segment_end_cursor_seconds = assign_contiguous_slots(
-         animal_group,
-         durations,
+         prepared_stops,
          start_seconds=start_seconds )
       effective_start_seconds = start_seconds
 
@@ -309,17 +317,19 @@ def _schedule_remaining_animals_forward(
       scheduled_animal_ids: set[ int ],
       slot_sink: LoopScheduleSlotSink | None = None,
    ) -> int:
-   durations = fetch_viewing_durations( conn, animal_group )
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      load_walk_graph(),
+      animal_group )
 
-   if durations is None:
+   if prepared_stops is None:
       raise LoopUnitSchedulePersistError( animals )
 
-   if start_seconds + sum( durations ) > window_end_seconds:
+   if start_seconds + total_occupied_seconds( prepared_stops ) > window_end_seconds:
       return start_seconds
 
    animal_slots, segment_end_cursor_seconds = assign_contiguous_slots(
-      animal_group,
-      durations,
+      prepared_stops,
       start_seconds=start_seconds )
 
    if not animal_slots:

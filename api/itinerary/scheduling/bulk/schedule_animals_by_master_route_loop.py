@@ -10,9 +10,12 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots_respecting_attraction_hours
-from .loop_unit_schedule_slots import fetch_viewing_durations
 from .loop_unit_schedule_slots import LoopScheduleSlotSink
+from .loop_unit_schedule_slots import prepare_loop_schedule_stops
 from .loop_unit_schedule_slots import save_loop_slots
+from .loop_unit_schedule_slots import total_occupied_seconds
+from .loop_unit_travel_time import approach_travel_seconds_to_unit
+from .loop_unit_travel_time import packed_units_occupied_seconds
 from .pack_loops_into_schedule_window import pack_all_loops_before_deadline
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from .pack_loops_into_schedule_window import prepare_loop_schedule_units
@@ -27,6 +30,7 @@ from .schedule_loop_unit_with_pins import pinned_loop_earliest_start_seconds
 from .schedule_loop_unit_with_pins import schedule_prepared_loop_unit_with_pins
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
+from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 
 
@@ -47,7 +51,10 @@ def schedule_animals_by_master_route_loop(
       walk_graph: WalkGraph,
       start_node_id: str,
       slot_sink: LoopScheduleSlotSink | None = None ) -> tuple[ list[ LoopScheduleStop ], int ]:
-   prepared_units = prepare_loop_schedule_units( conn, loop_units )
+   prepared_units = prepare_loop_schedule_units(
+      conn,
+      loop_units,
+      walk_graph=walk_graph )
 
    if prepared_units is None:
       return _animals_from_loop_units( loop_units ), schedule_cursor_seconds
@@ -354,6 +361,8 @@ def _process_schedule_window(
          packing_window,
          packed_units=packed_units,
          cursor_seconds=window_state.cursor_seconds,
+         walk_graph=walk_graph,
+         current_node_id=window_state.current_node_id,
          right_align_to_window_end=right_align_to_window_end )
 
       if (
@@ -362,8 +371,14 @@ def _process_schedule_window(
          free_pack_moved_past_open = True
 
       for prepared_unit in packed_units:
+         approach_seconds = approach_travel_seconds_to_unit(
+            walk_graph,
+            window_state.current_node_id,
+            prepared_unit.unit )
+         unit_start_seconds = window_state.cursor_seconds + approach_seconds
+
          if (
-               window_state.cursor_seconds + prepared_unit.duration_seconds
+               unit_start_seconds + prepared_unit.occupied_seconds
                > packing_window.end_seconds ):
             break
 
@@ -372,10 +387,11 @@ def _process_schedule_window(
                conn,
                prepared_unit,
                blockers=blockers,
-               start_seconds=window_state.cursor_seconds,
+               start_seconds=unit_start_seconds,
                end_seconds=packing_window.end_seconds,
                hours_by_attraction_name=hours_by_attraction_name,
-               slot_sink=slot_sink )
+               slot_sink=slot_sink,
+               walk_graph=walk_graph )
          except LoopUnitSchedulePersistError as error:
             remaining_animals.extend( error.stops )
             remaining_animals.extend(
@@ -388,7 +404,8 @@ def _process_schedule_window(
             continue
 
          remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
-         window_state.cursor_seconds += prepared_unit.duration_seconds
+         window_state.cursor_seconds = (
+            unit_start_seconds + prepared_unit.occupied_seconds )
 
          if (
                active_open_seconds is not None
@@ -590,7 +607,7 @@ def _wait_filler_pack_end_seconds(
       active_soft_pin_loop_ids=active_soft_pin_loop_ids,
       active_open_seconds=active_open_seconds )
    inactive_reserve_seconds = sum(
-      prepared_unit.duration_seconds
+      prepared_unit.occupied_seconds
       for prepared_unit in _units_matching_loop_ids(
          remaining_units,
          inactive_before_active_loop_ids - hard_pinned_loop_ids ) )
@@ -601,14 +618,14 @@ def _wait_filler_pack_end_seconds(
          max( cursor_seconds, planned_active_start_seconds - inactive_reserve_seconds ),
          planned_active_start_seconds )
 
-   active_soft_duration_seconds = sum(
-      prepared_unit.duration_seconds
+   active_soft_occupied_seconds = sum(
+      prepared_unit.occupied_seconds
       for prepared_unit in _units_matching_loop_ids(
          remaining_units,
          active_soft_pin_loop_ids - hard_pinned_loop_ids ) )
    planned_active_start_seconds = max(
       active_open_seconds,
-      hard_pin_deadline_seconds - active_soft_duration_seconds )
+      hard_pin_deadline_seconds - active_soft_occupied_seconds )
 
    return (
       max(
@@ -699,7 +716,7 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
             cursor_seconds=drain_cursor_seconds ):
          continue
 
-      unit_duration_seconds = prepared_unit.duration_seconds
+      unit_occupied_seconds = prepared_unit.occupied_seconds
       new_cursor_seconds = _drain_ready_soft_pin_loop_units(
          conn,
          remaining_units,
@@ -714,7 +731,7 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
          slot_sink=slot_sink )
 
       if not _units_matching_loop_ids( remaining_units, { soft_pin.loop_id } ):
-         cascade_end = cascade_end - unit_duration_seconds
+         cascade_end = cascade_end - unit_occupied_seconds
          placed_end_seconds = max( placed_end_seconds, new_cursor_seconds )
 
    return max( schedule_cursor_seconds, placed_end_seconds )
@@ -772,8 +789,8 @@ def _packing_window_with_active_soft_pin_tail_reserve(
    if not active_units:
       return packing_window
 
-   soft_duration_seconds = sum(
-      prepared_unit.duration_seconds
+   soft_occupied_seconds = sum(
+      prepared_unit.occupied_seconds
       for prepared_unit in active_units )
    soft_pins_by_loop_id = {
       soft_pin.loop_id: soft_pin
@@ -802,7 +819,7 @@ def _packing_window_with_active_soft_pin_tail_reserve(
          soft_pin_deadline_seconds,
          hard_pin_start_seconds )
 
-   reserved_end_seconds = soft_pin_deadline_seconds - soft_duration_seconds
+   reserved_end_seconds = soft_pin_deadline_seconds - soft_occupied_seconds
 
    if reserved_end_seconds <= cursor_seconds:
       return packing_window
@@ -858,8 +875,8 @@ def _should_defer_free_packing_until_after_anchor(
    if not free_units:
       return False
 
-   free_duration_seconds = sum(
-      prepared_unit.duration_seconds
+   free_occupied_seconds = sum(
+      prepared_unit.occupied_seconds
       for prepared_unit in free_units )
 
    for later_window in later_schedule_windows:
@@ -886,7 +903,7 @@ def _should_defer_free_packing_until_after_anchor(
          continue
 
       return (
-         gap_start_seconds + free_duration_seconds <= reserved_start_seconds )
+         gap_start_seconds + free_occupied_seconds <= reserved_start_seconds )
 
    return False
 
@@ -974,27 +991,35 @@ def _pack_non_pinned_loops_before_pinned_deadline(
    if packed_units is None:
       return window_state.cursor_seconds, False
 
-   total_duration_seconds = sum(
-      prepared_unit.duration_seconds
-      for prepared_unit in packed_units )
+   occupied_seconds = packed_units_occupied_seconds(
+      walk_graph,
+      packed_units,
+      from_node_id=window_state.current_node_id )
 
    if schedule_window.opens_after_fixed_time_stop:
-      schedule_start_seconds = window_start_seconds
-      next_cursor_seconds = window_start_seconds + total_duration_seconds
+      schedule_cursor_seconds = window_start_seconds
+      next_cursor_seconds = window_start_seconds + occupied_seconds
    else:
-      schedule_start_seconds = pinned_deadline_seconds - total_duration_seconds
+      schedule_cursor_seconds = pinned_deadline_seconds - occupied_seconds
       next_cursor_seconds = pinned_deadline_seconds
 
    for prepared_unit in packed_units:
+      approach_seconds = approach_travel_seconds_to_unit(
+         walk_graph,
+         window_state.current_node_id,
+         prepared_unit.unit )
+      unit_start_seconds = schedule_cursor_seconds + approach_seconds
+
       try:
          unscheduled_animals = _schedule_prepared_loop_unit(
             conn,
             prepared_unit,
             blockers=blockers,
-            start_seconds=schedule_start_seconds,
+            start_seconds=unit_start_seconds,
             end_seconds=pinned_deadline_seconds,
             hours_by_attraction_name=hours_by_attraction_name,
-            slot_sink=slot_sink )
+            slot_sink=slot_sink,
+            walk_graph=walk_graph )
       except LoopUnitSchedulePersistError as error:
          remaining_animals.extend( error.stops )
          remaining_animals.extend(
@@ -1006,7 +1031,8 @@ def _pack_non_pinned_loops_before_pinned_deadline(
          return window_state.cursor_seconds, False
 
       remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
-      schedule_start_seconds += prepared_unit.duration_seconds
+      schedule_cursor_seconds = (
+         unit_start_seconds + prepared_unit.occupied_seconds )
 
       if prepared_unit.unit.exit_walk_node_id is not None:
          window_state.current_node_id = prepared_unit.unit.exit_walk_node_id
@@ -1233,16 +1259,13 @@ def _keep_partial_pinned_loop_progress(
    if len( unscheduled_animals ) >= len( original_animals ):
       return False
 
-   durations = fetch_viewing_durations( conn, unscheduled_animals )
+   replacement = _prepared_loop_unit_from_stops(
+      conn,
+      prepared_unit.unit,
+      unscheduled_animals )
 
-   if durations is None:
+   if replacement is None:
       return False
-
-   replacement = PreparedLoopScheduleUnit(
-      unit=replace(
-         prepared_unit.unit,
-         stops=unscheduled_animals ),
-      duration_seconds=sum( durations ) )
 
    for index, candidate in enumerate( remaining_units ):
       if candidate is not prepared_unit:
@@ -1274,16 +1297,13 @@ def _keep_partial_soft_pin_loop_progress(
    if len( unscheduled_stops ) >= len( original_stops ):
       return False
 
-   durations = fetch_viewing_durations( conn, unscheduled_stops )
+   replacement = _prepared_loop_unit_from_stops(
+      conn,
+      prepared_unit.unit,
+      unscheduled_stops )
 
-   if durations is None:
+   if replacement is None:
       return False
-
-   replacement = PreparedLoopScheduleUnit(
-      unit=replace(
-         prepared_unit.unit,
-         stops=unscheduled_stops ),
-      duration_seconds=sum( durations ) )
 
    for index, candidate in enumerate( remaining_units ):
       if candidate is not prepared_unit:
@@ -1299,6 +1319,23 @@ def _keep_partial_soft_pin_loop_progress(
       return True
 
    return False
+
+
+def _prepared_loop_unit_from_stops(
+      conn: Connection,
+      loop_unit: LoopScheduleUnit,
+      stops: list[ LoopScheduleStop ] ) -> PreparedLoopScheduleUnit | None:
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      load_walk_graph(),
+      stops )
+
+   if prepared_stops is None:
+      return None
+
+   return PreparedLoopScheduleUnit(
+      unit=replace( loop_unit, stops=stops ),
+      occupied_seconds=total_occupied_seconds( prepared_stops ) )
 
 
 def _pinned_loop_ids_in_window(
@@ -1479,6 +1516,8 @@ def _schedule_start_seconds_for_packed_units(
       *,
       packed_units: list[ PreparedLoopScheduleUnit ],
       cursor_seconds: int,
+      walk_graph: WalkGraph,
+      current_node_id: str,
       right_align_to_window_end: bool = False ) -> int:
    window_start_seconds = _packed_units_start_seconds(
       schedule_window,
@@ -1496,13 +1535,14 @@ def _schedule_start_seconds_for_packed_units(
    if not should_right_align:
       return window_start_seconds
 
-   total_duration_seconds = sum(
-      prepared_unit.duration_seconds
-      for prepared_unit in packed_units )
+   occupied_seconds = packed_units_occupied_seconds(
+      walk_graph,
+      packed_units,
+      from_node_id=current_node_id )
 
    return max(
       window_start_seconds,
-      schedule_window.end_seconds - total_duration_seconds )
+      schedule_window.end_seconds - occupied_seconds )
 
 
 def _schedule_prepared_loop_unit(
@@ -1511,24 +1551,27 @@ def _schedule_prepared_loop_unit(
       *,
       blockers: list[ TimeBlock ],
       start_seconds: int,
+      walk_graph: WalkGraph,
       end_seconds: int | None = None,
       hours_by_attraction_name: dict[ str, tuple[ int, int ] ] | None = None,
       slot_sink: LoopScheduleSlotSink | None = None ) -> list[ LoopScheduleStop ]:
    animals = list( prepared_unit.unit.stops )
-   durations = fetch_viewing_durations( conn, animals )
+   prepared_stops = prepare_loop_schedule_stops(
+      conn,
+      walk_graph,
+      animals )
 
-   if durations is None:
+   if prepared_stops is None:
       return animals
 
    if (
          end_seconds is not None
-         and start_seconds + sum( durations ) > end_seconds ):
+         and start_seconds + total_occupied_seconds( prepared_stops ) > end_seconds ):
       return animals
 
    animal_slots, slot_end_seconds = (
       assign_contiguous_slots_respecting_attraction_hours(
-         animals,
-         durations,
+         prepared_stops,
          start_seconds=start_seconds,
          hours_by_attraction_name=hours_by_attraction_name ) )
 

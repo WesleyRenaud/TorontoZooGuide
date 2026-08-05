@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import loop_schedule_unit_orientations
 from .loop_schedule_unit import loop_schedule_unit_reversed
 from .loop_schedule_unit import LoopScheduleUnit
-from .loop_unit_schedule_slots import fetch_viewing_durations
+from .loop_unit_schedule_slots import prepare_loop_schedule_stops
+from .loop_unit_schedule_slots import total_occupied_seconds
+from .loop_unit_travel_time import approach_travel_seconds_to_unit
+from .loop_unit_travel_time import packed_units_occupied_seconds
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....types import Connection
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
@@ -21,24 +22,31 @@ from ....walk_graph.shortest_path import WalkGraphAdjacency
 @dataclass( frozen=True )
 class PreparedLoopScheduleUnit:
    unit: LoopScheduleUnit
-   duration_seconds: int
+   occupied_seconds: int
 
 
 def prepare_loop_schedule_units(
       conn: Connection,
-      units: list[ LoopScheduleUnit ] ) -> list[ PreparedLoopScheduleUnit ] | None:
+      units: list[ LoopScheduleUnit ],
+      *,
+      walk_graph: WalkGraph ) -> list[ PreparedLoopScheduleUnit ] | None:
    prepared_units: list[ PreparedLoopScheduleUnit ] = []
+   adjacency = build_walk_graph_adjacency( walk_graph )
 
    for unit in units:
-      duration_seconds = _total_viewing_duration_seconds( conn, unit.stops )
+      prepared_stops = prepare_loop_schedule_stops(
+         conn,
+         walk_graph,
+         unit.stops,
+         adjacency=adjacency )
 
-      if duration_seconds is None:
+      if prepared_stops is None:
          return None
 
       prepared_units.append(
          PreparedLoopScheduleUnit(
             unit=unit,
-            duration_seconds=duration_seconds ) )
+            occupied_seconds=total_occupied_seconds( prepared_stops ) ) )
 
    return prepared_units
 
@@ -112,6 +120,7 @@ def _pack_loops_for_anchored_window(
          sequence,
          window_end_seconds=schedule_window.end_seconds,
          window_start_seconds=window_start_seconds,
+         current_node_id=current_node_id,
          anchor_node_id=anchor_node_id )
 
       if best_score is None or score < best_score:
@@ -141,11 +150,12 @@ def pack_all_loops_before_deadline(
    if not prepared_units or window_start_seconds >= deadline_seconds:
       return None
 
-   total_duration_seconds = sum(
-      prepared_unit.duration_seconds
-      for prepared_unit in prepared_units )
+   occupied_seconds = packed_units_occupied_seconds(
+      walk_graph,
+      prepared_units,
+      from_node_id=current_node_id )
 
-   if window_start_seconds + total_duration_seconds > deadline_seconds:
+   if window_start_seconds + occupied_seconds > deadline_seconds:
       return None
 
    packed_units = _pack_loops_for_open_window(
@@ -174,7 +184,7 @@ def _pack_loops_with_terminal_unit(
       current_node_id: str,
       anchor_node_id: str,
       departure_side_cluster_id: str | None = None ) -> list[ PreparedLoopScheduleUnit ]:
-   terminal_start_seconds = window_end_seconds - terminal_unit.duration_seconds
+   terminal_start_seconds = window_end_seconds - terminal_unit.occupied_seconds
 
    if terminal_start_seconds < window_start_seconds:
       return []
@@ -192,11 +202,12 @@ def _pack_loops_with_terminal_unit(
       terminal_side_cluster_id=terminal_unit.unit.side_cluster_id,
       departure_side_cluster_id=departure_side_cluster_id )
 
-   total_duration_seconds = sum(
-      unit.duration_seconds
-      for unit in prefix_units ) + terminal_unit.duration_seconds
+   occupied_seconds = packed_units_occupied_seconds(
+      walk_graph,
+      [ *prefix_units, terminal_unit ],
+      from_node_id=current_node_id )
 
-   if window_start_seconds + total_duration_seconds > window_end_seconds:
+   if window_start_seconds + occupied_seconds > window_end_seconds:
       return []
 
    return [ *prefix_units, terminal_unit ]
@@ -227,7 +238,13 @@ def _greedy_prefix_units_before_terminal(
       fitting_units = [
          unit
          for unit in remaining_units
-         if unit.duration_seconds <= available_seconds
+         if (
+               approach_travel_seconds_to_unit(
+                  walk_graph,
+                  walk_node_id,
+                  unit.unit,
+                  adjacency=adjacency )
+               + unit.occupied_seconds ) <= available_seconds
       ]
 
       if not fitting_units:
@@ -253,7 +270,13 @@ def _greedy_prefix_units_before_terminal(
          prepared_unit=next_unit,
          adjacency=adjacency )
       packed_units.append( next_unit )
-      cursor_seconds += next_unit.duration_seconds
+      cursor_seconds += (
+         approach_travel_seconds_to_unit(
+            walk_graph,
+            walk_node_id,
+            next_unit.unit,
+            adjacency=adjacency )
+         + next_unit.occupied_seconds )
       previous_side_cluster_id = next_unit.unit.side_cluster_id
 
       if next_unit.unit.exit_walk_node_id is not None:
@@ -286,7 +309,13 @@ def _pack_loops_for_open_window(
       fitting_units = [
          unit
          for unit in remaining_units
-         if unit.duration_seconds <= available_seconds
+         if (
+               approach_travel_seconds_to_unit(
+                  walk_graph,
+                  walk_node_id,
+                  unit.unit,
+                  adjacency=adjacency )
+               + unit.occupied_seconds ) <= available_seconds
       ]
 
       if not fitting_units:
@@ -312,7 +341,13 @@ def _pack_loops_for_open_window(
          prepared_unit=next_unit,
          adjacency=adjacency )
       packed_units.append( next_unit )
-      cursor_seconds += next_unit.duration_seconds
+      cursor_seconds += (
+         approach_travel_seconds_to_unit(
+            walk_graph,
+            walk_node_id,
+            next_unit.unit,
+            adjacency=adjacency )
+         + next_unit.occupied_seconds )
       previous_side_cluster_id = next_unit.unit.side_cluster_id
 
       if next_unit.unit.exit_walk_node_id is not None:
@@ -327,13 +362,15 @@ def _anchored_sequence_score(
       *,
       window_end_seconds: int,
       window_start_seconds: int,
+      current_node_id: str,
       anchor_node_id: str ) -> tuple[ float, float, str ]:
    terminal_unit = sequence[ -1 ]
-   total_duration_seconds = sum(
-      unit.duration_seconds
-      for unit in sequence )
+   occupied_seconds = packed_units_occupied_seconds(
+      walk_graph,
+      sequence,
+      from_node_id=current_node_id )
    dead_time_seconds = float(
-      window_end_seconds - window_start_seconds - total_duration_seconds )
+      window_end_seconds - window_start_seconds - occupied_seconds )
    terminal_exit_node_id = terminal_unit.unit.exit_walk_node_id or ''
    event_travel_distance = _walk_distance_px(
       walk_graph,
@@ -544,7 +581,7 @@ def _prepared_unit_with_loop_schedule_unit(
       loop_unit: LoopScheduleUnit ) -> PreparedLoopScheduleUnit:
    return PreparedLoopScheduleUnit(
       unit=loop_unit,
-      duration_seconds=prepared_unit.duration_seconds )
+      occupied_seconds=prepared_unit.occupied_seconds )
 
 
 def _walk_distance_px(
@@ -593,14 +630,3 @@ def _anchor_walk_node_id(
       return None
 
    return anchor_stop.walk_node_ids[ 0 ]
-
-
-def _total_viewing_duration_seconds(
-      conn: Connection,
-      animals: list[ LoopScheduleStop ] ) -> int | None:
-   durations = fetch_viewing_durations( conn, animals )
-
-   if durations is None:
-      return None
-
-   return sum( durations )

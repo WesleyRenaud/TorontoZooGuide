@@ -125,10 +125,10 @@ def test_wait_filler_pack_end_reserves_inactive_soft_pins_without_hard_pin() -> 
    remaining_units = [
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'face-painting', [] ),
-         duration_seconds=20 * 60 ),
+         occupied_seconds=20 * 60 ),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'zoomobile', [] ),
-         duration_seconds=30 * 60 ),
+         occupied_seconds=30 * 60 ),
    ]
 
    wait_pack_end, planned_active_start = schedule_module._wait_filler_pack_end_seconds(
@@ -164,10 +164,10 @@ def test_wait_filler_pack_end_cascades_against_hard_pin_deadline() -> None:
    remaining_units = [
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'face-painting', [] ),
-         duration_seconds=20 * 60 ),
+         occupied_seconds=20 * 60 ),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'carousel', [] ),
-         duration_seconds=15 * 60 ),
+         occupied_seconds=15 * 60 ),
    ]
 
    wait_pack_end, planned_active_start = schedule_module._wait_filler_pack_end_seconds(
@@ -226,7 +226,7 @@ def test_drain_cascaded_inactive_soft_pins_skips_missing_and_unready_units() -> 
       attraction_hours_soft_pins=[ active, carousel, zoomobile ] )
    unready = PreparedLoopScheduleUnit(
       unit=_loop_unit( 'carousel', [] ),
-      duration_seconds=15 * 60 )
+      occupied_seconds=15 * 60 )
 
    assert schedule_module._drain_cascaded_inactive_soft_pin_loop_units(
       object(),
@@ -247,7 +247,7 @@ def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None
       new_likelihood=100 )
    prepared = PreparedLoopScheduleUnit(
       unit=_loop_unit( None, [ attraction ] ),
-      duration_seconds=30 * 60 )
+      occupied_seconds=30 * 60 )
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
@@ -268,7 +268,7 @@ def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None
 
    prepared_with_loop = PreparedLoopScheduleUnit(
       unit=_loop_unit( 'other-loop', [ attraction ] ),
-      duration_seconds=30 * 60 )
+      occupied_seconds=30 * 60 )
    stops, cursor = hours_module.schedule_prepared_loop_unit_with_attraction_hours(
       object(),
       prepared_with_loop,
@@ -308,21 +308,21 @@ def test_attraction_hours_loop_earliest_start_seconds_early_exits() -> None:
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( None, [ attraction ] ),
-         duration_seconds=30 * 60 ),
+         occupied_seconds=30 * 60 ),
       [ soft_pin ] ) is None
 
    assert hours_module.attraction_hours_loop_earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'other-loop', [ attraction ] ),
-         duration_seconds=30 * 60 ),
+         occupied_seconds=30 * 60 ),
       [ soft_pin ] ) is None
 
    assert hours_module.attraction_hours_loop_earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'zoomobile', [ attraction ] ),
-         duration_seconds=30 * 60 ),
+         occupied_seconds=30 * 60 ),
       [ soft_pin ] ) == 10 * 3600
 
 
