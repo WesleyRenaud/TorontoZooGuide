@@ -291,10 +291,11 @@ def test_bulk_schedule_left_aligns_free_loops_before_soft_pin_late_place(
    assert tiger_end is not None
    assert carousel_start is not None
    assert morning is not None
-   # Contiguous from day start — not right-aligned against the late-placed carousel.
+   # Contiguous from day start — free loops must not be shoved to day end.
    assert tiger_start <= morning
    assert tiger_end <= carousel_start
-   assert carousel_start - tiger_end >= 2 * 60 * 60
+   # Soft pin follows the free loop without a multi-hour dead gap.
+   assert carousel_start - tiger_end <= 30 * 60
 
 
 def test_bulk_schedule_fills_wait_with_already_open_soft_pin(

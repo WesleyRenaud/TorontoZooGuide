@@ -164,10 +164,9 @@ def schedule_animals_by_master_route_loop(
 
       window_state.cursor_seconds = schedule_window.end_seconds
 
-   remaining_animals.extend(
-      _animals_from_prepared_units( remaining_units ) )
-
-   return remaining_animals, window_state.cursor_seconds
+   return (
+      _animals_from_prepared_units( remaining_units ),
+      window_state.cursor_seconds )
 
 
 def _process_schedule_window(
@@ -266,6 +265,17 @@ def _process_schedule_window(
          slot_sink=slot_sink )
 
    packing_hold_loop_ids = set( held_constrained_loop_ids )
+   pack_open_soft_pins_with_free_loops = _should_pack_open_soft_pins_with_free_loops(
+      remaining_units=remaining_units,
+      active_soft_pin_loop_ids=active_soft_pin_loop_ids,
+      held_constrained_loop_ids=held_constrained_loop_ids,
+      wait_filler_pending=wait_filler_pending,
+      hard_pin_deadline_seconds=hard_pin_deadline_seconds,
+      active_open_seconds=active_open_seconds,
+      cursor_seconds=window_state.cursor_seconds )
+
+   if pack_open_soft_pins_with_free_loops:
+      packing_hold_loop_ids -= active_soft_pin_loop_ids
 
    # Incomplete hard-pinned loops (rainforest leftovers after a talk weave) must
    # finish before later same-cluster loops — otherwise Carousel/Savanna insert
@@ -285,10 +295,9 @@ def _process_schedule_window(
          remaining_units,
          held_constrained_loop_ids )
 
-   if active_soft_pin_loop_ids:
-      # Later same-cluster loops (Greenhouse after Walk-Thru) belong after the
-      # active soft pin on that corridor — whether waiting for open or packing
-      # beside an already-open pin.
+   if active_soft_pin_loop_ids and not pack_open_soft_pins_with_free_loops:
+      # Wait-filler / hard-pin: later same-cluster loops (Greenhouse after
+      # Walk-Thru) belong after the active soft pin on that corridor.
       packing_hold_loop_ids |= _later_same_cluster_loop_ids(
          remaining_units,
          active_soft_pin_loop_ids )
@@ -327,7 +336,7 @@ def _process_schedule_window(
       packing_window = replace(
          packing_window,
          end_seconds=min( packing_window.end_seconds, wait_pack_end_seconds ) )
-   else:
+   elif not pack_open_soft_pins_with_free_loops:
       packing_window = _packing_window_with_active_soft_pin_tail_reserve(
          packing_window,
          schedule_window=schedule_window,
@@ -427,9 +436,9 @@ def _process_schedule_window(
                cursor_seconds=window_state.cursor_seconds,
                slot_sink=slot_sink )
 
-         # Soft pins drain after the free-pack wave. Mid-loop late-place was
-         # jumping the cursor to window end and then scheduling the rest of
-         # packed_units past zoo close.
+         # Soft pins drain after the free-pack wave only when they were held out
+         # of packing. Mid-loop late-place was jumping the cursor to window end
+         # and then scheduling the rest of packed_units past zoo close.
 
    if hard_pinned_loop_ids and not wait_filler_pending:
       window_state.cursor_seconds = _drain_ready_pinned_loop_units(
@@ -501,7 +510,7 @@ def _process_schedule_window(
 
       return True
 
-   if active_soft_pin_loop_ids:
+   if active_soft_pin_loop_ids and not pack_open_soft_pins_with_free_loops:
       late_place = (
          hard_pin_deadline_seconds is not None
          or free_pack_moved_past_open
@@ -1471,6 +1480,31 @@ def _packed_units_start_seconds(
    return max(
       cursor_seconds,
       schedule_window.start_seconds )
+
+
+def _should_pack_open_soft_pins_with_free_loops(
+      *,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      active_soft_pin_loop_ids: set[ str ],
+      held_constrained_loop_ids: set[ str ],
+      wait_filler_pending: bool,
+      hard_pin_deadline_seconds: int | None,
+      active_open_seconds: int | None,
+      cursor_seconds: int,
+   ) -> bool:
+   """Pack already-open soft pins with free loops when no wait-filler or hard pin."""
+   if (
+         not active_soft_pin_loop_ids
+         or wait_filler_pending
+         or hard_pin_deadline_seconds is not None
+         or active_open_seconds is None
+         or cursor_seconds < active_open_seconds ):
+      return False
+
+   return any(
+      prepared_unit.unit.loop_id is not None
+      and prepared_unit.unit.loop_id not in held_constrained_loop_ids
+      for prepared_unit in remaining_units )
 
 
 def _later_same_cluster_loop_ids(

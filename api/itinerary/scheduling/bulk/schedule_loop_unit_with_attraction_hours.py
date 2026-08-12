@@ -204,14 +204,20 @@ def _schedule_stops_around_attraction_hours(
          scheduled_stop_ids.update( id( stop ) for stop in before_stops )
 
       elif late_place:
-         # Attraction-only soft pin already open: right-align before close /
-         # window end instead of locking the first open slot.
-         latest_start_seconds = (
-            min( soft_pin.close_seconds, window_end_seconds )
-            - attraction_duration_seconds )
+         # Right-align only against an external deadline (hard pin / cascade
+         # end) that is tighter than the attraction's own close. Otherwise an
+         # already-open soft pin would jump to its close and leave a dead gap
+         # after free-packed loops (e.g. Kangaroo Walk-Thru at 2:50 PM).
+         deadline_seconds = min(
+            soft_pin.close_seconds,
+            window_end_seconds )
 
-         if latest_start_seconds >= attraction_start_seconds:
-            attraction_start_seconds = latest_start_seconds
+         if deadline_seconds < soft_pin.close_seconds:
+            latest_start_seconds = (
+               deadline_seconds - attraction_duration_seconds )
+
+            if latest_start_seconds >= attraction_start_seconds:
+               attraction_start_seconds = latest_start_seconds
 
       attraction_end_seconds = (
          attraction_start_seconds + attraction_duration_seconds )

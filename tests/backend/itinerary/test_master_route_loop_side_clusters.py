@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from api.walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
 from api.walk_graph.master_route import default_master_route
 
@@ -13,7 +14,7 @@ def test_default_master_route_loads_north_and_south_loop_side_clusters() -> None
       cluster.cluster_id
       for cluster in master_route.loop_side_clusters
    }
-   assert cluster_ids == { 'north', 'south' }
+   assert cluster_ids == { LoopSideClusterId.NORTH, LoopSideClusterId.SOUTH }
 
 
 def test_north_loop_side_cluster_contains_expected_loops() -> None:
@@ -21,7 +22,7 @@ def test_north_loop_side_cluster_contains_expected_loops() -> None:
    north_cluster = next(
       cluster
       for cluster in master_route.loop_side_clusters
-      if cluster.cluster_id == 'north' )
+      if cluster.cluster_id == LoopSideClusterId.NORTH )
 
    assert north_cluster.loop_ids == [
       'australasia',
@@ -40,7 +41,7 @@ def test_south_loop_side_cluster_contains_expected_loops() -> None:
    south_cluster = next(
       cluster
       for cluster in master_route.loop_side_clusters
-      if cluster.cluster_id == 'south' )
+      if cluster.cluster_id == LoopSideClusterId.SOUTH )
 
    assert south_cluster.loop_ids == [
       'africa_savanna_canadian_domain',
@@ -75,16 +76,16 @@ def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:
 def test_default_loop_side_cluster_id_by_loop_id_maps_each_loop() -> None:
    loop_side_cluster_ids = default_loop_side_cluster_id_by_loop_id()
 
-   assert loop_side_cluster_ids[ 'australasia' ] == 'north'
-   assert loop_side_cluster_ids[ 'eurasia' ] == 'north'
-   assert loop_side_cluster_ids[ 'discovery_zone' ] == 'north'
-   assert loop_side_cluster_ids[ 'splash_island' ] == 'north'
-   assert loop_side_cluster_ids[ 'eurasia_attractions' ] == 'north'
-   assert loop_side_cluster_ids[ 'tundra_attractions' ] == 'north'
-   assert loop_side_cluster_ids[ 'indo_malaya' ] == 'south'
-   assert loop_side_cluster_ids[ 'africa_savanna_canadian_domain' ] == 'south'
-   assert loop_side_cluster_ids[ 'african_rainforest_giraffe' ] == 'south'
-   assert loop_side_cluster_ids[ 'gorilla_climb' ] == 'south'
-   assert loop_side_cluster_ids[ 'conservation_carousel' ] == 'south'
-   assert loop_side_cluster_ids[ 'face_painting_front_gates' ] == 'south'
-   assert loop_side_cluster_ids[ 'zoomobile' ] == 'south'
+   assert loop_side_cluster_ids[ 'australasia' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'eurasia' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'discovery_zone' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'splash_island' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'eurasia_attractions' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'tundra_attractions' ] == LoopSideClusterId.NORTH
+   assert loop_side_cluster_ids[ 'indo_malaya' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'africa_savanna_canadian_domain' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'african_rainforest_giraffe' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'gorilla_climb' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'conservation_carousel' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'face_painting_front_gates' ] == LoopSideClusterId.SOUTH
+   assert loop_side_cluster_ids[ 'zoomobile' ] == LoopSideClusterId.SOUTH
