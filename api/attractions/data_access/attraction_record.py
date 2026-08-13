@@ -21,3 +21,4 @@ class AttractionRecord:
    weekday_end_time: ScheduleTimeKey = None
    weekend_holiday_start_time: ScheduleTimeKey = None
    weekend_holiday_end_time: ScheduleTimeKey = None
+   is_also_transportation: bool = False

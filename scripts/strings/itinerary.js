@@ -7,6 +7,7 @@ export const itinerary = {
       build: 'Build Itinerary',
       cancel: 'Cancel',
       clear: 'Clear',
+      confirm: 'Confirm',
       edit: 'Edit',
       editItinerary: 'Edit Itinerary',
       finish: 'Finish',
@@ -30,6 +31,10 @@ export const itinerary = {
    },
    confirmation: {
       attractionMayBeClosed: 'Attraction May Be Closed',
+      attractionAlsoTransportationTitle: 'Add as Attraction?',
+      attractionAlsoTransportationMessage: attractionName => (
+         `The ${attractionName} can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the ${attractionName} as an attraction.`
+      ),
       clearMessage: (
          'This will remove all selected Animals, Attractions, Meet the Guardians talks, and Wild Encounters.'
       ),

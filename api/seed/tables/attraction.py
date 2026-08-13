@@ -18,6 +18,7 @@ RECORD_FIELDS = [
    'y_coord',
    'default_itinerary_duration_minutes',
    'region',
+   'is_also_transportation',
 ]
 
 DB_COLUMNS = [
@@ -30,6 +31,7 @@ DB_COLUMNS = [
    'Y_COORD',
    'DEFAULT_ITINERARY_DURATION_MINUTES',
    'REGION',
+   'IS_ALSO_TRANSPORTATION',
 ]
 
 DATA_FILE = 'attraction.json'

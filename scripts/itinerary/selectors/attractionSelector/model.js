@@ -45,6 +45,10 @@ export function isClosedAttraction(row) {
    return row?.is_closed === true;
 }
 
+export function isAlsoTransportationAttraction(row) {
+   return row?.is_also_transportation === true;
+}
+
 export function getAttractionSubtitle(row) {
    return buildOccurrenceSubtitle({
       primaryValue: isFreeWithAdmission(row)
@@ -142,7 +146,25 @@ export function shouldConfirmClosedAttraction({
    return isClosedAttraction(row);
 }
 
+export function shouldConfirmAlsoTransportationAttraction({
+   row,
+   isSelected,
+} = {}) {
+   if (isSelected) {
+      return false;
+   }
+
+   return isAlsoTransportationAttraction(row);
+}
+
 export function buildClosedAttractionMessage(row) {
    const name = getAttractionName(row) || CLOSED_ATTRACTION_FALLBACK_NAME;
    return `The ${name} is closed on your visit date. Do you still want to add it to your itinerary?`;
+}
+
+export function buildAlsoTransportationAttractionMessage(row) {
+   const name = getAttractionName(row) || CLOSED_ATTRACTION_FALLBACK_NAME;
+   return APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationMessage(
+      name
+   );
 }
