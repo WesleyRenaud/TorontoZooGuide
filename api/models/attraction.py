@@ -23,7 +23,8 @@ class Attraction:
          start_time: ScheduleTimeKey = None,
          end_time: ScheduleTimeKey = None,
          open_time: ScheduleTimeKey = None,
-         close_time: ScheduleTimeKey = None ) -> None:
+         close_time: ScheduleTimeKey = None,
+         is_also_transportation: bool = False ) -> None:
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -41,6 +42,7 @@ class Attraction:
       self.end_time = end_time
       self.open_time = open_time
       self.close_time = close_time
+      self.is_also_transportation = is_also_transportation
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -62,4 +64,6 @@ class Attraction:
          'end_time': self.end_time,
          'open_time': self.open_time,
          'close_time': self.close_time,
+         'is_also_transportation': ValueConversion.as_boolean(
+            self.is_also_transportation ),
       }

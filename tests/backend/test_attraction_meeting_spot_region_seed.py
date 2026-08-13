@@ -20,6 +20,7 @@ def test_attraction_and_meeting_spot_region_columns_are_seeded() -> None:
    conn.commit()
 
    assert 'REGION' in column_names( cursor, 'Attraction' )
+   assert 'IS_ALSO_TRANSPORTATION' in column_names( cursor, 'Attraction' )
    assert 'REGION' in column_names( cursor, 'WildEncounterMeetingSpot' )
    assert 'Wildlife Science Campus' in {
       row[ 0 ]
@@ -39,6 +40,15 @@ def test_attraction_and_meeting_spot_region_columns_are_seeded() -> None:
    assert attraction_regions[ 'Wildlife Health & Science Centre' ] == 'Wildlife Science Campus'
    assert attraction_regions[ 'Gorilla Climb Ropes Course' ] == 'Africa'
    assert attraction_regions[ 'Splash Island' ] == 'Discovery Zone'
+
+   transportation_flags = {
+      row[ 'NAME' ]: row[ 'IS_ALSO_TRANSPORTATION' ]
+      for row in cursor.execute(
+         'SELECT NAME, IS_ALSO_TRANSPORTATION FROM Attraction;'
+      ).fetchall()
+   }
+   assert transportation_flags[ 'Zoomobile' ] == 1
+   assert transportation_flags[ 'Conservation Carousel' ] == 0
 
    meeting_spot_regions = {
       row[ 'NAME' ]: row[ 'REGION' ]

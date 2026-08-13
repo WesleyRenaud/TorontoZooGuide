@@ -161,7 +161,8 @@ def build_attraction(
       closed_message=closed_message,
       likelihood=likelihood,
       open_time=open_time,
-      close_time=close_time )
+      close_time=close_time,
+      is_also_transportation=attraction_record.is_also_transportation )
 
 
 def build_attractions(
