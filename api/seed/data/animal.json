@@ -1400,6 +1400,20 @@
     "animals_at_the_zoo": null
   },
   {
+    "species": "Lake Sturgeon",
+    "latin_name": "Acipenser Fulvescens",
+    "min_temperature": null,
+    "general_viewing_tips": "The lake sturgeon can be found in a tank enclosure towards the end of the pavilion, across from the river otter and snapping turtle underwater viewings.",
+    "seasonal_viewing_tips": null,
+    "identification": "The Lake Sturgeon is a large, prehistoric-looking freshwater fish with a long, torpedo-shaped body, a pointed snout, and five rows of bony scutes instead of typical scales. Colouration is usually olive-grey to brown on the back, fading to paler grey or white on the belly, often with mottled blotches. Whisker-like barbels hang beneath the snout in front of a downward-facing, sucker-like mouth. The tail is heterocercal, with the upper lobe longer than the lower, similar to a shark. Adults commonly reach 1–1.5 m, with exceptional individuals growing larger.",
+    "habitat_and_range": "This species is native to large lakes and rivers of central and eastern North America, including the Great Lakes, the St. Lawrence River, Hudson Bay drainages, and parts of the Mississippi basin. In Ontario it inhabits deep, clean waters with gravel or rocky spawning sites. Lake sturgeon favour extensive freshwater systems where they can move between feeding, overwintering, and spawning habitats.",
+    "diet_and_feeding": "Lake sturgeon are bottom-feeding carnivores. They use their barbels to detect molluscs, insect larvae, crayfish, worms, and small fish along the substrate, then extend their protrusible mouths to vacuum prey from the bottom. In zoos they are fed a varied diet of aquatic invertebrates and fish that reflects this natural foraging style.",
+    "behaviour_and_social_life": "These fish are generally solitary and slow-moving, spending much of their time cruising near the bottom. They are long-lived and late-maturing, and adults may travel long distances to reach spawning grounds. Although not highly social, several individuals may gather in deeper pools or at feeding sites. They are most active during low light and are typically calm, deliberate swimmers.",
+    "adaptations": "Lake sturgeon retain many primitive features that suit a benthic lifestyle. Bony scutes provide armour, while barbels and a highly sensitive snout help locate buried prey in murky water. The heterocercal tail and heavy, streamlined body allow efficient cruising in large lakes and rivers. Their cartilaginous skeleton, slow metabolism, and extreme longevity help them survive in variable freshwater systems.",
+    "reproduction_and_life_cycle": "Lake sturgeon mature slowly, often not breeding until 15–25 years of age. Spawning occurs in spring over rocky or gravel shallows, where females release large numbers of adhesive eggs that are fertilized externally. There is no parental care. Juveniles grow slowly, and individuals can live 80–100 years or more, making this one of the longest-lived freshwater fishes in North America.",
+    "animals_at_the_zoo": null
+  },
+  {
     "species": "Lau Banded Iguana",
     "latin_name": "Brachylophus Fasciatus",
     "min_temperature": null,
