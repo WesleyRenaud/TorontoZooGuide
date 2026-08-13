@@ -11,6 +11,7 @@ from .loop_unit_travel_time import approach_travel_seconds_to_unit
 from .loop_unit_travel_time import packed_units_occupied_seconds
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....types import Connection
+from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
@@ -299,6 +300,13 @@ def _pack_loops_for_open_window(
    walk_node_id = current_node_id
    previous_side_cluster_id = departure_side_cluster_id
    adjacency = build_walk_graph_adjacency( walk_graph )
+   preferred_side_cluster_sequence, prefer_soft_pin_loop_ids = (
+      _choose_side_cluster_packing_order(
+         schedule_window,
+         prepared_units=prepared_units,
+         walk_graph=walk_graph,
+         current_node_id=current_node_id,
+         cursor_seconds=window_start_seconds ) )
 
    while remaining_units:
       available_seconds = schedule_window.end_seconds - cursor_seconds
@@ -333,7 +341,10 @@ def _pack_loops_for_open_window(
             from_node_id=walk_node_id,
             previous_side_cluster_id=previous_side_cluster_id,
             adjacency=adjacency,
-            prefer_side_cluster_loop_order=prefer_side_cluster_loop_order ) )
+            prefer_side_cluster_loop_order=prefer_side_cluster_loop_order,
+            remaining_units=remaining_units,
+            preferred_side_cluster_sequence=preferred_side_cluster_sequence,
+            prefer_soft_pin_loop_ids=prefer_soft_pin_loop_ids ) )
       remaining_units.remove( next_unit )
       next_unit = _prepared_unit_with_best_approach_orientation(
          walk_graph,
@@ -408,14 +419,43 @@ def _open_window_unit_sort_key(
       from_node_id: str,
       previous_side_cluster_id: str | None,
       adjacency: WalkGraphAdjacency,
-      prefer_side_cluster_loop_order: bool ) -> tuple[ float, float, str ]:
-   return _prepared_unit_sort_key(
+      prefer_side_cluster_loop_order: bool,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      preferred_side_cluster_sequence: list[ LoopSideClusterId ] | None = None,
+      prefer_soft_pin_loop_ids: list[ str ] | None = None,
+   ) -> tuple[ float, float, float, float, str ]:
+   remaining_cluster_ids = [
+      unit.unit.side_cluster_id
+      for unit in remaining_units
+      if unit.unit.side_cluster_id is not None
+   ]
+   next_cluster_id = next(
+      (
+         cluster_id
+         for cluster_id in ( preferred_side_cluster_sequence or [] )
+         if cluster_id in remaining_cluster_ids
+      ),
+      None )
+   corridor_rank = int(
+      next_cluster_id is not None
+      and prepared_unit.unit.side_cluster_id != next_cluster_id )
+   pin_rank = int(
+      bool( prefer_soft_pin_loop_ids )
+      and prepared_unit.unit.loop_id not in prefer_soft_pin_loop_ids )
+   distance_rank, cluster_rank, loop_id = _prepared_unit_sort_key(
       walk_graph,
       prepared_unit,
       from_node_id=from_node_id,
       adjacency=adjacency,
       prefer_side_cluster_loop_order=prefer_side_cluster_loop_order,
       reference_side_cluster_id=previous_side_cluster_id )
+
+   return (
+      float( corridor_rank ),
+      float( pin_rank ),
+      distance_rank,
+      cluster_rank,
+      loop_id )
 
 
 def _prepared_unit_sort_key(
@@ -450,6 +490,132 @@ def _prepared_unit_sort_key(
       float( -same_side_cluster ),
       prepared_unit.unit.loop_id or '',
    )
+
+
+def _soft_pin_loop_ids_in_units(
+      schedule_window: ItineraryScheduleWindow,
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+   ) -> list[ str ]:
+   unit_loop_ids = [
+      prepared_unit.unit.loop_id
+      for prepared_unit in prepared_units
+      if prepared_unit.unit.loop_id is not None
+   ]
+   loop_ids: list[ str ] = []
+
+   for soft_pin in schedule_window.attraction_hours_soft_pins:
+      if (
+            soft_pin.loop_id in unit_loop_ids
+            and soft_pin.loop_id not in loop_ids ):
+         loop_ids.append( soft_pin.loop_id )
+
+   return loop_ids
+
+
+def _choose_side_cluster_packing_order(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      walk_graph: WalkGraph,
+      current_node_id: str,
+      cursor_seconds: int,
+   ) -> tuple[ list[ LoopSideClusterId ] | None, list[ str ] | None ]:
+   """Prefer the soft-pin corridor later when hours allow; otherwise front-load it."""
+   soft_pin_loop_ids = _soft_pin_loop_ids_in_units(
+      schedule_window,
+      prepared_units )
+
+   if not soft_pin_loop_ids:
+      return None, None
+
+   soft_cluster_id = next(
+      (
+         LoopSideClusterId( prepared_unit.unit.side_cluster_id )
+         for prepared_unit in prepared_units
+         if (
+               prepared_unit.unit.loop_id in soft_pin_loop_ids
+               and prepared_unit.unit.side_cluster_id is not None )
+      ),
+      None )
+
+   if soft_cluster_id is None:
+      return None, None
+
+   present_cluster_ids = [
+      cluster_id
+      for cluster_id in LoopSideClusterId
+      if any(
+         prepared_unit.unit.side_cluster_id == cluster_id
+         for prepared_unit in prepared_units )
+   ]
+   other_cluster_ids = [
+      cluster_id
+      for cluster_id in present_cluster_ids
+      if cluster_id != soft_cluster_id
+   ]
+   pin_later_order = [ *other_cluster_ids, soft_cluster_id ]
+   pin_first_order = [ soft_cluster_id, *other_cluster_ids ]
+
+   if _soft_pins_fit_before_close(
+         schedule_window,
+         prepared_units=prepared_units,
+         cluster_order=pin_later_order,
+         soft_pin_loop_ids=soft_pin_loop_ids,
+         soft_pin_late_in_own_cluster=True,
+         walk_graph=walk_graph,
+         current_node_id=current_node_id,
+         cursor_seconds=cursor_seconds ):
+      return pin_later_order, None
+
+   return pin_first_order, soft_pin_loop_ids
+
+
+def _soft_pins_fit_before_close(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      cluster_order: list[ LoopSideClusterId ],
+      soft_pin_loop_ids: list[ str ],
+      soft_pin_late_in_own_cluster: bool,
+      walk_graph: WalkGraph,
+      current_node_id: str,
+      cursor_seconds: int,
+   ) -> bool:
+   for prepared_unit in prepared_units:
+      if prepared_unit.unit.loop_id not in soft_pin_loop_ids:
+         continue
+
+      matching_pins = [
+         soft_pin
+         for soft_pin in schedule_window.attraction_hours_soft_pins
+         if soft_pin.loop_id == prepared_unit.unit.loop_id
+      ]
+      soft_cluster_id = prepared_unit.unit.side_cluster_id
+
+      if not matching_pins or soft_cluster_id not in cluster_order:
+         continue
+
+      preceding_cluster_ids = cluster_order[ : cluster_order.index( soft_cluster_id ) ]
+      units_before_soft_end = [
+         candidate
+         for candidate in prepared_units
+         if candidate.unit.side_cluster_id in preceding_cluster_ids
+         or (
+               soft_pin_late_in_own_cluster
+               and candidate.unit.side_cluster_id == soft_cluster_id
+               and candidate.unit.loop_id not in soft_pin_loop_ids )
+      ] + [ prepared_unit ]
+
+      if (
+            cursor_seconds
+            + packed_units_occupied_seconds(
+               walk_graph,
+               units_before_soft_end,
+               from_node_id=current_node_id )
+            > min( matching_pins[ 0 ].close_seconds, schedule_window.end_seconds ) ):
+         return False
+
+   return True
 
 
 def _should_prefer_side_cluster_loop_order(

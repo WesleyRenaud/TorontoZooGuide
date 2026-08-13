@@ -231,12 +231,11 @@ def bulk_schedule_animals(
          build_bulk_schedule_animals_not_enough_time_issue(
             remaining_stops ),
       ]
-   else:
-      sync_visit_times_to_scheduled_endpoints_if_complete(
-         conn,
-         build_current_itinerary(
-            fetch_saved_itinerary( conn ),
-            **itinerary_context ) )
+   sync_visit_times_to_scheduled_endpoints_if_complete(
+      conn,
+      build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
 
    clear_visit_times_if_became_incomplete(
       conn,

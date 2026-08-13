@@ -6,6 +6,7 @@ from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
+from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
@@ -72,7 +73,7 @@ def _loop_schedule_unit_from_group(
       stops: list[ LoopScheduleStop ],
       *,
       loop_ids_by_stop_key: dict,
-      loop_side_cluster_ids: dict[ str, str ],
+      loop_side_cluster_ids: dict[ str, LoopSideClusterId ],
       loop_indexes_in_side_cluster: dict[ str, int ],
       loops_by_id: dict ) -> LoopScheduleUnit:
    loop_id = _loop_id_for_stops( stops, loop_ids_by_stop_key )
