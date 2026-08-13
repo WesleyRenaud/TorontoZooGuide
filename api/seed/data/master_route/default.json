@@ -865,6 +865,14 @@
         {
           "kind": "animal",
           "key": [
+            "Lake Sturgeon",
+            "Americas Pavilion",
+            null
+          ]
+        },
+        {
+          "kind": "animal",
+          "key": [
             "Leather Sea Star",
             "Americas Pavilion",
             null

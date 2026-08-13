@@ -1047,6 +1047,17 @@
     "is_zoomobile_only": false
   },
   {
+    "species": "Lake Sturgeon",
+    "exhibit": "Americas Pavilion",
+    "name": null,
+    "enclosure_type": "Indoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 68.663,
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5,
+    "is_zoomobile_only": false
+  },
+  {
     "species": "Leather Sea Star",
     "exhibit": "Americas Pavilion",
     "name": null,
