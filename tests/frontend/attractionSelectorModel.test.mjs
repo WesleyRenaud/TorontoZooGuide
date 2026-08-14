@@ -2,11 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+   buildAlsoTransportationAttractionMessage,
    buildAttractionImageSrc,
    buildClosedAttractionMessage,
    getAttractionSubtitle,
    makeAttractionSelection,
    migrateStoredAttractions,
+   shouldConfirmAlsoTransportationAttraction,
    shouldConfirmClosedAttraction,
 } from '../../scripts/itinerary/selectors/attractionSelector/model.js';
 
@@ -85,6 +87,32 @@ test('shouldConfirmClosedAttraction only prompts for new closed attractions', ()
    );
 });
 
+test('shouldConfirmAlsoTransportationAttraction only prompts when adding', () => {
+   const zoomobileRow = { is_also_transportation: true };
+
+   assert.equal(
+      shouldConfirmAlsoTransportationAttraction({
+         row: zoomobileRow,
+         isSelected: false,
+      }),
+      true
+   );
+   assert.equal(
+      shouldConfirmAlsoTransportationAttraction({
+         row: zoomobileRow,
+         isSelected: true,
+      }),
+      false
+   );
+   assert.equal(
+      shouldConfirmAlsoTransportationAttraction({
+         row: carouselRow,
+         isSelected: false,
+      }),
+      false
+   );
+});
+
 test('buildClosedAttractionMessage falls back when the attraction name is missing', () => {
    assert.equal(
       buildClosedAttractionMessage({ name: 'Zoomobile' }),
@@ -93,6 +121,17 @@ test('buildClosedAttractionMessage falls back when the attraction name is missin
    assert.match(
       buildClosedAttractionMessage({}),
       /This attraction is closed/
+   );
+});
+
+test('buildAlsoTransportationAttractionMessage explains attraction vs transportation', () => {
+   assert.equal(
+      buildAlsoTransportationAttractionMessage({ name: 'Zoomobile' }),
+      'The Zoomobile can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the Zoomobile as an attraction.'
+   );
+   assert.match(
+      buildAlsoTransportationAttractionMessage({}),
+      /This attraction can be added as a transportation method/
    );
 });
 

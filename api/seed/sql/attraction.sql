@@ -10,5 +10,6 @@ CREATE TABLE Attraction
    Y_COORD                               FLOAT       NOT NULL,
    DEFAULT_ITINERARY_DURATION_MINUTES    INTEGER     NOT NULL,
    REGION                                VARCHAR(64) NOT NULL,
+   IS_ALSO_TRANSPORTATION                BOOL        NOT NULL,
    FOREIGN KEY (REGION) REFERENCES Region(Name),
    PRIMARY KEY (NAME) );

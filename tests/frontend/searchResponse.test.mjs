@@ -13,6 +13,7 @@ test('normalizes search response collections before rows are rendered', () => {
             free_with_admission: true,
             part_of_seasonal_attraction: 1,
             is_closed: false,
+            is_also_transportation: true,
             info_link: '  https://www.torontozoo.com/tickets/carousel  ',
          },
       ],
@@ -47,6 +48,7 @@ test('normalizes search response collections before rows are rendered', () => {
    assert.equal(response.attractions[0].free_with_admission, true);
    assert.equal(response.attractions[0].part_of_seasonal_attraction, false);
    assert.equal(response.attractions[0].is_closed, false);
+   assert.equal(response.attractions[0].is_also_transportation, true);
    assert.equal(response.attractions[0].info_link, 'https://www.torontozoo.com/tickets/carousel');
    assert.deepEqual(response.guardians_talks[0], {
       name: 'Amur Tiger',

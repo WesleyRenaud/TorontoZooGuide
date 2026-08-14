@@ -55,6 +55,7 @@ test('searchZoo normalizes search responses', async () => {
             free_with_admission: true,
             part_of_seasonal_attraction: false,
             is_closed: false,
+            is_also_transportation: false,
             info_link: null,
             open_time: '10:00 AM',
             close_time: '4:00 PM',

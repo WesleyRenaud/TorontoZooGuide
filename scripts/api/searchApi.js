@@ -17,6 +17,7 @@ function normalizeAttractionRow(row) {
       free_with_admission: asBoolean(source.free_with_admission),
       part_of_seasonal_attraction: asBoolean(source.part_of_seasonal_attraction),
       is_closed: asBoolean(source.is_closed),
+      is_also_transportation: asBoolean(source.is_also_transportation),
       info_link: asNullableString(source.info_link),
       open_time: asNullableString(source.open_time),
       close_time: asNullableString(source.close_time),
