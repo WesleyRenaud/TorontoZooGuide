@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ...shared.enums.transportation_name import TransportationName
 from ...types import Connection
 from .zoomobile_station_mapper import map_zoomobile_station_records
 from .zoomobile_station_mapper import map_zoomobile_station_status_records
@@ -16,8 +17,10 @@ def fetch_zoomobile_station_names( conn: Connection ) -> list[ str ]:
       data = cur.execute(
          """   SELECT
                   s.NAME
-               FROM ZoomobileStation s;
-         """ )
+               FROM TransportationStation s
+               WHERE s.TRANSPORTATION = ?;
+         """,
+         ( TransportationName.ZOOMOBILE, ) )
 
       return [ row[ 0 ] for row in data.fetchall() ]
 
@@ -33,14 +36,54 @@ def fetch_zoomobile_station_records(
       data = cur.execute(
          """   SELECT
                   s.NAME,
-                  s.ON_WINTER_ROUTE,
                   s.DESCRIPTION,
                   s.X_COORD,
                   s.Y_COORD
-               FROM ZoomobileStation s;
-         """ )
+               FROM TransportationStation s
+               WHERE s.TRANSPORTATION = ?;
+         """,
+         ( TransportationName.ZOOMOBILE, ) )
 
       return map_zoomobile_station_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+def fetch_zoomobile_route_ids( conn: Connection ) -> list[ str ]:
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  r.ROUTE
+               FROM TransportationRoute r
+               WHERE r.TRANSPORTATION = ?;
+         """,
+         ( TransportationName.ZOOMOBILE, ) )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
+def fetch_zoomobile_route_station_names(
+      conn: Connection,
+      route: str ) -> list[ str ]:
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  rs.STATION
+               FROM TransportationRouteStation rs
+               WHERE rs.TRANSPORTATION = ?
+               AND rs.ROUTE = ?;
+         """,
+         ( TransportationName.ZOOMOBILE, route ) )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
 
    finally:
       cur.close()
@@ -53,13 +96,15 @@ def fetch_zoomobile_station_status_records(
    try:
       data = cur.execute(
          """   SELECT
-                  s.ZOOMOBILE_STATION,
+                  s.STATION,
                   s.CLOSED_START,
                   s.CLOSED_END,
                   s.IS_CLOSED,
                   s.CLOSED_MESSAGE
-               FROM ZoomobileStationStatus s;
-         """ )
+               FROM TransportationStationStatus s
+               WHERE s.TRANSPORTATION = ?;
+         """,
+         ( TransportationName.ZOOMOBILE, ) )
 
       return map_zoomobile_station_status_records( data.fetchall() )
 
@@ -107,10 +152,11 @@ def fetch_zoomobile_day_route(
       data = cur.execute(
          """   SELECT
                   z.ROUTE
-               FROM ZoomobileDayRoute z
-               WHERE z.MONTH = ?
+               FROM TransportationDayRoute z
+               WHERE z.TRANSPORTATION = ?
+               AND z.MONTH = ?
                AND z.DAY = ?;
-         """, ( month, day ) )
+         """, ( TransportationName.ZOOMOBILE, month, day ) )
 
       route_data = data.fetchone()
 

@@ -55,6 +55,13 @@ from . import restaurant_schedule_override
 from . import restroom
 from . import restroom_alert
 from . import restroom_status
+from . import transportation
+from . import transportation_day_route
+from . import transportation_leg
+from . import transportation_route
+from . import transportation_route_station
+from . import transportation_station
+from . import transportation_station_status
 from . import wild_encounter
 from . import wild_encounter_cancellation
 from . import wild_encounter_meeting_spot
@@ -62,10 +69,7 @@ from . import wild_encounter_schedule
 from . import zoo_event
 from . import zoo_hours
 from . import zoo_update
-from . import zoomobile_day_route
 from . import zoomobile_route_schedule
-from . import zoomobile_station
-from . import zoomobile_station_status
 
 
 static_tables = [
@@ -87,8 +91,12 @@ static_tables = [
    attraction,
    attraction_animal,
    attraction_day_seasonal_availability_multiplier,
-   zoomobile_station,
-   zoomobile_day_route,
+   transportation,
+   transportation_station,
+   transportation_route,
+   transportation_route_station,
+   transportation_day_route,
+   transportation_leg,
    meet_the_guardians_talk,
    guardians_talk_animal,
    wild_encounter_meeting_spot,
@@ -122,7 +130,7 @@ runtime_tables = [
    attraction_hours_schedule,
    attraction_schedule_override,
    zoomobile_route_schedule,
-   zoomobile_station_status,
+   transportation_station_status,
    guardians_talk_schedule,
    guardians_talk_cancellation,
    guardians_talk_occurrence,

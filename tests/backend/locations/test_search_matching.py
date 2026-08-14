@@ -30,7 +30,7 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
       for attraction in AttractionCoordinator.get_attractions_matching_query( 'CAROUSEL', 15, 'June', 2026, True )
    ] == [ 'Conservation Carousel' ]
 
-   assert [
+   assert {
       station.name
       for station in ZoomobileCoordinator.get_zoomobile_stations_matching_query(
          query='MAIN',
@@ -38,10 +38,10 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
          day=15,
          month='June',
          year=2026 )
-   ] == [
+   } == {
       'Main Zoomobile Station',
-      'Canadian Domain Zoomobile Station'
-   ]
+      'Canadian Domain Zoomobile Station',
+   }
 
    assert [
       pavilion.name

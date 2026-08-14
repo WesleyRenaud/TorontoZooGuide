@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..status.zoomobile_station_closed_status import ZoomobileStationClosedStatus
+from ...shared.enums.transportation_name import TransportationName
 from ...types import Connection
 
 
@@ -11,21 +12,23 @@ def save_zoomobile_station_closed_status(
 
    try:
       cur.execute(
-         """   INSERT INTO ZoomobileStationStatus (
-                  ZOOMOBILE_STATION,
+         """   INSERT INTO TransportationStationStatus (
+                  TRANSPORTATION,
+                  STATION,
                   IS_CLOSED,
                   CLOSED_MESSAGE,
                   CLOSED_START,
                   CLOSED_END
                )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(ZOOMOBILE_STATION) DO UPDATE SET
+               VALUES (?, ?, 1, ?, ?, ?)
+               ON CONFLICT(TRANSPORTATION, STATION) DO UPDATE SET
                   IS_CLOSED = 1,
                   CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
                   CLOSED_START = excluded.CLOSED_START,
                   CLOSED_END = excluded.CLOSED_END;
          """,
          (
+            TransportationName.ZOOMOBILE,
             status.zoomobile_station,
             status.message,
             status.start_date,
@@ -39,7 +42,6 @@ def save_zoomobile_station_closed_status(
       cur.close()
 
 
-
 def save_zoomobile_station_open_status(
       conn: Connection,
       zoomobile_station: str ) -> bool:
@@ -47,10 +49,11 @@ def save_zoomobile_station_open_status(
 
    try:
       cur.execute(
-         """   DELETE FROM ZoomobileStationStatus
-               WHERE ZOOMOBILE_STATION = ?;
+         """   DELETE FROM TransportationStationStatus
+               WHERE TRANSPORTATION = ?
+               AND STATION = ?;
          """,
-         ( zoomobile_station, ) )
+         ( TransportationName.ZOOMOBILE, zoomobile_station ) )
 
       conn.commit()
       return cur.rowcount > 0

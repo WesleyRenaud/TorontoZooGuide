@@ -85,13 +85,10 @@ class ZoomobileController():
       start_date = data.get( 'startDate' )
       end_date = data.get( 'endDate' )
 
-      success = False
-
-      if route in ( 'summer', 'winter' ):
-         success = ZoomobileCoordinator.set_current_zoomobile_route(
-            route=route,
-            start_date=start_date,
-            end_date=end_date )
+      success = ZoomobileCoordinator.set_current_zoomobile_route(
+         route=route,
+         start_date=start_date,
+         end_date=end_date )
 
       response = {
          'success': success,

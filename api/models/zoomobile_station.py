@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from ..types import Coordinate
+
 
 class ZoomobileStation:
    def __init__(
          self,
          name: str,
-         description: str | None = None,
-         x_coord: float | None = None,
-         y_coord: float | None = None ) -> None:
+         description: str,
+         x_coord: Coordinate,
+         y_coord: Coordinate ) -> None:
       self.name = name
       self.description = description
       self.x_coord = x_coord

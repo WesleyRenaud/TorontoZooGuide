@@ -5,6 +5,7 @@ from .itinerary_event_type import ItineraryEventType
 from .itinerary_save_issue_item_type import ItinerarySaveIssueItemType
 from .schedule_item_kind import ScheduleItemKind
 from .schedule_status import ScheduleStatus
+from .transportation_name import TransportationName
 from .zoomobile_route import ZoomobileRouteId
 from .zoomobile_route import ZoomobileRouteSource
 
@@ -16,6 +17,7 @@ __all__ = [
    'ItinerarySaveIssueItemType',
    'ScheduleItemKind',
    'ScheduleStatus',
+   'TransportationName',
    'ZoomobileRouteId',
    'ZoomobileRouteSource',
 ]

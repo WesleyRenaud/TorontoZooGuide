@@ -7,13 +7,13 @@ from ..data_access.zoomobile_station_status_record import ZoomobileStationStatus
 from ...models import ZoomobileStation
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
-from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...types import MonthInput, VisitDay, VisitYear
 from .zoomobile_station_context import ZoomobileStationContext
 
 
 def resolve_zoomobile_station_context(
       route: str,
+      stations_on_route: list[ str ],
       year: VisitYear,
       month: MonthInput,
       day: VisitDay,
@@ -25,7 +25,8 @@ def resolve_zoomobile_station_context(
       year=year )
 
    return ZoomobileStationContext(
-      route=ZoomobileRouteId( route ),
+      route=route,
+      stations_on_route=stations_on_route,
       target_date=target_date,
       zoomobile_stations_to_include=zoomobile_stations_to_include or [] )
 
@@ -35,10 +36,10 @@ def group_zoomobile_station_status_records_by_station(
    status_records_by_station: dict[ str, list[ ZoomobileStationStatusRecord ] ] = {}
 
    for status_record in status_records:
-      if status_record.zoomobile_station not in status_records_by_station:
-         status_records_by_station[ status_record.zoomobile_station ] = []
+      if status_record.station not in status_records_by_station:
+         status_records_by_station[ status_record.station ] = []
 
-      status_records_by_station[ status_record.zoomobile_station ].append( status_record )
+      status_records_by_station[ status_record.station ].append( status_record )
 
    return status_records_by_station
 
@@ -47,8 +48,7 @@ def is_zoomobile_station_on_route(
       station_record: ZoomobileStationRecord,
       context: ZoomobileStationContext ) -> bool:
    return (
-      context.route == ZoomobileRouteId.SUMMER
-      or station_record.on_winter_route
+      station_record.name in context.stations_on_route
       or station_record.name in context.zoomobile_stations_to_include
    )
 

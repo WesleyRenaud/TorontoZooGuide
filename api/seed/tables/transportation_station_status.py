@@ -5,7 +5,7 @@ from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
 
-SQL_FILE = 'zoomobile_station_status.sql'
+SQL_FILE = 'transportation_station_status.sql'
 
 
 def create_table( cursor: Cursor ) -> None:

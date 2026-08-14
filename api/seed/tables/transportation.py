@@ -10,23 +10,17 @@ from ...types import Cursor
 
 RECORD_FIELDS = [
    'name',
-   'on_winter_route',
-   'description',
-   'x_coord',
-   'y_coord',
+   'is_also_attraction',
 ]
 
 DB_COLUMNS = [
    'NAME',
-   'ON_WINTER_ROUTE',
-   'DESCRIPTION',
-   'X_COORD',
-   'Y_COORD',
+   'IS_ALSO_ATTRACTION',
 ]
 
-DATA_FILE = 'zoomobile_station.json'
+DATA_FILE = 'transportation.json'
 
-SQL_FILE = 'zoomobile_station.sql'
+SQL_FILE = 'transportation.sql'
 
 
 def create_table( cursor: Cursor ) -> None:
@@ -36,12 +30,12 @@ def create_table( cursor: Cursor ) -> None:
 def insert_rows( cursor: Cursor ) -> None:
    insert_json_records(
       cursor,
-      table='ZoomobileStation',
+      table='Transportation',
       columns=DB_COLUMNS,
       fields=RECORD_FIELDS,
       path=seed_data_path( DATA_FILE ) )
 
 
-zoomobile_stations = load_json_records(
+transportations = load_json_records(
    seed_data_path( DATA_FILE ),
    fields=RECORD_FIELDS )

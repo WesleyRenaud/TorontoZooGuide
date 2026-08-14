@@ -13,13 +13,23 @@ class ZoomobileStubMixin:
          return ZoomobileRoute(
             route='summer',
             route_source='manual',
-            zoomobile_stations=( ZoomobileStation( name=ZOOMOBILE_STATION_NAME ), ),
+            zoomobile_stations=( ZoomobileStation(
+               name=ZOOMOBILE_STATION_NAME,
+               description='Station',
+               x_coord=1.0,
+               y_coord=2.0,
+            ), ),
          )
 
 
    def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ ZoomobileStation ]:
          self.calls.append( ( 'get_zoomobile_stations_matching_query', kwargs ) )
-         return [ ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
+         return [ ZoomobileStation(
+            name=ZOOMOBILE_STATION_NAME,
+            description='Station',
+            x_coord=1.0,
+            y_coord=2.0,
+         ) ]
 
 
    def get_zoomobile_station_names( self ) -> list[ str ]:
