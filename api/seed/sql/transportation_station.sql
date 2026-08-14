@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS TransportationStation;
+
+CREATE TABLE TransportationStation
+(  TRANSPORTATION     VARCHAR(64) NOT NULL,
+   NAME               VARCHAR(64) NOT NULL,
+   DESCRIPTION        TEXT        NOT NULL,
+   X_COORD            FLOAT       NOT NULL,
+   Y_COORD            FLOAT       NOT NULL,
+   PRIMARY KEY (TRANSPORTATION, NAME),
+   FOREIGN KEY (TRANSPORTATION) REFERENCES Transportation(NAME) );

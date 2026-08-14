@@ -9,20 +9,22 @@ from ...types import Cursor
 
 
 RECORD_FIELDS = [
-   'month',
-   'day',
+   'transportation',
    'route',
+   'from_station',
+   'to_station',
 ]
 
 DB_COLUMNS = [
-   'MONTH',
-   'DAY',
+   'TRANSPORTATION',
    'ROUTE',
+   'FROM_STATION',
+   'TO_STATION',
 ]
 
-DATA_FILE = 'zoomobile_day_route.json'
+DATA_FILE = 'transportation_route_leg.json'
 
-SQL_FILE = 'zoomobile_day_route.sql'
+SQL_FILE = 'transportation_route_leg.sql'
 
 
 def create_table( cursor: Cursor ) -> None:
@@ -32,12 +34,12 @@ def create_table( cursor: Cursor ) -> None:
 def insert_rows( cursor: Cursor ) -> None:
    insert_json_records(
       cursor,
-      table='ZoomobileDayRoute',
+      table='TransportationRouteLeg',
       columns=DB_COLUMNS,
       fields=RECORD_FIELDS,
       path=seed_data_path( DATA_FILE ) )
 
 
-zoomobile_day_routes = load_json_records(
+transportation_route_legs = load_json_records(
    seed_data_path( DATA_FILE ),
    fields=RECORD_FIELDS )

@@ -1,0 +1,47 @@
+[
+  {
+    "transportation": "Zoomobile",
+    "route": "summer",
+    "station": "Main Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "summer",
+    "station": "Canadian Domain Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "summer",
+    "station": "Africa Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "summer",
+    "station": "Tundra Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "summer",
+    "station": "Eurasia Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "winter",
+    "station": "Main Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "winter",
+    "station": "Indo-Malaya Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "winter",
+    "station": "Tundra Zoomobile Station"
+  },
+  {
+    "transportation": "Zoomobile",
+    "route": "winter",
+    "station": "Eurasia Zoomobile Station"
+  }
+]

@@ -37,8 +37,8 @@ PARTIAL_RUNTIME_TABLES = {
    'AppSetting': 'ID INTEGER',
    'AttractionOpeningSchedule': 'ATTRACTION TEXT',
    'AttractionScheduleOverride': 'ATTRACTION TEXT',
-   'ZoomobileRouteSchedule': 'ID INTEGER',
-   'ZoomobileStationStatus': 'ZOOMOBILE_STATION TEXT',
+   'ZoomobileRouteSchedule': 'SCHEDULE_START_DATE DATE',
+   'TransportationStationStatus': 'TRANSPORTATION TEXT, STATION TEXT',
    'GuardiansTalkSchedule': 'TALK_NAME TEXT, LOCATION TEXT',
    'GuardiansTalkCancellation': 'TALK_NAME TEXT, LOCATION TEXT',
    'WildEncounterSchedule': 'WILD_ENCOUNTER TEXT',
@@ -190,13 +190,13 @@ EXPECTED_RUNTIME_COLUMNS = {
       'OVERRIDE_MESSAGE',
    },
    'ZoomobileRouteSchedule': {
-      'ID',
       'SCHEDULE_START_DATE',
       'SCHEDULE_END_DATE',
       'ROUTE',
    },
-   'ZoomobileStationStatus': {
-      'ZOOMOBILE_STATION',
+   'TransportationStationStatus': {
+      'TRANSPORTATION',
+      'STATION',
       'IS_CLOSED',
       'CLOSED_MESSAGE',
       'CLOSED_START',

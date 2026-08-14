@@ -20,6 +20,7 @@ from ..restaurants.routes import RESTAURANT_ROUTES
 from ..restrooms.routes import RESTROOM_ROUTES
 from ..search.routes import SEARCH_ROUTES
 from ..static.routes import STATIC_PAGE_ROUTES
+from ..transportation.routes import TRANSPORTATION_ROUTES
 from ..updates.routes import UPDATE_ROUTES
 from ..wild_encounters.routes import WILD_ENCOUNTER_ROUTES
 from ..zoo_hours.routes import ZOO_HOURS_ROUTES
@@ -43,6 +44,7 @@ register_post_routes( PICNIC_SITE_ROUTES )
 register_post_routes( RESTAURANT_ROUTES )
 register_post_routes( RESTROOM_ROUTES )
 register_post_routes( SEARCH_ROUTES )
+register_post_routes( TRANSPORTATION_ROUTES )
 register_post_routes( UPDATE_ROUTES )
 register_post_routes( WILD_ENCOUNTER_ROUTES )
 register_post_routes( ZOO_HOURS_ROUTES )

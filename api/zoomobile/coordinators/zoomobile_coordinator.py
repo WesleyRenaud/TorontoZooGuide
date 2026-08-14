@@ -5,6 +5,8 @@ from datetime import date
 from ..data_access.zoomobile_route_schedule import save_current_zoomobile_route_schedule
 from ..data_access.zoomobile_station import fetch_active_zoomobile_route
 from ..data_access.zoomobile_station import fetch_zoomobile_day_route
+from ..data_access.zoomobile_station import fetch_zoomobile_route_ids
+from ..data_access.zoomobile_station import fetch_zoomobile_route_station_names
 from ..data_access.zoomobile_station import fetch_zoomobile_station_names
 from ..data_access.zoomobile_station import fetch_zoomobile_station_records
 from ..data_access.zoomobile_station import fetch_zoomobile_station_status_records
@@ -32,6 +34,11 @@ class ZoomobileCoordinator():
 
 
    @classmethod
+   def get_zoomobile_route_ids( cls ) -> list[ str ]:
+      return fetch_zoomobile_route_ids( get_connection() )
+
+
+   @classmethod
    def get_zoomobile_stations(
          cls,
          route: str,
@@ -45,6 +52,9 @@ class ZoomobileCoordinator():
          status_records=fetch_zoomobile_station_status_records( get_connection() ),
          context=resolve_zoomobile_station_context(
             route=route,
+            stations_on_route=fetch_zoomobile_route_station_names(
+               get_connection(),
+               route=route ),
             day=day,
             month=month,
             year=year,
@@ -64,6 +74,7 @@ class ZoomobileCoordinator():
          day=day,
          month=month,
          year=year )
+      valid_routes = cls.get_zoomobile_route_ids()
       resolved_route, _ = resolve_requested_zoomobile_route(
          route,
          fetch_active_zoomobile_route(
@@ -72,7 +83,8 @@ class ZoomobileCoordinator():
          fetch_zoomobile_day_route(
             get_connection(),
             month=route_context.normalized_month,
-            day=route_context.normalized_day ) )
+            day=route_context.normalized_day ),
+         valid_routes )
       zoomobile_stations = cls.get_zoomobile_stations(
          route=resolved_route,
          day=day,
@@ -97,6 +109,7 @@ class ZoomobileCoordinator():
          day=day,
          month=month,
          year=year )
+      valid_routes = cls.get_zoomobile_route_ids()
       resolved_route, route_source = resolve_requested_zoomobile_route(
          route,
          fetch_active_zoomobile_route(
@@ -105,7 +118,8 @@ class ZoomobileCoordinator():
          fetch_zoomobile_day_route(
             get_connection(),
             month=route_context.normalized_month,
-            day=route_context.normalized_day ) )
+            day=route_context.normalized_day ),
+         valid_routes )
 
       return build_zoomobile_route_response(
          route=resolved_route,
@@ -124,7 +138,7 @@ class ZoomobileCoordinator():
          get_connection(),
          target_date=target_date )
 
-      if not is_valid_zoomobile_route( route ):
+      if not is_valid_zoomobile_route( route, cls.get_zoomobile_route_ids() ):
          return None
 
       return route
@@ -137,7 +151,7 @@ class ZoomobileCoordinator():
          month=month,
          day=day )
 
-      if not is_valid_zoomobile_route( route ):
+      if not is_valid_zoomobile_route( route, cls.get_zoomobile_route_ids() ):
          return None
 
       return route
@@ -174,6 +188,9 @@ class ZoomobileCoordinator():
          route: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
+      if not is_valid_zoomobile_route( route, cls.get_zoomobile_route_ids() ):
+         return False
+
       schedule = build_current_zoomobile_route_schedule(
          route=route,
          start_date=start_date,

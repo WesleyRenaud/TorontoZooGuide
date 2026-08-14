@@ -32,8 +32,13 @@ def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.gift_shop_day_seasonal_availability_multipliers
    assert data.attractions
    assert data.attraction_day_seasonal_availability_multipliers
-   assert data.zoomobile_stations
-   assert data.zoomobile_day_routes
+   assert data.transportations
+   assert data.transportation_stations
+   assert data.transportation_routes
+   assert data.transportation_route_stations
+   assert data.transportation_day_routes
+   assert data.transportation_legs
+   assert data.transportation_route_legs
    assert data.guardians_talks
    assert data.wild_encounter_meeting_spots
    assert data.wild_encounters

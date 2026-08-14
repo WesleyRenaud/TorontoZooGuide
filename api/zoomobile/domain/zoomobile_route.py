@@ -9,15 +9,10 @@ from ...types import MonthInput, VisitDay, VisitYear
 from .zoomobile_route_context import ZoomobileRouteContext
 
 
-def is_valid_zoomobile_route( route: str | None ) -> bool:
-   if route is None:
-      return False
-
-   try:
-      ZoomobileRouteId( route )
-      return True
-   except ValueError:
-      return False
+def is_valid_zoomobile_route(
+      route: str | None,
+      valid_routes: list[ str ] ) -> bool:
+   return route is not None and route in valid_routes
 
 
 def resolve_zoomobile_route_context(
@@ -39,24 +34,24 @@ def resolve_zoomobile_route_context(
 def resolve_requested_zoomobile_route(
       requested_route: str,
       active_route: str | None,
-      day_route: str | None ) -> tuple[ str, str ]:
+      day_route: str | None,
+      valid_routes: list[ str ] ) -> tuple[ str, str ]:
 
-   if requested_route in (
-         ZoomobileRouteId.SUMMER.value,
-         ZoomobileRouteId.WINTER.value,
-   ):
+   if is_valid_zoomobile_route( requested_route, valid_routes ):
       return requested_route, ZoomobileRouteSource.MANUAL.value
 
    return resolve_zoomobile_route(
       requested_route,
       active_route,
-      day_route )
+      day_route,
+      valid_routes )
 
 
 def resolve_zoomobile_route(
       requested_route: str,
       active_route: str | None,
-      day_route: str | None ) -> tuple[ str, str ]:
+      day_route: str | None,
+      valid_routes: list[ str ] ) -> tuple[ str, str ]:
 
    route = requested_route
    route_source = ZoomobileRouteSource.MANUAL
@@ -64,14 +59,18 @@ def resolve_zoomobile_route(
    if route == 'current':
       route = active_route
 
-      if is_valid_zoomobile_route( route ):
+      if is_valid_zoomobile_route( route, valid_routes ):
          route_source = ZoomobileRouteSource.OVERRIDE
       else:
          route = day_route
          route_source = ZoomobileRouteSource.FALLBACK
 
-   if not is_valid_zoomobile_route( route ):
-      route = ZoomobileRouteId.SUMMER.value
+   if not is_valid_zoomobile_route( route, valid_routes ):
+      route = (
+         ZoomobileRouteId.SUMMER.value
+         if ZoomobileRouteId.SUMMER.value in valid_routes
+         else valid_routes[ 0 ] if valid_routes else ZoomobileRouteId.SUMMER.value
+      )
 
    return route, route_source.value
 

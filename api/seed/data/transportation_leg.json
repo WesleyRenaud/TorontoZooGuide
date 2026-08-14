@@ -1,0 +1,44 @@
+[
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Canadian Domain Zoomobile Station",
+    "duration_minutes": 20
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Canadian Domain Zoomobile Station",
+    "to_station": "Africa Zoomobile Station",
+    "duration_minutes": 10
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Africa Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
+    "duration_minutes": 15
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Tundra Zoomobile Station",
+    "to_station": "Eurasia Zoomobile Station",
+    "duration_minutes": 15
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Eurasia Zoomobile Station",
+    "to_station": "Main Zoomobile Station",
+    "duration_minutes": 15
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Indo-Malaya Zoomobile Station",
+    "duration_minutes": 10
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Indo-Malaya Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
+    "duration_minutes": 20
+  }
+]

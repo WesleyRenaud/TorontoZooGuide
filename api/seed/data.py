@@ -23,11 +23,16 @@ from .tables.region import regions
 from .tables.restaurant import restaurants
 from .tables.restaurant_day_seasonal_availability_multiplier import restaurant_day_seasonal_availability_multipliers
 from .tables.restroom import restrooms
+from .tables.transportation import transportations
+from .tables.transportation_day_route import transportation_day_routes
+from .tables.transportation_leg import transportation_legs
+from .tables.transportation_route import transportation_routes
+from .tables.transportation_route_leg import transportation_route_legs
+from .tables.transportation_route_station import transportation_route_stations
+from .tables.transportation_station import transportation_stations
 from .tables.wild_encounter import wild_encounters
 from .tables.wild_encounter_meeting_spot import wild_encounter_meeting_spots
 from .tables.zoo_hours import zoo_hours
-from .tables.zoomobile_day_route import zoomobile_day_routes
-from .tables.zoomobile_station import zoomobile_stations
 
 __all__ = [
    'regions',
@@ -47,8 +52,13 @@ __all__ = [
    'itinerary_event_defaults',
    'attractions',
    'attraction_day_seasonal_availability_multipliers',
-   'zoomobile_stations',
-   'zoomobile_day_routes',
+   'transportations',
+   'transportation_stations',
+   'transportation_routes',
+   'transportation_route_stations',
+   'transportation_day_routes',
+   'transportation_legs',
+   'transportation_route_legs',
    'guardians_talks',
    'wild_encounter_meeting_spots',
    'wild_encounters',

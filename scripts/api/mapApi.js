@@ -64,6 +64,29 @@ export async function getZoomobileRoute(payload = EMPTY_PAYLOAD) {
    return normalizeRouteResponse(response);
 }
 
+function normalizeTransportationRoutesResponse(response) {
+   return asArray(asObject(response).transportations)
+      .map((entry) => {
+         const source = asObject(entry);
+         const name = asTrimmedString(source.name);
+
+         if (!name) {
+            return null;
+         }
+
+         return {
+            name,
+            routes: asStringArray(source.routes),
+         };
+      })
+      .filter(Boolean);
+}
+
+export async function getTransportationRoutes() {
+   const response = await postJson('/get-transportation-routes', EMPTY_PAYLOAD);
+   return normalizeTransportationRoutesResponse(response);
+}
+
 export async function getGuardiansTalks(payload) {
    return await fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
 }

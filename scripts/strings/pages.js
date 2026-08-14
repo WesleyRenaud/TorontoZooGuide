@@ -48,11 +48,6 @@ export const site = {
       updates: {
          title: 'Updates',
       },
-      zoomobileRoute: {
-         current: 'Current Route',
-         summer: 'Summer Route',
-         winter: 'Winter Route',
-      },
    },
    nav: {
       animals: 'Animals',

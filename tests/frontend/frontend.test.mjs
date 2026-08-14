@@ -103,6 +103,7 @@ import './layerRequest.test.mjs';
 import './mapDateContext.test.mjs';
 import './mapSvgIntegrity.test.mjs';
 import './mapSources.test.mjs';
+import './transportationRouteControls.test.mjs';
 import './markerHoverText.test.mjs';
 import './sourceHelpers.test.mjs';
 import './scheduledPillOverlap.test.mjs';
