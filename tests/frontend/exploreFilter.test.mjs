@@ -187,7 +187,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       assert.equal(chipContainer.children[0].className, 'filter-none');
       assert.equal(
          chipContainer.children[0].textContent,
-         APP_STRINGS.map.zoomobileRoute.none
+         APP_STRINGS.map.transportationRoute.none
       );
 
       checkboxes[1].checked = true;

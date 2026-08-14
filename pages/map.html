@@ -70,33 +70,7 @@
                      </label>
                   </div>
 
-                  <div class="zoomobile-route">
-                     <div class="zoomobile-route-title">
-                        {{ map.zoomobileRoute.title }}
-                     </div>
-
-                     <div class="zoomobile-route-options">
-                        <label class="zoomobile-route-option">
-                           <input type="radio" name="zoomobileRoute" value="none" checked>
-                           <span>{{ map.zoomobileRoute.none }}</span>
-                        </label>
-
-                        <label class="zoomobile-route-option">
-                           <input type="radio" name="zoomobileRoute" value="current">
-                           <span>{{ site.map.zoomobileRoute.current }}</span>
-                        </label>
-
-                        <label class="zoomobile-route-option">
-                           <input type="radio" name="zoomobileRoute" value="summer">
-                           <span>{{ site.map.zoomobileRoute.summer }}</span>
-                        </label>
-
-                        <label class="zoomobile-route-option">
-                           <input type="radio" name="zoomobileRoute" value="winter">
-                           <span>{{ site.map.zoomobileRoute.winter }}</span>
-                        </label>
-                     </div>
-                  </div>
+                  <div id="transportationRoutes" class="transportation-routes"></div>
 
                   <div class="filter-wrapper">
                      <div class="multi-select" id="typeFilter">

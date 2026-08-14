@@ -64,7 +64,7 @@ function getCheckboxLabel(checkbox) {
 function createNoSelectionChip() {
    const chip = document.createElement('span');
    chip.className = 'filter-none';
-   chip.textContent = APP_STRINGS.map.zoomobileRoute.none;
+   chip.textContent = APP_STRINGS.map.transportationRoute.none;
    return chip;
 }
 

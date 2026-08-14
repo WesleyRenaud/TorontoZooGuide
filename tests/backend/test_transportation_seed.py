@@ -48,6 +48,18 @@ EXPECTED_ZOOMOBILE_LEGS = {
    ( 'Indo-Malaya Zoomobile Station', 'Tundra Zoomobile Station', 20 ),
 }
 
+EXPECTED_ZOOMOBILE_ROUTE_LEGS = {
+   ( 'summer', 'Main Zoomobile Station', 'Canadian Domain Zoomobile Station' ),
+   ( 'summer', 'Canadian Domain Zoomobile Station', 'Africa Zoomobile Station' ),
+   ( 'summer', 'Africa Zoomobile Station', 'Tundra Zoomobile Station' ),
+   ( 'summer', 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ),
+   ( 'summer', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ),
+   ( 'winter', 'Main Zoomobile Station', 'Indo-Malaya Zoomobile Station' ),
+   ( 'winter', 'Indo-Malaya Zoomobile Station', 'Tundra Zoomobile Station' ),
+   ( 'winter', 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ),
+   ( 'winter', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ),
+}
+
 MAPPED_ZOOMOBILE_STATIONS = EXPECTED_ZOOMOBILE_STATIONS
 
 
@@ -90,6 +102,12 @@ def test_zoomobile_transportation_seed_graph() -> None:
       'FROM_STATION',
       'TO_STATION',
       'DURATION_MINUTES',
+   }
+   assert column_names( cursor, 'TransportationRouteLeg' ) >= {
+      'TRANSPORTATION',
+      'ROUTE',
+      'FROM_STATION',
+      'TO_STATION',
    }
    assert column_names( cursor, 'TransportationStationStatus' ) >= {
       'TRANSPORTATION',
@@ -195,5 +213,16 @@ def test_zoomobile_transportation_seed_graph() -> None:
       ).fetchall()
    }
    assert legs == EXPECTED_ZOOMOBILE_LEGS
+
+   route_legs = {
+      ( row[ 'ROUTE' ], row[ 'FROM_STATION' ], row[ 'TO_STATION' ] )
+      for row in cursor.execute(
+         """   SELECT ROUTE, FROM_STATION, TO_STATION
+               FROM TransportationRouteLeg
+               WHERE TRANSPORTATION = 'Zoomobile';
+         """
+      ).fetchall()
+   }
+   assert route_legs == EXPECTED_ZOOMOBILE_ROUTE_LEGS
 
    conn.close()

@@ -4,6 +4,7 @@ import { initMapControls } from '../map/controls.js';
 import { buildMapDateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
+import { initTransportationRouteControls } from '../map/transportationRouteControls.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
@@ -19,7 +20,7 @@ function getMapPageElements() {
       includeClosedRestroomsCheckbox: document.getElementById('includeClosedRestrooms'),
       includeClosedGiftShopsCheckbox: document.getElementById('includeClosedGiftShops'),
       includeClosedAttractionsCheckbox: document.getElementById('includeClosedAttractions'),
-      zoomobileRouteRadios: document.querySelectorAll?.('input[name="zoomobileRoute"]') ?? [],
+      transportationRoutesEl: document.getElementById('transportationRoutes'),
       animalSearchInput: document.getElementById('animalSearch'),
       animalSearchResultsEl: document.getElementById('animalSearchResults'),
       exploreUpdatesListEl: document.getElementById('exploreUpdatesList'),
@@ -42,8 +43,8 @@ function isCoordinateEditingEnabled() {
    return urlParams.get('editCoords') === '1';
 }
 
-function getSelectedZoomobileRoute(zoomobileRouteRadios) {
-   return Array.from(zoomobileRouteRadios)
+function getSelectedZoomobileRoute() {
+   return Array.from(document.querySelectorAll('input[name="zoomobileRoute"]'))
       .find((radio) => radio.checked)
       ?.value ?? 'none';
 }
@@ -78,7 +79,7 @@ function createRuntimeOptions(elements, {
       getIncludeClosedRestrooms: () => elements.includeClosedRestroomsCheckbox?.checked ?? false,
       getIncludeClosedGiftShops: () => elements.includeClosedGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
-      getZoomobileRoute: () => getSelectedZoomobileRoute(elements.zoomobileRouteRadios),
+      getZoomobileRoute: () => getSelectedZoomobileRoute(),
       getSelectedTypes,
       onDateContextChange: (dateCtx) => updates?.refresh?.(dateCtx),
    };
@@ -134,7 +135,7 @@ function initMapPageControls({
       includeClosedRestroomsCheckbox: elements.includeClosedRestroomsCheckbox,
       includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
-      zoomobileRouteRadios: elements.zoomobileRouteRadios,
+      zoomobileRouteRadios: document.querySelectorAll('input[name="zoomobileRoute"]'),
       earliestSelectableNoon,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
@@ -161,6 +162,7 @@ export async function initMapPage() {
    if (!hasRequiredMapPageElements(elements)) return;
 
    await loadInlineZooMap();
+   await initTransportationRouteControls(elements.transportationRoutesEl);
 
    let explore = null;
    let search = null;

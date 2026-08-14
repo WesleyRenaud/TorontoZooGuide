@@ -1,3 +1,5 @@
+import { asTrimmedString } from '../api/normalizeValues.js';
+
 export const map = {
    filter: {
       attractions: 'Attractions',
@@ -23,9 +25,19 @@ export const map = {
    previousUpdate: 'Previous update',
    showUpdates: 'Show updates and events',
    updatesAndEvents: 'Updates and events',
-   zoomobileRoute: {
+   transportationRoute: {
       none: 'None',
-      title: 'Zoomobile route',
+      current: 'Current Route',
+      title: name => `${name} route`,
+      route: route => {
+         const normalized = asTrimmedString(route);
+
+         if (!normalized) {
+            return '';
+         }
+
+         return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)} Route`;
+      },
    },
 };
 

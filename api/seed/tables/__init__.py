@@ -59,6 +59,7 @@ from . import transportation
 from . import transportation_day_route
 from . import transportation_leg
 from . import transportation_route
+from . import transportation_route_leg
 from . import transportation_route_station
 from . import transportation_station
 from . import transportation_station_status
@@ -97,6 +98,7 @@ static_tables = [
    transportation_route_station,
    transportation_day_route,
    transportation_leg,
+   transportation_route_leg,
    meet_the_guardians_talk,
    guardians_talk_animal,
    wild_encounter_meeting_spot,

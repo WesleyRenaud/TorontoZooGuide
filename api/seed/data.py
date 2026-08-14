@@ -27,6 +27,7 @@ from .tables.transportation import transportations
 from .tables.transportation_day_route import transportation_day_routes
 from .tables.transportation_leg import transportation_legs
 from .tables.transportation_route import transportation_routes
+from .tables.transportation_route_leg import transportation_route_legs
 from .tables.transportation_route_station import transportation_route_stations
 from .tables.transportation_station import transportation_stations
 from .tables.wild_encounter import wild_encounters
@@ -57,6 +58,7 @@ __all__ = [
    'transportation_route_stations',
    'transportation_day_routes',
    'transportation_legs',
+   'transportation_route_legs',
    'guardians_talks',
    'wild_encounter_meeting_spots',
    'wild_encounters',

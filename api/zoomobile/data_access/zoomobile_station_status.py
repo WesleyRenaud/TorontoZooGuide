@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..status.zoomobile_station_closed_status import ZoomobileStationClosedStatus
 from ...shared.enums.transportation_name import TransportationName
+from ..status.zoomobile_station_closed_status import ZoomobileStationClosedStatus
 from ...types import Connection
 
 
