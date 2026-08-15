@@ -9,6 +9,23 @@ from api.seed.migrations.runner import run_migrations_on_cursor
 from api.seed.schema import create_schema
 
 
+def marker_ids(
+      prefix: str,
+      start: int,
+      end: int,
+      maximum: int ) -> set[ str ]:
+   marker_numbers = (
+      range( start, end + 1 )
+      if start <= end
+      else [ *range( start, maximum + 1 ), *range( 1, end + 1 ) ]
+   )
+
+   return {
+      f'{ prefix }-{ str( marker_number ).zfill( 3 ) }'
+      for marker_number in marker_numbers
+   }
+
+
 EXPECTED_ZOOMOBILE_STATIONS = {
    'Main Zoomobile Station',
    'Indo-Malaya Zoomobile Station',
@@ -60,6 +77,27 @@ EXPECTED_ZOOMOBILE_ROUTE_LEGS = {
    ( 'winter', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ),
 }
 
+EXPECTED_ROUTE_LEG_MARKERS = {
+   ( 'summer', 'Main Zoomobile Station', 'Canadian Domain Zoomobile Station' ):
+      marker_ids( 'zm-s', 5, 85, 296 ),
+   ( 'summer', 'Canadian Domain Zoomobile Station', 'Africa Zoomobile Station' ):
+      marker_ids( 'zm-s', 86, 127, 296 ),
+   ( 'summer', 'Africa Zoomobile Station', 'Tundra Zoomobile Station' ):
+      marker_ids( 'zm-s', 128, 184, 296 ),
+   ( 'summer', 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ):
+      marker_ids( 'zm-s', 185, 251, 296 ),
+   ( 'summer', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ):
+      marker_ids( 'zm-s', 252, 4, 296 ),
+   ( 'winter', 'Main Zoomobile Station', 'Indo-Malaya Zoomobile Station' ):
+      marker_ids( 'zm-w', 6, 31, 241 ),
+   ( 'winter', 'Indo-Malaya Zoomobile Station', 'Tundra Zoomobile Station' ):
+      marker_ids( 'zm-w', 32, 112, 241 ),
+   ( 'winter', 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ):
+      marker_ids( 'zm-w', 113, 209, 241 ),
+   ( 'winter', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ):
+      marker_ids( 'zm-w', 210, 5, 241 ),
+}
+
 MAPPED_ZOOMOBILE_STATIONS = EXPECTED_ZOOMOBILE_STATIONS
 
 
@@ -108,6 +146,13 @@ def test_zoomobile_transportation_seed_graph() -> None:
       'ROUTE',
       'FROM_STATION',
       'TO_STATION',
+   }
+   assert column_names( cursor, 'TransportationRouteLegMarker' ) >= {
+      'TRANSPORTATION',
+      'ROUTE',
+      'FROM_STATION',
+      'TO_STATION',
+      'MARKER_ID',
    }
    assert column_names( cursor, 'TransportationStationStatus' ) >= {
       'TRANSPORTATION',
@@ -224,5 +269,23 @@ def test_zoomobile_transportation_seed_graph() -> None:
       ).fetchall()
    }
    assert route_legs == EXPECTED_ZOOMOBILE_ROUTE_LEGS
+
+   route_leg_markers: dict[ tuple[ str, str, str ], set[ str ] ] = {}
+
+   for row in cursor.execute(
+         """   SELECT ROUTE, FROM_STATION, TO_STATION, MARKER_ID
+               FROM TransportationRouteLegMarker
+               WHERE TRANSPORTATION = 'Zoomobile';
+         """
+      ).fetchall():
+      leg = ( row[ 'ROUTE' ], row[ 'FROM_STATION' ], row[ 'TO_STATION' ] )
+
+      if leg not in route_leg_markers:
+         route_leg_markers[ leg ] = set()
+
+      route_leg_markers[ leg ].add( row[ 'MARKER_ID' ] )
+
+   assert route_leg_markers == EXPECTED_ROUTE_LEG_MARKERS
+   assert sum( len( markers ) for markers in route_leg_markers.values() ) == 537
 
    conn.close()

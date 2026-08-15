@@ -18,6 +18,29 @@ test( 'validateMapSvg accepts the committed zoo map SVG', () => {
    assert.deepEqual( violations, [] );
 } );
 
+test( 'every Zoomobile route marker is mapped to one seeded leg', () => {
+   const svg = fs.readFileSync( MAP_SVG_PATH, 'utf8' );
+   const markerRows = JSON.parse(
+      fs.readFileSync(
+         path.resolve( 'api/seed/data/transportation_route_leg_marker.json' ),
+         'utf8'
+      )
+   );
+   const svgMarkerIds = [
+      ...svg.matchAll( /id="(zm-[sw]-\d{3})"/g ),
+   ].map( match => match[ 1 ] );
+   const seededMarkerIds = markerRows.map( row => row.marker_id );
+
+   assert.equal( svgMarkerIds.length, 537 );
+   assert.equal( new Set( svgMarkerIds ).size, 537 );
+   assert.equal( seededMarkerIds.length, 537 );
+   assert.equal( new Set( seededMarkerIds ).size, 537 );
+   assert.deepEqual(
+      seededMarkerIds.toSorted(),
+      svgMarkerIds.toSorted()
+   );
+} );
+
 test( 'validateMapSvg reports truncation and missing fragments', () => {
    const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
    const tempPath = path.join( tempDir, 'broken.svg' );

@@ -39,6 +39,7 @@ def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.transportation_day_routes
    assert data.transportation_legs
    assert data.transportation_route_legs
+   assert data.transportation_route_leg_markers
    assert data.guardians_talks
    assert data.wild_encounter_meeting_spots
    assert data.wild_encounters
