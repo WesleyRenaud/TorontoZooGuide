@@ -11,6 +11,7 @@ from api.attractions.scheduling.attraction_operating_hours import attraction_has
 from api.attractions.scheduling.attraction_operating_hours import attraction_operating_hours_seconds
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.models.attraction import Attraction
+from api.models.itinerary_transportation import ItineraryTransportation
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
@@ -314,9 +315,9 @@ def test_bulk_schedule_fills_wait_with_already_open_soft_pin(
    assert AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
       **_hours_payload(
          SPLASH_ISLAND,
-         weekday_start='11:00 AM',
+         weekday_start='12:00 PM',
          weekday_end='4:00 PM',
-         weekend_start='11:00 AM',
+         weekend_start='12:00 PM',
          weekend_end='4:00 PM' ) )
 
    assert ItineraryCoordinator.set_itinerary(
@@ -334,9 +335,9 @@ def test_bulk_schedule_fills_wait_with_already_open_soft_pin(
 
    assert result.success
    zoomobile = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == 'Zoomobile' )
+      transportation
+      for transportation in result.itinerary.transportations
+      if transportation.name == 'Zoomobile' )
    splash = next(
       attraction
       for attraction in result.itinerary.attractions
@@ -351,8 +352,9 @@ def test_bulk_schedule_fills_wait_with_already_open_soft_pin(
    assert splash_start is not None
    assert zoomobile_start < splash_start
    assert zoomobile.end_time <= splash.start_time
-   assert splash.start_time == '11:00 AM'
+   assert splash.start_time == '12:00 PM'
    # Right-aligned against Splash open — not left at 10:00 with a dead gap.
+   # Zoomobile loop duration is 75 minutes (summer route).
    zoomobile_end = DateValues.time_value_in_seconds( zoomobile.end_time )
    assert zoomobile_end is not None
    assert splash_start - zoomobile_end <= 5 * 60
@@ -428,9 +430,9 @@ def test_bulk_schedule_right_aligns_soft_pins_against_hard_pin_deadline(
 
    assert result.success
    zoomobile = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == 'Zoomobile' )
+      transportation
+      for transportation in result.itinerary.transportations
+      if transportation.name == 'Zoomobile' )
    face_painting = next(
       attraction
       for attraction in result.itinerary.attractions
@@ -554,9 +556,15 @@ def test_bulk_schedule_cascades_greenhouse_and_carousel_before_soft_pin_chain(
          for attraction in result.itinerary.attractions
          if attraction.name == name or attraction.name.startswith( name ) )
 
+   def _transportation( name: str ) -> ItineraryTransportation:
+      return next(
+         transportation
+         for transportation in result.itinerary.transportations
+         if transportation.name == name )
+
    greenhouse = _attraction( 'Greenhouse' )
    carousel = _attraction( 'Conservation Carousel' )
-   zoomobile = _attraction( 'Zoomobile' )
+   zoomobile = _transportation( 'Zoomobile' )
    face_painting = _attraction( 'Face Painting' )
    americas_scheduled = [
       animal
@@ -596,7 +604,8 @@ def test_bulk_schedule_cascades_greenhouse_and_carousel_before_soft_pin_chain(
    assert next_after_carousel - carousel_end <= 5 * 60
    assert face_start - zoomobile_end <= 5 * 60
    # Not left at zoo open with a long dead wait before the soft-pin chain.
-   assert greenhouse_end >= DateValues.time_value_in_seconds( '10:00 AM' )
+   # Zoomobile's 75-minute summer loop can pull the cascade slightly before 10:00.
+   assert greenhouse_end >= DateValues.time_value_in_seconds( '9:45 AM' )
 
 
 def test_bulk_schedule_weaves_animals_around_attraction_hours(

@@ -84,9 +84,9 @@ def test_bulk_schedule_packs_zoomobile_after_tiny_tour_and_giraffe_after_warthog
    assert result.itinerary is not None
 
    zoomobile = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == 'Zoomobile' )
+      transportation
+      for transportation in result.itinerary.transportations
+      if transportation.name == 'Zoomobile' )
    giraffe = next(
       animal
       for animal in result.itinerary.animals

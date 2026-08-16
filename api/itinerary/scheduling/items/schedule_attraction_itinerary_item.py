@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...attraction_item_key import AttractionScheduleItemKey
+from .attraction_or_transportation_duration import default_duration_seconds_for_attraction_or_transportation
 from ....attractions.scheduling.attraction_hours_schedule_adjustment import AttractionHoursScheduleAdjustment
 from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
 from ..core.find_next_available_slot import find_previous_available_slot
@@ -10,7 +11,6 @@ from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
 from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_saved_itinerary
-from ...data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from .listed_schedule_item_persistence import commit_listed_schedule
@@ -91,7 +91,7 @@ def schedule_attraction_itinerary_item(
 
    duration_seconds = effective_duration_seconds(
       time_options.duration_minutes,
-      fetch_attraction_default_duration_seconds(
+      default_duration_seconds_for_attraction_or_transportation(
          conn,
          schedule_item_key.name ) )
 

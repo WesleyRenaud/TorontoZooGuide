@@ -31,6 +31,7 @@ from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_stop import animals_from_stops
 from .loop_schedule_stop import attractions_from_stops
 from .loop_schedule_stop import LoopScheduleStop
+from .loop_schedule_stop import transportations_from_stops
 from .loop_schedule_unit import build_loop_schedule_units
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -61,6 +62,7 @@ def itinerary_has_items_to_rebuild(
    return bool(
       saved_itinerary.animal_rows
       or saved_itinerary.attraction_rows
+      or saved_itinerary.transportation_rows
       or saved_itinerary.guardians_talk_rows
       or saved_itinerary.wild_encounter_rows )
 
@@ -138,6 +140,7 @@ def bulk_schedule_animals(
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
    animals_to_schedule = animals_from_stops( stops_to_schedule )
    attractions_to_pack = attractions_from_stops( stops_to_schedule )
+   transportations_to_pack = transportations_from_stops( stops_to_schedule )
    covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
       conn,
       loop_pins,
@@ -155,7 +158,11 @@ def bulk_schedule_animals(
    animals_to_pack = filter_animals_excluding_covered(
       animals_to_schedule,
       covered_keys )
-   stops_to_pack = [ *animals_to_pack, *attractions_to_pack ]
+   stops_to_pack = [
+      *animals_to_pack,
+      *attractions_to_pack,
+      *transportations_to_pack,
+   ]
    sorted_loop_groups = group_stops_by_master_route_loop( stops_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
@@ -181,11 +188,15 @@ def bulk_schedule_animals(
          and zoo_close_seconds is not None ):
       soft_pins = resolve_attraction_hours_soft_pins(
          conn,
-         attractions=attractions_to_pack,
+         attractions=[
+            *attractions_to_pack,
+            *transportations_to_pack,
+         ],
          loop_units=loop_units,
          visit_date=visit_date,
          zoo_open_seconds=zoo_open_seconds,
          zoo_close_seconds=zoo_close_seconds )
+
       schedule_windows = attach_attraction_hours_soft_pins_to_schedule_windows(
          schedule_windows,
          soft_pins )

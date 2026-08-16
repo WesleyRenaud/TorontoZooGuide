@@ -74,6 +74,22 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
             start_time=attraction.start_time,
             end_time=attraction.end_time ) )
 
+   for transportation in itinerary.transportations:
+      # Also-attraction transportations share the attraction map-location name.
+      map_location = walk_node_for_map_location(
+         MapLocationKind.ATTRACTION,
+         transportation.name )
+
+      stops.append(
+         _stop_from_map_location(
+            schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
+            item_key=transportation.name,
+            map_location=map_location,
+            x_coord=transportation.x_coord,
+            y_coord=transportation.y_coord,
+            start_time=transportation.start_time,
+            end_time=transportation.end_time ) )
+
    for guardians_talk in itinerary.guardians_talks:
       if guardians_talk.is_deleted:
          continue

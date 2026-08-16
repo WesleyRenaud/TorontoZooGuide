@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
 from ....walk_graph.master_route import default_master_route_index_by_stop_key
@@ -29,7 +30,7 @@ def sort_stops_by_master_route(
 
 
 def _unmapped_stop_sort_key( stop: LoopScheduleStop ) -> tuple[ str, str, str ]:
-   if isinstance( stop, ItineraryAttractionRecord ):
+   if isinstance( stop, ( ItineraryAttractionRecord, ItineraryTransportationRecord ) ):
       return ( stop.attraction.lower(), '', '' )
 
    return (

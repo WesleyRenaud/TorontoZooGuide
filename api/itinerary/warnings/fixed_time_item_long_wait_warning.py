@@ -325,6 +325,7 @@ def _itinerary_with_fixed_time_items(
       selected_exhibits=list( itinerary.selected_exhibits ),
       animals=list( itinerary.animals ),
       attractions=list( itinerary.attractions ),
+      transportations=list( itinerary.transportations ),
       guardians_talks=(
          list( itinerary.guardians_talks )
          if guardians_talks is None

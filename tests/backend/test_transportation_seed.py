@@ -118,6 +118,7 @@ def test_zoomobile_transportation_seed_graph() -> None:
       'DESCRIPTION',
       'X_COORD',
       'Y_COORD',
+      'IS_MAIN_STATION',
    }
    assert 'ON_WINTER_ROUTE' not in column_names( cursor, 'TransportationStation' )
    assert column_names( cursor, 'TransportationRoute' ) >= {
@@ -167,6 +168,7 @@ def test_zoomobile_transportation_seed_graph() -> None:
    assert 'ZoomobileStation' not in table_names
    assert 'ZoomobileStationStatus' not in table_names
    assert 'ZoomobileDayRoute' not in table_names
+   assert 'ZoomobileRouteSchedule' not in table_names
 
    zoomobile = cursor.execute(
       """   SELECT NAME, IS_ALSO_ATTRACTION
@@ -187,6 +189,18 @@ def test_zoomobile_transportation_seed_graph() -> None:
       ).fetchall()
    }
    assert stations == EXPECTED_ZOOMOBILE_STATIONS
+
+   main_stations = {
+      row[ 'NAME' ]
+      for row in cursor.execute(
+         """   SELECT NAME
+               FROM TransportationStation
+               WHERE TRANSPORTATION = 'Zoomobile'
+               AND IS_MAIN_STATION = 1;
+         """
+      ).fetchall()
+   }
+   assert main_stations == { 'Main Zoomobile Station' }
 
    routes = {
       row[ 'ROUTE' ]

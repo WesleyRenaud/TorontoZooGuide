@@ -6,6 +6,7 @@ from ..core.time_block import TimeBlock
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ...data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
+from ...data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
 from ...data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ...data_access.validated_itinerary import ValidatedItinerary
 from ....types import Cursor
@@ -41,6 +42,13 @@ def saved_itinerary_has_overlap_with_time_blocks(
       if schedule_overlaps_any_time_block(
             attraction.start_time,
             attraction.end_time,
+            activity_blocks ):
+         return True
+
+   for transportation in saved_itinerary.transportation_rows:
+      if schedule_overlaps_any_time_block(
+            transportation.start_time,
+            transportation.end_time,
             activity_blocks ):
          return True
 
@@ -82,6 +90,11 @@ def prepare_validated_itinerary_for_fixed_time_activity_reschedule(
       attraction.start_time = None
       attraction.end_time = None
 
+   for transportation in validated_itinerary.transportations:
+      transportation.start_time = None
+      transportation.end_time = None
+      transportation.legs = []
+
    return validated_itinerary
 
 
@@ -107,6 +120,15 @@ def clear_saved_schedules_overlapping_time_blocks(
          clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
+
+   for transportation in saved_itinerary.transportation_rows:
+      if schedule_overlaps_any_time_block(
+            transportation.start_time,
+            transportation.end_time,
+            activity_blocks ):
+         clear_itinerary_transportation_schedule(
+            cur,
+            name=transportation.transportation )
 
    for event in saved_itinerary.event_rows:
       if schedule_overlaps_any_time_block(

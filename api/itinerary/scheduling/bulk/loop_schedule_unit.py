@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
@@ -134,7 +135,7 @@ def _stops_in_master_route_loop_order(
 
 def walk_node_id_for_loop_schedule_stop(
       stop: LoopScheduleStop ) -> str | None:
-   if isinstance( stop, ItineraryAttractionRecord ):
+   if isinstance( stop, ( ItineraryAttractionRecord, ItineraryTransportationRecord ) ):
       walk_node = walk_node_for_map_location(
          MapLocationKind.ATTRACTION,
          stop.attraction )

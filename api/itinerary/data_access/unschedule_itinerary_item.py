@@ -21,6 +21,15 @@ def clear_all_itinerary_attraction_schedules( cur: Cursor ) -> None:
          """ )
 
 
+def clear_all_itinerary_transportation_schedules( cur: Cursor ) -> None:
+   cur.execute( 'DELETE FROM ItineraryTransportationLeg;' )
+   cur.execute(
+      """   UPDATE ItineraryTransportation
+            SET START_TIME = NULL,
+                END_TIME = NULL;
+      """ )
+
+
 def clear_all_scheduled_itinerary_events( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryEvent;' )
 
@@ -54,6 +63,26 @@ def clear_itinerary_attraction_schedule(
                 END_TIME = NULL
             WHERE ATTRACTION = ?;
          """,
+      ( name, ),
+   )
+
+
+def clear_itinerary_transportation_schedule(
+      cur: Cursor,
+      *,
+      name: str ) -> None:
+   cur.execute(
+      """   DELETE FROM ItineraryTransportationLeg
+            WHERE TRANSPORTATION = ?;
+      """,
+      ( name, ),
+   )
+   cur.execute(
+      """   UPDATE ItineraryTransportation
+            SET START_TIME = NULL,
+                END_TIME = NULL
+            WHERE TRANSPORTATION = ?;
+      """,
       ( name, ),
    )
 

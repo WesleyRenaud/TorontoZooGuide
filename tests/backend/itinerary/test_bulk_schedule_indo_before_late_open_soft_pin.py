@@ -144,9 +144,9 @@ def test_bulk_schedule_progressive_soft_pins_avoid_morning_dead_gaps(
       for attraction in result.itinerary.attractions
       if attraction.name == KANGAROO_WALK_THRU )
    zoomobile = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == 'Zoomobile' )
+      transportation
+      for transportation in result.itinerary.transportations
+      if transportation.name == 'Zoomobile' )
    greenhouse = next(
       attraction
       for attraction in result.itinerary.attractions

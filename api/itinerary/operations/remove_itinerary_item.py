@@ -3,10 +3,12 @@ from __future__ import annotations
 from ..animal_item_key import AnimalScheduleItemKey
 from ..attraction_item_key import AttractionScheduleItemKey
 from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
+from ..data_access.attraction_also_transportation import attraction_is_also_transportation
 from ..data_access.remove_itinerary_item import delete_itinerary_animal
 from ..data_access.remove_itinerary_item import delete_itinerary_attraction
 from ..data_access.remove_itinerary_item import delete_itinerary_event
 from ..data_access.remove_itinerary_item import delete_itinerary_guardians_talk
+from ..data_access.remove_itinerary_item import delete_itinerary_transportation
 from ..data_access.remove_itinerary_item import delete_itinerary_wild_encounter
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -29,6 +31,14 @@ def _apply_remove(
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      if attraction_is_also_transportation(
+            cur.connection,
+            schedule_item_key.name ):
+         delete_itinerary_transportation(
+            cur,
+            name=schedule_item_key.name )
+         return
+
       delete_itinerary_attraction(
          cur,
          name=schedule_item_key.name )

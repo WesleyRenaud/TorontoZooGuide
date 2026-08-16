@@ -14,6 +14,8 @@ from .guardians_talk_diff import GuardiansTalkDiff
 from .guest_service import GuestService
 from .itinerary import Itinerary
 from .itinerary_event import ItineraryEvent
+from .itinerary_transportation import ItineraryTransportation
+from .itinerary_transportation_leg import ItineraryTransportationLeg
 from .pavilion import Pavilion
 from .picnic_site import PicnicSite
 from .region import Region
@@ -21,6 +23,7 @@ from .region_with_exhibits import RegionWithExhibits
 from .restaurant import Restaurant
 from .restroom import Restroom
 from .scheduled_occurrence import ScheduledOccurrence
+from .transportation_diff import TransportationDiff
 from .update import Update
 from .wild_encounter import WildEncounter
 from .wild_encounter_diff import WildEncounterDiff
@@ -46,6 +49,8 @@ __all__ = [
    'GuestService',
    'Itinerary',
    'ItineraryEvent',
+   'ItineraryTransportation',
+   'ItineraryTransportationLeg',
    'Pavilion',
    'PicnicSite',
    'Region',
@@ -53,6 +58,7 @@ __all__ = [
    'Restaurant',
    'Restroom',
    'ScheduledOccurrence',
+   'TransportationDiff',
    'Update',
    'WildEncounter',
    'WildEncounterDiff',

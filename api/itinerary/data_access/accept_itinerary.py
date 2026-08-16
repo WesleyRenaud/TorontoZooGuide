@@ -54,33 +54,22 @@ def clear_itinerary_animal_old_likelihoods( cur: Cursor ) -> None:
       """ )
 
 
-def remove_declined_itinerary_attractions( cur: Cursor ) -> None:
-   cur.execute(
-      """   UPDATE ItineraryAnimal
-            SET OLD_LIKELIHOOD = NULL
-            WHERE OLD_LIKELIHOOD IS NOT NULL;
-      """ )
-
-
-def build_excluded_attraction_where_clause(
-      attractions_to_keep: list[ str ] ) -> tuple[ str, list[ str ] ]:
-   if not attractions_to_keep:
+def build_excluded_name_where_clause(
+      column: str,
+      names_to_keep: list[ str ] ) -> tuple[ str, list[ str ] ]:
+   if not names_to_keep:
       return '', []
 
-   clauses: list[ str ] = []
-   params: list[ str ] = []
+   clauses = [ f'{ column } = ?' for _ in names_to_keep ]
 
-   for attraction_name in attractions_to_keep:
-      clauses.append( 'ATTRACTION = ?' )
-      params.append( attraction_name )
-
-   return f" AND NOT ( { ' OR '.join( clauses ) } )", params
+   return f" AND NOT ( { ' OR '.join( clauses ) } )", names_to_keep
 
 
 def remove_declined_itinerary_attractions(
       cur: Cursor,
       attractions_to_keep: list[ str ] ) -> None:
-   exclusion_clause, exclusion_params = build_excluded_attraction_where_clause(
+   exclusion_clause, exclusion_params = build_excluded_name_where_clause(
+      'ATTRACTION',
       attractions_to_keep )
    cur.execute(
       f"""   DELETE FROM ItineraryAttraction
@@ -91,6 +80,35 @@ def remove_declined_itinerary_attractions(
       """,
       exclusion_params )
 
+
+def remove_declined_itinerary_transportations(
+      cur: Cursor,
+      transportations_to_keep: list[ str ] ) -> None:
+   exclusion_clause, exclusion_params = build_excluded_name_where_clause(
+      'TRANSPORTATION',
+      transportations_to_keep )
+   cur.execute(
+      f"""   DELETE FROM ItineraryTransportationLeg
+            WHERE TRANSPORTATION IN (
+               SELECT TRANSPORTATION
+               FROM ItineraryTransportation
+               WHERE OLD_LIKELIHOOD IS NOT NULL
+                 AND NEW_LIKELIHOOD IS NOT NULL
+                 AND NEW_LIKELIHOOD = 0
+                 { exclusion_clause }
+            );
+      """,
+      exclusion_params )
+   cur.execute(
+      f"""   DELETE FROM ItineraryTransportation
+            WHERE OLD_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD = 0
+               { exclusion_clause };
+      """,
+      exclusion_params )
+
+
 def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:
    cur.execute(
       """   UPDATE ItineraryAttraction
@@ -98,9 +116,10 @@ def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:
             WHERE OLD_LIKELIHOOD IS NOT NULL;
       """ )
 
-def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:
+
+def clear_itinerary_transportation_old_likelihoods( cur: Cursor ) -> None:
    cur.execute(
-      """   UPDATE ItineraryAttraction
+      """   UPDATE ItineraryTransportation
             SET OLD_LIKELIHOOD = NULL
             WHERE OLD_LIKELIHOOD IS NOT NULL;
       """ )
@@ -133,9 +152,13 @@ def accept_itinerary(
       remove_declined_itinerary_attractions(
          cur,
          attractions_to_keep=attractions_to_keep )
+      remove_declined_itinerary_transportations(
+         cur,
+         transportations_to_keep=attractions_to_keep )
       clear_added_itinerary_animals( cur )
       clear_itinerary_animal_old_likelihoods( cur )
       clear_itinerary_attraction_old_likelihoods( cur )
+      clear_itinerary_transportation_old_likelihoods( cur )
       remove_deleted_itinerary_guardians_talks( cur )
       remove_deleted_itinerary_wild_encounters( cur )
 

@@ -120,16 +120,22 @@ def fetch_active_zoomobile_route(
    try:
       data = cur.execute(
          """   SELECT
-                  z.ROUTE
-               FROM ZoomobileRouteSchedule z
-               WHERE z.SCHEDULE_START_DATE <= ?
+                  ROUTE
+               FROM TransportationRouteSchedule
+               WHERE TRANSPORTATION = ?
+                 AND SCHEDULE_START_DATE <= ?
                AND (
-                  z.SCHEDULE_END_DATE IS NULL
-                  OR z.SCHEDULE_END_DATE >= ?
+                  SCHEDULE_END_DATE IS NULL
+                  OR SCHEDULE_END_DATE >= ?
                )
-               ORDER BY z.SCHEDULE_START_DATE DESC
+               ORDER BY SCHEDULE_START_DATE DESC
                LIMIT 1;
-         """, ( target_date.isoformat(), target_date.isoformat() ) )
+         """,
+         (
+            'Zoomobile',
+            target_date.isoformat(),
+            target_date.isoformat(),
+         ) )
 
       route_data = data.fetchone()
 
