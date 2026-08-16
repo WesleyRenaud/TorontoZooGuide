@@ -30,6 +30,7 @@ const ITINERARY_COLLECTION_FIELDS = [
    ['attractions', 'attractions'],
    ['guardiansTalks', 'guardians_talks'],
    ['wildEncounters', 'wild_encounters'],
+   ['transportations', 'transportations'],
 ];
 
 function mapScheduleItemKeyToWire(itemType, key) {

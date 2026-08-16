@@ -242,6 +242,18 @@ function renderEventSiteMarker(markerEl, items) {
    );
 }
 
+const attractionMarkerRenderer = createLikelihoodIconMarkerRenderer({
+   type: 'attraction',
+   getIconUrl: (attraction, iconToken) => getAttractionIconUrl(
+      attraction?.name,
+      iconToken
+   ),
+   applySize: (markerEl, attraction) => applyAttractionMarkerSize(
+      markerEl,
+      attraction?.name
+   ),
+});
+
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
    pavilion: createGenericIconMarkerRenderer('pavilion'),
@@ -254,17 +266,8 @@ const MARKER_TYPE_RENDERERS = {
       type: 'giftShop',
       getIconUrl: (_, iconToken) => getGiftShopIconUrl(iconToken),
    }),
-   attraction: createLikelihoodIconMarkerRenderer({
-      type: 'attraction',
-      getIconUrl: (attraction, iconToken) => getAttractionIconUrl(
-         attraction?.name,
-         iconToken
-      ),
-      applySize: (markerEl, attraction) => applyAttractionMarkerSize(
-         markerEl,
-         attraction?.name
-      ),
-   }),
+   attraction: attractionMarkerRenderer,
+   transportation: attractionMarkerRenderer,
    zoomobileStation: createGenericIconMarkerRenderer('zoomobileStation'),
    zoomobileRouteMarker: renderZoomobileRouteMarker,
    guardiansTalk: createGenericIconMarkerRenderer('guardiansTalk'),

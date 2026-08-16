@@ -1,31 +1,20 @@
 from __future__ import annotations
 
+from ..data_access.transportation import fetch_transportation_records
 from ..data_access.transportation_route import fetch_transportation_routes_by_name
-from ..data_access.transportation_route_record import TransportationRouteRecord
+from ..domain.transportation import build_transportations
+from ..domain.transportation_route import group_transportation_routes
+from ...models.transportation import Transportation
 from ...request_connection import get_connection
 
 
-def group_transportation_routes(
-      route_records: list[ TransportationRouteRecord ] ) -> list[ dict[ str, object ] ]:
-   transportations_by_name: dict[ str, list[ str ] ] = {}
-
-   for route_record in route_records:
-      if route_record.transportation not in transportations_by_name:
-         transportations_by_name[ route_record.transportation ] = []
-
-      transportations_by_name[ route_record.transportation ].append(
-         route_record.route )
-
-   return [
-      {
-         'name': transportation_name,
-         'routes': routes,
-      }
-      for transportation_name, routes in transportations_by_name.items()
-   ]
-
-
 class TransportationCoordinator():
+   @classmethod
+   def get_transportations( cls ) -> list[ Transportation ]:
+      return build_transportations(
+         fetch_transportation_records( get_connection() ) )
+
+
    @classmethod
    def get_transportation_routes( cls ) -> list[ dict[ str, object ] ]:
       return group_transportation_routes(

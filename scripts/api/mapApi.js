@@ -59,6 +59,10 @@ export async function getAttractions(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-attractions', 'attractions', payload);
 }
 
+export async function getTransportations() {
+   return await fetchCollection('/get-transportations', 'transportations');
+}
+
 export async function getZoomobileRoute(payload = EMPTY_PAYLOAD) {
    const response = await postJson('/get-zoomobile-route', payload);
    return normalizeRouteResponse(response);
