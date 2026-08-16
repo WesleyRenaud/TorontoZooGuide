@@ -23,6 +23,7 @@ from .region_with_exhibits import RegionWithExhibits
 from .restaurant import Restaurant
 from .restroom import Restroom
 from .scheduled_occurrence import ScheduledOccurrence
+from .transportation import Transportation
 from .transportation_diff import TransportationDiff
 from .update import Update
 from .wild_encounter import WildEncounter
@@ -58,6 +59,7 @@ __all__ = [
    'Restaurant',
    'Restroom',
    'ScheduledOccurrence',
+   'Transportation',
    'TransportationDiff',
    'Update',
    'WildEncounter',

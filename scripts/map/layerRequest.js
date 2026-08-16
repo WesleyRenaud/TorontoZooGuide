@@ -54,6 +54,7 @@ export function buildItineraryRows(itinerary) {
    return [
       ...normalizeTypedRows(itinerary?.animals, 'animal'),
       ...normalizeTypedRows(itinerary?.attractions, 'attraction'),
+      ...normalizeTypedRows(itinerary?.transportations, 'transportation'),
       ...normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
       ...normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
    ];

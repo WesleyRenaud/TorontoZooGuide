@@ -22,6 +22,7 @@ test('creates and normalizes itinerary draft shape', () => {
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+      transportations: [],
       events: [],
    });
 
@@ -41,6 +42,7 @@ test('creates and normalizes itinerary draft shape', () => {
       attractions: [],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [],
+      transportations: [],
       events: [],
    });
 
@@ -54,6 +56,7 @@ test('creates and normalizes itinerary draft shape', () => {
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+      transportations: [],
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    });
 });

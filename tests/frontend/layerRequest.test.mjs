@@ -15,6 +15,7 @@ test('builds typed itinerary rows for map focus candidates', () => {
          { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor' },
       ],
       attractions: [{ name: 'Conservation Carousel' }],
+      transportations: [{ name: 'Zoomobile' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
    }), [
@@ -22,6 +23,7 @@ test('builds typed itinerary rows for map focus candidates', () => {
       { species: 'Cheetah', exhibit: 'Africa Savanna', type: 'animal' },
       { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor', type: 'animal' },
       { name: 'Conservation Carousel', type: 'attraction' },
+      { name: 'Zoomobile', type: 'transportation' },
       { name: 'Amur Tiger', type: 'guardiansTalk' },
       { name: 'African Rainforest', type: 'wildEncounter' },
    ]);

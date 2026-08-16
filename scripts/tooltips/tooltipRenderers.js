@@ -13,6 +13,7 @@ export const TYPE_REGISTRY = {
    restaurant: restaurantRenderer,
    giftShop: giftShopRenderer,
    attraction: attractionRenderer,
+   transportation: attractionRenderer,
    zoomobileStation: zoomobileStationRenderer,
    guardiansTalk: guardiansTalkRenderer,
    wildEncounter: wildEncounterRenderer,

@@ -32,6 +32,11 @@ test('buildHoverText formats counted hover text for map item types', () => {
          expected: 'Americas Restroom',
       },
       {
+         type: 'transportation',
+         items: [{ type: 'transportation', name: 'Zoomobile' }],
+         expected: 'Zoomobile',
+      },
+      {
          type: 'drinkingFountain',
          items: [{ type: 'drinkingFountain' }, { type: 'drinkingFountain' }],
          expected: `${APP_STRINGS.map.hover.drinkingFountain} + 1`,

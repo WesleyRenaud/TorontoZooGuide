@@ -36,6 +36,7 @@ export function buildSectionConfigs(
       attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
+      transportations = [],
    } = {},
    {
       keys = Object.values(ITINERARY_PANEL_SECTION_KEYS),
@@ -46,7 +47,12 @@ export function buildSectionConfigs(
 ) {
    const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
    const animalRows = buildAnimalRows(animals, rowActionOptions);
-   const attractionRows = buildAttractionRows(attractions, rowActionOptions);
+   const attractionRows = buildAttractionRows([
+      ...attractions,
+      ...transportations.filter((transportation) => (
+         transportation?.added_as_attraction === true
+      )),
+   ], rowActionOptions);
    const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });
    const wildRows = buildWildRows(wildEncounters, { onRemoveItem });
    const sectionConfigs = [

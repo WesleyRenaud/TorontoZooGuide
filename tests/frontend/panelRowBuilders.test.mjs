@@ -289,6 +289,24 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(animalSection.count, 2);
       assert.equal(animalSection.children.length, 2);
    });
+
+   test('attraction section includes transportation added as an attraction', () => {
+      const [attractionSection] = buildSectionConfigs({
+         attractions: [{ name: 'Conservation Carousel' }],
+         transportations: [
+            { name: 'Zoomobile', added_as_attraction: true },
+            { name: 'Zoo Shuttle', added_as_attraction: false },
+         ],
+      }, {
+         keys: ['attractions'],
+      });
+
+      assert.equal(attractionSection.count, 2);
+      assert.deepEqual(
+         attractionSection.children.map((row) => textFor(row, '.itin-panel-name')),
+         ['Conservation Carousel', 'Zoomobile']
+      );
+   });
    
    test('removed items popup renders arrival time adjustments', () => {
       const mount = document.createElement('div');
