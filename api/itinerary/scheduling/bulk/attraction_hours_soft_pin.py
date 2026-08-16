@@ -5,6 +5,7 @@ from datetime import date
 
 from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_pin_segments import viewing_spot_index_for_stop_in_loop
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
@@ -15,10 +16,16 @@ from ....types import Connection
 from ....types import DateKey
 
 
+AttractionHoursSoftPinStop = (
+   ItineraryAttractionRecord
+   | ItineraryTransportationRecord
+)
+
+
 def resolve_attraction_hours_soft_pins(
       conn: Connection,
       *,
-      attractions: list[ ItineraryAttractionRecord ],
+      attractions: list[ AttractionHoursSoftPinStop ],
       loop_units: list[ LoopScheduleUnit ],
       visit_date: date | DateKey,
       zoo_open_seconds: int,
@@ -127,7 +134,9 @@ def _loop_id_by_attraction_name(
          continue
 
       for stop in loop_unit.stops:
-         if not isinstance( stop, ItineraryAttractionRecord ):
+         if not isinstance(
+               stop,
+               ( ItineraryAttractionRecord, ItineraryTransportationRecord ) ):
             continue
 
          loop_ids[ stop.attraction ] = loop_unit.loop_id

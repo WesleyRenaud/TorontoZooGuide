@@ -3,9 +3,11 @@ from __future__ import annotations
 from ..animal_item_key import AnimalScheduleItemKey
 from ..attraction_item_key import AttractionScheduleItemKey
 from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
+from ..data_access.attraction_also_transportation import attraction_is_also_transportation
 from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_guardians_talk_schedule
+from ..data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -29,6 +31,14 @@ def _apply_unschedule(
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      if attraction_is_also_transportation(
+            cur.connection,
+            schedule_item_key.name ):
+         clear_itinerary_transportation_schedule(
+            cur,
+            name=schedule_item_key.name )
+         return
+
       clear_itinerary_attraction_schedule(
          cur,
          name=schedule_item_key.name )

@@ -18,6 +18,12 @@ def saved_itinerary_has_guest_scheduled_items(
             attraction_row.end_time ):
          return True
 
+   for transportation_row in saved_itinerary.transportation_rows:
+      if has_itinerary_schedule_times(
+            transportation_row.start_time,
+            transportation_row.end_time ):
+         return True
+
    if saved_itinerary.event_rows:
       return True
 

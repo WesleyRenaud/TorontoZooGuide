@@ -8,16 +8,20 @@ from ..core.time_block import TimeBlock
 from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_itinerary_animal_rows
 from ...data_access.itinerary import fetch_itinerary_attraction_rows
+from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_itinerary_event_rows
 from ...data_access.itinerary import fetch_itinerary_guardians_talk_rows
+from ...data_access.itinerary import fetch_itinerary_transportation_rows
 from ...data_access.itinerary import fetch_itinerary_wild_encounter_rows
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_event_schedule
+from ...data_access.schedule_itinerary_transportation import apply_itinerary_transportation_schedule
 from ..items.schedule_item_key import ScheduleItemKey
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryEventType
+from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ....types import Connection
 from ....types import Cursor
 from ....types import ScheduleTimeKey
@@ -175,6 +179,24 @@ def _guest_shift_would_overlap_fixed_activity(
             occupied_blocks ):
          return True
 
+   for transportation_row in fetch_itinerary_transportation_rows( conn ):
+      if not has_itinerary_schedule_times(
+            transportation_row.start_time,
+            transportation_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            transportation_row.start_time,
+            anchor_end_time ):
+         continue
+
+      if _shifted_block_overlaps_occupied(
+            transportation_row.start_time,
+            transportation_row.end_time,
+            delta_seconds,
+            occupied_blocks ):
+         return True
+
    for event_row in fetch_itinerary_event_rows( conn ):
       if not _should_shift_guest_scheduled_event( event_row.event_type ):
          continue
@@ -270,6 +292,54 @@ def _shift_guest_scheduled_attraction_rows(
       )
 
 
+def _shift_guest_scheduled_transportation_rows(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      anchor_end_time: ScheduleTimeKey,
+      delta_seconds: int ) -> None:
+   visit_date = fetch_itinerary_date( conn )
+   parsed_visit_date = DateValues.parse_date_value( visit_date )
+
+   for transportation_row in fetch_itinerary_transportation_rows( conn ):
+      if not has_itinerary_schedule_times(
+            transportation_row.start_time,
+            transportation_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            transportation_row.start_time,
+            anchor_end_time ):
+         continue
+
+      shifted_times = shifted_schedule_times(
+         transportation_row.start_time,
+         transportation_row.end_time,
+         delta_seconds )
+
+      if shifted_times is None:
+         continue
+
+      day_loop = (
+         fetch_transportation_day_loop(
+            conn,
+            transportation=transportation_row.transportation,
+            target_date=parsed_visit_date )
+         if parsed_visit_date is not None
+         else None
+      )
+
+      if day_loop is None:
+         continue
+
+      apply_itinerary_transportation_schedule(
+         cur,
+         name=transportation_row.transportation,
+         start_time=shifted_times[ 0 ],
+         legs=day_loop.legs,
+         insert_if_missing=False )
+
+
 def _shift_guest_scheduled_event_rows(
       conn: Connection,
       cur: Cursor,
@@ -334,6 +404,11 @@ def shift_guest_scheduled_items_after_unschedule(
       anchor_end_time=anchor_end_time,
       delta_seconds=shift_seconds )
    _shift_guest_scheduled_attraction_rows(
+      conn,
+      cur,
+      anchor_end_time=anchor_end_time,
+      delta_seconds=shift_seconds )
+   _shift_guest_scheduled_transportation_rows(
       conn,
       cur,
       anchor_end_time=anchor_end_time,

@@ -5,7 +5,7 @@ from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
 
-SQL_FILE = 'zoomobile_route_schedule.sql'
+SQL_FILE = 'itinerary_transportation_leg.sql'
 
 
 def create_table( cursor: Cursor ) -> None:

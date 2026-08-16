@@ -20,6 +20,11 @@ def clear_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryAttraction;' )
 
 
+def clear_itinerary_transportations( cur: Cursor ) -> None:
+   cur.execute( 'DELETE FROM ItineraryTransportationLeg;' )
+   cur.execute( 'DELETE FROM ItineraryTransportation;' )
+
+
 def clear_itinerary_guardians_talks( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
 
@@ -40,6 +45,7 @@ def clear_itinerary( conn: Connection ) -> bool:
       clear_itinerary_exhibits( cur )
       clear_itinerary_animals( cur )
       clear_itinerary_attractions( cur )
+      clear_itinerary_transportations( cur )
       clear_itinerary_guardians_talks( cur )
       clear_itinerary_wild_encounters( cur )
       clear_itinerary_events( cur )

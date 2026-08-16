@@ -1,0 +1,14 @@
+INSERT OR IGNORE INTO TransportationRouteSchedule (
+   TRANSPORTATION,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   ROUTE
+)
+SELECT
+   'Zoomobile',
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   ROUTE
+FROM ZoomobileRouteSchedule;
+
+DROP TABLE IF EXISTS ZoomobileRouteSchedule;

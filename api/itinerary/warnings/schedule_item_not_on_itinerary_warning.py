@@ -30,7 +30,10 @@ def saved_itinerary_has_schedule_item(
          schedule_item_key.exhibit )
       return key in saved_itinerary.species_exhibit_pairs()
 
-   return schedule_item_key.name in saved_itinerary.attraction_names()
+   return (
+      schedule_item_key.name in saved_itinerary.attraction_names()
+      or schedule_item_key.name in saved_itinerary.transportation_names()
+   )
 
 
 def schedule_item_not_on_itinerary_warning_is_required(

@@ -3,10 +3,13 @@ from __future__ import annotations
 from datetime import date
 
 from .itinerary_exhibit import save_itinerary_exhibits
+from .itinerary_transportation import insert_itinerary_transportation
+from .itinerary_transportation import insert_itinerary_transportation_legs
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
+from ...models.transportation_diff import TransportationDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from .schedule_itinerary_item import insert_itinerary_guardians_talk
 from ...shared.calendar_dates import DateValues
@@ -90,6 +93,30 @@ def save_itinerary_attractions( cur: Cursor, attractions: list[ AttractionDiff ]
          ) )
 
 
+def save_itinerary_transportations(
+      cur: Cursor,
+      transportations: list[ TransportationDiff ] ) -> None:
+   if not transportations:
+      return
+
+   for transportation in transportations:
+      insert_itinerary_transportation(
+         cur,
+         transportation=transportation.name,
+         old_likelihood=transportation.old_likelihood,
+         new_likelihood=transportation.new_likelihood,
+         start_time=transportation.start_time,
+         end_time=transportation.end_time )
+
+      if not transportation.legs:
+         continue
+
+      insert_itinerary_transportation_legs(
+         cur,
+         transportation=transportation.name,
+         legs=transportation.legs )
+
+
 def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
    if not guardians_talks:
       return
@@ -162,6 +189,9 @@ def save_validated_itinerary(
       save_itinerary_exhibits( cur, selected_exhibits or [] )
       save_itinerary_animals( cur, validated_itinerary.animals )
       save_itinerary_attractions( cur, validated_itinerary.attractions )
+      save_itinerary_transportations(
+         cur,
+         validated_itinerary.transportations )
       save_itinerary_guardians_talks( cur, validated_itinerary.guardians_talks )
       save_itinerary_wild_encounters( cur, validated_itinerary.wild_encounters )
       save_itinerary_events( cur, validated_itinerary.events )

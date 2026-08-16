@@ -32,6 +32,24 @@ def delete_itinerary_attraction(
    )
 
 
+def delete_itinerary_transportation(
+      cur: Cursor,
+      *,
+      name: str ) -> None:
+   cur.execute(
+      """   DELETE FROM ItineraryTransportationLeg
+            WHERE TRANSPORTATION = ?;
+      """,
+      ( name, ),
+   )
+   cur.execute(
+      """   DELETE FROM ItineraryTransportation
+            WHERE TRANSPORTATION = ?;
+      """,
+      ( name, ),
+   )
+
+
 def delete_itinerary_guardians_talk(
       cur: Cursor,
       *,

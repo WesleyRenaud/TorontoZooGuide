@@ -39,6 +39,8 @@ from . import itinerary_exhibit
 from . import itinerary_guardians_talk
 from . import itinerary_status
 from . import itinerary_status_suppression
+from . import itinerary_transportation
+from . import itinerary_transportation_leg
 from . import itinerary_walk_route_leg
 from . import itinerary_walk_route_point
 from . import itinerary_walk_route_stop
@@ -61,6 +63,7 @@ from . import transportation_leg
 from . import transportation_route
 from . import transportation_route_leg
 from . import transportation_route_leg_marker
+from . import transportation_route_schedule
 from . import transportation_route_station
 from . import transportation_station
 from . import transportation_station_status
@@ -71,7 +74,6 @@ from . import wild_encounter_schedule
 from . import zoo_event
 from . import zoo_hours
 from . import zoo_update
-from . import zoomobile_route_schedule
 
 
 static_tables = [
@@ -133,7 +135,7 @@ runtime_tables = [
    attraction_opening_schedule,
    attraction_hours_schedule,
    attraction_schedule_override,
-   zoomobile_route_schedule,
+   transportation_route_schedule,
    transportation_station_status,
    guardians_talk_schedule,
    guardians_talk_cancellation,
@@ -146,6 +148,8 @@ runtime_tables = [
    itinerary_exhibit,
    itinerary_animal,
    itinerary_attraction,
+   itinerary_transportation,
+   itinerary_transportation_leg,
    itinerary_guardians_talk,
    itinerary_wild_encounter,
    itinerary_event,

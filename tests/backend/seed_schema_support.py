@@ -37,7 +37,6 @@ PARTIAL_RUNTIME_TABLES = {
    'AppSetting': 'ID INTEGER',
    'AttractionOpeningSchedule': 'ATTRACTION TEXT',
    'AttractionScheduleOverride': 'ATTRACTION TEXT',
-   'ZoomobileRouteSchedule': 'SCHEDULE_START_DATE DATE',
    'TransportationStationStatus': 'TRANSPORTATION TEXT, STATION TEXT',
    'GuardiansTalkSchedule': 'TALK_NAME TEXT, LOCATION TEXT',
    'GuardiansTalkCancellation': 'TALK_NAME TEXT, LOCATION TEXT',
@@ -189,7 +188,8 @@ EXPECTED_RUNTIME_COLUMNS = {
       'IS_CLOSED',
       'OVERRIDE_MESSAGE',
    },
-   'ZoomobileRouteSchedule': {
+   'TransportationRouteSchedule': {
+      'TRANSPORTATION',
       'SCHEDULE_START_DATE',
       'SCHEDULE_END_DATE',
       'ROUTE',
@@ -271,6 +271,20 @@ EXPECTED_RUNTIME_COLUMNS = {
       'ATTRACTION',
       'OLD_LIKELIHOOD',
       'NEW_LIKELIHOOD',
+      'START_TIME',
+      'END_TIME',
+   },
+   'ItineraryTransportation': {
+      'TRANSPORTATION',
+      'OLD_LIKELIHOOD',
+      'NEW_LIKELIHOOD',
+      'START_TIME',
+      'END_TIME',
+   },
+   'ItineraryTransportationLeg': {
+      'TRANSPORTATION',
+      'FROM_STATION',
+      'TO_STATION',
       'START_TIME',
       'END_TIME',
    },

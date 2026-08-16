@@ -3,8 +3,10 @@ from __future__ import annotations
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
 from ..data_access.itinerary import fetch_itinerary_event_rows
+from ..data_access.itinerary import fetch_itinerary_transportation_rows
 from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
+from ..data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
@@ -76,6 +78,19 @@ def clear_schedules_outside_visit_window(
          clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
+         did_clear_schedule = True
+
+      for transportation in fetch_itinerary_transportation_rows( conn ):
+         if not schedule_time_occurs_outside_visit_window(
+               transportation.start_time,
+               transportation.end_time,
+               arrival_time=arrival_time,
+               departure_time=departure_time ):
+            continue
+
+         clear_itinerary_transportation_schedule(
+            cur,
+            name=transportation.transportation )
          did_clear_schedule = True
 
       for event in fetch_itinerary_event_rows( conn ):

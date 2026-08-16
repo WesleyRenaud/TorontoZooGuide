@@ -73,6 +73,7 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
    return _collect_time_blocks(
       animals=itinerary.animals,
       attractions=itinerary.attractions,
+      transportations=itinerary.transportations,
       events=itinerary.events,
       guardians_talks=itinerary.guardians_talks,
       wild_encounters=itinerary.wild_encounters )
@@ -101,6 +102,7 @@ def collect_time_blocks_from_validated_itinerary(
    return _collect_time_blocks(
       animals=validated_itinerary.animals,
       attractions=validated_itinerary.attractions,
+      transportations=validated_itinerary.transportations,
       events=validated_itinerary.events,
       guardians_talks=validated_itinerary.guardians_talks,
       wild_encounters=validated_itinerary.wild_encounters )
@@ -110,6 +112,7 @@ def _collect_time_blocks(
       *,
       animals: list[ Any ],
       attractions: list[ Any ],
+      transportations: list[ Any ],
       events: list[ Any ],
       guardians_talks: list[ Any ],
       wild_encounters: list[ Any ] ) -> list[ TimeBlock ]:
@@ -129,6 +132,12 @@ def _collect_time_blocks(
          blocks,
          attraction.start_time,
          attraction.end_time )
+
+   for transportation in transportations:
+      append_block_from_schedule_times(
+         blocks,
+         transportation.start_time,
+         transportation.end_time )
 
    for event in events:
       append_block_from_schedule_times(

@@ -14,6 +14,7 @@ from ..data_access.itinerary_animal_save_carryover import itinerary_animal_save_
 from ..data_access.itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_attraction_save_carryover import itinerary_attraction_save_carryover
+from ..data_access.itinerary_attraction_save_carryover import ItineraryNamedSaveRow
 from ..data_access.itinerary_event_record import ItineraryEventRecord
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
@@ -26,8 +27,10 @@ from ...models import Animal
 from ...models import AnimalDiff
 from ...models import AttractionDiff
 from ...models import GuardiansTalkDiff
+from ...models import TransportationDiff
 from ...models import WildEncounterDiff
 from ...models.itinerary_event import ItineraryEvent
+from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ..scheduling.bulk.attraction_covered_animals import uncover_animals_for_removed_attractions
 from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
@@ -35,6 +38,8 @@ from ..scheduling.extend_departure_for_activity import departure_time_covering_s
 from .selected_exhibit_date_change_animals import apply_selected_exhibit_animals_on_date_change
 from ...shared.enums import ItineraryEventType
 from ...shared.value_conversion import ValueConversion
+from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
+from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ...types import Connection, DateKey, ScheduleTimeKey
 from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
 from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_overlapping_saved_schedule
@@ -200,7 +205,7 @@ def validate_itinerary_attractions(
       arrival_time: ScheduleTimeKey,
       departure_time: ScheduleTimeKey,
       old_visit_date: DateKey | None = None,
-      saved_attraction_rows: list[ ItineraryAttractionRecord ] | None = None,
+      saved_attraction_rows: list[ ItineraryNamedSaveRow ] | None = None,
       visit_date_is_changing: bool = False ) -> list[ AttractionDiff ]:
    diffs: list[ AttractionDiff ] = []
 
@@ -233,6 +238,110 @@ def validate_itinerary_attractions(
       )
 
    return diffs
+
+
+def _timed_legs_for_transportation_save(
+      conn: Connection,
+      *,
+      transportation_name: str,
+      visit_date: date,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      carryover_legs: list[ ItineraryTransportationLeg ],
+      visit_date_is_changing: bool,
+) -> tuple[ ScheduleTimeKey, list[ ItineraryTransportationLeg ] ]:
+   if start_time is None:
+      return None, []
+
+   if not visit_date_is_changing:
+      return end_time, list( carryover_legs )
+
+   day_loop = fetch_transportation_day_loop(
+      conn,
+      transportation=transportation_name,
+      target_date=visit_date )
+
+   if day_loop is None:
+      return end_time, []
+
+   timed_legs, expanded_end_time = expand_timed_transportation_legs(
+      start_time=start_time,
+      legs=day_loop.legs )
+
+   return expanded_end_time, timed_legs
+
+
+def validate_itinerary_transportations(
+      attraction_coordinator: type[ AttractionCoordinator ],
+      conn: Connection,
+      transportations: list[ str ],
+      new_visit_date: date,
+      *,
+      arrival_time: ScheduleTimeKey,
+      departure_time: ScheduleTimeKey,
+      old_visit_date: DateKey | None = None,
+      saved_transportation_rows: list[ ItineraryNamedSaveRow ] | None = None,
+      visit_date_is_changing: bool = False ) -> list[ TransportationDiff ]:
+   diffs: list[ TransportationDiff ] = []
+
+   for transportation_name in transportations:
+      carryover = itinerary_attraction_save_carryover(
+         saved_transportation_rows,
+         transportation_name,
+         old_visit_date=old_visit_date )
+
+      new_likelihood = attraction_coordinator.get_attraction_likelihood_for_visit_date(
+         visit_date=new_visit_date,
+         attraction_name=transportation_name )
+      start_time, end_time = (
+         ( carryover.start_time, carryover.end_time )
+         if visit_date_is_changing
+         else cleared_schedule_times_for_visit_window(
+            carryover.start_time,
+            carryover.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ) )
+      end_time, legs = _timed_legs_for_transportation_save(
+         conn,
+         transportation_name=transportation_name,
+         visit_date=new_visit_date,
+         start_time=start_time,
+         end_time=end_time,
+         carryover_legs=carryover.legs,
+         visit_date_is_changing=visit_date_is_changing )
+
+      diffs.append(
+         TransportationDiff(
+            name=carryover.name,
+            old_likelihood=carryover.old_likelihood,
+            new_likelihood=new_likelihood,
+            start_time=start_time,
+            end_time=end_time,
+            legs=legs,
+         )
+      )
+
+   return diffs
+
+
+def split_attraction_names_for_itinerary_save(
+      conn: Connection,
+      attraction_names: list[ str ],
+) -> tuple[ list[ str ], list[ str ] ]:
+   from ..data_access.attraction_also_transportation import (
+      fetch_also_transportation_attraction_names )
+
+   also_transportation_names = fetch_also_transportation_attraction_names( conn )
+   plain_attractions: list[ str ] = []
+   transportations: list[ str ] = []
+
+   for name in attraction_names:
+      if name in also_transportation_names:
+         transportations.append( name )
+      else:
+         plain_attractions.append( name )
+
+   return plain_attractions, transportations
 
 
 
@@ -402,6 +511,12 @@ def validate_itinerary_for_save(
          validated_animals,
          removed_attraction_rows )
 
+   plain_attraction_names, transportation_names = (
+      split_attraction_names_for_itinerary_save(
+         conn,
+         save_input.attractions or [] )
+   )
+
    validated_itinerary = ValidatedItinerary(
       arrival_time=arrival_time,
       departure_time=departure_time,
@@ -409,14 +524,27 @@ def validate_itinerary_for_save(
       attractions=(
          validate_itinerary_attractions(
             attraction_coordinator,
-            attractions=save_input.attractions,
+            attractions=plain_attraction_names,
             new_visit_date=save_input.date,
             arrival_time=arrival_time,
             departure_time=departure_time,
             old_visit_date=old_visit_date,
             saved_attraction_rows=saved_itinerary.attraction_rows,
             visit_date_is_changing=visit_date_is_changing )
-         if save_input.attractions
+         if plain_attraction_names
+         else [] ),
+      transportations=(
+         validate_itinerary_transportations(
+            attraction_coordinator,
+            conn,
+            transportations=transportation_names,
+            new_visit_date=save_input.date,
+            arrival_time=arrival_time,
+            departure_time=departure_time,
+            old_visit_date=old_visit_date,
+            saved_transportation_rows=saved_itinerary.transportation_rows,
+            visit_date_is_changing=visit_date_is_changing )
+         if transportation_names
          else [] ),
       guardians_talks=guardians_talk_diffs_within_visit_window(
          guardians_talk_diffs,
@@ -504,6 +632,14 @@ def _visit_window_cuts_off_saved_schedules(
       if schedule_time_occurs_outside_visit_window(
             attraction.start_time,
             attraction.end_time,
+            arrival_time=arrival_time,
+            departure_time=departure_time ):
+         return True
+
+   for transportation in saved_itinerary.transportation_rows:
+      if schedule_time_occurs_outside_visit_window(
+            transportation.start_time,
+            transportation.end_time,
             arrival_time=arrival_time,
             departure_time=departure_time ):
          return True

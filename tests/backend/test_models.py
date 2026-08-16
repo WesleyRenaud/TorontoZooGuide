@@ -282,6 +282,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'is_deleted': False
          }
       ],
+      'transportations': [],
       'guardians_talks': [
          {
             'name': 'Tiger Talk',

@@ -6,5 +6,6 @@ CREATE TABLE TransportationStation
    DESCRIPTION        TEXT        NOT NULL,
    X_COORD            FLOAT       NOT NULL,
    Y_COORD            FLOAT       NOT NULL,
+   IS_MAIN_STATION    BOOL        NOT NULL DEFAULT 0,
    PRIMARY KEY (TRANSPORTATION, NAME),
    FOREIGN KEY (TRANSPORTATION) REFERENCES Transportation(NAME) );

@@ -8,6 +8,7 @@ from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_record import ItineraryAttractionRecord
 from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
 from ..scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
@@ -19,6 +20,7 @@ from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 SavedItineraryScheduleItemRow = (
    ItineraryAnimalRecord
    | ItineraryAttractionRecord
+   | ItineraryTransportationRecord
    | ItineraryGuardiansTalkRecord
    | ItineraryWildEncounterRecord
    | ItineraryEventRecord
@@ -38,6 +40,28 @@ def _attraction_row_matches_schedule_item_key(
       attraction_row: ItineraryAttractionRecord,
       schedule_item_key: AttractionScheduleItemKey ) -> bool:
    return attraction_row.attraction == schedule_item_key.name
+
+
+def _transportation_row_matches_schedule_item_key(
+      transportation_row: ItineraryTransportationRecord,
+      schedule_item_key: AttractionScheduleItemKey ) -> bool:
+   return transportation_row.transportation == schedule_item_key.name
+
+
+def _find_saved_itinerary_transportation_row(
+      saved_itinerary: SavedItinerary,
+      schedule_item_key: AttractionScheduleItemKey,
+      ) -> ItineraryTransportationRecord | None:
+   return next(
+      (
+         transportation_row
+         for transportation_row in saved_itinerary.transportation_rows
+         if _transportation_row_matches_schedule_item_key(
+            transportation_row,
+            schedule_item_key )
+      ),
+      None,
+   )
 
 
 def _guardians_talk_row_matches_schedule_item_key(
@@ -85,6 +109,13 @@ def find_saved_itinerary_schedule_item_row(
       )
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      transportation_row = _find_saved_itinerary_transportation_row(
+         saved_itinerary,
+         schedule_item_key )
+
+      if transportation_row is not None:
+         return transportation_row
+
       return next(
          (
             attraction_row

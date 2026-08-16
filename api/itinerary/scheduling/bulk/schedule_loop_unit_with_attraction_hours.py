@@ -3,6 +3,7 @@ from __future__ import annotations
 from .attraction_hours_soft_pin import stops_before_attraction_hours_soft_pin
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots_ending_by
@@ -315,10 +316,12 @@ def _schedule_stops_around_attraction_hours(
 def _attraction_stop_for_soft_pin(
       stops: list[ LoopScheduleStop ],
       soft_pin: AttractionHoursSoftPin,
-   ) -> ItineraryAttractionRecord | None:
+   ) -> ItineraryAttractionRecord | ItineraryTransportationRecord | None:
    for stop in stops:
       if (
-            isinstance( stop, ItineraryAttractionRecord )
+            isinstance(
+               stop,
+               ( ItineraryAttractionRecord, ItineraryTransportationRecord ) )
             and stop.attraction == soft_pin.attraction_name ):
          return stop
 
@@ -330,7 +333,9 @@ def _stop_is_soft_pinned_attraction(
       soft_pin_attraction_names: set[ str ],
    ) -> bool:
    return (
-      isinstance( stop, ItineraryAttractionRecord )
+      isinstance(
+         stop,
+         ( ItineraryAttractionRecord, ItineraryTransportationRecord ) )
       and stop.attraction in soft_pin_attraction_names )
 
 

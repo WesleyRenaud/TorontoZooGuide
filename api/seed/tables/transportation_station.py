@@ -14,6 +14,7 @@ RECORD_FIELDS = [
    'description',
    'x_coord',
    'y_coord',
+   'is_main_station',
 ]
 
 DB_COLUMNS = [
@@ -22,6 +23,7 @@ DB_COLUMNS = [
    'DESCRIPTION',
    'X_COORD',
    'Y_COORD',
+   'IS_MAIN_STATION',
 ]
 
 DATA_FILE = 'transportation_station.json'

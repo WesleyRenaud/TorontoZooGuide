@@ -11,6 +11,10 @@ from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_exhibit import fetch_itinerary_exhibits
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from .itinerary_transportation_leg_record import ItineraryTransportationLegRecord
+from .itinerary_transportation_mapper import map_itinerary_transportation_leg_record
+from .itinerary_transportation_mapper import map_itinerary_transportation_records
+from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
@@ -84,6 +88,50 @@ def fetch_itinerary_attraction_rows( conn: Connection ) -> list[ ItineraryAttrac
    return map_itinerary_attraction_records( rows )
 
 
+def fetch_itinerary_transportation_leg_rows(
+      conn: Connection ) -> list[ ItineraryTransportationLegRecord ]:
+   cur = conn.cursor()
+
+   rows = cur.execute(
+      """   SELECT
+               TRANSPORTATION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            FROM ItineraryTransportationLeg
+            ORDER BY TRANSPORTATION, START_TIME;
+      """ ).fetchall()
+
+   cur.close()
+
+   return [
+      map_itinerary_transportation_leg_record( row )
+      for row in rows
+   ]
+
+
+def fetch_itinerary_transportation_rows(
+      conn: Connection ) -> list[ ItineraryTransportationRecord ]:
+   cur = conn.cursor()
+
+   rows = cur.execute(
+      """   SELECT
+               TRANSPORTATION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD,
+               START_TIME,
+               END_TIME
+            FROM ItineraryTransportation;
+      """ ).fetchall()
+
+   cur.close()
+
+   return map_itinerary_transportation_records(
+      rows,
+      legs=fetch_itinerary_transportation_leg_rows( conn ) )
+
+
 def fetch_itinerary_guardians_talk_rows( conn: Connection ) -> list[ ItineraryGuardiansTalkRecord ]:
    cur = conn.cursor()
 
@@ -145,6 +193,7 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
          selected_exhibits=[],
          animal_rows=[],
          attraction_rows=[],
+         transportation_rows=[],
          guardians_talk_rows=[],
          wild_encounter_rows=[],
          event_rows=[] )
@@ -156,6 +205,7 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
       selected_exhibits=fetch_itinerary_exhibits( conn ),
       animal_rows=fetch_itinerary_animal_rows( conn ),
       attraction_rows=fetch_itinerary_attraction_rows( conn ),
+      transportation_rows=fetch_itinerary_transportation_rows( conn ),
       guardians_talk_rows=fetch_itinerary_guardians_talk_rows( conn ),
       wild_encounter_rows=fetch_itinerary_wild_encounter_rows( conn ),
       event_rows=fetch_itinerary_event_rows( conn ) )
