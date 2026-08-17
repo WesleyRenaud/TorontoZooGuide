@@ -85,6 +85,7 @@ function createStoredAttractionFromString(item) {
       freeWithAdmission: false,
       seasonal: false,
       isClosed: false,
+      addedAsAttraction: false,
       infoLink: null,
       imageSrc: null,
    };
@@ -105,6 +106,7 @@ function createStoredAttractionFromObject(item) {
       freeWithAdmission: normalizeStoredBoolean(item.freeWithAdmission),
       seasonal: normalizeStoredBoolean(item.seasonal),
       isClosed: normalizeStoredBoolean(item.isClosed),
+      addedAsAttraction: normalizeStoredBoolean(item.addedAsAttraction),
       infoLink: normalizeStoredLink(item.infoLink),
       imageSrc: normalizeStoredLink(item.imageSrc),
    };
@@ -125,6 +127,7 @@ export function makeAttractionSelection(row) {
       freeWithAdmission: isFreeWithAdmission(row),
       seasonal: isSeasonalAttraction(row),
       isClosed: isClosedAttraction(row),
+      addedAsAttraction: isAlsoTransportationAttraction(row),
       infoLink: getAttractionInfoLink(row),
       imageSrc: buildAttractionImageSrc(row),
    };

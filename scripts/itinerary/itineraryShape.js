@@ -139,6 +139,65 @@ function normalizeGuardiansTalkListForSave(items) {
       .filter((talk) => talk.name);
 }
 
+function normalizeTransportationNameForSave(item) {
+   if (typeof item === 'string') {
+      return item.trim();
+   }
+
+   if (!item || typeof item !== 'object') {
+      return '';
+   }
+
+   return typeof item.name === 'string'
+      ? item.name.trim()
+      : '';
+}
+
+function isAttractionAddedAsAttraction(item) {
+   return Boolean(item && typeof item === 'object' && item.addedAsAttraction === true);
+}
+
+function normalizeTransportationsForSave(draft = {}) {
+   const fromAttractions = normalizeItineraryItems(draft.attractions)
+      .filter(isAttractionAddedAsAttraction)
+      .map((item) => ({
+         name: normalizeTransportationNameForSave(item),
+         added_as_attraction: true,
+      }))
+      .filter((item) => item.name);
+
+   const fromTransportations = normalizeItineraryItems(draft.transportations)
+      .map((item) => {
+         const name = normalizeTransportationNameForSave(item);
+
+         if (!name) {
+            return null;
+         }
+
+         return {
+            name,
+            added_as_attraction: item?.addedAsAttraction === true,
+         };
+      })
+      .filter(Boolean);
+
+   const byName = new Map();
+
+   [...fromTransportations, ...fromAttractions].forEach((item) => {
+      byName.set(item.name, item);
+   });
+
+   return [...byName.values()];
+}
+
+function normalizeAttractionsForSave(attractions = []) {
+   return normalizeItineraryNamesForSave(
+      normalizeItineraryItems(attractions).filter((item) => (
+         !isAttractionAddedAsAttraction(item)
+      ))
+   );
+}
+
 export function toSetItineraryPayload(draft = {}) {
    const base = normalizeItineraryDraft(draft);
 
@@ -147,7 +206,8 @@ export function toSetItineraryPayload(draft = {}) {
       arrivalTime: base.arrivalTime,
       departureTime: base.departureTime,
       animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
-      attractions: normalizeItineraryNamesForSave(base.attractions),
+      attractions: normalizeAttractionsForSave(base.attractions),
+      transportations: normalizeTransportationsForSave(base),
       guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
       wildEncounters: normalizeWildEncounterListForSave(base.wildEncounters),
    };
@@ -194,6 +254,10 @@ function areItineraryDraftSaveItemSelectionsEqual(
       sortStringsForComparison(rightSave.attractions),
    )
    && areDraftValuesEqual(
+      sortTransportationsForSaveComparison(leftSave.transportations),
+      sortTransportationsForSaveComparison(rightSave.transportations),
+   )
+   && areDraftValuesEqual(
       sortScheduledItemsForSaveComparison(leftSave.guardiansTalks),
       sortScheduledItemsForSaveComparison(rightSave.guardiansTalks),
    )
@@ -215,6 +279,12 @@ export function areItineraryDraftsSemanticallyEqual(left, right) {
 }
 
 function sortScheduledItemsForSaveComparison(items = []) {
+   return [...items].sort((left, right) => (
+      left.name.localeCompare(right.name)
+   ));
+}
+
+function sortTransportationsForSaveComparison(items = []) {
    return [...items].sort((left, right) => (
       left.name.localeCompare(right.name)
    ));

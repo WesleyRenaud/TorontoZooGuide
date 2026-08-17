@@ -10,6 +10,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.shared.calendar_dates import DateValues
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -64,7 +65,12 @@ def test_bulk_schedule_packs_zoomobile_after_tiny_tour_and_giraffe_after_warthog
       animals=itinerary_animals_for_exhibits(
          [ 'Africa Savanna' ],
          visit_date=VISIT_DATE ),
-      attractions=[ 'Zoomobile' ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
+      ],
       guardians_talks=[
          guardians_talk_save_entry( HYENA_TALK, start_time='14:00' ),
       ],

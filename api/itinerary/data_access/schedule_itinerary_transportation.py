@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from .itinerary_transportation import delete_itinerary_transportation_legs
-from .itinerary_transportation import insert_itinerary_transportation
 from .itinerary_transportation import insert_itinerary_transportation_legs
 from ...shared.calendar_dates import DateValues
 from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
@@ -37,8 +36,7 @@ def apply_itinerary_transportation_schedule(
       *,
       name: str,
       start_time: ScheduleTimeKey,
-      legs: list[ TransportationRouteLegSegment ],
-      insert_if_missing: bool ) -> bool:
+      legs: list[ TransportationRouteLegSegment ] ) -> bool:
    timed_legs, end_time = expand_timed_transportation_legs(
       start_time=start_time,
       legs=legs )
@@ -48,18 +46,6 @@ def apply_itinerary_transportation_schedule(
       cur,
       transportation=name,
       legs=timed_legs )
-
-   if insert_if_missing:
-      inserted = insert_itinerary_transportation(
-         cur,
-         transportation=name,
-         old_likelihood=None,
-         new_likelihood=None,
-         start_time=start_time,
-         end_time=end_time )
-
-      if inserted:
-         return True
 
    return update_itinerary_transportation_schedule(
       cur,

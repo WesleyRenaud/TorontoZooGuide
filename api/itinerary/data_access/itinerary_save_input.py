@@ -5,6 +5,7 @@ from datetime import date
 
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
+from .itinerary_transportation_input import ItineraryTransportationInput
 from ...types import ScheduleTimeKey
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
@@ -17,6 +18,8 @@ class ItinerarySaveInput:
    selected_exhibits: list[ str ] = field( default_factory=list )
    animals: list[ ItineraryAnimalInput ] = field( default_factory=list )
    attractions: list[ str ] = field( default_factory=list )
+   transportations: list[ ItineraryTransportationInput ] = field(
+      default_factory=list )
    guardians_talks: list[ ItineraryGuardiansTalkInput ] = field( default_factory=list )
    wild_encounters: list[ WildEncounterScheduleItemKey ] = field( default_factory=list )
 

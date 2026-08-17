@@ -120,6 +120,7 @@ def fetch_itinerary_transportation_rows(
                TRANSPORTATION,
                OLD_LIKELIHOOD,
                NEW_LIKELIHOOD,
+               ADDED_AS_ATTRACTION,
                START_TIME,
                END_TIME
             FROM ItineraryTransportation;

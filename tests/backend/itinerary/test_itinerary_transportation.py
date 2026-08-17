@@ -6,6 +6,7 @@ from itinerary.support import schedule_itinerary_item, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from api.itinerary.transportation.resolve_transportation_day_loop import order_route_legs_from_station
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
@@ -99,7 +100,12 @@ def test_set_itinerary_saves_zoomobile_as_transportation_not_attraction(
       arrival_time='09:30',
       departure_time='17:00',
       animals=[],
-      attractions=[ ZOOMOBILE ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
       guardians_talks=[],
       wild_encounters=[],
    )
@@ -107,12 +113,16 @@ def test_set_itinerary_saves_zoomobile_as_transportation_not_attraction(
    assert result.success is True
    assert result.itinerary.attractions == []
    assert [ t.name for t in result.itinerary.transportations ] == [ ZOOMOBILE ]
+   assert result.itinerary.transportations[ 0 ].added_as_attraction is True
+   assert result.itinerary.transportations[ 0 ].to_dict()[ 'added_as_attraction' ] is True
 
    attraction_rows = db.conn.execute(
       'SELECT ATTRACTION FROM ItineraryAttraction;'
    ).fetchall()
    transportation_rows = db.conn.execute(
-      'SELECT TRANSPORTATION FROM ItineraryTransportation;'
+      """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
+            FROM ItineraryTransportation;
+      """
    ).fetchall()
    leg_rows = db.conn.execute(
       'SELECT COUNT(*) AS count FROM ItineraryTransportationLeg;'
@@ -120,6 +130,7 @@ def test_set_itinerary_saves_zoomobile_as_transportation_not_attraction(
 
    assert attraction_rows == []
    assert [ row[ 'TRANSPORTATION' ] for row in transportation_rows ] == [ ZOOMOBILE ]
+   assert transportation_rows[ 0 ][ 'ADDED_AS_ATTRACTION' ] == 1
    assert leg_rows[ 'count' ] == 0
 
 
@@ -130,7 +141,12 @@ def test_schedule_zoomobile_expands_timed_legs(
       arrival_time='09:30',
       departure_time='17:00',
       animals=[],
-      attractions=[ ZOOMOBILE ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
       guardians_talks=[],
       wild_encounters=[],
    ).success
@@ -171,7 +187,12 @@ def test_unschedule_zoomobile_clears_parent_times_and_legs(
       arrival_time='09:30',
       departure_time='17:00',
       animals=[],
-      attractions=[ ZOOMOBILE ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
       guardians_talks=[],
       wild_encounters=[],
    ).success

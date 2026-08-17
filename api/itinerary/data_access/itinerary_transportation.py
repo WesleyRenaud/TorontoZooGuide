@@ -13,21 +13,24 @@ def insert_itinerary_transportation(
       old_likelihood: int | None,
       new_likelihood: int | None,
       start_time: ScheduleTimeKey = None,
-      end_time: ScheduleTimeKey = None ) -> bool:
+      end_time: ScheduleTimeKey = None,
+      added_as_attraction: bool ) -> bool:
    cur.execute(
       """   INSERT OR IGNORE INTO ItineraryTransportation (
                TRANSPORTATION,
                OLD_LIKELIHOOD,
                NEW_LIKELIHOOD,
+               ADDED_AS_ATTRACTION,
                START_TIME,
                END_TIME
             )
-            VALUES ( ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ? );
       """,
       (
          transportation,
          old_likelihood,
          new_likelihood,
+         added_as_attraction,
          DateValues.normalize_itinerary_schedule_time( start_time ),
          DateValues.normalize_itinerary_schedule_time( end_time ),
       ),
