@@ -7,6 +7,7 @@ import {
    cloneItineraryDraft,
    createEmptyItineraryDraft,
    hasSavedItineraryContent,
+   hydrateWizardDraftFromSavedItinerary,
    isItineraryCompletelyUnset,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
@@ -201,6 +202,38 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
       }],
       wildEncounters: ['African Rainforest||14:00'],
    });
+});
+
+test('hydrateWizardDraftFromSavedItinerary moves added-as-attraction transportations into attractions', () => {
+   assert.deepEqual(hydrateWizardDraftFromSavedItinerary({
+      date: '2026-08-17',
+      attractions: [],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: true },
+         { name: 'Zoo Shuttle', added_as_attraction: false },
+      ],
+   }), {
+      date: '2026-08-17',
+      arrivalTime: '',
+      departureTime: '',
+      animals: [],
+      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      guardiansTalks: [],
+      wildEncounters: [],
+      transportations: [{ name: 'Zoo Shuttle', added_as_attraction: false }],
+      events: [],
+   });
+});
+
+test('toSetItineraryPayload keeps added_as_attraction from saved transportations', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-08-17',
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+   }).transportations, [{
+      name: 'Zoomobile',
+      added_as_attraction: true,
+   }]);
 });
 
 test('toSetItineraryPayload moves also-transportation attractions into transportations', () => {

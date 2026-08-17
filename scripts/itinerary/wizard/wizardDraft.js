@@ -1,5 +1,7 @@
+import { normalizeItineraryDraft } from '../itineraryShape.js';
+
 export function buildWizardDraft(wizardState, override = {}) {
-   return {
+   return normalizeItineraryDraft({
       date: override.date ?? wizardState.date,
       arrivalTime: override.arrivalTime ?? wizardState.arrivalTime,
       departureTime: override.departureTime ?? wizardState.departureTime,
@@ -7,6 +9,7 @@ export function buildWizardDraft(wizardState, override = {}) {
       attractions: override.attractions ?? wizardState.attractions,
       guardiansTalks: override.guardiansTalks ?? wizardState.guardiansTalks,
       wildEncounters: override.wildEncounters ?? wizardState.wildEncounters,
+      transportations: override.transportations ?? wizardState.transportations,
       events: override.events ?? wizardState.events,
-   };
+   });
 }

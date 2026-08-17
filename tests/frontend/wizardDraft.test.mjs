@@ -28,6 +28,32 @@ test('buildWizardDraft preserves itinerary times when changing date', () => {
          attractions: ['Conservation Carousel'],
          guardiansTalks: [],
          wildEncounters: [],
+         transportations: [],
+         events: [],
+      }
+   );
+});
+
+test('buildWizardDraft preserves transportations from wizard state', () => {
+   assert.deepEqual(
+      buildWizardDraft({
+         date: '2026-08-17',
+         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+         events: [],
+      }),
+      {
+         date: '2026-08-17',
+         arrivalTime: '',
+         departureTime: '',
+         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
          events: [],
       }
    );
