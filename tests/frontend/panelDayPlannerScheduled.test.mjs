@@ -269,6 +269,89 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
+   test('scheduled transportation renders as timeline event card with stations', () => {
+      const unscheduleCalls = [];
+      const removeCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: true,
+                  start_time: '2:30 PM',
+                  end_time: '3:00 PM',
+                  legs: [
+                     {
+                        from_station: 'Main Station',
+                        to_station: 'Canadian Domain',
+                        start_time: '2:30 PM',
+                        end_time: '2:40 PM',
+                     },
+                     {
+                        from_station: 'Canadian Domain',
+                        to_station: 'Wildlife Health',
+                        start_time: '2:40 PM',
+                        end_time: '3:00 PM',
+                     },
+                  ],
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
+         }
+      );
+      const zoomobileEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Zoomobile')
+      ));
+      const eventCard = zoomobileEvent?.querySelector('.itinerary-day-event-card');
+      const menuItems = [
+         ...(eventCard?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
+      const text = allTextFor(planner);
+
+      assert.ok(zoomobileEvent);
+      assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
+      assert.match(allTextFor(zoomobileEvent), /Main Station - Wildlife Health/);
+      assert.match(text, /Attractions \(1\)/);
+      assert.match(
+         imageSrcFor(zoomobileEvent),
+         /images\/details\/attractions\/zoomobile\.png$/
+      );
+      assert.equal(menuItems.length, 2);
+      assert.equal(menuItems[0]?.textContent, 'Unschedule');
+      assert.equal(menuItems[1]?.textContent, 'Remove');
+
+      menuItems[0].click();
+
+      assert.deepEqual(unscheduleCalls, [{
+         itemType: 'transportations',
+         key: 'Zoomobile',
+      }]);
+
+      menuItems[1].click();
+
+      assert.deepEqual(removeCalls, [{
+         itemType: 'transportations',
+         key: 'Zoomobile',
+      }]);
+   });
+
 
    test('pre-open wild encounter keeps its start slot before zoo open', () => {
       const planner = makeDayPlannerPreview(

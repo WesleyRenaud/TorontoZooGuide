@@ -34,7 +34,9 @@ def map_schedule_item_key_from_wire(
    if item_kind == ScheduleItemKind.ANIMAL:
       return AnimalScheduleItemKey.from_wire( normalized_key )
 
-   if item_kind == ScheduleItemKind.ATTRACTION:
+   if item_kind in (
+         ScheduleItemKind.ATTRACTION,
+         ScheduleItemKind.TRANSPORTATION ):
       return AttractionScheduleItemKey.from_wire( normalized_key )
 
    if item_kind == ScheduleItemKind.GUARDIANS_TALK:

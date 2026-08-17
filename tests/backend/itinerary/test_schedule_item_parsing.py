@@ -60,6 +60,14 @@ def test_map_schedule_item_key_from_wire_attraction_key() -> None:
       name='Conservation Carousel' )
 
 
+def test_map_schedule_item_key_from_wire_transportation_key() -> None:
+   schedule_item_key = map_schedule_item_key_from_wire(
+      'transportations',
+      'Zoomobile' )
+
+   assert schedule_item_key == AttractionScheduleItemKey( name='Zoomobile' )
+
+
 def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
    zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 

@@ -2,8 +2,10 @@ import {
    buildAnimalRows,
    buildAttractionRows,
    buildGuardiansRows,
+   buildTransportationRows,
    buildWildRows,
 } from './rows.js';
+import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const ITINERARY_PANEL_SECTION_KEYS = {
@@ -47,12 +49,13 @@ export function buildSectionConfigs(
 ) {
    const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
    const animalRows = buildAnimalRows(animals, rowActionOptions);
-   const attractionRows = buildAttractionRows([
-      ...attractions,
-      ...transportations.filter((transportation) => (
-         transportation?.added_as_attraction === true
-      )),
-   ], rowActionOptions);
+   const attractionRows = [
+      ...buildAttractionRows(attractions, rowActionOptions),
+      ...buildTransportationRows(
+         transportations.filter(isTransportationAddedAsAttraction),
+         rowActionOptions
+      ),
+   ];
    const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });
    const wildRows = buildWildRows(wildEncounters, { onRemoveItem });
    const sectionConfigs = [

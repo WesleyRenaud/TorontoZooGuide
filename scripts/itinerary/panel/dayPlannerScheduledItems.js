@@ -9,6 +9,7 @@ import {
    buildAnimalRows,
    buildAttractionRows,
    buildGuardiansRows,
+   buildTransportationRows,
    buildWildRows,
 } from './rows.js';
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
@@ -18,6 +19,7 @@ import {
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
+import { getTransportationId } from '../selectors/transportationSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -210,6 +212,7 @@ export function buildScheduledItemRowsContext(
       attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
+      transportations = [],
       events = [],
    } = {},
    slotStarts = [],
@@ -247,12 +250,22 @@ export function buildScheduledItemRowsContext(
       scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       scheduleItemKey: getAttractionId(scheduledItem.item),
    }));
+   const transportationRows = buildScheduledItemRows(
+      transportations,
+      buildTransportationRows,
+      getDurationMinutesFromScheduleTimes
+   ).map((scheduledItem) => ({
+      ...scheduledItem,
+      scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
+      scheduleItemKey: getTransportationId(scheduledItem.item),
+   }));
    const genericEventRows = buildGenericEventScheduledRows(events);
    const scheduledItems = [
       ...guardiansTalkRows,
       ...wildEncounterRows,
       ...animalRows,
       ...attractionRows,
+      ...transportationRows,
       ...genericEventRows,
    ];
 
@@ -264,6 +277,9 @@ export function buildScheduledItemRowsContext(
       ),
       scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
       scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
+      scheduledTransportationIndexes: buildItineraryScheduledItemIndexes(
+         transportations
+      ),
       scheduledGuardiansTalkIndexes: new Set(
          guardiansTalkRows.map((scheduledItem) => scheduledItem.index)
       ),
@@ -278,6 +294,7 @@ export function buildScheduledItinerary(
    {
       scheduledAnimalIndexes = new Set(),
       scheduledAttractionIndexes = new Set(),
+      scheduledTransportationIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
    } = {}
@@ -288,6 +305,9 @@ export function buildScheduledItinerary(
       )),
       attractions: (itinerary.attractions ?? []).filter((_, index) => (
          scheduledAttractionIndexes.has(index)
+      )),
+      transportations: (itinerary.transportations ?? []).filter((_, index) => (
+         scheduledTransportationIndexes.has(index)
       )),
       guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
          scheduledGuardiansTalkIndexes.has(index)
@@ -303,6 +323,7 @@ export function buildUnscheduledItinerary(
    {
       scheduledAnimalIndexes = new Set(),
       scheduledAttractionIndexes = new Set(),
+      scheduledTransportationIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
    } = {}
@@ -314,6 +335,9 @@ export function buildUnscheduledItinerary(
       )),
       attractions: (itinerary.attractions ?? []).filter((_, index) => (
          !scheduledAttractionIndexes.has(index)
+      )),
+      transportations: (itinerary.transportations ?? []).filter((_, index) => (
+         !scheduledTransportationIndexes.has(index)
       )),
       guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
          !scheduledGuardiansTalkIndexes.has(index)

@@ -7,6 +7,7 @@ import {
    resolveScheduledPillOptions,
 } from '../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { allTextFor } from './helpers/panelRowsTestSetup.mjs';
 import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
@@ -218,8 +219,61 @@ test('buildScheduledItinerary tolerates missing itinerary collections', () => {
    assert.deepEqual(buildScheduledItinerary({}), {
       animals: [],
       attractions: [],
+      transportations: [],
       guardiansTalks: [],
       wildEncounters: [],
+   });
+});
+
+test.describe('buildScheduledItemRowsContext transportation', () => {
+   installDomTestHooks();
+
+   test('renders transportation with station range', () => {
+      const context = buildScheduledItemRowsContext(
+         {
+            animals: [],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  start_time: '2:30 PM',
+                  end_time: '3:00 PM',
+                  legs: [
+                     {
+                        from_station: 'Main Station',
+                        to_station: 'Canadian Domain',
+                        start_time: '2:30 PM',
+                        end_time: '2:40 PM',
+                     },
+                     {
+                        from_station: 'Canadian Domain',
+                        to_station: 'Wildlife Health',
+                        start_time: '2:40 PM',
+                        end_time: '3:00 PM',
+                     },
+                  ],
+               },
+            ],
+            events: [],
+         },
+         [870, 900],
+         1140
+      );
+      const transportationItems = [...context.itemsByStart.values()].flat()
+         .filter((item) => (
+            item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
+         ));
+
+      assert.equal(transportationItems.length, 1);
+      assert.equal(transportationItems[0].label, 'Zoomobile');
+      assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile');
+      assert.equal(context.scheduledTransportationIndexes.size, 1);
+      assert.match(
+         allTextFor(transportationItems[0].row),
+         /Main Station - Wildlife Health/
+      );
    });
 });
 

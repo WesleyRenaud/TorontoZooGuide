@@ -32,4 +32,14 @@ test('hasScheduledItineraryItems detects scheduled rows across collections', () 
       }),
       true
    );
+   assert.equal(
+      hasScheduledItineraryItems({
+         transportations: [{
+            name: 'Zoomobile',
+            start_time: '11:00',
+            end_time: '11:20',
+         }],
+      }),
+      true
+   );
 });

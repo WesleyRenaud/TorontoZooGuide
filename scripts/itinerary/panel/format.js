@@ -141,7 +141,34 @@ export function normalizeAttraction(value) {
       price: normalizeText(source.price),
       open_time: normalizeOptionalText(source.open_time),
       close_time: normalizeOptionalText(source.close_time),
-      infoLink: normalizeOptionalText(source.infoLink ?? source.info_link),
+      infoLink: normalizeOptionalText(source.info_link),
+      removalReason: normalizeOptionalText(source.removalReason),
+   };
+}
+
+export function normalizeTransportation(value) {
+   const source = asObject(value);
+   const legs = Array.isArray(source.legs)
+      ? source.legs.map((leg) => {
+         const sourceLeg = asObject(leg);
+
+         return {
+            ...sourceLeg,
+            from_station: normalizeText(sourceLeg.from_station),
+            to_station: normalizeText(sourceLeg.to_station),
+            start_time: normalizeText(sourceLeg.start_time),
+            end_time: normalizeText(sourceLeg.end_time),
+         };
+      })
+      : [];
+
+   return {
+      ...source,
+      name: normalizeText(source.name),
+      main_station: normalizeOptionalText(source.main_station),
+      infoLink: normalizeOptionalText(source.info_link),
+      added_as_attraction: source.added_as_attraction === true,
+      legs,
       removalReason: normalizeOptionalText(source.removalReason),
    };
 }

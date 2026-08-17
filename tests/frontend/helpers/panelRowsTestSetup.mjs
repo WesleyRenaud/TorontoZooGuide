@@ -10,6 +10,7 @@ import { installTestWindow } from './domMock.mjs';
 const EMPTY_ITINERARY = {
    animals: [],
    attractions: [],
+   transportations: [],
    guardiansTalks: [],
    wildEncounters: [],
 };

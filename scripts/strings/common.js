@@ -38,6 +38,7 @@ export const entityLabels = {
    wildEncounter: 'Wild Encounter',
    zoomobileStation: 'Zoomobile Station',
    zoomobileStations: 'zoomobile stations',
+   transportation: 'Transportation',
 };
 
 export const entityPhrases = {
@@ -82,6 +83,8 @@ export const labels = {
    talkTime: 'Talk time',
    time: 'Time',
    title: 'Title',
+   transportationRoundTrip: station => `${station} (round trip)`,
+   transportationStations: (first, last) => `${first} - ${last}`,
    type: 'Type',
    update: 'Update',
    viewingScope: 'Viewing scope',

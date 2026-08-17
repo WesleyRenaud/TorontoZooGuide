@@ -3,6 +3,7 @@ import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
+import { getTransportationId } from '../selectors/transportationSelector/model.js';
 import {
    getWildEncounterId,
    getWildEncounterKey,
@@ -33,6 +34,10 @@ function tagAttractionRows(rows = []) {
    return tagRows(rows, ScheduleItemKind.ATTRACTION.itemType);
 }
 
+function tagTransportationRows(rows = []) {
+   return tagRows(rows, ScheduleItemKind.TRANSPORTATION.itemType);
+}
+
 function tagGuardiansTalkRows(rows = []) {
    return tagRows(rows, ScheduleItemKind.GUARDIANS_TALK.itemType);
 }
@@ -50,6 +55,10 @@ export function getScheduleItemRowKind(row) {
 
    if (scheduleItemKind === ScheduleItemKind.ATTRACTION.itemType) {
       return ScheduleItemKind.ATTRACTION.itemType;
+   }
+
+   if (scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return ScheduleItemKind.TRANSPORTATION.itemType;
    }
 
    if (scheduleItemKind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
@@ -84,6 +93,10 @@ export function tagScheduleItemRow(itemType, row) {
       return tagAttractionRows([row])[0];
    }
 
+   if (itemType === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return tagTransportationRows([row])[0];
+   }
+
    if (itemType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
       return tagGuardiansTalkRows([row])[0];
    }
@@ -100,6 +113,10 @@ export function getScheduleItemRowId(row) {
 
    if (kind === ScheduleItemKind.ATTRACTION.itemType) {
       return getAttractionId(row);
+   }
+
+   if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return getTransportationId(row);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
@@ -122,6 +139,10 @@ export function getItineraryItemKey(itemType, item) {
 
    if (kind === ScheduleItemKind.ATTRACTION) {
       return getAttractionId(item);
+   }
+
+   if (kind === ScheduleItemKind.TRANSPORTATION) {
+      return getTransportationId(item);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK) {
