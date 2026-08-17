@@ -22,6 +22,7 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
          departureTime: '',
          animals: [],
          attractions: [],
+         transportations: [],
          guardiansTalks: [],
          wildEncounters: [],
          selectedExhibits: ['Africa Savanna', 'Eurasia'],
