@@ -304,6 +304,7 @@ export function isItineraryEmptyDraft(draft = {}) {
    && !normalizedDraft.arrivalTime
    && !normalizedDraft.departureTime
    && normalizedDraft.events.length === 0
+   && normalizedDraft.transportations.length === 0
    && ITINERARY_ITEM_KEYS.every((key) => (
       normalizedDraft[key].length === 0
    ));

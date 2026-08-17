@@ -10,7 +10,15 @@ import {
    isValidatedItineraryEmpty,
 } from './diff/summary.js';
 import { normalizeNonNegativeNumber } from '../panel/format.js';
+import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
 import { buildSpeciesExhibitKey } from '../speciesExhibitKey.js';
+
+function validatedAttractionPresenceItems(validated) {
+   return [
+      ...validated.attractions,
+      ...validated.transportations.filter(isTransportationAddedAsAttraction),
+   ];
+}
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
@@ -23,7 +31,7 @@ function buildRemovedItems(previous, validated, backendRemoved = {}) {
       attractions: mergeRemovedItems(
          backendRemoved.attractions,
          previous.attractions,
-         validated.attractions,
+         validatedAttractionPresenceItems(validated),
          'name'
       ),
       guardiansTalks: mergeRemovedItems(
@@ -88,7 +96,7 @@ function buildUnscheduledItems(previous, validated) {
       ),
       attractions: buildUnscheduledItemsByKey(
          previous.attractions,
-         validated.attractions,
+         validatedAttractionPresenceItems(validated),
          (item) => buildItemKey(item, 'name')
       ),
    };
