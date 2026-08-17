@@ -10,6 +10,7 @@ from ..data_access.itinerary_save_input_mapper import map_animal_inputs
 from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
+from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ..domain.itinerary import build_current_itinerary
 from ..domain.itinerary_visit_window import clear_schedules_outside_visit_window
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -93,6 +94,7 @@ class ItineraryCoordinator():
          attractions: list[ str ] | None = None,
          guardians_talks: list[ dict[ str, str | None ] ] | None = None,
          wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None,
+         transportations: list[ ItineraryTransportationInput ] | None = None,
          arrival_time: TimeInput = None,
          departure_time: TimeInput = None,
          visit_date_temp: float | None = None,
@@ -114,6 +116,7 @@ class ItineraryCoordinator():
          attractions=attractions,
          guardians_talks=guardians_talks,
          wild_encounters=wild_encounters,
+         transportations=transportations,
          visit_date_temp=visit_date_temp,
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),

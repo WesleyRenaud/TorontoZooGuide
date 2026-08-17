@@ -106,7 +106,8 @@ def save_itinerary_transportations(
          old_likelihood=transportation.old_likelihood,
          new_likelihood=transportation.new_likelihood,
          start_time=transportation.start_time,
-         end_time=transportation.end_time )
+         end_time=transportation.end_time,
+         added_as_attraction=transportation.added_as_attraction )
 
       if not transportation.legs:
          continue

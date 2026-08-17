@@ -190,12 +190,38 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
          },
       ],
       attractions: ['Conservation Carousel', 'Greenhouse'],
+      transportations: [],
       guardiansTalks: [{
          name: 'African Lion',
          start_time: null,
          end_time: null,
       }],
       wildEncounters: ['African Rainforest||14:00'],
+   });
+});
+
+test('toSetItineraryPayload moves also-transportation attractions into transportations', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-06-15',
+      attractions: [
+         { name: 'Conservation Carousel' },
+         { name: 'Zoomobile', addedAsAttraction: true },
+      ],
+      transportations: [
+         { name: 'Zoo Shuttle', addedAsAttraction: false },
+      ],
+   }), {
+      date: '2026-06-15',
+      arrivalTime: '',
+      departureTime: '',
+      animals: [],
+      attractions: ['Conservation Carousel'],
+      transportations: [
+         { name: 'Zoo Shuttle', added_as_attraction: false },
+         { name: 'Zoomobile', added_as_attraction: true },
+      ],
+      guardiansTalks: [],
+      wildEncounters: [],
    });
 });
 
@@ -232,6 +258,7 @@ test('toSetItineraryPayload keeps schedule times when provided', () => {
       departureTime: '17:00',
       animals: [],
       attractions: [],
+      transportations: [],
       guardiansTalks: [{
          name: 'African Lion',
          start_time: '13:45',

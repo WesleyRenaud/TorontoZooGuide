@@ -48,6 +48,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'selected_exhibits': [ ANIMAL_EXHIBIT ],
          'animals': [],
          'attractions': [],
+         'transportations': [],
          'guardians_talks': [],
          'wild_encounters': [],
          'visit_date_temp': None,

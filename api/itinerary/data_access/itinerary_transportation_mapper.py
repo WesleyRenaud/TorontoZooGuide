@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .itinerary_transportation_leg_record import ItineraryTransportationLegRecord
 from .itinerary_transportation_record import ItineraryTransportationRecord
+from ...shared.value_conversion import ValueConversion
 from ...types import Row
 
 
@@ -26,6 +27,8 @@ def map_itinerary_transportation_record(
       new_likelihood=row[ 'NEW_LIKELIHOOD' ],
       start_time=row[ 'START_TIME' ],
       end_time=row[ 'END_TIME' ],
+      added_as_attraction=ValueConversion.as_boolean(
+         row[ 'ADDED_AS_ATTRACTION' ] ),
       legs=list( legs or [] ) )
 
 

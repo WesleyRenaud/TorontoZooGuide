@@ -53,9 +53,28 @@ test('attraction selector model derives presentation fields', () => {
       freeWithAdmission: true,
       seasonal: false,
       isClosed: false,
+      addedAsAttraction: false,
       infoLink: 'https://example.com/carousel',
       imageSrc: '../images/details/attractions/conservation-carousel.png',
    });
+   assert.deepEqual(
+      makeAttractionSelection({
+         name: 'Zoomobile',
+         is_also_transportation: true,
+         free_with_admission: false,
+      }),
+      {
+         id: 'Zoomobile',
+         name: 'Zoomobile',
+         subtitle: 'Extra Charge',
+         freeWithAdmission: false,
+         seasonal: false,
+         isClosed: false,
+         addedAsAttraction: true,
+         infoLink: null,
+         imageSrc: '../images/details/attractions/zoomobile.png',
+      }
+   );
 });
 
 test('shouldConfirmClosedAttraction only prompts for new closed attractions', () => {
@@ -158,6 +177,7 @@ test('migrateStoredAttractions normalizes string and object entries', () => {
             freeWithAdmission: false,
             seasonal: false,
             isClosed: false,
+            addedAsAttraction: false,
             infoLink: null,
             imageSrc: null,
          },
@@ -168,6 +188,7 @@ test('migrateStoredAttractions normalizes string and object entries', () => {
             freeWithAdmission: true,
             seasonal: true,
             isClosed: false,
+            addedAsAttraction: false,
             infoLink: 'https://example.com',
             imageSrc: '../images/carousel.png',
          },

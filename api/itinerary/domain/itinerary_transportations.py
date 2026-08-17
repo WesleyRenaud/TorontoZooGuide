@@ -71,6 +71,7 @@ def build_itinerary_transportations(
                   start_time=leg.start_time,
                   end_time=leg.end_time )
                for leg in saved.legs
-            ] ) )
+            ],
+            added_as_attraction=saved.added_as_attraction ) )
 
    return transportations

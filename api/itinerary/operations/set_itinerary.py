@@ -7,6 +7,7 @@ from .commit_set_itinerary import commit_set_itinerary
 from ..conflicts.itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
+from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .prepare_set_itinerary_context import prepare_set_itinerary_context
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -27,6 +28,7 @@ def set_itinerary(
       attractions: list[ str ] | None = None,
       guardians_talks: list[ dict[ str, str | None ] ] | None = None,
       wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None,
+      transportations: list[ ItineraryTransportationInput ] | None = None,
       visit_date_temp: float | None = None,
       *,
       animal_coordinator: type[ AnimalCoordinator ],
@@ -49,7 +51,8 @@ def set_itinerary(
       animals,
       attractions,
       guardians_talks,
-      wild_encounters )
+      wild_encounters,
+      transportations )
    old_visit_date = fetch_itinerary_date( conn )
 
    controller_kwargs = itinerary_controller_kwargs(

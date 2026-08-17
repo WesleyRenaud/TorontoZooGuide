@@ -336,8 +336,7 @@ def _shift_guest_scheduled_transportation_rows(
          cur,
          name=transportation_row.transportation,
          start_time=shifted_times[ 0 ],
-         legs=day_loop.legs,
-         insert_if_missing=False )
+         legs=day_loop.legs )
 
 
 def _shift_guest_scheduled_event_rows(

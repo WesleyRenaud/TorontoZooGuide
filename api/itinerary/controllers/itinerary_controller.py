@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.itinerary_coordinator import ItineraryCoordinator
+from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ...json_handler import JsonRequestHandler
 from ...request_connection import get_connection
 from ..results.build_itinerary_path import build_itinerary_path
@@ -23,6 +24,8 @@ class ItineraryController():
       selected_exhibits = data.get( 'selectedExhibits' )
       animals = data.get( 'animals' )
       attractions = data.get( 'attractions' )
+      transportations = ItineraryTransportationInput.from_wires(
+         data.get( 'transportations' ) )
       guardians_talks = data.get( 'guardiansTalks' )
       wild_encounters = WildEncounterScheduleItemKey.from_wires(
          data.get( 'wildEncounters' ) )
@@ -50,6 +53,7 @@ class ItineraryController():
          selected_exhibits=selected_exhibits,
          animals=animals,
          attractions=attractions,
+         transportations=transportations,
          guardians_talks=guardians_talks,
          wild_encounters=wild_encounters,
          visit_date_temp=temp,

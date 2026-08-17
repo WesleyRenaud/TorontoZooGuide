@@ -10,6 +10,7 @@ from api.attractions.data_access.attraction_record import AttractionRecord
 from api.attractions.scheduling.attraction_operating_hours import attraction_has_configured_operating_hours
 from api.attractions.scheduling.attraction_operating_hours import attraction_operating_hours_seconds
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.models.attraction import Attraction
 from api.models.itinerary_transportation import ItineraryTransportation
 from api.shared.calendar_dates import DateValues
@@ -325,7 +326,12 @@ def test_bulk_schedule_fills_wait_with_already_open_soft_pin(
       arrival_time='10:00 AM',
       departure_time=None,
       animals=[],
-      attractions=[ 'Zoomobile', SPLASH_ISLAND ],
+      attractions=[ SPLASH_ISLAND ],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
+      ],
       guardians_talks=[],
       wild_encounters=[],
       confirming_attraction_without_animal=True,
@@ -414,8 +420,12 @@ def test_bulk_schedule_right_aligns_soft_pins_against_hard_pin_deadline(
       departure_time='17:00',
       animals=rainforest,
       attractions=[
-         'Zoomobile',
          'Face Painting, Caricatures and Henna! - Tundra Trek',
+      ],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
       ],
       guardians_talks=[
          guardians_talk_save_entry( TURTLE_TALK, start_time='12:00' ),
@@ -531,8 +541,12 @@ def test_bulk_schedule_cascades_greenhouse_and_carousel_before_soft_pin_chain(
       attractions=[
          'Greenhouse',
          'Conservation Carousel',
-         'Zoomobile',
          'Face Painting, Caricatures and Henna! - Tundra Trek',
+      ],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
       ],
       guardians_talks=[
          guardians_talk_save_entry( TURTLE_TALK, start_time='12:00' ),

@@ -17,6 +17,7 @@ from ..data_access.itinerary_attraction_save_carryover import itinerary_attracti
 from ..data_access.itinerary_attraction_save_carryover import ItineraryNamedSaveRow
 from ..data_access.itinerary_event_record import ItineraryEventRecord
 from ..data_access.itinerary_save_input import ItinerarySaveInput
+from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_window
@@ -274,7 +275,7 @@ def _timed_legs_for_transportation_save(
 def validate_itinerary_transportations(
       attraction_coordinator: type[ AttractionCoordinator ],
       conn: Connection,
-      transportations: list[ str ],
+      transportations: list[ ItineraryTransportationInput ],
       new_visit_date: date,
       *,
       arrival_time: ScheduleTimeKey,
@@ -284,15 +285,15 @@ def validate_itinerary_transportations(
       visit_date_is_changing: bool = False ) -> list[ TransportationDiff ]:
    diffs: list[ TransportationDiff ] = []
 
-   for transportation_name in transportations:
+   for transportation in transportations:
       carryover = itinerary_attraction_save_carryover(
          saved_transportation_rows,
-         transportation_name,
+         transportation.name,
          old_visit_date=old_visit_date )
 
       new_likelihood = attraction_coordinator.get_attraction_likelihood_for_visit_date(
          visit_date=new_visit_date,
-         attraction_name=transportation_name )
+         attraction_name=transportation.name )
       start_time, end_time = (
          ( carryover.start_time, carryover.end_time )
          if visit_date_is_changing
@@ -303,7 +304,7 @@ def validate_itinerary_transportations(
             departure_time=departure_time ) )
       end_time, legs = _timed_legs_for_transportation_save(
          conn,
-         transportation_name=transportation_name,
+         transportation_name=transportation.name,
          visit_date=new_visit_date,
          start_time=start_time,
          end_time=end_time,
@@ -318,6 +319,7 @@ def validate_itinerary_transportations(
             start_time=start_time,
             end_time=end_time,
             legs=legs,
+            added_as_attraction=transportation.added_as_attraction,
          )
       )
 
@@ -511,11 +513,12 @@ def validate_itinerary_for_save(
          validated_animals,
          removed_attraction_rows )
 
-   plain_attraction_names, transportation_names = (
+   plain_attraction_names, _diverted_transportation_names = (
       split_attraction_names_for_itinerary_save(
          conn,
          save_input.attractions or [] )
    )
+   transportation_inputs = list( save_input.transportations )
 
    validated_itinerary = ValidatedItinerary(
       arrival_time=arrival_time,
@@ -537,14 +540,14 @@ def validate_itinerary_for_save(
          validate_itinerary_transportations(
             attraction_coordinator,
             conn,
-            transportations=transportation_names,
+            transportations=transportation_inputs,
             new_visit_date=save_input.date,
             arrival_time=arrival_time,
             departure_time=departure_time,
             old_visit_date=old_visit_date,
             saved_transportation_rows=saved_itinerary.transportation_rows,
             visit_date_is_changing=visit_date_is_changing )
-         if transportation_names
+         if transportation_inputs
          else [] ),
       guardians_talks=guardians_talk_diffs_within_visit_window(
          guardians_talk_diffs,

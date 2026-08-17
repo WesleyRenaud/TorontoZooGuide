@@ -89,8 +89,7 @@ def apply_listed_schedule(
          cur,
          name=schedule_item_key.name,
          start_time=start_time,
-         legs=day_loop.legs,
-         insert_if_missing=insert_if_missing )
+         legs=day_loop.legs )
 
    if insert_if_missing:
       inserted = insert_itinerary_attraction_schedule(

@@ -18,6 +18,7 @@ class ItineraryTransportationRecord:
    new_likelihood: int | None
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
+   added_as_attraction: bool = False
    legs: list[ ItineraryTransportationLegRecord ] = field( default_factory=list )
 
 

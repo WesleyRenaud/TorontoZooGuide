@@ -11,6 +11,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -112,10 +113,14 @@ def test_bulk_schedule_progressive_soft_pins_avoid_morning_dead_gaps(
       departure_time='17:00',
       animals=[ *indo, *africa ],
       attractions=[
-         'Zoomobile',
          KANGAROO_WALK_THRU,
          'Greenhouse',
          'Wildlife Health & Science Centre',
+      ],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
       ],
       guardians_talks=[
          guardians_talk_save_entry( CAMEL_TALK, start_time='12:30' ),

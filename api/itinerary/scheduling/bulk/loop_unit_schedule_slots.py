@@ -246,8 +246,7 @@ def _persist_loop_group_slots(
                   cur,
                   name=stop.transportation,
                   start_time=start_time,
-                  legs=day_loop.legs,
-                  insert_if_missing=False )
+                  legs=day_loop.legs )
          else:
             persisted = update_itinerary_animal_schedule(
                cur,
