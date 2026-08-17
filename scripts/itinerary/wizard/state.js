@@ -11,6 +11,7 @@ import {
 } from './itineraryDiff.js';
 import {
    areItineraryDraftsSemanticallyEqual,
+   hydrateWizardDraftFromSavedItinerary,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
 } from '../itineraryShape.js';
@@ -103,7 +104,9 @@ function applyPendingValidation(state, {
 }
 
 export function createItineraryWizardState(existing = {}) {
-   const initialDraft = cloneItineraryDraft(existing);
+   const initialDraft = cloneItineraryDraft(
+      hydrateWizardDraftFromSavedItinerary(existing)
+   );
    const state = {
       ...buildWizardDraftSnapshot(initialDraft),
       ...createPendingValidationState(),

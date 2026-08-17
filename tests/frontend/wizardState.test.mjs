@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
+import { ATTRACTIONS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 beforeEach(() => {
@@ -142,4 +143,25 @@ test('hasUnsavedChanges is true when clearing a non-empty initial itinerary', ()
    wizard.updateSelection('animals', []);
 
    assert.equal(wizard.hasUnsavedChanges(), true);
+});
+
+test('hydrates also-transportation attractions when opening wizard state', () => {
+   const wizard = createItineraryWizardState({
+      date: '2026-08-17',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+   });
+
+   assert.deepEqual(wizard.state.attractions, [{
+      name: 'Zoomobile',
+      addedAsAttraction: true,
+   }]);
+   assert.deepEqual(wizard.state.transportations, []);
+   assert.deepEqual(JSON.parse(localStorage.getItem(ATTRACTIONS_KEY)), [{
+      name: 'Zoomobile',
+      addedAsAttraction: true,
+   }]);
 });
