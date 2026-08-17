@@ -294,7 +294,14 @@ test.describe('itinerary panel row builders', () => {
       const [attractionSection] = buildSectionConfigs({
          attractions: [{ name: 'Conservation Carousel' }],
          transportations: [
-            { name: 'Zoomobile', added_as_attraction: true },
+            {
+               name: 'Zoomobile',
+               added_as_attraction: true,
+               legs: [
+                  { from_station: 'Main Station', to_station: 'Canadian Domain' },
+                  { from_station: 'Canadian Domain', to_station: 'Wildlife Health' },
+               ],
+            },
             { name: 'Zoo Shuttle', added_as_attraction: false },
          ],
       }, {
@@ -305,6 +312,43 @@ test.describe('itinerary panel row builders', () => {
       assert.deepEqual(
          attractionSection.children.map((row) => textFor(row, '.itin-panel-name')),
          ['Conservation Carousel', 'Zoomobile']
+      );
+      assert.match(
+         allTextFor(attractionSection.children[1]),
+         /Main Station - Wildlife Health/
+      );
+   });
+
+   test('transportation station line marks round trips when first and last match', () => {
+      const [attractionSection] = buildSectionConfigs({
+         attractions: [],
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: true,
+               legs: [
+                  {
+                     from_station: 'Main Zoomobile Station',
+                     to_station: 'Canadian Domain',
+                  },
+                  {
+                     from_station: 'Canadian Domain',
+                     to_station: 'Main Zoomobile Station',
+                  },
+               ],
+            },
+         ],
+      }, {
+         keys: ['attractions'],
+      });
+
+      assert.match(
+         allTextFor(attractionSection.children[0]),
+         /Main Zoomobile Station \(round trip\)/
+      );
+      assert.doesNotMatch(
+         allTextFor(attractionSection.children[0]),
+         /Main Zoomobile Station - Main Zoomobile Station/
       );
    });
    

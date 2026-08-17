@@ -10,6 +10,10 @@ export const ScheduleItemKind = Object.freeze({
       kind: 'attraction',
       itemType: 'attractions',
    }),
+   TRANSPORTATION: Object.freeze({
+      kind: 'transportation',
+      itemType: 'transportations',
+   }),
    GUARDIANS_TALK: Object.freeze({
       kind: 'guardians_talk',
       itemType: 'guardians_talks',
@@ -26,6 +30,7 @@ export const ScheduleItemKind = Object.freeze({
 const ITEM_TYPE_BY_KIND = Object.freeze({
    [ScheduleItemKind.ANIMAL.kind]: ScheduleItemKind.ANIMAL.itemType,
    [ScheduleItemKind.ATTRACTION.kind]: ScheduleItemKind.ATTRACTION.itemType,
+   [ScheduleItemKind.TRANSPORTATION.kind]: ScheduleItemKind.TRANSPORTATION.itemType,
    [ScheduleItemKind.GUARDIANS_TALK.kind]: ScheduleItemKind.GUARDIANS_TALK.itemType,
    [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
 });
@@ -62,6 +67,7 @@ export function isScheduleItemModuleItemType(itemType) {
    return (
       normalized === ScheduleItemKind.ANIMAL.itemType
       || normalized === ScheduleItemKind.ATTRACTION.itemType
+      || normalized === ScheduleItemKind.TRANSPORTATION.itemType
       || normalized === ScheduleItemKind.GUARDIANS_TALK.itemType
       || normalized === ScheduleItemKind.WILD_ENCOUNTER.itemType
    );
@@ -77,9 +83,12 @@ export function isFixedTimeScheduleItemKind(itemType) {
 }
 
 export function usesScheduledTimelineEventCard(scheduleItemKind) {
+   const kind = scheduleItemKindFromItemType(scheduleItemKind);
+
    return (
       isFixedTimeScheduleItemKind(scheduleItemKind)
-      || scheduleItemKindFromItemType(scheduleItemKind) === ScheduleItemKind.ATTRACTION
+      || kind === ScheduleItemKind.ATTRACTION
+      || kind === ScheduleItemKind.TRANSPORTATION
    );
 }
 

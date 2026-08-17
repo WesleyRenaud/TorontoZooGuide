@@ -2,6 +2,7 @@ import {
    normalizeAnimal,
    normalizeAttraction,
    normalizeTalk,
+   normalizeTransportation,
    normalizeWild,
 } from './format.js';
 import {
@@ -43,6 +44,10 @@ import {
    getGuardiansTalkName,
    getGuardiansTalkTitleSuffix,
 } from '../selectors/guardiansTalkSelector/model.js';
+import {
+   buildTransportationStationsLine,
+   getTransportationName,
+} from '../selectors/transportationSelector/model.js';
 import {
    getWildEncounterName,
    getWildEncounterTitleSuffix,
@@ -113,6 +118,36 @@ export function buildAttractionRows(
          ...buildRowScheduleActionProps(
             ScheduleItemKind.ATTRACTION.itemType,
             attraction,
+            { onUnscheduleItem, onScheduleItem, onRemoveItem }
+         ),
+      }),
+   });
+}
+
+export function buildTransportationRows(
+   transportations = [],
+   {
+      onUnscheduleItem = null,
+      onScheduleItem = null,
+      onRemoveItem = null,
+   } = {}
+) {
+   return buildNamedRows(transportations, {
+      normalizeItem: normalizeTransportation,
+      prepareItems: sortScheduledOccurrencesByStartTime,
+      defaultName: APP_STRINGS.entityLabels.transportation,
+      imageDirectory: 'attractions',
+      getName: getTransportationName,
+      getMetaLines: (transportation) => [
+         buildTransportationStationsLine(transportation),
+         buildApproximateStartTimeFieldLine(transportation),
+      ],
+      getAlertLine: buildAttractionRemovalReasonLine,
+      extendRowProps: (transportation) => ({
+         ...buildTitleLinkRowProps(transportation.infoLink),
+         ...buildRowScheduleActionProps(
+            ScheduleItemKind.TRANSPORTATION.itemType,
+            transportation,
             { onUnscheduleItem, onScheduleItem, onRemoveItem }
          ),
       }),

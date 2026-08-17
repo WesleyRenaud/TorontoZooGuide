@@ -13,5 +13,6 @@ export function hasScheduledItineraryItems(itinerary = {}) {
       || collectionHasScheduledItems(itinerary.attractions)
       || collectionHasScheduledItems(itinerary.guardiansTalks)
       || collectionHasScheduledItems(itinerary.wildEncounters)
+      || collectionHasScheduledItems(itinerary.transportations)
       || collectionHasScheduledItems(itinerary.events);
 }
