@@ -838,3 +838,46 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
       exhibit: 'Africa Savanna',
    }]);
 });
+
+test('saveItinerary does not diff also-transportation attractions as removed', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/set-itinerary');
+      assert.deepEqual(JSON.parse(options.body).transportations, [{
+         name: 'Zoomobile',
+         added_as_attraction: true,
+      }]);
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            status: 'success',
+            reasons: [],
+            itinerary: {
+               date: '2026-08-17',
+               animals: [],
+               attractions: [],
+               transportations: [{
+                  name: 'Zoomobile',
+                  added_as_attraction: true,
+                  likelihood: 100,
+               }],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const result = await saveItinerary({
+      date: '2026-08-17',
+      animals: [],
+      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   assert.deepEqual(result.validation.removed.attractions, []);
+   assert.equal(result.validation.hasChanges, false);
+});

@@ -148,6 +148,9 @@ test('treats a draft with only a date as non-empty', () => {
       date: '2026-06-15',
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    }), false);
+   assert.equal(isItineraryEmptyDraft({
+      transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+   }), false);
 });
 
 test('distinguishes date-only drafts from completely unset itineraries', () => {

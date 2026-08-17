@@ -57,6 +57,7 @@ export function isValidatedItineraryEmpty(validated) {
       !hasItems(validated.animals) &&
       !hasItems(validated.attractions) &&
       !hasItems(validated.guardiansTalks) &&
-      !hasItems(validated.wildEncounters)
+      !hasItems(validated.wildEncounters) &&
+      !hasItems(validated.transportations)
    );
 }

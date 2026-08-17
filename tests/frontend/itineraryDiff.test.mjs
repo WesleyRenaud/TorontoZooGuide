@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { applyItineraryDiffToValidation } from '../../scripts/itinerary/itineraryValidationResult.js';
 import { normalizeItinerary } from '../../scripts/itinerary/itineraryNormalization.js';
+import { normalizeItineraryDraft } from '../../scripts/itinerary/itineraryShape.js';
 import {
    buildItineraryDiff,
    hasImprovedVisibility,
@@ -12,19 +13,23 @@ import {
    isValidatedItineraryEmpty,
 } from '../../scripts/itinerary/wizard/itineraryDiff.js';
 
+function draft(overrides = {}) {
+   return normalizeItineraryDraft(overrides);
+}
+
 test('reports seeded itinerary items removed during validation', () => {
-   const previous = {
+   const previous = draft({
       animals: [{ species: 'African Lion' }],
       attractions: [{ name: 'Conservation Carousel' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
-   };
-   const validated = {
+   });
+   const validated = draft({
       animals: [{ species: ' african lion ' }],
       attractions: [{ name: 'Greenhouse' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [],
-   };
+   });
 
    const diff = buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
 
@@ -37,14 +42,14 @@ test('reports seeded itinerary items removed during validation', () => {
 
 test('uses backend removed items when validation already provides them', () => {
    const diff = buildItineraryDiff(
-      {
+      draft({
          animals: [{ species: 'African Lion' }],
          attractions: [{ name: 'Conservation Carousel' }],
-      },
-      {
+      }),
+      draft({
          animals: [{ species: 'African Lion' }],
          attractions: [{ name: 'Conservation Carousel' }],
-      },
+      }),
       {
          attractions: [{ name: 'Conservation Carousel' }],
       },
@@ -55,25 +60,14 @@ test('uses backend removed items when validation already provides them', () => {
 });
 
 test('infers guardians talks removed when backend sends empty removed but previous had them', () => {
-   const previous = {
-      animals: [],
-      attractions: [],
+   const previous = draft({
       guardiansTalks: [{ name: 'Only On Mondays' }],
-      wildEncounters: [],
-   };
-   const validated = {
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   };
+   });
+   const validated = draft();
 
-   const diff = buildItineraryDiff(previous, validated, {
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   }, { animalVisibilityChangeThreshold: 20 });
+   const diff = buildItineraryDiff(previous, validated, draft(), {
+      animalVisibilityChangeThreshold: 20,
+   });
 
    assert.deepEqual(diff.removed.guardiansTalks, [{ name: 'Only On Mondays' }]);
    assert.equal(hasRemovedItems(diff.removed), true);
@@ -81,31 +75,20 @@ test('infers guardians talks removed when backend sends empty removed but previo
 
 test('merges backend removed guardians talks with items missing from validated', () => {
    const diff = buildItineraryDiff(
-      {
-         animals: [],
-         attractions: [],
+      draft({
          guardiansTalks: [
             { name: 'Not On New Day Schedule' },
             { name: 'Cancelled On Schedule' },
          ],
-         wildEncounters: [],
-      },
+      }),
+      draft(),
       {
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
-         wildEncounters: [],
-      },
-      {
-         animals: [],
-         attractions: [],
          guardiansTalks: [
             {
                name: 'Cancelled On Schedule',
                removalReason: 'Cancelled.',
             },
          ],
-         wildEncounters: [],
       },
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -120,20 +103,20 @@ test('merges backend removed guardians talks with items missing from validated',
 });
 
 test('reports meaningful animal visibility changes after date validation', () => {
-   const previous = {
+   const previous = draft({
       animals: [
          { species: 'African Lion', likelihood: 90 },
          { species: 'Amur Tiger', likelihood: 0.25 },
          { species: 'Snow Leopard', likelihood: 70 },
       ],
-   };
-   const validated = {
+   });
+   const validated = draft({
       animals: [
          { species: 'African Lion', likelihood: 60 },
          { species: 'Amur Tiger', likelihood: 0.7 },
          { species: 'Snow Leopard', likelihood: 55 },
       ],
-   };
+   });
 
    const diff = buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
 
@@ -151,7 +134,7 @@ test('reports meaningful animal visibility changes after date validation', () =>
 
 test('reports items unscheduled during validation', () => {
    const diff = buildItineraryDiff(
-      {
+      draft({
          animals: [
             {
                species: 'African Lion',
@@ -167,8 +150,8 @@ test('reports items unscheduled during validation', () => {
                end_time: '09:16',
             },
          ],
-      },
-      {
+      }),
+      draft({
          animals: [
             {
                species: 'African Lion',
@@ -184,7 +167,7 @@ test('reports items unscheduled during validation', () => {
                end_time: '',
             },
          ],
-      },
+      }),
       {},
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -202,9 +185,7 @@ test('reports items unscheduled during validation', () => {
 
 test('does not list deleted guardians talks as unscheduled when date removes schedule', () => {
    const diff = buildItineraryDiff(
-      {
-         animals: [],
-         attractions: [],
+      draft({
          guardiansTalks: [
             {
                name: 'Spotted Hyena',
@@ -213,11 +194,8 @@ test('does not list deleted guardians talks as unscheduled when date removes sch
                location: 'Africa Savanna',
             },
          ],
-         wildEncounters: [],
-      },
-      {
-         animals: [],
-         attractions: [],
+      }),
+      draft({
          guardiansTalks: [
             {
                name: 'Spotted Hyena',
@@ -225,8 +203,7 @@ test('does not list deleted guardians talks as unscheduled when date removes sch
                location: 'Africa Savanna',
             },
          ],
-         wildEncounters: [],
-      },
+      }),
       {},
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -237,10 +214,7 @@ test('does not list deleted guardians talks as unscheduled when date removes sch
 
 test('does not list deleted wild encounters as unscheduled when date removes schedule', () => {
    const diff = buildItineraryDiff(
-      {
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
+      draft({
          wildEncounters: [
             {
                name: 'African Rainforest',
@@ -248,18 +222,15 @@ test('does not list deleted wild encounters as unscheduled when date removes sch
                end_time: '13:45',
             },
          ],
-      },
-      {
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
+      }),
+      draft({
          wildEncounters: [
             {
                name: 'African Rainforest',
                is_deleted: true,
             },
          ],
-      },
+      }),
       {},
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -269,7 +240,7 @@ test('does not list deleted wild encounters as unscheduled when date removes sch
 });
 
 test('date change validation lists deleted guardians talk only once in removed', () => {
-   const previous = {
+   const previous = draft({
       date: '2026-06-21',
       guardiansTalks: [
          {
@@ -279,7 +250,7 @@ test('date change validation lists deleted guardians talk only once in removed',
             location: 'Africa Savanna',
          },
       ],
-   };
+   });
    const validatedItinerary = normalizeItinerary({
       date: '2026-06-22',
       guardiansTalks: [
@@ -310,9 +281,7 @@ test('date change validation lists deleted guardians talk only once in removed',
 
 test('reports guardians talks and wild encounters removed when dropped from validated', () => {
    const diff = buildItineraryDiff(
-      {
-         animals: [],
-         attractions: [],
+      draft({
          guardiansTalks: [
             {
                name: 'African Lion',
@@ -327,13 +296,8 @@ test('reports guardians talks and wild encounters removed when dropped from vali
                end_time: '16:45',
             },
          ],
-      },
-      {
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
-         wildEncounters: [],
-      },
+      }),
+      draft(),
       {},
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -350,20 +314,50 @@ test('reports guardians talks and wild encounters removed when dropped from vali
    assert.equal(hasUnscheduledItems(diff.unscheduled), false);
 });
 
+test('does not treat also-transportation attractions as removed after save', () => {
+   const previous = draft({
+      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+   });
+   const validated = draft({
+      transportations: [{
+         name: 'Zoomobile',
+         added_as_attraction: true,
+      }],
+   });
+
+   const diff = buildItineraryDiff(previous, validated);
+
+   assert.deepEqual(diff.removed.attractions, []);
+   assert.equal(hasRemovedItems(diff.removed), false);
+   assert.equal(isValidatedItineraryEmpty(validated), false);
+});
+
+test('still treats also-transportation attractions as removed when saved as transportation only', () => {
+   const previous = draft({
+      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+   });
+   const validated = draft({
+      transportations: [{
+         name: 'Zoomobile',
+         added_as_attraction: false,
+      }],
+   });
+
+   const diff = buildItineraryDiff(previous, validated);
+
+   assert.deepEqual(diff.removed.attractions, [{ name: 'Zoomobile', addedAsAttraction: true }]);
+   assert.equal(hasRemovedItems(diff.removed), true);
+});
+
 test('summary helpers handle empty validation results', () => {
    assert.equal(isValidatedItineraryEmpty(null), true);
-   assert.equal(isValidatedItineraryEmpty({
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   }), true);
-   assert.equal(isValidatedItineraryEmpty({
+   assert.equal(isValidatedItineraryEmpty(draft()), true);
+   assert.equal(isValidatedItineraryEmpty(draft({
       animals: [{ species: 'African Lion' }],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   }), false);
+   })), false);
+   assert.equal(isValidatedItineraryEmpty(draft({
+      transportations: [{ name: 'Zoomobile' }],
+   })), false);
    assert.equal(hasRemovedItems(null), false);
    assert.equal(hasUnscheduledItems(null), false);
    assert.equal(hasReducedVisibility({ animals: [] }), false);
