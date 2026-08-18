@@ -7,6 +7,7 @@ from .attraction_hours_soft_pin import attraction_hours_by_name_from_soft_pins
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .loop_schedule_stop import LoopScheduleStop
+from .loop_schedule_stop import transportations_from_stops
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots_respecting_attraction_hours
@@ -251,18 +252,21 @@ def _process_schedule_window(
          and active_open_seconds is not None
          and window_state.cursor_seconds >= active_open_seconds
          and hard_pin_deadline_seconds is not None ):
-      window_state.cursor_seconds = _drain_ready_soft_pin_loop_units(
-         conn,
-         remaining_units,
-         schedule_window,
-         soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
-         hard_pinned_loop_ids=hard_pinned_loop_ids,
-         pinned_earliest_start_cache=pinned_earliest_start_cache,
-         blockers=blockers,
-         cursor_seconds=window_state.cursor_seconds,
-         late_place=True,
-         window_end_seconds=hard_pin_deadline_seconds,
-         slot_sink=slot_sink )
+      window_state.cursor_seconds, window_state.current_node_id = (
+         _drain_ready_soft_pin_loop_units(
+            conn,
+            remaining_units,
+            schedule_window,
+            soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
+            hard_pinned_loop_ids=hard_pinned_loop_ids,
+            pinned_earliest_start_cache=pinned_earliest_start_cache,
+            blockers=blockers,
+            cursor_seconds=window_state.cursor_seconds,
+            current_node_id=window_state.current_node_id,
+            walk_graph=walk_graph,
+            late_place=True,
+            window_end_seconds=hard_pin_deadline_seconds,
+            slot_sink=slot_sink ) )
 
    packing_hold_loop_ids = set( held_constrained_loop_ids )
    pack_open_soft_pins_with_free_loops = _should_pack_open_soft_pins_with_free_loops(
@@ -459,48 +463,57 @@ def _process_schedule_window(
       if cascade_end_seconds is not None:
          # Late-place inactive soft pins (Carousel → Zoomobile) against the active
          # soft pin's planned start — with or without a hard pin ahead.
-         window_state.cursor_seconds = _drain_cascaded_inactive_soft_pin_loop_units(
-            conn,
-            remaining_units,
-            schedule_window,
-            active_soft_pin_loop_ids=active_soft_pin_loop_ids,
-            hard_pinned_loop_ids=hard_pinned_loop_ids,
-            pinned_earliest_start_cache=pinned_earliest_start_cache,
-            blockers=blockers,
-            cursor_seconds=window_state.cursor_seconds,
-            cascade_end_seconds=cascade_end_seconds,
-            slot_sink=slot_sink )
+         window_state.cursor_seconds, window_state.current_node_id = (
+            _drain_cascaded_inactive_soft_pin_loop_units(
+               conn,
+               remaining_units,
+               schedule_window,
+               active_soft_pin_loop_ids=active_soft_pin_loop_ids,
+               hard_pinned_loop_ids=hard_pinned_loop_ids,
+               pinned_earliest_start_cache=pinned_earliest_start_cache,
+               blockers=blockers,
+               cursor_seconds=window_state.cursor_seconds,
+               current_node_id=window_state.current_node_id,
+               walk_graph=walk_graph,
+               cascade_end_seconds=cascade_end_seconds,
+               slot_sink=slot_sink ) )
 
       if hard_pin_deadline_seconds is None:
-         window_state.cursor_seconds = _drain_ready_soft_pin_loop_units(
-            conn,
-            remaining_units,
-            schedule_window,
-            soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
-            hard_pinned_loop_ids=hard_pinned_loop_ids,
-            pinned_earliest_start_cache=pinned_earliest_start_cache,
-            blockers=blockers,
-            cursor_seconds=window_state.cursor_seconds,
-            late_place=False,
-            slot_sink=slot_sink )
+         window_state.cursor_seconds, window_state.current_node_id = (
+            _drain_ready_soft_pin_loop_units(
+               conn,
+               remaining_units,
+               schedule_window,
+               soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
+               hard_pinned_loop_ids=hard_pinned_loop_ids,
+               pinned_earliest_start_cache=pinned_earliest_start_cache,
+               blockers=blockers,
+               cursor_seconds=window_state.cursor_seconds,
+               current_node_id=window_state.current_node_id,
+               walk_graph=walk_graph,
+               late_place=False,
+               slot_sink=slot_sink ) )
       elif (
             active_open_seconds is not None
             and window_state.cursor_seconds >= active_open_seconds ):
          # Free pack may have jumped into the cascade slot. Late-place the active
          # soft pin against the hard pin before the next iteration's hard-pin
          # drain steals the weave window.
-         window_state.cursor_seconds = _drain_ready_soft_pin_loop_units(
-            conn,
-            remaining_units,
-            schedule_window,
-            soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
-            hard_pinned_loop_ids=hard_pinned_loop_ids,
-            pinned_earliest_start_cache=pinned_earliest_start_cache,
-            blockers=blockers,
-            cursor_seconds=window_state.cursor_seconds,
-            late_place=True,
-            window_end_seconds=hard_pin_deadline_seconds,
-            slot_sink=slot_sink )
+         window_state.cursor_seconds, window_state.current_node_id = (
+            _drain_ready_soft_pin_loop_units(
+               conn,
+               remaining_units,
+               schedule_window,
+               soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
+               hard_pinned_loop_ids=hard_pinned_loop_ids,
+               pinned_earliest_start_cache=pinned_earliest_start_cache,
+               blockers=blockers,
+               cursor_seconds=window_state.cursor_seconds,
+               current_node_id=window_state.current_node_id,
+               walk_graph=walk_graph,
+               late_place=True,
+               window_end_seconds=hard_pin_deadline_seconds,
+               slot_sink=slot_sink ) )
 
       # Still before open and the active soft pin remains: wait for open / ready.
       if _units_matching_loop_ids(
@@ -521,18 +534,21 @@ def _process_schedule_window(
          hard_pin_deadline_seconds
          if hard_pin_deadline_seconds is not None
          else schedule_window.end_seconds )
-      window_state.cursor_seconds = _drain_ready_soft_pin_loop_units(
-         conn,
-         remaining_units,
-         schedule_window,
-         soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
-         hard_pinned_loop_ids=hard_pinned_loop_ids,
-         pinned_earliest_start_cache=pinned_earliest_start_cache,
-         blockers=blockers,
-         cursor_seconds=window_state.cursor_seconds,
-         late_place=late_place,
-         window_end_seconds=soft_pin_window_end_seconds,
-         slot_sink=slot_sink )
+      window_state.cursor_seconds, window_state.current_node_id = (
+         _drain_ready_soft_pin_loop_units(
+            conn,
+            remaining_units,
+            schedule_window,
+            soft_only_loop_ids=active_soft_pin_loop_ids - hard_pinned_loop_ids,
+            hard_pinned_loop_ids=hard_pinned_loop_ids,
+            pinned_earliest_start_cache=pinned_earliest_start_cache,
+            blockers=blockers,
+            cursor_seconds=window_state.cursor_seconds,
+            current_node_id=window_state.current_node_id,
+            walk_graph=walk_graph,
+            late_place=late_place,
+            window_end_seconds=soft_pin_window_end_seconds,
+            slot_sink=slot_sink ) )
 
    return True
 
@@ -677,9 +693,11 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
       pinned_earliest_start_cache: dict[ int, int | None ],
       blockers: list[ TimeBlock ],
       cursor_seconds: int,
+      current_node_id: str,
+      walk_graph: WalkGraph,
       cascade_end_seconds: int,
       slot_sink: LoopScheduleSlotSink | None = None,
-   ) -> int:
+   ) -> tuple[ int, str ]:
    """Late-place inactive soft pins against a cascade deadline (latest open first).
 
    Zoomobile packs against Face Painting's start, then Carousel against
@@ -690,7 +708,7 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
       active_soft_pin_loop_ids )
 
    if active_open_seconds is None:
-      return cursor_seconds
+      return cursor_seconds, current_node_id
 
    inactive_pins = [
       soft_pin
@@ -707,6 +725,7 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
    schedule_cursor_seconds = cursor_seconds
    cascade_end = cascade_end_seconds
    placed_end_seconds = cursor_seconds
+   resolved_current_node_id = current_node_id
 
    for soft_pin in inactive_pins:
       matching_units = _units_matching_loop_ids(
@@ -726,24 +745,29 @@ def _drain_cascaded_inactive_soft_pin_loop_units(
          continue
 
       unit_occupied_seconds = prepared_unit.occupied_seconds
-      new_cursor_seconds = _drain_ready_soft_pin_loop_units(
-         conn,
-         remaining_units,
-         schedule_window,
-         soft_only_loop_ids={ soft_pin.loop_id },
-         hard_pinned_loop_ids=hard_pinned_loop_ids,
-         pinned_earliest_start_cache=pinned_earliest_start_cache,
-         blockers=blockers,
-         cursor_seconds=drain_cursor_seconds,
-         late_place=True,
-         window_end_seconds=cascade_end,
-         slot_sink=slot_sink )
+      new_cursor_seconds, resolved_current_node_id = (
+         _drain_ready_soft_pin_loop_units(
+            conn,
+            remaining_units,
+            schedule_window,
+            soft_only_loop_ids={ soft_pin.loop_id },
+            hard_pinned_loop_ids=hard_pinned_loop_ids,
+            pinned_earliest_start_cache=pinned_earliest_start_cache,
+            blockers=blockers,
+            cursor_seconds=drain_cursor_seconds,
+            current_node_id=resolved_current_node_id,
+            walk_graph=walk_graph,
+            late_place=True,
+            window_end_seconds=cascade_end,
+            slot_sink=slot_sink ) )
 
       if not _units_matching_loop_ids( remaining_units, { soft_pin.loop_id } ):
          cascade_end = cascade_end - unit_occupied_seconds
          placed_end_seconds = max( placed_end_seconds, new_cursor_seconds )
 
-   return max( schedule_cursor_seconds, placed_end_seconds )
+   return (
+      max( schedule_cursor_seconds, placed_end_seconds ),
+      resolved_current_node_id )
 
 
 def _inactive_soft_pin_loop_ids_opening_before_active(
@@ -1172,15 +1196,18 @@ def _drain_ready_soft_pin_loop_units(
       pinned_earliest_start_cache: dict[ int, int | None ],
       blockers: list[ TimeBlock ],
       cursor_seconds: int,
+      current_node_id: str,
+      walk_graph: WalkGraph,
       late_place: bool = False,
       window_end_seconds: int | None = None,
       slot_sink: LoopScheduleSlotSink | None = None,
-   ) -> int:
+   ) -> tuple[ int, str ]:
    if soft_only_loop_ids is None:
       soft_pin_loop_ids = _soft_pin_loop_ids_in_window( schedule_window )
       soft_only_loop_ids = soft_pin_loop_ids - hard_pinned_loop_ids
 
    schedule_cursor_seconds = cursor_seconds
+   resolved_current_node_id = current_node_id
    soft_pin_window_end_seconds = (
       schedule_window.end_seconds
       if window_end_seconds is None
@@ -1194,6 +1221,13 @@ def _drain_ready_soft_pin_loop_units(
             soft_only_loop_ids,
             pinned_earliest_start_cache=pinned_earliest_start_cache,
             cursor_seconds=schedule_cursor_seconds ):
+         approach_seconds = 0
+
+         if transportations_from_stops( list( prepared_unit.unit.stops ) ):
+            approach_seconds = approach_travel_seconds_to_unit(
+               walk_graph,
+               resolved_current_node_id,
+               prepared_unit.unit )
          unscheduled_stops, new_cursor_seconds = (
             schedule_prepared_loop_unit_with_attraction_hours(
                conn,
@@ -1202,13 +1236,19 @@ def _drain_ready_soft_pin_loop_units(
                blockers=blockers,
                window_start_seconds=schedule_window.start_seconds,
                window_end_seconds=soft_pin_window_end_seconds,
-               cursor_seconds=schedule_cursor_seconds,
+               cursor_seconds=schedule_cursor_seconds + approach_seconds,
                late_place=late_place,
                slot_sink=slot_sink ) )
 
          if not unscheduled_stops:
             remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
             schedule_cursor_seconds = new_cursor_seconds
+
+            if (
+                  approach_seconds
+                  and prepared_unit.unit.exit_walk_node_id is not None ):
+               resolved_current_node_id = prepared_unit.unit.exit_walk_node_id
+
             made_progress = True
             continue
 
@@ -1222,13 +1262,19 @@ def _drain_ready_soft_pin_loop_units(
             schedule_cursor_seconds = max(
                schedule_cursor_seconds,
                new_cursor_seconds )
+
+            if (
+                  approach_seconds
+                  and prepared_unit.unit.exit_walk_node_id is not None ):
+               resolved_current_node_id = prepared_unit.unit.exit_walk_node_id
+
             made_progress = True
             break
 
       if not made_progress:
          break
 
-   return schedule_cursor_seconds
+   return schedule_cursor_seconds, resolved_current_node_id
 
 
 def _earliest_hard_pin_deadline_seconds(

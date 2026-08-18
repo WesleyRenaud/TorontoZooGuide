@@ -8,8 +8,10 @@ from itinerary.support import CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, ent
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from api.itinerary.routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from api.itinerary.routing.walk_travel_time import travel_time_minutes_from_length_px
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_for_shortest_path
@@ -34,6 +36,8 @@ from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_locat
 from api.walk_graph.shortest_path import shortest_path
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 from conftest import DbControllers
+
+ZOOMOBILE = 'Zoomobile'
 
 LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
    species='African Lion',
@@ -635,6 +639,121 @@ def test_auto_schedule_attraction_after_animal_includes_travel(
    assert travel_seconds > 0
    assert carousel.start_time == schedule_time_after_seconds(
       lion.end_time,
+      travel_seconds )
+
+
+def test_auto_schedule_animal_after_zoomobile_transportation_includes_travel(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   assert schedule_itinerary_item(
+      item_type='attractions',
+      key=ZOOMOBILE,
+      start_time='10:00 AM',
+   ).success
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=LION_KEY,
+   )
+
+   lion = result.itinerary.animals[ 0 ]
+   zoomobile = result.itinerary.transportations[ 0 ]
+   walk_graph = load_walk_graph()
+   zoomobile_node_id = walk_node_id_for_transportation(
+      ZOOMOBILE,
+      legs=zoomobile.legs )
+   lion_node_id = walk_node_id_for_viewing_spot(
+      'African Lion',
+      'Africa Savanna',
+      None )
+   assert zoomobile_node_id is not None
+   assert lion_node_id is not None
+   travel_seconds = travel_time_seconds_between_nodes(
+      walk_graph,
+      zoomobile_node_id,
+      lion_node_id )
+
+   assert result.success
+   assert travel_seconds > 0
+   assert lion.start_time == schedule_time_after_seconds(
+      zoomobile.end_time,
+      travel_seconds )
+
+
+def test_bulk_schedule_animal_then_zoomobile_includes_travel(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+   lion = result.itinerary.animals[ 0 ]
+   zoomobile = result.itinerary.transportations[ 0 ]
+   walk_graph = load_walk_graph()
+   lion_node_id = walk_node_id_for_viewing_spot(
+      'African Lion',
+      'Africa Savanna',
+      None )
+   zoomobile_node_id = walk_node_id_for_transportation( ZOOMOBILE )
+
+   assert result.success
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert zoomobile.start_time is not None
+   assert zoomobile.end_time is not None
+   assert lion_node_id is not None
+   assert zoomobile_node_id is not None
+
+   if _seconds( lion.start_time ) < _seconds( zoomobile.start_time ):
+      from_node_id = lion_node_id
+      to_node_id = zoomobile_node_id
+      earlier_end = lion.end_time
+      later_start = zoomobile.start_time
+   else:
+      from_node_id = zoomobile_node_id
+      to_node_id = lion_node_id
+      earlier_end = zoomobile.end_time
+      later_start = lion.start_time
+
+   travel_seconds = travel_time_seconds_between_nodes(
+      walk_graph,
+      from_node_id,
+      to_node_id )
+
+   assert travel_seconds > 0
+   assert later_start == schedule_time_after_seconds(
+      earlier_end,
       travel_seconds )
 
 
