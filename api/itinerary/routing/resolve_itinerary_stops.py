@@ -14,6 +14,7 @@ from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
 from ...walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
+from .walk_node_id_for_transportation import walk_node_id_for_transportation
 
 
 def resolve_entrance_itinerary_stop() -> ItineraryStop:
@@ -75,16 +76,13 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
             end_time=attraction.end_time ) )
 
    for transportation in itinerary.transportations:
-      # Also-attraction transportations share the attraction map-location name.
-      map_location = walk_node_for_map_location(
-         MapLocationKind.ATTRACTION,
-         transportation.name )
-
       stops.append(
          _stop_from_map_location(
             schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
             item_key=transportation.name,
-            map_location=map_location,
+            walk_node_id=walk_node_id_for_transportation(
+               transportation.name,
+               legs=transportation.legs ),
             x_coord=transportation.x_coord,
             y_coord=transportation.y_coord,
             start_time=transportation.start_time,
@@ -144,7 +142,8 @@ def _stop_from_map_location(
       *,
       schedule_item_kind: ScheduleItemKind,
       item_key: str,
-      map_location: MapLocationWalkNode | None,
+      map_location: MapLocationWalkNode | None = None,
+      walk_node_id: str | None = None,
       meeting_spot: str | None = None,
       x_coord: float | None,
       y_coord: float | None,
@@ -154,6 +153,8 @@ def _stop_from_map_location(
 
    if map_location is not None:
       walk_node_ids = [ map_location.walk_node_id ]
+   elif walk_node_id is not None:
+      walk_node_ids = [ walk_node_id ]
 
    return ItineraryStop(
       schedule_item_kind=schedule_item_kind,

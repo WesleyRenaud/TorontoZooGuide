@@ -1,50 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from ..data_access.fetch_main_transportation_station import fetch_main_station_coords
 from ...itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ...models.itinerary_transportation import ItineraryTransportation
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
-from ...request_connection import get_connection
-from ...types import Coordinate
-
-
-@dataclass( frozen=True )
-class MainTransportationStation:
-   name: str | None = None
-   x_coord: Coordinate | None = None
-   y_coord: Coordinate | None = None
-
-
-def fetch_main_station_coords(
-      transportation: str ) -> MainTransportationStation:
-   conn = get_connection()
-
-   if conn is None:
-      return MainTransportationStation()
-
-   cur = conn.cursor()
-
-   try:
-      row = cur.execute(
-         """   SELECT NAME, X_COORD, Y_COORD
-               FROM TransportationStation
-               WHERE TRANSPORTATION = ?
-                 AND IS_MAIN_STATION = 1;
-         """,
-         ( transportation, ),
-      ).fetchone()
-
-      if row is None:
-         return MainTransportationStation()
-
-      return MainTransportationStation(
-         name=row[ 'NAME' ],
-         x_coord=row[ 'X_COORD' ],
-         y_coord=row[ 'Y_COORD' ] )
-
-   finally:
-      cur.close()
 
 
 def build_itinerary_transportations(

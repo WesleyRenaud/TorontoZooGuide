@@ -7,6 +7,7 @@ from ..core.time_block import latest_scheduled_end_seconds
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ....models import Itinerary
+from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from ...routing.walk_travel_time import travel_time_seconds_between_nodes
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
@@ -155,6 +156,15 @@ def _scheduled_stops_with_walk_nodes(
          start_time=attraction.start_time,
          end_time=attraction.end_time,
          walk_node_id=walk_node_id_for_attraction( attraction.name ) )
+
+   for transportation in itinerary.transportations:
+      _append_scheduled_stop_with_walk_node(
+         stops,
+         start_time=transportation.start_time,
+         end_time=transportation.end_time,
+         walk_node_id=walk_node_id_for_transportation(
+            transportation.name,
+            legs=transportation.legs ) )
 
    for talk in itinerary.guardians_talks:
       if talk.is_deleted:
