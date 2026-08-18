@@ -267,6 +267,83 @@ test('applyPreselectedRow seeds the type, search input, and selected row', () =>
    assert.equal(controller.canScheduleSelection(), true);
 });
 
+test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => {
+   const refs = createRefs();
+   const zoomobileRow = {
+      name: 'Zoomobile',
+      added_as_attraction: true,
+      scheduleItemKind: 'attractions',
+   };
+   const controller = createScheduleItemModuleController({
+      eventTypes: EVENT_TYPES,
+      strings: STRINGS,
+      itinerary: {
+         attractions: [],
+         transportations: [{
+            name: 'Zoomobile',
+            added_as_attraction: true,
+         }],
+      },
+      preselectedRow: zoomobileRow,
+      refs,
+      scheduleButton: refs.scheduleButton,
+      renderAnimalRowLeft: () => createDomNode('span', 'animal-row'),
+      renderAttractionRowLeft: () => createDomNode('span', 'attraction-row'),
+      renderTransportationRowLeft: () => createDomNode('span', 'transportation-row'),
+      deps: {
+         renderSearchResults: ({ rows }) => {
+            refs.resultsEl.latestRows = rows;
+         },
+      },
+   });
+
+   controller.applyPreselectedRow();
+
+   assert.equal(refs.typeSelect.value, ScheduleItemKind.ATTRACTION.itemType);
+   assert.equal(refs.searchInput.value, 'Zoomobile');
+   assert.deepEqual(refs.resultsEl.latestRows, [zoomobileRow]);
+   assert.equal(controller.canScheduleSelection(), true);
+   assert.equal(refs.scheduleButton.disabled, false);
+});
+
+test('applyPreselectedRow keeps transportation that was not added as an attraction', () => {
+   const refs = createRefs();
+   const zoomobileRow = {
+      name: 'Zoomobile',
+      added_as_attraction: false,
+      scheduleItemKind: 'transportations',
+   };
+   const controller = createScheduleItemModuleController({
+      eventTypes: EVENT_TYPES,
+      strings: STRINGS,
+      itinerary: {
+         attractions: [],
+         transportations: [{
+            name: 'Zoomobile',
+            added_as_attraction: false,
+         }],
+      },
+      preselectedRow: zoomobileRow,
+      refs,
+      scheduleButton: refs.scheduleButton,
+      renderAnimalRowLeft: () => createDomNode('span', 'animal-row'),
+      renderAttractionRowLeft: () => createDomNode('span', 'attraction-row'),
+      renderTransportationRowLeft: () => createDomNode('span', 'transportation-row'),
+      deps: {
+         renderSearchResults: ({ rows }) => {
+            refs.resultsEl.latestRows = rows;
+         },
+      },
+   });
+
+   controller.applyPreselectedRow();
+
+   assert.equal(refs.typeSelect.value, ScheduleItemKind.TRANSPORTATION.itemType);
+   assert.equal(refs.searchInput.value, 'Zoomobile');
+   assert.deepEqual(refs.resultsEl.latestRows, [zoomobileRow]);
+   assert.equal(controller.canScheduleSelection(), true);
+});
+
 test('displaySearchResults selects a row and infers the module type from the row kind', () => {
    const refs = createRefs({ selection: '' });
    let onSelectRow = null;

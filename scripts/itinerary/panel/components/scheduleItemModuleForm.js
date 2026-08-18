@@ -22,6 +22,12 @@ import {
    getGuardiansTalkTitleSuffix,
 } from '../../selectors/guardiansTalkSelector/model.js';
 import {
+   buildTransportationImageSrc,
+   buildTransportationStationsLine,
+   getTransportationInfoLink,
+   getTransportationName,
+} from '../../selectors/transportationSelector/model.js';
+import {
    buildWildEncounterImageSrc,
    getWildEncounterLink,
    getWildEncounterName,
@@ -110,6 +116,23 @@ export function buildSearchRowRenderer(moduleType) {
          getSubtitle: getWildEncounterSubtitle,
          getImageSrc: buildWildEncounterImageSrc,
          getInfoLink: getWildEncounterLink,
+      });
+   }
+
+   if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return createDefaultSelectorRowLeftRenderer({
+         getTitle: getTransportationName,
+         getSubtitle: buildTransportationStationsLine,
+         getImageSrc: buildTransportationImageSrc,
+         getInfoLink: () => null,
+         onTitleClick: (row) => {
+            const link = getTransportationInfoLink(row);
+
+            if (link) {
+               window.open(link, '_blank');
+            }
+         },
+         shouldEnableTitleClick: (row) => Boolean(getTransportationInfoLink(row)),
       });
    }
 

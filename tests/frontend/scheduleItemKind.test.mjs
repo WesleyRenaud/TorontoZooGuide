@@ -35,6 +35,7 @@ test('scheduleItemKindFromItemType accepts module and kind strings', () => {
 test('isScheduleItemModuleItemType recognizes module item types only', () => {
    assert.equal(isScheduleItemModuleItemType('animals'), true);
    assert.equal(isScheduleItemModuleItemType('attractions'), true);
+   assert.equal(isScheduleItemModuleItemType('transportations'), true);
    assert.equal(isScheduleItemModuleItemType('guardians_talks'), true);
    assert.equal(isScheduleItemModuleItemType('wild_encounters'), true);
    assert.equal(isScheduleItemModuleItemType('lunch'), false);

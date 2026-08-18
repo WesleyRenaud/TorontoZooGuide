@@ -1,9 +1,15 @@
 import { normalizeItineraryItems } from '../itineraryShape.js';
 import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
-import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import {
+   getAttractionId,
+   isAlsoTransportationAttraction,
+} from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import { getTransportationId } from '../selectors/transportationSelector/model.js';
+import {
+   getTransportationId,
+   isTransportationAddedAsAttraction,
+} from '../selectors/transportationSelector/model.js';
 import {
    getWildEncounterId,
    getWildEncounterKey,
@@ -94,6 +100,10 @@ export function tagScheduleItemRow(itemType, row) {
    }
 
    if (itemType === ScheduleItemKind.TRANSPORTATION.itemType) {
+      if (isTransportationAddedAsAttraction(row)) {
+         return tagAttractionRows([row])[0];
+      }
+
       return tagTransportationRows([row])[0];
    }
 
@@ -174,6 +184,13 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
       };
    }
 
+   if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return {
+         query: normalizedQuery,
+         includeAttractions: true,
+      };
+   }
+
    if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
       return {
          query: normalizedQuery,
@@ -217,12 +234,26 @@ export function buildItineraryScheduleItemRowIds(
          : list;
    };
 
+   const transportationItems = pickItems(itinerary.transportations);
+   const attractionIds = new Set(
+      pickItems(itinerary.attractions).map((attraction) => getAttractionId(attraction))
+   );
+
+   transportationItems
+      .filter(isTransportationAddedAsAttraction)
+      .forEach((transportation) => {
+         attractionIds.add(getTransportationId(transportation));
+      });
+
    return {
       animalIds: new Set(
          pickItems(itinerary.animals).map((animal) => getAnimalId(animal))
       ),
-      attractionIds: new Set(
-         pickItems(itinerary.attractions).map((attraction) => getAttractionId(attraction))
+      attractionIds,
+      transportationIds: new Set(
+         transportationItems
+            .filter((transportation) => !isTransportationAddedAsAttraction(transportation))
+            .map((transportation) => getTransportationId(transportation))
       ),
       guardiansTalkIds: new Set(
          pickItems(itinerary.guardiansTalks).map((talk) => getGuardiansTalkId(talk))
@@ -242,6 +273,7 @@ export function filterScheduleItemRowsToItinerary(
    const {
       animalIds,
       attractionIds,
+      transportationIds,
       guardiansTalkIds,
       wildEncounterIds,
    } = buildItineraryScheduleItemRowIds(itinerary, { unscheduledOnly });
@@ -251,6 +283,10 @@ export function filterScheduleItemRowsToItinerary(
 
       if (kind === ScheduleItemKind.ATTRACTION.itemType) {
          return attractionIds.has(getScheduleItemRowId(row));
+      }
+
+      if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+         return transportationIds.has(getScheduleItemRowId(row));
       }
 
       if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
@@ -271,6 +307,7 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
    const {
       animalIds,
       attractionIds,
+      transportationIds,
       guardiansTalkIds,
       wildEncounterIds,
    } = buildItineraryScheduleItemRowIds(itinerary, { scheduledOnly: true });
@@ -280,6 +317,10 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
 
       if (kind === ScheduleItemKind.ATTRACTION.itemType) {
          return !attractionIds.has(getScheduleItemRowId(row));
+      }
+
+      if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+         return !transportationIds.has(getScheduleItemRowId(row));
       }
 
       if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
@@ -328,6 +369,13 @@ export function extractScheduleItemSearchRows(moduleType, response = {}) {
    if (moduleType === ScheduleItemKind.ATTRACTION.itemType) {
       return tagAttractionRows(
          Array.isArray(response.attractions) ? response.attractions : []
+      );
+   }
+
+   if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return tagTransportationRows(
+         (Array.isArray(response.attractions) ? response.attractions : [])
+            .filter(isAlsoTransportationAttraction)
       );
    }
 

@@ -67,6 +67,9 @@ export function showScheduleItemModule({
       onScheduled,
       renderAnimalRowLeft: buildSearchRowRenderer(ScheduleItemKind.ANIMAL.itemType),
       renderAttractionRowLeft: buildSearchRowRenderer(ScheduleItemKind.ATTRACTION.itemType),
+      renderTransportationRowLeft: buildSearchRowRenderer(
+         ScheduleItemKind.TRANSPORTATION.itemType
+      ),
       renderGuardiansTalkRowLeft: buildSearchRowRenderer(ScheduleItemKind.GUARDIANS_TALK.itemType),
       renderWildEncounterRowLeft: buildSearchRowRenderer(ScheduleItemKind.WILD_ENCOUNTER.itemType),
       refs: {

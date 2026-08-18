@@ -44,6 +44,16 @@ test('buildScheduleItemSearchPayload limits search to attractions', () => {
    );
 });
 
+test('buildScheduleItemSearchPayload searches attractions for transportation', () => {
+   assert.deepEqual(
+      buildScheduleItemSearchPayload(ScheduleItemKind.TRANSPORTATION.itemType, 'zoomobile'),
+      {
+         query: 'zoomobile',
+         includeAttractions: true,
+      }
+   );
+});
+
 test('buildScheduleItemSearchPayload limits search to wild encounters', () => {
    assert.deepEqual(
       buildScheduleItemSearchPayload(ScheduleItemKind.WILD_ENCOUNTER.itemType, 'rainforest'),
@@ -115,6 +125,10 @@ test('type dropdown opens on a placeholder before event types and search kinds',
       { value: 'animals', label: APP_STRINGS.entityLabels.animal },
       { value: 'attractions', label: APP_STRINGS.entityLabels.attraction },
       {
+         value: 'transportations',
+         label: APP_STRINGS.entityLabels.transportation,
+      },
+      {
          value: 'guardians_talks',
          label: APP_STRINGS.entityLabels.guardiansTalk,
       },
@@ -139,6 +153,10 @@ test('placeholder enables global search; event types disable search', () => {
    );
    assert.equal(
       isScheduleItemSearchEnabled(ScheduleItemKind.ATTRACTION.itemType, eventTypes),
+      true
+   );
+   assert.equal(
+      isScheduleItemSearchEnabled(ScheduleItemKind.TRANSPORTATION.itemType, eventTypes),
       true
    );
    assert.equal(
@@ -208,6 +226,39 @@ test('extractScheduleItemSearchRows returns only the selected collection', () =>
    );
 });
 
+test('extractScheduleItemSearchRows tags also-transportation attractions as transportation', () => {
+   const response = {
+      attractions: [
+         { name: 'Carousel', is_also_transportation: false },
+         { name: 'Zoomobile', is_also_transportation: true },
+      ],
+   };
+
+   assert.deepEqual(
+      extractScheduleItemSearchRows(ScheduleItemKind.TRANSPORTATION.itemType, response),
+      [{
+         name: 'Zoomobile',
+         is_also_transportation: true,
+         scheduleItemKind: 'transportations',
+      }]
+   );
+   assert.deepEqual(
+      extractScheduleItemSearchRows(ScheduleItemKind.ATTRACTION.itemType, response),
+      [
+         {
+            name: 'Carousel',
+            is_also_transportation: false,
+            scheduleItemKind: 'attractions',
+         },
+         {
+            name: 'Zoomobile',
+            is_also_transportation: true,
+            scheduleItemKind: 'attractions',
+         },
+      ]
+   );
+});
+
 test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () => {
    const animalRow = {
       species: 'Tiger',
@@ -217,6 +268,11 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    const attractionRow = {
       name: 'Carousel',
       scheduleItemKind: 'attractions',
+   };
+   const transportationRow = {
+      name: 'Zoomobile',
+      added_as_attraction: true,
+      scheduleItemKind: 'transportations',
    };
    const guardiansTalkRow = {
       name: 'Amur Tiger',
@@ -231,10 +287,12 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
 
    assert.equal(getScheduleItemRowKind(animalRow), 'animals');
    assert.equal(getScheduleItemRowKind(attractionRow), 'attractions');
+   assert.equal(getScheduleItemRowKind(transportationRow), 'transportations');
    assert.equal(getScheduleItemRowKind(guardiansTalkRow), 'guardians_talks');
    assert.equal(getScheduleItemRowKind(wildEncounterRow), 'wild_encounters');
    assert.equal(getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(getScheduleItemRowId(attractionRow), 'Carousel');
+   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile');
    assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||14:00');
    assert.equal(getScheduleItemRowId(wildEncounterRow), 'African Rainforest||14:00');
 });
@@ -259,10 +317,27 @@ test('resolveEffectiveScheduleItemSelection infers animals from a selected row',
    );
 });
 
+test('resolveEffectiveScheduleItemSelection infers transportation from a selected row', () => {
+   const transportationRow = {
+      name: 'Zoomobile',
+      added_as_attraction: false,
+      scheduleItemKind: 'transportations',
+   };
+
+   assert.equal(
+      resolveEffectiveScheduleItemSelection('', transportationRow),
+      ScheduleItemKind.TRANSPORTATION.itemType
+   );
+});
+
 test('buildItineraryScheduleItemRowIds collects schedule item keys', () => {
    const ids = buildItineraryScheduleItemRowIds({
       animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
       attractions: [{ name: 'Carousel' }],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: true },
+         { name: 'Zoo Shuttle', added_as_attraction: false },
+      ],
       guardiansTalks: [{ name: 'Amur Tiger', start_time: '1:30 PM' }],
       wildEncounters: [
          { name: 'African Rainforest', start_time: '' },
@@ -272,6 +347,10 @@ test('buildItineraryScheduleItemRowIds collects schedule item keys', () => {
 
    assert.equal(ids.animalIds.has('Tiger||Savanna'), true);
    assert.equal(ids.attractionIds.has('Carousel'), true);
+   assert.equal(ids.attractionIds.has('Zoomobile'), true);
+   assert.equal(ids.attractionIds.has('Zoo Shuttle'), false);
+   assert.equal(ids.transportationIds.has('Zoomobile'), false);
+   assert.equal(ids.transportationIds.has('Zoo Shuttle'), true);
    assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
    assert.equal(ids.wildEncounterIds.has('African Rainforest'), false);
    assert.equal(ids.wildEncounterIds.has('Americas||2:00 PM'), true);
@@ -498,6 +577,75 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
    );
 });
 
+test('schedule module filters treat added-as-attraction transportation as an itinerary attraction', () => {
+   const zoomobileAsAttractionRow = {
+      name: 'Zoomobile',
+      added_as_attraction: true,
+      scheduleItemKind: 'attractions',
+   };
+   const zoomobileAsTransportationRow = {
+      name: 'Zoomobile',
+      added_as_attraction: false,
+      scheduleItemKind: 'transportations',
+   };
+   const carouselRow = {
+      name: 'Carousel',
+      scheduleItemKind: 'attractions',
+   };
+   const attractionItinerary = {
+      attractions: [],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: true },
+      ],
+   };
+   const transportationItinerary = {
+      attractions: [],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: false },
+      ],
+   };
+   const scheduledAttractionItinerary = {
+      attractions: [],
+      transportations: [
+         {
+            name: 'Zoomobile',
+            added_as_attraction: true,
+            start_time: '10:00 AM',
+         },
+      ],
+   };
+
+   assert.deepEqual(
+      filterScheduleItemRowsToItinerary(
+         [zoomobileAsAttractionRow, zoomobileAsTransportationRow, carouselRow],
+         attractionItinerary
+      ),
+      [zoomobileAsAttractionRow]
+   );
+   assert.deepEqual(
+      filterScheduleItemRowsToItinerary(
+         [zoomobileAsAttractionRow, zoomobileAsTransportationRow, carouselRow],
+         transportationItinerary
+      ),
+      [zoomobileAsTransportationRow]
+   );
+   assert.deepEqual(
+      filterScheduleItemRowsExcludingScheduledOccurrences(
+         [zoomobileAsAttractionRow, zoomobileAsTransportationRow, carouselRow],
+         scheduledAttractionItinerary
+      ),
+      [zoomobileAsTransportationRow, carouselRow]
+   );
+   assert.deepEqual(
+      filterScheduleItemRowsForScheduleModule(
+         [zoomobileAsAttractionRow, zoomobileAsTransportationRow, carouselRow],
+         attractionItinerary,
+         { onlyItineraryItemsEnabled: true }
+      ),
+      [zoomobileAsAttractionRow]
+   );
+});
+
 test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
    const animalRow = tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, {
       species: 'Giant Panda',
@@ -505,6 +653,17 @@ test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
    });
    const attractionRow = tagScheduleItemRow(ScheduleItemKind.ATTRACTION.itemType, {
       name: 'Conservation Carousel',
+   });
+   const transportationAsAttractionRow = tagScheduleItemRow(
+      ScheduleItemKind.TRANSPORTATION.itemType,
+      {
+         name: 'Zoomobile',
+         added_as_attraction: true,
+      }
+   );
+   const transportationRow = tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+      name: 'Zoomobile',
+      added_as_attraction: false,
    });
    const guardiansTalkRow = tagScheduleItemRow(ScheduleItemKind.GUARDIANS_TALK.itemType, {
       name: 'Amur Tiger',
@@ -518,6 +677,16 @@ test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
    );
    assert.equal(attractionRow.scheduleItemKind, ScheduleItemKind.ATTRACTION.itemType);
    assert.equal(getScheduleItemRowId(attractionRow), 'Conservation Carousel');
+   assert.equal(
+      transportationAsAttractionRow.scheduleItemKind,
+      ScheduleItemKind.ATTRACTION.itemType
+   );
+   assert.equal(getScheduleItemRowId(transportationAsAttractionRow), 'Zoomobile');
+   assert.equal(
+      transportationRow.scheduleItemKind,
+      ScheduleItemKind.TRANSPORTATION.itemType
+   );
+   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile');
    assert.equal(
       guardiansTalkRow.scheduleItemKind,
       ScheduleItemKind.GUARDIANS_TALK.itemType

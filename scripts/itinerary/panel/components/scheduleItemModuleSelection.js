@@ -12,6 +12,7 @@ import {
 import { getAnimalTitleLine } from '../../selectors/animalSelector/model.js';
 import { getAttractionTitle } from '../../selectors/attractionSelector/model.js';
 import { getGuardiansTalkName } from '../../selectors/guardiansTalkSelector/model.js';
+import { getTransportationName } from '../../selectors/transportationSelector/model.js';
 import { getWildEncounterName } from '../../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
@@ -61,6 +62,10 @@ export function resolveScheduleModuleSearchLabel(row) {
       return getAttractionTitle(row) || '';
    }
 
+   if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return getTransportationName(row) || '';
+   }
+
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
       return getGuardiansTalkName(row) || '';
    }
@@ -76,6 +81,7 @@ export function resolveScheduleModuleSearchRowRenderer({
    row,
    renderAnimalRowLeft,
    renderAttractionRowLeft,
+   renderTransportationRowLeft,
    renderGuardiansTalkRowLeft,
    renderWildEncounterRowLeft,
 }) {
@@ -83,6 +89,10 @@ export function resolveScheduleModuleSearchRowRenderer({
 
    if (kind === ScheduleItemKind.ATTRACTION.itemType) {
       return renderAttractionRowLeft(row);
+   }
+
+   if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return renderTransportationRowLeft(row);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {

@@ -34,6 +34,18 @@ const WILD_ENCOUNTER_ROW = {
    scheduleItemKind: 'wild_encounters',
 };
 
+const TRANSPORTATION_ROW = {
+   name: 'Zoomobile',
+   added_as_attraction: false,
+   scheduleItemKind: 'transportations',
+};
+
+const ZOOMOBILE_AS_ATTRACTION_ROW = {
+   name: 'Zoomobile',
+   added_as_attraction: true,
+   scheduleItemKind: 'attractions',
+};
+
 test('canScheduleModuleSelection requires a row for searchable kinds', () => {
    assert.equal(
       canScheduleModuleSelection({
@@ -47,6 +59,25 @@ test('canScheduleModuleSelection requires a row for searchable kinds', () => {
       canScheduleModuleSelection({
          selection: ScheduleItemKind.ANIMAL.itemType,
          selectedRow: ANIMAL_ROW,
+         eventTypes: EVENT_TYPES,
+      }),
+      true
+   );
+});
+
+test('canScheduleModuleSelection allows a preselected transportation attraction', () => {
+   assert.equal(
+      canScheduleModuleSelection({
+         selection: ScheduleItemKind.ATTRACTION.itemType,
+         selectedRow: ZOOMOBILE_AS_ATTRACTION_ROW,
+         eventTypes: EVENT_TYPES,
+      }),
+      true
+   );
+   assert.equal(
+      canScheduleModuleSelection({
+         selection: ScheduleItemKind.TRANSPORTATION.itemType,
+         selectedRow: TRANSPORTATION_ROW,
          eventTypes: EVENT_TYPES,
       }),
       true
@@ -150,4 +181,6 @@ test('shouldClearSelectedScheduleRow detects filtered-out selections', () => {
 test('resolveScheduleModuleSearchLabel uses species or attraction titles', () => {
    assert.equal(resolveScheduleModuleSearchLabel(ANIMAL_ROW), 'Tiger');
    assert.equal(resolveScheduleModuleSearchLabel(ATTRACTION_ROW), 'Carousel');
+   assert.equal(resolveScheduleModuleSearchLabel(ZOOMOBILE_AS_ATTRACTION_ROW), 'Zoomobile');
+   assert.equal(resolveScheduleModuleSearchLabel(TRANSPORTATION_ROW), 'Zoomobile');
 });
