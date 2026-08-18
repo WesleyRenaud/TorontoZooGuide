@@ -7,6 +7,7 @@ from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
+from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
@@ -135,7 +136,10 @@ def _stops_in_master_route_loop_order(
 
 def walk_node_id_for_loop_schedule_stop(
       stop: LoopScheduleStop ) -> str | None:
-   if isinstance( stop, ( ItineraryAttractionRecord, ItineraryTransportationRecord ) ):
+   if isinstance( stop, ItineraryTransportationRecord ):
+      return walk_node_id_for_transportation( stop.transportation )
+
+   if isinstance( stop, ItineraryAttractionRecord ):
       walk_node = walk_node_for_map_location(
          MapLocationKind.ATTRACTION,
          stop.attraction )

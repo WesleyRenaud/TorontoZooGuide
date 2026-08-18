@@ -198,7 +198,9 @@ def test_drain_cascaded_inactive_soft_pins_noop_without_active_open() -> None:
       pinned_earliest_start_cache={},
       blockers=[],
       cursor_seconds=9 * 3600,
-      cascade_end_seconds=11 * 3600 ) == 9 * 3600
+      current_node_id='entrance',
+      walk_graph=object(),
+      cascade_end_seconds=11 * 3600 ) == ( 9 * 3600, 'entrance' )
 
 
 def test_drain_cascaded_inactive_soft_pins_skips_missing_and_unready_units() -> None:
@@ -237,7 +239,9 @@ def test_drain_cascaded_inactive_soft_pins_skips_missing_and_unready_units() -> 
       pinned_earliest_start_cache={ id( unready ): 10 * 3600 },
       blockers=[],
       cursor_seconds=9 * 3600,
-      cascade_end_seconds=11 * 3600 ) == 9 * 3600
+      current_node_id='entrance',
+      walk_graph=object(),
+      cascade_end_seconds=11 * 3600 ) == ( 9 * 3600, 'entrance' )
 
 
 def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None:
