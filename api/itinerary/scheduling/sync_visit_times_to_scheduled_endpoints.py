@@ -13,7 +13,7 @@ from ...types import Connection
 
 
 def itinerary_is_fully_scheduled( itinerary: Itinerary ) -> bool:
-   """True when guest animals/attractions/events are all scheduled and something is on the clock.
+   """True when guest animals/attractions/transportations/events are all scheduled and something is on the clock.
 
    Guardians talks and wild encounters are fixed-time items; they do not themselves
    mark an itinerary incomplete. An empty day with no scheduled blocks is not

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from itinerary.support import schedule_itinerary_item, unschedule_itinerary_item
+from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -214,3 +214,42 @@ def test_unschedule_zoomobile_clears_parent_times_and_legs(
       'SELECT COUNT(*) AS count FROM ItineraryTransportationLeg;'
    ).fetchone()[ 'count' ]
    assert leg_count == 0
+
+
+def test_unschedule_zoomobile_clears_visit_times_when_left_unscheduled(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   assert schedule_itinerary_item(
+      'attractions',
+      ZOOMOBILE,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      LION_KEY,
+   ).success
+
+   scheduled = ItineraryCoordinator.get_itinerary()
+   assert scheduled.arrival_time is not None
+   assert scheduled.departure_time is not None
+
+   result = unschedule_itinerary_item( 'attractions', ZOOMOBILE )
+
+   assert result.success
+   assert result.itinerary.transportations[ 0 ].start_time is None
+   assert result.itinerary.transportations[ 0 ].end_time is None
+   assert result.itinerary.animals[ 0 ].start_time is not None
+   assert result.itinerary.arrival_time is None
+   assert result.itinerary.departure_time is None

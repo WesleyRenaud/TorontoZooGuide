@@ -96,6 +96,12 @@ def validated_itinerary_has_unscheduled_listed_items(
             and DateValues.normalize_schedule_time_key( attraction.end_time ) ):
          return True
 
+   for transportation in validated_itinerary.transportations:
+      if not (
+            DateValues.normalize_schedule_time_key( transportation.start_time )
+            and DateValues.normalize_schedule_time_key( transportation.end_time ) ):
+         return True
+
    return False
 
 
