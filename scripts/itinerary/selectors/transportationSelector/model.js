@@ -1,3 +1,5 @@
+import { normalizeStoredLink } from '../base/storedSelection.js';
+import { buildOccurrenceDetailImageSrc } from '../../scheduledOccurrencePresentation.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function asObject(value) {
@@ -20,6 +22,14 @@ export function getTransportationName(row) {
 
 export function getTransportationId(row) {
    return getTransportationName(row);
+}
+
+export function getTransportationInfoLink(row) {
+   return normalizeStoredLink(row?.info_link);
+}
+
+export function buildTransportationImageSrc(row) {
+   return buildOccurrenceDetailImageSrc('transportations', getTransportationName(row));
 }
 
 export function getTransportationLegs(row) {

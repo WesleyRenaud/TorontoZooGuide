@@ -136,7 +136,7 @@ export function buildTransportationRows(
       normalizeItem: normalizeTransportation,
       prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.transportation,
-      imageDirectory: 'attractions',
+      imageDirectory: 'transportations',
       getName: getTransportationName,
       getMetaLines: (transportation) => [
          buildTransportationStationsLine(transportation),

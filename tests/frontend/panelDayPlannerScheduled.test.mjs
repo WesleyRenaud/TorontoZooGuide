@@ -331,7 +331,7 @@ test.describe('itinerary day planner preview scheduled', () => {
       assert.match(text, /Attractions \(1\)/);
       assert.match(
          imageSrcFor(zoomobileEvent),
-         /images\/details\/attractions\/zoomobile\.png$/
+         /images\/details\/transportations\/zoomobile\.png$/
       );
       assert.equal(menuItems.length, 2);
       assert.equal(menuItems[0]?.textContent, 'Unschedule');

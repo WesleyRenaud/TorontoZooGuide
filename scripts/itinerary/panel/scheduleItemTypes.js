@@ -40,6 +40,10 @@ export function buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {
          label: APP_STRINGS.entityLabels.attraction,
       },
       {
+         value: ScheduleItemKind.TRANSPORTATION.itemType,
+         label: APP_STRINGS.entityLabels.transportation,
+      },
+      {
          value: ScheduleItemKind.GUARDIANS_TALK.itemType,
          label: APP_STRINGS.entityLabels.guardiansTalk,
       },

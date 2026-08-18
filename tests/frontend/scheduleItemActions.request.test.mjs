@@ -33,6 +33,22 @@ test('buildScheduleItemRequest maps event and animal rows', () => {
       }, []),
       { itemType: 'animals', key: 'Tiger||Savanna' }
    );
+   assert.deepEqual(
+      buildScheduleItemRequest('attractions', {
+         name: 'Zoomobile',
+         added_as_attraction: true,
+         scheduleItemKind: 'attractions',
+      }, []),
+      { itemType: 'attractions', key: 'Zoomobile' }
+   );
+   assert.deepEqual(
+      buildScheduleItemRequest('transportations', {
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         scheduleItemKind: 'transportations',
+      }, []),
+      { itemType: 'transportations', key: 'Zoomobile' }
+   );
 });
 
 test('buildScheduleItemRequest includes optional schedule times', () => {
