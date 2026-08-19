@@ -55,6 +55,7 @@ test.describe('showScheduleItemModule', () => {
          preselectedRow: tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
             name: 'Zoomobile',
             added_as_attraction: true,
+            route_duration_minutes: 75,
          }),
       });
 
@@ -69,6 +70,9 @@ test.describe('showScheduleItemModule', () => {
       assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
       assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
       assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
+      assert.equal(root?.querySelector('.schedule-item-time-input')?.disabled, false);
       assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
       assert.match(resultText, /Zoomobile/);
       assert.match(resultText, new RegExp(APP_STRINGS.search.extraCharge));
@@ -88,6 +92,7 @@ test.describe('showScheduleItemModule', () => {
          preselectedRow: tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
             name: 'Zoomobile',
             added_as_attraction: false,
+            route_duration_minutes: 75,
             legs: [
                {
                   from_station: 'Main Zoomobile Station',
@@ -112,6 +117,8 @@ test.describe('showScheduleItemModule', () => {
       assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
       assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
       assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
       assert.match(resultText, /Zoomobile/);
       assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
       assert.equal(root?.querySelector('.itin-finish')?.disabled, false);

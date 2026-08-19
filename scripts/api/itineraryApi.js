@@ -15,10 +15,12 @@ import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTa
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
    asArray,
+   asBoolean,
    asNullableString,
    asObject,
    asTrimmedString,
    asTrimmedStringList,
+   normalizeNumber,
 } from './normalizeValues.js';
 import {
    ScheduleItemKind,
@@ -69,6 +71,21 @@ function normalizeItineraryEvents(events) {
       .filter((event) => Boolean(event.event_type));
 }
 
+function normalizeItineraryTransportation(row) {
+   const source = asObject(row);
+
+   return {
+      ...source,
+      name: asTrimmedString(source.name),
+      route_duration_minutes: normalizeNumber(source.route_duration_minutes),
+      added_as_attraction: asBoolean(source.added_as_attraction),
+   };
+}
+
+function normalizeItineraryTransportations(transportations) {
+   return asArray(transportations).map(normalizeItineraryTransportation);
+}
+
 function normalizeCollectionFields(source = {}, fields) {
    return Object.fromEntries(
       fields.map(([targetKey, responseKey]) => [
@@ -84,13 +101,15 @@ function normalizeItineraryCollections(source = {}) {
 
 function normalizeItineraryModel(itinerary) {
    const source = asObject(itinerary);
+   const collections = normalizeItineraryCollections(source);
 
    return {
       date: asTrimmedString(source.date),
       arrivalTime: asTrimmedString(source.arrival_time),
       departureTime: asTrimmedString(source.departure_time),
       selectedExhibits: asTrimmedStringList(source.selected_exhibits),
-      ...normalizeItineraryCollections(source),
+      ...collections,
+      transportations: normalizeItineraryTransportations(source.transportations),
       events: normalizeItineraryEvents(source.events),
    };
 }

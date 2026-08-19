@@ -18,7 +18,8 @@ class ItineraryTransportation:
          y_coord: float | None = None,
          main_station: str | None = None,
          legs: list[ ItineraryTransportationLeg ] | None = None,
-         added_as_attraction: bool = False ) -> None:
+         added_as_attraction: bool = False,
+         route_duration_minutes: int | None = None ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood
       self.likelihood = likelihood
@@ -29,6 +30,7 @@ class ItineraryTransportation:
       self.main_station = main_station
       self.legs = legs or []
       self.added_as_attraction = added_as_attraction
+      self.route_duration_minutes = route_duration_minutes
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -44,4 +46,5 @@ class ItineraryTransportation:
          'legs': [ leg.to_dict() for leg in self.legs ],
          'added_as_attraction': ValueConversion.as_boolean(
             self.added_as_attraction ),
+         'route_duration_minutes': self.route_duration_minutes,
       }

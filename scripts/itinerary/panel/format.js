@@ -1,5 +1,8 @@
+import { normalizeNumber } from '../../api/normalizeValues.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
+
+export { normalizeNumber };
 
 function asObject(value) {
    return value && typeof value === 'object'
@@ -16,11 +19,6 @@ export function normalizeText(value) {
 function normalizeOptionalText(value) {
    const text = normalizeText(value);
    return text || null;
-}
-
-export function normalizeNumber(value) {
-   const number = Number(value);
-   return Number.isFinite(number) ? number : null;
 }
 
 export function normalizeNonNegativeNumber(value) {

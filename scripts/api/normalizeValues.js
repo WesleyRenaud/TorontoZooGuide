@@ -28,3 +28,8 @@ export function asNullableString(value) {
 export function asBoolean(value) {
    return value === true;
 }
+
+export function normalizeNumber(value) {
+   const number = Number(value);
+   return Number.isFinite(number) ? number : null;
+}
