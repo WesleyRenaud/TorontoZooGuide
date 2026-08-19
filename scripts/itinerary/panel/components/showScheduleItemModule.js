@@ -74,6 +74,9 @@ export function showScheduleItemModule({
       renderWildEncounterRowLeft: buildSearchRowRenderer(ScheduleItemKind.WILD_ENCOUNTER.itemType),
       refs: {
          typeSelect: body?.querySelector('.schedule-item-select'),
+         typeLabelEl: body?.querySelector(
+            '.schedule-item-type-field .schedule-item-field-label'
+         ),
          searchInput: body?.querySelector('.schedule-item-search-input'),
          resultsEl: body?.querySelector('.schedule-item-results'),
          searchLabelEl: body?.querySelector(
@@ -87,11 +90,18 @@ export function showScheduleItemModule({
       scheduleButton: buttonEls.schedule,
    });
 
+   const typeSelect = body?.querySelector('.schedule-item-select');
+   const dialogEl = root.querySelector('.itin-card');
+
+   if (preselectedRow) {
+      dialogEl?.setAttribute('tabindex', '-1');
+   }
+
    const popup = mountDismissablePopup({
       mountEl: getItineraryPanelMountEl() ?? document.body,
       root,
       overlay,
-      initialFocusEl: body?.querySelector('.schedule-item-select'),
+      initialFocusEl: preselectedRow ? dialogEl : typeSelect,
       onDismiss: null,
    });
 

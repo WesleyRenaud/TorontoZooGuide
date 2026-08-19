@@ -25,6 +25,7 @@ function createRefs({
    const typeSelect = createDomNode('select', 'schedule-item-select');
    typeSelect.value = selection;
 
+   const typeLabelEl = createDomNode('label', 'schedule-item-field-label');
    const searchInput = createDomNode('input', 'schedule-item-search-input');
    searchInput.value = searchValue;
 
@@ -38,6 +39,7 @@ function createRefs({
 
    return {
       typeSelect,
+      typeLabelEl,
       searchInput,
       resultsEl,
       searchLabelEl,
@@ -98,8 +100,33 @@ test('updateFieldVisibility keeps the schedule button disabled until a row is se
 
    controller.updateFieldVisibility();
 
+   assert.equal(refs.typeSelect.disabled, false);
    assert.equal(refs.searchInput.disabled, false);
+   assert.equal(refs.onlyItineraryItemsCheckbox.disabled, false);
    assert.equal(refs.scheduleButton.disabled, true);
+});
+
+test('initialize locks type, search, and itinerary filter for a preselected row', () => {
+   const refs = createRefs();
+   const controller = createController({
+      refs,
+      preselectedRow: ANIMAL_ROW,
+      deps: {
+         renderSearchResults: () => {},
+      },
+   });
+
+   controller.initialize();
+
+   assert.equal(refs.typeSelect.disabled, true);
+   assert.equal(refs.typeSelect.getAttribute('aria-disabled'), 'true');
+   assert.equal(refs.typeLabelEl.classList.contains('is-disabled'), true);
+   assert.equal(refs.searchInput.disabled, true);
+   assert.equal(refs.searchInput.getAttribute('aria-disabled'), 'true');
+   assert.equal(refs.searchLabelEl.classList.contains('is-disabled'), true);
+   assert.equal(refs.onlyItineraryItemsCheckbox.disabled, true);
+   assert.equal(refs.onlyItineraryItemsWrap.hidden, false);
+   assert.equal(refs.scheduleButton.disabled, false);
 });
 
 test('displaySearchResults filters rows to itinerary items when enabled', () => {
@@ -265,6 +292,9 @@ test('applyPreselectedRow seeds the type, search input, and selected row', () =>
    assert.equal(refs.typeSelect.value, ScheduleItemKind.ANIMAL.itemType);
    assert.equal(refs.searchInput.value, 'Tiger');
    assert.equal(controller.canScheduleSelection(), true);
+   assert.equal(refs.typeSelect.disabled, true);
+   assert.equal(refs.searchInput.disabled, true);
+   assert.equal(refs.onlyItineraryItemsCheckbox.disabled, true);
 });
 
 test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => {
@@ -618,6 +648,28 @@ test('handleSchedule ignores duplicate submissions while one is in flight', asyn
    await Promise.all([firstSchedule, secondSchedule]);
 
    assert.equal(scheduleCalls, 1);
+});
+
+test('clicking the preselected result does not clear the locked selection', () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'Tiger',
+   });
+   let onSelectRow = null;
+   const controller = createController({
+      refs,
+      preselectedRow: ANIMAL_ROW,
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.initialize();
+   onSelectRow?.(ANIMAL_ROW, 'Tiger||Savanna');
+
+   assert.equal(controller.canScheduleSelection(), true);
 });
 
 test('handleSearchInput clears the selected row and triggers a search', () => {
