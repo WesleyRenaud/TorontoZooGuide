@@ -26,6 +26,7 @@ import {
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
 } from '../scheduleItemTypes.js';
+import { isScheduleItemTransportationRow } from '../../selectors/transportationSelector/model.js';
 import { isFixedTimeScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -100,14 +101,29 @@ export function createScheduleItemModuleController({
    }
 
    function syncScheduleTimeFields() {
-      const fixedTimeSelected = Boolean(
-         selectedRow
-         && isFixedTimeScheduleItemKind(getScheduleItemRowKind(selectedRow))
-      );
+      if (!selectedRow) {
+         scheduleTimeFields.reset?.();
+         return;
+      }
 
-      scheduleTimeFields.setFixedTimeScheduleMode?.({
-         enabled: fixedTimeSelected,
-      });
+      const rowKind = getScheduleItemRowKind(selectedRow);
+
+      if (isFixedTimeScheduleItemKind(rowKind)) {
+         scheduleTimeFields.setFixedDurationScheduleMode?.({ lockDuration: false });
+         scheduleTimeFields.setFixedTimeScheduleMode?.({ lockTimes: true });
+         return;
+      }
+
+      if (isScheduleItemTransportationRow(selectedRow)) {
+         scheduleTimeFields.setFixedTimeScheduleMode?.({ lockTimes: false });
+         scheduleTimeFields.setFixedDurationScheduleMode?.({
+            lockDuration: true,
+            durationMinutes: selectedRow.route_duration_minutes,
+         });
+         return;
+      }
+
+      scheduleTimeFields.reset?.();
    }
 
    function updateFieldVisibility() {
@@ -332,7 +348,6 @@ export function createScheduleItemModuleController({
          searchInput.value = '';
       }
 
-      scheduleTimeFields.reset?.();
       updateFieldVisibility();
       void runSearch();
    }

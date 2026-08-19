@@ -302,6 +302,7 @@ test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => 
    const zoomobileRow = {
       name: 'Zoomobile',
       added_as_attraction: true,
+      route_duration_minutes: 75,
       scheduleItemKind: 'attractions',
    };
    const controller = createScheduleItemModuleController({
@@ -432,8 +433,9 @@ test('updateFieldVisibility disables time fields for selected talks and encounte
          setFixedTimeScheduleMode: (options) => {
             fixedTimeMode = options;
          },
+         setFixedDurationScheduleMode: () => {},
          reset: () => {
-            fixedTimeMode = { enabled: false };
+            fixedTimeMode = { lockTimes: false };
          },
       },
       deps: {
@@ -446,11 +448,84 @@ test('updateFieldVisibility disables time fields for selected talks and encounte
    controller.displaySearchResults([talkRow]);
    onSelectRow?.(talkRow, 'Amur Tiger');
 
-   assert.deepEqual(fixedTimeMode, { enabled: true });
+   assert.deepEqual(fixedTimeMode, { lockTimes: true });
 
    controller.handleTypeSelectChange();
 
-   assert.deepEqual(fixedTimeMode, { enabled: false });
+   assert.deepEqual(fixedTimeMode, { lockTimes: false });
+});
+
+test('updateFieldVisibility locks transportation duration to the route total', () => {
+   const refs = createRefs({ selection: ScheduleItemKind.TRANSPORTATION.itemType });
+   let fixedDurationMode = null;
+   let onSelectRow = null;
+   const zoomobileRow = {
+      name: 'Zoomobile',
+      route_duration_minutes: 75,
+      scheduleItemKind: 'transportations',
+   };
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         setFixedTimeScheduleMode: () => {},
+         setFixedDurationScheduleMode: (options) => {
+            fixedDurationMode = options;
+         },
+         reset: () => {
+            fixedDurationMode = { lockDuration: false };
+         },
+      },
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([zoomobileRow]);
+   onSelectRow?.(zoomobileRow, 'Zoomobile');
+
+   assert.deepEqual(fixedDurationMode, {
+      lockDuration: true,
+      durationMinutes: 75,
+   });
+});
+
+test('updateFieldVisibility locks duration for transportation added as an attraction', () => {
+   const refs = createRefs({ selection: ScheduleItemKind.ATTRACTION.itemType });
+   let fixedDurationMode = null;
+   let onSelectRow = null;
+   const zoomobileRow = {
+      name: 'Zoomobile',
+      added_as_attraction: true,
+      route_duration_minutes: 75,
+      scheduleItemKind: 'attractions',
+   };
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         setFixedTimeScheduleMode: () => {},
+         setFixedDurationScheduleMode: (options) => {
+            fixedDurationMode = options;
+         },
+         reset: () => {
+            fixedDurationMode = { lockDuration: false };
+         },
+      },
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([zoomobileRow]);
+   onSelectRow?.(zoomobileRow, 'Zoomobile');
+
+   assert.deepEqual(fixedDurationMode, {
+      lockDuration: true,
+      durationMinutes: 75,
+   });
 });
 
 test('handleTypeSelectChange clears the search input and resets time fields', () => {

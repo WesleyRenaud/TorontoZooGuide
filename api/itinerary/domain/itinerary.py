@@ -103,7 +103,9 @@ def build_current_itinerary(
       animals=animals,
       attractions=attractions,
       transportations=build_itinerary_transportations(
-         saved_itinerary.transportation_rows ),
+         saved_itinerary.transportation_rows,
+         target_date=saved_itinerary.itinerary_date(),
+      ),
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,
       events=events,

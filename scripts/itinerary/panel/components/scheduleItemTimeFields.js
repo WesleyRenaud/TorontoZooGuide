@@ -21,7 +21,8 @@ export function makeScheduleItemTimeFields(strings = {}) {
    const timeInput = document.createElement('input');
    const durationInput = document.createElement('input');
    let selectedStartTime = '';
-   let isFixedTimeMode = false;
+   let areTimesLocked = false;
+   let isDurationLocked = false;
    let flatpickrInstance = null;
 
    timeInput.className = 'schedule-item-time-input';
@@ -43,14 +44,17 @@ export function makeScheduleItemTimeFields(strings = {}) {
    }
 
    function syncFixedTimeFieldPresentation() {
-      timeField.classList.toggle('is-disabled', isFixedTimeMode);
-      durationField.classList.toggle('is-disabled', isFixedTimeMode);
-      timeLabel.classList.toggle('is-disabled', isFixedTimeMode);
-      durationLabel.classList.toggle('is-disabled', isFixedTimeMode);
+      timeField.classList.toggle('is-disabled', areTimesLocked);
+      timeLabel.classList.toggle('is-disabled', areTimesLocked);
+   }
+
+   function syncFixedDurationFieldPresentation() {
+      durationField.classList.toggle('is-disabled', areTimesLocked || isDurationLocked);
+      durationLabel.classList.toggle('is-disabled', areTimesLocked || isDurationLocked);
    }
 
    function syncTimeInputDisabledState() {
-      const disabled = isFixedTimeMode;
+      const disabled = areTimesLocked;
 
       timeInput.disabled = disabled;
       timeInput.readOnly = disabled;
@@ -59,14 +63,14 @@ export function makeScheduleItemTimeFields(strings = {}) {
    }
 
    function syncDurationFieldState() {
-      const disabled = isFixedTimeMode;
+      const disabled = areTimesLocked || isDurationLocked;
 
       durationInput.disabled = disabled;
       durationInput.setAttribute('aria-disabled', String(disabled));
    }
 
    function commitPickerTime(_selectedDates, dateStr, instance) {
-      if (isFixedTimeMode) {
+      if (areTimesLocked) {
          return;
       }
 
@@ -77,7 +81,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
    }
 
    function resolveSelectedStartTime() {
-      if (isFixedTimeMode) {
+      if (areTimesLocked) {
          return '';
       }
 
@@ -87,6 +91,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
    timeField.append(timeLabel, timeInput);
    durationField.append(durationLabel, durationInput);
    syncDurationFieldState();
+   syncFixedDurationFieldPresentation();
 
    initTimePicker(timeInput, {
       allowInput: false,
@@ -99,20 +104,48 @@ export function makeScheduleItemTimeFields(strings = {}) {
       },
    });
 
-   function setFixedTimeScheduleMode({ enabled = false } = {}) {
-      isFixedTimeMode = enabled;
+   function setFixedTimeScheduleMode({ lockTimes = false } = {}) {
+      areTimesLocked = lockTimes;
+
+      if (lockTimes) {
+         isDurationLocked = false;
+      }
+
       clearTimeFieldValues();
       syncTimeInputDisabledState();
       syncDurationFieldState();
       syncFixedTimeFieldPresentation();
+      syncFixedDurationFieldPresentation();
+   }
+
+   function setFixedDurationScheduleMode({
+      lockDuration = false,
+      durationMinutes = null,
+   } = {}) {
+      isDurationLocked = lockDuration;
+
+      if (lockDuration) {
+         areTimesLocked = false;
+         durationInput.value = durationMinutes != null
+            ? String(durationMinutes)
+            : '';
+      }
+      else {
+         durationInput.value = '';
+      }
+
+      syncTimeInputDisabledState();
+      syncDurationFieldState();
+      syncFixedTimeFieldPresentation();
+      syncFixedDurationFieldPresentation();
    }
 
    return {
       fields: [timeField, durationField],
       getScheduleTimeOptions() {
-         if (isFixedTimeMode) {
+         if (areTimesLocked || isDurationLocked) {
             return {
-               startTime: '',
+               startTime: areTimesLocked ? '' : resolveSelectedStartTime(),
                durationMinutes: null,
             };
          }
@@ -126,8 +159,10 @@ export function makeScheduleItemTimeFields(strings = {}) {
          };
       },
       reset() {
-         setFixedTimeScheduleMode({ enabled: false });
+         setFixedTimeScheduleMode({ lockTimes: false });
+         setFixedDurationScheduleMode({ lockDuration: false });
       },
+      setFixedDurationScheduleMode,
       setFixedTimeScheduleMode,
    };
 }

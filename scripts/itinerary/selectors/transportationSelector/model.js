@@ -1,5 +1,6 @@
 import { normalizeStoredLink } from '../base/storedSelection.js';
 import { buildOccurrenceDetailImageSrc } from '../../scheduledOccurrencePresentation.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function asObject(value) {
@@ -81,4 +82,16 @@ export function buildTransportationStationsLine(row) {
 
 export function isTransportationAddedAsAttraction(row) {
    return row?.added_as_attraction === true;
+}
+
+export function isScheduleItemTransportationRow(row) {
+   if (!row || typeof row !== 'object') {
+      return false;
+   }
+
+   if (row.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType) {
+      return true;
+   }
+
+   return isTransportationAddedAsAttraction(row);
 }

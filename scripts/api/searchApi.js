@@ -6,6 +6,7 @@ import {
    asNullableString,
    asObject,
    asTrimmedString,
+   normalizeNumber,
 } from './normalizeValues.js';
 
 function normalizeAttractionRow(row) {
@@ -18,6 +19,7 @@ function normalizeAttractionRow(row) {
       part_of_seasonal_attraction: asBoolean(source.part_of_seasonal_attraction),
       is_closed: asBoolean(source.is_closed),
       is_also_transportation: asBoolean(source.is_also_transportation),
+      route_duration_minutes: normalizeNumber(source.route_duration_minutes),
       info_link: asNullableString(source.info_link),
       open_time: asNullableString(source.open_time),
       close_time: asNullableString(source.close_time),

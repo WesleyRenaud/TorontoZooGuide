@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..enrich_transportation_attraction_route_durations import enrich_transportation_attraction_route_durations_for_visit
 from ...giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Animal
@@ -116,6 +117,12 @@ class SearchCoordinator():
                month=month,
                year=year,
                include_closed_attractions=include_closed_attractions ) or []
+         )
+         enrich_transportation_attraction_route_durations_for_visit(
+            attractions,
+            month=month,
+            day=day,
+            year=year,
          )
 
       if include_zoomobile_stations:

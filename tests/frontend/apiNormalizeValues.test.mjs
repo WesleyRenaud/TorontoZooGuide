@@ -8,6 +8,7 @@ import {
    asObject,
    asTrimmedString,
    asTrimmedStringList,
+   normalizeNumber,
 } from '../../scripts/api/normalizeValues.js';
 
 test('keeps valid API collection and object values intact', () => {
@@ -33,6 +34,10 @@ test('normalizes scalar API values without inventing truthy values', () => {
    assert.equal(asBoolean(true), true);
    assert.equal(asBoolean(1), false);
    assert.equal(asBoolean('true'), false);
+   assert.equal(normalizeNumber(75), 75);
+   assert.equal(normalizeNumber('75'), 75);
+   assert.equal(normalizeNumber('abc'), null);
+   assert.equal(normalizeNumber(undefined), null);
 });
 
 test('asTrimmedStringList trims values and drops blanks', () => {

@@ -62,7 +62,7 @@ test('makeScheduleItemTimeFields disables empty fields for fixed-time schedule i
    timeInput.value = '12:00 PM';
    durationInput.value = '30';
 
-   fields.setFixedTimeScheduleMode({ enabled: true });
+   fields.setFixedTimeScheduleMode({ lockTimes: true });
 
    assert.equal(timeInput.disabled, true);
    assert.equal(timeInput.value, '');
@@ -86,7 +86,7 @@ test('makeScheduleItemTimeFields re-enables fields after fixed-time mode is clea
    const timeField = getTimeField(fields);
    const durationField = getDurationField(fields);
 
-   fields.setFixedTimeScheduleMode({ enabled: true });
+   fields.setFixedTimeScheduleMode({ lockTimes: true });
    fields.reset();
 
    assert.equal(timeInput.disabled, false);
@@ -110,5 +110,32 @@ test('makeScheduleItemTimeFields allows duration without a start time', () => {
    assert.deepEqual(fields.getScheduleTimeOptions(), {
       startTime: '',
       durationMinutes: 25,
+   });
+});
+
+test('makeScheduleItemTimeFields shows fixed transportation duration while keeping start time editable', () => {
+   const fields = makeScheduleItemTimeFields({
+      timeLabel: 'Schedule time',
+      durationLabel: 'Duration',
+   });
+   const timeInput = getTimeInput(fields);
+   const durationInput = getDurationInput(fields);
+   const durationField = getDurationField(fields);
+
+   timeInput.value = '10:00 AM';
+   durationInput.value = '30';
+
+   fields.setFixedDurationScheduleMode({
+      lockDuration: true,
+      durationMinutes: 75,
+   });
+
+   assert.equal(timeInput.disabled, false);
+   assert.equal(durationInput.disabled, true);
+   assert.equal(durationInput.value, '75');
+   assert.equal(durationField.classList.contains('is-disabled'), true);
+   assert.deepEqual(fields.getScheduleTimeOptions(), {
+      startTime: '10:00 AM',
+      durationMinutes: null,
    });
 });
