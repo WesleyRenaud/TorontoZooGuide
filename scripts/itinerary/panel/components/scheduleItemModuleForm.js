@@ -62,7 +62,7 @@ function createSelectField({
    getOptionValue = (option) => option,
    getOptionLabel = (option) => String(option),
 } = {}) {
-   const field = el('div', 'schedule-item-field');
+   const field = el('div', 'schedule-item-field schedule-item-type-field');
    const select = document.createElement('select');
    select.className = 'schedule-item-select';
 

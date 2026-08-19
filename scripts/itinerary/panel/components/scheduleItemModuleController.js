@@ -48,6 +48,7 @@ export function createScheduleItemModuleController({
 } = {}) {
    const {
       typeSelect = null,
+      typeLabelEl = null,
       searchInput = null,
       resultsEl = null,
       searchLabelEl = null,
@@ -94,6 +95,10 @@ export function createScheduleItemModuleController({
       return Boolean(onlyItineraryItemsCheckbox?.checked);
    }
 
+   function isItemSelectionLocked() {
+      return Boolean(preselectedRow);
+   }
+
    function syncScheduleTimeFields() {
       const fixedTimeSelected = Boolean(
          selectedRow
@@ -108,14 +113,25 @@ export function createScheduleItemModuleController({
    function updateFieldVisibility() {
       const selection = getSelection();
       const searchEnabled = isScheduleItemSearchEnabled(selection, eventTypes);
+      const itemSelectionLocked = isItemSelectionLocked();
+      const searchLocked = itemSelectionLocked || !searchEnabled;
+
+      if (typeSelect) {
+         typeSelect.disabled = itemSelectionLocked;
+         typeSelect.setAttribute('aria-disabled', String(itemSelectionLocked));
+      }
+
+      if (typeLabelEl) {
+         typeLabelEl.classList.toggle('is-disabled', itemSelectionLocked);
+      }
 
       if (searchInput) {
-         searchInput.disabled = !searchEnabled;
-         searchInput.setAttribute('aria-disabled', String(!searchEnabled));
+         searchInput.disabled = searchLocked;
+         searchInput.setAttribute('aria-disabled', String(searchLocked));
       }
 
       if (searchLabelEl) {
-         searchLabelEl.classList.toggle('is-disabled', !searchEnabled);
+         searchLabelEl.classList.toggle('is-disabled', searchLocked);
       }
 
       if (onlyItineraryItemsWrap) {
@@ -123,7 +139,7 @@ export function createScheduleItemModuleController({
       }
 
       if (onlyItineraryItemsCheckbox) {
-         onlyItineraryItemsCheckbox.disabled = !searchEnabled;
+         onlyItineraryItemsCheckbox.disabled = searchLocked;
       }
 
       if (scheduleButton) {
@@ -156,6 +172,10 @@ export function createScheduleItemModuleController({
             renderWildEncounterRowLeft,
          }),
          onSelectRow: (row, id) => {
+            if (isItemSelectionLocked()) {
+               return;
+            }
+
             const isSameRow = id === selectedRowId;
 
             clearSelectedRow();

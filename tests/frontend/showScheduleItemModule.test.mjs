@@ -27,11 +27,15 @@ test.describe('showScheduleItemModule', () => {
       assert.ok(root);
       assert.equal(root?.querySelector('.itin-top-title')?.textContent, strings.title);
       assert.ok(root?.querySelector('.schedule-item-select'));
+      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, false);
       assert.ok(root?.querySelector('.schedule-item-search-input'));
+      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, false);
       assert.ok(root?.querySelector('.schedule-item-only-itinerary-checkbox'));
+      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, false);
       assert.ok(root?.querySelector('.schedule-item-time-input'));
       assert.ok(root?.querySelector('.schedule-item-duration-input'));
       assert.ok(root?.querySelector('.schedule-item-results'));
+      assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), null);
       assert.equal(root?.querySelector('.itin-finish')?.textContent, strings.scheduleButton);
       assert.equal(
          root?.querySelector('.itin-prev')?.textContent,
@@ -62,6 +66,10 @@ test.describe('showScheduleItemModule', () => {
          ScheduleItemKind.ATTRACTION.itemType
       );
       assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
+      assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
       assert.match(resultText, /Zoomobile/);
       assert.match(resultText, new RegExp(APP_STRINGS.search.extraCharge));
       assert.doesNotMatch(resultText, /round trip/);
@@ -101,6 +109,9 @@ test.describe('showScheduleItemModule', () => {
          ScheduleItemKind.TRANSPORTATION.itemType
       );
       assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
+      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
       assert.match(resultText, /Zoomobile/);
       assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
       assert.equal(root?.querySelector('.itin-finish')?.disabled, false);

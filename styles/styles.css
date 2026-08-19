@@ -2367,6 +2367,7 @@ nav ul li a:hover {
    cursor: not-allowed;
 }
 
+.schedule-item-select:disabled,
 .schedule-item-search-input:disabled,
 .schedule-item-time-field.is-disabled .schedule-item-time-input,
 .schedule-item-duration-field.is-disabled .schedule-item-duration-input,
