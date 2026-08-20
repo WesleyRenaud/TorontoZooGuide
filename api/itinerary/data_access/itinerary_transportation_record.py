@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from .itinerary_name_key import itinerary_name_key
-from .itinerary_transportation_leg_record import ItineraryTransportationLegRecord
+from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.enums import ScheduleItemKind
 from ...types import ScheduleTimeKey
 from ...walk_graph.domain.master_route_stop_key import attraction_master_route_stop_key
@@ -19,7 +19,7 @@ class ItineraryTransportationRecord:
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
    added_as_attraction: bool = False
-   legs: list[ ItineraryTransportationLegRecord ] = field( default_factory=list )
+   legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
 
 
    def name_key( self ) -> str:

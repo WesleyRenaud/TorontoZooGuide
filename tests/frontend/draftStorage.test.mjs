@@ -61,6 +61,7 @@ test('writes and loads the stored itinerary draft', () => {
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
       transportations: [],
+      transportationStations: [],
       events: [],
    });
 });

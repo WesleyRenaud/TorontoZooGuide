@@ -38,6 +38,7 @@ def apply_itinerary_transportation_schedule(
       start_time: ScheduleTimeKey,
       legs: list[ TransportationRouteLegSegment ] ) -> bool:
    timed_legs, end_time = expand_timed_transportation_legs(
+      transportation=name,
       start_time=start_time,
       legs=legs )
 

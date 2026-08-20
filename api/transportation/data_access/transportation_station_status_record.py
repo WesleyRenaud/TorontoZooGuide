@@ -6,7 +6,7 @@ from ...types import DateKey
 
 
 @dataclass( frozen=True )
-class ZoomobileStationStatusRecord:
+class TransportationStationStatusRecord:
    station: str
    closed_start: DateKey
    closed_end: DateKey | None

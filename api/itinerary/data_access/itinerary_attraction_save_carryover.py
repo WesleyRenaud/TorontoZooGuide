@@ -21,21 +21,6 @@ class ItineraryAttractionSaveCarryover:
    legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
 
 
-def _legs_from_named_save_row(
-      row: ItineraryNamedSaveRow ) -> list[ ItineraryTransportationLeg ]:
-   if not isinstance( row, ItineraryTransportationRecord ):
-      return []
-
-   return [
-      ItineraryTransportationLeg(
-         from_station=leg.from_station,
-         to_station=leg.to_station,
-         start_time=leg.start_time,
-         end_time=leg.end_time )
-      for leg in row.legs
-   ]
-
-
 def itinerary_attraction_save_carryover(
       saved_rows: list[ ItineraryNamedSaveRow ] | None,
       attraction_name: str,
@@ -56,7 +41,9 @@ def itinerary_attraction_save_carryover(
             old_likelihood=row.new_likelihood,
             start_time=row.start_time,
             end_time=row.end_time,
-            legs=_legs_from_named_save_row( row ),
+            legs=list( row.legs )
+            if isinstance( row, ItineraryTransportationRecord )
+            else [],
          )
 
    return ItineraryAttractionSaveCarryover(

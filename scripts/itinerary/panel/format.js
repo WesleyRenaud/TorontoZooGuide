@@ -159,6 +159,22 @@ export function normalizeTransportation(value) {
          };
       })
       : [];
+   const stations = Array.isArray(source.stations)
+      ? source.stations.map((station) => {
+         const sourceStation = asObject(station);
+
+         return {
+            ...sourceStation,
+            name: normalizeText(sourceStation.name),
+            transportation: normalizeText(sourceStation.transportation),
+            role: normalizeText(sourceStation.role),
+            type: normalizeText(sourceStation.type),
+            description: normalizeText(sourceStation.description),
+            x_coord: normalizeNumber(sourceStation.x_coord),
+            y_coord: normalizeNumber(sourceStation.y_coord),
+         };
+      })
+      : [];
 
    return {
       ...source,
@@ -167,6 +183,7 @@ export function normalizeTransportation(value) {
       infoLink: normalizeOptionalText(source.info_link),
       added_as_attraction: source.added_as_attraction === true,
       legs,
+      stations,
       removalReason: normalizeOptionalText(source.removalReason),
    };
 }

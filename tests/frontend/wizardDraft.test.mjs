@@ -29,6 +29,7 @@ test('buildWizardDraft preserves itinerary times when changing date', () => {
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [],
+         transportationStations: [],
          events: [],
       }
    );
@@ -54,6 +55,7 @@ test('buildWizardDraft preserves transportations from wizard state', () => {
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+         transportationStations: [],
          events: [],
       }
    );

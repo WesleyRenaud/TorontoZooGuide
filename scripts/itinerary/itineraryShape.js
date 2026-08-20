@@ -101,6 +101,7 @@ export function createEmptyItineraryDraft() {
       guardiansTalks: [],
       wildEncounters: [],
       transportations: [],
+      transportationStations: [],
       events: [],
    };
 }
@@ -117,6 +118,7 @@ export function normalizeItineraryDraft(draft = {}) {
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
       wildEncounters: normalizeItineraryItems(source.wildEncounters),
       transportations: normalizeItineraryItems(source.transportations),
+      transportationStations: normalizeItineraryItems(source.transportationStations),
       events: normalizeItineraryItems(source.events),
    };
 }
@@ -133,6 +135,9 @@ export function cloneItineraryDraft(draft = {}) {
       guardiansTalks: cloneItineraryItems(normalizedDraft.guardiansTalks),
       wildEncounters: cloneItineraryItems(normalizedDraft.wildEncounters),
       transportations: cloneItineraryItems(normalizedDraft.transportations),
+      transportationStations: cloneItineraryItems(
+         normalizedDraft.transportationStations
+      ),
       events: cloneItineraryItems(normalizedDraft.events),
    };
 }

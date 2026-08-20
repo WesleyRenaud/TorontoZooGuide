@@ -43,6 +43,7 @@ function assignWizardDraft(state, draft) {
    state.guardiansTalks = normalizedDraft.guardiansTalks.slice();
    state.wildEncounters = normalizedDraft.wildEncounters.slice();
    state.transportations = normalizedDraft.transportations.slice();
+   state.transportationStations = normalizedDraft.transportationStations.slice();
 }
 
 function resetPendingValidation(state) {

@@ -11,12 +11,12 @@ from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_exhibit import fetch_itinerary_exhibits
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
-from .itinerary_transportation_leg_record import ItineraryTransportationLegRecord
-from .itinerary_transportation_mapper import map_itinerary_transportation_leg_record
+from .itinerary_transportation_leg_mapper import map_itinerary_transportation_legs
 from .itinerary_transportation_mapper import map_itinerary_transportation_records
 from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
+from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from .saved_itinerary import SavedItinerary
 from ...types import Connection, DateKey
 
@@ -89,7 +89,7 @@ def fetch_itinerary_attraction_rows( conn: Connection ) -> list[ ItineraryAttrac
 
 
 def fetch_itinerary_transportation_leg_rows(
-      conn: Connection ) -> list[ ItineraryTransportationLegRecord ]:
+      conn: Connection ) -> list[ ItineraryTransportationLeg ]:
    cur = conn.cursor()
 
    rows = cur.execute(
@@ -105,10 +105,7 @@ def fetch_itinerary_transportation_leg_rows(
 
    cur.close()
 
-   return [
-      map_itinerary_transportation_leg_record( row )
-      for row in rows
-   ]
+   return map_itinerary_transportation_legs( rows )
 
 
 def fetch_itinerary_transportation_rows(

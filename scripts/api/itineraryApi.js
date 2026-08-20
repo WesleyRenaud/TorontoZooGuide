@@ -11,6 +11,7 @@ import {
    EMPTY_ITINERARY_PATH,
    normalizeItineraryPath,
 } from '../itinerary/itineraryPathModel.js';
+import { updateItineraryTransportationStationRolesFromConfig } from '../itinerary/itineraryTransportationStationRoles.js';
 import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
@@ -33,6 +34,7 @@ const ITINERARY_COLLECTION_FIELDS = [
    ['guardiansTalks', 'guardians_talks'],
    ['wildEncounters', 'wild_encounters'],
    ['transportations', 'transportations'],
+   ['transportationStations', 'transportation_stations'],
 ];
 
 function mapScheduleItemKeyToWire(itemType, key) {
@@ -114,8 +116,8 @@ function normalizeItineraryModel(itinerary) {
    };
 }
 
-function normalizeItineraryErrorTypes(errorTypes) {
-   const source = asObject(errorTypes);
+function normalizeNamedStringMap(values) {
+   const source = asObject(values);
 
    return Object.freeze(
       Object.fromEntries(
@@ -126,16 +128,12 @@ function normalizeItineraryErrorTypes(errorTypes) {
    );
 }
 
-function normalizeItineraryAdjustmentTypes(adjustmentTypes) {
-   const source = asObject(adjustmentTypes);
+function normalizeItineraryErrorTypes(errorTypes) {
+   return normalizeNamedStringMap(errorTypes);
+}
 
-   return Object.freeze(
-      Object.fromEntries(
-         Object.entries(source)
-            .map(([key, value]) => [key, asTrimmedString(value)])
-            .filter(([, value]) => value)
-      )
-   );
+function normalizeItineraryAdjustmentTypes(adjustmentTypes) {
+   return normalizeNamedStringMap(adjustmentTypes);
 }
 
 function normalizeVisitBoundaryEventTypes(config) {
@@ -175,6 +173,19 @@ function normalizeItineraryConfig(config) {
       adjustmentTypes: normalizeItineraryAdjustmentTypes(
          source.itinerary_adjustment_types
       ),
+      transportationStationRoles: normalizeNamedStringMap(
+         source.itinerary_transportation_station_roles
+      ),
+      transportationStationOnboardingRoles: asArray(
+         source.itinerary_transportation_station_onboarding_roles
+      )
+         .map(asTrimmedString)
+         .filter(Boolean),
+      transportationStationOffboardingRoles: asArray(
+         source.itinerary_transportation_station_offboarding_roles
+      )
+         .map(asTrimmedString)
+         .filter(Boolean),
       statuses: normalizedStatuses,
       suppressedErrorTypes: asArray(source.suppressed_error_types)
          .map(asTrimmedString)
@@ -192,6 +203,7 @@ function normalizeItineraryConfig(config) {
 
    updateItineraryErrorTypesFromConfig(normalizedConfig);
    updateItineraryAdjustmentTypesFromConfig(normalizedConfig);
+   updateItineraryTransportationStationRolesFromConfig(normalizedConfig);
 
    return normalizedConfig;
 }

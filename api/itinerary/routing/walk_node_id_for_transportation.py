@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ..data_access.fetch_transportation_station_coords import fetch_transportation_station_coords
 from ..data_access.itinerary import fetch_itinerary_date_record
 from ..data_access.transportation_day_loop import fetch_main_transportation_station
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...request_connection import get_connection
 from ...shared.calendar_dates import DateValues
+from ...transportation.data_access.transportation_station import fetch_transportation_station_record
 from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from .transportation_boarding_station import boarding_station_for_transportation_legs
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -22,17 +22,18 @@ def walk_node_id_for_transportation(
    if station_name is None:
       return None
 
-   station_coords = fetch_transportation_station_coords(
+   station = fetch_transportation_station_record(
+      get_connection(),
       transportation_name,
       station_name )
 
-   if station_coords is None:
+   if station is None:
       return None
 
    walk_graph = load_walk_graph()
    walk_node_id, _ = snap_point_to_nearest_walk_node(
-      station_coords.x_coord,
-      station_coords.y_coord,
+      station.x_coord,
+      station.y_coord,
       walk_graph )
 
    return walk_node_id

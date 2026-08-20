@@ -72,6 +72,10 @@ const HOVER_FORMATTERS = Object.freeze({
       items,
       (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.zoomobileStation)
    ),
+   transportationStation: (items) => formatCountedHoverText(
+      items,
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.transportationStation)
+   ),
    guardiansTalk: formatGuardiansTalkHoverText,
    wildEncounter: formatWildEncounterHoverText,
    drinkingFountain: (items) => formatCountedHoverText(

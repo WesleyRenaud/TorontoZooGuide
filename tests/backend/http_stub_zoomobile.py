@@ -4,8 +4,9 @@ from typing import Any
 
 from http_support_constants import ZOOMOBILE_STATION_NAME
 
-from api.models import ZoomobileStation
+from api.models import TransportationStation
 from api.models.zoomobile_route import ZoomobileRoute
+
 
 class ZoomobileStubMixin:
    def get_zoomobile_route( self, **kwargs: Any ) -> ZoomobileRoute:
@@ -13,7 +14,7 @@ class ZoomobileStubMixin:
          return ZoomobileRoute(
             route='summer',
             route_source='manual',
-            zoomobile_stations=( ZoomobileStation(
+            zoomobile_stations=( TransportationStation(
                name=ZOOMOBILE_STATION_NAME,
                description='Station',
                x_coord=1.0,
@@ -22,9 +23,9 @@ class ZoomobileStubMixin:
          )
 
 
-   def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ ZoomobileStation ]:
+   def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ TransportationStation ]:
          self.calls.append( ( 'get_zoomobile_stations_matching_query', kwargs ) )
-         return [ ZoomobileStation(
+         return [ TransportationStation(
             name=ZOOMOBILE_STATION_NAME,
             description='Station',
             x_coord=1.0,

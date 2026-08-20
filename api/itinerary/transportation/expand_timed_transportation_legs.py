@@ -9,6 +9,7 @@ from ...types import ScheduleTimeKey
 
 def expand_timed_transportation_legs(
       *,
+      transportation: str,
       start_time: ScheduleTimeKey,
       legs: list[ TransportationRouteLegSegment ],
 ) -> tuple[ list[ ItineraryTransportationLeg ], ScheduleTimeKey ]:
@@ -31,6 +32,7 @@ def expand_timed_transportation_legs(
             from_station=leg.from_station,
             to_station=leg.to_station,
             start_time=leg_start_time,
-            end_time=leg_end_time ) )
+            end_time=leg_end_time,
+            transportation=transportation ) )
 
    return timed_legs, end_time_key

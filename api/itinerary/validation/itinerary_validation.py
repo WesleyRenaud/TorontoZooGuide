@@ -266,6 +266,7 @@ def _timed_legs_for_transportation_save(
       return end_time, []
 
    timed_legs, expanded_end_time = expand_timed_transportation_legs(
+      transportation=transportation_name,
       start_time=start_time,
       legs=day_loop.legs )
 

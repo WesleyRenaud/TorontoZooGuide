@@ -10,6 +10,8 @@ export function buildWizardDraft(wizardState, override = {}) {
       guardiansTalks: override.guardiansTalks ?? wizardState.guardiansTalks,
       wildEncounters: override.wildEncounters ?? wizardState.wildEncounters,
       transportations: override.transportations ?? wizardState.transportations,
+      transportationStations: override.transportationStations
+         ?? wizardState.transportationStations,
       events: override.events ?? wizardState.events,
    });
 }

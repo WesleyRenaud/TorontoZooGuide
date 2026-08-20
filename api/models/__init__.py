@@ -16,6 +16,7 @@ from .itinerary import Itinerary
 from .itinerary_event import ItineraryEvent
 from .itinerary_transportation import ItineraryTransportation
 from .itinerary_transportation_leg import ItineraryTransportationLeg
+from .itinerary_transportation_station import ItineraryTransportationStation
 from .pavilion import Pavilion
 from .picnic_site import PicnicSite
 from .region import Region
@@ -25,13 +26,13 @@ from .restroom import Restroom
 from .scheduled_occurrence import ScheduledOccurrence
 from .transportation import Transportation
 from .transportation_diff import TransportationDiff
+from .transportation_station import TransportationStation
 from .update import Update
 from .wild_encounter import WildEncounter
 from .wild_encounter_diff import WildEncounterDiff
 from .zoo_hours import ZooHours
 from .zoomobile_route import ZoomobileRoute
 from .zoomobile_route_marker import ZoomobileRouteMarker
-from .zoomobile_station import ZoomobileStation
 
 __all__ = [
    'Animal',
@@ -52,6 +53,7 @@ __all__ = [
    'ItineraryEvent',
    'ItineraryTransportation',
    'ItineraryTransportationLeg',
+   'ItineraryTransportationStation',
    'Pavilion',
    'PicnicSite',
    'Region',
@@ -61,11 +63,11 @@ __all__ = [
    'ScheduledOccurrence',
    'Transportation',
    'TransportationDiff',
+   'TransportationStation',
    'Update',
    'WildEncounter',
    'WildEncounterDiff',
    'ZooHours',
    'ZoomobileRoute',
    'ZoomobileRouteMarker',
-   'ZoomobileStation',
 ]
