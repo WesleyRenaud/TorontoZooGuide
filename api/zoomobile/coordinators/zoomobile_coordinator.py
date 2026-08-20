@@ -18,8 +18,8 @@ from ..domain.zoomobile_route import resolve_requested_zoomobile_route
 from ..domain.zoomobile_route import resolve_zoomobile_route_context
 from ..domain.zoomobile_station import build_zoomobile_stations
 from ..domain.zoomobile_station import resolve_zoomobile_station_context
+from ...models import TransportationStation
 from ...models import ZoomobileRoute
-from ...models import ZoomobileStation
 from ...request_connection import get_connection
 from ..scheduling.zoomobile_route_schedule import build_current_zoomobile_route_schedule
 from ..search.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
@@ -45,7 +45,7 @@ class ZoomobileCoordinator():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         zoomobile_stations_to_include: list[ str ] | None = None ) -> list[ ZoomobileStation ]:
+         zoomobile_stations_to_include: list[ str ] | None = None ) -> list[ TransportationStation ]:
 
       return build_zoomobile_stations(
          station_records=fetch_zoomobile_station_records( get_connection() ),
@@ -68,7 +68,7 @@ class ZoomobileCoordinator():
          route: str,
          day: VisitDay,
          month: MonthInput,
-         year: VisitYear ) -> list[ ZoomobileStation ]:
+         year: VisitYear ) -> list[ TransportationStation ]:
 
       route_context = resolve_zoomobile_route_context(
          day=day,

@@ -1,3 +1,4 @@
+import { MapItemType } from '../shared/enums/mapItemType.js';
 import { normalizeTypedRows } from './sourceHelpers.js';
 
 function uniqStrings(values) {
@@ -57,6 +58,10 @@ export function buildItineraryRows(itinerary) {
       ...normalizeTypedRows(itinerary?.transportations, 'transportation'),
       ...normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
       ...normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
+      ...normalizeTypedRows(
+         itinerary?.transportationStations,
+         MapItemType.TRANSPORTATION_STATION
+      ),
    ];
 }
 

@@ -10,17 +10,20 @@ def test_boarding_station_is_first_leg_from_station() -> None:
          'Main Zoomobile Station',
          'Canadian Domain Zoomobile Station',
          '10:00 AM',
-         '10:20 AM' ),
+         '10:20 AM',
+         'Zoomobile' ),
       ItineraryTransportationLeg(
          'Canadian Domain Zoomobile Station',
          'Africa Zoomobile Station',
          '10:20 AM',
-         '10:30 AM' ),
+         '10:30 AM',
+         'Zoomobile' ),
       ItineraryTransportationLeg(
          'Tundra Zoomobile Station',
          'Eurasia Zoomobile Station',
          '10:30 AM',
-         '10:45 AM' ),
+         '10:45 AM',
+         'Zoomobile' ),
    ]
 
    assert boarding_station_for_transportation_legs( legs ) == (

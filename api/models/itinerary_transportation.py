@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_transportation_leg import ItineraryTransportationLeg
+from .itinerary_transportation_station import ItineraryTransportationStation
 from ..shared.value_conversion import ValueConversion
 from ..types import ScheduleTimeKey
 
@@ -18,6 +19,7 @@ class ItineraryTransportation:
          y_coord: float | None = None,
          main_station: str | None = None,
          legs: list[ ItineraryTransportationLeg ] | None = None,
+         stations: list[ ItineraryTransportationStation ] | None = None,
          added_as_attraction: bool = False,
          route_duration_minutes: int | None = None ) -> None:
       self.name = name
@@ -29,6 +31,7 @@ class ItineraryTransportation:
       self.y_coord = y_coord
       self.main_station = main_station
       self.legs = legs or []
+      self.stations = stations or []
       self.added_as_attraction = added_as_attraction
       self.route_duration_minutes = route_duration_minutes
 
@@ -44,6 +47,7 @@ class ItineraryTransportation:
          'y_coord': self.y_coord,
          'main_station': self.main_station,
          'legs': [ leg.to_dict() for leg in self.legs ],
+         'stations': [ station.to_dict() for station in self.stations ],
          'added_as_attraction': ValueConversion.as_boolean(
             self.added_as_attraction ),
          'route_duration_minutes': self.route_duration_minutes,

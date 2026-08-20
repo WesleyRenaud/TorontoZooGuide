@@ -4,6 +4,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from .itinerary_transportation_stations import attach_itinerary_transportation_stations
 from .itinerary_transportations import build_itinerary_transportations
 from ...models import Animal
 from ...models import Attraction
@@ -11,6 +12,7 @@ from ...models import GuardiansTalk
 from ...models import Itinerary
 from ...models import ItineraryEvent
 from ...models import ItineraryTransportation
+from ...models import ItineraryTransportationStation
 from ...models import WildEncounter
 from ...types import DateInput, ScheduleTimeKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -23,6 +25,7 @@ def empty_itinerary() -> Itinerary:
       animals=[],
       attractions=[],
       transportations=[],
+      transportation_stations=[],
       guardians_talks=[],
       wild_encounters=[],
       events=[],
@@ -36,6 +39,7 @@ def build_itinerary(
       animals: list[ Animal ],
       attractions: list[ Attraction ],
       transportations: list[ ItineraryTransportation ],
+      transportation_stations: list[ ItineraryTransportationStation ],
       guardians_talks: list[ GuardiansTalk ],
       wild_encounters: list[ WildEncounter ],
       events: list[ ItineraryEvent ],
@@ -48,6 +52,7 @@ def build_itinerary(
       animals=animals,
       attractions=attractions,
       transportations=transportations,
+      transportation_stations=transportation_stations,
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,
       events=events,
@@ -97,15 +102,19 @@ def build_current_itinerary(
       for event in saved_itinerary.event_rows
    ]
 
+   transportations = build_itinerary_transportations(
+      saved_itinerary.transportation_rows,
+      target_date=saved_itinerary.itinerary_date(),
+   )
+
    return build_itinerary(
       date=saved_itinerary.date_value,
       selected_exhibits=saved_itinerary.selected_exhibits,
       animals=animals,
       attractions=attractions,
-      transportations=build_itinerary_transportations(
-         saved_itinerary.transportation_rows,
-         target_date=saved_itinerary.itinerary_date(),
-      ),
+      transportations=transportations,
+      transportation_stations=attach_itinerary_transportation_stations(
+         transportations ),
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,
       events=events,

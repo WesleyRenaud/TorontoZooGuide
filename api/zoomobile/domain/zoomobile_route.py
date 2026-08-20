@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...models import ZoomobileStation
+from ...models import TransportationStation
 from ...models.zoomobile_route import ZoomobileRoute
 from ...shared.calendar_dates import CalendarDates
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
@@ -78,7 +78,7 @@ def resolve_zoomobile_route(
 def build_zoomobile_route_response(
       route: str,
       route_source: str,
-      zoomobile_stations: list[ ZoomobileStation ] ) -> ZoomobileRoute:
+      zoomobile_stations: list[ TransportationStation ] ) -> ZoomobileRoute:
 
    return ZoomobileRoute(
       route=route,

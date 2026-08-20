@@ -5,6 +5,7 @@ from .attraction import Attraction
 from .guardians_talk import GuardiansTalk
 from .itinerary_event import ItineraryEvent
 from .itinerary_transportation import ItineraryTransportation
+from .itinerary_transportation_station import ItineraryTransportationStation
 from ..shared.typed_dict import to_dict_with_type
 from ..types import ScheduleTimeKey
 from .wild_encounter import WildEncounter
@@ -18,6 +19,7 @@ class Itinerary:
          animals: list[ Animal ] | None = None,
          attractions: list[ Attraction ] | None = None,
          transportations: list[ ItineraryTransportation ] | None = None,
+         transportation_stations: list[ ItineraryTransportationStation ] | None = None,
          guardians_talks: list[ GuardiansTalk ] | None = None,
          wild_encounters: list[ WildEncounter ] | None = None,
          events: list[ ItineraryEvent ] | None = None,
@@ -28,6 +30,7 @@ class Itinerary:
       self.animals = animals or []
       self.attractions = attractions or []
       self.transportations = transportations or []
+      self.transportation_stations = transportation_stations or []
       self.guardians_talks = guardians_talks or []
       self.wild_encounters = wild_encounters or []
       self.events = events or []
@@ -50,6 +53,10 @@ class Itinerary:
          'transportations': [
             to_dict_with_type( t, 'transportation' )
             for t in self.transportations
+         ],
+         'transportation_stations': [
+            station.to_dict()
+            for station in self.transportation_stations
          ],
          'guardians_talks': [
             to_dict_with_type( g, 'guardiansTalk' ) for g in self.guardians_talks

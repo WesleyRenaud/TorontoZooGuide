@@ -30,6 +30,7 @@ function normalizeItinerarySource(itinerary) {
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
       wildEncounters: normalizeItineraryItems(source.wildEncounters),
       transportations: normalizeItineraryItems(source.transportations),
+      transportationStations: normalizeItineraryItems(source.transportationStations),
       events: normalizeItineraryItems(source.events),
    };
 }

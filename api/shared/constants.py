@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
+from .enums import ItineraryTransportationStationRole
 from ..itinerary.data_access.itinerary_status import fetch_itinerary_statuses
 from ..itinerary.data_access.itinerary_status import fetch_suppressed_status_values
 from ..itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
@@ -45,6 +46,15 @@ def itinerary_config_to_dict(
          adjustment_type.name: adjustment_type.value
          for adjustment_type in ItineraryAdjustmentType
       },
+      'itinerary_transportation_station_roles': (
+         ItineraryTransportationStationRole.to_config_dict()
+      ),
+      'itinerary_transportation_station_onboarding_roles': (
+         ItineraryTransportationStationRole.onboarding_role_values()
+      ),
+      'itinerary_transportation_station_offboarding_roles': (
+         ItineraryTransportationStationRole.offboarding_role_values()
+      ),
       'itinerary_statuses': [
          {
             'status': status.status,

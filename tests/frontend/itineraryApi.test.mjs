@@ -43,6 +43,13 @@ function normalizedItineraryConfig(overrides = {}) {
          ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
          DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
       },
+      transportationStationRoles: overrides.transportationStationRoles ?? {},
+      transportationStationOnboardingRoles: (
+         overrides.transportationStationOnboardingRoles ?? []
+      ),
+      transportationStationOffboardingRoles: (
+         overrides.transportationStationOffboardingRoles ?? []
+      ),
       statuses: overrides.statuses ?? [],
       suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
    };
@@ -189,6 +196,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          guardiansTalks: [{ name: 'Amur Tiger' }],
          wildEncounters: [{ name: 'African Rainforest' }],
          transportations: [],
+         transportationStations: [],
          events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
       },
       itineraryPath: normalizedItineraryPath({
@@ -264,6 +272,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [],
+         transportationStations: [],
          events: [],
       },
       itineraryPath: normalizedItineraryPath(),
@@ -487,6 +496,7 @@ test('normalizes accept itinerary response', async () => {
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [],
+         transportationStations: [],
          events: [],
       },
       itineraryPath: normalizedItineraryPath(),
@@ -533,6 +543,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [],
+         transportationStations: [],
          events: [],
       },
       itineraryPath: normalizedItineraryPath(),

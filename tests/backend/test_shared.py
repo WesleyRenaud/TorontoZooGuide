@@ -16,6 +16,7 @@ from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryTransportationStationRole
 from api.shared.value_conversion import ValueConversion
 from api.shared.weather import Weather
 
@@ -96,6 +97,18 @@ def test_itinerary_config_exposes_adjustment_types() -> None:
       adjustment_type.name: adjustment_type.value
       for adjustment_type in ItineraryAdjustmentType
    }
+
+
+def test_itinerary_config_exposes_transportation_station_roles() -> None:
+   assert itinerary_config_to_dict()[
+      'itinerary_transportation_station_roles'
+   ] == ItineraryTransportationStationRole.to_config_dict()
+   assert itinerary_config_to_dict()[
+      'itinerary_transportation_station_onboarding_roles'
+   ] == ItineraryTransportationStationRole.onboarding_role_values()
+   assert itinerary_config_to_dict()[
+      'itinerary_transportation_station_offboarding_roles'
+   ] == ItineraryTransportationStationRole.offboarding_role_values()
 
 
 def test_itinerary_config_exposes_suppressed_error_types_without_connection() -> None:

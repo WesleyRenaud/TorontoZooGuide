@@ -16,6 +16,10 @@ test('builds typed itinerary rows for map focus candidates', () => {
       ],
       attractions: [{ name: 'Conservation Carousel' }],
       transportations: [{ name: 'Zoomobile' }],
+      transportationStations: [{
+         name: 'Main Zoomobile Station',
+         role: 'round_trip',
+      }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
    }), [
@@ -26,6 +30,11 @@ test('builds typed itinerary rows for map focus candidates', () => {
       { name: 'Zoomobile', type: 'transportation' },
       { name: 'Amur Tiger', type: 'guardiansTalk' },
       { name: 'African Rainforest', type: 'wildEncounter' },
+      {
+         name: 'Main Zoomobile Station',
+         role: 'round_trip',
+         type: 'transportationStation',
+      },
    ]);
 });
 

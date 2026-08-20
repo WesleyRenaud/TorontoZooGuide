@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..data_access.zoomobile_station_record import ZoomobileStationRecord
-from ..data_access.zoomobile_station_status_record import ZoomobileStationStatusRecord
-from ...models import ZoomobileStation
+from ...models import TransportationStation
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ...transportation.data_access.transportation_station_record import TransportationStationRecord
+from ...transportation.data_access.transportation_station_status_record import TransportationStationStatusRecord
+from ...transportation.domain.transportation_station import build_transportation_station
 from ...types import MonthInput, VisitDay, VisitYear
 from .zoomobile_station_context import ZoomobileStationContext
 
@@ -32,8 +33,9 @@ def resolve_zoomobile_station_context(
 
 
 def group_zoomobile_station_status_records_by_station(
-      status_records: list[ ZoomobileStationStatusRecord ] ) -> dict[ str, list[ ZoomobileStationStatusRecord ] ]:
-   status_records_by_station: dict[ str, list[ ZoomobileStationStatusRecord ] ] = {}
+      status_records: list[ TransportationStationStatusRecord ],
+) -> dict[ str, list[ TransportationStationStatusRecord ] ]:
+   status_records_by_station: dict[ str, list[ TransportationStationStatusRecord ] ] = {}
 
    for status_record in status_records:
       if status_record.station not in status_records_by_station:
@@ -45,7 +47,7 @@ def group_zoomobile_station_status_records_by_station(
 
 
 def is_zoomobile_station_on_route(
-      station_record: ZoomobileStationRecord,
+      station_record: TransportationStationRecord,
       context: ZoomobileStationContext ) -> bool:
    return (
       station_record.name in context.stations_on_route
@@ -54,7 +56,7 @@ def is_zoomobile_station_on_route(
 
 
 def is_zoomobile_station_closed(
-      status_records: list[ ZoomobileStationStatusRecord ],
+      status_records: list[ TransportationStationStatusRecord ],
       target_date: date ) -> bool:
    for status_record in status_records:
       is_active = DateValues.is_date_in_range(
@@ -69,18 +71,14 @@ def is_zoomobile_station_closed(
 
 
 def build_zoomobile_station(
-      station_record: ZoomobileStationRecord ) -> ZoomobileStation:
-   return ZoomobileStation(
-      name=station_record.name,
-      description=station_record.description,
-      x_coord=station_record.x_coord,
-      y_coord=station_record.y_coord )
+      station_record: TransportationStationRecord ) -> TransportationStation:
+   return build_transportation_station( station_record )
 
 
 def build_zoomobile_stations(
-      station_records: list[ ZoomobileStationRecord ],
-      status_records: list[ ZoomobileStationStatusRecord ],
-      context: ZoomobileStationContext ) -> list[ ZoomobileStation ]:
+      station_records: list[ TransportationStationRecord ],
+      status_records: list[ TransportationStationStatusRecord ],
+      context: ZoomobileStationContext ) -> list[ TransportationStation ]:
 
    status_records_by_station = group_zoomobile_station_status_records_by_station(
       status_records )

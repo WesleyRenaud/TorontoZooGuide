@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..types import Coordinate
 
 
-class ZoomobileStation:
+class TransportationStation:
    def __init__(
          self,
          name: str,
@@ -21,5 +21,5 @@ class ZoomobileStation:
          'name': self.name,
          'description': self.description,
          'x_coord': self.x_coord,
-         'y_coord': self.y_coord
+         'y_coord': self.y_coord,
       }

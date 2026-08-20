@@ -24,6 +24,7 @@ test('creates and normalizes itinerary draft shape', () => {
       guardiansTalks: [],
       wildEncounters: [],
       transportations: [],
+      transportationStations: [],
       events: [],
    });
 
@@ -44,6 +45,7 @@ test('creates and normalizes itinerary draft shape', () => {
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [],
       transportations: [],
+      transportationStations: [],
       events: [],
    });
 
@@ -58,6 +60,7 @@ test('creates and normalizes itinerary draft shape', () => {
       guardiansTalks: [],
       wildEncounters: [],
       transportations: [],
+      transportationStations: [],
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    });
 });
@@ -221,6 +224,7 @@ test('hydrateWizardDraftFromSavedItinerary moves added-as-attraction transportat
       guardiansTalks: [],
       wildEncounters: [],
       transportations: [{ name: 'Zoo Shuttle', added_as_attraction: false }],
+      transportationStations: [],
       events: [],
    });
 });

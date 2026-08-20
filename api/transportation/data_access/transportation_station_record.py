@@ -6,7 +6,7 @@ from ...types import Coordinate
 
 
 @dataclass( frozen=True )
-class ZoomobileStationRecord:
+class TransportationStationRecord:
    name: str
    description: str
    x_coord: Coordinate

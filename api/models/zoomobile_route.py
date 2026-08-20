@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .zoomobile_station import ZoomobileStation
+from .transportation_station import TransportationStation
 
 
 @dataclass( frozen=True )
 class ZoomobileRoute:
    route: str
    route_source: str
-   zoomobile_stations: list[ ZoomobileStation ]
+   zoomobile_stations: list[ TransportationStation ]
 
 
    def to_dict( self ) -> dict[ str, object ]:

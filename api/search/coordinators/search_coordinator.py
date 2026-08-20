@@ -12,8 +12,8 @@ from ...models import GuardiansTalk
 from ...models import Pavilion
 from ...models import Restaurant
 from ...models import Restroom
+from ...models import TransportationStation
 from ...models import WildEncounter
-from ...models import ZoomobileStation
 from ...pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from ...restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from ...restrooms.coordinators.restroom_coordinator import RestroomCoordinator
@@ -55,7 +55,7 @@ class SearchCoordinator():
       restrooms: list[ Restroom ] = []
       gift_shops: list[ GiftShop ] = []
       attractions: list[ Attraction ] = []
-      zoomobile_stations: list[ ZoomobileStation ] = []
+      zoomobile_stations: list[ TransportationStation ] = []
       wild_encounters: list[ WildEncounter ] = []
       guardians_talks: list[ GuardiansTalk ] = []
 

@@ -15,6 +15,7 @@ export const TYPE_REGISTRY = {
    attraction: attractionRenderer,
    transportation: attractionRenderer,
    zoomobileStation: zoomobileStationRenderer,
+   transportationStation: zoomobileStationRenderer,
    guardiansTalk: guardiansTalkRenderer,
    wildEncounter: wildEncounterRenderer,
 };
