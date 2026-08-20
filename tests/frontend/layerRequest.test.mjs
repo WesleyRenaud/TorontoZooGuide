@@ -15,11 +15,8 @@ test('builds typed itinerary rows for map focus candidates', () => {
          { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor' },
       ],
       attractions: [{ name: 'Conservation Carousel' }],
-      transportations: [{ name: 'Zoomobile' }],
-      transportationStations: [{
-         name: 'Main Zoomobile Station',
-         role: 'round_trip',
-      }],
+      transportations: [{ name: 'Zoomobile', legs: [] }],
+      transportationStations: [],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
    }), [
@@ -27,12 +24,52 @@ test('builds typed itinerary rows for map focus candidates', () => {
       { species: 'Cheetah', exhibit: 'Africa Savanna', type: 'animal' },
       { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor', type: 'animal' },
       { name: 'Conservation Carousel', type: 'attraction' },
-      { name: 'Zoomobile', type: 'transportation' },
+      { name: 'Zoomobile', legs: [], type: 'transportation' },
       { name: 'Amur Tiger', type: 'guardiansTalk' },
       { name: 'African Rainforest', type: 'wildEncounter' },
+   ]);
+});
+
+test('uses station markers for scheduled transportations and generic markers when unscheduled', () => {
+   assert.deepEqual(buildItineraryRows({
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      transportations: [
+         {
+            name: 'Zoomobile',
+            legs: [{
+               from_station: 'Main Zoomobile Station',
+               to_station: 'Africa Zoomobile Station',
+            }],
+         },
+         {
+            name: 'Zoo Shuttle',
+            legs: [],
+         },
+      ],
+      transportationStations: [{
+         name: 'Main Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'onboarding_station',
+      }, {
+         name: 'Africa Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'offboarding_station',
+      }],
+   }), [
+      { name: 'Zoo Shuttle', legs: [], type: 'transportation' },
       {
          name: 'Main Zoomobile Station',
-         role: 'round_trip',
+         transportation: 'Zoomobile',
+         role: 'onboarding_station',
+         type: 'transportationStation',
+      },
+      {
+         name: 'Africa Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'offboarding_station',
          type: 'transportationStation',
       },
    ]);

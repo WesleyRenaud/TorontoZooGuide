@@ -110,6 +110,10 @@ export function getTransportationStations(row) {
       : [];
 }
 
+export function isTransportationScheduled(row) {
+   return getTransportationLegs(row).length > 0;
+}
+
 export function buildTransportationStationsLine(row) {
    const [firstStation] = boardingStationNames(row);
    const offboarding = offboardingStationNames(row);
