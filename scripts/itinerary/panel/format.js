@@ -1,4 +1,7 @@
-import { normalizeNumber } from '../../api/normalizeValues.js';
+import {
+   asTrimmedStringList,
+   normalizeNumber,
+} from '../../api/normalizeValues.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
 
@@ -184,6 +187,8 @@ export function normalizeTransportation(value) {
       added_as_attraction: source.added_as_attraction === true,
       legs,
       stations,
+      route: normalizeOptionalText(source.route),
+      route_markers: asTrimmedStringList(source.route_markers),
       removalReason: normalizeOptionalText(source.removalReason),
    };
 }

@@ -4,6 +4,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from .itinerary_transportation_route_markers import attach_itinerary_transportation_route_markers
 from .itinerary_transportation_stations import attach_itinerary_transportation_stations
 from .itinerary_transportations import build_itinerary_transportations
 from ...models import Animal
@@ -104,6 +105,10 @@ def build_current_itinerary(
 
    transportations = build_itinerary_transportations(
       saved_itinerary.transportation_rows,
+      target_date=saved_itinerary.itinerary_date(),
+   )
+   attach_itinerary_transportation_route_markers(
+      transportations,
       target_date=saved_itinerary.itinerary_date(),
    )
 

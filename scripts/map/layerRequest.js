@@ -67,6 +67,21 @@ export function buildItineraryRows(itinerary) {
    ];
 }
 
+export function resolveItineraryTransportationRouteMarkers(itinerary) {
+   const transportation = itinerary?.transportations?.find((row) => (
+      row.route && row.route_markers.length > 0
+   ));
+
+   if (!transportation) {
+      return null;
+   }
+
+   return {
+      route: transportation.route,
+      markerIds: transportation.route_markers,
+   };
+}
+
 export function buildSelectedTypes(selectedTypes, focusType, zoomobileRoute) {
    const normalizedTypes = uniqStrings(selectedTypes);
    const routeActive = zoomobileRoute !== 'none';

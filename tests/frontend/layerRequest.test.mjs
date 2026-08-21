@@ -5,6 +5,7 @@ import {
    buildItineraryRows,
    buildLayerRequest,
    buildSelectedTypes,
+   resolveItineraryTransportationRouteMarkers,
 } from '../../scripts/map/layerRequest.js';
 
 test('builds typed itinerary rows for map focus candidates', () => {
@@ -73,6 +74,46 @@ test('uses station markers for scheduled transportations and generic markers whe
          type: 'transportationStation',
       },
    ]);
+});
+
+test('resolves itinerary transportation route markers from scheduled legs', () => {
+   assert.equal(
+      resolveItineraryTransportationRouteMarkers({
+         transportations: [{ name: 'Zoomobile', legs: [] }],
+      }),
+      null
+   );
+   assert.deepEqual(
+      resolveItineraryTransportationRouteMarkers({
+         transportations: [{
+            name: 'Zoomobile',
+            route: 'summer',
+            route_markers: ['zm-s-005', 'zm-s-006'],
+            legs: [{
+               from_station: 'Main Zoomobile Station',
+               to_station: 'Canadian Domain Zoomobile Station',
+            }],
+         }],
+      }),
+      {
+         route: 'summer',
+         markerIds: ['zm-s-005', 'zm-s-006'],
+      }
+   );
+   assert.deepEqual(
+      resolveItineraryTransportationRouteMarkers({
+         transportations: [{
+            name: 'Zoo Shuttle',
+            route: 'summer',
+            route_markers: ['zm-s-005'],
+            legs: [{ from_station: 'A', to_station: 'B' }],
+         }],
+      }),
+      {
+         route: 'summer',
+         markerIds: ['zm-s-005'],
+      }
+   );
 });
 
 test('adds focused type to selected types when needed', () => {

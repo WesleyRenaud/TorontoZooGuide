@@ -4,6 +4,7 @@ import {
 } from './itineraryService.js';
 import { clearItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
+import { hideZoomobileRouteLayers } from '../map/zoomobileRouteOverlay.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
    getIncludeOffDisplay: () => false,
@@ -50,6 +51,7 @@ function createItineraryMapRuntime() {
 export function clearItineraryMapDisplay(runtime) {
    runtime?.markers?.render([]);
    clearItineraryPathOverlay();
+   hideZoomobileRouteLayers();
 }
 
 function getItineraryMapDate(itinerary) {
