@@ -9,22 +9,57 @@ function setLayerVisibility(svgRoot, layerId, isVisible) {
    );
 }
 
+function clearRouteMarkerFilters(svgRoot) {
+   svgRoot?.querySelectorAll(
+      '#zoomobile-route-summer circle[id], #zoomobile-route-winter circle[id]'
+   ).forEach((circle) => {
+      circle.style.removeProperty('display');
+   });
+}
+
 export function hideZoomobileRouteLayers() {
    const svgRoot = getSvgRoot();
 
+   clearRouteMarkerFilters(svgRoot);
    setLayerVisibility(svgRoot, '#zoomobile-route-summer', false);
    setLayerVisibility(svgRoot, '#zoomobile-route-winter', false);
 }
 
 export function showZoomobileRouteLayer(route) {
    const svgRoot = getSvgRoot();
-   const normalizedRoute = String(route || '').trim().toLowerCase();
 
    hideZoomobileRouteLayers();
 
-   if (normalizedRoute === 'summer') {
-      setLayerVisibility(svgRoot, '#zoomobile-route-summer', true);
-   } else if (normalizedRoute === 'winter') {
-      setLayerVisibility(svgRoot, '#zoomobile-route-winter', true);
+   if (!route) {
+      return;
    }
+
+   setLayerVisibility(svgRoot, `#zoomobile-route-${route}`, true);
+}
+
+export function showZoomobileRouteMarkers(route, markerIds) {
+   const svgRoot = getSvgRoot();
+
+   hideZoomobileRouteLayers();
+
+   if (!route || markerIds.length === 0) {
+      return;
+   }
+
+   const groupSelector = `#zoomobile-route-${route}`;
+   const group = svgRoot?.querySelector(groupSelector);
+
+   if (!group) {
+      return;
+   }
+
+   const visibleMarkerIds = new Set(markerIds);
+
+   setLayerVisibility(svgRoot, groupSelector, true);
+   group.querySelectorAll('circle[id]').forEach((circle) => {
+      circle.style.setProperty(
+         'display',
+         visibleMarkerIds.has(circle.id) ? '' : 'none'
+      );
+   });
 }

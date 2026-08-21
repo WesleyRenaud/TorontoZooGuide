@@ -79,6 +79,8 @@ function normalizeItineraryTransportation(row) {
    return {
       ...source,
       name: asTrimmedString(source.name),
+      route: asTrimmedString(source.route),
+      route_markers: asTrimmedStringList(source.route_markers),
       route_duration_minutes: normalizeNumber(source.route_duration_minutes),
       added_as_attraction: asBoolean(source.added_as_attraction),
    };

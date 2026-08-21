@@ -13,8 +13,13 @@ import {
 import {
    buildItineraryRows,
    buildLayerRequest,
+   resolveItineraryTransportationRouteMarkers,
 } from './layerRequest.js';
 import { setSourceRows } from './sourceHelpers.js';
+import {
+   hideZoomobileRouteLayers,
+   showZoomobileRouteMarkers,
+} from './zoomobileRouteOverlay.js';
 
 function buildUniqueTypes(types = []) {
    return Array.from(new Set(types));
@@ -50,6 +55,7 @@ export function createMapUpdater({
    function clearRenderedMarkers() {
       markers.render([]);
       clearItineraryPathOverlay();
+      hideZoomobileRouteLayers();
    }
 
    function resolvePendingUpdateOptions(options) {
@@ -114,8 +120,20 @@ export function createMapUpdater({
       };
    }
 
-   function renderItineraryOnly(itinerary, options) {
+   function syncItineraryTransportationRoute(itinerary) {
+      const routeMarkers = resolveItineraryTransportationRouteMarkers(itinerary);
+
+      if (!routeMarkers) {
+         hideZoomobileRouteLayers();
+         return;
+      }
+
+      showZoomobileRouteMarkers(routeMarkers.route, routeMarkers.markerIds);
+   }
+
+   async function renderItineraryOnly(dateCtx, itinerary, options) {
       try {
+         syncItineraryTransportationRoute(itinerary);
          markers.render(buildItineraryRows(itinerary));
          renderItineraryPathOverlay(
             resolveItineraryPath(options, itinerary)
@@ -185,7 +203,7 @@ export function createMapUpdater({
       const itinerary = options?.itinerary || null;
 
       if (itinerary) {
-         renderItineraryOnly(itinerary, options);
+         await renderItineraryOnly(dateCtx, itinerary, options);
          return;
       }
 
