@@ -89,6 +89,7 @@ def apply_listed_schedule(
          cur,
          name=schedule_item_key.name,
          start_time=start_time,
+         route=day_loop.route,
          legs=day_loop.legs )
 
    if insert_if_missing:

@@ -562,8 +562,8 @@
   {
     "transportation": "Zoomobile",
     "route": "summer",
-    "from_station": "Main Zoomobile Station",
-    "to_station": "Canadian Domain Zoomobile Station",
+    "from_station": "Canadian Domain Zoomobile Station",
+    "to_station": "Africa Zoomobile Station",
     "marker_id": "zm-s-085"
   },
   {
@@ -856,8 +856,8 @@
   {
     "transportation": "Zoomobile",
     "route": "summer",
-    "from_station": "Canadian Domain Zoomobile Station",
-    "to_station": "Africa Zoomobile Station",
+    "from_station": "Africa Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
     "marker_id": "zm-s-127"
   },
   {
@@ -1255,8 +1255,8 @@
   {
     "transportation": "Zoomobile",
     "route": "summer",
-    "from_station": "Africa Zoomobile Station",
-    "to_station": "Tundra Zoomobile Station",
+    "from_station": "Tundra Zoomobile Station",
+    "to_station": "Eurasia Zoomobile Station",
     "marker_id": "zm-s-184"
   },
   {
@@ -1724,8 +1724,8 @@
   {
     "transportation": "Zoomobile",
     "route": "summer",
-    "from_station": "Tundra Zoomobile Station",
-    "to_station": "Eurasia Zoomobile Station",
+    "from_station": "Eurasia Zoomobile Station",
+    "to_station": "Main Zoomobile Station",
     "marker_id": "zm-s-251"
   },
   {

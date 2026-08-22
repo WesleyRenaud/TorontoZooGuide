@@ -1,0 +1,1 @@
+ALTER TABLE ItineraryTransportation ADD COLUMN ROUTE VARCHAR(64);

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_animal_input import ItineraryAnimalInput
+from .itinerary_transportation import delete_itinerary_transportation
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...types import Connection, Cursor
 
@@ -87,26 +88,20 @@ def remove_declined_itinerary_transportations(
    exclusion_clause, exclusion_params = build_excluded_name_where_clause(
       'TRANSPORTATION',
       transportations_to_keep )
-   cur.execute(
-      f"""   DELETE FROM ItineraryTransportationLeg
-            WHERE TRANSPORTATION IN (
-               SELECT TRANSPORTATION
-               FROM ItineraryTransportation
-               WHERE OLD_LIKELIHOOD IS NOT NULL
-                 AND NEW_LIKELIHOOD IS NOT NULL
-                 AND NEW_LIKELIHOOD = 0
-                 { exclusion_clause }
-            );
-      """,
-      exclusion_params )
-   cur.execute(
-      f"""   DELETE FROM ItineraryTransportation
+   declined_rows = cur.execute(
+      f"""   SELECT TRANSPORTATION
+            FROM ItineraryTransportation
             WHERE OLD_LIKELIHOOD IS NOT NULL
-               AND NEW_LIKELIHOOD IS NOT NULL
-               AND NEW_LIKELIHOOD = 0
-               { exclusion_clause };
+              AND NEW_LIKELIHOOD IS NOT NULL
+              AND NEW_LIKELIHOOD = 0
+              { exclusion_clause };
       """,
-      exclusion_params )
+      exclusion_params ).fetchall()
+
+   for row in declined_rows:
+      delete_itinerary_transportation(
+         cur,
+         transportation=row[ 'TRANSPORTATION' ] )
 
 
 def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:

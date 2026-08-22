@@ -14,6 +14,8 @@ class TransportationDiff:
          end_time: ScheduleTimeKey = None,
          legs: list[ ItineraryTransportationLeg ] | None = None,
          *,
+         route: str | None = None,
+         route_marker_sequences: list[ list[ str ] ] | None = None,
          added_as_attraction: bool ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood
@@ -21,6 +23,8 @@ class TransportationDiff:
       self.start_time = start_time
       self.end_time = end_time
       self.legs = list( legs or [] )
+      self.route = route
+      self.route_marker_sequences = list( route_marker_sequences or [] )
       self.added_as_attraction = added_as_attraction
 
 
@@ -32,5 +36,7 @@ class TransportationDiff:
          'start_time': self.start_time,
          'end_time': self.end_time,
          'legs': [ leg.to_dict() for leg in self.legs ],
+         'route': self.route,
+         'route_marker_sequences': self.route_marker_sequences,
          'added_as_attraction': self.added_as_attraction,
       }

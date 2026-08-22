@@ -19,7 +19,9 @@ class ItineraryTransportationRecord:
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
    added_as_attraction: bool = False
+   route: str | None = None
    legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
+   route_marker_sequences: list[ list[ str ] ] = field( default_factory=list )
 
 
    def name_key( self ) -> str:
