@@ -1135,6 +1135,17 @@
     "is_zoomobile_only": false
   },
   {
+    "species": "Northern Clearwater Crayfish",
+    "exhibit": "Americas Pavilion",
+    "name": null,
+    "enclosure_type": "Indoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 68.663,
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5,
+    "is_zoomobile_only": false
+  },
+  {
     "species": "Opal-Rumped Tanager",
     "exhibit": "Americas Pavilion",
     "name": null,

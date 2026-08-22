@@ -1403,7 +1403,7 @@
     "species": "Lake Sturgeon",
     "latin_name": "Acipenser Fulvescens",
     "min_temperature": null,
-    "general_viewing_tips": "The lake sturgeon can be found in a tank enclosure towards the end of the pavilion, across from the river otter and snapping turtle underwater viewings.",
+    "general_viewing_tips": "The lake sturgeon can be found in the enclosure beside the otters, shared with the northern clearwater crayfish.",
     "seasonal_viewing_tips": null,
     "identification": "The Lake Sturgeon is a large, prehistoric-looking freshwater fish with a long, torpedo-shaped body, a pointed snout, and five rows of bony scutes instead of typical scales. Colouration is usually olive-grey to brown on the back, fading to paler grey or white on the belly, often with mottled blotches. Whisker-like barbels hang beneath the snout in front of a downward-facing, sucker-like mouth. The tail is heterocercal, with the upper lobe longer than the lower, similar to a shark. Adults commonly reach 1–1.5 m, with exceptional individuals growing larger.",
     "habitat_and_range": "This species is native to large lakes and rivers of central and eastern North America, including the Great Lakes, the St. Lawrence River, Hudson Bay drainages, and parts of the Mississippi basin. In Ontario it inhabits deep, clean waters with gravel or rocky spawning sites. Lake sturgeon favour extensive freshwater systems where they can move between feeding, overwintering, and spawning habitats.",
@@ -1873,6 +1873,20 @@
     "behaviour_and_social_life": "Bald Eagles are usually seen alone or in pairs, though they may gather in larger numbers where food is abundant. They form          long-term pair bonds and often reuse the same nest year after year, gradually building massive structures over time.          Communication includes vocal calls, posturing, and flight displays.",
     "adaptations": "These eagles are highly adapted for hunting in cold, aquatic environments. Their keen eyesight allows them to spot prey          from great distances, while powerful talons provide a secure grip on slippery fish. Broad wings enable efficient soaring          and gliding, conserving energy during long patrol flights. Dense plumage helps insulate against cold northern climates.",
     "reproduction_and_life_cycle": "Breeding occurs in late winter to early spring. Pairs build large stick nests in tall trees or on cliffs, often near water.          Females lay 1–3 eggs, which hatch after about 35 days. Chicks fledge at around 10–12 weeks but remain dependent on their          parents for several more months. Bald Eagles can live 20–30 years in the wild, with captive individuals sometimes living          longer.",
+    "animals_at_the_zoo": null
+  },
+  {
+    "species": "Northern Clearwater Crayfish",
+    "latin_name": "Faxonius Propinquus",
+    "min_temperature": null,
+    "general_viewing_tips": "The northern clearwater crayfish can be found in the enclosure beside the otters, shared with the lake sturgeon.",
+    "seasonal_viewing_tips": null,
+    "identification": "The Northern Clearwater Crayfish is a medium-sized freshwater crayfish with a smooth, olive-brown to greenish carapace and relatively slender claws. Adults typically reach 6–10 cm in body length. The rostrum is long and sharp, and the body often appears cleaner and less mottled than many related species, which helps give this crayfish its common name.",
+    "habitat_and_range": "This species is native to the Great Lakes and St. Lawrence River drainages of eastern North America, including much of Ontario, the northeastern United States, and adjoining watersheds. It favours clear lakes, rivers, and streams with rocky or gravel bottoms and moderate current, often sheltering under stones or woody debris.",
+    "diet_and_feeding": "Northern clearwater crayfish are opportunistic omnivores. They feed on algae, plant material, detritus, insect larvae, small molluscs, and carrion. In zoos they are offered a balanced mix of plant matter and protein-rich foods that encourages natural foraging along the substrate.",
+    "behaviour_and_social_life": "These crayfish are largely solitary and territorial, especially around preferred shelters. They are most active at dusk and at night, remaining hidden under rocks or in crevices during the day. When threatened they raise their claws in a defensive display or retreat quickly into cover.",
+    "adaptations": "A hard exoskeleton protects the body while still allowing flexible movement of the abdomen and walking legs. Strong claws are used for feeding, digging, and defence, and the ability to regenerate lost limbs through successive moults helps them recover from injuries. Their preference for clearer water reflects sensitivity to siltation and habitat quality.",
+    "reproduction_and_life_cycle": "Breeding usually occurs in autumn or spring, depending on local climate. Females carry fertilised eggs beneath the abdomen until the young hatch and remain attached for a short period before becoming independent. Individuals grow through a series of moults and typically live several years in the wild, with captive animals sometimes living longer under stable conditions.",
     "animals_at_the_zoo": null
   },
   {

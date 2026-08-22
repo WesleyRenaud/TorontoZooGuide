@@ -61,7 +61,7 @@ def test_fetch_transportation_route_leg_marker_ids_preserves_travel_order(
       ],
    )
 
-   assert marker_ids_result == ordered_marker_ids( 'zm-s', 5, 84, 296 )
+   assert marker_ids_result == ordered_marker_ids( 'zm-s', 5, 85, 297 )
    assert set( marker_ids_result ) == EXPECTED_ROUTE_LEG_MARKERS[
       ( 'summer', MAIN, CANADA )
    ]
@@ -84,8 +84,8 @@ def test_fetch_wraparound_leg_markers_preserve_travel_order(
       ],
    )
 
-   assert marker_ids_result == ordered_marker_ids( 'zm-s', 251, 4, 296 )
-   assert marker_ids_result[ 0 ] == 'zm-s-251'
+   assert marker_ids_result == ordered_marker_ids( 'zm-s', 252, 4, 297 )
+   assert marker_ids_result[ 0 ] == 'zm-s-252'
    assert marker_ids_result[ -1 ] == 'zm-s-004'
 
 
@@ -114,8 +114,8 @@ def test_build_sequences_splits_discontinuous_legs(
    )
 
    assert len( sequences ) == 2
-   assert sequences[ 0 ] == ordered_marker_ids( 'zm-s', 5, 84, 296 )
-   assert sequences[ 1 ] == ordered_marker_ids( 'zm-s', 184, 250, 296 )
+   assert sequences[ 0 ] == ordered_marker_ids( 'zm-s', 5, 85, 297 )
+   assert sequences[ 1 ] == ordered_marker_ids( 'zm-s', 185, 251, 297 )
 
 
 def test_build_sequences_concatenates_consecutive_legs(
@@ -144,8 +144,8 @@ def test_build_sequences_concatenates_consecutive_legs(
 
    assert len( sequences ) == 1
    assert sequences[ 0 ] == (
-      ordered_marker_ids( 'zm-s', 5, 84, 296 )
-      + ordered_marker_ids( 'zm-s', 85, 126, 296 )
+      ordered_marker_ids( 'zm-s', 5, 85, 297 )
+      + ordered_marker_ids( 'zm-s', 86, 127, 297 )
    )
 
 
@@ -199,8 +199,8 @@ def test_schedule_persists_route_marker_sequences(
 
       assert route == 'summer'
       assert sequences == [
-         ordered_marker_ids( 'zm-s', 5, 84, 296 ),
-         ordered_marker_ids( 'zm-s', 184, 250, 296 ),
+         ordered_marker_ids( 'zm-s', 5, 85, 297 ),
+         ordered_marker_ids( 'zm-s', 185, 251, 297 ),
       ]
    finally:
       cur.close()
@@ -235,7 +235,7 @@ def test_clear_transportation_schedule_removes_route_markers(
          cur,
          transportation=ZOOMOBILE,
          route_marker_sequences=[
-            ordered_marker_ids( 'zm-s', 5, 84, 296 ),
+            ordered_marker_ids( 'zm-s', 5, 85, 297 ),
          ],
       )
       clear_itinerary_transportation_schedule( cur, name=ZOOMOBILE )

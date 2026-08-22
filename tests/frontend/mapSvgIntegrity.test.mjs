@@ -31,10 +31,10 @@ test( 'every Zoomobile route marker is mapped to one seeded leg', () => {
    ].map( match => match[ 1 ] );
    const seededMarkerIds = markerRows.map( row => row.marker_id );
 
-   assert.equal( svgMarkerIds.length, 537 );
-   assert.equal( new Set( svgMarkerIds ).size, 537 );
-   assert.equal( seededMarkerIds.length, 537 );
-   assert.equal( new Set( seededMarkerIds ).size, 537 );
+   assert.equal( svgMarkerIds.length, 538 );
+   assert.equal( new Set( svgMarkerIds ).size, 538 );
+   assert.equal( seededMarkerIds.length, 538 );
+   assert.equal( new Set( seededMarkerIds ).size, 538 );
    assert.deepEqual(
       seededMarkerIds.toSorted(),
       svgMarkerIds.toSorted()

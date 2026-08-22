@@ -15,7 +15,7 @@ export const REQUIRED_FRAGMENTS = [
    'id="zm-w-001"',
    'id="zm-w-241"',
    'id="zm-s-001"',
-   'id="zm-s-296"',
+   'id="zm-s-297"',
    'id="walk-graph" style="display: none;"',
    'id="walk-graph-path"',
    'stroke="black" fill="none"/>',
