@@ -24,6 +24,7 @@ import {
    REMOVED_ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
    SELECTED_REGIONS_KEY,
+   TRANSPORTATIONS_KEY,
    WILD_KEY,
 } from './storageKeys.js';
 
@@ -40,6 +41,7 @@ const DRAFT_ITEM_STORAGE_KEYS = Object.freeze({
    attractions: ATTRACTIONS_KEY,
    guardiansTalks: GUARDIANS_KEY,
    wildEncounters: WILD_KEY,
+   transportations: TRANSPORTATIONS_KEY,
 });
 
 export const ITINERARY_DRAFT_KEYS = [
@@ -48,6 +50,7 @@ export const ITINERARY_DRAFT_KEYS = [
    ATTRACTIONS_KEY,
    GUARDIANS_KEY,
    WILD_KEY,
+   TRANSPORTATIONS_KEY,
 ];
 
 export const ITINERARY_SELECTION_KEYS = [

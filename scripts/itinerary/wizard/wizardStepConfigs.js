@@ -2,9 +2,15 @@ export const WIZARD_DEFAULT_START_STEP = 'date';
 
 export const WIZARD_SELECTION_STEP_DEFINITIONS = Object.freeze([
    {
+      stepKey: 'transportations',
+      selectionKey: 'transportations',
+      prevStepKey: 'wildEncounters',
+   },
+   {
       stepKey: 'wildEncounters',
       selectionKey: 'wildEncounters',
       prevStepKey: 'guardiansTalks',
+      nextStepKey: 'transportations',
    },
    {
       stepKey: 'guardiansTalks',

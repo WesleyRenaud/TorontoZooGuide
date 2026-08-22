@@ -65,6 +65,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    import api.request_connection as request_connection
    from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
    from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
+   from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
    from api.updates.coordinators.update_coordinator import UpdateCoordinator
    from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
    from api.zoo_hours.coordinators.zoo_hours_coordinator import ZooHoursCoordinator
@@ -94,6 +95,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       RestroomCoordinator,
       GiftShopCoordinator,
       AttractionCoordinator,
+      TransportationCoordinator,
       ZoomobileCoordinator,
       GuardiansCoordinator,
       WildEncounterCoordinator,

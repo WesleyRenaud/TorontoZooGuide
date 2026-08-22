@@ -7,11 +7,17 @@ from ...json_handler import JsonRequestHandler
 class TransportationController():
    @staticmethod
    def get_transportations( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      transportations = TransportationCoordinator.get_transportations(
+         day=data.get( 'day' ),
+         month=data.get( 'month' ),
+         year=data.get( 'year' ) )
+
       handler._write_json( {
          'transportations': [
             transportation.to_dict()
-            for transportation
-            in TransportationCoordinator.get_transportations()
+            for transportation in transportations
          ],
       } )
 

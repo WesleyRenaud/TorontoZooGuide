@@ -14,7 +14,11 @@ def map_transportation_record( row: Row ) -> TransportationRecord:
       hyperlink_text=row[ 'HYPERLINK_TEXT' ],
       x_coord=row[ 'X_COORD' ],
       y_coord=row[ 'Y_COORD' ],
-      region=row[ 'REGION' ] )
+      region=row[ 'REGION' ],
+      weekday_start_time=row[ 'WEEKDAY_START_TIME' ],
+      weekday_end_time=row[ 'WEEKDAY_END_TIME' ],
+      weekend_holiday_start_time=row[ 'WEEKEND_HOLIDAY_START_TIME' ],
+      weekend_holiday_end_time=row[ 'WEEKEND_HOLIDAY_END_TIME' ] )
 
 
 def map_transportation_records(

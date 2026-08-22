@@ -173,6 +173,7 @@ export const itinerary = {
       guardiansTalks: 'No Meet the Guardians talks found for this day',
       regions: 'No regions available right now.',
       results: 'No results found.',
+      transportations: 'No transportation options found.',
       wildEncounters: 'No wild encounters found for this day',
    },
    emptyPanel: 'Build an itinerary to see it here.',
@@ -280,7 +281,7 @@ export const itinerary = {
    noItemsSelected: {
       button: 'OK',
       message: (
-         'Please add at least one Animal, Attraction, Meet the Guardians talk, or Wild Encounter before finishing.'
+         'Please add at least one Animal, Attraction, Meet the Guardians talk, Wild Encounter, or Transportation before finishing.'
       ),
       title: 'No Items Selected',
    },
@@ -340,10 +341,12 @@ export const itinerary = {
       titleAttractions: 'Add Attractions',
       titleDate: 'Set Visit Date',
       titleRegions: 'Add Animals by Region',
+      titleTransportations: 'Add Transportation',
       talkFallback: 'Talk',
       meetingSpot: 'Meeting Spot',
       visitDate: 'Visit Date',
       visitDateSubtitle: 'Choose the date for your visit.',
+      transportationSubtitle: 'Search and add transportation to your plan.',
       wildEncounterSubtitle: 'Search and add wild encounters to your plan.',
    },
 };

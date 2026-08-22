@@ -1,4 +1,7 @@
 import {
+   migrateStoredSelectionItems,
+   normalizeStoredBoolean,
+   normalizeStoredId,
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
@@ -6,7 +9,11 @@ import {
    getItineraryTransportationStationOffboardingRoles,
    getItineraryTransportationStationOnboardingRoles,
 } from '../../itineraryTransportationStationRoles.js';
-import { buildOccurrenceDetailImageSrc } from '../../scheduledOccurrencePresentation.js';
+import {
+   buildOccurrenceDetailImageSrc,
+   buildOccurrenceSubtitle,
+} from '../../scheduledOccurrencePresentation.js';
+import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -148,4 +155,79 @@ export function isScheduleItemTransportationRow(row) {
    }
 
    return isTransportationAddedAsAttraction(row);
+}
+
+export function getTransportationTitle(row) {
+   return getTransportationName(row) || APP_STRINGS.entityLabels.transportation;
+}
+
+export function isFreeWithAdmissionTransportation(row) {
+   return row?.free_with_admission === true;
+}
+
+export function getTransportationSubtitle(row) {
+   return buildOccurrenceSubtitle({
+      primaryValue: isFreeWithAdmissionTransportation(row)
+         ? APP_STRINGS.search.freeWithAdmission
+         : APP_STRINGS.search.extraCharge,
+      timeRange: buildScheduledOccurrenceTimeRange({
+         start_time: row?.open_time,
+         end_time: row?.close_time,
+      }),
+   });
+}
+
+function createStoredTransportationFromString(item) {
+   const name = normalizeStoredString(item);
+
+   if (!name) {
+      return null;
+   }
+
+   return {
+      id: name,
+      name,
+      subtitle: '',
+      infoLink: null,
+      imageSrc: null,
+      addedAsAttraction: false,
+   };
+}
+
+function createStoredTransportationFromObject(item) {
+   const name = normalizeStoredString(item.name);
+   const id = normalizeStoredId(item.id, name);
+
+   if (!id) {
+      return null;
+   }
+
+   return {
+      id,
+      name,
+      subtitle: normalizeStoredString(item.subtitle),
+      infoLink: normalizeStoredLink(item.infoLink),
+      imageSrc: normalizeStoredLink(item.imageSrc),
+      addedAsAttraction: normalizeStoredBoolean(
+         item.addedAsAttraction ?? item.added_as_attraction
+      ),
+   };
+}
+
+export function migrateStoredTransportations(items) {
+   return migrateStoredSelectionItems(items, {
+      fromString: createStoredTransportationFromString,
+      fromObject: createStoredTransportationFromObject,
+   });
+}
+
+export function makeTransportationSelection(row) {
+   return {
+      id: getTransportationId(row),
+      name: getTransportationName(row),
+      subtitle: buildTransportationStationsLine(row) || getTransportationSubtitle(row),
+      infoLink: getTransportationInfoLink(row),
+      imageSrc: buildTransportationImageSrc(row),
+      addedAsAttraction: false,
+   };
 }

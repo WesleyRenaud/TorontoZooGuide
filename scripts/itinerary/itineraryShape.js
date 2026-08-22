@@ -17,6 +17,7 @@ export const ITINERARY_ITEM_KEYS = Object.freeze([
    'attractions',
    'guardiansTalks',
    'wildEncounters',
+   'transportations',
 ]);
 
 function asItineraryDraftSource(value) {

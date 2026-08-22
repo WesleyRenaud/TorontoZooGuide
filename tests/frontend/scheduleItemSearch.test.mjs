@@ -44,12 +44,12 @@ test('buildScheduleItemSearchPayload limits search to attractions', () => {
    );
 });
 
-test('buildScheduleItemSearchPayload searches attractions for transportation', () => {
+test('buildScheduleItemSearchPayload searches transportations via search', () => {
    assert.deepEqual(
       buildScheduleItemSearchPayload(ScheduleItemKind.TRANSPORTATION.itemType, 'zoomobile'),
       {
          query: 'zoomobile',
-         includeAttractions: true,
+         includeTransportations: true,
       }
    );
 });
@@ -226,8 +226,11 @@ test('extractScheduleItemSearchRows returns only the selected collection', () =>
    );
 });
 
-test('extractScheduleItemSearchRows tags also-transportation attractions as transportation', () => {
+test('extractScheduleItemSearchRows tags transportations from search', () => {
    const response = {
+      transportations: [
+         { name: 'Zoomobile', free_with_admission: false },
+      ],
       attractions: [
          { name: 'Carousel', is_also_transportation: false },
          { name: 'Zoomobile', is_also_transportation: true },
@@ -238,7 +241,7 @@ test('extractScheduleItemSearchRows tags also-transportation attractions as tran
       extractScheduleItemSearchRows(ScheduleItemKind.TRANSPORTATION.itemType, response),
       [{
          name: 'Zoomobile',
-         is_also_transportation: true,
+         free_with_admission: false,
          scheduleItemKind: 'transportations',
       }]
    );
