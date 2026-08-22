@@ -693,6 +693,13 @@
     "include_all_viewing_spots": true
   },
   {
+    "species": "Northern Clearwater Crayfish",
+    "exhibit": "Americas Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "include_all_viewing_spots": null
+  },
+  {
     "species": "Opal-Rumped Tanager",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
