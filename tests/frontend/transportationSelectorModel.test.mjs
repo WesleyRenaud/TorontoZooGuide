@@ -126,7 +126,7 @@ test('migrateStoredTransportations normalizes string and object selections', () 
             id: 'Zoomobile',
             name: 'Zoomobile',
             subtitle: 'Main Zoomobile Station',
-            added_as_attraction: false,
+            addedAsAttraction: false,
          },
          { name: '' },
       ]),

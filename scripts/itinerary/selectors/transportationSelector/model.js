@@ -229,9 +229,7 @@ function createStoredTransportationFromObject(item) {
       subtitle: normalizeStoredString(item.subtitle),
       infoLink: normalizeStoredLink(item.infoLink),
       imageSrc: normalizeStoredLink(item.imageSrc),
-      addedAsAttraction: normalizeStoredBoolean(
-         item.addedAsAttraction ?? item.added_as_attraction
-      ),
+      addedAsAttraction: normalizeStoredBoolean(item.addedAsAttraction),
    };
 }
 
