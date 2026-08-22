@@ -4,10 +4,16 @@ from datetime import date
 
 from test_transportation_seed import EXPECTED_ROUTE_LEG_MARKERS
 
-from api.itinerary.domain.itinerary_transportation_route_markers import attach_itinerary_transportation_route_markers
-from api.models.itinerary_transportation import ItineraryTransportation
+from api.itinerary.data_access.fetch_itinerary_transportation_route_markers import fetch_itinerary_transportation_route_markers
+from api.itinerary.data_access.itinerary_transportation import insert_itinerary_transportation
+from api.itinerary.data_access.itinerary_transportation import insert_itinerary_transportation_legs
+from api.itinerary.data_access.itinerary_transportation_route_marker_mapper import route_marker_sequences_for_markers
+from api.itinerary.data_access.itinerary_transportation_route_markers import insert_itinerary_transportation_route_markers
+from api.itinerary.data_access.schedule_itinerary_transportation import apply_itinerary_transportation_schedule
+from api.itinerary.data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
+from api.itinerary.domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
+from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
-from api.request_connection import set_connection
 from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_route_leg_marker import fetch_transportation_route_leg_marker_ids
 from conftest import DbControllers
@@ -17,11 +23,30 @@ ZOOMOBILE = TransportationName.ZOOMOBILE.value
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
+TUNDRA = 'Tundra Zoomobile Station'
+EURASIA = 'Eurasia Zoomobile Station'
 
 
-def test_fetch_transportation_route_leg_marker_ids_for_single_leg(
+def ordered_marker_ids(
+      prefix: str,
+      start: int,
+      end: int,
+      maximum: int ) -> list[ str ]:
+   marker_numbers = (
+      range( start, end + 1 )
+      if start <= end
+      else [ *range( start, maximum + 1 ), *range( 1, end + 1 ) ]
+   )
+
+   return [
+      f'{ prefix }-{ str( marker_number ).zfill( 3 ) }'
+      for marker_number in marker_numbers
+   ]
+
+
+def test_fetch_transportation_route_leg_marker_ids_preserves_travel_order(
       db: DbControllers ) -> None:
-   marker_ids = fetch_transportation_route_leg_marker_ids(
+   marker_ids_result = fetch_transportation_route_leg_marker_ids(
       db.conn,
       transportation=ZOOMOBILE,
       route='summer',
@@ -36,18 +61,166 @@ def test_fetch_transportation_route_leg_marker_ids_for_single_leg(
       ],
    )
 
-   assert set( marker_ids ) == EXPECTED_ROUTE_LEG_MARKERS[
+   assert marker_ids_result == ordered_marker_ids( 'zm-s', 5, 84, 296 )
+   assert set( marker_ids_result ) == EXPECTED_ROUTE_LEG_MARKERS[
       ( 'summer', MAIN, CANADA )
    ]
 
 
-def test_attach_itinerary_transportation_route_markers_uses_scheduled_legs(
+def test_fetch_wraparound_leg_markers_preserve_travel_order(
       db: DbControllers ) -> None:
-   set_connection( db.conn )
+   marker_ids_result = fetch_transportation_route_leg_marker_ids(
+      db.conn,
+      transportation=ZOOMOBILE,
+      route='summer',
+      legs=[
+         ItineraryTransportationLeg(
+            transportation=ZOOMOBILE,
+            from_station=EURASIA,
+            to_station=MAIN,
+            start_time='11:00 AM',
+            end_time='11:15 AM',
+         ),
+      ],
+   )
+
+   assert marker_ids_result == ordered_marker_ids( 'zm-s', 251, 4, 296 )
+   assert marker_ids_result[ 0 ] == 'zm-s-251'
+   assert marker_ids_result[ -1 ] == 'zm-s-004'
+
+
+def test_build_sequences_splits_discontinuous_legs(
+      db: DbControllers ) -> None:
+   sequences = build_transportation_route_marker_sequences(
+      db.conn,
+      transportation=ZOOMOBILE,
+      route='summer',
+      legs=[
+         ItineraryTransportationLeg(
+            transportation=ZOOMOBILE,
+            from_station=MAIN,
+            to_station=CANADA,
+            start_time='10:00 AM',
+            end_time='10:20 AM',
+         ),
+         ItineraryTransportationLeg(
+            transportation=ZOOMOBILE,
+            from_station=TUNDRA,
+            to_station=EURASIA,
+            start_time='2:00 PM',
+            end_time='2:15 PM',
+         ),
+      ],
+   )
+
+   assert len( sequences ) == 2
+   assert sequences[ 0 ] == ordered_marker_ids( 'zm-s', 5, 84, 296 )
+   assert sequences[ 1 ] == ordered_marker_ids( 'zm-s', 184, 250, 296 )
+
+
+def test_build_sequences_concatenates_consecutive_legs(
+      db: DbControllers ) -> None:
+   sequences = build_transportation_route_marker_sequences(
+      db.conn,
+      transportation=ZOOMOBILE,
+      route='summer',
+      legs=[
+         ItineraryTransportationLeg(
+            transportation=ZOOMOBILE,
+            from_station=MAIN,
+            to_station=CANADA,
+            start_time='10:00 AM',
+            end_time='10:20 AM',
+         ),
+         ItineraryTransportationLeg(
+            transportation=ZOOMOBILE,
+            from_station=CANADA,
+            to_station=AFRICA,
+            start_time='10:20 AM',
+            end_time='10:30 AM',
+         ),
+      ],
+   )
+
+   assert len( sequences ) == 1
+   assert sequences[ 0 ] == (
+      ordered_marker_ids( 'zm-s', 5, 84, 296 )
+      + ordered_marker_ids( 'zm-s', 85, 126, 296 )
+   )
+
+
+def test_schedule_persists_route_marker_sequences(
+      db: DbControllers ) -> None:
+   cur = db.conn.cursor()
 
    try:
-      transportation = ItineraryTransportation(
+      insert_itinerary_transportation(
+         cur,
+         transportation=ZOOMOBILE,
+         old_likelihood=None,
+         new_likelihood=3,
+         added_as_attraction=True )
+      applied = apply_itinerary_transportation_schedule(
+         cur,
          name=ZOOMOBILE,
+         start_time='10:00 AM',
+         route='summer',
+         legs=[
+            TransportationRouteLegSegment(
+               from_station=MAIN,
+               to_station=CANADA,
+               duration_minutes=20,
+            ),
+            TransportationRouteLegSegment(
+               from_station=TUNDRA,
+               to_station=EURASIA,
+               duration_minutes=15,
+            ),
+         ],
+      )
+      db.conn.commit()
+
+      assert applied is True
+
+      route = cur.execute(
+         """   SELECT ROUTE
+               FROM ItineraryTransportation
+               WHERE TRANSPORTATION = ?;
+         """,
+         ( ZOOMOBILE, ),
+      ).fetchone()[ 'ROUTE' ]
+      sequences = route_marker_sequences_for_markers(
+         [
+            marker
+            for marker in fetch_itinerary_transportation_route_markers( db.conn )
+            if marker.transportation == ZOOMOBILE
+         ]
+      )
+
+      assert route == 'summer'
+      assert sequences == [
+         ordered_marker_ids( 'zm-s', 5, 84, 296 ),
+         ordered_marker_ids( 'zm-s', 184, 250, 296 ),
+      ]
+   finally:
+      cur.close()
+
+
+def test_clear_transportation_schedule_removes_route_markers(
+      db: DbControllers ) -> None:
+   cur = db.conn.cursor()
+
+   try:
+      insert_itinerary_transportation(
+         cur,
+         transportation=ZOOMOBILE,
+         old_likelihood=None,
+         new_likelihood=3,
+         route='summer',
+         added_as_attraction=True )
+      insert_itinerary_transportation_legs(
+         cur,
+         transportation=ZOOMOBILE,
          legs=[
             ItineraryTransportationLeg(
                transportation=ZOOMOBILE,
@@ -56,46 +229,27 @@ def test_attach_itinerary_transportation_route_markers_uses_scheduled_legs(
                start_time='10:00 AM',
                end_time='10:20 AM',
             ),
-            ItineraryTransportationLeg(
-               transportation=ZOOMOBILE,
-               from_station=CANADA,
-               to_station=AFRICA,
-               start_time='10:20 AM',
-               end_time='10:30 AM',
-            ),
          ],
       )
-
-      attach_itinerary_transportation_route_markers(
-         [ transportation ],
-         target_date=date( 2026, 6, 15 ),
+      insert_itinerary_transportation_route_markers(
+         cur,
+         transportation=ZOOMOBILE,
+         route_marker_sequences=[
+            ordered_marker_ids( 'zm-s', 5, 84, 296 ),
+         ],
       )
+      clear_itinerary_transportation_schedule( cur, name=ZOOMOBILE )
+      db.conn.commit()
 
-      assert transportation.route == 'summer'
-      assert set( transportation.route_markers ) == (
-         EXPECTED_ROUTE_LEG_MARKERS[ ( 'summer', MAIN, CANADA ) ]
-         | EXPECTED_ROUTE_LEG_MARKERS[ ( 'summer', CANADA, AFRICA ) ]
-      )
+      route = cur.execute(
+         """   SELECT ROUTE
+               FROM ItineraryTransportation
+               WHERE TRANSPORTATION = ?;
+         """,
+         ( ZOOMOBILE, ),
+      ).fetchone()[ 'ROUTE' ]
+
+      assert route is None
+      assert fetch_itinerary_transportation_route_markers( db.conn ) == []
    finally:
-      set_connection( None )
-
-
-def test_attach_itinerary_transportation_route_markers_skips_unscheduled(
-      db: DbControllers ) -> None:
-   set_connection( db.conn )
-
-   try:
-      transportation = ItineraryTransportation(
-         name=ZOOMOBILE,
-         legs=[],
-      )
-
-      attach_itinerary_transportation_route_markers(
-         [ transportation ],
-         target_date=date( 2026, 6, 15 ),
-      )
-
-      assert transportation.route is None
-      assert transportation.route_markers == []
-   finally:
-      set_connection( None )
+      cur.close()

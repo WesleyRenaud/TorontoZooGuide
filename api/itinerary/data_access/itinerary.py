@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .fetch_itinerary_transportation_route_markers import fetch_itinerary_transportation_route_markers
 from .itinerary_animal_mapper import map_itinerary_animal_records
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_mapper import map_itinerary_attraction_records
@@ -119,7 +120,8 @@ def fetch_itinerary_transportation_rows(
                NEW_LIKELIHOOD,
                ADDED_AS_ATTRACTION,
                START_TIME,
-               END_TIME
+               END_TIME,
+               ROUTE
             FROM ItineraryTransportation;
       """ ).fetchall()
 
@@ -127,7 +129,9 @@ def fetch_itinerary_transportation_rows(
 
    return map_itinerary_transportation_records(
       rows,
-      legs=fetch_itinerary_transportation_leg_rows( conn ) )
+      legs=fetch_itinerary_transportation_leg_rows( conn ),
+      route_markers=fetch_itinerary_transportation_route_markers( conn ),
+   )
 
 
 def fetch_itinerary_guardians_talk_rows( conn: Connection ) -> list[ ItineraryGuardiansTalkRecord ]:

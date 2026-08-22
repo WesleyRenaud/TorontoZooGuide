@@ -41,6 +41,7 @@ from . import itinerary_status
 from . import itinerary_status_suppression
 from . import itinerary_transportation
 from . import itinerary_transportation_leg
+from . import itinerary_transportation_route_marker
 from . import itinerary_walk_route_leg
 from . import itinerary_walk_route_point
 from . import itinerary_walk_route_stop
@@ -150,6 +151,7 @@ runtime_tables = [
    itinerary_attraction,
    itinerary_transportation,
    itinerary_transportation_leg,
+   itinerary_transportation_route_marker,
    itinerary_guardians_talk,
    itinerary_wild_encounter,
    itinerary_event,

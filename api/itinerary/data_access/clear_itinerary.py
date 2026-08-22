@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .clear_itinerary_walk_route import clear_itinerary_walk_route
+from .itinerary_transportation import clear_itinerary_transportations
 from ...types import Connection, Cursor
 
 
@@ -18,11 +19,6 @@ def clear_itinerary_animals( cur: Cursor ) -> None:
 
 def clear_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryAttraction;' )
-
-
-def clear_itinerary_transportations( cur: Cursor ) -> None:
-   cur.execute( 'DELETE FROM ItineraryTransportationLeg;' )
-   cur.execute( 'DELETE FROM ItineraryTransportation;' )
 
 
 def clear_itinerary_guardians_talks( cur: Cursor ) -> None:

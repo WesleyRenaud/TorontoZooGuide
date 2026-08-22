@@ -1,4 +1,5 @@
 import {
+   asArray,
    asTrimmedStringList,
    normalizeNumber,
 } from '../../api/normalizeValues.js';
@@ -188,7 +189,9 @@ export function normalizeTransportation(value) {
       legs,
       stations,
       route: normalizeOptionalText(source.route),
-      route_markers: asTrimmedStringList(source.route_markers),
+      route_marker_sequences: asArray(source.route_marker_sequences).map(
+         asTrimmedStringList
+      ),
       removalReason: normalizeOptionalText(source.removalReason),
    };
 }

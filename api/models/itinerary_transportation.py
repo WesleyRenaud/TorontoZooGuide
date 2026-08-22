@@ -21,7 +21,7 @@ class ItineraryTransportation:
          legs: list[ ItineraryTransportationLeg ] | None = None,
          stations: list[ ItineraryTransportationStation ] | None = None,
          route: str | None = None,
-         route_markers: list[ str ] | None = None,
+         route_marker_sequences: list[ list[ str ] ] | None = None,
          added_as_attraction: bool = False,
          route_duration_minutes: int | None = None ) -> None:
       self.name = name
@@ -35,7 +35,7 @@ class ItineraryTransportation:
       self.legs = legs or []
       self.stations = stations or []
       self.route = route
-      self.route_markers = route_markers or []
+      self.route_marker_sequences = route_marker_sequences or []
       self.added_as_attraction = added_as_attraction
       self.route_duration_minutes = route_duration_minutes
 
@@ -53,7 +53,7 @@ class ItineraryTransportation:
          'legs': [ leg.to_dict() for leg in self.legs ],
          'stations': [ station.to_dict() for station in self.stations ],
          'route': self.route,
-         'route_markers': self.route_markers,
+         'route_marker_sequences': self.route_marker_sequences,
          'added_as_attraction': ValueConversion.as_boolean(
             self.added_as_attraction ),
          'route_duration_minutes': self.route_duration_minutes,

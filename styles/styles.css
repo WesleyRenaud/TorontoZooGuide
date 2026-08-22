@@ -875,6 +875,14 @@ html.home-page {
    fill: var(--color-itinerary-path);
 }
 
+.transportation-route-arrows {
+   pointer-events: none;
+}
+
+.transportation-route-arrow {
+   fill: var(--color-brand-primary-dark);
+}
+
 .hide-map-labels .map-label-primary-svg,
 .hide-map-labels .map-label-secondary-svg {
    display: none !important;

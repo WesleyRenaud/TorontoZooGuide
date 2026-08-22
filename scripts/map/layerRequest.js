@@ -69,7 +69,7 @@ export function buildItineraryRows(itinerary) {
 
 export function resolveItineraryTransportationRouteMarkers(itinerary) {
    const transportation = itinerary?.transportations?.find((row) => (
-      row.route && row.route_markers.length > 0
+      row.route && row.route_marker_sequences.length > 0
    ));
 
    if (!transportation) {
@@ -78,7 +78,7 @@ export function resolveItineraryTransportationRouteMarkers(itinerary) {
 
    return {
       route: transportation.route,
-      markerIds: transportation.route_markers,
+      markerSequences: transportation.route_marker_sequences,
    };
 }
 

@@ -20,6 +20,7 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
+from ..domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
 from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_window
 from ..domain.itinerary_visit_window import schedule_time_occurs_outside_visit_window
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -41,6 +42,7 @@ from ...shared.enums import ItineraryEventType
 from ...shared.value_conversion import ValueConversion
 from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
 from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
+from ..transportation.resolve_transportation_day_loop import resolve_transportation_route_for_date
 from ...types import Connection, DateKey, ScheduleTimeKey
 from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
 from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_overlapping_saved_schedule
@@ -312,6 +314,25 @@ def validate_itinerary_transportations(
          carryover_legs=carryover.legs,
          visit_date_is_changing=visit_date_is_changing )
 
+      if not legs:
+         diffs.append(
+            TransportationDiff(
+               name=carryover.name,
+               old_likelihood=carryover.old_likelihood,
+               new_likelihood=new_likelihood,
+               start_time=start_time,
+               end_time=end_time,
+               legs=legs,
+               added_as_attraction=transportation.added_as_attraction,
+            )
+         )
+         continue
+
+      route = resolve_transportation_route_for_date(
+         conn,
+         transportation=transportation.name,
+         target_date=new_visit_date,
+      )
       diffs.append(
          TransportationDiff(
             name=carryover.name,
@@ -320,6 +341,13 @@ def validate_itinerary_transportations(
             start_time=start_time,
             end_time=end_time,
             legs=legs,
+            route=route,
+            route_marker_sequences=build_transportation_route_marker_sequences(
+               conn,
+               transportation=transportation.name,
+               route=route,
+               legs=legs,
+            ),
             added_as_attraction=transportation.added_as_attraction,
          )
       )

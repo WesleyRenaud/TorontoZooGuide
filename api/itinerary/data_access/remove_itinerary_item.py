@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .itinerary_transportation import delete_itinerary_transportation as delete_itinerary_transportation_row
 from ...shared.enums import ItineraryEventType
 from ...types import Cursor
 
@@ -36,18 +37,7 @@ def delete_itinerary_transportation(
       cur: Cursor,
       *,
       name: str ) -> None:
-   cur.execute(
-      """   DELETE FROM ItineraryTransportationLeg
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( name, ),
-   )
-   cur.execute(
-      """   DELETE FROM ItineraryTransportation
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( name, ),
-   )
+   delete_itinerary_transportation_row( cur, transportation=name )
 
 
 def delete_itinerary_guardians_talk(

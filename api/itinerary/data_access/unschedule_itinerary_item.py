@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from .itinerary_transportation import clear_all_itinerary_transportation_schedule_times
+from .itinerary_transportation import clear_itinerary_transportation_legs
+from .itinerary_transportation import clear_itinerary_transportation_schedule_times
+from .itinerary_transportation import delete_itinerary_transportation_legs
+from .itinerary_transportation_route_markers import clear_itinerary_transportation_route_markers
+from .itinerary_transportation_route_markers import delete_itinerary_transportation_route_markers
 from ...shared.enums import ItineraryEventType
 from ...types import Cursor
 
@@ -22,12 +28,9 @@ def clear_all_itinerary_attraction_schedules( cur: Cursor ) -> None:
 
 
 def clear_all_itinerary_transportation_schedules( cur: Cursor ) -> None:
-   cur.execute( 'DELETE FROM ItineraryTransportationLeg;' )
-   cur.execute(
-      """   UPDATE ItineraryTransportation
-            SET START_TIME = NULL,
-                END_TIME = NULL;
-      """ )
+   clear_itinerary_transportation_route_markers( cur )
+   clear_itinerary_transportation_legs( cur )
+   clear_all_itinerary_transportation_schedule_times( cur )
 
 
 def clear_all_scheduled_itinerary_events( cur: Cursor ) -> None:
@@ -71,20 +74,9 @@ def clear_itinerary_transportation_schedule(
       cur: Cursor,
       *,
       name: str ) -> None:
-   cur.execute(
-      """   DELETE FROM ItineraryTransportationLeg
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( name, ),
-   )
-   cur.execute(
-      """   UPDATE ItineraryTransportation
-            SET START_TIME = NULL,
-                END_TIME = NULL
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( name, ),
-   )
+   delete_itinerary_transportation_route_markers( cur, transportation=name )
+   delete_itinerary_transportation_legs( cur, transportation=name )
+   clear_itinerary_transportation_schedule_times( cur, transportation=name )
 
 
 def clear_itinerary_guardians_talk_schedule(

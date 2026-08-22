@@ -32,6 +32,8 @@ def build_itinerary_transportations(
             y_coord=main_station_record.y_coord,
             main_station=main_station_record.name,
             legs=saved.legs,
+            route=saved.route,
+            route_marker_sequences=saved.route_marker_sequences,
             added_as_attraction=saved.added_as_attraction,
             route_duration_minutes=transportation_route_duration_minutes(
                conn,

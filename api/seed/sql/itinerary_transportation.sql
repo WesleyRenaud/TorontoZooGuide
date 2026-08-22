@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS ItineraryTransportation
    ADDED_AS_ATTRACTION   BOOL        NOT NULL DEFAULT 0,
    START_TIME            TEXT,
    END_TIME              TEXT,
+   ROUTE                 VARCHAR(64),
    PRIMARY KEY ( TRANSPORTATION ),
    FOREIGN KEY ( TRANSPORTATION ) REFERENCES Transportation(NAME) );

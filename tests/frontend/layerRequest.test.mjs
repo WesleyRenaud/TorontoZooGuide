@@ -88,7 +88,7 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
          transportations: [{
             name: 'Zoomobile',
             route: 'summer',
-            route_markers: ['zm-s-005', 'zm-s-006'],
+            route_marker_sequences: [['zm-s-005', 'zm-s-006']],
             legs: [{
                from_station: 'Main Zoomobile Station',
                to_station: 'Canadian Domain Zoomobile Station',
@@ -97,7 +97,7 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
       }),
       {
          route: 'summer',
-         markerIds: ['zm-s-005', 'zm-s-006'],
+         markerSequences: [['zm-s-005', 'zm-s-006']],
       }
    );
    assert.deepEqual(
@@ -105,13 +105,13 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
          transportations: [{
             name: 'Zoo Shuttle',
             route: 'summer',
-            route_markers: ['zm-s-005'],
+            route_marker_sequences: [['zm-s-005']],
             legs: [{ from_station: 'A', to_station: 'B' }],
          }],
       }),
       {
          route: 'summer',
-         markerIds: ['zm-s-005'],
+         markerSequences: [['zm-s-005']],
       }
    );
 });

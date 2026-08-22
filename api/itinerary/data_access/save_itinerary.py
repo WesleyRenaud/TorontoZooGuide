@@ -5,6 +5,7 @@ from datetime import date
 from .itinerary_exhibit import save_itinerary_exhibits
 from .itinerary_transportation import insert_itinerary_transportation
 from .itinerary_transportation import insert_itinerary_transportation_legs
+from .itinerary_transportation_route_markers import insert_itinerary_transportation_route_markers
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
@@ -107,6 +108,7 @@ def save_itinerary_transportations(
          new_likelihood=transportation.new_likelihood,
          start_time=transportation.start_time,
          end_time=transportation.end_time,
+         route=transportation.route,
          added_as_attraction=transportation.added_as_attraction )
 
       if not transportation.legs:
@@ -116,6 +118,12 @@ def save_itinerary_transportations(
          cur,
          transportation=transportation.name,
          legs=transportation.legs )
+
+      if transportation.route_marker_sequences:
+         insert_itinerary_transportation_route_markers(
+            cur,
+            transportation=transportation.name,
+            route_marker_sequences=transportation.route_marker_sequences )
 
 
 def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ GuardiansTalkDiff ] ) -> None:

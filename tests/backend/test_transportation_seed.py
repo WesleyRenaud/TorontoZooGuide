@@ -79,15 +79,15 @@ EXPECTED_ZOOMOBILE_ROUTE_LEGS = {
 
 EXPECTED_ROUTE_LEG_MARKERS = {
    ( 'summer', 'Main Zoomobile Station', 'Canadian Domain Zoomobile Station' ):
-      marker_ids( 'zm-s', 5, 85, 296 ),
+      marker_ids( 'zm-s', 5, 84, 296 ),
    ( 'summer', 'Canadian Domain Zoomobile Station', 'Africa Zoomobile Station' ):
-      marker_ids( 'zm-s', 86, 127, 296 ),
+      marker_ids( 'zm-s', 85, 126, 296 ),
    ( 'summer', 'Africa Zoomobile Station', 'Tundra Zoomobile Station' ):
-      marker_ids( 'zm-s', 128, 184, 296 ),
+      marker_ids( 'zm-s', 127, 183, 296 ),
    ( 'summer', 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ):
-      marker_ids( 'zm-s', 185, 251, 296 ),
+      marker_ids( 'zm-s', 184, 250, 296 ),
    ( 'summer', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ):
-      marker_ids( 'zm-s', 252, 4, 296 ),
+      marker_ids( 'zm-s', 251, 4, 296 ),
    ( 'winter', 'Main Zoomobile Station', 'Indo-Malaya Zoomobile Station' ):
       marker_ids( 'zm-w', 6, 31, 241 ),
    ( 'winter', 'Indo-Malaya Zoomobile Station', 'Tundra Zoomobile Station' ):

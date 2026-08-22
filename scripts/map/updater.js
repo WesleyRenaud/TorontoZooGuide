@@ -128,7 +128,10 @@ export function createMapUpdater({
          return;
       }
 
-      showZoomobileRouteMarkers(routeMarkers.route, routeMarkers.markerIds);
+      showZoomobileRouteMarkers(
+         routeMarkers.route,
+         routeMarkers.markerSequences
+      );
    }
 
    async function renderItineraryOnly(dateCtx, itinerary, options) {
