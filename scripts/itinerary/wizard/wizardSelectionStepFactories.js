@@ -2,10 +2,12 @@ import { createItineraryAnimalSelectorController } from '../selectors/animalSele
 import { createItineraryAttractionSelectorController } from '../selectors/attractionSelector.js';
 import { createItineraryGuardiansTalkSelectorController } from '../selectors/guardiansTalkSelector.js';
 import { createItineraryRegionSelectorController } from '../selectors/regionSelector.js';
+import { createItineraryTransportationSelectorController } from '../selectors/transportationSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../selectors/wildEncounterSelector.js';
 import { WIZARD_SELECTION_STEP_DEFINITIONS } from './wizardStepConfigs.js';
 
 const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
+   transportations: createItineraryTransportationSelectorController,
    wildEncounters: createItineraryWildEncounterSelectorController,
    guardiansTalks: createItineraryGuardiansTalkSelectorController,
    attractions: createItineraryAttractionSelectorController,

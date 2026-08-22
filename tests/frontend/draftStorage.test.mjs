@@ -8,6 +8,7 @@ import {
    GUARDIANS_KEY,
    REMOVED_ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
+   TRANSPORTATIONS_KEY,
    WILD_KEY,
 } from '../../scripts/itinerary/storageKeys.js';
 import {
@@ -80,6 +81,7 @@ test('clears draft storage while optionally preserving selection storage', () =>
    assert.equal(localStorage.getItem(ATTRACTIONS_KEY), null);
    assert.equal(localStorage.getItem(GUARDIANS_KEY), null);
    assert.equal(localStorage.getItem(WILD_KEY), null);
+   assert.equal(localStorage.getItem(TRANSPORTATIONS_KEY), null);
    assert.equal(localStorage.getItem(SELECTED_EXHIBITS_KEY), '["Africa Savanna"]');
 });
 

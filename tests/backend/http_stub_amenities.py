@@ -7,12 +7,14 @@ from http_support_constants import GIFT_SHOP_NAME
 from http_support_constants import PAVILION_NAME
 from http_support_constants import RESTAURANT_NAME
 from http_support_constants import RESTROOM_NAME
+from http_support_constants import TRANSPORTATION_NAME
 
 from api.models import Attraction
 from api.models import GiftShop
 from api.models import Pavilion
 from api.models import Restaurant
 from api.models import Restroom
+from api.models import Transportation
 
 class AmenitiesStubMixin:
    def get_pavilions( self ) -> list[ Pavilion ]:
@@ -63,6 +65,16 @@ class AmenitiesStubMixin:
    def get_attractions_matching_query( self, **kwargs: Any ) -> list[ Attraction ]:
          self.calls.append( ( 'get_attractions_matching_query', kwargs ) )
          return [ Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
+
+
+   def get_transportations( self, **kwargs: Any ) -> list[ Transportation ]:
+         self.calls.append( ( 'get_transportations', kwargs ) )
+         return [ Transportation( name=TRANSPORTATION_NAME, is_also_attraction=True ) ]
+
+
+   def get_transportations_matching_query( self, **kwargs: Any ) -> list[ Transportation ]:
+         self.calls.append( ( 'get_transportations_matching_query', kwargs ) )
+         return [ Transportation( name=TRANSPORTATION_NAME, is_also_attraction=True ) ]
 
 
    def get_restaurant_names( self ) -> list[ str ]:

@@ -50,6 +50,20 @@ function normalizeWildEncounterRow(row) {
    };
 }
 
+function normalizeTransportationRow(row) {
+   const source = asObject(row);
+
+   return {
+      ...source,
+      name: asTrimmedString(source.name),
+      free_with_admission: asBoolean(source.free_with_admission),
+      is_also_attraction: asBoolean(source.is_also_attraction),
+      info_link: asNullableString(source.info_link),
+      open_time: asNullableString(source.open_time),
+      close_time: asNullableString(source.close_time),
+   };
+}
+
 const SEARCH_RESPONSE_NORMALIZERS = {
    '/search': normalizeSearchResponse,
 };
@@ -64,6 +78,7 @@ export function normalizeSearchResponse(response) {
       restrooms: asArray(source.restrooms),
       gift_shops: asArray(source.gift_shops),
       attractions: asArray(source.attractions).map(normalizeAttractionRow),
+      transportations: asArray(source.transportations).map(normalizeTransportationRow),
       zoomobile_stations: asArray(source.zoomobile_stations),
       guardians_talks: asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
       wild_encounters: asArray(source.wild_encounters).map(normalizeWildEncounterRow),

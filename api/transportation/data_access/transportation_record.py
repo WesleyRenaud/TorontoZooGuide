@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import Coordinate
+from ...types import Coordinate, ScheduleTimeKey
 
 
 @dataclass( frozen=True )
@@ -16,3 +16,7 @@ class TransportationRecord:
    x_coord: Coordinate
    y_coord: Coordinate
    region: str
+   weekday_start_time: ScheduleTimeKey
+   weekday_end_time: ScheduleTimeKey
+   weekend_holiday_start_time: ScheduleTimeKey
+   weekend_holiday_end_time: ScheduleTimeKey

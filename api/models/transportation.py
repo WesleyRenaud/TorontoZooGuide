@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..shared.value_conversion import ValueConversion
-from ..types import Coordinate
+from ..types import Coordinate, ScheduleTimeKey
 
 
 class Transportation:
@@ -16,7 +16,9 @@ class Transportation:
          hyperlink_text: str | None = None,
          x_coord: Coordinate | None = None,
          y_coord: Coordinate | None = None,
-         region: str | None = None ) -> None:
+         region: str | None = None,
+         open_time: ScheduleTimeKey = None,
+         close_time: ScheduleTimeKey = None ) -> None:
       self.name = name
       self.is_also_attraction = is_also_attraction
       self.free_with_admission = free_with_admission
@@ -26,6 +28,8 @@ class Transportation:
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.region = region
+      self.open_time = open_time
+      self.close_time = close_time
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -41,4 +45,6 @@ class Transportation:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'region': self.region,
+         'open_time': self.open_time,
+         'close_time': self.close_time,
       }

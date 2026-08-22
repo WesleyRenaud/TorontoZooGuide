@@ -20,6 +20,7 @@ def test_search_includes_route_duration_for_also_transportation_attractions(
       include_restrooms=False,
       include_gift_shops=False,
       include_attractions=True,
+      include_transportations=False,
       include_zoomobile_stations=False,
       include_guardians_talks=False,
       include_wild_encounters=False,

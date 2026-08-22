@@ -12,12 +12,14 @@ from ...models import GuardiansTalk
 from ...models import Pavilion
 from ...models import Restaurant
 from ...models import Restroom
+from ...models import Transportation
 from ...models import TransportationStation
 from ...models import WildEncounter
 from ...pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from ...restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from ...restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from ...transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from ...types import MonthInput, VisitDay, VisitYear
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
@@ -35,6 +37,7 @@ class SearchCoordinator():
          include_restrooms: bool,
          include_gift_shops: bool,
          include_attractions: bool,
+         include_transportations: bool,
          include_zoomobile_stations: bool,
          include_guardians_talks: bool,
          include_wild_encounters: bool,
@@ -55,6 +58,7 @@ class SearchCoordinator():
       restrooms: list[ Restroom ] = []
       gift_shops: list[ GiftShop ] = []
       attractions: list[ Attraction ] = []
+      transportations: list[ Transportation ] = []
       zoomobile_stations: list[ TransportationStation ] = []
       wild_encounters: list[ WildEncounter ] = []
       guardians_talks: list[ GuardiansTalk ] = []
@@ -125,6 +129,15 @@ class SearchCoordinator():
             year=year,
          )
 
+      if include_transportations:
+         transportations = (
+            TransportationCoordinator.get_transportations_matching_query(
+               query=query,
+               day=day,
+               month=month,
+               year=year ) or []
+         )
+
       if include_zoomobile_stations:
          zoomobile_stations = (
             ZoomobileCoordinator.get_zoomobile_stations_matching_query(
@@ -160,6 +173,7 @@ class SearchCoordinator():
          'restrooms': restrooms,
          'gift_shops': gift_shops,
          'attractions': attractions,
+         'transportations': transportations,
          'zoomobile_stations': zoomobile_stations,
          'wild_encounters': wild_encounters,
          'guardians_talks': guardians_talks,

@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { isScheduleItemTransportationRow } from '../../scripts/itinerary/selectors/transportationSelector/model.js';
+import {
+   isScheduleItemTransportationRow,
+   makeTransportationSelection,
+   migrateStoredTransportations,
+} from '../../scripts/itinerary/selectors/transportationSelector/model.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
 test('isScheduleItemTransportationRow recognizes transportations and added-as-attraction rows', () => {
@@ -30,5 +34,83 @@ test('isScheduleItemTransportationRow recognizes transportations and added-as-at
          scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       }),
       false
+   );
+});
+
+test('makeTransportationSelection stores pure transportation selections', () => {
+   assert.deepEqual(
+      makeTransportationSelection({
+         name: 'Zoomobile',
+         info_link: 'https://example.com/zoomobile',
+         free_with_admission: false,
+         open_time: '10:00 AM',
+         close_time: '4:00 PM',
+         legs: [
+            {
+               from_station: 'Main Zoomobile Station',
+               to_station: 'Canadian Domain Zoomobile Station',
+            },
+         ],
+      }),
+      {
+         id: 'Zoomobile',
+         name: 'Zoomobile',
+         subtitle: 'Main Zoomobile Station - Canadian Domain Zoomobile Station',
+         infoLink: 'https://example.com/zoomobile',
+         imageSrc: '../images/details/transportations/zoomobile.png',
+         addedAsAttraction: false,
+      }
+   );
+});
+
+test('makeTransportationSelection falls back to cost and hours subtitle', () => {
+   assert.deepEqual(
+      makeTransportationSelection({
+         name: 'Zoomobile',
+         free_with_admission: false,
+         open_time: '10:00 AM',
+         close_time: '4:00 PM',
+      }),
+      {
+         id: 'Zoomobile',
+         name: 'Zoomobile',
+         subtitle: 'Extra Charge  •  10:00 AM - 4:00 PM',
+         infoLink: null,
+         imageSrc: '../images/details/transportations/zoomobile.png',
+         addedAsAttraction: false,
+      }
+   );
+});
+
+test('migrateStoredTransportations normalizes string and object selections', () => {
+   assert.deepEqual(
+      migrateStoredTransportations([
+         'Zoomobile',
+         {
+            id: 'Zoomobile',
+            name: 'Zoomobile',
+            subtitle: 'Main Zoomobile Station',
+            added_as_attraction: false,
+         },
+         { name: '' },
+      ]),
+      [
+         {
+            id: 'Zoomobile',
+            name: 'Zoomobile',
+            subtitle: '',
+            infoLink: null,
+            imageSrc: null,
+            addedAsAttraction: false,
+         },
+         {
+            id: 'Zoomobile',
+            name: 'Zoomobile',
+            subtitle: 'Main Zoomobile Station',
+            infoLink: null,
+            imageSrc: null,
+            addedAsAttraction: false,
+         },
+      ]
    );
 });

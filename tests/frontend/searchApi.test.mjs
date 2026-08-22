@@ -62,6 +62,7 @@ test('searchZoo normalizes search responses', async () => {
             close_time: '4:00 PM',
          },
       ],
+      transportations: [],
       zoomobile_stations: [],
       guardians_talks: [],
       wild_encounters: [],

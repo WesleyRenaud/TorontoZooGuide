@@ -1,10 +1,7 @@
 import { normalizeItineraryItems } from '../itineraryShape.js';
 import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
-import {
-   getAttractionId,
-   isAlsoTransportationAttraction,
-} from '../selectors/attractionSelector/model.js';
+import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import {
    getTransportationId,
@@ -187,7 +184,7 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
    if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
       return {
          query: normalizedQuery,
-         includeAttractions: true,
+         includeTransportations: true,
       };
    }
 
@@ -374,8 +371,7 @@ export function extractScheduleItemSearchRows(moduleType, response = {}) {
 
    if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
       return tagTransportationRows(
-         (Array.isArray(response.attractions) ? response.attractions : [])
-            .filter(isAlsoTransportationAttraction)
+         Array.isArray(response.transportations) ? response.transportations : []
       );
    }
 

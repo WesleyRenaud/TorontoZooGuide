@@ -79,6 +79,7 @@ test('normalizes missing search response groups to empty arrays', () => {
       restrooms: [],
       gift_shops: [],
       attractions: [],
+      transportations: [],
       zoomobile_stations: [],
       guardians_talks: [],
       wild_encounters: [],

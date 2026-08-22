@@ -17,6 +17,7 @@ class SearchController():
       include_restrooms = bool( data.get( 'includeRestrooms' ) )
       include_gift_shops = bool( data.get( 'includeGiftShops' ) )
       include_attractions = bool( data.get( 'includeAttractions' ) )
+      include_transportations = bool( data.get( 'includeTransportations' ) )
       include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
       include_guardians_talks = bool( data.get( 'includeGuardiansTalks' ) )
       include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
@@ -41,6 +42,7 @@ class SearchController():
          include_restrooms=include_restrooms,
          include_gift_shops=include_gift_shops,
          include_attractions=include_attractions,
+         include_transportations=include_transportations,
          include_zoomobile_stations=include_zoomobile_stations,
          include_guardians_talks=include_guardians_talks,
          include_wild_encounters=include_wild_encounters,
@@ -79,6 +81,10 @@ class SearchController():
          'attractions': [
             to_dict_with_type( attraction, 'attraction' )
             for attraction in results[ 'attractions' ]
+         ],
+         'transportations': [
+            to_dict_with_type( transportation, 'transportation' )
+            for transportation in results[ 'transportations' ]
          ],
          'zoomobile_stations': [
             to_dict_with_type( zoomobile_station, 'zoomobileStation' )

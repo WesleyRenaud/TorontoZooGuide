@@ -14,6 +14,7 @@ const STORAGE_KEY = 'tzg.itineraryWildEncounters';
 
 export function createItineraryWildEncounterSelectorController({
    mountEl,
+   onNext,
    onPrev,
    onFinish,
    onClose,
@@ -21,9 +22,9 @@ export function createItineraryWildEncounterSelectorController({
    return createScheduledOccurrenceSelectorController({
       mountEl,
       onPrev,
+      onNext,
       onFinish,
       onClose,
-      hideNextButton: true,
 
       storageKey: STORAGE_KEY,
       responseKey: 'wild_encounters',

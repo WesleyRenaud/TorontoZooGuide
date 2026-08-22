@@ -4,6 +4,7 @@ export const ANIMALS_KEY = 'tzg.itineraryAnimals';
 export const ATTRACTIONS_KEY = 'tzg.itineraryAttractions';
 export const GUARDIANS_KEY = 'tzg.itineraryGuardiansTalks';
 export const WILD_KEY = 'tzg.itineraryWildEncounters';
+export const TRANSPORTATIONS_KEY = 'tzg.itineraryTransportations';
 export const SELECTED_EXHIBITS_KEY = 'tzg.itinerarySelectedExhibits';
 export const SELECTED_REGIONS_KEY = 'tzg.itinerarySelectedRegions';
 export const REMOVED_ANIMALS_KEY = 'tzg.itineraryRemovedAnimals';

@@ -3,12 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from http_client import post_route
+from support import MAP_VISIT_DATE
 
 
 def test_get_transportations_returns_attraction_marker_data(
       integration_db: Path,
 ) -> None:
-   status, response = post_route( '/get-transportations', {} )
+   status, response = post_route( '/get-transportations', MAP_VISIT_DATE )
 
    assert status == 200
    assert response[ 'transportations' ] == [
@@ -22,6 +23,8 @@ def test_get_transportations_returns_attraction_marker_data(
          'x_coord': 56.068,
          'y_coord': 83.343,
          'region': 'Front Courtyard',
+         'open_time': None,
+         'close_time': None,
       },
    ]
 
