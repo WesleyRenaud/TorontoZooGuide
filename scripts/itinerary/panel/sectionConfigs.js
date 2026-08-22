@@ -11,6 +11,7 @@ import { APP_STRINGS } from '../../strings.js';
 export const ITINERARY_PANEL_SECTION_KEYS = {
    animals: 'animals',
    attractions: 'attractions',
+   transportations: 'transportations',
    guardiansTalks: 'guardiansTalks',
    wildEncounters: 'wildEncounters',
 };
@@ -25,6 +26,7 @@ export const SCHEDULED_DAY_PLANNER_SECTION_KEYS = [
 export const UNSCHEDULED_DAY_PLANNER_SECTION_KEYS = [
    ITINERARY_PANEL_SECTION_KEYS.animals,
    ITINERARY_PANEL_SECTION_KEYS.attractions,
+   ITINERARY_PANEL_SECTION_KEYS.transportations,
 ];
 
 export const SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS = [
@@ -56,6 +58,10 @@ export function buildSectionConfigs(
          rowActionOptions
       ),
    ];
+   const transportationRows = buildTransportationRows(
+      transportations.filter((item) => !isTransportationAddedAsAttraction(item)),
+      rowActionOptions
+   );
    const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });
    const wildRows = buildWildRows(wildEncounters, { onRemoveItem });
    const sectionConfigs = [
@@ -72,6 +78,13 @@ export function buildSectionConfigs(
          count: attractionRows.length,
          children: attractionRows,
          stepKey: ITINERARY_PANEL_SECTION_KEYS.attractions,
+      },
+      {
+         key: ITINERARY_PANEL_SECTION_KEYS.transportations,
+         title: APP_STRINGS.entityLabels.transportation,
+         count: transportationRows.length,
+         children: transportationRows,
+         stepKey: ITINERARY_PANEL_SECTION_KEYS.transportations,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,

@@ -139,4 +139,5 @@ import './panelDayPlannerMarkers.test.mjs';
 import './panelDayPlannerScheduled.test.mjs';
 import './panelDayPlannerUnscheduled.test.mjs';
 import './panelRowBuilders.test.mjs';
+import './rowActionProps.test.mjs';
 import './strings.test.mjs';

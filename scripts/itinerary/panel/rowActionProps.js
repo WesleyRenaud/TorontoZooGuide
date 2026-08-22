@@ -2,10 +2,20 @@ import {
    getItineraryItemKey,
    tagScheduleItemRow,
 } from './scheduleItemSearch.js';
+import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function hasItineraryScheduleTimes(item) {
    return Boolean(item.start_time && item.end_time);
+}
+
+export function canShowItineraryItemScheduleAction(itemType, item) {
+   if (itemType !== ScheduleItemKind.TRANSPORTATION.itemType) {
+      return true;
+   }
+
+   return isTransportationAddedAsAttraction(item);
 }
 
 export function buildScheduleRowProps(itemType, item, onScheduleItem) {
@@ -14,6 +24,10 @@ export function buildScheduleRowProps(itemType, item, onScheduleItem) {
    }
 
    if (hasItineraryScheduleTimes(item)) {
+      return {};
+   }
+
+   if (!canShowItineraryItemScheduleAction(itemType, item)) {
       return {};
    }
 

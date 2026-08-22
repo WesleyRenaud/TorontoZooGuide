@@ -319,6 +319,52 @@ test.describe('itinerary panel row builders', () => {
       );
    });
 
+   test('transportation section lists pure transportations without schedule actions', () => {
+      const scheduleCalls = [];
+      const removeCalls = [];
+      const [transportationSection] = buildSectionConfigs({
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: false,
+            },
+            {
+               name: 'Zoo Shuttle',
+               added_as_attraction: true,
+            },
+         ],
+      }, {
+         keys: ['transportations'],
+         onScheduleItem: (pick) => {
+            scheduleCalls.push(pick);
+         },
+         onRemoveItem: (request) => {
+            removeCalls.push(request);
+         },
+      });
+
+      assert.equal(transportationSection.count, 1);
+      assert.deepEqual(
+         transportationSection.children.map((row) => textFor(row, '.itin-panel-name')),
+         ['Zoomobile']
+      );
+
+      const buttons = [
+         ...(transportationSection.children[0]?.querySelectorAll('.itin-panel-item-action-btn') ?? []),
+      ];
+      assert.deepEqual(
+         buttons.map((button) => button.textContent),
+         ['Remove']
+      );
+
+      buttons[0]?.click();
+      assert.equal(scheduleCalls.length, 0);
+      assert.deepEqual(removeCalls, [{
+         itemType: 'transportations',
+         key: 'Zoomobile',
+      }]);
+   });
+
    test('transportation station line marks round trips when first and last match', () => {
       const [attractionSection] = buildSectionConfigs({
          attractions: [],

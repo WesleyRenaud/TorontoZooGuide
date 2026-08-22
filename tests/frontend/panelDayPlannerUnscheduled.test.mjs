@@ -54,7 +54,64 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.match(text, /Unscheduled Items/);
       assert.match(text, /Animals \(0\)/);
       assert.match(text, /Attractions \(0\)/);
+      assert.match(text, /Transportation \(0\)/);
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Meet The Guardians/);
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
+   });
+
+   test('day planner shows unscheduled transportation without a schedule button', () => {
+      const scheduleCalls = [];
+      const removeCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: false,
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onScheduleItineraryItem: (pick) => {
+                  scheduleCalls.push(pick);
+               },
+               onUnscheduleItineraryItem: () => {},
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
+         }
+      );
+      const text = allTextFor(planner);
+      const unscheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
+         section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+      ));
+      const zoomobileRow = [...(unscheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
+         allTextFor(row).includes('Zoomobile')
+      ));
+      const zoomobileButtons = [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])];
+
+      assert.match(text, /Unscheduled Items/);
+      assert.match(text, /Transportation \(1\)/);
+      assert.deepEqual(
+         zoomobileButtons.map((button) => button.textContent),
+         ['Remove']
+      );
+
+      zoomobileButtons[0]?.click();
+      assert.equal(scheduleCalls.length, 0);
+      assert.deepEqual(removeCalls, [{
+         itemType: 'transportations',
+         key: 'Zoomobile',
+      }]);
    });
 });
