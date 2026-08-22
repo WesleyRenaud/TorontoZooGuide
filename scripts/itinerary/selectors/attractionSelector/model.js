@@ -166,8 +166,7 @@ export function buildClosedAttractionMessage(row) {
 }
 
 export function buildAlsoTransportationAttractionMessage(row) {
-   const name = getAttractionName(row) || CLOSED_ATTRACTION_FALLBACK_NAME;
    return APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationMessage(
-      name
+      getAttractionName(row)
    );
 }

@@ -35,6 +35,10 @@ export const itinerary = {
       attractionAlsoTransportationMessage: attractionName => (
          `The ${attractionName} can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the ${attractionName} as an attraction.`
       ),
+      addAsTransportationTitle: 'Add as Transportation?',
+      addAsTransportationMessage: transportationName => (
+         `The ${transportationName} will be used to reduce walking distance when bulk scheduling. This action will add the ${transportationName} as a transportation method.`
+      ),
       clearMessage: (
          'This will remove all selected Animals, Attractions, Meet the Guardians talks, and Wild Encounters.'
       ),

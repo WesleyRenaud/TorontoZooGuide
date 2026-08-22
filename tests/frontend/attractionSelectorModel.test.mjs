@@ -148,10 +148,6 @@ test('buildAlsoTransportationAttractionMessage explains attraction vs transporta
       buildAlsoTransportationAttractionMessage({ name: 'Zoomobile' }),
       'The Zoomobile can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the Zoomobile as an attraction.'
    );
-   assert.match(
-      buildAlsoTransportationAttractionMessage({}),
-      /This attraction can be added as a transportation method/
-   );
 });
 
 test('migrateStoredAttractions normalizes string and object entries', () => {

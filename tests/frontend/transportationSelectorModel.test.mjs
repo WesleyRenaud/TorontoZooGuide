@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+   buildAddAsTransportationMessage,
    isScheduleItemTransportationRow,
    makeTransportationSelection,
    migrateStoredTransportations,
+   shouldConfirmAddAsTransportation,
 } from '../../scripts/itinerary/selectors/transportationSelector/model.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
@@ -79,6 +81,40 @@ test('makeTransportationSelection falls back to cost and hours subtitle', () => 
          imageSrc: '../images/details/transportations/zoomobile.png',
          addedAsAttraction: false,
       }
+   );
+});
+
+test('shouldConfirmAddAsTransportation only prompts when adding also-attraction rows', () => {
+   const zoomobileRow = { is_also_attraction: true };
+   const pureTransportationRow = { is_also_attraction: false };
+
+   assert.equal(
+      shouldConfirmAddAsTransportation({
+         row: zoomobileRow,
+         isSelected: false,
+      }),
+      true
+   );
+   assert.equal(
+      shouldConfirmAddAsTransportation({
+         row: zoomobileRow,
+         isSelected: true,
+      }),
+      false
+   );
+   assert.equal(
+      shouldConfirmAddAsTransportation({
+         row: pureTransportationRow,
+         isSelected: false,
+      }),
+      false
+   );
+});
+
+test('buildAddAsTransportationMessage explains bulk scheduling use', () => {
+   assert.equal(
+      buildAddAsTransportationMessage({ name: 'Zoomobile' }),
+      'The Zoomobile will be used to reduce walking distance when bulk scheduling. This action will add the Zoomobile as a transportation method.'
    );
 });
 

@@ -161,6 +161,27 @@ export function getTransportationTitle(row) {
    return getTransportationName(row) || APP_STRINGS.entityLabels.transportation;
 }
 
+export function isAlsoAttractionTransportation(row) {
+   return row?.is_also_attraction === true;
+}
+
+export function shouldConfirmAddAsTransportation({
+   row,
+   isSelected,
+} = {}) {
+   if (isSelected) {
+      return false;
+   }
+
+   return isAlsoAttractionTransportation(row);
+}
+
+export function buildAddAsTransportationMessage(row) {
+   return APP_STRINGS.itinerary.confirmation.addAsTransportationMessage(
+      getTransportationName(row)
+   );
+}
+
 export function isFreeWithAdmissionTransportation(row) {
    return row?.free_with_admission === true;
 }
