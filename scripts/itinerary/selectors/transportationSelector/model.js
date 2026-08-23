@@ -14,6 +14,7 @@ import {
    buildOccurrenceSubtitle,
 } from '../../scheduledOccurrencePresentation.js';
 import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { TransportationScheduleItemKey } from './scheduleItemKey.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -103,6 +104,10 @@ export function getTransportationName(row) {
 
 export function getTransportationId(row) {
    return getTransportationName(row);
+}
+
+export function getTransportationScheduleItemKey(row) {
+   return TransportationScheduleItemKey.fromRow(row)?.toWire() ?? '';
 }
 
 export function getTransportationInfoLink(row) {

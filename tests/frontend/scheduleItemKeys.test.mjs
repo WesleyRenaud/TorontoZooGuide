@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import { getItineraryItemKey } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import { GuardiansTalkScheduleItemKey } from '../../scripts/itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
+import { TransportationScheduleItemKey } from '../../scripts/itinerary/selectors/transportationSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../../scripts/itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 
 test('getItineraryItemKey resolves keys for itinerary item types', () => {
@@ -16,6 +17,17 @@ test('getItineraryItemKey resolves keys for itinerary item types', () => {
    assert.equal(
       getItineraryItemKey('attractions', { name: 'Zoomobile' }),
       'Zoomobile'
+   );
+   assert.equal(
+      getItineraryItemKey('transportations', { name: 'Zoomobile' }),
+      ''
+   );
+   assert.equal(
+      getItineraryItemKey('transportations', {
+         name: 'Zoomobile',
+         added_as_attraction: false,
+      }),
+      'Zoomobile||0'
    );
    assert.equal(
       getItineraryItemKey('guardians_talks', { name: 'Amur Tiger' }),
@@ -74,5 +86,27 @@ test('wild encounter schedule item key wire round-trips', () => {
          end_time: '12:00',
       }),
       key
+   );
+});
+
+test('transportation schedule item key wire round-trips', () => {
+   const key = new TransportationScheduleItemKey('Zoomobile', false);
+
+   assert.equal(key.toWire(), 'Zoomobile||0');
+   assert.deepEqual(
+      TransportationScheduleItemKey.fromWire('Zoomobile||0'),
+      key
+   );
+   assert.deepEqual(
+      TransportationScheduleItemKey.fromRow({
+         name: 'Zoomobile',
+         added_as_attraction: false,
+      }),
+      key
+   );
+   assert.equal(TransportationScheduleItemKey.fromWire('Zoomobile'), null);
+   assert.equal(
+      TransportationScheduleItemKey.fromRow({ name: 'Zoomobile' }),
+      null
    );
 });

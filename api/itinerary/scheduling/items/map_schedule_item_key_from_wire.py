@@ -6,6 +6,7 @@ from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from .schedule_item_key import ScheduleItemKey
 from ....shared.enums import ItineraryEventType
 from ....shared.enums import ScheduleItemKind
+from ...transportation_item_key import TransportationScheduleItemKey
 from ...wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
@@ -34,10 +35,11 @@ def map_schedule_item_key_from_wire(
    if item_kind == ScheduleItemKind.ANIMAL:
       return AnimalScheduleItemKey.from_wire( normalized_key )
 
-   if item_kind in (
-         ScheduleItemKind.ATTRACTION,
-         ScheduleItemKind.TRANSPORTATION ):
+   if item_kind == ScheduleItemKind.ATTRACTION:
       return AttractionScheduleItemKey.from_wire( normalized_key )
+
+   if item_kind == ScheduleItemKind.TRANSPORTATION:
+      return TransportationScheduleItemKey.from_wire( normalized_key )
 
    if item_kind == ScheduleItemKind.GUARDIANS_TALK:
       return GuardiansTalkScheduleItemKey.from_wire( normalized_key )

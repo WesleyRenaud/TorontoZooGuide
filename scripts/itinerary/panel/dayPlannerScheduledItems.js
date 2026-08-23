@@ -19,7 +19,7 @@ import {
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import { getTransportationId } from '../selectors/transportationSelector/model.js';
+import { getTransportationScheduleItemKey } from '../selectors/transportationSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -257,7 +257,7 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
-      scheduleItemKey: getTransportationId(scheduledItem.item),
+      scheduleItemKey: getTransportationScheduleItemKey(scheduledItem.item),
    }));
    const genericEventRows = buildGenericEventScheduledRows(events);
    const scheduledItems = [

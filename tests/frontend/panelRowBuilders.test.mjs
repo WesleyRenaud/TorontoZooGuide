@@ -366,7 +366,7 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(scheduleCalls.length, 0);
       assert.deepEqual(removeCalls, [{
          itemType: 'transportations',
-         key: 'Zoomobile',
+         key: 'Zoomobile||0',
       }]);
    });
 

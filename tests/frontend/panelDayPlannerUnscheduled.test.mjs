@@ -111,7 +111,7 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.equal(scheduleCalls.length, 0);
       assert.deepEqual(removeCalls, [{
          itemType: 'transportations',
-         key: 'Zoomobile',
+         key: 'Zoomobile||0',
       }]);
    });
 });
