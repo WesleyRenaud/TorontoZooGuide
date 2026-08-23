@@ -59,6 +59,7 @@ def _find_saved_itinerary_transportation_row(
          if _transportation_row_matches_schedule_item_key(
             transportation_row,
             schedule_item_key )
+         and transportation_row.added_as_attraction
       ),
       None,
    )

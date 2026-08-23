@@ -128,7 +128,8 @@ def clear_saved_schedules_overlapping_time_blocks(
             activity_blocks ):
          clear_itinerary_transportation_schedule(
             cur,
-            name=transportation.transportation )
+            name=transportation.transportation,
+            added_as_attraction=transportation.added_as_attraction )
 
    for event in saved_itinerary.event_rows:
       if schedule_overlaps_any_time_block(

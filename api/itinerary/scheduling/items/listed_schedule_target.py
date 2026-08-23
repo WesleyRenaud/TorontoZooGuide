@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...animal_item_key import AnimalScheduleItemKey
+from ...attraction_item_key import AttractionScheduleItemKey
 from .attraction_or_transportation_duration import default_duration_seconds_for_attraction_or_transportation
-from ...data_access.attraction_also_transportation import attraction_is_also_transportation
+from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_itinerary_date
+from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
+from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ...data_access.schedule_itinerary_item import insert_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
@@ -70,27 +73,33 @@ def apply_listed_schedule(
          start_time=start_time,
          end_time=end_time )
 
-   if attraction_is_also_transportation( cur.connection, schedule_item_key.name ):
-      visit_date = fetch_itinerary_date( cur.connection )
-      parsed_visit_date = DateValues.parse_date_value( visit_date )
+   if isinstance( schedule_item_key, AttractionScheduleItemKey ):
+      saved_row = find_saved_itinerary_schedule_item_row(
+         fetch_saved_itinerary( cur.connection ),
+         schedule_item_key )
 
-      if parsed_visit_date is None:
-         return False
+      if isinstance( saved_row, ItineraryTransportationRecord ):
+         visit_date = fetch_itinerary_date( cur.connection )
+         parsed_visit_date = DateValues.parse_date_value( visit_date )
 
-      day_loop = fetch_transportation_day_loop(
-         cur.connection,
-         transportation=schedule_item_key.name,
-         target_date=parsed_visit_date )
+         if parsed_visit_date is None:
+            return False
 
-      if day_loop is None:
-         return False
+         day_loop = fetch_transportation_day_loop(
+            cur.connection,
+            transportation=schedule_item_key.name,
+            target_date=parsed_visit_date )
 
-      return apply_itinerary_transportation_schedule(
-         cur,
-         name=schedule_item_key.name,
-         start_time=start_time,
-         route=day_loop.route,
-         legs=day_loop.legs )
+         if day_loop is None:
+            return False
+
+         return apply_itinerary_transportation_schedule(
+            cur,
+            name=schedule_item_key.name,
+            added_as_attraction=saved_row.added_as_attraction,
+            start_time=start_time,
+            route=day_loop.route,
+            legs=day_loop.legs )
 
    if insert_if_missing:
       inserted = insert_itinerary_attraction_schedule(

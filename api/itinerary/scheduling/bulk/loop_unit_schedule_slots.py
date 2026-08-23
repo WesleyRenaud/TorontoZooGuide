@@ -245,6 +245,7 @@ def _persist_loop_group_slots(
                persisted = apply_itinerary_transportation_schedule(
                   cur,
                   name=stop.transportation,
+                  added_as_attraction=stop.added_as_attraction,
                   start_time=start_time,
                   route=day_loop.route,
                   legs=day_loop.legs )

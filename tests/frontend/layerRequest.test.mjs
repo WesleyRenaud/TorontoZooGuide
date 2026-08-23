@@ -16,7 +16,7 @@ test('builds typed itinerary rows for map focus candidates', () => {
          { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor' },
       ],
       attractions: [{ name: 'Conservation Carousel' }],
-      transportations: [{ name: 'Zoomobile', legs: [] }],
+      transportations: [{ name: 'Zoomobile', added_as_attraction: false, legs: [] }],
       transportationStations: [],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
@@ -25,13 +25,13 @@ test('builds typed itinerary rows for map focus candidates', () => {
       { species: 'Cheetah', exhibit: 'Africa Savanna', type: 'animal' },
       { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor', type: 'animal' },
       { name: 'Conservation Carousel', type: 'attraction' },
-      { name: 'Zoomobile', legs: [], type: 'transportation' },
+      { name: 'Zoomobile', added_as_attraction: false, legs: [], type: 'transportation' },
       { name: 'Amur Tiger', type: 'guardiansTalk' },
       { name: 'African Rainforest', type: 'wildEncounter' },
    ]);
 });
 
-test('uses station markers for scheduled transportations and generic markers when unscheduled', () => {
+test('includes transportation markers and station markers for scheduled rides', () => {
    assert.deepEqual(buildItineraryRows({
       animals: [],
       attractions: [],
@@ -40,6 +40,7 @@ test('uses station markers for scheduled transportations and generic markers whe
       transportations: [
          {
             name: 'Zoomobile',
+            added_as_attraction: false,
             legs: [{
                from_station: 'Main Zoomobile Station',
                to_station: 'Africa Zoomobile Station',
@@ -47,6 +48,7 @@ test('uses station markers for scheduled transportations and generic markers whe
          },
          {
             name: 'Zoo Shuttle',
+            added_as_attraction: false,
             legs: [],
          },
       ],
@@ -60,7 +62,16 @@ test('uses station markers for scheduled transportations and generic markers whe
          role: 'offboarding_station',
       }],
    }), [
-      { name: 'Zoo Shuttle', legs: [], type: 'transportation' },
+      {
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         legs: [{
+            from_station: 'Main Zoomobile Station',
+            to_station: 'Africa Zoomobile Station',
+         }],
+         type: 'transportation',
+      },
+      { name: 'Zoo Shuttle', added_as_attraction: false, legs: [], type: 'transportation' },
       {
          name: 'Main Zoomobile Station',
          transportation: 'Zoomobile',
@@ -72,6 +83,27 @@ test('uses station markers for scheduled transportations and generic markers whe
          transportation: 'Zoomobile',
          role: 'offboarding_station',
          type: 'transportationStation',
+      },
+   ]);
+});
+
+test('includes only transportations added as transportation', () => {
+   assert.deepEqual(buildItineraryRows({
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: true, legs: [] },
+         { name: 'Zoomobile', added_as_attraction: false, legs: [] },
+      ],
+      transportationStations: [],
+   }), [
+      {
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         legs: [],
+         type: 'transportation',
       },
    ]);
 });

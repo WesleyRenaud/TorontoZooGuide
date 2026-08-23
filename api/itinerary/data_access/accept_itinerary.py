@@ -89,7 +89,7 @@ def remove_declined_itinerary_transportations(
       'TRANSPORTATION',
       transportations_to_keep )
    declined_rows = cur.execute(
-      f"""   SELECT TRANSPORTATION
+      f"""   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
             FROM ItineraryTransportation
             WHERE OLD_LIKELIHOOD IS NOT NULL
               AND NEW_LIKELIHOOD IS NOT NULL
@@ -101,7 +101,8 @@ def remove_declined_itinerary_transportations(
    for row in declined_rows:
       delete_itinerary_transportation(
          cur,
-         transportation=row[ 'TRANSPORTATION' ] )
+         transportation=row[ 'TRANSPORTATION' ],
+         added_as_attraction=bool( row[ 'ADDED_AS_ATTRACTION' ] ) )
 
 
 def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:

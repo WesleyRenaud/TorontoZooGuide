@@ -281,9 +281,11 @@ EXPECTED_RUNTIME_COLUMNS = {
       'ADDED_AS_ATTRACTION',
       'START_TIME',
       'END_TIME',
+      'ROUTE',
    },
    'ItineraryTransportationLeg': {
       'TRANSPORTATION',
+      'ADDED_AS_ATTRACTION',
       'FROM_STATION',
       'TO_STATION',
       'START_TIME',

@@ -117,12 +117,14 @@ def save_itinerary_transportations(
       insert_itinerary_transportation_legs(
          cur,
          transportation=transportation.name,
+         added_as_attraction=transportation.added_as_attraction,
          legs=transportation.legs )
 
       if transportation.route_marker_sequences:
          insert_itinerary_transportation_route_markers(
             cur,
             transportation=transportation.name,
+            added_as_attraction=transportation.added_as_attraction,
             route_marker_sequences=transportation.route_marker_sequences )
 
 

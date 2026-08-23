@@ -72,11 +72,20 @@ def clear_itinerary_attraction_schedule(
 
 def clear_itinerary_transportation_schedule(
       cur: Cursor,
-      *,
-      name: str ) -> None:
-   delete_itinerary_transportation_route_markers( cur, transportation=name )
-   delete_itinerary_transportation_legs( cur, transportation=name )
-   clear_itinerary_transportation_schedule_times( cur, transportation=name )
+      name: str,
+      added_as_attraction: bool ) -> None:
+   delete_itinerary_transportation_route_markers(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
+   delete_itinerary_transportation_legs(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
+   clear_itinerary_transportation_schedule_times(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
 
 
 def clear_itinerary_guardians_talk_schedule(

@@ -14,8 +14,8 @@ from ...types import ScheduleTimeKey
 
 def update_itinerary_transportation_schedule(
       cur: Cursor,
-      *,
       name: str,
+      added_as_attraction: bool,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       route: str ) -> bool:
@@ -24,13 +24,15 @@ def update_itinerary_transportation_schedule(
             SET START_TIME = ?,
                 END_TIME = ?,
                 ROUTE = ?
-            WHERE TRANSPORTATION = ?;
+            WHERE TRANSPORTATION = ?
+              AND ADDED_AS_ATTRACTION = ?;
       """,
       (
          DateValues.normalize_itinerary_schedule_time( start_time ),
          DateValues.normalize_itinerary_schedule_time( end_time ),
          route,
          name,
+         added_as_attraction,
       ),
    )
 
@@ -39,23 +41,31 @@ def update_itinerary_transportation_schedule(
 
 def apply_itinerary_transportation_schedule(
       cur: Cursor,
-      *,
       name: str,
+      added_as_attraction: bool,
       start_time: ScheduleTimeKey,
       route: str,
       legs: list[ TransportationRouteLegSegment ] ) -> bool:
    timed_legs, end_time = expand_timed_transportation_legs(
       transportation=name,
       start_time=start_time,
-      legs=legs )
+      legs=legs,
+      added_as_attraction=added_as_attraction )
 
-   delete_itinerary_transportation_legs( cur, transportation=name )
+   delete_itinerary_transportation_legs(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
    insert_itinerary_transportation_legs(
       cur,
       transportation=name,
+      added_as_attraction=added_as_attraction,
       legs=timed_legs )
 
-   delete_itinerary_transportation_route_markers( cur, transportation=name )
+   delete_itinerary_transportation_route_markers(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
    route_marker_sequences = build_transportation_route_marker_sequences(
       cur.connection,
       transportation=name,
@@ -67,11 +77,13 @@ def apply_itinerary_transportation_schedule(
       insert_itinerary_transportation_route_markers(
          cur,
          transportation=name,
+         added_as_attraction=added_as_attraction,
          route_marker_sequences=route_marker_sequences )
 
    return update_itinerary_transportation_schedule(
       cur,
       name=name,
+      added_as_attraction=added_as_attraction,
       start_time=start_time,
       end_time=end_time,
       route=route )

@@ -3,7 +3,9 @@ from __future__ import annotations
 from ..animal_item_key import AnimalScheduleItemKey
 from ..attraction_item_key import AttractionScheduleItemKey
 from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
-from ..data_access.attraction_also_transportation import attraction_is_also_transportation
+from ..data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
+from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ..data_access.remove_itinerary_item import delete_itinerary_animal
 from ..data_access.remove_itinerary_item import delete_itinerary_attraction
 from ..data_access.remove_itinerary_item import delete_itinerary_event
@@ -31,12 +33,15 @@ def _apply_remove(
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
-      if attraction_is_also_transportation(
-            cur.connection,
-            schedule_item_key.name ):
+      saved_row = find_saved_itinerary_schedule_item_row(
+         fetch_saved_itinerary( cur.connection ),
+         schedule_item_key )
+
+      if isinstance( saved_row, ItineraryTransportationRecord ):
          delete_itinerary_transportation(
             cur,
-            name=schedule_item_key.name )
+            name=schedule_item_key.name,
+            added_as_attraction=saved_row.added_as_attraction )
          return
 
       delete_itinerary_attraction(

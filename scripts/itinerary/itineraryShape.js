@@ -240,13 +240,16 @@ function normalizeTransportationsForSave(draft = {}) {
       })
       .filter(Boolean);
 
-   const byName = new Map();
+   const bySaveKey = new Map();
 
    [...fromTransportations, ...fromAttractions].forEach((item) => {
-      byName.set(item.name, item);
+      bySaveKey.set(
+         `${item.name}::${item.added_as_attraction}`,
+         item
+      );
    });
 
-   return [...byName.values()];
+   return [...bySaveKey.values()];
 }
 
 function normalizeAttractionsForSave(attractions = []) {
