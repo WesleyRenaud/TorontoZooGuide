@@ -90,7 +90,8 @@ def clear_schedules_outside_visit_window(
 
          clear_itinerary_transportation_schedule(
             cur,
-            name=transportation.transportation )
+            name=transportation.transportation,
+            added_as_attraction=transportation.added_as_attraction )
          did_clear_schedule = True
 
       for event in fetch_itinerary_event_rows( conn ):

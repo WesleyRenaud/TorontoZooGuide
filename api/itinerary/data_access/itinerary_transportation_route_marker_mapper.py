@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_transportation_route_marker_record import ItineraryTransportationRouteMarkerRecord
+from ...shared.value_conversion import ValueConversion
 from ...types import Row
 
 
@@ -9,6 +10,8 @@ def map_itinerary_transportation_route_marker(
 ) -> ItineraryTransportationRouteMarkerRecord:
    return ItineraryTransportationRouteMarkerRecord(
       transportation=row[ 'TRANSPORTATION' ],
+      added_as_attraction=ValueConversion.as_boolean(
+         row[ 'ADDED_AS_ATTRACTION' ] ),
       sequence=row[ 'SEQUENCE' ],
       marker_order=row[ 'MARKER_ORDER' ],
       marker_id=row[ 'MARKER_ID' ],

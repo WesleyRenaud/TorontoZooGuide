@@ -8,9 +8,17 @@ from ...shared.value_conversion import ValueConversion
 from ...types import Row
 
 
+TransportationRowKey = tuple[ str, bool ]
+
+
+def transportation_row_key(
+      transportation: str,
+      added_as_attraction: bool ) -> TransportationRowKey:
+   return ( transportation, added_as_attraction )
+
+
 def map_itinerary_transportation_record(
       row: Row,
-      *,
       legs: list[ ItineraryTransportationLeg ],
       route_markers: list[ ItineraryTransportationRouteMarkerRecord ],
 ) -> ItineraryTransportationRecord:
@@ -30,31 +38,47 @@ def map_itinerary_transportation_record(
 
 def map_itinerary_transportation_records(
       rows: list[ Row ],
-      *,
       legs: list[ ItineraryTransportationLeg ],
       route_markers: list[ ItineraryTransportationRouteMarkerRecord ],
 ) -> list[ ItineraryTransportationRecord ]:
-   legs_by_transportation: dict[ str, list[ ItineraryTransportationLeg ] ] = {}
+   legs_by_transportation: dict[
+      TransportationRowKey,
+      list[ ItineraryTransportationLeg ],
+   ] = {}
    markers_by_transportation: dict[
-      str,
+      TransportationRowKey,
       list[ ItineraryTransportationRouteMarkerRecord ],
    ] = {}
 
    for leg in legs:
-      legs_by_transportation.setdefault( leg.transportation, [] ).append( leg )
+      key = transportation_row_key(
+         leg.transportation,
+         added_as_attraction=leg.added_as_attraction )
+      legs_by_transportation.setdefault( key, [] ).append( leg )
 
    for marker in route_markers:
-      markers_by_transportation.setdefault(
+      key = transportation_row_key(
          marker.transportation,
-         [],
-      ).append( marker )
+         added_as_attraction=marker.added_as_attraction )
+      markers_by_transportation.setdefault( key, [] ).append( marker )
 
    return [
       map_itinerary_transportation_record(
          row,
-         legs=legs_by_transportation.get( row[ 'TRANSPORTATION' ], [] ),
+         legs=legs_by_transportation.get(
+            transportation_row_key(
+               row[ 'TRANSPORTATION' ],
+               added_as_attraction=ValueConversion.as_boolean(
+                  row[ 'ADDED_AS_ATTRACTION' ] ),
+            ),
+            [],
+         ),
          route_markers=markers_by_transportation.get(
-            row[ 'TRANSPORTATION' ],
+            transportation_row_key(
+               row[ 'TRANSPORTATION' ],
+               added_as_attraction=ValueConversion.as_boolean(
+                  row[ 'ADDED_AS_ATTRACTION' ] ),
+            ),
             [],
          ),
       )

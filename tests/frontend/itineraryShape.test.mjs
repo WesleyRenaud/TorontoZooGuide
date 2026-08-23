@@ -229,6 +229,17 @@ test('hydrateWizardDraftFromSavedItinerary moves added-as-attraction transportat
    });
 });
 
+test('toSetItineraryPayload keeps both transportation roles for the same name', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-08-17',
+      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      transportations: [{ name: 'Zoomobile', addedAsAttraction: false }],
+   }).transportations, [
+      { name: 'Zoomobile', added_as_attraction: false },
+      { name: 'Zoomobile', added_as_attraction: true },
+   ]);
+});
+
 test('toSetItineraryPayload keeps added_as_attraction from saved transportations', () => {
    assert.deepEqual(toSetItineraryPayload({
       date: '2026-08-17',

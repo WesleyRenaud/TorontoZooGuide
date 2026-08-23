@@ -14,10 +14,11 @@ from ..data_access.itinerary_animal_save_carryover import itinerary_animal_save_
 from ..data_access.itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_attraction_save_carryover import itinerary_attraction_save_carryover
-from ..data_access.itinerary_attraction_save_carryover import ItineraryNamedSaveRow
 from ..data_access.itinerary_event_record import ItineraryEventRecord
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
+from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
+from ..data_access.itinerary_transportation_save_carryover import itinerary_transportation_save_carryover
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ..domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
@@ -208,7 +209,7 @@ def validate_itinerary_attractions(
       arrival_time: ScheduleTimeKey,
       departure_time: ScheduleTimeKey,
       old_visit_date: DateKey | None = None,
-      saved_attraction_rows: list[ ItineraryNamedSaveRow ] | None = None,
+      saved_attraction_rows: list[ ItineraryAttractionRecord ] | None = None,
       visit_date_is_changing: bool = False ) -> list[ AttractionDiff ]:
    diffs: list[ AttractionDiff ] = []
 
@@ -245,13 +246,13 @@ def validate_itinerary_attractions(
 
 def _timed_legs_for_transportation_save(
       conn: Connection,
-      *,
       transportation_name: str,
       visit_date: date,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       carryover_legs: list[ ItineraryTransportationLeg ],
       visit_date_is_changing: bool,
+      added_as_attraction: bool,
 ) -> tuple[ ScheduleTimeKey, list[ ItineraryTransportationLeg ] ]:
    if start_time is None:
       return None, []
@@ -270,7 +271,8 @@ def _timed_legs_for_transportation_save(
    timed_legs, expanded_end_time = expand_timed_transportation_legs(
       transportation=transportation_name,
       start_time=start_time,
-      legs=day_loop.legs )
+      legs=day_loop.legs,
+      added_as_attraction=added_as_attraction )
 
    return expanded_end_time, timed_legs
 
@@ -284,14 +286,14 @@ def validate_itinerary_transportations(
       arrival_time: ScheduleTimeKey,
       departure_time: ScheduleTimeKey,
       old_visit_date: DateKey | None = None,
-      saved_transportation_rows: list[ ItineraryNamedSaveRow ] | None = None,
+      saved_transportation_rows: list[ ItineraryTransportationRecord ] | None = None,
       visit_date_is_changing: bool = False ) -> list[ TransportationDiff ]:
    diffs: list[ TransportationDiff ] = []
 
    for transportation in transportations:
-      carryover = itinerary_attraction_save_carryover(
+      carryover = itinerary_transportation_save_carryover(
          saved_transportation_rows,
-         transportation.name,
+         transportation,
          old_visit_date=old_visit_date )
 
       new_likelihood = attraction_coordinator.get_attraction_likelihood_for_visit_date(
@@ -312,7 +314,8 @@ def validate_itinerary_transportations(
          start_time=start_time,
          end_time=end_time,
          carryover_legs=carryover.legs,
-         visit_date_is_changing=visit_date_is_changing )
+         visit_date_is_changing=visit_date_is_changing,
+         added_as_attraction=transportation.added_as_attraction )
 
       if not legs:
          diffs.append(

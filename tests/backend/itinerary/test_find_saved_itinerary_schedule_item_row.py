@@ -6,6 +6,7 @@ from api.itinerary.data_access.find_saved_itinerary_schedule_item_row import fin
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -66,6 +67,56 @@ def test_find_saved_itinerary_schedule_item_row_finds_attraction_row() -> None:
 
    assert row is not None
    assert row.attraction == 'Conservation Carousel'
+
+
+def test_find_saved_itinerary_schedule_item_row_finds_added_as_attraction_transportation_row() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=None,
+      departure_time=None,
+      transportation_rows=(
+         ItineraryTransportationRecord(
+            transportation='Zoomobile',
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=True ),
+         ItineraryTransportationRecord(
+            transportation='Zoomobile',
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=False ),
+      ),
+   )
+
+   row = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      AttractionScheduleItemKey( name='Zoomobile' ),
+   )
+
+   assert isinstance( row, ItineraryTransportationRecord )
+   assert row.added_as_attraction is True
+
+
+def test_find_saved_itinerary_schedule_item_row_ignores_pure_transportation_row() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=None,
+      departure_time=None,
+      transportation_rows=(
+         ItineraryTransportationRecord(
+            transportation='Zoomobile',
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=False ),
+      ),
+   )
+
+   row = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      AttractionScheduleItemKey( name='Zoomobile' ),
+   )
+
+   assert row is None
 
 
 def test_find_saved_itinerary_schedule_item_row_finds_event_row() -> None:

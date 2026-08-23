@@ -10,7 +10,7 @@ class ItineraryTransportation:
    def __init__(
          self,
          name: str,
-         *,
+         added_as_attraction: bool,
          old_likelihood: int | None = None,
          likelihood: int | None = None,
          start_time: ScheduleTimeKey = None,
@@ -22,7 +22,6 @@ class ItineraryTransportation:
          stations: list[ ItineraryTransportationStation ] | None = None,
          route: str | None = None,
          route_marker_sequences: list[ list[ str ] ] | None = None,
-         added_as_attraction: bool = False,
          route_duration_minutes: int | None = None ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood

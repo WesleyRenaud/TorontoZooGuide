@@ -14,11 +14,12 @@ def fetch_itinerary_transportation_route_markers(
       rows = cur.execute(
          """   SELECT
                   TRANSPORTATION,
+                  ADDED_AS_ATTRACTION,
                   SEQUENCE,
                   MARKER_ORDER,
                   MARKER_ID
                FROM ItineraryTransportationRouteMarker
-               ORDER BY TRANSPORTATION, SEQUENCE, MARKER_ORDER;
+               ORDER BY TRANSPORTATION, ADDED_AS_ATTRACTION, SEQUENCE, MARKER_ORDER;
          """
       ).fetchall()
    finally:

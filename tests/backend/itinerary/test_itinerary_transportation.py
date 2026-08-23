@@ -134,6 +134,57 @@ def test_set_itinerary_saves_zoomobile_as_transportation_not_attraction(
    assert leg_rows[ 'count' ] == 0
 
 
+def test_set_itinerary_saves_same_transportation_as_attraction_and_transportation(
+      db: DbControllers ) -> None:
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=False ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success is True
+   assert sorted(
+      (
+         transportation.added_as_attraction,
+         transportation.name,
+      )
+      for transportation in result.itinerary.transportations
+   ) == [
+      ( False, ZOOMOBILE ),
+      ( True, ZOOMOBILE ),
+   ]
+
+   transportation_rows = db.conn.execute(
+      """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
+            FROM ItineraryTransportation
+            ORDER BY ADDED_AS_ATTRACTION;
+      """
+   ).fetchall()
+
+   assert [
+      {
+         'TRANSPORTATION': row[ 'TRANSPORTATION' ],
+         'ADDED_AS_ATTRACTION': row[ 'ADDED_AS_ATTRACTION' ],
+      }
+      for row in transportation_rows
+   ] == [
+      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 0 },
+      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 1 },
+   ]
+
+
 def test_schedule_zoomobile_expands_timed_legs(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(

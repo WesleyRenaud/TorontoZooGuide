@@ -35,9 +35,12 @@ def delete_itinerary_attraction(
 
 def delete_itinerary_transportation(
       cur: Cursor,
-      *,
-      name: str ) -> None:
-   delete_itinerary_transportation_row( cur, transportation=name )
+      name: str,
+      added_as_attraction: bool ) -> None:
+   delete_itinerary_transportation_row(
+      cur,
+      transportation=name,
+      added_as_attraction=added_as_attraction )
 
 
 def delete_itinerary_guardians_talk(

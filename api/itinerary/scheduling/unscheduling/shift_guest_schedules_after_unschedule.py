@@ -335,6 +335,7 @@ def _shift_guest_scheduled_transportation_rows(
       apply_itinerary_transportation_schedule(
          cur,
          name=transportation_row.transportation,
+         added_as_attraction=transportation_row.added_as_attraction,
          start_time=shifted_times[ 0 ],
          route=day_loop.route,
          legs=day_loop.legs )

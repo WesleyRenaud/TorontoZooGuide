@@ -1,4 +1,3 @@
-import { isTransportationScheduled } from '../itinerary/selectors/transportationSelector/model.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
 import { normalizeTypedRows } from './sourceHelpers.js';
 
@@ -57,7 +56,7 @@ export function buildItineraryRows(itinerary) {
       ...normalizeTypedRows(itinerary?.animals, 'animal'),
       ...normalizeTypedRows(itinerary?.attractions, 'attraction'),
       ...normalizeTypedRows(itinerary?.transportations, 'transportation')
-         .filter((transportation) => !isTransportationScheduled(transportation)),
+         .filter((transportation) => transportation.added_as_attraction === false),
       ...normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
       ...normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
       ...normalizeTypedRows(

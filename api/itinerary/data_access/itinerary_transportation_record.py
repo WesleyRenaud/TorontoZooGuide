@@ -16,9 +16,9 @@ class ItineraryTransportationRecord:
    transportation: str
    old_likelihood: int | None
    new_likelihood: int | None
+   added_as_attraction: bool
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
-   added_as_attraction: bool = False
    route: str | None = None
    legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
    route_marker_sequences: list[ list[ str ] ] = field( default_factory=list )

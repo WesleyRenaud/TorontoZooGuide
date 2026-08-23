@@ -96,12 +96,13 @@ def fetch_itinerary_transportation_leg_rows(
    rows = cur.execute(
       """   SELECT
                TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
                FROM_STATION,
                TO_STATION,
                START_TIME,
                END_TIME
             FROM ItineraryTransportationLeg
-            ORDER BY TRANSPORTATION, START_TIME;
+            ORDER BY TRANSPORTATION, ADDED_AS_ATTRACTION, START_TIME;
       """ ).fetchall()
 
    cur.close()

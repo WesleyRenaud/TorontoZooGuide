@@ -57,6 +57,7 @@ def test_fetch_transportation_route_leg_marker_ids_preserves_travel_order(
             to_station=CANADA,
             start_time='10:00 AM',
             end_time='10:20 AM',
+            added_as_attraction=False,
          ),
       ],
    )
@@ -80,6 +81,7 @@ def test_fetch_wraparound_leg_markers_preserve_travel_order(
             to_station=MAIN,
             start_time='11:00 AM',
             end_time='11:15 AM',
+            added_as_attraction=False,
          ),
       ],
    )
@@ -102,6 +104,7 @@ def test_build_sequences_splits_discontinuous_legs(
             to_station=CANADA,
             start_time='10:00 AM',
             end_time='10:20 AM',
+            added_as_attraction=False,
          ),
          ItineraryTransportationLeg(
             transportation=ZOOMOBILE,
@@ -109,6 +112,7 @@ def test_build_sequences_splits_discontinuous_legs(
             to_station=EURASIA,
             start_time='2:00 PM',
             end_time='2:15 PM',
+            added_as_attraction=False,
          ),
       ],
    )
@@ -131,6 +135,7 @@ def test_build_sequences_concatenates_consecutive_legs(
             to_station=CANADA,
             start_time='10:00 AM',
             end_time='10:20 AM',
+            added_as_attraction=False,
          ),
          ItineraryTransportationLeg(
             transportation=ZOOMOBILE,
@@ -138,6 +143,7 @@ def test_build_sequences_concatenates_consecutive_legs(
             to_station=AFRICA,
             start_time='10:20 AM',
             end_time='10:30 AM',
+            added_as_attraction=False,
          ),
       ],
    )
@@ -163,6 +169,7 @@ def test_schedule_persists_route_marker_sequences(
       applied = apply_itinerary_transportation_schedule(
          cur,
          name=ZOOMOBILE,
+         added_as_attraction=True,
          start_time='10:00 AM',
          route='summer',
          legs=[
@@ -221,6 +228,7 @@ def test_clear_transportation_schedule_removes_route_markers(
       insert_itinerary_transportation_legs(
          cur,
          transportation=ZOOMOBILE,
+         added_as_attraction=True,
          legs=[
             ItineraryTransportationLeg(
                transportation=ZOOMOBILE,
@@ -228,17 +236,22 @@ def test_clear_transportation_schedule_removes_route_markers(
                to_station=CANADA,
                start_time='10:00 AM',
                end_time='10:20 AM',
+               added_as_attraction=True,
             ),
          ],
       )
       insert_itinerary_transportation_route_markers(
          cur,
          transportation=ZOOMOBILE,
+         added_as_attraction=True,
          route_marker_sequences=[
             ordered_marker_ids( 'zm-s', 5, 85, 297 ),
          ],
       )
-      clear_itinerary_transportation_schedule( cur, name=ZOOMOBILE )
+      clear_itinerary_transportation_schedule(
+         cur,
+         name=ZOOMOBILE,
+         added_as_attraction=True )
       db.conn.commit()
 
       route = cur.execute(
