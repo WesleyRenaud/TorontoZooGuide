@@ -5,6 +5,7 @@ import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import {
    getTransportationId,
+   getTransportationScheduleItemKey,
    isTransportationAddedAsAttraction,
 } from '../selectors/transportationSelector/model.js';
 import {
@@ -123,7 +124,7 @@ export function getScheduleItemRowId(row) {
    }
 
    if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
-      return getTransportationId(row);
+      return getTransportationScheduleItemKey(row);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
@@ -149,7 +150,7 @@ export function getItineraryItemKey(itemType, item) {
    }
 
    if (kind === ScheduleItemKind.TRANSPORTATION) {
-      return getTransportationId(item);
+      return getTransportationScheduleItemKey(item);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK) {
@@ -250,7 +251,7 @@ export function buildItineraryScheduleItemRowIds(
       transportationIds: new Set(
          transportationItems
             .filter((transportation) => !isTransportationAddedAsAttraction(transportation))
-            .map((transportation) => getTransportationId(transportation))
+            .map((transportation) => getTransportationScheduleItemKey(transportation))
       ),
       guardiansTalkIds: new Set(
          pickItems(itinerary.guardiansTalks).map((talk) => getGuardiansTalkId(talk))

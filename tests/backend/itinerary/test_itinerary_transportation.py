@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, unschedule_itinerary_item
+from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, remove_itinerary_item, schedule_itinerary_item, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -182,6 +182,70 @@ def test_set_itinerary_saves_same_transportation_as_attraction_and_transportatio
    ] == [
       { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 0 },
       { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 1 },
+   ]
+
+
+def test_remove_transportation_as_transportation_keeps_attraction_role(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=False ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert remove_itinerary_item( 'transportations', f'{ ZOOMOBILE }||0' ).success
+
+   saved = fetch_saved_itinerary( db.conn )
+
+   assert [
+      ( row.transportation, row.added_as_attraction )
+      for row in saved.transportation_rows
+   ] == [
+      ( ZOOMOBILE, True ),
+   ]
+
+
+def test_remove_transportation_as_attraction_keeps_transportation_role(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+         ItineraryTransportationInput(
+            name=ZOOMOBILE,
+            added_as_attraction=False ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert remove_itinerary_item( 'attractions', ZOOMOBILE ).success
+
+   saved = fetch_saved_itinerary( db.conn )
+
+   assert [
+      ( row.transportation, row.added_as_attraction )
+      for row in saved.transportation_rows
+   ] == [
+      ( ZOOMOBILE, False ),
    ]
 
 

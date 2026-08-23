@@ -341,14 +341,14 @@ test.describe('itinerary day planner preview scheduled', () => {
 
       assert.deepEqual(unscheduleCalls, [{
          itemType: 'transportations',
-         key: 'Zoomobile',
+         key: 'Zoomobile||1',
       }]);
 
       menuItems[1].click();
 
       assert.deepEqual(removeCalls, [{
          itemType: 'transportations',
-         key: 'Zoomobile',
+         key: 'Zoomobile||1',
       }]);
    });
 

@@ -47,7 +47,7 @@ test('buildScheduleItemRequest maps event and animal rows', () => {
          added_as_attraction: false,
          scheduleItemKind: 'transportations',
       }, []),
-      { itemType: 'transportations', key: 'Zoomobile' }
+      { itemType: 'transportations', key: 'Zoomobile||0' }
    );
 });
 

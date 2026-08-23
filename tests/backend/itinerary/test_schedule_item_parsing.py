@@ -11,6 +11,7 @@ from api.itinerary.scheduling.core.scheduling_anchor import scheduling_anchor_se
 from api.itinerary.scheduling.core.time_block import time_blocks_overlap
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
+from api.itinerary.transportation_item_key import TransportationScheduleItemKey
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -63,9 +64,21 @@ def test_map_schedule_item_key_from_wire_attraction_key() -> None:
 def test_map_schedule_item_key_from_wire_transportation_key() -> None:
    schedule_item_key = map_schedule_item_key_from_wire(
       'transportations',
-      'Zoomobile' )
+      'Zoomobile||0' )
 
-   assert schedule_item_key == AttractionScheduleItemKey( name='Zoomobile' )
+   assert schedule_item_key == TransportationScheduleItemKey(
+      name='Zoomobile',
+      added_as_attraction=False )
+
+   assert map_schedule_item_key_from_wire(
+      'transportations',
+      'Zoomobile' ) is None
+
+   assert map_schedule_item_key_from_wire(
+      'transportations',
+      'Zoomobile||1' ) == TransportationScheduleItemKey(
+         name='Zoomobile',
+         added_as_attraction=True )
 
 
 def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:

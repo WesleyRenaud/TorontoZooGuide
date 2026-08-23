@@ -274,7 +274,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    };
    const transportationRow = {
       name: 'Zoomobile',
-      added_as_attraction: true,
+      added_as_attraction: false,
       scheduleItemKind: 'transportations',
    };
    const guardiansTalkRow = {
@@ -295,7 +295,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    assert.equal(getScheduleItemRowKind(wildEncounterRow), 'wild_encounters');
    assert.equal(getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(getScheduleItemRowId(attractionRow), 'Carousel');
-   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile');
+   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile||0');
    assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||14:00');
    assert.equal(getScheduleItemRowId(wildEncounterRow), 'African Rainforest||14:00');
 });
@@ -353,7 +353,8 @@ test('buildItineraryScheduleItemRowIds collects schedule item keys', () => {
    assert.equal(ids.attractionIds.has('Zoomobile'), true);
    assert.equal(ids.attractionIds.has('Zoo Shuttle'), false);
    assert.equal(ids.transportationIds.has('Zoomobile'), false);
-   assert.equal(ids.transportationIds.has('Zoo Shuttle'), true);
+   assert.equal(ids.transportationIds.has('Zoo Shuttle'), false);
+   assert.equal(ids.transportationIds.has('Zoo Shuttle||0'), true);
    assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
    assert.equal(ids.wildEncounterIds.has('African Rainforest'), false);
    assert.equal(ids.wildEncounterIds.has('Americas||2:00 PM'), true);
@@ -689,7 +690,7 @@ test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
       transportationRow.scheduleItemKind,
       ScheduleItemKind.TRANSPORTATION.itemType
    );
-   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile');
+   assert.equal(getScheduleItemRowId(transportationRow), 'Zoomobile||0');
    assert.equal(
       guardiansTalkRow.scheduleItemKind,
       ScheduleItemKind.GUARDIANS_TALK.itemType

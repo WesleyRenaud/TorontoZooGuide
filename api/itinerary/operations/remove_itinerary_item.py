@@ -16,6 +16,7 @@ from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.enums import ItineraryEventType
+from ..transportation_item_key import TransportationScheduleItemKey
 from ...types import Connection
 from ...types import Cursor
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -30,6 +31,13 @@ def _apply_remove(
          species=schedule_item_key.species,
          exhibit=schedule_item_key.exhibit,
          enclosure_name=schedule_item_key.enclosure_name )
+      return
+
+   if isinstance( schedule_item_key, TransportationScheduleItemKey ):
+      delete_itinerary_transportation(
+         cur,
+         name=schedule_item_key.name,
+         added_as_attraction=schedule_item_key.added_as_attraction )
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):

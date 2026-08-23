@@ -14,6 +14,7 @@ from .saved_itinerary import SavedItinerary
 from ..scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.enums import ItineraryEventType
+from ..transportation_item_key import TransportationScheduleItemKey
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
@@ -42,13 +43,26 @@ def _attraction_row_matches_schedule_item_key(
    return attraction_row.attraction == schedule_item_key.name
 
 
-def _transportation_row_matches_schedule_item_key(
+def _transportation_row_matches_attraction_schedule_item_key(
       transportation_row: ItineraryTransportationRecord,
       schedule_item_key: AttractionScheduleItemKey ) -> bool:
-   return transportation_row.transportation == schedule_item_key.name
+   return (
+      transportation_row.transportation == schedule_item_key.name
+      and transportation_row.added_as_attraction
+   )
 
 
-def _find_saved_itinerary_transportation_row(
+def _transportation_row_matches_transportation_schedule_item_key(
+      transportation_row: ItineraryTransportationRecord,
+      schedule_item_key: TransportationScheduleItemKey ) -> bool:
+   return (
+      transportation_row.transportation == schedule_item_key.name
+      and transportation_row.added_as_attraction
+      == schedule_item_key.added_as_attraction
+   )
+
+
+def _find_saved_itinerary_transportation_row_for_attraction(
       saved_itinerary: SavedItinerary,
       schedule_item_key: AttractionScheduleItemKey,
       ) -> ItineraryTransportationRecord | None:
@@ -56,10 +70,25 @@ def _find_saved_itinerary_transportation_row(
       (
          transportation_row
          for transportation_row in saved_itinerary.transportation_rows
-         if _transportation_row_matches_schedule_item_key(
+         if _transportation_row_matches_attraction_schedule_item_key(
             transportation_row,
             schedule_item_key )
-         and transportation_row.added_as_attraction
+      ),
+      None,
+   )
+
+
+def _find_saved_itinerary_transportation_row(
+      saved_itinerary: SavedItinerary,
+      schedule_item_key: TransportationScheduleItemKey,
+      ) -> ItineraryTransportationRecord | None:
+   return next(
+      (
+         transportation_row
+         for transportation_row in saved_itinerary.transportation_rows
+         if _transportation_row_matches_transportation_schedule_item_key(
+            transportation_row,
+            schedule_item_key )
       ),
       None,
    )
@@ -110,7 +139,7 @@ def find_saved_itinerary_schedule_item_row(
       )
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
-      transportation_row = _find_saved_itinerary_transportation_row(
+      transportation_row = _find_saved_itinerary_transportation_row_for_attraction(
          saved_itinerary,
          schedule_item_key )
 
@@ -127,6 +156,11 @@ def find_saved_itinerary_schedule_item_row(
          ),
          None,
       )
+
+   if isinstance( schedule_item_key, TransportationScheduleItemKey ):
+      return _find_saved_itinerary_transportation_row(
+         saved_itinerary,
+         schedule_item_key )
 
    if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
       return next(

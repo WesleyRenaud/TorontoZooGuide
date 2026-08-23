@@ -238,6 +238,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
             transportations: [
                {
                   name: 'Zoomobile',
+                  added_as_attraction: false,
                   start_time: '2:30 PM',
                   end_time: '3:00 PM',
                   legs: [
@@ -268,7 +269,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
 
       assert.equal(transportationItems.length, 1);
       assert.equal(transportationItems[0].label, 'Zoomobile');
-      assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile');
+      assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile||0');
       assert.equal(context.scheduledTransportationIndexes.size, 1);
       assert.match(
          allTextFor(transportationItems[0].row),
