@@ -3,12 +3,34 @@ import { test } from 'node:test';
 
 import {
    buildAddAsTransportationMessage,
+   buildTransportationStationsLine,
    isScheduleItemTransportationRow,
    makeTransportationSelection,
    migrateStoredTransportations,
    shouldConfirmAddAsTransportation,
 } from '../../scripts/itinerary/selectors/transportationSelector/model.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+
+test('buildTransportationStationsLine omits main-station round trip for pure transportations', () => {
+   assert.equal(
+      buildTransportationStationsLine({
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         main_station: 'Main Zoomobile Station',
+         legs: [],
+      }),
+      ''
+   );
+   assert.equal(
+      buildTransportationStationsLine({
+         name: 'Zoomobile',
+         added_as_attraction: true,
+         main_station: 'Main Zoomobile Station',
+         legs: [],
+      }),
+      'Main Zoomobile Station (round trip)'
+   );
+});
 
 test('isScheduleItemTransportationRow recognizes transportations and added-as-attraction rows', () => {
    assert.equal(

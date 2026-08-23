@@ -63,6 +63,10 @@ function fallbackStationNames(row, pickFromLeg) {
       return name ? [name] : [];
    }
 
+   if (!isTransportationAddedAsAttraction(row)) {
+      return [];
+   }
+
    const mainStation = normalizeStoredString(row?.main_station);
    return mainStation ? [mainStation] : [];
 }

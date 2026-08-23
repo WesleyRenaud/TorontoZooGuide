@@ -327,6 +327,7 @@ test.describe('itinerary panel row builders', () => {
             {
                name: 'Zoomobile',
                added_as_attraction: false,
+               main_station: 'Main Zoomobile Station',
             },
             {
                name: 'Zoo Shuttle',
@@ -348,6 +349,10 @@ test.describe('itinerary panel row builders', () => {
          transportationSection.children.map((row) => textFor(row, '.itin-panel-name')),
          ['Zoomobile']
       );
+      assert.doesNotMatch(
+         allTextFor(transportationSection.children[0]),
+         /round trip|Main Zoomobile Station/
+      );
 
       const buttons = [
          ...(transportationSection.children[0]?.querySelectorAll('.itin-panel-item-action-btn') ?? []),
@@ -363,6 +368,27 @@ test.describe('itinerary panel row builders', () => {
          itemType: 'transportations',
          key: 'Zoomobile',
       }]);
+   });
+
+   test('attraction section shows main-station round trip for unscheduled transportation attractions', () => {
+      const [attractionSection] = buildSectionConfigs({
+         attractions: [],
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: true,
+               main_station: 'Main Zoomobile Station',
+               legs: [],
+            },
+         ],
+      }, {
+         keys: ['attractions'],
+      });
+
+      assert.match(
+         allTextFor(attractionSection.children[0]),
+         /Main Zoomobile Station \(round trip\)/
+      );
    });
 
    test('transportation station line marks round trips when first and last match', () => {
