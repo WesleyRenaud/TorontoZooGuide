@@ -6,6 +6,7 @@ import {
    buildWildRows,
 } from './rows.js';
 import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
+import { expandTransportationListItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const ITINERARY_PANEL_SECTION_KEYS = {
@@ -48,19 +49,24 @@ export function buildSectionConfigs(
       onUnscheduleItem = null,
       onScheduleItem = null,
       onRemoveItem = null,
+      splitTransportationSequences = false,
    } = {}
 ) {
    const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
+   const listTransportations = expandTransportationListItems(
+      transportations,
+      { splitSequences: splitTransportationSequences }
+   );
    const animalRows = buildAnimalRows(animals, rowActionOptions);
    const attractionRows = [
       ...buildAttractionRows(attractions, rowActionOptions),
       ...buildTransportationRows(
-         transportations.filter(isTransportationAddedAsAttraction),
+         listTransportations.filter(isTransportationAddedAsAttraction),
          rowActionOptions
       ),
    ];
    const transportationRows = buildTransportationRows(
-      transportations.filter((item) => !isTransportationAddedAsAttraction(item)),
+      listTransportations.filter((item) => !isTransportationAddedAsAttraction(item)),
       rowActionOptions
    );
    const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });
