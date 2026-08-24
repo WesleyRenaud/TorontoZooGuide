@@ -57,6 +57,7 @@ test.describe('itinerary path overlay', () => {
 
    test('renders an exact path layer inside the zoo map svg', () => {
       renderItineraryPathOverlay({
+         legs: [],
          points: [
             { nodeId: ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
             { nodeId: 'v-0012', xPx: 2515.5, yPx: 2434.9 },
@@ -82,6 +83,7 @@ test.describe('itinerary path overlay', () => {
 
    test('places arrows along the route path', () => {
       renderItineraryPathOverlay({
+         legs: [],
          points: [
             { nodeId: 'v-0001', xPx: 100, yPx: 200 },
             { nodeId: 'v-0002', xPx: 500, yPx: 200 },
@@ -96,6 +98,7 @@ test.describe('itinerary path overlay', () => {
 
    test('clears the overlay when fewer than two points are available', () => {
       renderItineraryPathOverlay({
+         legs: [],
          points: [{ xPx: 100, yPx: 200 }],
       });
 
@@ -105,6 +108,7 @@ test.describe('itinerary path overlay', () => {
       );
 
       renderItineraryPathOverlay({
+         legs: [],
          points: [
             { xPx: 100, yPx: 200 },
             { xPx: 300, yPx: 400 },

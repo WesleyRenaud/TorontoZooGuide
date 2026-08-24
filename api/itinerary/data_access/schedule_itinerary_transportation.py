@@ -46,11 +46,42 @@ def apply_itinerary_transportation_schedule(
       start_time: ScheduleTimeKey,
       route: str,
       legs: list[ TransportationRouteLegSegment ] ) -> bool:
-   timed_legs, end_time = expand_timed_transportation_legs(
-      transportation=name,
-      start_time=start_time,
-      legs=legs,
-      added_as_attraction=added_as_attraction )
+   return apply_itinerary_transportation_ride_segments(
+      cur,
+      name=name,
+      added_as_attraction=added_as_attraction,
+      route=route,
+      segments=[ ( start_time, legs ) ] )
+
+
+def apply_itinerary_transportation_ride_segments(
+      cur: Cursor,
+      name: str,
+      added_as_attraction: bool,
+      route: str,
+      segments: list[ tuple[ ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ],
+) -> bool:
+   if not segments:
+      return False
+
+   timed_legs: list = []
+   parent_start_time = segments[ 0 ][ 0 ]
+   parent_end_time = segments[ 0 ][ 0 ]
+
+   for start_time, legs in segments:
+      if not legs:
+         continue
+
+      segment_legs, end_time = expand_timed_transportation_legs(
+         transportation=name,
+         start_time=start_time,
+         legs=legs,
+         added_as_attraction=added_as_attraction )
+      timed_legs.extend( segment_legs )
+      parent_end_time = end_time
+
+   if not timed_legs:
+      return False
 
    delete_itinerary_transportation_legs(
       cur,
@@ -84,6 +115,6 @@ def apply_itinerary_transportation_schedule(
       cur,
       name=name,
       added_as_attraction=added_as_attraction,
-      start_time=start_time,
-      end_time=end_time,
+      start_time=parent_start_time,
+      end_time=parent_end_time,
       route=route )

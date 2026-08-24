@@ -250,8 +250,8 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
    assert [ unit.unit.loop_id for unit in packed_units ] == [
       'americas_pavilion',
       'tundra_trek_mayan_temple',
-      'eurasia',
       'australasia',
+      'eurasia',
    ]
 
 

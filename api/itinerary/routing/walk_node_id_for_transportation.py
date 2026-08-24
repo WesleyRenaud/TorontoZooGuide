@@ -5,50 +5,39 @@ from ..data_access.transportation_day_loop import fetch_main_transportation_stat
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...request_connection import get_connection
 from ...shared.calendar_dates import DateValues
-from ...transportation.data_access.transportation_station import fetch_transportation_station_record
+from .transit_ride_endpoint import TransitRideEndpoint
 from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
-from .transportation_boarding_station import boarding_station_for_transportation_legs
-from ...walk_graph.data_access.load_walk_graph import load_walk_graph
-from ...walk_graph.snap_point import snap_point_to_nearest_walk_node
+from .transportation_boarding_station import station_for_transportation_legs
+from .walk_node_id_for_transportation_station import walk_node_id_for_transportation_station
 
 
 def walk_node_id_for_transportation(
       transportation_name: str,
       *,
       legs: list[ ItineraryTransportationLeg ] | None = None,
+      endpoint: TransitRideEndpoint = TransitRideEndpoint.ONBOARDING,
    ) -> str | None:
-   station_name = _boarding_station_name( transportation_name, legs=legs )
+   station_name = _station_name_for_endpoint(
+      transportation_name,
+      legs=legs,
+      endpoint=endpoint )
 
    if station_name is None:
       return None
 
-   station = fetch_transportation_station_record(
-      get_connection(),
+   return walk_node_id_for_transportation_station(
       transportation_name,
       station_name )
 
-   if station is None:
-      return None
 
-   walk_graph = load_walk_graph()
-   walk_node_id, _ = snap_point_to_nearest_walk_node(
-      station.x_coord,
-      station.y_coord,
-      walk_graph )
-
-   return walk_node_id
-
-
-def _boarding_station_name(
+def _station_name_for_endpoint(
       transportation_name: str,
       *,
       legs: list[ ItineraryTransportationLeg ] | None,
+      endpoint: TransitRideEndpoint,
    ) -> str | None:
    if legs:
-      station_name = boarding_station_for_transportation_legs( legs )
-
-      if station_name is not None:
-         return station_name
+      return station_for_transportation_legs( legs, endpoint )
 
    return _default_boarding_station_name( transportation_name )
 

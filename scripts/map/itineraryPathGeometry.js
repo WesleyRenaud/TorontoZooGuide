@@ -77,13 +77,17 @@ export function buildRouteMapPoints(points = [], {
    return normalizedPoints;
 }
 
-export function buildItineraryPathD(routePoints, segments = null) {
+export function buildItineraryPathD(routePoints, segments = undefined) {
    if (routePoints.length < 2) {
       return '';
    }
 
-   const walkGraphSegments = segments ?? getWalkGraphPathSegments();
-   const walkGraphPathD = walkGraphSegments
+   const walkGraphSegments = (
+      segments === undefined
+         ? getWalkGraphPathSegments()
+         : segments
+   );
+   const walkGraphPathD = walkGraphSegments?.length
       ? buildPathDFromWalkGraphSegments(walkGraphSegments, routePoints)
       : '';
 
@@ -92,4 +96,84 @@ export function buildItineraryPathD(routePoints, segments = null) {
    }
 
    return buildSmoothedPathD(routePoints);
+}
+
+export function inclusivePointSlicesForWalkRouteLegs(legs) {
+   const slices = [];
+
+   for (let legIndex = 0; legIndex < legs.length; legIndex += 1) {
+      const leg = legs[legIndex];
+      let fromPointSequence;
+
+      if (slices.length === 0) {
+         fromPointSequence = 0;
+      } else if (legsShareJoinNode(legs[legIndex - 1], leg)) {
+         fromPointSequence = slices[slices.length - 1][1];
+      } else {
+         fromPointSequence = slices[slices.length - 1][1] + 1;
+      }
+
+      const toPointSequence = fromPointSequence + leg.nodeIds.length - 1;
+      slices.push([fromPointSequence, toPointSequence]);
+   }
+
+   return slices;
+}
+
+function legsShareJoinNode(previousLeg, currentLeg) {
+   return (
+      previousLeg.nodeIds[previousLeg.nodeIds.length - 1]
+      === currentLeg.nodeIds[0]
+   );
+}
+
+export function buildItineraryPathDFromWalkLegs(
+   legs,
+   points,
+   {
+      pointToMapPx = (point) => point,
+   } = {}
+) {
+   if (!legs.length) {
+      return '';
+   }
+
+   const pathParts = [];
+
+   for (const [fromPointSequence, toPointSequence] of inclusivePointSlicesForWalkRouteLegs(legs)) {
+      if (toPointSequence >= points.length) {
+         continue;
+      }
+
+      const routePoints = [];
+
+      for (
+         let pointIndex = fromPointSequence;
+         pointIndex <= toPointSequence;
+         pointIndex += 1
+      ) {
+         const mappedPoint = pointToMapPx(points[pointIndex]);
+
+         if (!mappedPoint) {
+            routePoints.length = 0;
+            break;
+         }
+
+         routePoints.push(mappedPoint);
+      }
+
+      if (routePoints.length < 2) {
+         continue;
+      }
+
+      // Follow the backend walk-leg waypoints directly. Ride gaps are separate
+      // legs, so the next subpath starts at the offboarding station.
+      const legPathD = buildSmoothedPathD(routePoints);
+
+      if (legPathD) {
+         pathParts.push(legPathD);
+      }
+   }
+
+   return pathParts.join(' ');
 }

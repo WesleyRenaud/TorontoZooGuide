@@ -19,12 +19,33 @@ import {
    resolveRegionColorSlugForScheduledItem,
 } from '../../../shared/regionColors.js';
 
-export function makeTimelineRow(timeLabel) {
+export function timelineSlotRowHeightFraction(slotSpanMinutes) {
+   const span = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
+      ? slotSpanMinutes
+      : TIMELINE_SLOT_MINUTES;
+
+   return span / TIMELINE_SLOT_MINUTES;
+}
+
+export function makeTimelineRow(
+   timeLabel,
+   slotSpanMinutes = TIMELINE_SLOT_MINUTES
+) {
    const timeCell = el('div', 'itinerary-day-time');
 
    timeCell.appendChild(el('span', 'itinerary-day-time-label', timeLabel));
 
    const gridLine = el('div', 'itinerary-day-grid-line');
+   const heightFraction = timelineSlotRowHeightFraction(slotSpanMinutes);
+
+   timeCell.style.setProperty(
+      '--itinerary-slot-row-height-fraction',
+      String(heightFraction)
+   );
+   gridLine.style.setProperty(
+      '--itinerary-slot-row-height-fraction',
+      String(heightFraction)
+   );
 
    return [
       timeCell,

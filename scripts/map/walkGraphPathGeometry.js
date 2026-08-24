@@ -91,12 +91,15 @@ export function buildPathDFromWalkGraphSegments(segments, waypoints) {
 
       if (!slice) {
          if (matchedSliceCount === 0) {
-            pathParts.push(`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`);
+            pathParts.push(
+               `M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`
+            );
          }
          else {
             pathParts.push(`L ${toPoint.x} ${toPoint.y}`);
          }
 
+         matchedSliceCount += 1;
          continue;
       }
 

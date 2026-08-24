@@ -19,6 +19,7 @@ import {
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
+import { groupConsecutiveTransportationLegSequences } from '../selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js';
 import { getTransportationScheduleItemKey } from '../selectors/transportationSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
@@ -151,6 +152,55 @@ function buildScheduledAnimalRows(animals = []) {
    ));
 }
 
+function transportationSequenceItems(transportation) {
+   const sequences = groupConsecutiveTransportationLegSequences(
+      transportation?.legs
+   );
+
+   if (sequences.length === 0) {
+      return hasItineraryScheduleTimes(transportation)
+         ? [transportation]
+         : [];
+   }
+
+   return sequences.map((sequence) => ({
+      ...transportation,
+      start_time: sequence[0].start_time,
+      end_time: sequence[sequence.length - 1].end_time,
+      legs: sequence,
+      // Sequence-local stations come from these legs, not parent roles.
+      stations: [],
+   }));
+}
+
+function buildScheduledTransportationRows(transportations = []) {
+   return transportations.flatMap((transportation, index) => (
+      transportationSequenceItems(transportation).map((item) => {
+         const [row] = buildTransportationRows([item]);
+         const startMinutes = parseClockTimeMinutes(item.start_time);
+         const endMinutes = parseClockTimeMinutes(item.end_time);
+         const maximumDuration = getDurationMinutesFromScheduleTimes(item);
+         const label = getScheduledItemLabel(item);
+
+         return {
+            index,
+            item,
+            row,
+            label,
+            startMinutes,
+            endMinutes,
+            maximumDuration,
+         };
+      })
+   )).filter((scheduledItem) => (
+      scheduledItem.row
+      && scheduledItem.label
+      && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.endMinutes)
+      && Number.isFinite(scheduledItem.maximumDuration)
+   ));
+}
+
 function buildItineraryScheduledItemIndexes(items = []) {
    const indexes = new Set();
 
@@ -250,10 +300,8 @@ export function buildScheduledItemRowsContext(
       scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       scheduleItemKey: getAttractionId(scheduledItem.item),
    }));
-   const transportationRows = buildScheduledItemRows(
-      transportations,
-      buildTransportationRows,
-      getDurationMinutesFromScheduleTimes
+   const transportationRows = buildScheduledTransportationRows(
+      transportations
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,

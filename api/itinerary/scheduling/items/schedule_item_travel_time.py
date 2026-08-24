@@ -7,6 +7,7 @@ from ..core.time_block import latest_scheduled_end_seconds
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ....models import Itinerary
+from ...routing.transit_ride_endpoint import TransitRideEndpoint
 from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from ...routing.walk_travel_time import travel_time_seconds_between_nodes
 from ....shared.calendar_dates import DateValues
@@ -125,6 +126,20 @@ def walk_node_id_for_latest_scheduled_item(
 
    if latest_end_seconds is None:
       return None
+
+   for transportation in itinerary.transportations:
+      end_seconds = DateValues.time_value_in_seconds( transportation.end_time )
+
+      if end_seconds != latest_end_seconds:
+         continue
+
+      walk_node_id = walk_node_id_for_transportation(
+         transportation.name,
+         legs=transportation.legs,
+         endpoint=TransitRideEndpoint.OFFBOARDING )
+
+      if walk_node_id is not None:
+         return walk_node_id
 
    for stop in _scheduled_stops_with_walk_nodes( itinerary ):
       if stop.end_seconds == latest_end_seconds:

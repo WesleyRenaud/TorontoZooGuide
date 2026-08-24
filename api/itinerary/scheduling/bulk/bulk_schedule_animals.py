@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
+from .animals_for_bulk_schedule import transit_transportations_for_bulk_schedule
 from .attraction_covered_animals import apply_covered_by_attraction_schedules
 from .attraction_covered_animals import merge_covered_viewing_spot_keys
 from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
@@ -49,6 +50,7 @@ from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from .zoomobile_transit_rides import apply_zoomobile_transit_rides
 
 
 def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool:
@@ -234,6 +236,20 @@ def bulk_schedule_animals(
 
    apply_covered_by_talk_schedules( conn, covered_by_talk )
    apply_covered_by_attraction_schedules( conn, covered_by_attraction )
+
+   saved_after_pack = fetch_saved_itinerary( conn )
+   apply_zoomobile_transit_rides(
+      conn,
+      transit_rows=transit_transportations_for_bulk_schedule( saved_after_pack ),
+      scheduled_animals=[
+         animal_row
+         for animal_row in saved_after_pack.animal_rows
+         if has_itinerary_schedule_times(
+            animal_row.start_time,
+            animal_row.end_time )
+      ],
+      visit_date=visit_date,
+      schedule_anchor_seconds=start_state.schedule_anchor_seconds )
 
    reasons: list[ ItineraryResultReason ] = []
 

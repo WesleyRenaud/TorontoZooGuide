@@ -42,6 +42,7 @@ import {
    SCHEDULED_DAY_PLANNER_SECTION_KEYS,
    UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
 } from '../sectionConfigs.js';
+import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
 
@@ -291,10 +292,15 @@ export function makeDayPlannerPreview(
       closeMinutes,
    };
 
-   timelineSlotStarts.forEach((slotStart) => {
+   timelineSlotStarts.forEach((slotStart, slotIndex) => {
+      const nextSlotStart = timelineSlotStarts[slotIndex + 1];
+      const slotSpanMinutes = Number.isFinite(nextSlotStart)
+         ? nextSlotStart - slotStart
+         : TIMELINE_SLOT_MINUTES;
       const pillLabel = resolveTimelinePillLabel(slotStart, pillContext, strings);
       const [timeCell, gridLine] = makeTimelineRow(
-         formatMinutesAsClockTime(slotStart)
+         formatMinutesAsClockTime(slotStart),
+         slotSpanMinutes
       );
 
       timeline.appendChild(timeCell);

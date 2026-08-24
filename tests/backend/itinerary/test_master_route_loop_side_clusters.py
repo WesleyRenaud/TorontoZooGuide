@@ -25,11 +25,11 @@ def test_north_loop_side_cluster_contains_expected_loops() -> None:
       if cluster.cluster_id == LoopSideClusterId.NORTH )
 
    assert north_cluster.loop_ids == [
-      'australasia',
       'discovery_zone',
       'splash_island',
       'eurasia',
       'eurasia_attractions',
+      'australasia',
       'tundra_trek_mayan_temple',
       'tundra_attractions',
       'americas_pavilion',
@@ -59,10 +59,11 @@ def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:
 
    loop_indexes = default_loop_index_in_side_cluster_by_loop_id()
 
-   assert loop_indexes[ 'australasia' ] == 0
-   assert loop_indexes[ 'splash_island' ] == 2
-   assert loop_indexes[ 'eurasia' ] == 3
-   assert loop_indexes[ 'eurasia_attractions' ] == 4
+   assert loop_indexes[ 'discovery_zone' ] == 0
+   assert loop_indexes[ 'splash_island' ] == 1
+   assert loop_indexes[ 'eurasia' ] == 2
+   assert loop_indexes[ 'eurasia_attractions' ] == 3
+   assert loop_indexes[ 'australasia' ] == 4
    assert loop_indexes[ 'tundra_trek_mayan_temple' ] == 5
    assert loop_indexes[ 'tundra_attractions' ] == 6
    assert loop_indexes[ 'americas_pavilion' ] == 7

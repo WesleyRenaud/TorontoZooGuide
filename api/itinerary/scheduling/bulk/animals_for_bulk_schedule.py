@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .bulk_schedule_animals import has_itinerary_schedule_times
+from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -53,16 +53,36 @@ def transportations_for_bulk_schedule(
    if saved_itinerary is None:
       return []
 
+   # Transit-mode rows (added_as_attraction=False) are walk-replacement methods,
+   # not scenic full-loop packing stops.
+   attraction_mode_rows = [
+      transportation_row
+      for transportation_row in saved_itinerary.transportation_rows
+      if transportation_row.added_as_attraction
+   ]
+
    if only_previously_scheduled:
       return [
          transportation_row
-         for transportation_row in saved_itinerary.transportation_rows
+         for transportation_row in attraction_mode_rows
          if has_itinerary_schedule_times(
             transportation_row.start_time,
             transportation_row.end_time )
       ]
 
-   return list( saved_itinerary.transportation_rows )
+   return list( attraction_mode_rows )
+
+
+def transit_transportations_for_bulk_schedule(
+      saved_itinerary: SavedItinerary | None ) -> list[ ItineraryTransportationRecord ]:
+   if saved_itinerary is None:
+      return []
+
+   return [
+      transportation_row
+      for transportation_row in saved_itinerary.transportation_rows
+      if not transportation_row.added_as_attraction
+   ]
 
 
 def stops_for_bulk_schedule(
@@ -108,9 +128,12 @@ def stops_for_bulk_schedule_matching_previous(
    previously_scheduled_transportations = {
       transportation_row.name_key()
       for transportation_row in saved_itinerary_before_clear.transportation_rows
-      if has_itinerary_schedule_times(
-         transportation_row.start_time,
-         transportation_row.end_time )
+      if (
+            transportation_row.added_as_attraction
+            and has_itinerary_schedule_times(
+               transportation_row.start_time,
+               transportation_row.end_time )
+      )
    }
 
    return [
@@ -127,6 +150,9 @@ def stops_for_bulk_schedule_matching_previous(
       *(
          transportation_row
          for transportation_row in saved_itinerary_after_save.transportation_rows
-         if transportation_row.name_key() in previously_scheduled_transportations
+         if (
+               transportation_row.added_as_attraction
+               and transportation_row.name_key() in previously_scheduled_transportations
+         )
       ),
    ]

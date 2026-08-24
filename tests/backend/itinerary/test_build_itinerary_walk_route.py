@@ -353,3 +353,81 @@ def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
          walk_route.points,
          from_point_sequence=from_point_sequence,
          to_point_sequence=to_point_sequence ) == leg.node_ids
+
+
+def test_build_itinerary_walk_route_skips_walk_during_zoomobile_rides(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
+   from api.itinerary.data_access.itinerary_transportation_input import (
+      ItineraryTransportationInput,
+   )
+   from api.itinerary.routing.build_walk_route_anchors import build_walk_route_anchors
+   from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
+   from itinerary.support import itinerary_animals_for_exhibits
+
+   freeze_database_today( date( 2026, 7, 11 ) )
+   domain_exhibits: list[ str ] = []
+
+   for region in ExhibitCoordinator.get_regions_with_exhibits():
+      if region.name == 'Canadian Domain':
+         domain_exhibits.extend( region.exhibits )
+
+   assert domain_exhibits
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-07-11',
+      arrival_time='09:00',
+      departure_time='18:00',
+      animals=itinerary_animals_for_exhibits(
+         domain_exhibits,
+         visit_date='2026-07-11' ),
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=False ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+      selected_exhibits=domain_exhibits,
+      confirming_early_admission=True,
+   ).success
+   assert ItineraryCoordinator.bulk_schedule_animals().success
+
+   itinerary = ItineraryCoordinator.get_itinerary()
+   walk_route = build_itinerary_walk_route( itinerary )
+   transit_anchors = [
+      anchor
+      for anchor in build_walk_route_anchors( itinerary )
+      if anchor.transit_ride_key is not None
+   ]
+
+   assert len( transit_anchors ) >= 4
+   assert transit_anchors[ 0 ].transit_endpoint is TransitRideEndpoint.ONBOARDING
+   assert transit_anchors[ 1 ].transit_endpoint is TransitRideEndpoint.OFFBOARDING
+   assert transit_anchors[ 0 ].transit_ride_key == transit_anchors[ 1 ].transit_ride_key
+
+   walk_leg_keys = {
+      ( leg.from_item_key, leg.to_item_key )
+      for leg in walk_route.legs
+   }
+   assert (
+      transit_anchors[ 0 ].item_key,
+      transit_anchors[ 1 ].item_key,
+   ) not in walk_leg_keys
+
+   for leg, ( from_point_sequence, to_point_sequence ) in zip(
+         walk_route.legs,
+         inclusive_point_slices_for_walk_route_legs( walk_route.legs ) ):
+      assert walk_route_node_ids_for_point_slice(
+         walk_route.points,
+         from_point_sequence=from_point_sequence,
+         to_point_sequence=to_point_sequence ) == leg.node_ids
+
+   assert any(
+      (
+         walk_route.legs[ index ].node_ids[ -1 ]
+         != walk_route.legs[ index + 1 ].node_ids[ 0 ]
+      )
+      for index in range( len( walk_route.legs ) - 1 )
+   )

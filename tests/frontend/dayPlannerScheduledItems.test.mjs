@@ -276,6 +276,85 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
          /Main Station - Wildlife Health/
       );
    });
+
+   test('splits discontinuous Zoomobile rides into separate timeline pills', () => {
+      const context = buildScheduledItemRowsContext(
+         {
+            animals: [],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: false,
+                  start_time: '9:00 AM',
+                  end_time: '11:19 AM',
+                  legs: [
+                     {
+                        from_station: 'Main Zoomobile Station',
+                        to_station: 'Canadian Domain Zoomobile Station',
+                        start_time: '9:00 AM',
+                        end_time: '9:20 AM',
+                     },
+                     {
+                        from_station: 'Canadian Domain Zoomobile Station',
+                        to_station: 'Africa Zoomobile Station',
+                        start_time: '9:20 AM',
+                        end_time: '9:30 AM',
+                     },
+                     {
+                        from_station: 'Canadian Domain Zoomobile Station',
+                        to_station: 'Africa Zoomobile Station',
+                        start_time: '10:24 AM',
+                        end_time: '10:34 AM',
+                     },
+                     {
+                        from_station: 'Africa Zoomobile Station',
+                        to_station: 'Tundra Zoomobile Station',
+                        start_time: '10:34 AM',
+                        end_time: '10:49 AM',
+                     },
+                     {
+                        from_station: 'Tundra Zoomobile Station',
+                        to_station: 'Eurasia Zoomobile Station',
+                        start_time: '10:49 AM',
+                        end_time: '11:04 AM',
+                     },
+                     {
+                        from_station: 'Eurasia Zoomobile Station',
+                        to_station: 'Main Zoomobile Station',
+                        start_time: '11:04 AM',
+                        end_time: '11:19 AM',
+                     },
+                  ],
+               },
+            ],
+            events: [],
+         },
+         [540, 570, 600, 630, 660, 690],
+         1140
+      );
+      const transportationItems = [...context.itemsByStart.values()].flat()
+         .filter((item) => (
+            item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
+         ))
+         .sort((left, right) => left.startMinutes - right.startMinutes);
+
+      assert.equal(transportationItems.length, 2);
+      assert.equal(transportationItems[0].startMinutes, 540);
+      assert.equal(transportationItems[0].maximumDuration, 30);
+      assert.equal(transportationItems[1].startMinutes, 624);
+      assert.equal(transportationItems[1].maximumDuration, 55);
+      assert.match(
+         allTextFor(transportationItems[0].row),
+         /Main Zoomobile Station - Africa Zoomobile Station/
+      );
+      assert.match(
+         allTextFor(transportationItems[1].row),
+         /Canadian Domain Zoomobile Station - Main Zoomobile Station/
+      );
+   });
 });
 
 test('buildScheduledItemRowsContext omits deleted wild encounters from the timeline', () => {
