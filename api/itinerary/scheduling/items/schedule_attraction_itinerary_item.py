@@ -9,7 +9,6 @@ from ....attractions.scheduling.attraction_operating_hours import fetch_configur
 from ..core.find_next_available_slot import find_previous_available_slot
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
-from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
@@ -26,11 +25,11 @@ from .schedule_itinerary_helpers import resolve_slot_times
 from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
+from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....types import ScheduleTimeKey
 from ...warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ...warnings.schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
-from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
 def schedule_attraction_itinerary_item(
@@ -52,14 +51,21 @@ def schedule_attraction_itinerary_item(
       return prepared_window
 
    schedule_window = prepared_window.window
-   attraction_hours = _configured_attraction_hours_for_itinerary(
-      conn,
-      schedule_item_key.name )
+   attraction_hours = (
+      None
+      if prepared_window.zoo_operating_hours is None
+      else fetch_configured_attraction_operating_hours_seconds(
+         conn,
+         schedule_item_key.name,
+         visit_date=prepared_window.visit_date,
+         zoo_operating_hours=prepared_window.zoo_operating_hours,
+      )
+   )
 
    if attraction_hours is not None:
       schedule_window = (
-         max( schedule_window[ 0 ], attraction_hours[ 0 ] ),
-         min( schedule_window[ 1 ], attraction_hours[ 1 ] ) )
+         max( schedule_window[ 0 ], attraction_hours.open_seconds ),
+         min( schedule_window[ 1 ], attraction_hours.close_seconds ) )
 
       if schedule_window[ 0 ] >= schedule_window[ 1 ]:
          return build_save_result(
@@ -139,7 +145,14 @@ def schedule_attraction_itinerary_item(
          duration_seconds,
          start_time=time_options.start_time,
          itinerary_context=itinerary_context,
-         day_hours_window=attraction_hours,
+         day_hours_window=(
+            None
+            if attraction_hours is None
+            else (
+               attraction_hours.open_seconds,
+               attraction_hours.close_seconds,
+            )
+         ),
          earliest_start_seconds=earliest_start_seconds )
 
    if slot_error is not None:
@@ -164,7 +177,7 @@ def _attraction_hours_adjustment_for_requested_time(
       start_time: ScheduleTimeKey,
       *,
       duration_seconds: int,
-      attraction_hours: tuple[ int, int ] | None,
+      attraction_hours: OperatingHours | None,
 ) -> AttractionHoursScheduleAdjustment | None:
    if start_time is None or attraction_hours is None:
       return None
@@ -174,7 +187,8 @@ def _attraction_hours_adjustment_for_requested_time(
    if start_seconds is None:
       return None
 
-   open_seconds, close_seconds = attraction_hours
+   open_seconds = attraction_hours.open_seconds
+   close_seconds = attraction_hours.close_seconds
 
    if start_seconds < open_seconds:
       return AttractionHoursScheduleAdjustment.BEFORE_OPEN
@@ -219,34 +233,3 @@ def _resolve_adjusted_attraction_slot(
          **itinerary_context )
 
    return slot, None
-
-
-def _configured_attraction_hours_for_itinerary(
-      conn: Connection,
-      attraction_name: str,
-) -> tuple[ int, int ] | None:
-   visit_date = fetch_itinerary_date( conn )
-   parsed_visit_date = DateValues.parse_date_value( visit_date )
-
-   if parsed_visit_date is None:
-      return None
-
-   zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
-
-   if zoo_hours_record is None:
-      return None
-
-   zoo_open_seconds = DateValues.time_value_in_seconds(
-      zoo_hours_record.open_time )
-   zoo_close_seconds = DateValues.time_value_in_seconds(
-      zoo_hours_record.close_time )
-
-   if zoo_open_seconds is None or zoo_close_seconds is None:
-      return None
-
-   return fetch_configured_attraction_operating_hours_seconds(
-      conn,
-      attraction_name,
-      visit_date=parsed_visit_date,
-      zoo_open_seconds=zoo_open_seconds,
-      zoo_close_seconds=zoo_close_seconds )

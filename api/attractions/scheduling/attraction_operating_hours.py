@@ -6,6 +6,7 @@ from ..data_access.attraction import fetch_attraction_record_for_calendar_day
 from ..data_access.attraction_record import AttractionRecord
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ...shared.operating_hours import OperatingHours
 from ...types import Connection
 from ...types import ScheduleTimeKey
 
@@ -24,9 +25,8 @@ def attraction_operating_hours_seconds(
       attraction_record: AttractionRecord,
       *,
       visit_date: date,
-      zoo_open_seconds: int,
-      zoo_close_seconds: int,
-   ) -> tuple[ int, int ]:
+      zoo_operating_hours: OperatingHours,
+   ) -> OperatingHours:
    """Return open/close seconds for the visit day.
 
    Configured weekday or weekend/holiday times win when present. Missing sides
@@ -40,12 +40,14 @@ def attraction_operating_hours_seconds(
    close_seconds = DateValues.time_value_in_seconds( end_time )
 
    if open_seconds is None:
-      open_seconds = zoo_open_seconds
+      open_seconds = zoo_operating_hours.open_seconds
 
    if close_seconds is None:
-      close_seconds = zoo_close_seconds
+      close_seconds = zoo_operating_hours.close_seconds
 
-   return open_seconds, close_seconds
+   return OperatingHours(
+      open_seconds=open_seconds,
+      close_seconds=close_seconds )
 
 
 def fetch_configured_attraction_operating_hours_seconds(
@@ -53,9 +55,8 @@ def fetch_configured_attraction_operating_hours_seconds(
       attraction_name: str,
       *,
       visit_date: date,
-      zoo_open_seconds: int,
-      zoo_close_seconds: int,
-   ) -> tuple[ int, int ] | None:
+      zoo_operating_hours: OperatingHours,
+   ) -> OperatingHours | None:
    """Configured attraction hours for the day, or None when unset/unavailable."""
    attraction_record = fetch_attraction_record_for_calendar_day(
       conn,
@@ -73,8 +74,7 @@ def fetch_configured_attraction_operating_hours_seconds(
    return attraction_operating_hours_seconds(
       attraction_record,
       visit_date=visit_date,
-      zoo_open_seconds=zoo_open_seconds,
-      zoo_close_seconds=zoo_close_seconds )
+      zoo_operating_hours=zoo_operating_hours )
 
 
 def _configured_hours_for_visit_date(

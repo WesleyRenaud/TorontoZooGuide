@@ -16,6 +16,7 @@ from ...data_access.schedule_itinerary_transportation import apply_itinerary_tra
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_travel_time import inter_stop_travel_seconds
 from ....shared.calendar_dates import DateValues
+from ....shared.operating_hours import OperatingHours
 from .timed_loop_schedule_stop import TimedLoopScheduleStop
 from ...transportation.default_duration_seconds import default_duration_seconds_for_transportation
 from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
@@ -132,7 +133,7 @@ def assign_contiguous_slots_respecting_attraction_hours(
       stops: list[ TimedLoopScheduleStop ],
       *,
       start_seconds: int,
-      hours_by_attraction_name: dict[ str, tuple[ int, int ] ] | None,
+      hours_by_attraction_name: dict[ str, OperatingHours ] | None,
    ) -> tuple[ list[ LoopScheduleSlot ], int ]:
    slots: list[ LoopScheduleSlot ] = []
    slot_cursor_seconds = start_seconds
@@ -149,12 +150,13 @@ def assign_contiguous_slots_respecting_attraction_hours(
             timed_stop.stop.attraction )
 
          if attraction_hours is not None:
-            open_seconds, close_seconds = attraction_hours
+            if slot_cursor_seconds < attraction_hours.open_seconds:
+               slot_cursor_seconds = attraction_hours.open_seconds
 
-            if slot_cursor_seconds < open_seconds:
-               slot_cursor_seconds = open_seconds
-
-            if slot_cursor_seconds + timed_stop.duration_seconds > close_seconds:
+            if (
+                  slot_cursor_seconds + timed_stop.duration_seconds
+                  > attraction_hours.close_seconds
+            ):
                return [], start_seconds
 
       start_time = DateValues.schedule_time_key_from_seconds(
