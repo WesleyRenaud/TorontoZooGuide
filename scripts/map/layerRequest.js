@@ -1,3 +1,7 @@
+import {
+   getTransportationName,
+   isTransportationScheduled,
+} from '../itinerary/selectors/transportationSelector/model.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
 import { normalizeTypedRows } from './sourceHelpers.js';
 
@@ -51,16 +55,78 @@ function buildFocusIncludes(focusType, focusRow) {
    return includes;
 }
 
+function transportationNamesWithStations(transportationStations) {
+   return new Set(
+      uniqStrings((transportationStations || []).map((station) => station.transportation))
+   );
+}
+
+function isFullyUnscheduledTransportationName(
+      name,
+      transportations,
+      scheduledTransportationNames
+) {
+   if (scheduledTransportationNames.has(name)) {
+      return false;
+   }
+
+   const rows = (transportations || []).filter(
+      (transportation) => getTransportationName(transportation) === name
+   );
+
+   if (rows.length === 0) {
+      return false;
+   }
+
+   return rows.every((transportation) => !isTransportationScheduled(transportation));
+}
+
+function buildFullyUnscheduledTransportationRows(
+      transportations,
+      transportationStations
+) {
+   const scheduledTransportationNames = transportationNamesWithStations(
+      transportationStations
+   );
+   const seenNames = new Set();
+   const rows = [];
+
+   (transportations || []).forEach((transportation) => {
+      const name = getTransportationName(transportation);
+
+      if (!name || seenNames.has(name)) {
+         return;
+      }
+
+      if (!isFullyUnscheduledTransportationName(
+         name,
+         transportations,
+         scheduledTransportationNames
+      )) {
+         return;
+      }
+
+      seenNames.add(name);
+      rows.push(transportation);
+   });
+
+   return normalizeTypedRows(rows, 'transportation');
+}
+
 export function buildItineraryRows(itinerary) {
+   const transportationStations = itinerary?.transportationStations;
+
    return [
       ...normalizeTypedRows(itinerary?.animals, 'animal'),
       ...normalizeTypedRows(itinerary?.attractions, 'attraction'),
-      ...normalizeTypedRows(itinerary?.transportations, 'transportation')
-         .filter((transportation) => transportation.added_as_attraction === false),
+      ...buildFullyUnscheduledTransportationRows(
+         itinerary?.transportations,
+         transportationStations
+      ),
       ...normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
       ...normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
       ...normalizeTypedRows(
-         itinerary?.transportationStations,
+         transportationStations,
          MapItemType.TRANSPORTATION_STATION
       ),
    ];
