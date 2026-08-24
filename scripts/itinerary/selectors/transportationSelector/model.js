@@ -130,6 +130,18 @@ export function isTransportationScheduled(row) {
    return getTransportationLegs(row).length > 0;
 }
 
+export function isBulkTransitEvaluated(row) {
+   return row?.bulk_transit_evaluated === true;
+}
+
+export function isTransitTransportationHandledForDayPlanner(row) {
+   if (isTransportationAddedAsAttraction(row)) {
+      return Boolean(row?.start_time && row?.end_time);
+   }
+
+   return isBulkTransitEvaluated(row);
+}
+
 export function buildTransportationStationsLine(row) {
    const [firstStation] = boardingStationNames(row);
    const offboarding = offboardingStationNames(row);

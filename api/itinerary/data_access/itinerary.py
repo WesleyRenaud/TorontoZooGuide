@@ -122,7 +122,8 @@ def fetch_itinerary_transportation_rows(
                ADDED_AS_ATTRACTION,
                START_TIME,
                END_TIME,
-               ROUTE
+               ROUTE,
+               BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation;
       """ ).fetchall()
 

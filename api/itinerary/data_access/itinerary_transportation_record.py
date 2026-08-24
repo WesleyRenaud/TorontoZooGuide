@@ -20,6 +20,7 @@ class ItineraryTransportationRecord:
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
    route: str | None = None
+   bulk_transit_evaluated: bool = False
    legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
    route_marker_sequences: list[ list[ str ] ] = field( default_factory=list )
 

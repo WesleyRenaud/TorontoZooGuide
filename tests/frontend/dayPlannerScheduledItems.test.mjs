@@ -239,6 +239,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
                {
                   name: 'Zoomobile',
                   added_as_attraction: false,
+                  bulk_transit_evaluated: true,
                   start_time: '2:30 PM',
                   end_time: '3:00 PM',
                   legs: [
@@ -288,6 +289,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
                {
                   name: 'Zoomobile',
                   added_as_attraction: false,
+                  bulk_transit_evaluated: true,
                   start_time: '9:00 AM',
                   end_time: '11:19 AM',
                   legs: [

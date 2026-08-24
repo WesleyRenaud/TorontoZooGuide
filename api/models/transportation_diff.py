@@ -16,7 +16,8 @@ class TransportationDiff:
          *,
          route: str | None = None,
          route_marker_sequences: list[ list[ str ] ] | None = None,
-         added_as_attraction: bool ) -> None:
+         added_as_attraction: bool,
+         bulk_transit_evaluated: bool = False ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood
       self.new_likelihood = new_likelihood
@@ -26,6 +27,7 @@ class TransportationDiff:
       self.route = route
       self.route_marker_sequences = list( route_marker_sequences or [] )
       self.added_as_attraction = added_as_attraction
+      self.bulk_transit_evaluated = bulk_transit_evaluated
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -39,4 +41,5 @@ class TransportationDiff:
          'route': self.route,
          'route_marker_sequences': self.route_marker_sequences,
          'added_as_attraction': self.added_as_attraction,
+         'bulk_transit_evaluated': self.bulk_transit_evaluated,
       }

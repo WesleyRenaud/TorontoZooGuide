@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_transportation import set_itinerary_transportation_bulk_transit_evaluated
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_transportation import apply_itinerary_transportation_ride_segments
@@ -95,6 +96,18 @@ def apply_zoomobile_transit_rides(
          adjacency=adjacency,
          station_walk_nodes=station_walk_nodes,
          entrance_node_id=entrance_node_id )
+
+      cur = conn.cursor()
+
+      try:
+         set_itinerary_transportation_bulk_transit_evaluated(
+            cur,
+            transportation=transit_row.transportation,
+            added_as_attraction=transit_row.added_as_attraction,
+            bulk_transit_evaluated=True )
+         conn.commit()
+      finally:
+         cur.close()
 
 
 def _station_walk_node_ids(

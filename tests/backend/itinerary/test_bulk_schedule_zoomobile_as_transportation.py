@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import itinerary_animals_for_exhibits
+import pytest
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -139,6 +140,7 @@ def test_bulk_schedule_domain_only_uses_zoomobile_to_cut_long_walk(
 
    zoomobile = _transit_zoomobile( result.itinerary )
    rides = _ride_board_alight_pairs( zoomobile.legs )
+   assert zoomobile.bulk_transit_evaluated is True
    assert len( rides ) >= 1
    assert rides[ 0 ][ 0 ] == MAIN
    assert rides[ 0 ][ 1 ] in { DOMAIN, AFRICA }
@@ -337,3 +339,27 @@ def test_bulk_schedule_multi_region_uses_zoomobile_for_long_hops(
       board == 'Eurasia Zoomobile Station' and alight == TUNDRA
       for board, alight in rides
    )
+
+
+def test_bulk_schedule_marks_transit_zoomobile_evaluated_when_no_rides_used(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ],
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   freeze_database_today( VISIT_DAY )
+   _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.zoomobile_transit_rides._plan_rides_for_anchors',
+      lambda **_kwargs: ( [], None ),
+   )
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.itinerary is not None
+
+   zoomobile = _transit_zoomobile( result.itinerary )
+
+   assert zoomobile.legs == []
+   assert zoomobile.bulk_transit_evaluated is True

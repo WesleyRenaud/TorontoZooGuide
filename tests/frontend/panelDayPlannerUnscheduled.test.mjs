@@ -114,4 +114,31 @@ test.describe('itinerary day planner preview unscheduled', () => {
          key: 'Zoomobile||0',
       }]);
    });
+
+   test('day planner omits bulk-evaluated transit transportation from unscheduled items', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: false,
+                  bulk_transit_evaluated: true,
+                  legs: [],
+               },
+            ],
+         }
+      );
+      const text = allTextFor(planner);
+
+      assert.match(text, /Scheduled Items/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Transportation \(1\)/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
+   });
 });

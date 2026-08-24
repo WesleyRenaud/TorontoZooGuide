@@ -32,6 +32,8 @@ def map_itinerary_transportation_record(
       added_as_attraction=ValueConversion.as_boolean(
          row[ 'ADDED_AS_ATTRACTION' ] ),
       route=row[ 'ROUTE' ],
+      bulk_transit_evaluated=ValueConversion.as_boolean(
+         row[ 'BULK_TRANSIT_EVALUATED' ] ),
       legs=sorted(
          legs,
          key=lambda leg: DateValues.time_value_in_seconds( leg.start_time ) ),

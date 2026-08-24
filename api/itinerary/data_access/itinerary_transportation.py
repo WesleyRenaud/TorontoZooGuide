@@ -17,6 +17,7 @@ def insert_itinerary_transportation(
       start_time: ScheduleTimeKey = None,
       end_time: ScheduleTimeKey = None,
       route: str | None = None,
+      bulk_transit_evaluated: bool = False,
 ) -> bool:
    cur.execute(
       """   INSERT OR IGNORE INTO ItineraryTransportation (
@@ -26,9 +27,10 @@ def insert_itinerary_transportation(
                ADDED_AS_ATTRACTION,
                START_TIME,
                END_TIME,
-               ROUTE
+               ROUTE,
+               BULK_TRANSIT_EVALUATED
             )
-            VALUES ( ?, ?, ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          transportation,
@@ -38,6 +40,7 @@ def insert_itinerary_transportation(
          DateValues.normalize_itinerary_schedule_time( start_time ),
          DateValues.normalize_itinerary_schedule_time( end_time ),
          route,
+         bulk_transit_evaluated,
       ),
    )
 
@@ -106,6 +109,23 @@ def clear_itinerary_transportation_rows( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryTransportation;' )
 
 
+def set_itinerary_transportation_bulk_transit_evaluated(
+      cur: Cursor,
+      transportation: str,
+      added_as_attraction: bool,
+      *,
+      bulk_transit_evaluated: bool,
+) -> None:
+   cur.execute(
+      """   UPDATE ItineraryTransportation
+            SET BULK_TRANSIT_EVALUATED = ?
+            WHERE TRANSPORTATION = ?
+              AND ADDED_AS_ATTRACTION = ?;
+      """,
+      ( bulk_transit_evaluated, transportation, added_as_attraction ),
+   )
+
+
 def clear_itinerary_transportation_schedule_times(
       cur: Cursor,
       transportation: str,
@@ -114,7 +134,8 @@ def clear_itinerary_transportation_schedule_times(
       """   UPDATE ItineraryTransportation
             SET START_TIME = NULL,
                 END_TIME = NULL,
-                ROUTE = NULL
+                ROUTE = NULL,
+                BULK_TRANSIT_EVALUATED = 0
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = ?;
       """,
@@ -127,7 +148,8 @@ def clear_all_itinerary_transportation_schedule_times( cur: Cursor ) -> None:
       """   UPDATE ItineraryTransportation
             SET START_TIME = NULL,
                 END_TIME = NULL,
-                ROUTE = NULL;
+                ROUTE = NULL,
+                BULK_TRANSIT_EVALUATED = 0;
       """ )
 
 

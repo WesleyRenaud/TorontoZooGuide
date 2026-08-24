@@ -63,6 +63,34 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_transportatio
    assert itinerary_has_unscheduled_guest_items( itinerary )
 
 
+def test_itinerary_has_unscheduled_guest_items_ignores_bulk_evaluated_transit_transportation() -> None:
+   itinerary = build_itinerary(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:30 AM' ),
+      ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportation(
+            name='Zoomobile',
+            added_as_attraction=False,
+            bulk_transit_evaluated=True ),
+      ],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+
+   assert not itinerary_has_unscheduled_guest_items( itinerary )
+
+
 def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_scheduled() -> None:
    itinerary = build_itinerary(
       date='2026-06-20',

@@ -50,6 +50,7 @@ def build_itinerary_transportations(
                transportation=saved.transportation,
                target_date=target_date,
             ),
+            bulk_transit_evaluated=saved.bulk_transit_evaluated,
          ),
       )
 

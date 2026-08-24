@@ -186,6 +186,7 @@ export function normalizeTransportation(value) {
       main_station: normalizeOptionalText(source.main_station),
       infoLink: normalizeOptionalText(source.info_link),
       added_as_attraction: source.added_as_attraction === true,
+      bulk_transit_evaluated: source.bulk_transit_evaluated === true,
       legs,
       stations,
       route: normalizeOptionalText(source.route),
