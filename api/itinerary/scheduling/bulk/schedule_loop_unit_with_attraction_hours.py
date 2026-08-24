@@ -16,6 +16,7 @@ from .loop_unit_schedule_slots import total_occupied_seconds
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
+from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 
@@ -281,9 +282,9 @@ def _schedule_stops_around_attraction_hours(
             prepared_after_stops,
             start_seconds=schedule_cursor_seconds,
             hours_by_attraction_name={
-               soft_pin.attraction_name: (
-                  soft_pin.open_seconds,
-                  soft_pin.close_seconds )
+               soft_pin.attraction_name: OperatingHours(
+                  open_seconds=soft_pin.open_seconds,
+                  close_seconds=soft_pin.close_seconds )
                for soft_pin in soft_pins
             } ) )
 

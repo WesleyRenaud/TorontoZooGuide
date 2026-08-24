@@ -175,19 +175,14 @@ def bulk_schedule_animals(
       None
       if visit_date is None
       else fetch_zoo_hours_record( conn, visit_date ) )
-   zoo_open_seconds = (
+   zoo_operating_hours_value = (
       None
       if zoo_hours_record is None
-      else DateValues.time_value_in_seconds( zoo_hours_record.open_time ) )
-   zoo_close_seconds = (
-      None
-      if zoo_hours_record is None
-      else DateValues.time_value_in_seconds( zoo_hours_record.close_time ) )
+      else zoo_hours_record.operating_hours() )
 
    if (
          visit_date is not None
-         and zoo_open_seconds is not None
-         and zoo_close_seconds is not None ):
+         and zoo_operating_hours_value is not None ):
       soft_pins = resolve_attraction_hours_soft_pins(
          conn,
          attractions=[
@@ -196,8 +191,7 @@ def bulk_schedule_animals(
          ],
          loop_units=loop_units,
          visit_date=visit_date,
-         zoo_open_seconds=zoo_open_seconds,
-         zoo_close_seconds=zoo_close_seconds )
+         zoo_operating_hours=zoo_operating_hours_value )
 
       schedule_windows = attach_attraction_hours_soft_pins_to_schedule_windows(
          schedule_windows,
@@ -249,7 +243,8 @@ def bulk_schedule_animals(
             animal_row.end_time )
       ],
       visit_date=visit_date,
-      schedule_anchor_seconds=start_state.schedule_anchor_seconds )
+      schedule_anchor_seconds=start_state.schedule_anchor_seconds,
+      zoo_operating_hours=zoo_operating_hours_value )
 
    reasons: list[ ItineraryResultReason ] = []
 

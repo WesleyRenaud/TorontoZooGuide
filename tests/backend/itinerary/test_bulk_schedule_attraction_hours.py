@@ -16,6 +16,7 @@ from api.models.itinerary_transportation import ItineraryTransportation
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.shared.operating_hours import OperatingHours
 from conftest import DbControllers
 
 
@@ -70,11 +71,13 @@ def test_attraction_operating_hours_falls_back_to_zoo_hours_when_unset() -> None
    assert not attraction_has_configured_operating_hours(
       record,
       visit_date=date( 2026, 6, 20 ) )
+   zoo_hours = OperatingHours(
+      open_seconds=9 * 3600,
+      close_seconds=18 * 3600 )
    assert attraction_operating_hours_seconds(
       record,
       visit_date=date( 2026, 6, 20 ),
-      zoo_open_seconds=9 * 3600,
-      zoo_close_seconds=18 * 3600 ) == ( 9 * 3600, 18 * 3600 )
+      zoo_operating_hours=zoo_hours ) == zoo_hours
 
 
 def test_attraction_operating_hours_uses_weekend_pair() -> None:
@@ -97,13 +100,15 @@ def test_attraction_operating_hours_uses_weekend_pair() -> None:
    assert attraction_has_configured_operating_hours(
       record,
       visit_date=date( 2026, 6, 20 ) )
+   zoo_hours = OperatingHours(
+      open_seconds=9 * 3600,
+      close_seconds=18 * 3600 )
    assert attraction_operating_hours_seconds(
       record,
       visit_date=date( 2026, 6, 20 ),
-      zoo_open_seconds=9 * 3600,
-      zoo_close_seconds=18 * 3600 ) == (
-         DateValues.time_value_in_seconds( '11:00 AM' ),
-         DateValues.time_value_in_seconds( '5:00 PM' ) )
+      zoo_operating_hours=zoo_hours ) == OperatingHours(
+         open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
 
 
 def test_bulk_schedule_holds_attraction_until_configured_open(

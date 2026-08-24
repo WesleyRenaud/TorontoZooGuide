@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
@@ -19,8 +20,10 @@ from ...domain.itinerary_adjustment import ItineraryAdjustment
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
+from ....shared.calendar_dates import DateValues
 from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.enums import ItineraryErrorType
+from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....types import ScheduleTimeKey
 from ...validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
@@ -33,6 +36,8 @@ from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 class PreparedScheduleWindow:
    saved_itinerary: SavedItinerary
    window: tuple[ int, int ]
+   visit_date: date
+   zoo_operating_hours: OperatingHours | None = None
 
 
 def build_itinerary_context(
@@ -101,7 +106,19 @@ def prepare_schedule_window(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
+   parsed_visit_date = DateValues.parse_date_value( visit_date )
+
+   if parsed_visit_date is None:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         **itinerary_context )
+
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   zoo_operating_hours_value = (
+      None
+      if zoo_hours_record is None
+      else zoo_hours_record.operating_hours() )
    allow_early_admission = _early_admission_scheduling_is_allowed( conn )
 
    fixed_zoo_start_times = fixed_zoo_schedule_start_times_from_saved_itinerary(
@@ -123,7 +140,9 @@ def prepare_schedule_window(
 
    return PreparedScheduleWindow(
       saved_itinerary=saved_itinerary,
-      window=( anchor_seconds, day_end_seconds ) )
+      window=( anchor_seconds, day_end_seconds ),
+      visit_date=parsed_visit_date,
+      zoo_operating_hours=zoo_operating_hours_value )
 
 
 def prepare_zoo_hours_schedule_window(
@@ -138,7 +157,19 @@ def prepare_zoo_hours_schedule_window(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
+   parsed_visit_date = DateValues.parse_date_value( visit_date )
+
+   if parsed_visit_date is None:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         **itinerary_context )
+
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   zoo_operating_hours_value = (
+      None
+      if zoo_hours_record is None
+      else zoo_hours_record.operating_hours() )
    allow_early_admission = _early_admission_scheduling_is_allowed( conn )
 
    window = zoo_hours_schedule_window_seconds(
@@ -155,7 +186,9 @@ def prepare_zoo_hours_schedule_window(
 
    return PreparedScheduleWindow(
       saved_itinerary=saved_itinerary,
-      window=window )
+      window=window,
+      visit_date=parsed_visit_date,
+      zoo_operating_hours=zoo_operating_hours_value )
 
 
 def zoo_hours_schedule_window_seconds(

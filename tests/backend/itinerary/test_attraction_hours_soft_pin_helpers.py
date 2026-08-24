@@ -9,6 +9,7 @@ from api.itinerary.scheduling.bulk import schedule_animals_by_master_route_loop 
 from api.itinerary.scheduling.bulk import schedule_loop_unit_with_attraction_hours as hours_module
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from api.shared.operating_hours import OperatingHours
 
 
 def _loop_unit(
@@ -31,8 +32,9 @@ def test_resolve_attraction_hours_soft_pins_rejects_invalid_visit_date() -> None
       attractions=[],
       loop_units=[],
       visit_date=None,
-      zoo_open_seconds=9 * 3600,
-      zoo_close_seconds=19 * 3600 ) == []
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) ) == []
 
 
 def test_attach_attraction_hours_soft_pins_noop_without_pins() -> None:
@@ -341,8 +343,9 @@ def test_resolve_skips_attraction_not_on_any_loop() -> None:
       ],
       loop_units=[],
       visit_date='2026-06-20',
-      zoo_open_seconds=9 * 3600,
-      zoo_close_seconds=19 * 3600 )
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) )
 
    assert soft_pins == []
 

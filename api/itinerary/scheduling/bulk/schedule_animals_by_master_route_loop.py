@@ -30,6 +30,7 @@ from .schedule_loop_unit_with_attraction_hours import schedule_prepared_loop_uni
 from .schedule_loop_unit_with_pins import pinned_loop_earliest_start_seconds
 from .schedule_loop_unit_with_pins import schedule_prepared_loop_unit_with_pins
 from ....shared.calendar_dates import DateValues
+from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
@@ -180,7 +181,7 @@ def _process_schedule_window(
       active_soft_pin_loop_ids: set[ str ],
       held_constrained_loop_ids: set[ str ],
       pinned_earliest_start_cache: dict[ int, int | None ],
-      hours_by_attraction_name: dict[ str, tuple[ int, int ] ],
+      hours_by_attraction_name: dict[ str, OperatingHours ],
       blockers: list[ TimeBlock ],
       walk_graph: WalkGraph,
       window_state: _LoopScheduleWindowState,
@@ -977,7 +978,7 @@ def _pack_non_pinned_loops_before_pinned_deadline(
       pinned_loop_ids: set[ str ],
       exclude_loop_ids: set[ str ] | None = None,
       pinned_earliest_start_cache: dict[ int, int | None ],
-      hours_by_attraction_name: dict[ str, tuple[ int, int ] ],
+      hours_by_attraction_name: dict[ str, OperatingHours ],
       blockers: list[ TimeBlock ],
       walk_graph: WalkGraph,
       window_state: _LoopScheduleWindowState,
@@ -1633,7 +1634,7 @@ def _schedule_prepared_loop_unit(
       start_seconds: int,
       walk_graph: WalkGraph,
       end_seconds: int | None = None,
-      hours_by_attraction_name: dict[ str, tuple[ int, int ] ] | None = None,
+      hours_by_attraction_name: dict[ str, OperatingHours ] | None = None,
       slot_sink: LoopScheduleSlotSink | None = None ) -> list[ LoopScheduleStop ]:
    animals = list( prepared_unit.unit.stops )
    prepared_stops = prepare_loop_schedule_stops(

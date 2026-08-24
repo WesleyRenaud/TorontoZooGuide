@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_transportation import set_itinerary_transportation_bulk_transit_evaluated
@@ -14,6 +15,7 @@ from ....shared.calendar_dates import DateValues
 from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
 from ....shared.constants import TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION
 from ....shared.duration_values import duration_minutes_to_seconds
+from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station import fetch_transportation_station_records
 from ...transportation.legs_along_day_loop import legs_along_day_loop
 from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
@@ -37,7 +39,8 @@ def apply_zoomobile_transit_rides(
       transit_rows: list[ ItineraryTransportationRecord ],
       scheduled_animals: list[ ItineraryAnimalRecord ],
       visit_date: DateKey | None,
-      schedule_anchor_seconds: int ) -> None:
+      schedule_anchor_seconds: int,
+      zoo_operating_hours: OperatingHours | None = None ) -> None:
    if not transit_rows or not scheduled_animals or visit_date is None:
       return
 
@@ -84,6 +87,16 @@ def apply_zoomobile_transit_rides(
          walk_graph=walk_graph,
          adjacency=adjacency )
 
+      operating_hours = (
+         None
+         if zoo_operating_hours is None
+         else fetch_configured_attraction_operating_hours_seconds(
+            conn,
+            transit_row.transportation,
+            visit_date=parsed_visit_date,
+            zoo_operating_hours=zoo_operating_hours )
+      )
+
       _apply_timeline(
          conn,
          transit_row=transit_row,
@@ -95,7 +108,8 @@ def apply_zoomobile_transit_rides(
          walk_graph=walk_graph,
          adjacency=adjacency,
          station_walk_nodes=station_walk_nodes,
-         entrance_node_id=entrance_node_id )
+         entrance_node_id=entrance_node_id,
+         operating_hours=operating_hours )
 
       cur = conn.cursor()
 
@@ -312,6 +326,23 @@ def _walk_seconds_to_station(
       adjacency=adjacency )
 
 
+def _ride_window_within_operating_hours(
+      ride_start: int,
+      ride_duration: int,
+      operating_hours: OperatingHours | None,
+) -> tuple[ int, int ] | None:
+   if operating_hours is None:
+      return ride_start, ride_start + ride_duration
+
+   adjusted_start = max( ride_start, operating_hours.open_seconds )
+   adjusted_end = adjusted_start + ride_duration
+
+   if adjusted_end > operating_hours.close_seconds:
+      return None
+
+   return adjusted_start, adjusted_end
+
+
 def _apply_timeline(
       conn: Connection,
       *,
@@ -324,7 +355,8 @@ def _apply_timeline(
       walk_graph: WalkGraph,
       adjacency: WalkGraphAdjacency,
       station_walk_nodes: dict[ str, str ],
-      entrance_node_id: str ) -> None:
+      entrance_node_id: str,
+      operating_hours: OperatingHours | None ) -> None:
    segments: list[ tuple[ ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ] = []
    animal_updates: list[ tuple[ ItineraryAnimalRecord, ScheduleTimeKey, ScheduleTimeKey ] ] = []
    shift_seconds = 0
@@ -344,7 +376,7 @@ def _apply_timeline(
       if ride is not None:
          ride_duration = duration_minutes_to_seconds(
             sum( leg.duration_minutes for leg in ride.legs ) )
-         ride_start = (
+         proposed_ride_start = (
             cursor_seconds
             + _walk_seconds_to_station(
                walk_graph=walk_graph,
@@ -352,23 +384,29 @@ def _apply_timeline(
                station_walk_nodes=station_walk_nodes,
                from_node_id=current_node_id,
                station_name=ride.from_station ) )
-         ride_end = ride_start + ride_duration
+         ride_window = _ride_window_within_operating_hours(
+            proposed_ride_start,
+            ride_duration,
+            operating_hours )
 
-         if ride_end > animal_start:
-            extra = ride_end - animal_start
-            shift_seconds += extra
-            animal_start += extra
-            animal_end += extra
+         if ride_window is not None:
+            ride_start, ride_end = ride_window
 
-         segments.append(
-            (
-               DateValues.schedule_time_key_from_seconds( ride_start ),
-               list( ride.legs ),
-            ) )
-         cursor_seconds = max( cursor_seconds, ride_end )
-         current_node_id = (
-            station_walk_nodes.get( ride.to_station )
-            or current_node_id )
+            if ride_end > animal_start:
+               extra = ride_end - animal_start
+               shift_seconds += extra
+               animal_start += extra
+               animal_end += extra
+
+            segments.append(
+               (
+                  DateValues.schedule_time_key_from_seconds( ride_start ),
+                  list( ride.legs ),
+               ) )
+            cursor_seconds = max( cursor_seconds, ride_end )
+            current_node_id = (
+               station_walk_nodes.get( ride.to_station )
+               or current_node_id )
 
       animal_updates.append(
          (
@@ -380,7 +418,9 @@ def _apply_timeline(
       current_node_id = anchor.walk_node_id
 
    if return_ride is not None:
-      ride_start = (
+      return_ride_duration = duration_minutes_to_seconds(
+         sum( leg.duration_minutes for leg in return_ride.legs ) )
+      proposed_return_start = (
          cursor_seconds
          + _walk_seconds_to_station(
             walk_graph=walk_graph,
@@ -388,11 +428,18 @@ def _apply_timeline(
             station_walk_nodes=station_walk_nodes,
             from_node_id=current_node_id,
             station_name=return_ride.from_station ) )
-      segments.append(
-         (
-            DateValues.schedule_time_key_from_seconds( ride_start ),
-            list( return_ride.legs ),
-         ) )
+      return_window = _ride_window_within_operating_hours(
+         proposed_return_start,
+         return_ride_duration,
+         operating_hours )
+
+      if return_window is not None:
+         return_start, _return_end = return_window
+         segments.append(
+            (
+               DateValues.schedule_time_key_from_seconds( return_start ),
+               list( return_ride.legs ),
+            ) )
 
    if not segments:
       return

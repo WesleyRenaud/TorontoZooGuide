@@ -6,6 +6,7 @@ from datetime import date
 from itinerary.support import itinerary_animals_for_exhibits
 import pytest
 
+from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
@@ -87,6 +88,24 @@ def _seconds( time_key: str | None ) -> int:
    assert value is not None
 
    return value
+
+
+def _zoomobile_hours_payload(
+      *,
+      weekday_start: str,
+      weekday_end: str,
+      weekend_start: str,
+      weekend_end: str,
+) -> dict:
+   return {
+      'attraction': 'Zoomobile',
+      'start_date': '2026-07-01',
+      'end_date': '2026-07-31',
+      'weekday_start_time': weekday_start,
+      'weekday_end_time': weekday_end,
+      'weekend_holiday_start_time': weekend_start,
+      'weekend_holiday_end_time': weekend_end,
+   }
 
 
 def _scheduled_animals_in_regions(
@@ -363,3 +382,39 @@ def test_bulk_schedule_marks_transit_zoomobile_evaluated_when_no_rides_used(
 
    assert zoomobile.legs == []
    assert zoomobile.bulk_transit_evaluated is True
+
+
+def test_bulk_schedule_transit_zoomobile_respects_configured_operating_hours(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( VISIT_DAY )
+
+   assert AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
+      **_zoomobile_hours_payload(
+         weekday_start='10:00 AM',
+         weekday_end='6:00 PM',
+         weekend_start='10:00 AM',
+         weekend_end='6:00 PM' ) )
+
+   _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.itinerary is not None
+
+   zoomobile = _transit_zoomobile( result.itinerary )
+   open_seconds = _seconds( '10:00 AM' )
+   close_seconds = _seconds( '6:00 PM' )
+
+   assert zoomobile.bulk_transit_evaluated is True
+
+   for leg in zoomobile.legs:
+      leg_start = _seconds( leg.start_time )
+      leg_end = _seconds( leg.end_time )
+      assert leg_start >= open_seconds
+      assert leg_end <= close_seconds
+
+   if zoomobile.legs:
+      assert _seconds( zoomobile.legs[ 0 ].start_time ) >= open_seconds

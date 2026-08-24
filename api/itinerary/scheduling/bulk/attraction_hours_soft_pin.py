@@ -12,6 +12,7 @@ from .loop_schedule_unit import LoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
+from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....types import DateKey
 
@@ -28,8 +29,7 @@ def resolve_attraction_hours_soft_pins(
       attractions: list[ AttractionHoursSoftPinStop ],
       loop_units: list[ LoopScheduleUnit ],
       visit_date: date | DateKey,
-      zoo_open_seconds: int,
-      zoo_close_seconds: int,
+      zoo_operating_hours: OperatingHours,
    ) -> list[ AttractionHoursSoftPin ]:
    parsed_visit_date = DateValues.parse_date_value( visit_date )
 
@@ -49,15 +49,12 @@ def resolve_attraction_hours_soft_pins(
          conn,
          attraction_row.attraction,
          visit_date=parsed_visit_date,
-         zoo_open_seconds=zoo_open_seconds,
-         zoo_close_seconds=zoo_close_seconds )
+         zoo_operating_hours=zoo_operating_hours )
 
       if attraction_hours is None:
          continue
 
-      open_seconds, close_seconds = attraction_hours
-
-      if open_seconds >= close_seconds:
+      if attraction_hours.open_seconds >= attraction_hours.close_seconds:
          continue
 
       viewing_spot_index = viewing_spot_index_for_stop_in_loop(
@@ -72,8 +69,8 @@ def resolve_attraction_hours_soft_pins(
             loop_id=loop_id,
             viewing_spot_index=viewing_spot_index,
             attraction_name=attraction_row.attraction,
-            open_seconds=open_seconds,
-            close_seconds=close_seconds ) )
+            open_seconds=attraction_hours.open_seconds,
+            close_seconds=attraction_hours.close_seconds ) )
 
    soft_pins.sort(
       key=lambda soft_pin: (
@@ -106,11 +103,11 @@ def attach_attraction_hours_soft_pins_to_schedule_windows(
 
 def attraction_hours_by_name_from_soft_pins(
       soft_pins: list[ AttractionHoursSoftPin ],
-   ) -> dict[ str, tuple[ int, int ] ]:
+   ) -> dict[ str, OperatingHours ]:
    return {
-      soft_pin.attraction_name: (
-         soft_pin.open_seconds,
-         soft_pin.close_seconds )
+      soft_pin.attraction_name: OperatingHours(
+         open_seconds=soft_pin.open_seconds,
+         close_seconds=soft_pin.close_seconds )
       for soft_pin in soft_pins
    }
 

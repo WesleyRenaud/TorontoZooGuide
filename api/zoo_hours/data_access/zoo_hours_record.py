@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...shared.operating_hours import OperatingHours
 from ...types import DateKey, ScheduleTimeKey
 
 
@@ -12,3 +13,8 @@ class ZooHoursRecord:
    open_time: ScheduleTimeKey
    last_admission_time: ScheduleTimeKey
    close_time: ScheduleTimeKey
+
+   def operating_hours( self ) -> OperatingHours | None:
+      return OperatingHours.from_schedule_times(
+         self.open_time,
+         self.close_time )
