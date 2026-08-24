@@ -110,6 +110,7 @@ import './scheduledPillOverlap.test.mjs';
 import './scheduledPillLayoutUnits.test.mjs';
 import './scheduledPillRenderPlan.test.mjs';
 import './dayPlannerScheduledItems.test.mjs';
+import './transportationSequenceItems.test.mjs';
 import './dayPlannerTimelinePillPlacement.test.mjs';
 import './dayPlannerTimelinePillAppend.test.mjs';
 import './dayPlannerTimelineEventCardRegionColors.test.mjs';

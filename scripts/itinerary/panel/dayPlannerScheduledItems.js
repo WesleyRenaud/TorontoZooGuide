@@ -5,6 +5,7 @@ import {
    findTimelineAnchorSlot,
    findTimelineSlotEndMinutes,
 } from './dayPlannerTimelineMarkers.js';
+import { hasItineraryScheduleTimes } from './rowActionProps.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
@@ -19,11 +20,11 @@ import {
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import { groupConsecutiveTransportationLegSequences } from '../selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js';
 import {
    getTransportationScheduleItemKey,
    isTransitTransportationHandledForDayPlanner,
 } from '../selectors/transportationSelector/model.js';
+import { buildTransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -40,10 +41,6 @@ function getDurationMinutesFromScheduleTimes(item) {
    return (
       parseClockTimeMinutes(item.end_time) - parseClockTimeMinutes(item.start_time)
    );
-}
-
-function hasItineraryScheduleTimes(item) {
-   return Boolean(item.start_time && item.end_time);
 }
 
 function isCoveredByTalk(item) {
@@ -155,30 +152,9 @@ function buildScheduledAnimalRows(animals = []) {
    ));
 }
 
-function transportationSequenceItems(transportation) {
-   const sequences = groupConsecutiveTransportationLegSequences(
-      transportation?.legs
-   );
-
-   if (sequences.length === 0) {
-      return hasItineraryScheduleTimes(transportation)
-         ? [transportation]
-         : [];
-   }
-
-   return sequences.map((sequence) => ({
-      ...transportation,
-      start_time: sequence[0].start_time,
-      end_time: sequence[sequence.length - 1].end_time,
-      legs: sequence,
-      // Sequence-local stations come from these legs, not parent roles.
-      stations: [],
-   }));
-}
-
 function buildScheduledTransportationRows(transportations = []) {
    return transportations.flatMap((transportation, index) => (
-      transportationSequenceItems(transportation).map((item) => {
+      buildTransportationSequenceItems(transportation).map((item) => {
          const [row] = buildTransportationRows([item]);
          const startMinutes = parseClockTimeMinutes(item.start_time);
          const endMinutes = parseClockTimeMinutes(item.end_time);
