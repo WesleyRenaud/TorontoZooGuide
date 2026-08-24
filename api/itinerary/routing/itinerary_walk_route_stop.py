@@ -2,30 +2,30 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_stop import ItineraryStop
 from ...shared.enums import ScheduleItemKind
 from ...types import ScheduleTimeKey
+from .walk_route_anchor import WalkRouteAnchor
 
 
 @dataclass( frozen=True )
 class ItineraryWalkRouteStop:
    schedule_item_kind: ScheduleItemKind
    item_key: str
-   walk_node_id: str | None
+   walk_node_id: str
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
 
    @classmethod
-   def from_itinerary_stop(
+   def from_walk_route_anchor(
          cls,
-         stop: ItineraryStop,
-         walk_node_id: str | None ) -> ItineraryWalkRouteStop:
+         anchor: WalkRouteAnchor,
+         walk_node_id: str ) -> ItineraryWalkRouteStop:
       return cls(
-         schedule_item_kind=stop.schedule_item_kind,
-         item_key=stop.item_key,
+         schedule_item_kind=anchor.schedule_item_kind,
+         item_key=anchor.item_key,
          walk_node_id=walk_node_id,
-         start_time=stop.start_time,
-         end_time=stop.end_time )
+         start_time=anchor.start_time,
+         end_time=anchor.end_time )
 
 
    def to_dict( self ) -> dict[ str, object ]:

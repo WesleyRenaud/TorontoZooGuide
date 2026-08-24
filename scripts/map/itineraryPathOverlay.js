@@ -1,6 +1,7 @@
 import { ITINERARY_PATH_ARROW_SIDE_OFFSET_PX } from './itineraryPathConstants.js';
 import {
    buildItineraryPathD,
+   buildItineraryPathDFromWalkLegs,
    buildPathArrowPlacements,
    buildRouteMapPoints,
    offsetArrowPlacement,
@@ -40,8 +41,16 @@ function pointToMapPx(point) {
    return null;
 }
 
-function buildPathD(points = []) {
-   const routePoints = buildRouteMapPoints(points, {
+function buildPathD(itineraryPath) {
+   if (itineraryPath.legs.length > 0) {
+      return buildItineraryPathDFromWalkLegs(
+         itineraryPath.legs,
+         itineraryPath.points,
+         { pointToMapPx }
+      );
+   }
+
+   const routePoints = buildRouteMapPoints(itineraryPath.points, {
       withEntranceLandmark: (normalizedPoints) => normalizedPoints,
       pointToMapPx,
    });
@@ -116,7 +125,7 @@ export function renderItineraryPathOverlay(itineraryPath) {
       return;
    }
 
-   const pathD = buildPathD(itineraryPath?.points);
+   const pathD = buildPathD(itineraryPath);
 
    if (!pathD) {
       return;

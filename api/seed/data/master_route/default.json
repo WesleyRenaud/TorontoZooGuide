@@ -2274,11 +2274,11 @@
     {
       "id": "north",
       "loop_ids": [
-        "australasia",
         "discovery_zone",
         "splash_island",
         "eurasia",
         "eurasia_attractions",
+        "australasia",
         "tundra_trek_mayan_temple",
         "tundra_attractions",
         "americas_pavilion"

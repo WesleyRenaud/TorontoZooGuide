@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+   buildItineraryPathDFromWalkLegs,
    buildPathArrowPlacements,
    buildPathDFromWalkGraphSegments,
    buildSmoothedPathD,
@@ -64,4 +65,54 @@ test('buildPathArrowPlacements spaces arrows along a straight path', () => {
 
 test('buildPathArrowPlacements skips short paths', () => {
    assert.deepEqual(buildPathArrowPlacements('M 0 0 L 20 0'), []);
+});
+
+test('buildItineraryPathDFromWalkLegs keeps transit ride gaps discontinuous', () => {
+   const pathD = buildItineraryPathDFromWalkLegs(
+      [
+         {
+            nodeIds: ['a', 'b'],
+         },
+         {
+            nodeIds: ['c', 'd'],
+         },
+      ],
+      [
+         { nodeId: 'a', x: 0, y: 0 },
+         { nodeId: 'b', x: 10, y: 0 },
+         { nodeId: 'c', x: 100, y: 100 },
+         { nodeId: 'd', x: 110, y: 100 },
+      ],
+      {
+         pointToMapPx: (point) => ({ x: point.x, y: point.y }),
+      }
+   );
+
+   assert.equal(pathD, 'M 0 0 L 10 0 M 100 100 L 110 100');
+});
+
+test('buildItineraryPathDFromWalkLegs draws a continuous leg to a transit station', () => {
+   const pathD = buildItineraryPathDFromWalkLegs(
+      [
+         {
+            nodeIds: ['exhibit', 'path', 'domain-station'],
+         },
+         {
+            nodeIds: ['africa-station', 'next-exhibit'],
+         },
+      ],
+      [
+         { nodeId: 'exhibit', x: 0, y: 0 },
+         { nodeId: 'path', x: 10, y: 0 },
+         { nodeId: 'domain-station', x: 20, y: 0 },
+         { nodeId: 'africa-station', x: 200, y: 200 },
+         { nodeId: 'next-exhibit', x: 210, y: 200 },
+      ],
+      {
+         pointToMapPx: (point) => ({ x: point.x, y: point.y }),
+      }
+   );
+
+   assert.match(pathD, /^M 0 0[\s\S]*20 0 M 200 200 L 210 200$/);
+   assert.equal(pathD.includes('L 200 200'), false);
 });

@@ -4,6 +4,7 @@ from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_transportation_route_marker_mapper import route_marker_sequences_for_markers
 from .itinerary_transportation_route_marker_record import ItineraryTransportationRouteMarkerRecord
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
+from ...shared.calendar_dates import DateValues
 from ...shared.value_conversion import ValueConversion
 from ...types import Row
 
@@ -31,7 +32,9 @@ def map_itinerary_transportation_record(
       added_as_attraction=ValueConversion.as_boolean(
          row[ 'ADDED_AS_ATTRACTION' ] ),
       route=row[ 'ROUTE' ],
-      legs=legs,
+      legs=sorted(
+         legs,
+         key=lambda leg: DateValues.time_value_in_seconds( leg.start_time ) ),
       route_marker_sequences=route_marker_sequences_for_markers( route_markers ),
    )
 

@@ -17,12 +17,14 @@ def group_consecutive_transportation_leg_sequences(
    current_sequence: list[ ItineraryTransportationLeg ] = []
 
    for leg in legs:
-      if (
-            current_sequence
-            and current_sequence[ SequenceIndex.LAST ].to_station != leg.from_station
-      ):
-         sequences.append( current_sequence )
-         current_sequence = []
+      if current_sequence:
+         previous_leg = current_sequence[ SequenceIndex.LAST ]
+         station_gap = previous_leg.to_station != leg.from_station
+         time_gap = previous_leg.end_time != leg.start_time
+
+         if station_gap or time_gap:
+            sequences.append( current_sequence )
+            current_sequence = []
 
       current_sequence.append( leg )
 

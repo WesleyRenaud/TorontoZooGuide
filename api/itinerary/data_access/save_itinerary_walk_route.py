@@ -31,8 +31,6 @@ def insert_itinerary_walk_route_stops(
       cur: Cursor,
       walk_route: ItineraryWalkRoute ) -> None:
    for stop_sequence, stop in enumerate( walk_route.stops ):
-      assert stop.walk_node_id is not None
-
       cur.execute(
          """   INSERT INTO ItineraryWalkRouteStop (
                   STOP_SEQUENCE,
