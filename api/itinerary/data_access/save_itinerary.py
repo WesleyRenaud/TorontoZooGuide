@@ -109,7 +109,8 @@ def save_itinerary_transportations(
          start_time=transportation.start_time,
          end_time=transportation.end_time,
          route=transportation.route,
-         added_as_attraction=transportation.added_as_attraction )
+         added_as_attraction=transportation.added_as_attraction,
+         bulk_transit_evaluated=transportation.bulk_transit_evaluated )
 
       if not transportation.legs:
          continue

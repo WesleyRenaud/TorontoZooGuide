@@ -16,6 +16,7 @@ class ItineraryTransportationSaveCarryover:
    start_time: ScheduleTimeKey
    end_time: ScheduleTimeKey
    legs: list[ ItineraryTransportationLeg ] = field( default_factory=list )
+   bulk_transit_evaluated: bool = False
 
 
 def _saved_transportation_row_for_input(
@@ -52,6 +53,7 @@ def _transportation_save_carryover_from_row(
       start_time=saved_row.start_time,
       end_time=saved_row.end_time,
       legs=saved_row.legs,
+      bulk_transit_evaluated=saved_row.bulk_transit_evaluated,
    )
 
 

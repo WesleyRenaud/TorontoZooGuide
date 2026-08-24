@@ -5,11 +5,33 @@ import {
    buildAddAsTransportationMessage,
    buildTransportationStationsLine,
    isScheduleItemTransportationRow,
+   isTransitTransportationHandledForDayPlanner,
    makeTransportationSelection,
    migrateStoredTransportations,
    shouldConfirmAddAsTransportation,
 } from '../../scripts/itinerary/selectors/transportationSelector/model.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+
+test('isTransitTransportationHandledForDayPlanner treats bulk evaluation as handled', () => {
+   assert.equal(
+      isTransitTransportationHandledForDayPlanner({
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         bulk_transit_evaluated: true,
+         legs: [],
+      }),
+      true
+   );
+   assert.equal(
+      isTransitTransportationHandledForDayPlanner({
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         bulk_transit_evaluated: false,
+         legs: [],
+      }),
+      false
+   );
+});
 
 test('buildTransportationStationsLine omits main-station round trip for pure transportations', () => {
    assert.equal(

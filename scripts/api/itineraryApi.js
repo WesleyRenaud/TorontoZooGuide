@@ -85,6 +85,7 @@ function normalizeItineraryTransportation(row) {
       ),
       route_duration_minutes: normalizeNumber(source.route_duration_minutes),
       added_as_attraction: asBoolean(source.added_as_attraction),
+      bulk_transit_evaluated: asBoolean(source.bulk_transit_evaluated),
    };
 }
 

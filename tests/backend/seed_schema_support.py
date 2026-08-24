@@ -282,6 +282,7 @@ EXPECTED_RUNTIME_COLUMNS = {
       'START_TIME',
       'END_TIME',
       'ROUTE',
+      'BULK_TRANSIT_EVALUATED',
    },
    'ItineraryTransportationLeg': {
       'TRANSPORTATION',

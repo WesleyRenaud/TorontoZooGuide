@@ -20,7 +20,10 @@ import {
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import { groupConsecutiveTransportationLegSequences } from '../selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js';
-import { getTransportationScheduleItemKey } from '../selectors/transportationSelector/model.js';
+import {
+   getTransportationScheduleItemKey,
+   isTransitTransportationHandledForDayPlanner,
+} from '../selectors/transportationSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -201,6 +204,20 @@ function buildScheduledTransportationRows(transportations = []) {
    ));
 }
 
+function buildItineraryScheduledTransportationIndexes(items = []) {
+   const indexes = new Set();
+
+   items.forEach((item, index) => {
+      if (!isTransitTransportationHandledForDayPlanner(item)) {
+         return;
+      }
+
+      indexes.add(index);
+   });
+
+   return indexes;
+}
+
 function buildItineraryScheduledItemIndexes(items = []) {
    const indexes = new Set();
 
@@ -325,7 +342,7 @@ export function buildScheduledItemRowsContext(
       ),
       scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
       scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
-      scheduledTransportationIndexes: buildItineraryScheduledItemIndexes(
+      scheduledTransportationIndexes: buildItineraryScheduledTransportationIndexes(
          transportations
       ),
       scheduledGuardiansTalkIndexes: new Set(

@@ -307,6 +307,10 @@ def validate_itinerary_transportations(
             carryover.end_time,
             arrival_time=arrival_time,
             departure_time=departure_time ) )
+      bulk_transit_evaluated = (
+         False
+         if visit_date_is_changing
+         else carryover.bulk_transit_evaluated )
       end_time, legs = _timed_legs_for_transportation_save(
          conn,
          transportation_name=transportation.name,
@@ -327,6 +331,7 @@ def validate_itinerary_transportations(
                end_time=end_time,
                legs=legs,
                added_as_attraction=transportation.added_as_attraction,
+               bulk_transit_evaluated=bulk_transit_evaluated,
             )
          )
          continue
@@ -352,6 +357,7 @@ def validate_itinerary_transportations(
                legs=legs,
             ),
             added_as_attraction=transportation.added_as_attraction,
+            bulk_transit_evaluated=bulk_transit_evaluated,
          )
       )
 

@@ -22,7 +22,8 @@ class ItineraryTransportation:
          stations: list[ ItineraryTransportationStation ] | None = None,
          route: str | None = None,
          route_marker_sequences: list[ list[ str ] ] | None = None,
-         route_duration_minutes: int | None = None ) -> None:
+         route_duration_minutes: int | None = None,
+         bulk_transit_evaluated: bool = False ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood
       self.likelihood = likelihood
@@ -37,6 +38,7 @@ class ItineraryTransportation:
       self.route_marker_sequences = route_marker_sequences or []
       self.added_as_attraction = added_as_attraction
       self.route_duration_minutes = route_duration_minutes
+      self.bulk_transit_evaluated = bulk_transit_evaluated
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -55,5 +57,7 @@ class ItineraryTransportation:
          'route_marker_sequences': self.route_marker_sequences,
          'added_as_attraction': ValueConversion.as_boolean(
             self.added_as_attraction ),
+         'bulk_transit_evaluated': ValueConversion.as_boolean(
+            self.bulk_transit_evaluated ),
          'route_duration_minutes': self.route_duration_minutes,
       }
