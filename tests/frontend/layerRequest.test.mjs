@@ -31,7 +31,7 @@ test('builds typed itinerary rows for map focus candidates', () => {
    ]);
 });
 
-test('includes transportation markers and station markers for scheduled rides', () => {
+test('includes station markers without generic transportation icon for scheduled rides', () => {
    assert.deepEqual(buildItineraryRows({
       animals: [],
       attractions: [],
@@ -63,15 +63,11 @@ test('includes transportation markers and station markers for scheduled rides', 
       }],
    }), [
       {
-         name: 'Zoomobile',
+         name: 'Zoo Shuttle',
          added_as_attraction: false,
-         legs: [{
-            from_station: 'Main Zoomobile Station',
-            to_station: 'Africa Zoomobile Station',
-         }],
+         legs: [],
          type: 'transportation',
       },
-      { name: 'Zoo Shuttle', added_as_attraction: false, legs: [], type: 'transportation' },
       {
          name: 'Main Zoomobile Station',
          transportation: 'Zoomobile',
@@ -87,7 +83,7 @@ test('includes transportation markers and station markers for scheduled rides', 
    ]);
 });
 
-test('includes only transportations added as transportation', () => {
+test('includes only fully unscheduled transportations as generic markers', () => {
    assert.deepEqual(buildItineraryRows({
       animals: [],
       attractions: [],
@@ -101,9 +97,51 @@ test('includes only transportations added as transportation', () => {
    }), [
       {
          name: 'Zoomobile',
-         added_as_attraction: false,
+         added_as_attraction: true,
          legs: [],
          type: 'transportation',
+      },
+   ]);
+});
+
+test('hides generic transportation marker when either role is scheduled', () => {
+   assert.deepEqual(buildItineraryRows({
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      transportations: [
+         { name: 'Zoomobile', added_as_attraction: true, legs: [] },
+         {
+            name: 'Zoomobile',
+            added_as_attraction: false,
+            legs: [{
+               from_station: 'Main Zoomobile Station',
+               to_station: 'Eurasia Zoomobile Station',
+            }],
+         },
+      ],
+      transportationStations: [{
+         name: 'Main Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'onboarding_station',
+      }, {
+         name: 'Eurasia Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'offboarding_station',
+      }],
+   }), [
+      {
+         name: 'Main Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'onboarding_station',
+         type: 'transportationStation',
+      },
+      {
+         name: 'Eurasia Zoomobile Station',
+         transportation: 'Zoomobile',
+         role: 'offboarding_station',
+         type: 'transportationStation',
       },
    ]);
 });
