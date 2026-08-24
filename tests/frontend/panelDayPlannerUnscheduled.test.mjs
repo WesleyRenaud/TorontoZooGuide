@@ -115,7 +115,8 @@ test.describe('itinerary day planner preview unscheduled', () => {
       }]);
    });
 
-   test('day planner omits bulk-evaluated transit transportation from unscheduled items', () => {
+   test('day planner renders bulk-evaluated transit transportation in scheduled items', () => {
+      const removeCalls = [];
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -133,12 +134,93 @@ test.describe('itinerary day planner preview unscheduled', () => {
                   legs: [],
                },
             ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: () => {},
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
          }
       );
       const text = allTextFor(planner);
+      const scheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
+         section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      ));
+      const zoomobileRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
+         allTextFor(row).includes('Zoomobile')
+      ));
+      const zoomobileButtons = [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])];
+      const zoomobileMeta = allTextFor(
+         zoomobileRow?.querySelector('.itin-panel-meta') ?? createNode('div')
+      );
 
       assert.match(text, /Scheduled Items/);
+      assert.match(text, /Transportation \(1\)/);
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Transportation \(1\)/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
+      assert.equal(zoomobileMeta, '');
+      assert.deepEqual(
+         zoomobileButtons.map((button) => button.textContent),
+         ['Remove']
+      );
+
+      zoomobileButtons[0]?.click();
+
+      assert.deepEqual(removeCalls, [{
+         itemType: 'transportations',
+         key: 'Zoomobile||0',
+      }]);
+   });
+
+   test('day planner renders bulk-evaluated transit transportation with leg sequence in scheduled items', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: false,
+                  bulk_transit_evaluated: true,
+                  start_time: '2:30 PM',
+                  end_time: '3:00 PM',
+                  legs: [
+                     {
+                        from_station: 'Main Station',
+                        to_station: 'Canadian Domain',
+                        start_time: '2:30 PM',
+                        end_time: '2:40 PM',
+                     },
+                     {
+                        from_station: 'Canadian Domain',
+                        to_station: 'Wildlife Health',
+                        start_time: '2:40 PM',
+                        end_time: '3:00 PM',
+                     },
+                  ],
+               },
+            ],
+         }
+      );
+      const text = allTextFor(planner);
+      const scheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
+         section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      ));
+      const zoomobileRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
+         allTextFor(row).includes('Zoomobile')
+      ));
+
+      assert.match(text, /Scheduled Items[\s\S]*Transportation \(1\)/);
+      assert.match(allTextFor(zoomobileRow), /Main Station - Wildlife Health/);
+      assert.match(allTextFor(zoomobileRow), /Time: ~2:30 PM/);
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
    });
 });
