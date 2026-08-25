@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from ...app_strings import format_app_string
 from .exhibit_closed_status import ExhibitClosedStatus
 from ...shared.calendar_dates import DateValues
-from ...shared.strings import SharedStrings
 from ...types import DateInput
 
 
@@ -16,7 +16,7 @@ def build_exhibit_closed_status(
       end_date=end_date )
 
    if not message:
-      message = SharedStrings.Locations.temporarily_closed( exhibit )
+      message = format_app_string( 'guestStatus.locations.temporarilyClosed', name=exhibit )
 
    return ExhibitClosedStatus(
       exhibit=exhibit,

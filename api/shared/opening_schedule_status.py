@@ -4,12 +4,12 @@ from collections.abc import Callable
 from datetime import date
 from typing import TypeVar
 
+from ..app_strings import format_app_string
 from .calendar_dates import CalendarDates
 from .calendar_dates import DateValues
 from .enums import ScheduleStatus
 from .opening_schedule_record import OpeningScheduleRecord
 from .schedule_override_record import ScheduleOverrideRecord
-from .strings import SharedStrings
 from ..types import SeasonalMultiplier
 
 
@@ -156,6 +156,6 @@ def resolve_amenity_likelihood_and_message(
          if likely_closed_message is not None:
             closed_message = likely_closed_message( name )
          else:
-            closed_message = SharedStrings.Locations.likely_not_open_on_day( name )
+            closed_message = format_app_string( 'guestStatus.locations.likelyNotOpenOnDay', name=name )
 
    return likelihood, closed_message

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from ..coordinators.restroom_coordinator import RestroomCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.api_error_response import apply_api_error
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class RestroomController():
@@ -53,7 +55,7 @@ class RestroomController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set "{ restroom }" as closed.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=restroom )
 
       handler._write_json( response )
 
@@ -79,7 +81,7 @@ class RestroomController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set "{ restroom }" as open.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=restroom )
 
       handler._write_json( response )
 
@@ -108,7 +110,7 @@ class RestroomController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set alert for "{ restroom }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_RESTROOM_ALERT, name=restroom )
 
       handler._write_json( response )
 
@@ -127,6 +129,6 @@ class RestroomController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not remove alert for "{ restroom }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_REMOVE_RESTROOM_ALERT, name=restroom )
 
       handler._write_json( response )

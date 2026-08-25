@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from .animal_viewability_context import AnimalViewabilityContext
+from ...app_strings import format_app_string
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from .indoor_outdoor_viewing_visibility import apply_indoor_outdoor_viewing_visibility
 from ...models import Animal
@@ -318,9 +319,9 @@ def get_viewable_animal_display_message(
    if (
          exhibit_status == ScheduleStatus.UNKNOWN
          and exhibit_day_seasonal_availability_multiplier == 0 ):
-      return f'The { animal.exhibit } is most likely closed on this day.'
+      return format_app_string( 'guestStatus.animals.exhibitLikelyClosedOnDay', exhibit=animal.exhibit )
 
    if animal.seasonally_off_display_message:
       return animal.seasonally_off_display_message
 
-   return f'The { animal.species } is most likely off display on this day.'
+   return format_app_string( 'guestStatus.animals.speciesLikelyOffDisplayOnDay', species=animal.species )

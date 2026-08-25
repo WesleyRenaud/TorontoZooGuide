@@ -161,4 +161,5 @@ def test_console_mutation_returns_error_when_database_returns_false(
       {
          'restaurant': 'Africa Restaurant'
       },
-      'Could not set opening schedule for "Africa Restaurant".' )
+      'couldNotSetOpeningSchedule',
+      { 'name': 'Africa Restaurant' } )

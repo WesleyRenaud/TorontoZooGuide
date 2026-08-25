@@ -201,6 +201,9 @@ export const itinerary = {
    },
    errors: {
       generic: 'Could not update itinerary.',
+      itineraryDateNotSet: 'Set a visit date before saving your itinerary.',
+      saveFailed: 'Could not save itinerary.',
+      timeOrderInvalid: 'Arrival time must be before departure.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',
       earlyAdmissionRequiresMembership: 'Early admission requires membership.',
       noAvailableSlot: 'No open time slot is available for this item.',
@@ -230,9 +233,6 @@ export const itinerary = {
       clearArrivalTimeAria: 'Clear arrival time',
       arrivalTimeInvalid: (
          'Arrival time must be between opening and last admission.'
-      ),
-      arrivalTimeBeforeDepartureInvalid: (
-         'Arrival time must be before departure.'
       ),
       arrivalLabel: 'Arrival',
       arrivalTimeMenuAria: 'Arrival time options',

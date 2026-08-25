@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from ..coordinators.event_coordinator import EventCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.api_error_response import apply_api_error
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class EventController():
@@ -49,6 +51,6 @@ class EventController():
       }
 
       if not success:
-         response[ 'error' ] = 'Could not create event.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_CREATE_EVENT )
 
       handler._write_json( response )

@@ -37,10 +37,11 @@ from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInpu
 from ..scheduling.guardians_talk_schedule_row_input import parse_guardians_talk_schedule_rows
 from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule
 from ..search.guardians_talks_matching_query import build_guardians_talks_matching_query
+from ...shared.api_error_response import ApiOperationFailure
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import SCHEDULED_OCCURRENCE_DAYS_AHEAD
-from ...shared.strings import SharedStrings
+from ...shared.enums.api_error_type import ApiErrorType
 from ...types import Connection, DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
@@ -289,7 +290,7 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          date: DateKey,
-         talk_times: list[ str ] ) -> tuple[ bool, str | None ]:
+         talk_times: list[ str ] ) -> tuple[ bool, ApiOperationFailure | None ]:
       conn = get_connection()
 
       for talk_time in DateValues.normalize_unique_schedule_times(
@@ -308,21 +309,28 @@ class GuardiansCoordinator():
                occurrence.talk_time ):
             return (
                False,
-               SharedStrings.GuardiansTalks.occurrence_already_exists(
-                  occurrence.talk_name,
-                  occurrence.location,
-                  occurrence.occurrence_date,
-                  occurrence.talk_time ) )
+               ApiOperationFailure(
+                  error_type=(
+                     ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS ),
+                  params={
+                     'talk': occurrence.talk_name,
+                     'location': occurrence.location,
+                     'date': occurrence.occurrence_date,
+                     'talkTime': occurrence.talk_time,
+                  } ) )
 
          if not save_guardians_talk_occurrence(
                conn,
                occurrence=occurrence ):
             return (
                False,
-               SharedStrings.GuardiansTalks.could_not_add_occurrence(
-                  talk,
-                  location,
-                  date ) )
+               ApiOperationFailure(
+                  error_type=ApiErrorType.COULD_NOT_ADD_GUARDIANS_TALK_OCCURRENCE,
+                  params={
+                     'talk': talk,
+                     'location': location,
+                     'date': date,
+                  } ) )
 
       return True, None
 

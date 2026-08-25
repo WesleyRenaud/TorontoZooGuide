@@ -215,7 +215,7 @@ export function resolveArrivalTimeValidationError(
    }
 
    if (!areItineraryScheduleTimesOrdered(timeValue, departureTime)) {
-      return strings.arrivalTimeBeforeDepartureInvalid;
+      return strings.timeOrderInvalid;
    }
 
    return null;

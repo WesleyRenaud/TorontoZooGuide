@@ -8,6 +8,7 @@ import {
    schedule,
 } from './strings/common.js';
 import {
+   apiErrors,
    confirm,
    help,
    loadErrors,
@@ -33,6 +34,7 @@ import {
 
 export const APP_STRINGS = {
    actions,
+   apiErrors,
    common,
    confirm,
    site,

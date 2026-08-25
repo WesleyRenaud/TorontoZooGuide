@@ -8,6 +8,7 @@ import pytest
 import api.app_strings as app_strings
 from api.app_strings import clear_app_string_cache
 from api.app_strings import format_app_string
+from api.app_strings import format_app_string
 from api.app_strings import get_app_string_values
 from api.html_strings import clear_html_string_cache
 
@@ -38,6 +39,12 @@ def test_format_app_string_resolves_guest_status_templates() -> None:
    assert format_app_string(
       'guestStatus.animals.temporarilyOffDisplay',
       species='Giraffe' ) == 'The Giraffe is temporarily off-display.'
+
+
+def test_format_app_string_resolves_guest_status_likely_off_display_message() -> None:
+   assert format_app_string(
+      'guestStatus.animals.speciesLikelyOffDisplayOnDay',
+      species='Giraffe' ) == 'The Giraffe is most likely off display on this day.'
 
 
 def test_html_string_cache_clear_also_clears_app_string_cache(

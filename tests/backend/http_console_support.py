@@ -143,7 +143,8 @@ def assert_opening_schedule_overlap_failure(
 def assert_console_mutation_failure(
       path: str,
       body: dict[ str, Any ],
-      expected_error: str ) -> None:
+      expected_api_error_type: str,
+      expected_api_error_params: dict[ str, Any ] | None = None ) -> None:
    StubZooControllers.default_success = False
    handler = make_handler( path, body )
 
@@ -153,4 +154,9 @@ def assert_console_mutation_failure(
 
    assert handler.statuses == [ 200 ]
    assert result[ 'success' ] is False
-   assert result[ 'error' ] == expected_error
+   assert result[ 'apiErrorType' ] == expected_api_error_type
+
+   if expected_api_error_params is None:
+      assert 'apiErrorParams' not in result
+   else:
+      assert result.get( 'apiErrorParams' ) == expected_api_error_params

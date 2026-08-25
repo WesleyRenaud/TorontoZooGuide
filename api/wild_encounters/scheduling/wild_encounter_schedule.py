@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from datetime import date
 
+from ...app_strings import format_app_string
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from ..domain.wild_encounter_name_filter import WildEncounterNameFilter
 from ..domain.wild_encounter_sort import sort_wild_encounters_by_name_and_start_time
 from ...models import WildEncounter
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
-from ...shared.strings import SharedStrings
 from ...types import ScheduleTimeKey
 
 
@@ -85,13 +85,15 @@ def build_wild_encounter_schedule_for_target_date(
 
       if not is_available:
          if not date_range_ok:
-            unavailable_message = SharedStrings.VisitDaySchedule.not_scheduled_on_visit_day(
-               name,
-               target_date )
+            unavailable_message = format_app_string(
+               'guestStatus.visitDaySchedule.notScheduledOnVisitDay',
+               name=name,
+               month=target_date.strftime( '%B' ),
+               day=target_date.day )
          elif not weekday_ok:
-            unavailable_message = SharedStrings.VisitDaySchedule.not_offered_this_weekday( name )
+            unavailable_message = format_app_string( 'guestStatus.visitDaySchedule.notOfferedThisWeekday', name=name )
          elif record.is_cancelled:
-            unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
+            unavailable_message = format_app_string( 'guestStatus.visitDaySchedule.cancelledForThisDate', name=name )
 
       encounter_end_time = DateValues.normalize_schedule_time(
          DateValues.add_minutes_to_time(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from ...app_strings import format_app_string
 from ...shared.calendar_dates import DateValues
-from ...shared.strings import SharedStrings
 from .station_closed_status import TransportationStationClosedStatus
 from ...types import DateInput
 
@@ -16,7 +16,7 @@ def build_transportation_station_closed_status(
       end_date=end_date )
 
    if not message:
-      message = SharedStrings.Locations.temporarily_closed( transportation_station )
+      message = format_app_string( 'guestStatus.locations.temporarilyClosed', name=transportation_station )
 
    return TransportationStationClosedStatus(
       transportation_station=transportation_station,

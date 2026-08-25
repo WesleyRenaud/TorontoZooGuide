@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from ..app_strings import format_app_string
 from .calendar_dates import DateValues
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
-from .strings import SharedStrings
 from ..types import DateInput
 
 
@@ -24,7 +24,7 @@ def build_opening_schedule_weekday_fields(
       end_date=end_date )
 
    if not message:
-      message = SharedStrings.Locations.not_scheduled_to_be_open_today( name )
+      message = format_app_string( 'guestStatus.locations.notScheduledToBeOpenToday', name=name )
 
    return OpeningScheduleWeekdayFields(
       start_date=date_range.start_date,

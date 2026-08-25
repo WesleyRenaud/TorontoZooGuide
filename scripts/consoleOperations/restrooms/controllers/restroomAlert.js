@@ -8,6 +8,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { loadRestrooms } from '../../options/loaders.js';
+import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -121,7 +122,7 @@ export function createRestroomAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
+            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch(err) {

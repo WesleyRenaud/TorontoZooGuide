@@ -205,7 +205,7 @@ test.describe('itinerary panel format and schedule', () => {
          '5:00 PM',
          {
             arrivalTimeInvalid: 'hours',
-            arrivalTimeBeforeDepartureInvalid: 'order',
+            timeOrderInvalid: 'order',
          }
       ), 'order');
       assert.deepEqual(buildHalfHourSlotStarts(570, 720), [

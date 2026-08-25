@@ -3,6 +3,9 @@ from __future__ import annotations
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
 from ...json_handler import JsonRequestHandler
 from ..scheduling.collapse_guardians_talks_for_map import collapse_guardians_talks_for_map
+from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import apply_api_failure
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class GuardiansController():
@@ -92,7 +95,7 @@ class GuardiansController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set schedule for "{ talk }" at "{ location }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
 
       return response
 
@@ -232,7 +235,7 @@ class GuardiansController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not end schedule for "{ talk }" at "{ location }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_END_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
 
       handler._write_json( response )
 
@@ -261,9 +264,7 @@ class GuardiansController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not cancel "{ talk }" at "{ location }" on { date }.'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_CANCEL_GUARDIANS_TALK_OCCURRENCE, talk=talk, location=location, date=date )
 
       handler._write_json( response )
 
@@ -276,7 +277,7 @@ class GuardiansController():
       location = data.get( 'location' )
       date = data.get( 'date' )
       talk_times = data.get( 'times' )
-      success, error = GuardiansCoordinator.add_guardians_talk_occurrence(
+      success, failure = GuardiansCoordinator.add_guardians_talk_occurrence(
          talk=talk,
          location=location,
          date=date,
@@ -288,7 +289,9 @@ class GuardiansController():
          'location': location,
          'date': date,
          'times': talk_times,
-         'error': error,
       }
+
+      if failure is not None:
+         apply_api_failure( response, failure )
 
       handler._write_json( response )

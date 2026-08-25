@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from ..coordinators.exhibit_coordinator import ExhibitCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.api_error_response import apply_api_error
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class ExhibitController():
@@ -93,7 +95,7 @@ class ExhibitController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set "{ exhibit }" as closed.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=exhibit )
 
       handler._write_json( response )
 
@@ -119,6 +121,6 @@ class ExhibitController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set "{ exhibit }" as open.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=exhibit )
 
       handler._write_json( response )
