@@ -327,7 +327,7 @@ test.describe('itinerary day planner preview scheduled', () => {
 
       assert.ok(zoomobileEvent);
       assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
-      assert.match(allTextFor(zoomobileEvent), /Main Station - Wildlife Health/);
+      assert.match(allTextFor(zoomobileEvent), /Main Station → Wildlife Health/);
       assert.match(text, /Attractions \(1\)/);
       assert.match(
          imageSrcFor(zoomobileEvent),

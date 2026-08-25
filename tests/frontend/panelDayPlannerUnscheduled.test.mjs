@@ -219,7 +219,7 @@ test.describe('itinerary day planner preview unscheduled', () => {
       ));
 
       assert.match(text, /Scheduled Items[\s\S]*Transportation \(1\)/);
-      assert.match(allTextFor(zoomobileRow), /Main Station - Wildlife Health/);
+      assert.match(allTextFor(zoomobileRow), /Main Station → Wildlife Health/);
       assert.match(allTextFor(zoomobileRow), /Time: ~2:30 PM/);
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
    });
@@ -294,11 +294,11 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.equal(zoomobileRows.length, 2);
       assert.match(
          allTextFor(zoomobileRows[0]),
-         /Main Zoomobile Station - Africa Zoomobile Station/
+         /Main Zoomobile Station → Africa Zoomobile Station/
       );
       assert.match(
          allTextFor(zoomobileRows[1]),
-         /Canadian Domain Zoomobile Station - Main Zoomobile Station/
+         /Canadian Domain Zoomobile Station → Main Zoomobile Station/
       );
       assert.match(allTextFor(zoomobileRows[0]), /Time: ~9:00 AM/);
       assert.match(allTextFor(zoomobileRows[1]), /Time: ~10:25 AM/);

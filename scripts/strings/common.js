@@ -85,7 +85,7 @@ export const labels = {
    time: 'Time',
    title: 'Title',
    transportationRoundTrip: station => `${station} (round trip)`,
-   transportationStations: (first, last) => `${first} - ${last}`,
+   transportationStations: (first, last) => `${first} → ${last}`,
    type: 'Type',
    update: 'Update',
    viewingScope: 'Viewing scope',

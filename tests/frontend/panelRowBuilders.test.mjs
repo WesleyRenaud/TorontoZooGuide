@@ -315,7 +315,7 @@ test.describe('itinerary panel row builders', () => {
       );
       assert.match(
          allTextFor(attractionSection.children[1]),
-         /Main Station - Wildlife Health/
+         /Main Station → Wildlife Health/
       );
    });
 
@@ -420,7 +420,7 @@ test.describe('itinerary panel row builders', () => {
       );
       assert.doesNotMatch(
          allTextFor(attractionSection.children[0]),
-         /Main Zoomobile Station - Main Zoomobile Station/
+         /Main Zoomobile Station → Main Zoomobile Station/
       );
    });
    
