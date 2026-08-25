@@ -25,7 +25,7 @@ function createPopupButton({
 
 export function createItineraryPopupLayout({
    popupClassName = '',
-   title = 'Heads up',
+   title = APP_STRINGS.common.headsUp,
    message = '',
    bodyContent = null,
    actionsClassName = '',

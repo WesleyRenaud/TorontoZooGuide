@@ -6,7 +6,7 @@ import {
 import { APP_STRINGS } from '../../../strings.js';
 
 export function showItineraryNoticePopup({
-   title = 'Heads up',
+   title = APP_STRINGS.common.headsUp,
    message = '',
    bodyContent = null,
    buttonText = APP_STRINGS.itinerary.noItemsSelected.button,

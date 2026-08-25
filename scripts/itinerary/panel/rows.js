@@ -103,13 +103,13 @@ export function buildAttractionRows(
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
       prepareItems: sortScheduledOccurrencesByStartTime,
-      defaultName: 'Attraction',
+      defaultName: APP_STRINGS.entityLabels.attraction,
       imageDirectory: 'attractions',
       getName: (attraction) => attraction.name,
       getMetaLines: (attraction) => [
          attraction.subtitle,
-         buildFieldLine('Location', attraction.region),
-         buildFieldLine('Price', attraction.price),
+         buildFieldLine(APP_STRINGS.labels.location, attraction.region),
+         buildFieldLine(APP_STRINGS.labels.price, attraction.price),
          buildApproximateStartTimeFieldLine(attraction),
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
@@ -167,7 +167,7 @@ export function buildGuardiansRows(
       getImageName: getGuardiansTalkName,
       getNameSuffix: getGuardiansTalkTitleSuffix,
       getMetaLines: (talk) => [
-         buildFieldLine('Location', talk.location),
+         buildFieldLine(APP_STRINGS.labels.location, talk.location),
          buildScheduledTimeFieldLine(talk),
       ],
       getAlertLine: buildGuardiansRemovalReasonLine,
@@ -205,7 +205,7 @@ export function buildWildRows(
       getImageName: getWildEncounterName,
       getNameSuffix: getWildEncounterTitleSuffix,
       getMetaLines: (wild) => [
-         buildFieldLine('Meeting Spot', wild.meeting_spot),
+         buildFieldLine(APP_STRINGS.itinerary.selectors.meetingSpot, wild.meeting_spot),
          buildScheduledTimeFieldLine(wild),
       ],
       getAlertLine: buildWildRemovalReasonLine,

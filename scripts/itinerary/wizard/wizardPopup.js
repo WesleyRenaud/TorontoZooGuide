@@ -2,12 +2,13 @@ import {
    createItineraryPopupLayout,
    mountDismissablePopup,
 } from '../panel/components/popup.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export function showItineraryWizardPopup({
    mountEl,
-   title = 'Heads up',
+   title = APP_STRINGS.common.headsUp,
    message = '',
-   buttonText = 'OK',
+   buttonText = APP_STRINGS.itinerary.noItemsSelected.button,
 } = {}) {
    if (!mountEl) return;
 

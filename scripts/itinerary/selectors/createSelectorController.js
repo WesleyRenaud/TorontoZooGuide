@@ -41,8 +41,8 @@ export function createItinerarySelectorController({
    makeSelection = row => ({ id: getId(row) }),
 
    topTitle = APP_STRINGS.itinerary.selectors.builderTitle,
-   h1 = 'Add Items',
-   subtitle = 'Search and add items to your plan.',
+   h1 = APP_STRINGS.itinerary.selectors.defaultTitle,
+   subtitle = APP_STRINGS.itinerary.selectors.defaultSubtitle,
    emptyText = APP_STRINGS.itinerary.emptyText.results,
 
    renderRowLeft,

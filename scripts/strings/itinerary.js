@@ -184,6 +184,10 @@ export const itinerary = {
       wildEncounters: 'No wild encounters found for this day',
    },
    emptyPanel: 'Build an itinerary to see it here.',
+   panel: {
+      editSectionAria: title => `Edit ${title}`,
+      toggleSectionAria: title => `Toggle ${title}`,
+   },
    stale: {
       title: 'Itinerary Date Has Passed',
       message: (
@@ -265,6 +269,12 @@ export const itinerary = {
       unscheduleAllButton: 'Unschedule all items',
       unscheduleAllButtonBusy: 'Unscheduling…',
       unscheduleAllSuccess: 'All items unscheduled',
+      previousScheduledItem: 'Previous scheduled item',
+      nextScheduledItem: 'Next scheduled item',
+      scheduledPillMoreCount: count => `+ ${count}`,
+      scheduledPillGroupLabel: (firstLabel, extraCount) => (
+         `${firstLabel} + ${extraCount}`
+      ),
    },
    scheduleItem: {
       title: 'Schedule item',
@@ -282,6 +292,7 @@ export const itinerary = {
       emptyResults: 'No matching items found.',
       selectItem: 'Select item',
       itemSelected: 'Selected',
+      schedulingBusy: 'Scheduling…',
    },
    itemImage: title => `${title} image`,
    itemPhoto: title => `${title} photo`,
@@ -314,6 +325,11 @@ export const itinerary = {
       unscheduledSubtitle: (
          'These items are still on your itinerary, but their scheduled times are not available on the new date.'
       ),
+      unavailableReason: reason => `Unavailable: ${reason}`,
+      notAvailableOnDate: reason => `Not available on this date: ${reason}`,
+      projectedVisibilityChanged: (before, after) => (
+         `Projected visibility changed from ${before}% to ${after}% on your new date.`
+      ),
       arrivalAdjusted: (oldTime, newTime) => (
          `Arrival changed from ${oldTime} to ${newTime} because the new date has different admission hours.`
       ),
@@ -341,6 +357,8 @@ export const itinerary = {
       animalSubtitle: 'Search and add animals to your plan.',
       attractionSubtitle: 'Search and add attractions to your plan.',
       builderTitle: 'Itinerary Builder',
+      defaultTitle: 'Add Items',
+      defaultSubtitle: 'Search and add items to your plan.',
       guardiansTalkSubtitle: 'Search and add talks to your plan.',
       includeOffDisplayAnimals: 'Include off-display animals',
       lowVisibilityHint: 'Very low chance of seeing this animal',

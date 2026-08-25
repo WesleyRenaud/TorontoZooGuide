@@ -10,6 +10,9 @@ import {
    applyRegionColorsToElement,
    resolveRegionColorSlugForScheduledItem,
 } from '../../../shared/regionColors.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+const { dayPlanner } = APP_STRINGS.itinerary;
 
 function applyScheduledPillRegionColors(pill, item = null) {
    applyRegionColorsToElement(
@@ -71,7 +74,11 @@ function replaceGroupedScheduledPillLabel(
 
    if (suffixCount > 0) {
       labelMount.appendChild(
-         el('span', 'itinerary-day-scheduled-pill-count', `+ ${suffixCount}`)
+         el(
+            'span',
+            'itinerary-day-scheduled-pill-count',
+            dayPlanner.scheduledPillMoreCount(suffixCount)
+         )
       );
    }
 }
@@ -103,11 +110,11 @@ function buildGroupedScheduledPill(
    const pill = el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu itinerary-day-scheduled-pill--grouped');
    const header = el('div', 'itinerary-day-scheduled-pill-header itinerary-day-scheduled-pill-header--grouped');
    const previousButton = makeScheduledPillArrowButton(
-      'Previous scheduled item',
+      dayPlanner.previousScheduledItem,
       'previous'
    );
    const nextButton = makeScheduledPillArrowButton(
-      'Next scheduled item',
+      dayPlanner.nextScheduledItem,
       'next'
    );
    const labelMount = el('div', 'itinerary-day-scheduled-pill-label-mount');
