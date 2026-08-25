@@ -7,7 +7,7 @@ from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_trav
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph

@@ -1,0 +1,53 @@
+from __future__ import annotations
+
+from typing import Any
+
+from ...data_access.itinerary import fetch_saved_itinerary
+from ...domain.itinerary import build_current_itinerary
+from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
+from .loop_schedule_stop import LoopScheduleStop
+from ....models import Itinerary
+from ...results.itinerary_result_reason import ItineraryResultReason
+from ...results.itinerary_save_result import ItinerarySaveResult
+from ....shared.enums import ItineraryErrorType
+from ..sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
+from ..sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
+from ....types import Connection
+from ...warnings.bulk_schedule_itinerary_warning import build_bulk_schedule_itinerary_not_enough_time_issue
+
+
+def finalize_bulk_schedule_itinerary(
+      conn: Connection,
+      *,
+      previous_itinerary: Itinerary,
+      itinerary_context: dict[ str, Any ],
+      remaining_stops: list[ LoopScheduleStop ] | None = None ) -> ItinerarySaveResult:
+   reasons: list[ ItineraryResultReason ] = []
+
+   if remaining_stops:
+      reasons = [
+         build_bulk_schedule_itinerary_not_enough_time_issue(
+            remaining_stops ),
+      ]
+
+   sync_visit_times_to_scheduled_endpoints_if_complete(
+      conn,
+      build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
+
+   clear_visit_times_if_became_incomplete(
+      conn,
+      previous_itinerary=previous_itinerary,
+      current_itinerary=build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
+
+   persist_itinerary_walk_route( conn, **itinerary_context )
+
+   return ItinerarySaveResult(
+      status=ItineraryErrorType.SUCCESS,
+      reasons=reasons,
+      itinerary=build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
