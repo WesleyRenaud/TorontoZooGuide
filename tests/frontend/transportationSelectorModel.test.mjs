@@ -101,7 +101,7 @@ test('makeTransportationSelection stores pure transportation selections', () => 
       {
          id: 'Zoomobile',
          name: 'Zoomobile',
-         subtitle: 'Main Zoomobile Station - Canadian Domain Zoomobile Station',
+         subtitle: 'Main Zoomobile Station → Canadian Domain Zoomobile Station',
          infoLink: 'https://example.com/zoomobile',
          imageSrc: '../images/details/transportations/zoomobile.png',
          addedAsAttraction: false,

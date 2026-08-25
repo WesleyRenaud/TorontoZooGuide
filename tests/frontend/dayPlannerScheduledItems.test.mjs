@@ -274,7 +274,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
       assert.equal(context.scheduledTransportationIndexes.size, 1);
       assert.match(
          allTextFor(transportationItems[0].row),
-         /Main Station - Wildlife Health/
+         /Main Station → Wildlife Health/
       );
    });
 
@@ -350,11 +350,11 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
       assert.equal(transportationItems[1].maximumDuration, 55);
       assert.match(
          allTextFor(transportationItems[0].row),
-         /Main Zoomobile Station - Africa Zoomobile Station/
+         /Main Zoomobile Station → Africa Zoomobile Station/
       );
       assert.match(
          allTextFor(transportationItems[1].row),
-         /Canadian Domain Zoomobile Station - Main Zoomobile Station/
+         /Canadian Domain Zoomobile Station → Main Zoomobile Station/
       );
    });
 });
