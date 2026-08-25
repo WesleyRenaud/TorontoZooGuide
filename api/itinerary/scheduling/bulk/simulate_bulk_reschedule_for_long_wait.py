@@ -11,11 +11,11 @@ from .animals_for_bulk_schedule import animals_for_bulk_schedule
 from .attraction_covered_animals import CoveredAnimalAttraction
 from .attraction_covered_animals import merge_covered_viewing_spot_keys
 from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
-from .bulk_schedule_itinerary import has_itinerary_schedule_times
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
-from .bulk_schedule_start_state import BulkScheduleStartState
+from .bulk_schedule_window_prep import bulk_schedule_start_state
+from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import time_block_from_schedule_times
 from ...data_access.itinerary import fetch_saved_itinerary
@@ -46,7 +46,6 @@ from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
-from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.fixed_time_item_long_wait_warning import filter_newly_added_fixed_time_items
 from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_is_isolated_after_adding
 from ...warnings.fixed_time_item_long_wait_warning import FIXED_TIME_ITEM_LONG_WAIT_TYPES
@@ -250,8 +249,9 @@ def pack_animals_into_itinerary_in_memory(
    packing_itinerary = _itinerary_with_cleared_animal_times( itinerary )
    blockers = collect_time_blocks_from_itinerary( packing_itinerary )
    walk_graph = load_walk_graph()
-   start_state = _bulk_schedule_start_state_for_unscheduled_animals(
+   start_state = bulk_schedule_start_state(
       walk_graph,
+      [],
       anchor_seconds )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( packing_itinerary )
    boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
@@ -305,14 +305,6 @@ def pack_animals_into_itinerary_in_memory(
       covered_by_attraction )
 
    return packing_itinerary
-
-
-def _bulk_schedule_start_state_for_unscheduled_animals(
-      walk_graph: WalkGraph,
-      anchor_seconds: int ) -> BulkScheduleStartState:
-   return BulkScheduleStartState(
-      start_node_id=str( walk_graph[ 'entrance_node_id' ] ),
-      schedule_anchor_seconds=anchor_seconds )
 
 
 def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:

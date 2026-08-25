@@ -10,7 +10,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers

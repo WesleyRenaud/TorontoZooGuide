@@ -9,7 +9,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary import empty_itinerary
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.scheduling.core.time_block import time_block_gap_seconds
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary

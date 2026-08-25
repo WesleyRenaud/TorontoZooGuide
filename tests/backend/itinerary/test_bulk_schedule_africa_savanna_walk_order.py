@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import itinerary_animals_for_exhibits
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.shared.calendar_dates import DateValues
 from conftest import DbControllers
 

@@ -12,7 +12,7 @@ from api.connection import open_connection
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
