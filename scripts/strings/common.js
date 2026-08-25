@@ -36,10 +36,9 @@ export const entityLabels = {
    restroom: 'Restroom',
    restrooms: 'restrooms',
    wildEncounter: 'Wild Encounter',
-   zoomobileStation: 'Zoomobile Station',
-   zoomobileStations: 'zoomobile stations',
    transportation: 'Transportation',
    transportationStation: 'Transportation Station',
+   transportationStations: 'transportation stations',
 };
 
 export const entityPhrases = {

@@ -24,7 +24,6 @@ const FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
 const GENERIC_ICON_PATHS = Object.freeze({
    pavilion: '/images/icons/pavilion/pavilion-open.png',
    restroom: '/images/icons/restroom/restroom-open.png',
-   zoomobileStation: '/images/icons/zoomobile-station/zoomobile-station.png',
    transportationStation: '/images/icons/zoomobile-station/zoomobile-station.png',
    guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
    wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
@@ -38,9 +37,8 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    restroom: 'marker-restroom',
    giftShop: 'marker-gift-shop',
    attraction: 'marker-attraction',
-   zoomobileStation: 'marker-zoomobile-station',
    transportationStation: 'marker-zoomobile-station',
-   zoomobileRouteMarker: 'marker-zoomobile-route-marker',
+   transportationRouteMarker: 'marker-zoomobile-route-marker',
    guardiansTalk: 'marker-guardians-talk',
    wildEncounter: 'marker-wild-encounter',
    drinkingFountain: 'marker-drinking-fountain',
@@ -177,13 +175,13 @@ function renderRestroomMarker(markerEl, items) {
    }
 }
 
-function renderZoomobileRouteMarker(markerEl, items) {
+function renderTransportationRouteMarker(markerEl, items) {
    const routeType = items[0]?.route_type;
    const routeColor = ZOOMOBILE_ROUTE_COLORS[routeType]
       || ZOOMOBILE_ROUTE_COLORS.default;
 
    markerEl.style.backgroundColor = routeColor;
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.zoomobileRouteMarker);
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.transportationRouteMarker);
 }
 
 function renderDrinkingFountainMarker(markerEl, items) {
@@ -270,9 +268,8 @@ const MARKER_TYPE_RENDERERS = {
    }),
    attraction: attractionMarkerRenderer,
    transportation: attractionMarkerRenderer,
-   zoomobileStation: createGenericIconMarkerRenderer('zoomobileStation'),
    transportationStation: createGenericIconMarkerRenderer('transportationStation'),
-   zoomobileRouteMarker: renderZoomobileRouteMarker,
+   transportationRouteMarker: renderTransportationRouteMarker,
    guardiansTalk: createGenericIconMarkerRenderer('guardiansTalk'),
    wildEncounter: createGenericIconMarkerRenderer('wildEncounter'),
    drinkingFountain: renderDrinkingFountainMarker,

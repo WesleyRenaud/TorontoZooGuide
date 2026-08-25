@@ -110,7 +110,7 @@ export function createMapRuntime({
    getIncludeClosedRestrooms = () => false,
    getIncludeClosedGiftShops = () => false,
    getIncludeClosedAttractions = () => false,
-   getZoomobileRoute = () => 'none',
+   getTransportationRoute = () => 'none',
    getSelectedTypes = () => [],
    onDateContextChange = null,
 } = {}) {
@@ -157,7 +157,7 @@ export function createMapRuntime({
       getIncludeClosedRestrooms,
       getIncludeClosedGiftShops,
       getIncludeClosedAttractions,
-      getZoomobileRoute,
+      getTransportationRoute,
       getSelectedTypes,
       onDateContextChange,
    });

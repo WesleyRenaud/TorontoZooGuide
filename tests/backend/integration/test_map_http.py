@@ -24,10 +24,10 @@ def test_search_returns_matching_animal_via_http(
          'includeRestrooms': False,
          'includeGiftShops': False,
          'includeAttractions': False,
-         'includeZoomobileStations': False,
+         'includeTransportationStations': False,
          'includeGuardiansTalks': False,
          'includeWildEncounters': False,
-         'zoomobileRoute': 'summer',
+         'transportationRoute': 'summer',
          **MAP_VISIT_DATE,
       },
    )

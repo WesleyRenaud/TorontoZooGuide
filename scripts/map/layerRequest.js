@@ -21,7 +21,7 @@ function buildFocusIncludes(focusType, focusRow) {
       restaurantsToInclude: [],
       giftShopsToInclude: [],
       attractionsToInclude: [],
-      zoomobileStationsToInclude: [],
+      transportationStationsToInclude: [],
    };
 
    if (!focusRow) {
@@ -48,8 +48,8 @@ function buildFocusIncludes(focusType, focusRow) {
       includes.attractionsToInclude = uniqStrings([focusRow.name]);
    }
 
-   if (focusType === 'zoomobileStation' && focusRow.name != null) {
-      includes.zoomobileStationsToInclude = uniqStrings([focusRow.name]);
+   if (focusType === 'transportationStation' && focusRow.name != null) {
+      includes.transportationStationsToInclude = uniqStrings([focusRow.name]);
    }
 
    return includes;
@@ -147,15 +147,15 @@ export function resolveItineraryTransportationRouteMarkers(itinerary) {
    };
 }
 
-export function buildSelectedTypes(selectedTypes, focusType, zoomobileRoute) {
+export function buildSelectedTypes(selectedTypes, focusType, transportationRoute) {
    const normalizedTypes = uniqStrings(selectedTypes);
-   const routeActive = zoomobileRoute !== 'none';
-   const focusIsZoomobileStation = focusType === 'zoomobileStation';
+   const routeActive = transportationRoute !== 'none';
+   const focusIsTransportationStation = focusType === 'transportationStation';
 
    if (
       focusType &&
       !normalizedTypes.includes(focusType) &&
-      !(routeActive && focusIsZoomobileStation && normalizedTypes.includes('zoomobileRoute'))
+      !(routeActive && focusIsTransportationStation && normalizedTypes.includes('transportationRoute'))
    ) {
       return uniqStrings([focusType, ...normalizedTypes]);
    }
@@ -166,7 +166,7 @@ export function buildSelectedTypes(selectedTypes, focusType, zoomobileRoute) {
 export function buildLayerRequest({
    dateCtx,
    selectedTypes,
-   zoomobileRoute,
+   transportationRoute,
    focusRow,
    focusType,
    includeOffDisplayAnimals,
@@ -178,7 +178,7 @@ export function buildLayerRequest({
    const includes = buildFocusIncludes(focusType, focusRow);
 
    return {
-      selectedTypes: buildSelectedTypes(selectedTypes, focusType, zoomobileRoute),
+      selectedTypes: buildSelectedTypes(selectedTypes, focusType, transportationRoute),
       ctx: {
          month: dateCtx.month,
          day: dateCtx.day,
@@ -189,7 +189,7 @@ export function buildLayerRequest({
          includeClosedRestrooms,
          includeClosedGiftShops,
          includeClosedAttractions,
-         zoomobileRoute,
+         transportationRoute,
          ...includes,
       },
    };

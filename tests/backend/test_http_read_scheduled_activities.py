@@ -15,7 +15,7 @@ import api.server as server
 @pytest.mark.parametrize(
    'path, body, response_key',
    [
-      ( '/get-zoomobile-route', { 'zoomobileRoute': 'summer', 'month': 'June', 'day': 15, 'year': 2026 }, 'route' ),
+      ( '/get-transportation-route', { 'transportationRoute': 'summer', 'month': 'June', 'day': 15, 'year': 2026 }, 'route' ),
       ( '/get-guardians-talks', { 'month': 'June', 'day': 15, 'year': 2026 }, 'guardians_talks' ),
       ( '/get-wild-encounters', { 'month': 'June', 'day': 15, 'year': 2026 }, 'wild_encounters' ),
    ]

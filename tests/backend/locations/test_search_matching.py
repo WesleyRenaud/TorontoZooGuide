@@ -11,7 +11,7 @@ from api.pavilions.search.pavilions_matching_query import build_pavilions_matchi
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.restrooms.search.restrooms_matching_query import build_restrooms_matching_query
-from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
+from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from conftest import DbControllers
 
 def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
@@ -32,7 +32,7 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
 
    assert {
       station.name
-      for station in ZoomobileCoordinator.get_zoomobile_stations_matching_query(
+      for station in TransportationCoordinator.get_transportation_stations_matching_query(
          query='MAIN',
          route='summer',
          day=15,

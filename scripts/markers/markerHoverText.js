@@ -1,7 +1,7 @@
 import { APP_STRINGS } from '../strings.js';
 
 const HIDDEN_HOVER_TYPES = new Set([
-   'zoomobileRouteMarker',
+   'transportationRouteMarker',
 ]);
 
 function readItemText(item, field, fallback) {
@@ -67,10 +67,6 @@ const HOVER_FORMATTERS = Object.freeze({
    transportation: (items) => formatCountedHoverText(
       items,
       (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.attraction)
-   ),
-   zoomobileStation: (items) => formatCountedHoverText(
-      items,
-      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.zoomobileStation)
    ),
    transportationStation: (items) => formatCountedHoverText(
       items,

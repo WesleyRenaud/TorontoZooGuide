@@ -194,7 +194,7 @@ test('renderSearchResults shows thumbnails for named map detail image types', ()
       { type: 'giftShop', name: 'Zootique', location: 'Africa' },
       { type: 'guardiansTalk', name: 'Amur Tiger', location: 'Eurasia Wilds' },
       { type: 'pavilion', name: 'Americas Pavilion', region: 'Americas' },
-      { type: 'zoomobileStation', name: 'Zoomobile Station 1' },
+      { type: 'transportationStation', name: 'Zoomobile Station 1' },
    ]);
 
    assert.equal(resultsEl.children.length, 5);
@@ -204,7 +204,7 @@ test('renderSearchResults shows thumbnails for named map detail image types', ()
       '../images/details/gift-shops/zootique.png',
       '../images/details/guardians-talks/amur-tiger.png',
       '../images/details/pavilions/americas-pavilion.png',
-      '../images/details/zoomobile-stations/zoomobile-station-1.png',
+      '../images/details/transportation-stations/zoomobile-station-1.png',
    ];
 
    resultsEl.children.forEach((row, index) => {

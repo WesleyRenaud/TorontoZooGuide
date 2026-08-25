@@ -17,9 +17,9 @@ import {
 } from './layerRequest.js';
 import { setSourceRows } from './sourceHelpers.js';
 import {
-   hideZoomobileRouteLayers,
-   showZoomobileRouteMarkers,
-} from './zoomobileRouteOverlay.js';
+   hideTransportationRouteLayers,
+   showTransportationRouteMarkers,
+} from './transportationRouteOverlay.js';
 
 function buildUniqueTypes(types = []) {
    return Array.from(new Set(types));
@@ -35,7 +35,7 @@ export function createMapUpdater({
    getIncludeClosedRestrooms,
    getIncludeClosedGiftShops,
    getIncludeClosedAttractions,
-   getZoomobileRoute,
+   getTransportationRoute,
    getSelectedTypes,
    onDateContextChange = null,
 }) {
@@ -55,7 +55,7 @@ export function createMapUpdater({
    function clearRenderedMarkers() {
       markers.render([]);
       clearItineraryPathOverlay();
-      hideZoomobileRouteLayers();
+      hideTransportationRouteLayers();
    }
 
    function resolvePendingUpdateOptions(options) {
@@ -79,7 +79,7 @@ export function createMapUpdater({
          includeClosedRestrooms: getIncludeClosedRestrooms(),
          includeClosedGiftShops: getIncludeClosedGiftShops(),
          includeClosedAttractions: getIncludeClosedAttractions(),
-         zoomobileRoute: getZoomobileRoute(),
+         transportationRoute: getTransportationRoute(),
          selectedTypes: getSelectedTypes(),
       };
    }
@@ -104,7 +104,7 @@ export function createMapUpdater({
       } = buildLayerRequest({
          dateCtx,
          selectedTypes: controls.selectedTypes,
-         zoomobileRoute: controls.zoomobileRoute,
+         transportationRoute: controls.transportationRoute,
          focusRow,
          focusType,
          includeOffDisplayAnimals: controls.includeOffDisplayAnimals,
@@ -124,11 +124,11 @@ export function createMapUpdater({
       const routeMarkers = resolveItineraryTransportationRouteMarkers(itinerary);
 
       if (!routeMarkers) {
-         hideZoomobileRouteLayers();
+         hideTransportationRouteLayers();
          return;
       }
 
-      showZoomobileRouteMarkers(
+      showTransportationRouteMarkers(
          routeMarkers.route,
          routeMarkers.markerSequences
       );

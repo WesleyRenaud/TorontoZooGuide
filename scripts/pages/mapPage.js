@@ -43,8 +43,8 @@ function isCoordinateEditingEnabled() {
    return urlParams.get('editCoords') === '1';
 }
 
-function getSelectedZoomobileRoute() {
-   return Array.from(document.querySelectorAll('input[name="zoomobileRoute"]'))
+function getSelectedTransportationRoute() {
+   return Array.from(document.querySelectorAll('input[name="transportationRoute-zoomobile"]'))
       .find((radio) => radio.checked)
       ?.value ?? 'none';
 }
@@ -79,7 +79,7 @@ function createRuntimeOptions(elements, {
       getIncludeClosedRestrooms: () => elements.includeClosedRestroomsCheckbox?.checked ?? false,
       getIncludeClosedGiftShops: () => elements.includeClosedGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
-      getZoomobileRoute: () => getSelectedZoomobileRoute(),
+      getTransportationRoute: () => getSelectedTransportationRoute(),
       getSelectedTypes,
       onDateContextChange: (dateCtx) => updates?.refresh?.(dateCtx),
    };
@@ -135,7 +135,7 @@ function initMapPageControls({
       includeClosedRestroomsCheckbox: elements.includeClosedRestroomsCheckbox,
       includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
-      zoomobileRouteRadios: document.querySelectorAll('input[name="zoomobileRoute"]'),
+      transportationRouteRadios: document.querySelectorAll('input[name="transportationRoute-zoomobile"]'),
       earliestSelectableNoon,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);

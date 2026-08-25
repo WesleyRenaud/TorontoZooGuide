@@ -1,7 +1,7 @@
 import { APP_STRINGS } from '../strings.js';
 
 const TYPE_FILTER_ID = 'typeFilter';
-const ZOOMOBILE_ROUTE_SELECTOR = 'input[name="zoomobileRoute"]:checked';
+const TRANSPORTATION_ROUTE_SELECTOR = 'input[name="transportationRoute-zoomobile"]:checked';
 const DEFAULT_SELECTED_TYPES = ['animal'];
 
 const SEARCH_INCLUDE_FLAGS = [
@@ -15,16 +15,16 @@ const SEARCH_INCLUDE_FLAGS = [
    ['includeWildEncounters', 'wildEncounter'],
 ];
 
-function getSelectedZoomobileRoute() {
-   const checked = document.querySelector(ZOOMOBILE_ROUTE_SELECTOR);
+function getSelectedTransportationRoute() {
+   const checked = document.querySelector(TRANSPORTATION_ROUTE_SELECTOR);
    return checked?.value ?? 'none';
 }
 
-function hasZoomobileRoute(zoomobileRoute) {
-   return zoomobileRoute !== 'none';
+function hasTransportationRoute(transportationRoute) {
+   return transportationRoute !== 'none';
 }
 
-export function buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute) {
+export function buildExploreSearchIncludeFlags(selectedTypes, transportationRoute) {
    const selectedTypeSet = new Set(selectedTypes);
 
    return {
@@ -34,8 +34,8 @@ export function buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute) {
             selectedTypeSet.has(type),
          ])
       ),
-      includeZoomobileStations: hasZoomobileRoute(zoomobileRoute),
-      ...(hasZoomobileRoute(zoomobileRoute) ? { zoomobileRoute } : {}),
+      includeTransportationStations: hasTransportationRoute(transportationRoute),
+      ...(hasTransportationRoute(transportationRoute) ? { transportationRoute } : {}),
    };
 }
 
@@ -79,12 +79,12 @@ function getSelectedCheckboxes(checkboxes) {
    return checkboxes.filter((checkbox) => checkbox.checked);
 }
 
-function getSelectedTypeValues(checkboxes, zoomobileRoute) {
+function getSelectedTypeValues(checkboxes, transportationRoute) {
    const selected = getSelectedCheckboxes(checkboxes)
       .map((checkbox) => String(checkbox.value || ''));
 
-   if (hasZoomobileRoute(zoomobileRoute) && !selected.includes('zoomobileRoute')) {
-      selected.push('zoomobileRoute');
+   if (hasTransportationRoute(transportationRoute) && !selected.includes('transportationRoute')) {
+      selected.push('transportationRoute');
    }
 
    return selected;
@@ -108,14 +108,14 @@ function renderSelectedChips(chipContainer, checkboxes) {
 
 function createExploreFilterState({
    checkboxes,
-   getZoomobileRoute,
+   getTransportationRoute,
 } = {}) {
    function getCurrentSelection() {
-      const zoomobileRoute = getZoomobileRoute();
+      const transportationRoute = getTransportationRoute();
 
       return {
-         zoomobileRoute,
-         selectedTypes: getSelectedTypeValues(checkboxes, zoomobileRoute),
+         transportationRoute,
+         selectedTypes: getSelectedTypeValues(checkboxes, transportationRoute),
       };
    }
 
@@ -124,8 +124,8 @@ function createExploreFilterState({
    }
 
    function buildSearchIncludeFlags() {
-      const { selectedTypes, zoomobileRoute } = getCurrentSelection();
-      return buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute);
+      const { selectedTypes, transportationRoute } = getCurrentSelection();
+      return buildExploreSearchIncludeFlags(selectedTypes, transportationRoute);
    }
 
    return { getSelectedTypes, buildSearchIncludeFlags };
@@ -174,7 +174,7 @@ export function initExploreTypeFilter({
    onChange,
    onAnimalsUnchecked,
    multiSelect = document.getElementById(TYPE_FILTER_ID),
-   getZoomobileRoute = getSelectedZoomobileRoute,
+   getTransportationRoute = getSelectedTransportationRoute,
 } = {}) {
    if (!multiSelect) {
       return createFallbackExploreFilter();
@@ -189,7 +189,7 @@ export function initExploreTypeFilter({
 
    const state = createExploreFilterState({
       checkboxes,
-      getZoomobileRoute,
+      getTransportationRoute,
    });
 
    const updateSelectedChips = () => {

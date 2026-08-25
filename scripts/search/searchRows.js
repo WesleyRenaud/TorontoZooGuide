@@ -5,7 +5,7 @@ const SEARCH_GROUPS = [
    ['restrooms', 'restroom'],
    ['gift_shops', 'giftShop'],
    ['attractions', 'attraction'],
-   ['zoomobile_stations', 'zoomobileStation'],
+   ['transportation_stations', 'transportationStation'],
    ['guardians_talks', 'guardiansTalk'],
    ['wild_encounters', 'wildEncounter'],
 ];

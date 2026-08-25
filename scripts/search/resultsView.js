@@ -79,7 +79,7 @@ const ROW_LEFT_RENDERERS = {
       { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: getRestaurantMenuLink },
       { type: 'giftShop', imageDirectory: 'gift-shops' },
       { type: 'pavilion', imageDirectory: 'pavilions' },
-      { type: 'zoomobileStation', imageDirectory: 'zoomobile-stations' },
+      { type: 'transportationStation', imageDirectory: 'transportation-stations' },
    ]),
 };
 

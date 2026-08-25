@@ -15,10 +15,10 @@ from api.models import Pavilion
 from api.models import PicnicSite
 from api.models import Restaurant
 from api.models import Restroom
+from api.models import TransportationRouteMarker
 from api.models import TransportationStation
 from api.models import Update
 from api.models import WildEncounter
-from api.models import ZoomobileRouteMarker
 from api.models.guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
 
 
@@ -67,7 +67,7 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
       x_coord=1.0,
       y_coord=2.0,
    ).to_dict()[ 'name' ] == 'Station'
-   assert ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
+   assert TransportationRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
    assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
    assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_deleted' ] is False
    assert WildEncounter(

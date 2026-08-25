@@ -43,6 +43,7 @@ from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ..sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
 from ..sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
+from .transportation_transit_rides import apply_transportation_transit_rides
 from ....types import Connection
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -50,7 +51,6 @@ from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
-from .zoomobile_transit_rides import apply_zoomobile_transit_rides
 
 
 def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool:
@@ -232,7 +232,7 @@ def bulk_schedule_animals(
    apply_covered_by_attraction_schedules( conn, covered_by_attraction )
 
    saved_after_pack = fetch_saved_itinerary( conn )
-   apply_zoomobile_transit_rides(
+   apply_transportation_transit_rides(
       conn,
       transit_rows=transit_transportations_for_bulk_schedule( saved_after_pack ),
       scheduled_animals=[

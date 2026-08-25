@@ -22,7 +22,7 @@ function normalizeRouteResponse(response) {
 
    return {
       route: asTrimmedString(source.route).toLowerCase(),
-      zoomobileStations: readResponseCollection(source, 'zoomobile_stations'),
+      transportationStations: readResponseCollection(source, 'transportation_stations'),
    };
 }
 
@@ -63,8 +63,8 @@ export async function getTransportations(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-transportations', 'transportations', payload);
 }
 
-export async function getZoomobileRoute(payload = EMPTY_PAYLOAD) {
-   const response = await postJson('/get-zoomobile-route', payload);
+export async function getTransportationRoute(payload = EMPTY_PAYLOAD) {
+   const response = await postJson('/get-transportation-route', payload);
    return normalizeRouteResponse(response);
 }
 

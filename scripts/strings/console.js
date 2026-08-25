@@ -85,7 +85,7 @@ export const placeholders = {
    update: 'Select an update',
    viewingScope: 'Select viewing scope',
    wildEncounter: 'Select a Wild Encounter',
-   zoomobileStation: 'Select a zoomobile station',
+   transportationStation: 'Select a transportation station',
 };
 
 export const textareas = {
@@ -146,9 +146,9 @@ export const panelTitles = {
    viewingAlert: 'Set animal viewing alert',
    visibilitySchedule: 'Set animal visibility schedule',
    wildEncounterSchedule: 'Set Wild Encounter schedule',
-   zoomobileRoute: 'Set current Zoomobile route',
-   zoomobileStationClosed: 'Set zoomobile station as closed',
-   zoomobileStationOpen: 'Set zoomobile station as open',
+   transportationRoute: 'Set current transportation route',
+   transportationStationClosed: 'Set transportation station as closed',
+   transportationStationOpen: 'Set transportation station as open',
 };
 
 export const status = {
@@ -172,7 +172,7 @@ export const status = {
    updateCreated: result => `${result.title} was created.`,
    updateEdited: 'Update was edited.',
    updateEnded: 'Update was ended.',
-   zoomobileRouteSet: result => `Zoomobile route was set to ${result.route}.`,
+   transportationRouteSet: result => `Transportation route was set to ${result.route}.`,
 };
 
 export const confirm = {

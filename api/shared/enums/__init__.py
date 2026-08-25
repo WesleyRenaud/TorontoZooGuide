@@ -8,8 +8,8 @@ from .map_item_type import MapItemType
 from .schedule_item_kind import ScheduleItemKind
 from .schedule_status import ScheduleStatus
 from .transportation_name import TransportationName
-from .zoomobile_route import ZoomobileRouteId
-from .zoomobile_route import ZoomobileRouteSource
+from .transportation_route import TransportationRouteId
+from .transportation_route import TransportationRouteSource
 
 __all__ = [
    'AnimalViewingScope',
@@ -22,6 +22,6 @@ __all__ = [
    'ScheduleItemKind',
    'ScheduleStatus',
    'TransportationName',
-   'ZoomobileRouteId',
-   'ZoomobileRouteSource',
+   'TransportationRouteId',
+   'TransportationRouteSource',
 ]

@@ -39,10 +39,10 @@ test('renderTransportationRouteControls builds title, current, and route radios'
 
    assert.deepEqual(values, ['none', 'current', 'summer', 'winter']);
    assert.deepEqual(names, [
-      'zoomobileRoute',
-      'zoomobileRoute',
-      'zoomobileRoute',
-      'zoomobileRoute',
+      'transportationRoute-zoomobile',
+      'transportationRoute-zoomobile',
+      'transportationRoute-zoomobile',
+      'transportationRoute-zoomobile',
    ]);
    assert.equal(options.children[0].children[0].checked, true);
    assert.deepEqual(labels, [

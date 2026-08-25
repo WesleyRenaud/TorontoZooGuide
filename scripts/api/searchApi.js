@@ -79,7 +79,7 @@ export function normalizeSearchResponse(response) {
       gift_shops: asArray(source.gift_shops),
       attractions: asArray(source.attractions).map(normalizeAttractionRow),
       transportations: asArray(source.transportations).map(normalizeTransportationRow),
-      zoomobile_stations: asArray(source.zoomobile_stations),
+      transportation_stations: asArray(source.transportation_stations),
       guardians_talks: asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
       wild_encounters: asArray(source.wild_encounters).map(normalizeWildEncounterRow),
    };

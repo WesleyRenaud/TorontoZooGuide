@@ -1,3 +1,4 @@
+from .active_transportation_route import ActiveTransportationRoute
 from .animal import Animal
 from .animal_diff import AnimalDiff
 from .attraction import Attraction
@@ -26,13 +27,12 @@ from .restroom import Restroom
 from .scheduled_occurrence import ScheduledOccurrence
 from .transportation import Transportation
 from .transportation_diff import TransportationDiff
+from .transportation_route_marker import TransportationRouteMarker
 from .transportation_station import TransportationStation
 from .update import Update
 from .wild_encounter import WildEncounter
 from .wild_encounter_diff import WildEncounterDiff
 from .zoo_hours import ZooHours
-from .zoomobile_route import ZoomobileRoute
-from .zoomobile_route_marker import ZoomobileRouteMarker
 
 __all__ = [
    'Animal',
@@ -68,6 +68,6 @@ __all__ = [
    'WildEncounter',
    'WildEncounterDiff',
    'ZooHours',
-   'ZoomobileRoute',
-   'ZoomobileRouteMarker',
+   'ActiveTransportationRoute',
+   'TransportationRouteMarker',
 ]

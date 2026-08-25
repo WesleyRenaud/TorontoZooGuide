@@ -31,6 +31,9 @@ import { createRemoveRestroomAlertController } from '../restrooms/controllers/re
 import { createRestroomAlertController } from '../restrooms/controllers/restroomAlert.js';
 import { createRestroomClosedController } from '../restrooms/controllers/restroomClosed.js';
 import { createRestroomOpenController } from '../restrooms/controllers/restroomOpen.js';
+import { createTransportationRouteController } from '../transportation/controllers/transportationRoute.js';
+import { createTransportationStationClosedController } from '../transportation/controllers/transportationStationClosed.js';
+import { createTransportationStationOpenController } from '../transportation/controllers/transportationStationOpen.js';
 import { createCreateUpdateController } from '../updates/controllers/createUpdate.js';
 import { createEditUpdateController } from '../updates/controllers/editUpdate.js';
 import { createEndUpdateController } from '../updates/controllers/endUpdate.js';
@@ -39,9 +42,6 @@ import { createEndWildEncounterScheduleController } from '../wildEncounters/cont
 import { createWildEncounterOccurrenceFilterController } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 import { createWildEncounterScheduleController } from '../wildEncounters/controllers/wildEncounterSchedule.js';
 import { createWildEncounterScheduleTimesFilterController } from '../wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
-import { createZoomobileRouteController } from '../zoomobile/controllers/zoomobileRoute.js';
-import { createZoomobileStationClosedController } from '../zoomobile/controllers/zoomobileStationClosed.js';
-import { createZoomobileStationOpenController } from '../zoomobile/controllers/zoomobileStationOpen.js';
 
 const ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
    'offDisplay',
@@ -142,16 +142,16 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.attractions.hoursSchedule,
    },
    {
-      createController: createZoomobileStationClosedController,
-      getRefs: refs => refs.zoomobile.stationClosed,
+      createController: createTransportationStationClosedController,
+      getRefs: refs => refs.transportation.stationClosed,
    },
    {
-      createController: createZoomobileStationOpenController,
-      getRefs: refs => refs.zoomobile.stationOpen,
+      createController: createTransportationStationOpenController,
+      getRefs: refs => refs.transportation.stationOpen,
    },
    {
-      createController: createZoomobileRouteController,
-      getRefs: refs => refs.zoomobile.route,
+      createController: createTransportationRouteController,
+      getRefs: refs => refs.transportation.route,
    },
    {
       createController: createGuardiansTalkScheduleController,

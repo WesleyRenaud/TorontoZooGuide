@@ -24,8 +24,8 @@ export function getAttractionNameOptions() {
    return postJson('/get-attraction-names', {});
 }
 
-export function getZoomobileStationNameOptions() {
-   return postJson('/get-zoomobile-station-names', {});
+export function getTransportationStationNameOptions() {
+   return postJson('/get-transportation-station-names', {});
 }
 
 export function getGuardiansTalkNameOptions() {
@@ -180,16 +180,16 @@ export function trimAttractionHoursScheduleOverlaps(payload) {
    return postJson('/trim-attraction-hours-schedule-overlaps', payload);
 }
 
-export function setZoomobileStationOpen(payload) {
-   return postJson('/set-zoomobile-station-open', payload);
+export function setTransportationStationOpen(payload) {
+   return postJson('/set-transportation-station-open', payload);
 }
 
-export function setZoomobileStationClosed(payload) {
-   return postJson('/set-zoomobile-station-closed', payload);
+export function setTransportationStationClosed(payload) {
+   return postJson('/set-transportation-station-closed', payload);
 }
 
-export function setCurrentZoomobileRoute(payload) {
-   return postJson('/set-current-zoomobile-route', payload);
+export function setCurrentTransportationRoute(payload) {
+   return postJson('/set-current-transportation-route', payload);
 }
 
 export function getGuardiansTalkLocations() {

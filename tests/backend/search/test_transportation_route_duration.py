@@ -21,7 +21,7 @@ def test_search_includes_route_duration_for_also_transportation_attractions(
       include_gift_shops=False,
       include_attractions=True,
       include_transportations=False,
-      include_zoomobile_stations=False,
+      include_transportation_stations=False,
       include_guardians_talks=False,
       include_wild_encounters=False,
       month='June',
@@ -33,7 +33,7 @@ def test_search_includes_route_duration_for_also_transportation_attractions(
       include_closed_restaurants=False,
       include_closed_restrooms=False,
       include_closed_attractions=True,
-      zoomobile_route=None,
+      transportation_route=None,
    )
 
    zoomobile = next(
