@@ -4,15 +4,17 @@ from .drinking_fountain_record import DrinkingFountainRecord
 from ...types import Row
 
 
-def map_drinking_fountain_record( row: Row ) -> DrinkingFountainRecord:
-   return DrinkingFountainRecord(
-      x_coord=row[ 'X_COORD' ],
-      y_coord=row[ 'Y_COORD' ] )
+class DrinkingFountainMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> DrinkingFountainRecord:
+      return DrinkingFountainRecord(
+         x_coord=row[ 'X_COORD' ],
+         y_coord=row[ 'Y_COORD' ] )
 
 
-
-def map_drinking_fountain_records( rows: list[ Row ] ) -> list[ DrinkingFountainRecord ]:
-   return [
-      map_drinking_fountain_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records( cls, rows: list[ Row ] ) -> list[ DrinkingFountainRecord ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
