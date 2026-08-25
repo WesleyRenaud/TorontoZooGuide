@@ -7,6 +7,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
+import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { formatJoinedTimes } from '../../../shared/formatJoinedTimes.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -136,7 +137,7 @@ export function createCancelWildEncounterOccurrenceController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
+            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {

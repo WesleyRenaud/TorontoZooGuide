@@ -210,6 +210,7 @@ export function makeDayPlannerPreview(
 ) {
    const strings = {
       ...APP_STRINGS.itinerary.dayPlanner,
+      timeOrderInvalid: APP_STRINGS.itinerary.errors.timeOrderInvalid,
       departureLabel: labels.departure,
    };
    const hours = zooHours && typeof zooHours === 'object'

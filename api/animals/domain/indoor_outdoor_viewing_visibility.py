@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from ...app_strings import format_app_string
 from ...models import Animal
 from ..search.animals_matching_query import species_exhibit_key
 from ..search.species_exhibit_key import SpeciesExhibitKey
 from ...shared.enums import EnclosureType
-from ...shared.strings import SharedStrings
 
 
 def complementary_indoor_likelihood( outdoor_likelihood: int ) -> int:
@@ -19,10 +19,11 @@ def single_habitat_alternate_enclosure_viewing_alert_message(
    if enclosure_type is None:
       return None
 
-   return SharedStrings.Animals.single_habitat_alternate_enclosure_viewing_alert(
+   return format_app_string(
+      'guestStatus.animals.singleHabitatAlternateEnclosureViewingAlert',
       species=animal.species,
-      chosen_location=enclosure_type.viewing_location_label,
-      alternate_habitat=EnclosureType.opposite_type( enclosure_type ).habitat_label )
+      chosenLocation=enclosure_type.viewing_location_label,
+      alternateHabitat=EnclosureType.opposite_type( enclosure_type ).habitat_label )
 
 
 def apply_single_habitat_alternate_enclosure_viewing_alert(

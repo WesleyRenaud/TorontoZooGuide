@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from ..coordinators.attraction_coordinator import AttractionCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.api_error_response import apply_api_error
 from ...shared.calendar_dates import DateValues
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class AttractionController():
@@ -54,7 +56,7 @@ class AttractionController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set "{ attraction }" as closed.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=attraction )
 
       handler._write_json( response )
 
@@ -83,7 +85,7 @@ class AttractionController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not create closure override for "{ attraction }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE, name=attraction )
 
       handler._write_json( response )
 
@@ -136,7 +138,7 @@ class AttractionController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=attraction )
          response[ 'errorType' ] = 'overlappingSchedule'
 
       handler._write_json( response )
@@ -190,9 +192,7 @@ class AttractionController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not replace opening schedule overlaps for "{ attraction }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS, name=attraction )
 
       handler._write_json( response )
 
@@ -245,9 +245,7 @@ class AttractionController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not trim opening schedule overlaps for "{ attraction }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS, name=attraction )
 
       handler._write_json( response )
 
@@ -269,10 +267,8 @@ class AttractionController():
    def _attraction_hours_schedule_response(
          data: dict,
          *,
-         success: bool,
-         error: str | None = None,
-         error_type: str | None = None ) -> dict:
-      response = {
+         success: bool ) -> dict:
+      return {
          'success': success,
          'attraction': data.get( 'attraction' ),
          'scheduleStartDate': data.get( 'scheduleStartDate' ),
@@ -283,11 +279,13 @@ class AttractionController():
          'weekendHolidayEndTime': data.get( 'weekendHolidayEndTime' ),
       }
 
-      if error:
-         response[ 'error' ] = error
 
-      if error_type:
-         response[ 'errorType' ] = error_type
+   @staticmethod
+   def _invalid_attraction_hours_response( data: dict ) -> dict:
+      response = AttractionController._attraction_hours_schedule_response(
+         data,
+         success=False )
+      apply_api_error( response, ApiErrorType.INVALID_ATTRACTION_HOURS )
 
       return response
 
@@ -301,11 +299,12 @@ class AttractionController():
          bounds = AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
             start_date=data.get( 'scheduleStartDate' ),
             end_date=data.get( 'scheduleEndDate' ) )
-      except ValueError as error:
-         handler._write_json( {
-            'success': False,
-            'error': str( error ),
-         } )
+      except ValueError:
+         response = { 'success': False }
+         apply_api_error(
+            response,
+            ApiErrorType.COULD_NOT_RESOLVE_ATTRACTION_HOURS_TIME_BOUNDS )
+         handler._write_json( response )
          return
 
       handler._write_json( {
@@ -334,13 +333,9 @@ class AttractionController():
 
       try:
          success = AttractionCoordinator.set_attraction_hours_schedule( **payload )
-      except ValueError as error:
+      except ValueError:
          handler._write_json(
-            AttractionController._attraction_hours_schedule_response(
-               data,
-               success=False,
-               error=str( error ),
-               error_type='invalidAttractionHours' ) )
+            AttractionController._invalid_attraction_hours_response( data ) )
          return
 
       response = AttractionController._attraction_hours_schedule_response(
@@ -348,9 +343,10 @@ class AttractionController():
          success=success )
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not set attraction hours for "{ payload[ "attraction" ] }".'
-         )
+         apply_api_error(
+            response,
+            ApiErrorType.COULD_NOT_SET_ATTRACTION_HOURS,
+            name=payload[ 'attraction' ] )
          response[ 'errorType' ] = 'overlappingSchedule'
 
       handler._write_json( response )
@@ -365,13 +361,9 @@ class AttractionController():
       try:
          success = AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
             **payload )
-      except ValueError as error:
+      except ValueError:
          handler._write_json(
-            AttractionController._attraction_hours_schedule_response(
-               data,
-               success=False,
-               error=str( error ),
-               error_type='invalidAttractionHours' ) )
+            AttractionController._invalid_attraction_hours_response( data ) )
          return
 
       response = AttractionController._attraction_hours_schedule_response(
@@ -379,10 +371,10 @@ class AttractionController():
          success=success )
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not replace attraction hours overlaps for '
-            f'"{ payload[ "attraction" ] }".'
-         )
+         apply_api_error(
+            response,
+            ApiErrorType.COULD_NOT_REPLACE_ATTRACTION_HOURS_OVERLAPS,
+            name=payload[ 'attraction' ] )
 
       handler._write_json( response )
 
@@ -396,13 +388,9 @@ class AttractionController():
       try:
          success = AttractionCoordinator.trim_attraction_hours_schedule_overlaps(
             **payload )
-      except ValueError as error:
+      except ValueError:
          handler._write_json(
-            AttractionController._attraction_hours_schedule_response(
-               data,
-               success=False,
-               error=str( error ),
-               error_type='invalidAttractionHours' ) )
+            AttractionController._invalid_attraction_hours_response( data ) )
          return
 
       response = AttractionController._attraction_hours_schedule_response(
@@ -410,9 +398,9 @@ class AttractionController():
          success=success )
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not trim attraction hours overlaps for '
-            f'"{ payload[ "attraction" ] }".'
-         )
+         apply_api_error(
+            response,
+            ApiErrorType.COULD_NOT_TRIM_ATTRACTION_HOURS_OVERLAPS,
+            name=payload[ 'attraction' ] )
 
       handler._write_json( response )

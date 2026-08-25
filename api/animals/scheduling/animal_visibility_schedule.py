@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
+from ...app_strings import format_app_string
 from ...shared.calendar_dates import DateValues
-from ...shared.strings import SharedStrings
 from ...types import DateInput
 
 
@@ -46,13 +46,15 @@ def build_limited_viewing_schedule_message(
       daily_end_time )
 
    if end_date != None:
-      return SharedStrings.Animals.limited_viewing_schedule_until(
+      return format_app_string(
+         'guestStatus.animals.limitedViewingScheduleUntil',
          species=species,
-         daily_start_time=formatted_daily_start_time,
-         daily_end_time=formatted_daily_end_time,
-         end_date=end_date )
+         dailyStartTime=formatted_daily_start_time,
+         dailyEndTime=formatted_daily_end_time,
+         endDate=DateValues.format_display_date_value( end_date ) )
 
-   return SharedStrings.Animals.limited_viewing_schedule(
+   return format_app_string(
+      'guestStatus.animals.limitedViewingSchedule',
       species=species,
-      daily_start_time=formatted_daily_start_time,
-      daily_end_time=formatted_daily_end_time )
+      dailyStartTime=formatted_daily_start_time,
+      dailyEndTime=formatted_daily_end_time )

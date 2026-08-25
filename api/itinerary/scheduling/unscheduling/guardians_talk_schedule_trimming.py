@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from ....app_strings import format_app_string
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ....models.wild_encounter_diff import WildEncounterDiff
 from ....shared.calendar_dates import DateValues
-from ....shared.strings import SharedStrings
 from ....types import ScheduledItem, ScheduleTimeKey
 
 
@@ -26,7 +26,7 @@ def trim_range_against_blocker(
 
    if blocker_start <= start and blocker_end >= end:
       raise ValueError(
-         SharedStrings.Itinerary.guardians_talk_fully_covered_by_blocker() )
+         format_app_string( 'guestStatus.itinerary.guardiansTalkFullyCoveredByBlocker' ) )
 
    if blocker_start <= start and blocker_end < end:
       return ( blocker_end, end )
@@ -38,7 +38,7 @@ def trim_range_against_blocker(
       return ( blocker_end, end )
 
    raise ValueError(
-      SharedStrings.Itinerary.guardians_talk_unexpected_blocker_overlap() )
+      format_app_string( 'guestStatus.itinerary.guardiansTalkUnexpectedBlockerOverlap' ) )
 
 
 def trim_guardians_talk_times(
@@ -61,7 +61,7 @@ def trim_guardians_talk_times(
 
    if start >= end:
       raise ValueError(
-         SharedStrings.Itinerary.guardians_talk_no_remaining_time_after_trimming() )
+         format_app_string( 'guestStatus.itinerary.guardiansTalkNoRemainingTimeAfterTrimming' ) )
 
    return (
       DateValues.schedule_time_key_from_minutes( start ),

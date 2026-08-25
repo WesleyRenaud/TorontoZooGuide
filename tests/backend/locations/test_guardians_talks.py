@@ -6,7 +6,8 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.shared.strings import SharedStrings
+from api.shared.api_error_response import ApiOperationFailure
+from api.shared.enums.api_error_type import ApiErrorType
 from conftest import DbControllers
 
 
@@ -283,11 +284,14 @@ def test_guardians_talk_add_occurrence_fails_for_schedule_and_duplicate(
       talk_times=[ '10:00 AM' ]
    ) == (
       False,
-      SharedStrings.GuardiansTalks.occurrence_already_exists(
-         'African Lion',
-         'Africa Savanna',
-         '2026-06-15',
-         '10:00 AM' ) )
+      ApiOperationFailure(
+         error_type=ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS,
+         params={
+            'talk': 'African Lion',
+            'location': 'Africa Savanna',
+            'date': '2026-06-15',
+            'talkTime': '10:00 AM',
+         } ) )
 
    assert_added_guardians_talk_occurrence(
       talk='African Lion',
@@ -302,11 +306,14 @@ def test_guardians_talk_add_occurrence_fails_for_schedule_and_duplicate(
       talk_times=[ '11:00 AM' ]
    ) == (
       False,
-      SharedStrings.GuardiansTalks.occurrence_already_exists(
-         'African Lion',
-         'Africa Savanna',
-         '2026-06-15',
-         '11:00 AM' ) )
+      ApiOperationFailure(
+         error_type=ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS,
+         params={
+            'talk': 'African Lion',
+            'location': 'Africa Savanna',
+            'date': '2026-06-15',
+            'talkTime': '11:00 AM',
+         } ) )
 
 
 def test_guardians_talk_end_schedule_keeps_added_occurrence(

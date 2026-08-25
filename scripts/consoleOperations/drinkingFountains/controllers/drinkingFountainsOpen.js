@@ -3,6 +3,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
+import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -48,7 +49,7 @@ export function createDrinkingFountainsOpenController({
             resetForm();
          }
          else {
-            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
+            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {

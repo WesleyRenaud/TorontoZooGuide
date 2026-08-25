@@ -197,6 +197,84 @@ export const viewingScopes = [
    { value: AnimalViewingScope.OUTDOOR, label: 'Outdoor only' },
 ];
 
+/** Console operation API failure messages (Python str.format compatible). */
+export const apiErrors = {
+   couldNotSetClosed: 'Could not set "{name}" as closed.',
+   couldNotSetOpen: 'Could not set "{name}" as open.',
+   couldNotCreateClosureOverride: (
+      'Could not create closure override for "{name}".'
+   ),
+   couldNotSetOpeningSchedule: 'Could not set opening schedule for "{name}".',
+   couldNotReplaceOpeningScheduleOverlaps: (
+      'Could not replace opening schedule overlaps for "{name}".'
+   ),
+   couldNotTrimOpeningScheduleOverlaps: (
+      'Could not trim opening schedule overlaps for "{name}".'
+   ),
+   couldNotSetAttractionHours: 'Could not set attraction hours for "{name}".',
+   couldNotReplaceAttractionHoursOverlaps: (
+      'Could not replace attraction hours overlaps for "{name}".'
+   ),
+   couldNotTrimAttractionHoursOverlaps: (
+      'Could not trim attraction hours overlaps for "{name}".'
+   ),
+   couldNotSetGuardiansTalkSchedule: (
+      'Could not set schedule for "{talk}" at "{location}".'
+   ),
+   couldNotEndGuardiansTalkSchedule: (
+      'Could not end schedule for "{talk}" at "{location}".'
+   ),
+   couldNotCancelGuardiansTalkOccurrence: (
+      'Could not cancel "{talk}" at "{location}" on {date}.'
+   ),
+   couldNotSetWildEncounterSchedule: 'Could not set schedule for "{name}".',
+   couldNotEndWildEncounterSchedule: 'Could not end schedule for "{name}".',
+   couldNotCancelWildEncounterOccurrence: 'Could not cancel "{name}" on {date}.',
+   couldNotSetRestroomAlert: 'Could not set alert for "{name}".',
+   couldNotRemoveRestroomAlert: 'Could not remove alert for "{name}".',
+   couldNotSetTransportationRoute: (
+      'Could not set transportation route to "{route}".'
+   ),
+   drinkingFountainsCouldNotSetClosed: (
+      'Could not set drinking fountains as closed.'
+   ),
+   drinkingFountainsCouldNotSetOpen: 'Could not set drinking fountains as open.',
+   couldNotCreateUpdate: 'Could not create update.',
+   couldNotEndUpdate: 'Could not end update.',
+   couldNotEditUpdate: 'Could not edit update.',
+   couldNotCreateEvent: 'Could not create event.',
+   noAnimalFoundWithSpecies: 'No animal found with species "{species}".',
+   noOffDisplayEntryFound: (
+      'No off-display entry found for "{species}" in "{exhibit}".'
+   ),
+   couldNotSetLimitedViewingSchedule: (
+      'Could not set limited viewing schedule for "{species}" in "{exhibit}".'
+   ),
+   couldNotRemoveVisibilitySchedule: (
+      'Could not remove visibility schedule for "{species}" in "{exhibit}".'
+   ),
+   couldNotSetViewingAlert: (
+      'Could not set viewing alert for "{species}" in "{exhibit}".'
+   ),
+   couldNotRemoveViewingAlert: (
+      'Could not remove viewing alert for "{species}" in "{exhibit}".'
+   ),
+   couldNotClearItinerary: 'Could not clear itinerary.',
+   couldNotAcceptItineraryChanges: 'Could not accept itinerary changes.',
+   invalidAttractionHours: (
+      'Attraction hours must fall within regular zoo hours for the selected date range.'
+   ),
+   guardiansTalkOccurrenceAlreadyExists: (
+      '"{talk}" at "{location}" on {date} at {talkTime} already exists.'
+   ),
+   couldNotAddGuardiansTalkOccurrence: (
+      'Could not add "{talk}" at "{location}" on {date}.'
+   ),
+   couldNotResolveAttractionHoursTimeBounds: (
+      'Could not resolve zoo hours bounds for attraction hours.'
+   ),
+};
+
 export const validation = {
    dateRangeInvalid: 'Invalid start or end date.',
    dailyViewingTimes: 'Daily viewing start and end times are required.',

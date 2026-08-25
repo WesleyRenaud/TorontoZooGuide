@@ -130,14 +130,15 @@ def test_console_mutation_maps_payload_and_success_response(
       response_subset )
 
 @pytest.mark.parametrize(
-   'path, body, expected_error',
+   'path, body, expected_api_error_type, expected_api_error_params',
    [
       (
          '/set-current-transportation-route',
          {
             'route': 'winter'
          },
-         'Could not set transportation route to "winter".'
+         'couldNotSetTransportationRoute',
+         { 'route': 'winter' },
       ),
    ]
 )
@@ -145,5 +146,10 @@ def test_console_mutation_returns_error_when_database_returns_false(
       stub_database: type[ StubZooControllers ],
       path: str,
       body: dict[ str, Any ],
-      expected_error: str ) -> None:
-   assert_console_mutation_failure( path, body, expected_error )
+      expected_api_error_type: str,
+      expected_api_error_params: dict[ str, Any ] ) -> None:
+   assert_console_mutation_failure(
+      path,
+      body,
+      expected_api_error_type,
+      expected_api_error_params )

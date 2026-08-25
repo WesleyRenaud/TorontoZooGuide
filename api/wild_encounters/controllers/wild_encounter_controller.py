@@ -3,6 +3,8 @@ from __future__ import annotations
 from ..coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...json_handler import JsonRequestHandler
 from ..scheduling.collapse_wild_encounters_for_map import collapse_wild_encounters_for_map
+from ...shared.api_error_response import apply_api_error
+from ...shared.enums.api_error_type import ApiErrorType
 
 
 class WildEncounterController():
@@ -64,7 +66,7 @@ class WildEncounterController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not set schedule for "{ wild_encounter }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_WILD_ENCOUNTER_SCHEDULE, name=wild_encounter )
 
       return response
 
@@ -189,7 +191,7 @@ class WildEncounterController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not end schedule for "{ wild_encounter }".'
+         apply_api_error( response, ApiErrorType.COULD_NOT_END_WILD_ENCOUNTER_SCHEDULE, name=wild_encounter )
 
       handler._write_json( response )
 
@@ -215,6 +217,6 @@ class WildEncounterController():
       }
 
       if not success:
-         response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date }.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_CANCEL_WILD_ENCOUNTER_OCCURRENCE, name=wild_encounter, date=date )
 
       handler._write_json( response )

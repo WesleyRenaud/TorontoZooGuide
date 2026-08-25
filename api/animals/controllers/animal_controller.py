@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from ..coordinators.animal_coordinator import AnimalCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.api_error_response import apply_api_error
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...shared.enums import AnimalViewingScope
+from ...shared.enums.api_error_type import ApiErrorType
 from ...shared.typed_dict import to_dict_with_type
 
 
@@ -120,7 +122,7 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = f'No animal found with species "{ species }".'
+         apply_api_error( response, ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES, species=species )
 
       handler._write_json( response )
 
@@ -146,7 +148,7 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = f'No off-display entry found for "{ species }" in "{ exhibit }".'
+         apply_api_error( response, ApiErrorType.NO_OFF_DISPLAY_ENTRY_FOUND, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -184,9 +186,7 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not set limited viewing schedule for "{ species }" in "{ exhibit }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_LIMITED_VIEWING_SCHEDULE, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -209,9 +209,7 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not remove visibility schedule for "{ species }" in "{ exhibit }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_REMOVE_VISIBILITY_SCHEDULE, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -243,9 +241,7 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not set viewing alert for "{ species }" in "{ exhibit }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_SET_VIEWING_ALERT, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -268,8 +264,6 @@ class AnimalController():
       }
 
       if not success:
-         response[ 'error' ] = (
-            f'Could not remove viewing alert for "{ species }" in "{ exhibit }".'
-         )
+         apply_api_error( response, ApiErrorType.COULD_NOT_REMOVE_VIEWING_ALERT, species=species, exhibit=exhibit )
 
       handler._write_json( response )

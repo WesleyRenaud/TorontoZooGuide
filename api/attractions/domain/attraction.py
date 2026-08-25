@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ...app_strings import format_app_string
 from .attraction_context import AttractionContext
 from ..data_access.attraction_record import AttractionRecord
 from ..data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
@@ -17,7 +18,6 @@ from ...shared.opening_schedule_status import group_records_by_name
 from ...shared.opening_schedule_status import is_open_on_weekday
 from ...shared.opening_schedule_status import resolve_amenity_likelihood_and_message
 from ...shared.opening_schedule_visit_context import resolve_opening_schedule_visit_context
-from ...shared.strings import SharedStrings
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 
 
@@ -63,9 +63,9 @@ def build_closed_attraction_schedule_message(
       return schedule_record.schedule_message
 
    if schedule_record.saturday and schedule_record.sunday and schedule_record.holidays_only:
-      return SharedStrings.Attractions.weekends_and_holidays_only( attraction_name )
+      return format_app_string( 'guestStatus.attractions.weekendsAndHolidaysOnly', attractionName=attraction_name )
 
-   return SharedStrings.Attractions.not_scheduled_today( attraction_name )
+   return format_app_string( 'guestStatus.attractions.notScheduledToday', attractionName=attraction_name )
 
 
 def get_active_attraction_schedule_status(
@@ -126,7 +126,7 @@ def get_attraction_likelihood_and_message_for_date(
       build_closed_schedule_message=lambda schedule_record: build_closed_attraction_schedule_message(
          attraction_name=attraction_record.name,
          schedule_record=schedule_record ),
-      likely_closed_message=SharedStrings.Attractions.likely_not_operating )
+      likely_closed_message=lambda name: format_app_string( 'guestStatus.attractions.likelyNotOperating', attractionName=name ) )
 
 
 def build_attraction(

@@ -80,4 +80,5 @@ def test_console_mutation_returns_error_when_database_returns_false(
       {
          'exhibit': 'Africa Savanna'
       },
-      'Could not set "Africa Savanna" as closed.' )
+      'couldNotSetClosed',
+      { 'name': 'Africa Savanna' } )

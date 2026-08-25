@@ -15,6 +15,12 @@ export const guestStatus = {
          'The {species} is viewable daily only from '
          + '{dailyStartTime} to {dailyEndTime}until {endDate}.'
       ),
+      exhibitLikelyClosedOnDay: (
+         'The {exhibit} is most likely closed on this day.'
+      ),
+      speciesLikelyOffDisplayOnDay: (
+         'The {species} is most likely off display on this day.'
+      ),
    },
    attractions: {
       weekendsAndHolidaysOnly: (
@@ -43,12 +49,6 @@ export const guestStatus = {
    guardiansTalks: {
       notScheduledToday: (
          'The {talkName} at {location} is not scheduled today.'
-      ),
-      couldNotAddOccurrence: (
-         'Could not add "{talk}" at "{location}" on {date}.'
-      ),
-      occurrenceAlreadyExists: (
-         '"{talk}" at "{location}" on {date} at {talkTime} already exists.'
       ),
    },
    itinerary: {

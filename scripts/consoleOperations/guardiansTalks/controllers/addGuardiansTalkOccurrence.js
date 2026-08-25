@@ -4,6 +4,7 @@ import {
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
+import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -102,7 +103,7 @@ export function createAddGuardiansTalkOccurrenceController({
          if (!result.success) {
             setStatus(
                statusEl,
-               result.error || APP_STRINGS.common.genericFailed,
+               resolveConsoleMutationError(result),
                'is-error'
             );
             return;

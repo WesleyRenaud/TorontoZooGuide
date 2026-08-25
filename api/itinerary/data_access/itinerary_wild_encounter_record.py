@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...app_strings import format_app_string
 from .itinerary_name_key import itinerary_name_key
-from ...shared.strings import SharedStrings
 from ...types import ScheduleTimeKey
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
@@ -25,7 +25,8 @@ class ItineraryWildEncounterRecord:
 
       if key is None:
          raise ValueError(
-            SharedStrings.Itinerary.wild_encounter_row_missing_start_time(
-               self.wild_encounter ) )
+            format_app_string(
+               'guestStatus.itinerary.wildEncounterRowMissingStartTime',
+               wildEncounter=repr( self.wild_encounter ) ) )
 
       return key

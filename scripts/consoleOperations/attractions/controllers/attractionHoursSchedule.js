@@ -19,6 +19,7 @@ import {
 import { parseClockTimeMinutes } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
+import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -153,8 +154,10 @@ export function createAttractionHoursScheduleController({
       applyTimeBounds(null);
       setStatus(
          statusEl,
-         boundsResult?.error
-            || APP_STRINGS.loadErrors.attractionHoursTimeBounds,
+         resolveConsoleMutationError(
+            boundsResult,
+            APP_STRINGS.loadErrors.attractionHoursTimeBounds
+         ),
          'is-error'
       );
       return false;
@@ -246,7 +249,7 @@ export function createAttractionHoursScheduleController({
 
             setStatus(
                statusEl,
-               resolved.error || APP_STRINGS.common.genericFailed,
+               resolveConsoleMutationError(resolved),
                'is-error'
             );
             return;
@@ -254,7 +257,7 @@ export function createAttractionHoursScheduleController({
 
          setStatus(
             statusEl,
-            result?.error || APP_STRINGS.common.genericFailed,
+            resolveConsoleMutationError(result),
             'is-error'
          );
       }

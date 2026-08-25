@@ -85,6 +85,18 @@ export function resolveItineraryErrorMessage(
    errorType,
    strings = APP_STRINGS.itinerary.errors
 ) {
+   if (errorType === itineraryErrorTypes?.ITINERARY_DATE_NOT_SET) {
+      return strings.itineraryDateNotSet;
+   }
+
+   if (errorType === itineraryErrorTypes?.SAVE_FAILED) {
+      return strings.saveFailed;
+   }
+
+   if (errorType === itineraryErrorTypes?.TIME_ORDER_INVALID) {
+      return strings.timeOrderInvalid;
+   }
+
    if (errorType === itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE) {
       return strings.arrivalDepartureTooClose;
    }

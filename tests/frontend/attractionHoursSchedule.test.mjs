@@ -263,8 +263,7 @@ test('attraction hours submit surfaces backend zoo hours errors', async () => {
       statusEl,
       saveSchedule: async () => ( {
          success: false,
-         error: 'Attraction hours must fall within regular zoo hours for the selected date range.',
-         errorType: 'invalidAttractionHours',
+         apiErrorType: 'invalidAttractionHours',
       } ),
    });
 

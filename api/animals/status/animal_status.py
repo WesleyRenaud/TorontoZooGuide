@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from .animal_off_display_status import AnimalOffDisplayStatus
+from ...app_strings import format_app_string
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import AnimalViewingScope
-from ...shared.strings import SharedStrings
 from ...types import DateInput
 
 
@@ -15,7 +15,7 @@ def build_animal_off_display_status(
       end_date: DateInput,
       message: str ) -> AnimalOffDisplayStatus:
    if not message:
-      message = SharedStrings.Animals.temporarily_off_display( species )
+      message = format_app_string( 'guestStatus.animals.temporarilyOffDisplay', species=species )
 
    date_range = DateValues.resolve_open_ended_date_range(
       start_date=start_date,

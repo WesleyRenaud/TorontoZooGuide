@@ -9,7 +9,9 @@ from ..results.itinerary_result_response import itinerary_result_to_dict
 from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
 from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from ..scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
+from ...shared.api_error_response import apply_api_error
 from ...shared.constants import itinerary_config_to_dict
+from ...shared.enums.api_error_type import ApiErrorType
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
@@ -290,7 +292,7 @@ class ItineraryController():
       }
 
       if not success:
-         response[ 'error' ] = 'Could not clear itinerary.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_CLEAR_ITINERARY )
 
       handler._write_json( response )
 
@@ -320,6 +322,6 @@ class ItineraryController():
       }
 
       if not success:
-         response[ 'error' ] = 'Could not accept itinerary changes.'
+         apply_api_error( response, ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES )
 
       handler._write_json( response )
