@@ -80,7 +80,7 @@ test('normalizes missing search response groups to empty arrays', () => {
       gift_shops: [],
       attractions: [],
       transportations: [],
-      zoomobile_stations: [],
+      transportation_stations: [],
       guardians_talks: [],
       wild_encounters: [],
    });

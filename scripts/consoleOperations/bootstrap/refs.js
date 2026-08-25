@@ -191,23 +191,23 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
-   zoomobile: {
+   transportation: {
       stationClosed: {
-         operationName: 'zoomobileStationClosed',
+         operationName: 'transportationStationClosed',
          includeDateRange: true,
          fieldSuffixes: {
-            zoomobileStationEl: 'ZoomobileStation',
+            transportationStationEl: 'TransportationStation',
             messageEl: 'Message',
          },
       },
       stationOpen: {
-         operationName: 'zoomobileStationOpen',
+         operationName: 'transportationStationOpen',
          fieldSuffixes: {
-            zoomobileStationEl: 'ZoomobileStation',
+            transportationStationEl: 'TransportationStation',
          },
       },
       route: {
-         operationName: 'zoomobileRoute',
+         operationName: 'transportationRoute',
          includeDateRange: true,
          fieldSuffixes: {
             summerRouteEl: 'Summer',

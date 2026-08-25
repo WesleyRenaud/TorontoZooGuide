@@ -69,7 +69,6 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    from api.updates.coordinators.update_coordinator import UpdateCoordinator
    from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
    from api.zoo_hours.coordinators.zoo_hours_coordinator import ZooHoursCoordinator
-   from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
    StubZooControllers.instances = []
    StubZooControllers.default_success = True
@@ -96,7 +95,6 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       GiftShopCoordinator,
       AttractionCoordinator,
       TransportationCoordinator,
-      ZoomobileCoordinator,
       GuardiansCoordinator,
       WildEncounterCoordinator,
       DrinkingFountainCoordinator,

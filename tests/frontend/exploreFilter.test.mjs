@@ -98,7 +98,7 @@ test('buildExploreSearchIncludeFlags maps selected explore types to search flags
          includeAttractions: false,
          includeGuardiansTalks: false,
          includeWildEncounters: true,
-         includeZoomobileStations: false,
+         includeTransportationStations: false,
       }
    );
 });
@@ -115,8 +115,8 @@ test('buildExploreSearchIncludeFlags includes zoomobile stations when a route is
          includeAttractions: false,
          includeGuardiansTalks: false,
          includeWildEncounters: false,
-         includeZoomobileStations: true,
-         zoomobileRoute: 'current',
+         includeTransportationStations: true,
+         transportationRoute: 'current',
       }
    );
 });
@@ -139,7 +139,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
          includeAttractions: false,
          includeGuardiansTalks: false,
          includeWildEncounters: false,
-         includeZoomobileStations: false,
+         includeTransportationStations: false,
       });
    });
 
@@ -152,7 +152,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
 
       const filter = initExploreTypeFilter({
          multiSelect,
-         getZoomobileRoute: () => 'current',
+         getTransportationRoute: () => 'current',
          onChange: () => {
             changeCalls.push('changed');
          },
@@ -161,7 +161,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
          },
       });
 
-      assert.deepEqual(filter.getSelectedTypes(), ['animal', 'zoomobileRoute']);
+      assert.deepEqual(filter.getSelectedTypes(), ['animal', 'transportationRoute']);
       assert.deepEqual(filter.buildSearchIncludeFlags(), {
          includeAnimals: true,
          includePavilions: false,
@@ -171,8 +171,8 @@ test.describe('initExploreTypeFilter DOM integration', () => {
          includeAttractions: false,
          includeGuardiansTalks: false,
          includeWildEncounters: false,
-         includeZoomobileStations: true,
-         zoomobileRoute: 'current',
+         includeTransportationStations: true,
+         transportationRoute: 'current',
       });
       assert.equal(chipContainer.children.length, 1);
       assert.equal(chipContainer.children[0].className, 'filter-chip');
@@ -181,7 +181,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       checkboxes[0].checked = false;
       checkboxes[0].dispatchChange();
 
-      assert.deepEqual(filter.getSelectedTypes(), ['zoomobileRoute']);
+      assert.deepEqual(filter.getSelectedTypes(), ['transportationRoute']);
       assert.deepEqual(changeCalls, ['changed']);
       assert.deepEqual(animalsUncheckedCalls, ['unchecked']);
       assert.equal(chipContainer.children[0].className, 'filter-none');
@@ -193,7 +193,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       checkboxes[1].checked = true;
       checkboxes[1].dispatchChange();
 
-      assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'zoomobileRoute']);
+      assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'transportationRoute']);
       assert.deepEqual(changeCalls, ['changed', 'changed']);
       assert.equal(chipContainer.children[0].textContent, 'Restaurants');
    });
@@ -213,7 +213,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
 
       initExploreTypeFilter({
          multiSelect,
-         getZoomobileRoute: () => 'none',
+         getTransportationRoute: () => 'none',
       });
 
       assert.equal(multiSelect.classList.contains('open'), false);

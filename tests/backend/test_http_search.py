@@ -17,10 +17,10 @@ def test_search_endpoint_adds_type_fields(
          'includeGiftShops': True,
          'includeAttractions': True,
          'includeTransportations': True,
-         'includeZoomobileStations': True,
+         'includeTransportationStations': True,
          'includeGuardiansTalks': True,
          'includeWildEncounters': True,
-         'zoomobileRoute': 'summer',
+         'transportationRoute': 'summer',
          'month': 'June',
          'day': 15,
          'year': 2026,
@@ -37,7 +37,7 @@ def test_search_endpoint_adds_type_fields(
    assert result[ 'gift_shops' ][ 0 ][ 'type' ] == 'giftShop'
    assert result[ 'attractions' ][ 0 ][ 'type' ] == 'attraction'
    assert result[ 'transportations' ][ 0 ][ 'type' ] == 'transportation'
-   assert result[ 'zoomobile_stations' ][ 0 ][ 'type' ] == 'zoomobileStation'
+   assert result[ 'transportation_stations' ][ 0 ][ 'type' ] == 'transportationStation'
    assert result[ 'guardians_talks' ][ 0 ][ 'type' ] == 'guardiansTalk'
    assert result[ 'wild_encounters' ][ 0 ][ 'type' ] == 'wildEncounter'
    assert (
@@ -52,7 +52,7 @@ def test_search_endpoint_adds_type_fields(
    ) in StubZooControllers.instances[ 0 ].calls
 
    assert (
-      'get_zoomobile_stations_matching_query',
+      'get_transportation_stations_matching_query',
       {
          'query': 'a',
          'route': 'summer',
@@ -173,7 +173,7 @@ def test_search_endpoint_skips_unselected_types(
          'includeRestrooms': False,
          'includeGiftShops': False,
          'includeAttractions': False,
-         'includeZoomobileStations': False,
+         'includeTransportationStations': False,
          'includeGuardiansTalks': False,
          'includeWildEncounters': False
       }
@@ -190,7 +190,7 @@ def test_search_endpoint_skips_unselected_types(
       'gift_shops': [],
       'attractions': [],
       'transportations': [],
-      'zoomobile_stations': [],
+      'transportation_stations': [],
       'wild_encounters': [],
       'guardians_talks': []
    }

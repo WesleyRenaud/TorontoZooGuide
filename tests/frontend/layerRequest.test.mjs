@@ -189,8 +189,8 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
 test('adds focused type to selected types when needed', () => {
    assert.deepEqual(buildSelectedTypes(['animal'], 'giftShop', 'none'), ['giftShop', 'animal']);
    assert.deepEqual(
-      buildSelectedTypes(['zoomobileRoute'], 'zoomobileStation', 'summer'),
-      ['zoomobileRoute']
+      buildSelectedTypes(['transportationRoute'], 'transportationStation', 'summer'),
+      ['transportationRoute']
    );
 });
 
@@ -203,7 +203,7 @@ test('builds layer request context with focused row includes', () => {
          temp: 22,
       },
       selectedTypes: ['animal', 'giftShop'],
-      zoomobileRoute: 'summer',
+      transportationRoute: 'summer',
       focusType: 'giftShop',
       focusRow: { name: '  Zootique  ' },
       includeOffDisplayAnimals: false,
@@ -223,12 +223,12 @@ test('builds layer request context with focused row includes', () => {
          includeClosedRestrooms: false,
          includeClosedGiftShops: true,
          includeClosedAttractions: false,
-         zoomobileRoute: 'summer',
+         transportationRoute: 'summer',
          speciesToInclude: [],
          restaurantsToInclude: [],
          giftShopsToInclude: ['Zootique'],
          attractionsToInclude: [],
-         zoomobileStationsToInclude: [],
+         transportationStationsToInclude: [],
       },
    });
 });

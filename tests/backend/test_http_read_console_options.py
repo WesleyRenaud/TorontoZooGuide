@@ -66,10 +66,10 @@ import api.server as server
          { 'attractions': [ 'Conservation Carousel' ] }
       ),
       (
-         '/get-zoomobile-station-names',
+         '/get-transportation-station-names',
          {},
-         ( 'get_zoomobile_station_names', {} ),
-         { 'zoomobile_stations': [ 'Main Zoomobile Station' ] }
+         ( 'get_transportation_station_names', { 'transportation': 'Zoomobile' } ),
+         { 'transportation_stations': [ 'Main Zoomobile Station' ] }
       ),
       (
          '/get-guardians-talk-locations',

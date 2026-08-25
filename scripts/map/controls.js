@@ -114,7 +114,7 @@ export function initMapControls({
    includeClosedRestroomsCheckbox,
    includeClosedGiftShopsCheckbox,
    includeClosedAttractionsCheckbox,
-   zoomobileRouteRadios,
+   transportationRouteRadios,
    earliestSelectableNoon,
    onUpdate,
 } = {}) {
@@ -168,7 +168,7 @@ export function initMapControls({
       includeClosedAttractionsCheckbox,
    ], refetch);
 
-   bindChangeListeners(zoomobileRouteRadios, refetch);
+   bindChangeListeners(transportationRouteRadios, refetch);
 
    syncDateInputVisibility(mapPreset, mapDateInput);
 

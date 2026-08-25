@@ -63,7 +63,7 @@ test('searchZoo normalizes search responses', async () => {
          },
       ],
       transportations: [],
-      zoomobile_stations: [],
+      transportation_stations: [],
       guardians_talks: [],
       wild_encounters: [],
    });

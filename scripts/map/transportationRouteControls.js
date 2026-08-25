@@ -2,8 +2,6 @@ import { getTransportationRoutes } from '../api/mapApi.js';
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
 import { APP_STRINGS } from '../strings.js';
 
-const ZOOMOBILE_TRANSPORTATION = 'Zoomobile';
-
 function createRouteOption({
    groupName,
    value,
@@ -27,10 +25,6 @@ function createRouteOption({
 }
 
 function radioGroupName(transportationName) {
-   if (transportationName === ZOOMOBILE_TRANSPORTATION) {
-      return 'zoomobileRoute';
-   }
-
    return `transportationRoute-${normalizeAssetKey(transportationName)}`;
 }
 

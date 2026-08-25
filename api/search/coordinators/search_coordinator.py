@@ -22,7 +22,6 @@ from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from ...types import MonthInput, VisitDay, VisitYear
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ...zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
 
 class SearchCoordinator():
@@ -38,7 +37,7 @@ class SearchCoordinator():
          include_gift_shops: bool,
          include_attractions: bool,
          include_transportations: bool,
-         include_zoomobile_stations: bool,
+         include_transportation_stations: bool,
          include_guardians_talks: bool,
          include_wild_encounters: bool,
          month: MonthInput,
@@ -50,7 +49,7 @@ class SearchCoordinator():
          include_closed_restaurants: bool,
          include_closed_restrooms: bool,
          include_closed_attractions: bool,
-         zoomobile_route: str | None ) -> dict[ str, list ]:
+         transportation_route: str | None ) -> dict[ str, list ]:
 
       animals: list[ Animal ] = []
       pavilions: list[ Pavilion ] = []
@@ -59,7 +58,7 @@ class SearchCoordinator():
       gift_shops: list[ GiftShop ] = []
       attractions: list[ Attraction ] = []
       transportations: list[ Transportation ] = []
-      zoomobile_stations: list[ TransportationStation ] = []
+      transportation_stations: list[ TransportationStation ] = []
       wild_encounters: list[ WildEncounter ] = []
       guardians_talks: list[ GuardiansTalk ] = []
 
@@ -138,11 +137,11 @@ class SearchCoordinator():
                year=year ) or []
          )
 
-      if include_zoomobile_stations:
-         zoomobile_stations = (
-            ZoomobileCoordinator.get_zoomobile_stations_matching_query(
+      if include_transportation_stations:
+         transportation_stations = (
+            TransportationCoordinator.get_transportation_stations_matching_query(
                query=query,
-               route=zoomobile_route,
+               route=transportation_route,
                day=day,
                month=month,
                year=year ) or []
@@ -174,7 +173,7 @@ class SearchCoordinator():
          'gift_shops': gift_shops,
          'attractions': attractions,
          'transportations': transportations,
-         'zoomobile_stations': zoomobile_stations,
+         'transportation_stations': transportation_stations,
          'wild_encounters': wild_encounters,
          'guardians_talks': guardians_talks,
       }

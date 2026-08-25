@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.search_coordinator import SearchCoordinator
 from ...json_handler import JsonRequestHandler
+from ...shared.enums.map_item_type import MapItemType
 from ...shared.typed_dict import to_dict_with_type
 
 
@@ -18,7 +19,7 @@ class SearchController():
       include_gift_shops = bool( data.get( 'includeGiftShops' ) )
       include_attractions = bool( data.get( 'includeAttractions' ) )
       include_transportations = bool( data.get( 'includeTransportations' ) )
-      include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
+      include_transportation_stations = bool( data.get( 'includeTransportationStations' ) )
       include_guardians_talks = bool( data.get( 'includeGuardiansTalks' ) )
       include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
 
@@ -32,7 +33,7 @@ class SearchController():
       include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
       include_closed_restrooms = bool( data.get( 'includeClosedRestrooms' ) )
       include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
-      zoomobile_route = data.get( 'zoomobileRoute' )
+      transportation_route = data.get( 'transportationRoute' )
 
       results = SearchCoordinator.search(
          query=query,
@@ -43,7 +44,7 @@ class SearchController():
          include_gift_shops=include_gift_shops,
          include_attractions=include_attractions,
          include_transportations=include_transportations,
-         include_zoomobile_stations=include_zoomobile_stations,
+         include_transportation_stations=include_transportation_stations,
          include_guardians_talks=include_guardians_talks,
          include_wild_encounters=include_wild_encounters,
          month=month,
@@ -55,7 +56,7 @@ class SearchController():
          include_closed_restaurants=include_closed_restaurants,
          include_closed_restrooms=include_closed_restrooms,
          include_closed_attractions=include_closed_attractions,
-         zoomobile_route=zoomobile_route )
+         transportation_route=transportation_route )
 
       handler._write_json( {
          'animals': [
@@ -86,9 +87,11 @@ class SearchController():
             to_dict_with_type( transportation, 'transportation' )
             for transportation in results[ 'transportations' ]
          ],
-         'zoomobile_stations': [
-            to_dict_with_type( zoomobile_station, 'zoomobileStation' )
-            for zoomobile_station in results[ 'zoomobile_stations' ]
+         'transportation_stations': [
+            to_dict_with_type(
+               transportation_station,
+               MapItemType.TRANSPORTATION_STATION.value )
+            for transportation_station in results[ 'transportation_stations' ]
          ],
          'wild_encounters': [
             to_dict_with_type( wild_encounter, 'wildEncounter' )

@@ -6,8 +6,8 @@ import {
    getRestaurantNameOptions,
    getRestroomNameOptions,
    getSpeciesOptions,
+   getTransportationStationNameOptions,
    getWildEncounterNameOptions,
-   getZoomobileStationNameOptions,
 } from '../../api/consoleOperationsApi.js';
 import { sortNamedOptions } from './namedItems.js';
 
@@ -18,7 +18,7 @@ const cachedOptionSets = {
    restrooms: null,
    giftShops: null,
    attractions: null,
-   zoomobileStations: null,
+   transportationStations: null,
    guardiansTalks: null,
    wildEncounters: null,
 };
@@ -89,11 +89,11 @@ export async function loadAttractions() {
    });
 }
 
-export async function loadZoomobileStations() {
+export async function loadTransportationStations() {
    return loadCachedOptions({
-      cacheKey: 'zoomobileStations',
-      fetchOptions: getZoomobileStationNameOptions,
-      resultKey: 'zoomobile_stations',
+      cacheKey: 'transportationStations',
+      fetchOptions: getTransportationStationNameOptions,
+      resultKey: 'transportation_stations',
    });
 }
 

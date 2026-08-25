@@ -27,15 +27,15 @@ import { createRemoveRestroomAlertPanel } from '../restrooms/panels/removeRestro
 import { createRestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
 import { createRestroomClosedPanel } from '../restrooms/panels/restroomClosedPanel.js';
 import { createRestroomOpenPanel } from '../restrooms/panels/restroomOpenPanel.js';
+import { createTransportationRoutePanel } from '../transportation/panels/transportationRoutePanel.js';
+import { createTransportationStationClosedPanel } from '../transportation/panels/transportationStationClosedPanel.js';
+import { createTransportationStationOpenPanel } from '../transportation/panels/transportationStationOpenPanel.js';
 import { createCreateUpdatePanel } from '../updates/panels/createUpdatePanel.js';
 import { createEditUpdatePanel } from '../updates/panels/editUpdatePanel.js';
 import { createEndUpdatePanel } from '../updates/panels/endUpdatePanel.js';
 import { createCancelWildEncounterOccurrencePanel } from '../wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
 import { createEndWildEncounterSchedulePanel } from '../wildEncounters/panels/endWildEncounterSchedulePanel.js';
 import { createWildEncounterSchedulePanel } from '../wildEncounters/panels/wildEncounterSchedulePanel.js';
-import { createZoomobileRoutePanel } from '../zoomobile/panels/zoomobileRoutePanel.js';
-import { createZoomobileStationClosedPanel } from '../zoomobile/panels/zoomobileStationClosedPanel.js';
-import { createZoomobileStationOpenPanel } from '../zoomobile/panels/zoomobileStationOpenPanel.js';
 
 const PANEL_CREATORS = {
    animals: [
@@ -72,10 +72,10 @@ const PANEL_CREATORS = {
       createAttractionOpeningSchedulePanel,
       createAttractionHoursSchedulePanel,
    ],
-   zoomobile: [
-      createZoomobileStationClosedPanel,
-      createZoomobileStationOpenPanel,
-      createZoomobileRoutePanel,
+   transportation: [
+      createTransportationStationClosedPanel,
+      createTransportationStationOpenPanel,
+      createTransportationRoutePanel,
    ],
    guardiansTalks: [
       createGuardiansTalkSchedulePanel,

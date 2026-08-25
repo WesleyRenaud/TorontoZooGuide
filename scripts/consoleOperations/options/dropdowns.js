@@ -79,8 +79,8 @@ export function populateAttractionDropdown(selectEl, attractions) {
    populateNamedDropdown(selectEl, attractions, APP_STRINGS.placeholders.attraction);
 }
 
-export function populateZoomobileStationDropdown(selectEl, zoomobileStations) {
-   populateNamedDropdown(selectEl, zoomobileStations, APP_STRINGS.placeholders.zoomobileStation);
+export function populateTransportationStationDropdown(selectEl, transportationStations) {
+   populateNamedDropdown(selectEl, transportationStations, APP_STRINGS.placeholders.transportationStation);
 }
 
 export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {

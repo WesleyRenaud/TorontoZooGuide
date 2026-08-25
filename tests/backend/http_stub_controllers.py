@@ -8,9 +8,9 @@ from http_stub_animals import AnimalsExhibitsStubMixin
 from http_stub_events import EventsStubMixin
 from http_stub_itinerary import ItineraryStubMixin
 from http_stub_locations import LocationsStubMixin
+from http_stub_transportation_route import TransportationRouteStubMixin
 from http_stub_updates import UpdatesStubMixin
 from http_stub_zoo_hours import ZooHoursStubMixin
-from http_stub_zoomobile import ZoomobileStubMixin
 
 from api.types import Connection
 
@@ -24,7 +24,7 @@ class StubControllerNamespace:
       return getattr( self._root, name )
 
 
-class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, ZoomobileStubMixin, EventsStubMixin, LocationsStubMixin, UpdatesStubMixin, ItineraryStubMixin, ZooHoursStubMixin ):
+class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, TransportationRouteStubMixin, EventsStubMixin, LocationsStubMixin, UpdatesStubMixin, ItineraryStubMixin, ZooHoursStubMixin ):
    instances: list[ StubZooControllers ] = []
    default_success: bool = True
    controller_attributes: list[ str ] = [
@@ -35,7 +35,7 @@ class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, Zoomobil
       'restrooms',
       'giftshops',
       'attractions',
-      'zoomobile',
+      'transportation',
       'guardians',
       'wild_encounters',
       'drinking_fountains',

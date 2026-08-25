@@ -65,8 +65,8 @@ export const SEARCH_RESULT_PRESENTATIONS = {
       getImageName: getGuardiansTalkName,
       getSubtitle: getGuardiansTalkSubtitle,
    },
-   zoomobileStation: buildNamedResultPresentation(
-      APP_STRINGS.entityLabels.zoomobileStation,
+   transportationStation: buildNamedResultPresentation(
+      APP_STRINGS.entityLabels.transportationStation,
       () => null
    ),
    attraction: buildNamedResultPresentation(

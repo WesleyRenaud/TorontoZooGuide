@@ -4,8 +4,8 @@ import { giftShopRenderer } from './renderers/giftShops.js';
 import { guardiansTalkRenderer } from './renderers/guardiansTalks.js';
 import { pavilionRenderer } from './renderers/pavilions.js';
 import { restaurantRenderer } from './renderers/restaurants.js';
+import { transportationStationRenderer } from './renderers/transportationStations.js';
 import { wildEncounterRenderer } from './renderers/wildEncounters.js';
-import { zoomobileStationRenderer } from './renderers/zoomobileStations.js';
 
 export const TYPE_REGISTRY = {
    animal: animalRenderer,
@@ -14,8 +14,7 @@ export const TYPE_REGISTRY = {
    giftShop: giftShopRenderer,
    attraction: attractionRenderer,
    transportation: attractionRenderer,
-   zoomobileStation: zoomobileStationRenderer,
-   transportationStation: zoomobileStationRenderer,
+   transportationStation: transportationStationRenderer,
    guardiansTalk: guardiansTalkRenderer,
    wildEncounter: wildEncounterRenderer,
 };

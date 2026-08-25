@@ -13,9 +13,9 @@ import {
    getPicnicSites,
    getRestaurants,
    getRestrooms,
+   getTransportationRoute,
    getVisibleAnimals,
    getWildEncounters,
-   getZoomobileRoute,
 } from '../api/mapApi.js';
 import {
    createDynamicTypedSource,
@@ -23,10 +23,10 @@ import {
    normalizeTypedRows,
 } from './sourceHelpers.js';
 import {
-   hideZoomobileRouteLayers,
-   showZoomobileRouteLayer,
-} from './zoomobileRouteOverlay.js';
-import { createZoomobileRouteSource } from './zoomobileRouteSource.js';
+   hideTransportationRouteLayers,
+   showTransportationRouteLayer,
+} from './transportationRouteOverlay.js';
+import { createTransportationRouteSource } from './transportationRouteSource.js';
 
 function createNoCacheSource(fetchRows) {
    return {
@@ -125,10 +125,10 @@ export function createDataSources(store) {
          })
       ),
 
-      zoomobileRoute: createZoomobileRouteSource(store, {
-         fetchZoomobileRoute: getZoomobileRoute,
-         hideRouteLayers: hideZoomobileRouteLayers,
-         showRouteLayer: showZoomobileRouteLayer,
+      transportationRoute: createTransportationRouteSource(store, {
+         fetchTransportationRoute: getTransportationRoute,
+         hideRouteLayers: hideTransportationRouteLayers,
+         showRouteLayer: showTransportationRouteLayer,
       }),
 
       guardiansTalk: createTypedDynamicApiSource(

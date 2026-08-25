@@ -7,7 +7,7 @@ export function createMapStore() {
          restroom: [],
          giftShop: [],
          attraction: [],
-         zoomobileStation: [],
+         transportationStation: [],
          guardiansTalk: [],
          wildEncounter: [],
          defibrillator: [],

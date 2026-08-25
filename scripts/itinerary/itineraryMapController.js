@@ -4,14 +4,14 @@ import {
 } from './itineraryService.js';
 import { clearItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
-import { hideZoomobileRouteLayers } from '../map/zoomobileRouteOverlay.js';
+import { hideTransportationRouteLayers } from '../map/transportationRouteOverlay.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
    getIncludeOffDisplay: () => false,
    getIncludeClosedRestaurants: () => false,
    getIncludeClosedGiftShops: () => false,
    getIncludeClosedAttractions: () => false,
-   getZoomobileRoute: () => 'none',
+   getTransportationRoute: () => 'none',
    getSelectedTypes: () => [],
 });
 
@@ -51,7 +51,7 @@ function createItineraryMapRuntime() {
 export function clearItineraryMapDisplay(runtime) {
    runtime?.markers?.render([]);
    clearItineraryPathOverlay();
-   hideZoomobileRouteLayers();
+   hideTransportationRouteLayers();
 }
 
 function getItineraryMapDate(itinerary) {

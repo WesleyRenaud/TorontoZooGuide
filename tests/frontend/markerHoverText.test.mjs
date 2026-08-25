@@ -7,7 +7,7 @@ import { APP_STRINGS } from '../../scripts/strings.js';
 test('buildHoverText returns empty text for missing or hidden marker types', () => {
    assert.equal(buildHoverText(null), '');
    assert.equal(buildHoverText([]), '');
-   assert.equal(buildHoverText([{ type: 'zoomobileRouteMarker', name: 'Route' }]), '');
+   assert.equal(buildHoverText([{ type: 'transportationRouteMarker', name: 'Route' }]), '');
    assert.equal(buildHoverText([{ type: 'unknownType', name: 'Item' }]), '');
 });
 
