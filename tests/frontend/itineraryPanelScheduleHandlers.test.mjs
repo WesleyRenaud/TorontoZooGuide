@@ -146,6 +146,36 @@ test('buildItineraryPanelScheduleHandlers confirms before removing configured ev
    assert.equal(refreshed, true);
 });
 
+test('buildItineraryPanelScheduleHandlers passes item identity into remove confirmation', async () => {
+   const confirmations = [];
+   const handlers = buildItineraryPanelScheduleHandlers(
+      { itineraryConfig: ITINERARY_CONFIG },
+      {
+         deps: {
+            removeItem: async () => ({ errorType: 'success' }),
+            removeAnimalDraft: () => {},
+            requiresRemoveConfirmation: () => true,
+            showRemoveConfirmation: (options) => {
+               confirmations.push(options);
+            },
+            notifyUpdated: async () => true,
+         },
+      }
+   );
+
+   handlers.onRemoveItineraryItem({
+      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+      key: 'Zoomobile||0',
+   });
+
+   assert.equal(confirmations.length, 1);
+   assert.equal(
+      confirmations[0].itemType,
+      ScheduleItemKind.TRANSPORTATION.itemType
+   );
+   assert.equal(confirmations[0].key, 'Zoomobile||0');
+});
+
 test('buildItineraryPanelScheduleHandlers removes animals without confirmation', async () => {
    const removed = [];
    let notified = false;

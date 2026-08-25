@@ -93,6 +93,8 @@ export function buildItineraryPanelScheduleHandlers(
 
          if (requiresRemoveConfirmation(itemType, itinerary.itineraryConfig)) {
             showRemoveConfirmation({
+               itemType,
+               key,
                onConfirm: performRemove,
             });
             return;

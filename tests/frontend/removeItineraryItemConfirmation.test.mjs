@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { showRemoveItineraryItemConfirmation } from '../../scripts/itinerary/panel/removeItineraryItemConfirmation.js';
+import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
@@ -37,5 +38,34 @@ test.describe('removeItineraryItemConfirmation', () => {
       confirmButton?.click();
 
       assert.deepEqual(confirmCalls, ['confirmed']);
+   });
+
+   test('showRemoveItineraryItemConfirmation uses transit message for transit transportation', () => {
+      const strings = APP_STRINGS.itinerary.confirmation;
+
+      showRemoveItineraryItemConfirmation({
+         itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+         key: 'Zoomobile||0',
+      });
+
+      const message = document.querySelector('.tzg-popup-message');
+
+      assert.equal(
+         message?.textContent,
+         strings.removeTransitTransportationMessage
+      );
+   });
+
+   test('showRemoveItineraryItemConfirmation keeps default message for attraction transportation', () => {
+      const strings = APP_STRINGS.itinerary.confirmation;
+
+      showRemoveItineraryItemConfirmation({
+         itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+         key: 'Zoomobile||1',
+      });
+
+      const message = document.querySelector('.tzg-popup-message');
+
+      assert.equal(message?.textContent, strings.removeItemMessage);
    });
 });
