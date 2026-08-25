@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
 from .bulk_schedule_walk_order import representative_walk_node_id
+from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_transportation_row
+from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_transportation import set_itinerary_transportation_bulk_transit_evaluated
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_transportation import apply_itinerary_transportation_ride_segments
 from .planned_transit_ride import PlannedTransitRide
+from ...routing.transit_ride_endpoint import TransitRideEndpoint
+from ...routing.transportation_boarding_station import station_for_transportation_legs
 from ...routing.walk_travel_time import travel_time_minutes_from_length_px
 from ...routing.walk_travel_time import travel_time_seconds_between_nodes
 from .scheduled_animal_anchor import ScheduledAnimalAnchor
@@ -21,6 +25,7 @@ from ...transportation.legs_along_day_loop import legs_along_day_loop
 from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ...transportation.transportation_day_loop import TransportationDayLoop
 from ...transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from ...transportation_item_key import TransportationScheduleItemKey
 from ....types import Connection
 from ....types import DateKey
 from ....types import ScheduleTimeKey
@@ -47,6 +52,7 @@ def apply_zoomobile_transit_rides(
    walk_graph = load_walk_graph()
    adjacency = build_walk_graph_adjacency( walk_graph )
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
+   saved_itinerary = fetch_saved_itinerary( conn )
 
    for transit_row in transit_rows:
       parsed_visit_date = DateValues.parse_date_value( visit_date )
@@ -79,9 +85,20 @@ def apply_zoomobile_transit_rides(
       if not animal_anchors:
          continue
 
+      timeline_start_seconds, start_node_id = _transit_timeline_start(
+         find_saved_itinerary_transportation_row(
+            saved_itinerary,
+            TransportationScheduleItemKey(
+               name=transit_row.transportation,
+               added_as_attraction=True ) ),
+         schedule_anchor_seconds=schedule_anchor_seconds,
+         station_walk_nodes=station_walk_nodes,
+         entrance_node_id=entrance_node_id )
+
       rides_before_animals, return_ride = _plan_rides_for_anchors(
          day_loop=day_loop,
          station_walk_nodes=station_walk_nodes,
+         start_node_id=start_node_id,
          entrance_node_id=entrance_node_id,
          animal_anchors=animal_anchors,
          walk_graph=walk_graph,
@@ -104,11 +121,11 @@ def apply_zoomobile_transit_rides(
          animal_anchors=animal_anchors,
          rides_before_animals=rides_before_animals,
          return_ride=return_ride,
-         schedule_anchor_seconds=schedule_anchor_seconds,
+         timeline_start_seconds=timeline_start_seconds,
+         start_node_id=start_node_id,
          walk_graph=walk_graph,
          adjacency=adjacency,
          station_walk_nodes=station_walk_nodes,
-         entrance_node_id=entrance_node_id,
          operating_hours=operating_hours )
 
       cur = conn.cursor()
@@ -122,6 +139,33 @@ def apply_zoomobile_transit_rides(
          conn.commit()
       finally:
          cur.close()
+
+
+def _transit_timeline_start(
+      companion_attraction_row: ItineraryTransportationRecord | None,
+      *,
+      schedule_anchor_seconds: int,
+      station_walk_nodes: dict[ str, str ],
+      entrance_node_id: str,
+) -> tuple[ int, str ]:
+   if companion_attraction_row is None:
+      return schedule_anchor_seconds, entrance_node_id
+
+   end_seconds = DateValues.time_value_in_seconds( companion_attraction_row.end_time )
+   timeline_start_seconds = (
+      schedule_anchor_seconds
+      if end_seconds is None
+      else max( schedule_anchor_seconds, end_seconds ) )
+
+   if not companion_attraction_row.legs:
+      return timeline_start_seconds, entrance_node_id
+
+   alight_node_id = station_walk_nodes.get(
+      station_for_transportation_legs(
+         companion_attraction_row.legs,
+         TransitRideEndpoint.OFFBOARDING ) )
+
+   return timeline_start_seconds, alight_node_id or entrance_node_id
 
 
 def _station_walk_node_ids(
@@ -199,13 +243,14 @@ def _plan_rides_for_anchors(
       *,
       day_loop: TransportationDayLoop,
       station_walk_nodes: dict[ str, str ],
+      start_node_id: str,
       entrance_node_id: str,
       animal_anchors: list[ ScheduledAnimalAnchor ],
       walk_graph: WalkGraph,
       adjacency: WalkGraphAdjacency,
 ) -> tuple[ list[ PlannedTransitRide | None ], PlannedTransitRide | None ]:
    rides_before_animals: list[ PlannedTransitRide | None ] = []
-   current_node_id = entrance_node_id
+   current_node_id = start_node_id
 
    for anchor in animal_anchors:
       rides_before_animals.append(
@@ -351,17 +396,17 @@ def _apply_timeline(
       animal_anchors: list[ ScheduledAnimalAnchor ],
       rides_before_animals: list[ PlannedTransitRide | None ],
       return_ride: PlannedTransitRide | None,
-      schedule_anchor_seconds: int,
+      timeline_start_seconds: int,
+      start_node_id: str,
       walk_graph: WalkGraph,
       adjacency: WalkGraphAdjacency,
       station_walk_nodes: dict[ str, str ],
-      entrance_node_id: str,
       operating_hours: OperatingHours | None ) -> None:
    segments: list[ tuple[ ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ] = []
    animal_updates: list[ tuple[ ItineraryAnimalRecord, ScheduleTimeKey, ScheduleTimeKey ] ] = []
    shift_seconds = 0
-   cursor_seconds = schedule_anchor_seconds
-   current_node_id = entrance_node_id
+   cursor_seconds = timeline_start_seconds
+   current_node_id = start_node_id
 
    for ride, anchor in zip( rides_before_animals, animal_anchors ):
       original_start = DateValues.time_value_in_seconds( anchor.animal.start_time )

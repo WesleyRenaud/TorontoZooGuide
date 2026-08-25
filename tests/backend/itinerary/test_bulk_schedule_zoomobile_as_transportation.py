@@ -418,3 +418,66 @@ def test_bulk_schedule_transit_zoomobile_respects_configured_operating_hours(
 
    if zoomobile.legs:
       assert _seconds( zoomobile.legs[ 0 ].start_time ) >= open_seconds
+
+
+def test_bulk_schedule_transit_zoomobile_starts_after_attraction_mode_trip(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( VISIT_DAY )
+   selected_exhibits = _selected_exhibits_for_regions( [ 'Canadian Domain' ] )
+
+   save = ItineraryCoordinator.set_itinerary(
+      date=VISIT_DATE,
+      arrival_time='09:00',
+      departure_time='18:00',
+      animals=itinerary_animals_for_exhibits(
+         selected_exhibits,
+         visit_date=VISIT_DATE ),
+      attractions=[],
+      transportations=[
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=True ),
+         ItineraryTransportationInput(
+            name='Zoomobile',
+            added_as_attraction=False ),
+      ],
+      guardians_talks=[],
+      wild_encounters=[],
+      selected_exhibits=selected_exhibits,
+      confirming_early_admission=True,
+   )
+
+   assert save.success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.itinerary is not None
+
+   attraction_zoomobile = next(
+      transportation
+      for transportation in result.itinerary.transportations
+      if (
+            transportation.name == 'Zoomobile'
+            and transportation.added_as_attraction is True
+      )
+   )
+   transit_zoomobile = _transit_zoomobile( result.itinerary )
+
+   assert attraction_zoomobile.start_time is not None
+   assert attraction_zoomobile.end_time is not None
+   assert attraction_zoomobile.legs
+   assert transit_zoomobile.bulk_transit_evaluated is True
+   assert transit_zoomobile.legs
+
+   attraction_end = _seconds( attraction_zoomobile.end_time )
+
+   for leg in transit_zoomobile.legs:
+      assert _seconds( leg.start_time ) >= attraction_end
+
+   transit_rides = _ride_board_alight_pairs( transit_zoomobile.legs )
+   assert any(
+      DOMAIN in { board, alight }
+      for board, alight in transit_rides
+   )
