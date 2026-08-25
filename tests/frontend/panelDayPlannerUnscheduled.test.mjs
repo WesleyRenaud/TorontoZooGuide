@@ -208,6 +208,15 @@ test.describe('itinerary day planner preview unscheduled', () => {
                   ],
                },
             ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: () => {
+                  throw new Error('pure transportations should not expose unschedule');
+               },
+               onRemoveItineraryItem: () => {},
+            },
          }
       );
       const text = allTextFor(planner);
@@ -221,6 +230,11 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.match(text, /Scheduled Items[\s\S]*Transportation \(1\)/);
       assert.match(allTextFor(zoomobileRow), /Main Station → Wildlife Health/);
       assert.match(allTextFor(zoomobileRow), /Time: ~2:30 PM/);
+      assert.deepEqual(
+         [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])]
+            .map((button) => button.textContent),
+         ['Remove']
+      );
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
    });
 
