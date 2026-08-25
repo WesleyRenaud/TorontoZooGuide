@@ -19,6 +19,7 @@ import {
    validation,
    viewingScopes,
 } from './strings/console.js';
+import { guestStatus } from './strings/guestStatus.js';
 import { itinerary } from './strings/itinerary.js';
 import {
    map,
@@ -36,6 +37,7 @@ export const APP_STRINGS = {
    confirm,
    site,
    animalsPage,
+   guestStatus,
    itinerary,
    help,
    loadErrors,
