@@ -6,7 +6,7 @@ function createEventTitleEl(event) {
    const titleEl = document.createElement('h4');
    titleEl.className = 'explore-update-title';
 
-   const name = event.name || APP_STRINGS.site.map.events.title;
+   const name = event.name || APP_STRINGS.map.events.title;
    const location = asTrimmedString(event.location);
    const link = asTrimmedString(event.link);
 

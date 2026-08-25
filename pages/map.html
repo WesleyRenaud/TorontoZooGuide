@@ -30,9 +30,9 @@
 
          <main class="map-layout">
             <!-- LEFT PANEL: Explore menu -->
-            <aside class="side-panel left" aria-label="{{ site.map.exploreMenuAria }}">
+            <aside class="side-panel left" aria-label="{{ map.exploreMenuAria }}">
                <div class="side-panel-header">
-                  <h2 class="side-panel-title">{{ site.map.exploreTitle }}</h2>
+                  <h2 class="side-panel-title">{{ map.exploreTitle }}</h2>
                </div>
 
                <div class="side-panel-body">
@@ -41,32 +41,32 @@
                   <div class="side-panel-toggle">
                      <label class="toggle-row">
                         <input id="showMapLabels" type="checkbox" checked>
-                        <span>{{ site.map.toggleLabels.showMapLabels }}</span>
+                        <span>{{ map.toggleLabels.showMapLabels }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeOffDisplayAnimals" type="checkbox">
-                        <span>{{ site.map.toggleLabels.includeOffDisplayAnimals }}</span>
+                        <span>{{ map.toggleLabels.includeOffDisplayAnimals }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedRestaurants" type="checkbox">
-                        <span>{{ site.map.toggleLabels.includeClosedRestaurants }}</span>
+                        <span>{{ map.toggleLabels.includeClosedRestaurants }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedRestrooms" type="checkbox">
-                        <span>{{ site.map.toggleLabels.includeClosedRestrooms }}</span>
+                        <span>{{ map.toggleLabels.includeClosedRestrooms }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedGiftShops" type="checkbox">
-                        <span>{{ site.map.toggleLabels.includeClosedGiftShops }}</span>
+                        <span>{{ map.toggleLabels.includeClosedGiftShops }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedAttractions" type="checkbox">
-                        <span>{{ site.map.toggleLabels.includeClosedAttractions }}</span>
+                        <span>{{ map.toggleLabels.includeClosedAttractions }}</span>
                      </label>
                   </div>
 
@@ -75,7 +75,7 @@
                   <div class="filter-wrapper">
                      <div class="multi-select" id="typeFilter">
                         <button class="multi-select-button" type="button">
-                           <span class="filter-label">{{ site.map.filterLabel }}</span>
+                           <span class="filter-label">{{ map.filterLabel }}</span>
                            <span class="selected-values"></span>
                         </button>
 
@@ -86,19 +86,19 @@
                            </label>
                            <label>
                               <input type="checkbox" value="pavilion">
-                              {{ site.map.filterTypes.pavilion }}
+                              {{ map.filterTypes.pavilion }}
                            </label>
                            <label>
                               <input type="checkbox" value="restaurant">
-                              {{ site.map.filterTypes.restaurant }}
+                              {{ map.filterTypes.restaurant }}
                            </label>
                            <label>
                               <input type="checkbox" value="restroom">
-                              {{ site.map.filterTypes.restroom }}
+                              {{ map.filterTypes.restroom }}
                            </label>
                            <label>
                               <input type="checkbox" value="giftShop">
-                              {{ site.map.filterTypes.giftShop }}
+                              {{ map.filterTypes.giftShop }}
                            </label>
                            <label>
                               <input type="checkbox" value="attraction">
@@ -106,7 +106,7 @@
                            </label>
                            <label>
                               <input type="checkbox" value="guardiansTalk">
-                              {{ site.map.filterTypes.guardiansTalk }}
+                              {{ map.filterTypes.guardiansTalk }}
                            </label>
                            <label>
                               <input type="checkbox" value="wildEncounter">
@@ -114,27 +114,27 @@
                            </label>
                            <label>
                               <input type="checkbox" value="drinkingFountain">
-                              {{ site.map.filterTypes.drinkingFountain }}
+                              {{ map.filterTypes.drinkingFountain }}
                            </label>
                            <label>
                               <input type="checkbox" value="defibrillator">
-                              {{ site.map.filterTypes.defibrillator }}
+                              {{ map.filterTypes.defibrillator }}
                            </label>
                            <label>
                               <input type="checkbox" value="emergencyIntercom">
-                              {{ site.map.filterTypes.emergencyIntercom }}
+                              {{ map.filterTypes.emergencyIntercom }}
                            </label>
                            <label>
                               <input type="checkbox" value="guestService">
-                              {{ site.map.filterTypes.guestService }}
+                              {{ map.filterTypes.guestService }}
                            </label>
                            <label>
                               <input type="checkbox" value="picnicSite">
-                              {{ site.map.filterTypes.picnicSite }}
+                              {{ map.filterTypes.picnicSite }}
                            </label>
                            <label>
                               <input type="checkbox" value="eventSite">
-                              {{ site.map.filterTypes.eventSite }}
+                              {{ map.filterTypes.eventSite }}
                            </label>
                         </div>
                      </div>
@@ -142,7 +142,7 @@
 
                   <!-- Search -->
                   <div class="side-panel-search">
-                     <label for="animalSearch" class="sr-only">{{ site.map.searchAnimals }}</label>
+                     <label for="animalSearch" class="sr-only">{{ map.searchAnimals }}</label>
                      <input
                         id="animalSearch"
                         class="animal-search"
@@ -166,7 +166,7 @@
                               aria-selected="true"
                               aria-controls="exploreUpdatesList"
                            >
-                              {{ site.map.updates.title }}
+                              {{ map.updates.title }}
                            </button>
                            <button
                               type="button"
@@ -176,7 +176,7 @@
                               aria-selected="false"
                               aria-controls="exploreUpdatesList"
                            >
-                              {{ site.map.events.title }}
+                              {{ map.events.title }}
                            </button>
                         </div>
                         <button
@@ -199,10 +199,10 @@
                <!-- Dropdown container -->
                <div class="map-controls">
                   <select id="mapPreset">
-                     <option value="" disabled hidden>{{ site.map.mapPresetPlaceholder }}</option>
-                     <option value="summer">{{ site.map.mapPresets.summer }}</option>
-                     <option value="winter">{{ site.map.mapPresets.winter }}</option>
-                     <option value="specific-day" selected>{{ site.map.mapPresets.specificDay }}</option>
+                     <option value="" disabled hidden>{{ map.mapPresetPlaceholder }}</option>
+                     <option value="summer">{{ map.mapPresets.summer }}</option>
+                     <option value="winter">{{ map.mapPresets.winter }}</option>
+                     <option value="specific-day" selected>{{ map.mapPresets.specificDay }}</option>
                   </select>
 
                   <!-- Date picker only relevant if "Specific Map" is selected -->
@@ -210,7 +210,7 @@
                </div>
 
                <div id="mapInner">
-                  <div id="zooMapMount" aria-label="{{ site.map.mapAria }}"></div>
+                  <div id="zooMapMount" aria-label="{{ map.mapAria }}"></div>
 
                   <!-- markers injected here -->
                </div>

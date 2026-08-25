@@ -1,11 +1,12 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export const pavilionRenderer = {
    key: 'pavilion',
 
    createCard(p, index) {
-      const name = p.name || 'Pavilion';
+      const name = p.name || APP_STRINGS.entityLabels.pavilion;
       const normalizedName = normalizeAssetKey(name);
 
       return createTooltipCard({
@@ -17,8 +18,8 @@ export const pavilionRenderer = {
          },
          title: { text: name },
          details: [
-            p.region ? `Region: ${p.region}` : '',
-            p.description ? `Description: ${p.description}` : '',
+            p.region ? APP_STRINGS.search.region(p.region) : '',
+            p.description ? APP_STRINGS.tooltips.description(p.description) : '',
          ],
       });
    },

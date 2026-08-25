@@ -7,6 +7,7 @@ import {
    getAnimalSubtitle,
 } from '../../itinerary/selectors/animalSelector/model.js';
 import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export const animalRenderer = {
    key: 'animal',
@@ -47,7 +48,10 @@ export const animalRenderer = {
          },
          details: [
             getAnimalSubtitle(a),
-            `Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)`,
+            APP_STRINGS.tooltips.likelihoodDetail(
+               getLikelihoodPhrase(a.likelihood),
+               a.likelihood
+            ),
          ],
       });
    },
