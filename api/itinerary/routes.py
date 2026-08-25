@@ -8,7 +8,7 @@ ITINERARY_ROUTES: dict[ str, PostRouteHandler ] = {
    '/set-itinerary': ItineraryController.set_itinerary,
    '/get-itinerary-date': ItineraryController.get_itinerary_date,
    '/schedule-itinerary-item': ItineraryController.schedule_itinerary_item,
-   '/bulk-schedule-animals': ItineraryController.bulk_schedule_animals,
+   '/bulk-schedule-itinerary': ItineraryController.bulk_schedule_itinerary,
    '/unschedule-all-itinerary-items': ItineraryController.unschedule_all_itinerary_items,
    '/unschedule-itinerary-item': ItineraryController.unschedule_itinerary_item,
    '/remove-item-from-itinerary': ItineraryController.remove_item_from_itinerary,

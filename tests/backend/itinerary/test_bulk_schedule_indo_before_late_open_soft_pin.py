@@ -138,7 +138,7 @@ def test_bulk_schedule_progressive_soft_pins_avoid_morning_dead_gaps(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success

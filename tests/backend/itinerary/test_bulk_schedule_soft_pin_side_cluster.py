@@ -122,7 +122,7 @@ def test_bulk_schedule_defers_kangaroo_after_south_and_tundra(
       kangaroo_end='6:00 PM',
       departure_time='18:00' )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    kangaroo = next(
@@ -166,7 +166,7 @@ def test_bulk_schedule_front_loads_kangaroo_before_south_when_hours_tight(
       kangaroo_end='12:30 PM',
       departure_time='18:00' )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    kangaroo = next(

@@ -64,11 +64,11 @@
     "is_suppressable": 0
   },
   {
-    "status": "bulkScheduleAnimalsNotEnoughTime",
+    "status": "bulkScheduleItineraryNotEnoughTime",
     "is_suppressable": 0
   },
   {
-    "status": "bulkScheduleAnimalsAlreadyScheduled",
+    "status": "bulkScheduleItineraryAlreadyScheduled",
     "is_suppressable": 0
   }
 ]

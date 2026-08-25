@@ -27,9 +27,9 @@ test('resolveItineraryErrorMessage maps itemAlreadyScheduled', () => {
    );
 });
 
-test('resolveItineraryErrorMessage maps bulkScheduleAnimalsAlreadyScheduled', () => {
+test('resolveItineraryErrorMessage maps bulkScheduleItineraryAlreadyScheduled', () => {
    assert.match(
-      resolveItineraryErrorMessage('bulkScheduleAnimalsAlreadyScheduled'),
+      resolveItineraryErrorMessage('bulkScheduleItineraryAlreadyScheduled'),
       /no items to schedule/i
    );
 });

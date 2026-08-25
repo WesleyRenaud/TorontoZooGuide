@@ -60,7 +60,7 @@ def test_bulk_schedule_covers_kangaroo_animal_when_walk_thru_is_packed(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -113,7 +113,7 @@ def test_unschedule_covering_attraction_restores_kangaroo_default_duration(
       confirming_early_admission=True,
    ).success
 
-   scheduled = ItineraryCoordinator.bulk_schedule_animals()
+   scheduled = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert scheduled.success
 

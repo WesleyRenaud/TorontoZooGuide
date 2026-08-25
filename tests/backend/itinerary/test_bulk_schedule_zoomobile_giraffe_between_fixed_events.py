@@ -83,7 +83,7 @@ def test_bulk_schedule_packs_zoomobile_after_tiny_tour_and_giraffe_after_warthog
 
    assert save.success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success

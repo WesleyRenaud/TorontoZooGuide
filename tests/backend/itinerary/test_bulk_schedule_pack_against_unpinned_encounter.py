@@ -60,7 +60,7 @@ def test_schedule_unpinned_afternoon_encounter_does_not_bulk_reschedule(
       wild_encounters=[],
    ).success
 
-   bulk_result = ItineraryCoordinator.bulk_schedule_animals()
+   bulk_result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert bulk_result.success
 
@@ -86,7 +86,7 @@ def test_schedule_unpinned_afternoon_encounter_does_not_bulk_reschedule(
       if animal.start_time is not None and animal.end_time is not None
    ] == morning_animal_times
 
-   rebuild_result = ItineraryCoordinator.bulk_schedule_animals()
+   rebuild_result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert rebuild_result.success
    assert rebuild_result.itinerary is not None

@@ -1,6 +1,6 @@
 import {
    acceptItineraryRequest,
-   bulkScheduleAnimalsRequest,
+   bulkScheduleItineraryRequest,
    clearItineraryRequest,
    getItineraryDateRequest,
    getItineraryRequest,
@@ -86,12 +86,12 @@ export async function clearItinerary() {
    return result;
 }
 
-export async function bulkScheduleAnimals({
+export async function bulkScheduleItinerary({
    confirmingFixedTimeItemLongWait = false,
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await bulkScheduleAnimalsRequest(temp, {
+   const result = await bulkScheduleItineraryRequest(temp, {
       confirmingFixedTimeItemLongWait,
    });
 

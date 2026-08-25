@@ -8,7 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary import empty_itinerary
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.itinerary.warnings.wild_encounter_long_wait_warning import isolated_wild_encounters_from_itinerary
 from api.models import Animal
 from api.models import WildEncounter
@@ -282,7 +282,7 @@ def test_bulk_schedule_skips_long_wait_warning_for_already_saved_encounters(
       LION_KEY,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

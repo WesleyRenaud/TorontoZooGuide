@@ -125,8 +125,8 @@ export function resolveItineraryErrorMessage(
       return strings.scheduleWindowUnavailable;
    }
 
-   if (errorType === itineraryErrorTypes?.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED) {
-      return strings.bulkScheduleAnimalsAlreadyScheduled;
+   if (errorType === itineraryErrorTypes?.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED) {
+      return strings.bulkScheduleItineraryAlreadyScheduled;
    }
 
    if (errorType === itineraryErrorTypes?.UNSCHEDULE_ALL_NOTHING_SCHEDULED) {

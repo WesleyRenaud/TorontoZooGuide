@@ -194,7 +194,7 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
             last_admission_time='09:35',
             close_time='09:35',
          ) ):
-      result = ItineraryCoordinator.bulk_schedule_animals()
+      result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    walk_route = build_itinerary_walk_route( result.itinerary )
@@ -392,7 +392,7 @@ def test_build_itinerary_walk_route_skips_walk_during_zoomobile_rides(
       selected_exhibits=domain_exhibits,
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    itinerary = ItineraryCoordinator.get_itinerary()
    walk_route = build_itinerary_walk_route( itinerary )

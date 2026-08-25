@@ -12,7 +12,7 @@ from api.connection import open_connection
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -31,10 +31,10 @@ def _bulk_schedule_with_five_minute_zoo_hours() -> ItinerarySaveResult:
    with patch(
          'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
          return_value=FIVE_MINUTE_ZOO_HOURS ):
-      return ItineraryCoordinator.bulk_schedule_animals()
+      return ItineraryCoordinator.bulk_schedule_itinerary()
 
 
-def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
+def test_bulk_schedule_itinerary_returns_issue_when_day_runs_out(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -58,7 +58,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    assert len( result.reasons ) == 1
    assert (
       result.reasons[ 0 ].code
-      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+      == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert [ item.name for item in result.reasons[ 0 ].items ] == [
       'African Penguin',
       'African Lion',
@@ -84,7 +84,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    assert lion_row.end_time is None
 
 
-def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
+def test_bulk_schedule_itinerary_does_not_set_departure_when_not_enough_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -109,11 +109,11 @@ def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
    assert result.success
    assert (
       result.reasons[ 0 ].code
-      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+      == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert result.itinerary.departure_time is None
 
 
-def test_bulk_schedule_animals_does_not_set_arrival_when_not_enough_time(
+def test_bulk_schedule_itinerary_does_not_set_arrival_when_not_enough_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    """Incomplete bulk must not seed arrival to zoo open / first packed item."""
@@ -139,7 +139,7 @@ def test_bulk_schedule_animals_does_not_set_arrival_when_not_enough_time(
    assert result.success
    assert (
       result.reasons[ 0 ].code
-      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+      == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert any(
       animal.start_time is not None
       for animal in result.itinerary.animals )
@@ -147,7 +147,7 @@ def test_bulk_schedule_animals_does_not_set_arrival_when_not_enough_time(
    assert result.itinerary.departure_time is None
 
 
-def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
+def test_bulk_schedule_itinerary_persists_partial_schedule_after_connection_close(
       db: DbControllers,
       db_path: Path,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
@@ -192,7 +192,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
    assert lion_row.end_time is None
 
 
-def test_bulk_schedule_animals_packs_through_zoo_close_despite_early_departure(
+def test_bulk_schedule_itinerary_packs_through_zoo_close_despite_early_departure(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -211,7 +211,7 @@ def test_bulk_schedule_animals_packs_through_zoo_close_despite_early_departure(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.reasons == []

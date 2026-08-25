@@ -10,7 +10,7 @@ from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
 
 
-def build_bulk_schedule_animals_not_enough_time_issue(
+def build_bulk_schedule_itinerary_not_enough_time_issue(
       stops: list[ LoopScheduleStop ] ) -> ItineraryResultReason:
    issue_items: list[ ItinerarySaveIssueItem ] = []
 
@@ -47,5 +47,5 @@ def build_bulk_schedule_animals_not_enough_time_issue(
          ) )
 
    return ItineraryResultReason(
-      code=ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME,
+      code=ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME,
       items=issue_items )

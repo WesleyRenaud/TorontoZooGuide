@@ -130,7 +130,7 @@ def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
       ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
       ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
       ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-      ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
    ]
 
    assert is_itinerary_status_suppressable(
@@ -144,7 +144,7 @@ def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
       ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
    assert not is_itinerary_status_suppressable(
       db.conn,
-      ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED )
+      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED )
 
    for error_type in non_suppressable_error_types:
       suppress_itinerary_status( db.conn, error_type )

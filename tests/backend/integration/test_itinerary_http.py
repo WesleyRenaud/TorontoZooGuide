@@ -362,7 +362,7 @@ def test_date_change_adjusts_arrival_time_via_http(
    ]
 
 
-def test_bulk_schedule_animals_via_http(
+def test_bulk_schedule_itinerary_via_http(
       integration_db: Path,
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
@@ -387,7 +387,7 @@ def test_bulk_schedule_animals_via_http(
    assert status == 200
    assert set_response[ 'status' ] == 'success'
 
-   status, bulk_response = post_route( '/bulk-schedule-animals', {} )
+   status, bulk_response = post_route( '/bulk-schedule-itinerary', {} )
 
    assert status == 200
    assert bulk_response[ 'status' ] == 'success'

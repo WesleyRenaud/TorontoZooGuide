@@ -717,7 +717,7 @@ def test_bulk_schedule_animal_then_zoomobile_includes_travel(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    lion = result.itinerary.animals[ 0 ]
    zoomobile = result.itinerary.transportations[ 0 ]
    walk_graph = load_walk_graph()
@@ -775,7 +775,7 @@ def test_bulk_schedule_keeps_arrival_at_gate_while_delaying_first_animal(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    expected_start = schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS )
 
    assert result.success
@@ -798,7 +798,7 @@ def test_bulk_schedule_seeds_unset_arrival_to_zoo_open_not_first_animal(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary.arrival_time == '9:30 AM'
@@ -825,7 +825,7 @@ def test_bulk_schedule_places_second_animal_after_inter_stop_travel(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    cheetah = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'Cheetah' )
@@ -863,7 +863,7 @@ def test_bulk_schedule_persists_floored_travel_minutes_on_walk_legs(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    walk_graph = load_walk_graph()
    path = shortest_path(
       walk_graph,
@@ -896,7 +896,7 @@ def test_bulk_schedule_does_not_pull_arrival_before_zoo_open(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary.arrival_time == '9:30 AM'
@@ -931,7 +931,7 @@ def test_bulk_and_single_schedule_agree_on_first_animal_start(
    ).success
    assert ItineraryCoordinator.get_itinerary().animals[ 0 ].start_time is None
 
-   bulk = ItineraryCoordinator.bulk_schedule_animals()
+   bulk = ItineraryCoordinator.bulk_schedule_itinerary()
    assert bulk.success
    assert bulk.itinerary.animals[ 0 ].start_time == expected_start
    assert bulk.itinerary.animals[ 0 ].start_time == single.itinerary.animals[ 0 ].start_time
@@ -1005,7 +1005,7 @@ def test_early_admission_bulk_delays_from_nine_am_anchor(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary.arrival_time == '9:00 AM'
@@ -1063,7 +1063,7 @@ def test_bulk_schedule_three_animals_keeps_travel_gaps_along_chain(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    scheduled = sorted(
       [
          animal

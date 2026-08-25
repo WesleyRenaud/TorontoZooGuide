@@ -54,7 +54,7 @@ def test_remove_last_wild_encounter_sets_departure_to_previous_last_end(
       wild_encounters=[],
    ).success
 
-   bulk_result = ItineraryCoordinator.bulk_schedule_animals()
+   bulk_result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert bulk_result.success
    assert bulk_result.reasons == []

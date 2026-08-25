@@ -24,7 +24,7 @@ from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResu
 from ...request_connection import get_connection
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
-from ..scheduling.bulk import bulk_schedule_animals as bulk_schedule_animals_logic
+from ..scheduling.bulk import bulk_schedule_itinerary as bulk_schedule_itinerary_logic
 from ..scheduling.bulk.animals_for_bulk_schedule import stops_for_bulk_schedule
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
@@ -179,7 +179,7 @@ class ItineraryCoordinator():
 
 
    @classmethod
-   def bulk_schedule_animals(
+   def bulk_schedule_itinerary(
          cls,
          visit_date_temp: float | None = None,
          *,
@@ -187,7 +187,7 @@ class ItineraryCoordinator():
       conn = get_connection()
       saved_itinerary = fetch_saved_itinerary( conn )
 
-      return bulk_schedule_animals_logic.bulk_schedule_animals(
+      return bulk_schedule_itinerary_logic.bulk_schedule_itinerary(
          conn,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,

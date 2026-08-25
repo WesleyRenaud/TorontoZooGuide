@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import {
    acceptItinerary,
-   bulkScheduleAnimals,
+   bulkScheduleItinerary,
    clearItinerary,
    getItinerary,
    getZooHours,
@@ -95,13 +95,13 @@ test('clearItinerary dispatches cleared itinerary events', async () => {
    assert.deepEqual(result, { success: true });
 });
 
-test('bulkScheduleAnimals returns normalized itinerary and issues', async () => {
+test('bulkScheduleItinerary returns normalized itinerary and issues', async () => {
    globalThis.fetch = async (url, options) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
       }
 
-      if (url === '/bulk-schedule-animals') {
+      if (url === '/bulk-schedule-itinerary') {
          assert.deepEqual(JSON.parse(options.body), {
             temp: null,
             confirmingFixedTimeItemLongWait: false,
@@ -115,17 +115,17 @@ test('bulkScheduleAnimals returns normalized itinerary and issues', async () => 
                guardians_talks: [],
                wild_encounters: [],
             },
-            reasons: [{ code: 'bulkScheduleAnimalsNotEnoughTime', items: [] }],
+            reasons: [{ code: 'bulkScheduleItineraryNotEnoughTime', items: [] }],
          });
       }
 
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await bulkScheduleAnimals();
+   const result = await bulkScheduleItinerary();
 
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
-   assert.equal(result.issues[0].code, 'bulkScheduleAnimalsNotEnoughTime');
+   assert.equal(result.issues[0].code, 'bulkScheduleItineraryNotEnoughTime');
 });
 
 test('acceptItinerary keeps selected animals and attractions', async () => {

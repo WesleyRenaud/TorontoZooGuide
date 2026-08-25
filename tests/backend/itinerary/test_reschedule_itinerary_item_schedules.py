@@ -10,7 +10,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.itinerary.scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -91,7 +91,7 @@ def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
             exhibit='Africa Savanna' ) ),
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
 
@@ -131,7 +131,7 @@ def test_bulk_schedule_schedules_animals_and_attractions_and_clears_events(
    ).success
    assert schedule_itinerary_item( 'lunch', '' ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary.events == []

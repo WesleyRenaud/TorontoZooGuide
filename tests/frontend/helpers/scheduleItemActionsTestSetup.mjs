@@ -18,7 +18,7 @@ export const MOCK_ERROR_TYPES = Object.freeze({
    GUARDIANS_TALK_WITHOUT_ANIMAL: 'guardiansTalkWithoutAnimal',
    ATTRACTION_WITHOUT_ANIMAL: 'attractionWithoutAnimal',
    WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
-   BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED: 'bulkScheduleAnimalsAlreadyScheduled',
+   BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED: 'bulkScheduleItineraryAlreadyScheduled',
    UNSCHEDULE_ALL_NOTHING_SCHEDULED: 'unscheduleAllNothingScheduled',
 });
 

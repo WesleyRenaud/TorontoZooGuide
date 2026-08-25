@@ -66,7 +66,7 @@ import './actionsBar.test.mjs';
 import './itineraryPanelContent.test.mjs';
 import './scheduleItemSearch.test.mjs';
 import './scheduleItemEventLabels.test.mjs';
-import './bulkScheduleAnimalsNotEnoughTimeConfirmation.test.mjs';
+import './bulkScheduleItineraryNotEnoughTimeConfirmation.test.mjs';
 import './dayPlannerPlanActions.test.mjs';
 import './dayPlannerActionFeedback.test.mjs';
 import './scheduleItemButton.test.mjs';

@@ -39,7 +39,7 @@ def _set_giraffe_encounter_schedule( *, start_time: str = '11:00' ) -> None:
    )
 
 
-def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
+def test_bulk_schedule_itinerary_places_south_loop_last_before_giraffe_encounter(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -61,7 +61,7 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -97,7 +97,7 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
    assert cheetah_end_seconds == encounter_start_seconds
 
 
-def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_encounter_window(
+def test_bulk_schedule_itinerary_schedules_only_fitting_south_loop_in_short_pre_encounter_window(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -118,7 +118,7 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
       ],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -151,7 +151,7 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
    assert cheetah_end_seconds <= encounter_start_seconds
 
 
-def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_encounter(
+def test_bulk_schedule_itinerary_packs_prefix_and_terminal_loops_before_giraffe_encounter(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -172,7 +172,7 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
       ],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.reasons == []

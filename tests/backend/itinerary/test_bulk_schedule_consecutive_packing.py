@@ -85,7 +85,7 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -158,7 +158,7 @@ def test_bulk_schedule_keeps_arrival_after_pinned_talk_removed_and_rescheduled(
    _set_saturday_zebra_talk_schedule()
    _schedule_africa_savanna_with_zebra_talk()
 
-   with_talk = ItineraryCoordinator.bulk_schedule_animals()
+   with_talk = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert with_talk.success
    assert with_talk.adjustments == []
@@ -170,7 +170,7 @@ def test_bulk_schedule_keeps_arrival_after_pinned_talk_removed_and_rescheduled(
       key=guardians_talk_wire( ZEBRA_TALK, start_time='11:00' ),
    ).success
 
-   without_talk = ItineraryCoordinator.bulk_schedule_animals()
+   without_talk = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert without_talk.success
    assert without_talk.itinerary.arrival_time == (

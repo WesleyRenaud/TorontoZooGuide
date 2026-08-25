@@ -96,7 +96,7 @@ def test_bulk_schedule_reserves_before_otter_talk_for_americas_pavilion(
       confirming_fixed_time_item_long_wait=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success
@@ -163,7 +163,7 @@ def test_adding_otter_talk_after_bulk_keeps_americas_pavilion_scheduled(
       confirming_early_admission=True,
    ).success
 
-   bulk = ItineraryCoordinator.bulk_schedule_animals()
+   bulk = ItineraryCoordinator.bulk_schedule_itinerary()
    assert bulk.success
    assert bulk.status == ItineraryErrorType.SUCCESS
 

@@ -82,7 +82,7 @@ def _set_midday_rhino_encounter_schedule() -> None:
    )
 
 
-def test_bulk_schedule_animals_keeps_master_route_loop_on_one_side_of_wild_encounter(
+def test_bulk_schedule_itinerary_keeps_master_route_loop_on_one_side_of_wild_encounter(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -105,7 +105,7 @@ def test_bulk_schedule_animals_keeps_master_route_loop_on_one_side_of_wild_encou
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

@@ -420,11 +420,11 @@ export async function suppressItineraryWarningRequest(warningType) {
    return normalizeItineraryResult(response, { includeItinerary: false });
 }
 
-export async function bulkScheduleAnimalsRequest(
+export async function bulkScheduleItineraryRequest(
    temp,
    { confirmingFixedTimeItemLongWait = false } = {}
 ) {
-   const response = await postJson('/bulk-schedule-animals', {
+   const response = await postJson('/bulk-schedule-itinerary', {
       temp,
       confirmingFixedTimeItemLongWait,
    });
