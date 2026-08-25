@@ -180,7 +180,7 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -274,7 +274,7 @@ def test_bulk_schedule_does_not_overlap_loop_pin_wild_encounter(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

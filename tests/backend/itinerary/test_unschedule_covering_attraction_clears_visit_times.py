@@ -42,7 +42,7 @@ def test_unschedule_covering_attraction_clears_visit_times_when_attraction_left_
       selected_exhibits=exhibits,
    ).success
 
-   scheduled = ItineraryCoordinator.bulk_schedule_animals()
+   scheduled = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert scheduled.success
    assert scheduled.itinerary.arrival_time is not None

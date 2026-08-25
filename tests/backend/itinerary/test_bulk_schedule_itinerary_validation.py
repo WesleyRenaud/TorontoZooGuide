@@ -10,12 +10,12 @@ from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 
-def test_bulk_schedule_animals_with_no_itinerary_returns_nothing_to_schedule(
+def test_bulk_schedule_itinerary_with_no_itinerary_returns_nothing_to_schedule(
       db: DbControllers ) -> None:
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert not result.success
-   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED
 
 
 def test_unschedule_all_itinerary_items_with_no_itinerary_returns_nothing_to_unschedule(
@@ -26,7 +26,7 @@ def test_unschedule_all_itinerary_items_with_no_itinerary_returns_nothing_to_uns
    assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
 
 
-def test_bulk_schedule_animals_with_no_unscheduled_animals(
+def test_bulk_schedule_itinerary_with_no_unscheduled_animals(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -39,10 +39,10 @@ def test_bulk_schedule_animals_with_no_unscheduled_animals(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert not result.success
-   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED
    assert result.reasons == []
    assert result.itinerary.animals == []
 
@@ -66,7 +66,7 @@ def test_bulk_schedule_succeeds_when_itinerary_only_has_fixed_time_items(
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

@@ -158,8 +158,8 @@ test.describe('itineraryPanelContent', () => {
       const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
-            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -178,7 +178,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+         message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
       }]);
    });
 
@@ -224,7 +224,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
             issues: [{
-               type: 'bulkScheduleAnimalsNotEnoughTime',
+               type: 'bulkScheduleItineraryNotEnoughTime',
                items: [],
             }],
          }),
@@ -245,7 +245,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.confirmation.bulkScheduleAnimalsNotEnoughTimeMessage,
+         message: APP_STRINGS.itinerary.confirmation.bulkScheduleItineraryNotEnoughTimeMessage,
       }]);
    });
 
@@ -381,8 +381,8 @@ test.describe('itineraryPanelContent', () => {
       const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
-            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -412,7 +412,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+         message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
       }]);
    });
 

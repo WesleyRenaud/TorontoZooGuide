@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from ..bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from ...data_access.saved_itinerary import SavedItinerary
 
 

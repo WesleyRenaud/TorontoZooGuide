@@ -144,7 +144,7 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -273,7 +273,7 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -333,7 +333,7 @@ def test_bulk_schedule_covers_african_lion_animal_when_talk_is_woven(
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -379,7 +379,7 @@ def test_unschedule_woven_talk_restores_enclosure_at_default_duration_and_shifts
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   scheduled = ItineraryCoordinator.bulk_schedule_animals()
+   scheduled = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert scheduled.success
 
@@ -467,7 +467,7 @@ def test_bulk_schedule_keeps_rainforest_loop_contiguous_around_turtle_talk(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success

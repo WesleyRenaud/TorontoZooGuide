@@ -3,7 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import {
    acceptItineraryRequest,
-   bulkScheduleAnimalsRequest,
+   bulkScheduleItineraryRequest,
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
@@ -669,7 +669,7 @@ test('normalizes schedule itinerary item response', async () => {
 
 test('normalizes bulk schedule animals response', async () => {
    globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/bulk-schedule-animals');
+      assert.equal(url, '/bulk-schedule-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
          temp: true,
          confirmingFixedTimeItemLongWait: false,
@@ -679,7 +679,7 @@ test('normalizes bulk schedule animals response', async () => {
          status: 'success',
          reasons: [
             {
-               code: 'bulkScheduleAnimalsNotEnoughTime',
+               code: 'bulkScheduleItineraryNotEnoughTime',
                items: [
                   {
                      name: 'African Lion',
@@ -710,11 +710,11 @@ test('normalizes bulk schedule animals response', async () => {
       });
    };
 
-   const result = await bulkScheduleAnimalsRequest(true);
+   const result = await bulkScheduleItineraryRequest(true);
 
    assert.equal(result.status, 'success');
    assert.equal(result.reasons.length, 1);
-   assert.equal(result.reasons[0].code, 'bulkScheduleAnimalsNotEnoughTime');
+   assert.equal(result.reasons[0].code, 'bulkScheduleItineraryNotEnoughTime');
    assert.equal(result.itinerary.animals.length, 1);
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
 });

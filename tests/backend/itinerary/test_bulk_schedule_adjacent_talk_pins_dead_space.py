@@ -188,7 +188,7 @@ def test_adjacent_zebra_then_camel_anchors_savanna_loop_before_zebra(
       confirming_guardians_talk_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

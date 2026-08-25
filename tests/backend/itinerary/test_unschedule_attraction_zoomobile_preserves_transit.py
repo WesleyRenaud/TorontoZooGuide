@@ -62,7 +62,7 @@ def test_unschedule_attraction_zoomobile_preserves_transit_ride_legs(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    itinerary_before = ItineraryCoordinator.get_itinerary()
    attraction_before = next(
@@ -146,7 +146,7 @@ def test_unschedule_attraction_zoomobile_via_transportation_key_preserves_transi
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    transit_before = next(
       transportation

@@ -4,7 +4,7 @@ from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_ta
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 

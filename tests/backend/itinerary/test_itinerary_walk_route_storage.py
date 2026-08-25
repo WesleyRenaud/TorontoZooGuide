@@ -49,7 +49,7 @@ def test_schedule_itinerary_item_persists_walk_route(
    assert walk_route_matches( expected_route, persisted_route )
 
 
-def test_bulk_schedule_animals_persists_walk_route(
+def test_bulk_schedule_itinerary_persists_walk_route(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -63,7 +63,7 @@ def test_bulk_schedule_animals_persists_walk_route(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

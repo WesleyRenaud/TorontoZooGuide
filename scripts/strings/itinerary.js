@@ -172,7 +172,7 @@ export const itinerary = {
          'It will no longer appear in your day plan or itinerary lists. Your remaining items will be rescheduled without it. You can add it again later from the itinerary builder.'
       ),
       animalMayBeOffDisplay: 'Animal May Be Off Display',
-      bulkScheduleAnimalsNotEnoughTimeMessage: 'There is not enough time left in your day to schedule all unscheduled animals. Some animals could not be added to your day plan, but they are still on your itinerary.',
+      bulkScheduleItineraryNotEnoughTimeMessage: 'There is not enough time left in your day to schedule all unscheduled animals. Some animals could not be added to your day plan, but they are still on your itinerary.',
    },
    emptyText: {
       animals: 'No animals found.',
@@ -215,7 +215,7 @@ export const itinerary = {
       scheduleWindowUnavailable: (
          'Operating hours are unavailable for this visit date.'
       ),
-      bulkScheduleAnimalsAlreadyScheduled: (
+      bulkScheduleItineraryAlreadyScheduled: (
          'There were no items to schedule.'
       ),
       unscheduleAllNothingScheduled: 'There were no items to unschedule.',

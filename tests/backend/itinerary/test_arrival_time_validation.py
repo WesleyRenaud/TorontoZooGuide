@@ -4,7 +4,7 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LI
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from api.itinerary.validation.itinerary_schedule_time_order_validation import departure_follows_arrival
 from api.shared.calendar_dates import DateValues

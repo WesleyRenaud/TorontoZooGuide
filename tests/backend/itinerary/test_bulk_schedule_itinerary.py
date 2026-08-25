@@ -7,7 +7,7 @@ from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_trav
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import has_itinerary_schedule_times
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -50,7 +50,7 @@ def _travel_seconds_between_animals(
       to_node_id )
 
 
-def test_bulk_schedule_animals_schedules_animals_in_travel_efficient_order(
+def test_bulk_schedule_itinerary_schedules_animals_in_travel_efficient_order(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -67,7 +67,7 @@ def test_bulk_schedule_animals_schedules_animals_in_travel_efficient_order(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -102,7 +102,7 @@ def test_bulk_schedule_animals_schedules_animals_in_travel_efficient_order(
       result.itinerary )
 
 
-def test_bulk_schedule_animals_sets_arrival_time_to_zoo_open_when_unset(
+def test_bulk_schedule_itinerary_sets_arrival_time_to_zoo_open_when_unset(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -119,7 +119,7 @@ def test_bulk_schedule_animals_sets_arrival_time_to_zoo_open_when_unset(
    assert itinerary_before.arrival_time is None
    assert itinerary_before.departure_time is None
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    expected_start = schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS )
    expected_end = schedule_time_after_seconds( expected_start, 8 * 60 )
 
@@ -131,7 +131,7 @@ def test_bulk_schedule_animals_sets_arrival_time_to_zoo_open_when_unset(
       result.itinerary )
 
 
-def test_bulk_schedule_animals_uses_early_admission_when_warning_suppressed(
+def test_bulk_schedule_itinerary_uses_early_admission_when_warning_suppressed(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -146,7 +146,7 @@ def test_bulk_schedule_animals_uses_early_admission_when_warning_suppressed(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    expected_start = schedule_time_after_seconds( '9:00 AM', LION_TRAVEL_SECONDS )
    expected_end = schedule_time_after_seconds( expected_start, 8 * 60 )
 
@@ -158,7 +158,7 @@ def test_bulk_schedule_animals_uses_early_admission_when_warning_suppressed(
       result.itinerary )
 
 
-def test_bulk_schedule_animals_sets_departure_to_last_animal_end_when_departure_was_set(
+def test_bulk_schedule_itinerary_sets_departure_to_last_animal_end_when_departure_was_set(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -173,7 +173,7 @@ def test_bulk_schedule_animals_sets_departure_to_last_animal_end_when_departure_
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
    expected_end = schedule_time_after_seconds(
       schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS ),
       8 * 60 )
@@ -185,7 +185,7 @@ def test_bulk_schedule_animals_sets_departure_to_last_animal_end_when_departure_
       result.itinerary )
 
 
-def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
+def test_bulk_schedule_itinerary_rebuild_reschedules_already_scheduled_animals(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -208,7 +208,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
       key=LION_KEY,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.reasons == []
@@ -246,7 +246,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
       result.itinerary )
 
 
-def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_scheduled(
+def test_bulk_schedule_itinerary_rebuild_reschedules_when_all_animals_are_already_scheduled(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -273,7 +273,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_
       key=PENGUIN_KEY,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -285,7 +285,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_
    } == { 'African Lion', 'African Penguin' }
 
 
-def test_bulk_schedule_animals_preserves_custom_animal_duration(
+def test_bulk_schedule_itinerary_preserves_custom_animal_duration(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -319,7 +319,7 @@ def test_bulk_schedule_animals_preserves_custom_animal_duration(
    )
    assert custom_duration_seconds == 20 * 60
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
 

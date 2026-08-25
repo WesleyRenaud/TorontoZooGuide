@@ -48,7 +48,7 @@ from ....types import Connection
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
+from ...warnings.bulk_schedule_itinerary_warning import build_bulk_schedule_itinerary_not_enough_time_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
@@ -69,7 +69,7 @@ def itinerary_has_items_to_rebuild(
       or saved_itinerary.wild_encounter_rows )
 
 
-def bulk_schedule_animals(
+def bulk_schedule_itinerary(
       conn: Connection,
       *,
       animal_coordinator: type[ AnimalCoordinator ],
@@ -98,7 +98,7 @@ def bulk_schedule_animals(
          saved_itinerary ):
       return build_save_result(
          conn,
-         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+         ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
          **itinerary_context )
 
    prepared_window = prepare_zoo_hours_schedule_window(
@@ -250,7 +250,7 @@ def bulk_schedule_animals(
 
    if remaining_stops:
       reasons = [
-         build_bulk_schedule_animals_not_enough_time_issue(
+         build_bulk_schedule_itinerary_not_enough_time_issue(
             remaining_stops ),
       ]
    sync_visit_times_to_scheduled_endpoints_if_complete(

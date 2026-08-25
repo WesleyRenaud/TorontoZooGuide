@@ -71,7 +71,7 @@ def test_date_change_dropping_talk_packs_caribou_with_enclosure_duration(
       wild_encounters=[],
       confirming_fixed_time_item_long_wait=True,
    ).success
-   assert ItineraryCoordinator.bulk_schedule_animals(
+   assert ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True ).success
 
    saturday = ItineraryCoordinator.get_itinerary()
@@ -138,7 +138,7 @@ def test_date_change_swaps_outdoor_aldabra_for_indoor_and_closes_schedule_hole(
       wild_encounters=[],
       visit_date_temp=28,
    ).success
-   assert ItineraryCoordinator.bulk_schedule_animals(
+   assert ItineraryCoordinator.bulk_schedule_itinerary(
       visit_date_temp=28 ).success
 
    warm_day = ItineraryCoordinator.get_itinerary( visit_date_temp=28 )

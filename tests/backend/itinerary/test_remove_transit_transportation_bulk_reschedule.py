@@ -59,7 +59,7 @@ def test_remove_transit_zoomobile_bulk_reschedules_without_rides(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    itinerary_before = ItineraryCoordinator.get_itinerary()
    transit_before = next(
@@ -139,7 +139,7 @@ def test_remove_attraction_zoomobile_keeps_transit_rides(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    transit_before = next(
       transportation

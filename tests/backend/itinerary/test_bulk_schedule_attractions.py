@@ -17,7 +17,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule
 from api.itinerary.scheduling.bulk.loop_schedule_unit import walk_node_id_for_loop_schedule_stop
 from api.itinerary.scheduling.bulk.sort_stops_by_master_route import sort_stops_by_master_route
 from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
-from api.itinerary.warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
+from api.itinerary.warnings.bulk_schedule_itinerary_warning import build_bulk_schedule_itinerary_not_enough_time_issue
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -49,7 +49,7 @@ def test_bulk_schedule_packs_attraction_only_loop(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -81,7 +81,7 @@ def test_bulk_schedule_covers_kangaroo_when_walk_thru_is_selected(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    kangaroo = next(
@@ -118,7 +118,7 @@ def test_bulk_schedule_repacks_attractions_after_clear(
       wild_encounters=[],
    ).success
 
-   first = ItineraryCoordinator.bulk_schedule_animals()
+   first = ItineraryCoordinator.bulk_schedule_itinerary()
    assert first.success
    carousel_before = next(
       attraction
@@ -126,7 +126,7 @@ def test_bulk_schedule_repacks_attractions_after_clear(
       if attraction.name == CAROUSEL )
    assert carousel_before.start_time is not None
 
-   second = ItineraryCoordinator.bulk_schedule_animals()
+   second = ItineraryCoordinator.bulk_schedule_itinerary()
    assert second.success
    carousel_after = next(
       attraction
@@ -201,7 +201,7 @@ def test_sort_stops_by_master_route_orders_unmapped_attractions_by_name() -> Non
 
 
 def test_build_bulk_schedule_not_enough_time_issue_includes_attractions() -> None:
-   issue = build_bulk_schedule_animals_not_enough_time_issue(
+   issue = build_bulk_schedule_itinerary_not_enough_time_issue(
       [
          ItineraryAnimalRecord(
             species='African Lion',
@@ -214,7 +214,7 @@ def test_build_bulk_schedule_not_enough_time_issue_includes_attractions() -> Non
             new_likelihood=100 ),
       ] )
 
-   assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME
+   assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
    assert [
       ( item.name, item.item_type, item.location )
       for item in issue.items

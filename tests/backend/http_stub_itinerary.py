@@ -18,8 +18,8 @@ class ItineraryStubMixin:
          return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
-   def bulk_schedule_animals( self, **kwargs: Any ) -> ItinerarySaveResult:
-         self.calls.append( ( 'bulk_schedule_animals', kwargs ) )
+   def bulk_schedule_itinerary( self, **kwargs: Any ) -> ItinerarySaveResult:
+         self.calls.append( ( 'bulk_schedule_itinerary', kwargs ) )
          return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 

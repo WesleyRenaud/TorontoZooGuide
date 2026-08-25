@@ -151,7 +151,7 @@ def test_bulk_schedule_domain_only_uses_zoomobile_to_cut_long_walk(
    freeze_database_today( VISIT_DAY )
    _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -188,7 +188,7 @@ def test_departure_after_return_to_main_uses_alighting_station_walk(
    freeze_database_today( VISIT_DAY )
    _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -231,7 +231,7 @@ def test_bulk_schedule_zoomobile_does_not_pull_arrival_before_zoo_open(
 
    assert save.success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -247,7 +247,7 @@ def test_bulk_schedule_domain_and_tundra_inserts_rides_for_long_transfers(
    _save_transit_zoomobile_itinerary(
       region_names=[ 'Canadian Domain', 'Tundra Trek' ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -277,7 +277,7 @@ def test_bulk_schedule_africa_and_domain_rides_into_south_cluster(
    _save_transit_zoomobile_itinerary(
       region_names=[ 'Africa', 'Canadian Domain' ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -310,7 +310,7 @@ def test_bulk_schedule_multi_region_uses_zoomobile_for_long_hops(
          'Tundra Trek',
       ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -373,7 +373,7 @@ def test_bulk_schedule_marks_transit_zoomobile_evaluated_when_no_rides_used(
       lambda **_kwargs: ( [], None ),
    )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -399,7 +399,7 @@ def test_bulk_schedule_transit_zoomobile_respects_configured_operating_hours(
 
    _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -450,7 +450,7 @@ def test_bulk_schedule_transit_zoomobile_starts_after_attraction_mode_trip(
 
    assert save.success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.itinerary is not None

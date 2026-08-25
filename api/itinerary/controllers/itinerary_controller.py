@@ -137,14 +137,14 @@ class ItineraryController():
 
 
    @staticmethod
-   def bulk_schedule_animals( handler: JsonRequestHandler ) -> None:
+   def bulk_schedule_itinerary( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
       temp = data.get( 'temp' )
       confirming_fixed_time_item_long_wait = bool(
          data.get( 'confirmingFixedTimeItemLongWait' ) )
 
-      save_result = ItineraryCoordinator.bulk_schedule_animals(
+      save_result = ItineraryCoordinator.bulk_schedule_itinerary(
          visit_date_temp=temp,
          confirming_fixed_time_item_long_wait=(
             confirming_fixed_time_item_long_wait ),

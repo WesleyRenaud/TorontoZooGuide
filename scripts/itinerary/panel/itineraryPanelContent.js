@@ -1,4 +1,4 @@
-import { hasBulkScheduleAnimalsNotEnoughTimeIssue } from './bulkScheduleAnimalsNotEnoughTimeConfirmation.js';
+import { hasBulkScheduleItineraryNotEnoughTimeIssue } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
@@ -19,7 +19,7 @@ import {
 } from './itineraryPanelScheduleHandlers.js';
 import { makeItineraryPanelViewShell } from './itineraryPanelViewState.js';
 import {
-   bulkScheduleAnimals,
+   bulkScheduleItinerary,
    unscheduleAllItineraryItems,
 } from '../itineraryService.js';
 import {
@@ -53,9 +53,9 @@ function appendDayPlannerViewWithHours(
 ) {
    const {
       openModule = openScheduleItemModule,
-      bulkSchedule = bulkScheduleAnimals,
+      bulkSchedule = bulkScheduleItinerary,
       unscheduleAll = unscheduleAllItineraryItems,
-      hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
+      hasNotEnoughTimeIssue = hasBulkScheduleItineraryNotEnoughTimeIssue,
       hasMultipleBuildWarnings = hasMultipleItineraryBuildWarnings,
       showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
       requiresLongWaitConfirmation = requiresFixedTimeItemLongWaitConfirmation,
@@ -108,7 +108,7 @@ function appendDayPlannerViewWithHours(
                      variant: 'error',
                      message: (
                         APP_STRINGS.itinerary.confirmation
-                           .bulkScheduleAnimalsNotEnoughTimeMessage
+                           .bulkScheduleItineraryNotEnoughTimeMessage
                      ),
                   });
                   return;

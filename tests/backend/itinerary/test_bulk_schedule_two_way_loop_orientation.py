@@ -59,7 +59,7 @@ def _animal_record(
    )
 
 
-def test_bulk_schedule_animals_reverses_eurasia_loop_after_temple_for_shorter_walk(
+def test_bulk_schedule_itinerary_reverses_eurasia_loop_after_temple_for_shorter_walk(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -75,7 +75,7 @@ def test_bulk_schedule_animals_reverses_eurasia_loop_after_temple_for_shorter_wa
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS

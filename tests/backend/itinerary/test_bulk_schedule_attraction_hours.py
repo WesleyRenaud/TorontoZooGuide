@@ -132,7 +132,7 @@ def test_bulk_schedule_holds_attraction_until_configured_open(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    splash = next(
@@ -165,7 +165,7 @@ def test_bulk_schedule_leaves_attraction_unscheduled_when_hours_cannot_fit(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    splash = next(
@@ -176,7 +176,7 @@ def test_bulk_schedule_leaves_attraction_unscheduled_when_hours_cannot_fit(
    assert splash.end_time is None
    assert result.reasons
    assert result.reasons[ 0 ].code == (
-      ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert any(
       item.item_type == ItinerarySaveIssueItemType.ATTRACTION
       and item.name == SPLASH_ISLAND
@@ -218,7 +218,7 @@ def test_bulk_schedule_does_not_place_items_past_zoo_close(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    zoo_close_seconds = DateValues.time_value_in_seconds( '7:00 PM' )
@@ -275,7 +275,7 @@ def test_bulk_schedule_left_aligns_free_loops_before_soft_pin_late_place(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    tiger = next(
@@ -342,7 +342,7 @@ def test_bulk_schedule_fills_wait_with_already_open_soft_pin(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    zoomobile = next(
@@ -440,7 +440,7 @@ def test_bulk_schedule_right_aligns_soft_pins_against_hard_pin_deadline(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success
@@ -564,7 +564,7 @@ def test_bulk_schedule_cascades_greenhouse_and_carousel_before_soft_pin_chain(
       confirming_attraction_without_animal=True,
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.success
@@ -648,7 +648,7 @@ def test_bulk_schedule_weaves_animals_around_attraction_hours(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
    wombat = next(
