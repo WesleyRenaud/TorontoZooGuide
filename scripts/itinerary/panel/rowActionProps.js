@@ -10,7 +10,7 @@ export function hasItineraryScheduleTimes(item) {
    return Boolean(item.start_time && item.end_time);
 }
 
-export function canShowItineraryItemScheduleAction(itemType, item) {
+export function canShowItineraryItemScheduleControls(itemType, item) {
    if (itemType !== ScheduleItemKind.TRANSPORTATION.itemType) {
       return true;
    }
@@ -27,7 +27,7 @@ export function buildScheduleRowProps(itemType, item, onScheduleItem) {
       return {};
    }
 
-   if (!canShowItineraryItemScheduleAction(itemType, item)) {
+   if (!canShowItineraryItemScheduleControls(itemType, item)) {
       return {};
    }
 
@@ -54,6 +54,10 @@ export function buildUnscheduleRowProps(itemType, item, onUnscheduleItem) {
    }
 
    if (!hasItineraryScheduleTimes(item)) {
+      return {};
+   }
+
+   if (!canShowItineraryItemScheduleControls(itemType, item)) {
       return {};
    }
 

@@ -11,6 +11,58 @@ import { allTextFor } from './helpers/panelRowsTestSetup.mjs';
 import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
+test('resolveScheduledPillOptions hides unschedule for pure transportations', () => {
+   const options = resolveScheduledPillOptions(
+      {
+         scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
+         scheduleItemKey: 'Zoomobile||0',
+         item: {
+            name: 'Zoomobile',
+            added_as_attraction: false,
+            start_time: '2:30 PM',
+            end_time: '3:00 PM',
+         },
+      },
+      {
+         onUnscheduleItineraryItem: () => {
+            throw new Error('pure transportations should not expose unschedule');
+         },
+         onRemoveItineraryItem: () => {},
+      },
+      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+   );
+
+   assert.deepEqual(
+      options.menuItems?.map((item) => item.label),
+      ['Remove']
+   );
+});
+
+test('resolveScheduledPillOptions keeps unschedule for added-as-attraction transportations', () => {
+   const options = resolveScheduledPillOptions(
+      {
+         scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
+         scheduleItemKey: 'Zoomobile||1',
+         item: {
+            name: 'Zoomobile',
+            added_as_attraction: true,
+            start_time: '2:30 PM',
+            end_time: '3:00 PM',
+         },
+      },
+      {
+         onUnscheduleItineraryItem: () => {},
+         onRemoveItineraryItem: () => {},
+      },
+      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+   );
+
+   assert.deepEqual(
+      options.menuItems?.map((item) => item.label),
+      ['Unschedule', 'Remove']
+   );
+});
+
 test('resolveGroupedScheduledPillOptions merges menu actions for grouped pills', () => {
    const options = resolveGroupedScheduledPillOptions(
       [

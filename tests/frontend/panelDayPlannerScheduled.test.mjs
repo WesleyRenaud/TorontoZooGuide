@@ -352,6 +352,64 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
+   test('scheduled pure transportation timeline menu omits unschedule', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            transportations: [
+               {
+                  name: 'Zoomobile',
+                  added_as_attraction: false,
+                  bulk_transit_evaluated: true,
+                  start_time: '2:30 PM',
+                  end_time: '3:00 PM',
+                  legs: [
+                     {
+                        from_station: 'Main Station',
+                        to_station: 'Canadian Domain',
+                        start_time: '2:30 PM',
+                        end_time: '2:40 PM',
+                     },
+                     {
+                        from_station: 'Canadian Domain',
+                        to_station: 'Wildlife Health',
+                        start_time: '2:40 PM',
+                        end_time: '3:00 PM',
+                     },
+                  ],
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: () => {
+                  throw new Error('pure transportations should not expose unschedule');
+               },
+               onRemoveItineraryItem: () => {},
+            },
+         }
+      );
+      const zoomobileEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Zoomobile')
+      ));
+      const menuItems = [
+         ...(zoomobileEvent?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
+
+      assert.ok(zoomobileEvent);
+      assert.deepEqual(
+         menuItems.map((item) => item.textContent),
+         ['Remove']
+      );
+   });
+
 
    test('pre-open wild encounter keeps its start slot before zoo open', () => {
       const planner = makeDayPlannerPreview(
