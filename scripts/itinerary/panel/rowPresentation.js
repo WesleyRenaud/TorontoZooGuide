@@ -31,7 +31,7 @@ function buildTimeFieldLine(value) {
       return '';
    }
 
-   return `Time: ${value}`;
+   return `${APP_STRINGS.labels.time}: ${value}`;
 }
 
 export function buildScheduledTimeFieldLine(item) {

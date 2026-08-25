@@ -1,7 +1,7 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { el } from './dom.js';
+import { buildScheduledTimeFieldLine } from './rowPresentation.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
-import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import {
    applyConflictSelectionButtonState,
    getConflictSelectionButtonState,
@@ -98,7 +98,7 @@ function createScheduleConflictSubtitle(item) {
    const time = el(
       'span',
       'itin-panel-time-conflict',
-      `Time: ${buildScheduledOccurrenceTimeRange(item)}`
+      buildScheduledTimeFieldLine(item)
    );
    const locationLabel = isGuardiansTalkConflictItem(item)
       ? APP_STRINGS.labels.location

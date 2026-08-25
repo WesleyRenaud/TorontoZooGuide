@@ -8,6 +8,9 @@ import {
    TIMELINE_SLOT_HEIGHT_PX,
    TIMELINE_SLOT_MINUTES,
 } from '../../../shared/constants.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+const { dayPlanner } = APP_STRINGS.itinerary;
 
 export {
    MAX_TIMELINE_PILL_COLUMNS,
@@ -163,5 +166,8 @@ export function formatScheduledPillGroupLabel(items = []) {
       return firstLabel;
    }
 
-   return `${firstLabel} + ${sortedItems.length - 1}`;
+   return dayPlanner.scheduledPillGroupLabel(
+      firstLabel,
+      sortedItems.length - 1
+   );
 }

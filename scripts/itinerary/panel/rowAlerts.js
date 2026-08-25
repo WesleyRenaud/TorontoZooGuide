@@ -1,4 +1,7 @@
 import { likelihoodToPercent } from '../../likelihood/likelihoodValues.js';
+import { APP_STRINGS } from '../../strings.js';
+
+const { removedItems } = APP_STRINGS.itinerary;
 
 function getLikelihoodPair(animal) {
    const beforeRaw = animal?.likelihoodBefore;
@@ -15,7 +18,7 @@ function buildAnimalRemovalReasonLine(animal) {
 
    if (!reason) return '';
 
-  return `Unavailable: ${reason}`;
+   return removedItems.unavailableReason(reason);
 }
 
 function buildAnimalVisibilityChange(animal) {
@@ -28,15 +31,17 @@ function buildAnimalVisibilityChange(animal) {
       };
    }
 
+   const line = removedItems.projectedVisibilityChanged(before, after);
+
    if (after < before) {
       return {
-         line: `Projected visibility changed from ${before}% to ${after}% on your new date.`,
+         line,
          tone: 'default',
       };
    }
 
    return {
-      line: `Projected visibility changed from ${before}% to ${after}% on your new date.`,
+      line,
       tone: 'positive',
    };
 }
@@ -59,7 +64,7 @@ export function buildAttractionRemovalReasonLine(attraction) {
 
    if (!reason) return '';
 
-   return `Not available on this date: ${reason}`;
+   return removedItems.notAvailableOnDate(reason);
 }
 
 export function buildGuardiansRemovalReasonLine(guardiansTalk) {
@@ -67,7 +72,7 @@ export function buildGuardiansRemovalReasonLine(guardiansTalk) {
 
    if (!reason) return '';
 
-   return `Not available on this date: ${reason}`;
+   return removedItems.notAvailableOnDate(reason);
 }
 
 export function buildWildRemovalReasonLine(wildEncounter) {
@@ -75,5 +80,5 @@ export function buildWildRemovalReasonLine(wildEncounter) {
 
    if (!reason) return '';
 
-   return `Not available on this date: ${reason}`;
+   return removedItems.notAvailableOnDate(reason);
 }

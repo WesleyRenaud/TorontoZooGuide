@@ -4,6 +4,9 @@ import {
    getItineraryOverlayMountEl,
    mountDismissablePopup,
 } from './popup.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+const { actions } = APP_STRINGS.itinerary;
 
 function createConfirmPopupBody(message, doNotShowAgainLabel) {
    const body = el('div', 'tzg-popup-confirm-body');
@@ -30,11 +33,11 @@ function createConfirmPopupBody(message, doNotShowAgainLabel) {
 }
 
 export function showItineraryConfirmPopup({
-   title = 'Heads up',
+   title = APP_STRINGS.common.headsUp,
    message = '',
    bodyContent = null,
-   confirmText = 'Confirm',
-   cancelText = 'Cancel',
+   confirmText = actions.confirm,
+   cancelText = actions.cancel,
    doNotShowAgainLabel = null,
    mountEl = getItineraryOverlayMountEl() ?? document.body,
    onConfirm,

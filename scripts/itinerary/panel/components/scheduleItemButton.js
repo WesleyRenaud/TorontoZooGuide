@@ -1,9 +1,12 @@
 import { el } from '../dom.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+const { scheduleItem } = APP_STRINGS.itinerary;
 
 export function setScheduleItemButtonBusy(
    button,
    isBusy,
-   busyLabel = 'Scheduling…'
+   busyLabel = scheduleItem.schedulingBusy
 ) {
    if (!button.dataset.defaultLabel) {
       button.dataset.defaultLabel = button.textContent;
@@ -18,7 +21,7 @@ export function setScheduleItemButtonBusy(
 export async function runScheduleItemButtonAction(
    button,
    action,
-   busyLabel = 'Scheduling…'
+   busyLabel = scheduleItem.schedulingBusy
 ) {
    if (button.disabled) {
       return;
@@ -35,7 +38,7 @@ export async function runScheduleItemButtonAction(
 }
 
 export function makeScheduleItemButton({
-   label = 'Schedule item',
+   label = scheduleItem.title,
    onClick = null,
    variant = 'primary',
 } = {}) {

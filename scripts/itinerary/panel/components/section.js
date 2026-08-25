@@ -1,4 +1,7 @@
 import { el } from '../dom.js';
+import { APP_STRINGS } from '../../../strings.js';
+
+const { actions, panel } = APP_STRINGS.itinerary;
 
 const MAX_VISIBLE_ITEMS = 3;
 
@@ -58,11 +61,11 @@ export function makeSection({
    const countEl = el('span', 'itin-panel-count', `(${count})`);
    titleEl.appendChild(countEl);
 
-   const actions = el('div', 'itin-panel-header-actions');
+   const headerActions = el('div', 'itin-panel-header-actions');
 
-   const editBtn = el('button', 'itin-panel-section-edit-btn', 'Edit');
+   const editBtn = el('button', 'itin-panel-section-edit-btn', actions.edit);
    editBtn.type = 'button';
-   editBtn.setAttribute('aria-label', `Edit ${title}`);
+   editBtn.setAttribute('aria-label', panel.editSectionAria(title));
    editBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -73,17 +76,17 @@ export function makeSection({
 
    const toggleBtn = el('button', 'itin-panel-toggle');
    toggleBtn.type = 'button';
-   toggleBtn.setAttribute('aria-label', `Toggle ${title}`);
+   toggleBtn.setAttribute('aria-label', panel.toggleSectionAria(title));
    toggleBtn.appendChild(el('span', 'itin-panel-toggle-icon'));
 
    if (showEditButton) {
-      actions.appendChild(editBtn);
+      headerActions.appendChild(editBtn);
    }
 
-   actions.appendChild(toggleBtn);
+   headerActions.appendChild(toggleBtn);
 
    header.appendChild(titleEl);
-   header.appendChild(actions);
+   header.appendChild(headerActions);
 
    const body = el('div', 'itin-panel-section-body');
    const bodyInner = el('div', 'itin-panel-section-body-inner');
