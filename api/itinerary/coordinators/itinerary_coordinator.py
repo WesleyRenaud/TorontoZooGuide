@@ -29,8 +29,8 @@ from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
 from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
-from ..validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
-from ..validation.itinerary_departure_time_validation_builder import ItineraryDepartureTimeValidationBuilder
+from ..validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
+from ..validation.itinerary_departure_time_validator import ItineraryDepartureTimeValidator
 from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
 from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -263,7 +263,7 @@ class ItineraryCoordinator():
          conn,
          ItineraryProvider.fetch_itinerary_date( conn ) )
 
-      validation_error = ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
+      validation_error = ItineraryArrivalTimeValidator.validate_for_zoo_hours(
          normalized_arrival_time,
          zoo_hours_record,
          departure_time=saved_itinerary.departure_time,
@@ -322,7 +322,7 @@ class ItineraryCoordinator():
          conn,
          ItineraryProvider.fetch_itinerary_date( conn ) )
 
-      validation_error = ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+      validation_error = ItineraryDepartureTimeValidator.validate_for_zoo_hours(
          normalized_departure_time,
          zoo_hours_record,
          arrival_time=saved_itinerary.arrival_time )

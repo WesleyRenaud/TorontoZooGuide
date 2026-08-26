@@ -4,7 +4,7 @@ from ...shared.calendar_dates import DateValues
 from ...types import ScheduleTimeKey
 
 
-class ItineraryScheduleTimeOrderValidationBuilder():
+class ItineraryScheduleTimeOrderValidator():
    @classmethod
    def departure_follows_arrival(
          cls,

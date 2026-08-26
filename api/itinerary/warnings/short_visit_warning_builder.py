@@ -5,7 +5,7 @@ from .itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBu
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, ScheduleTimeKey
-from ..validation.itinerary_visit_duration_validation_builder import ItineraryVisitDurationValidationBuilder
+from ..validation.itinerary_visit_duration_validator import ItineraryVisitDurationValidator
 
 
 class ShortVisitWarningBuilder():
@@ -37,6 +37,6 @@ class ShortVisitWarningBuilder():
       if arrival_minutes is None or departure_minutes is None:
          return False
 
-      return ItineraryVisitDurationValidationBuilder.is_shorter_than_minimum(
+      return ItineraryVisitDurationValidator.is_shorter_than_minimum(
          arrival_time,
          departure_time )

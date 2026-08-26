@@ -1,12 +1,12 @@
-from api.guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
+from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from api.models import GuardiansTalk
 from api.models import WildEncounter
-from api.wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
+from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 
 
 def test_build_guardians_talk_diff_preserves_saved_times_when_talk_not_on_schedule() -> None:
-   talk = GuardiansTalkItineraryValidationBuilder.build_diff_for_visit_day(
+   talk = GuardiansTalkItineraryValidator.build_diff_for_visit_day(
       'Spotted Hyena',
       None,
       start_time_override='13:00',
@@ -19,7 +19,7 @@ def test_build_guardians_talk_diff_preserves_saved_times_when_talk_not_on_schedu
 
 
 def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None:
-   encounter = WildEncounterItineraryValidationBuilder.build_diff_for_visit_day(
+   encounter = WildEncounterItineraryValidator.build_diff_for_visit_day(
       'Grizzly Bear',
       WildEncounter(
          name='Grizzly Bear',
@@ -30,7 +30,7 @@ def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None
          is_available=True,
       ),
    )
-   talk = GuardiansTalkItineraryValidationBuilder.build_diff_for_visit_day(
+   talk = GuardiansTalkItineraryValidator.build_diff_for_visit_day(
       'African Lion',
       GuardiansTalk(
          name='African Lion',
@@ -50,7 +50,7 @@ def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None
 
 
 def test_apply_guardians_talk_trimming_gives_earlier_talk_precedence() -> None:
-   first_talk = GuardiansTalkItineraryValidationBuilder.build_diff_for_visit_day(
+   first_talk = GuardiansTalkItineraryValidator.build_diff_for_visit_day(
       'African Lion',
       GuardiansTalk(
          name='African Lion',
@@ -62,7 +62,7 @@ def test_apply_guardians_talk_trimming_gives_earlier_talk_precedence() -> None:
          is_available=True,
       ),
    )
-   second_talk = GuardiansTalkItineraryValidationBuilder.build_diff_for_visit_day(
+   second_talk = GuardiansTalkItineraryValidator.build_diff_for_visit_day(
       'Amur Tiger',
       GuardiansTalk(
          name='Amur Tiger',

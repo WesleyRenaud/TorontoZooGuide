@@ -18,7 +18,7 @@ CAROUSEL_AFTER_LION = schedule_time_after_seconds(
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.validation.itinerary_departure_time_validation_builder import ItineraryDepartureTimeValidationBuilder
+from api.itinerary.validation.itinerary_departure_time_validator import ItineraryDepartureTimeValidator
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
@@ -41,19 +41,19 @@ def test_departure_time_is_valid_for_zoo_hours(
 
    zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '09:00',
       zoo_hours_record,
       arrival_time='09:30' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '09:30',
       zoo_hours_record,
       arrival_time='09:30' ) == ItineraryErrorType.TIME_ORDER_INVALID
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '18:00',
       zoo_hours_record,
       arrival_time='09:30' ) == ItineraryErrorType.SUCCESS
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '18:00',
       zoo_hours_record,
       arrival_time=None ) == ItineraryErrorType.SUCCESS
@@ -76,11 +76,11 @@ def test_departure_time_allows_early_admission_window(
 
    zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '09:08',
       zoo_hours_record,
       arrival_time='09:00' ) == ItineraryErrorType.SUCCESS
-   assert ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '08:59',
       zoo_hours_record,
       arrival_time='09:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
-from ...validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
+from ...validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -19,7 +19,7 @@ def scheduling_anchor_seconds(
 
    if allow_early_admission:
       return DateValues.time_value_in_seconds(
-         ItineraryArrivalTimeValidationBuilder.earliest_arrival_time( zoo_hours_record ) )
+         ItineraryArrivalTimeValidator.earliest_arrival_time( zoo_hours_record ) )
 
    return DateValues.time_value_in_seconds( zoo_hours_record.open_time )
 
