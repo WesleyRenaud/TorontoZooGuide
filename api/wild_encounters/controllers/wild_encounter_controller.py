@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...json_handler import JsonRequestHandler
-from ..scheduling.collapse_wild_encounters_for_map import collapse_wild_encounters_for_map
+from ..scheduling.collapse_wild_encounters_for_map_builder import CollapseWildEncountersForMapBuilder
 from ...shared.api_error_response import apply_api_error
 from ...shared.enums.api_error_type import ApiErrorType
 
@@ -12,7 +12,7 @@ class WildEncounterController():
    def get_wild_encounters( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      wild_encounters = collapse_wild_encounters_for_map(
+      wild_encounters = CollapseWildEncountersForMapBuilder.build(
          WildEncounterCoordinator.get_available_wild_encounters(
             month=data.get( 'month' ),
             day=data.get( 'day' ),

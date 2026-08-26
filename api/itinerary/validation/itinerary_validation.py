@@ -47,7 +47,7 @@ from ...types import Connection, DateKey, ScheduleTimeKey
 from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
 from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_overlapping_saved_schedule
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ...wild_encounters.itinerary.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from ...wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
 
 
 def _preferred_habitat_for_removed_animal(
@@ -472,7 +472,7 @@ def validate_itinerary_for_save(
          month=save_input.month(),
          day=save_input.day(),
          year=save_input.year() ) )
-   wild_encounter_diffs = validate_wild_encounters_for_itinerary(
+   wild_encounter_diffs = WildEncounterItineraryValidationBuilder.validate_for_itinerary(
       save_input.wild_encounters,
       wild_encounter_coordinator.get_wild_encounter_schedule(
          month=save_input.month(),

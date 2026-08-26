@@ -2,7 +2,7 @@ from api.guardians.itinerary.guardians_talk_itinerary_validation_builder import 
 from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from api.models import GuardiansTalk
 from api.models import WildEncounter
-from api.wild_encounters.itinerary.wild_encounter_itinerary_validation import build_wild_encounter_diff_for_visit_day
+from api.wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
 
 
 def test_build_guardians_talk_diff_preserves_saved_times_when_talk_not_on_schedule() -> None:
@@ -19,7 +19,7 @@ def test_build_guardians_talk_diff_preserves_saved_times_when_talk_not_on_schedu
 
 
 def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None:
-   encounter = build_wild_encounter_diff_for_visit_day(
+   encounter = WildEncounterItineraryValidationBuilder.build_diff_for_visit_day(
       'Grizzly Bear',
       WildEncounter(
          name='Grizzly Bear',

@@ -6,7 +6,7 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from api.wild_encounters.data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_records_for_occurrences
+from api.wild_encounters.data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from conftest import DbControllers
 
 
@@ -57,7 +57,7 @@ def test_wild_encounter_schedule_can_replace_overlapping_schedules(
          message='Replacement schedule.' )
    )
 
-   schedule_records = fetch_wild_encounter_schedule_records_for_occurrences(
+   schedule_records = WildEncounterScheduleProvider.fetch_schedule_records_for_occurrences(
       db.conn,
       wild_encounter='African Rainforest' )
 
@@ -94,7 +94,7 @@ def test_wild_encounter_schedule_can_trim_existing_schedule_around_new_schedule(
          message='Special schedule.' )
    )
 
-   schedule_records = fetch_wild_encounter_schedule_records_for_occurrences(
+   schedule_records = WildEncounterScheduleProvider.fetch_schedule_records_for_occurrences(
       db.conn,
       wild_encounter='African Rainforest' )
 
