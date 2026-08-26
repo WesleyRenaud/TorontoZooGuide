@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from api.itinerary.animal_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_item_key import AttractionScheduleItemKey
-from api.itinerary.data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from api.itinerary.transportation_item_key import TransportationScheduleItemKey
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryEventType
@@ -36,7 +36,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_animal_row() -> None:
       exhibit='Africa Savanna',
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       schedule_item_key )
 
@@ -61,7 +61,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_attraction_row() -> None:
       wild_encounter_rows=(),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       AttractionScheduleItemKey( name='Conservation Carousel' ),
    )
@@ -89,7 +89,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_added_as_attraction_transp
       ),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       AttractionScheduleItemKey( name='Zoomobile' ),
    )
@@ -112,7 +112,7 @@ def test_find_saved_itinerary_schedule_item_row_ignores_pure_transportation_row(
       ),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       AttractionScheduleItemKey( name='Zoomobile' ),
    )
@@ -139,7 +139,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_pure_transportation_row() 
       ),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       TransportationScheduleItemKey(
          name='Zoomobile',
@@ -168,7 +168,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_event_row() -> None:
       ),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       ItineraryEventType.LUNCH,
    )
@@ -195,7 +195,7 @@ def test_find_saved_itinerary_schedule_item_row_matches_wild_encounter_by_name_a
       ),
    )
 
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       WildEncounterScheduleItemKey(
          name='African Rainforest',
@@ -207,7 +207,7 @@ def test_find_saved_itinerary_schedule_item_row_matches_wild_encounter_by_name_a
    assert row.wild_encounter == 'African Rainforest'
    assert row.end_time == '4:15 PM'
 
-   missing = find_saved_itinerary_schedule_item_row(
+   missing = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       WildEncounterScheduleItemKey(
          name='African Rainforest',

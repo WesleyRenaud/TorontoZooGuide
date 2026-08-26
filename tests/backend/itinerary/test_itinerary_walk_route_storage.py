@@ -10,8 +10,8 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.results.itinerary_result_response import itinerary_result_to_dict
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_walk_route import empty_itinerary_walk_route
@@ -44,7 +44,7 @@ def test_schedule_itinerary_item_persists_walk_route(
    assert result.success
 
    expected_route = build_itinerary_walk_route( result.itinerary )
-   persisted_route = fetch_itinerary_walk_route( db.conn )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert walk_route_matches( expected_route, persisted_route )
 
@@ -69,14 +69,14 @@ def test_bulk_schedule_itinerary_persists_walk_route(
    assert result.status == ItineraryErrorType.SUCCESS
 
    expected_route = build_itinerary_walk_route( result.itinerary )
-   persisted_route = fetch_itinerary_walk_route( db.conn )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert walk_route_matches( expected_route, persisted_route )
 
 
 def test_fetch_itinerary_walk_route_returns_empty_when_unpersisted(
       db: DbControllers ) -> None:
-   walk_route = fetch_itinerary_walk_route( db.conn )
+   walk_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert walk_route == empty_itinerary_walk_route()
 
@@ -107,7 +107,7 @@ def test_rebuild_and_persist_itinerary_walk_route_round_trips_route(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator,
    )
-   persisted_route = fetch_itinerary_walk_route( db.conn )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert walk_route_matches( expected_route, persisted_route )
 
@@ -135,10 +135,10 @@ def test_clear_itinerary_clears_walk_route(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator,
    )
-   assert fetch_itinerary_walk_route( db.conn ).legs
+   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).legs
 
    assert ItineraryCoordinator.clear_itinerary()
-   assert fetch_itinerary_walk_route( db.conn ) == empty_itinerary_walk_route()
+   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ) == empty_itinerary_walk_route()
 
 
 def test_itinerary_result_to_dict_includes_itinerary_path(
@@ -165,7 +165,7 @@ def test_itinerary_result_to_dict_includes_itinerary_path(
 
    payload = itinerary_result_to_dict( result, conn=db.conn )
 
-   assert payload[ 'itinerary_path' ] == fetch_itinerary_walk_route( db.conn ).to_dict()
+   assert payload[ 'itinerary_path' ] == ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).to_dict()
    assert payload[ 'itinerary_path' ][ 'points' ]
 
 
@@ -188,7 +188,7 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
       start_time='10:00',
    ).success
 
-   assert fetch_itinerary_walk_route( db.conn ).legs
+   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).legs
 
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -207,7 +207,7 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
    assert not result.itinerary.animals[ 1 ].start_time
 
    expected_route = build_itinerary_walk_route( result.itinerary )
-   persisted_route = fetch_itinerary_walk_route( db.conn )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
    payload = itinerary_result_to_dict( result, conn=db.conn )
 
    assert expected_route.legs
@@ -215,4 +215,4 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
    assert payload[ 'itinerary_path' ][ 'points' ]
    assert walk_route_matches(
       build_itinerary_walk_route( result.itinerary ),
-      fetch_itinerary_walk_route( db.conn ) )
+      ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ) )

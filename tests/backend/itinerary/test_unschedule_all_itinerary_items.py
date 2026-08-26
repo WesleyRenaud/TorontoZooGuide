@@ -3,7 +3,7 @@ from __future__ import annotations
 from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, schedule_itinerary_item, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
@@ -34,7 +34,7 @@ def test_unschedule_all_itinerary_items_clears_schedules_but_keeps_itinerary_row
 
    assert result.success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal_row = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -148,7 +148,7 @@ def test_unschedule_all_itinerary_items_returns_error_when_nothing_guest_schedul
    assert not result.success
    assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal_row = saved.animal_rows[ 0 ]
 
    assert not has_itinerary_schedule_times(
@@ -167,14 +167,14 @@ def test_unschedule_all_itinerary_items_returns_error_after_items_already_unsche
 
    assert first_result.success
 
-   saved_after_first = fetch_saved_itinerary( db.conn )
+   saved_after_first = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    second_result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
    assert not second_result.success
    assert second_result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
 
-   saved_after_second = fetch_saved_itinerary( db.conn )
+   saved_after_second = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert saved_after_second.animal_rows == saved_after_first.animal_rows
    assert saved_after_second.attraction_rows == saved_after_first.attraction_rows

@@ -8,10 +8,10 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
+from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -97,7 +97,7 @@ def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_item
       == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ GUARDIANS_TALK ]
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -234,7 +234,7 @@ def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
       == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
    assert [ item.name for item in result.reasons[ 0 ].items ] == [ GUARDIANS_TALK ]
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -289,7 +289,7 @@ def test_confirmed_guardians_talk_reschedule_persists_walk_route(
    assert result.success
 
    expected_route = build_itinerary_walk_route( result.itinerary )
-   persisted_route = fetch_itinerary_walk_route( db.conn )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert walk_route_matches( expected_route, persisted_route )
    assert any(
@@ -305,7 +305,7 @@ def test_guardians_talk_unschedule_warning_cannot_be_suppressed(
       db,
       freeze_database_today=freeze_database_today )
 
-   suppress_itinerary_status(
+   ItineraryStatusProvider.suppress_itinerary_status(
       db.conn,
       ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
 

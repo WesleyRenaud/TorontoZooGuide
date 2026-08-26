@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_cover_and_schedule
-from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
+from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
+from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ....guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from ....models import AnimalDiff
 from ....models import GuardiansTalkDiff
@@ -65,7 +65,7 @@ def apply_covered_by_talk_schedules(
 
    try:
       for animal_row, loop_pin in covered_by_talk.values():
-         update_itinerary_animal_cover_and_schedule(
+         ScheduleItineraryItemProvider.update_itinerary_animal_cover_and_schedule(
             cur,
             species=animal_row.species,
             exhibit=animal_row.exhibit,
@@ -99,7 +99,7 @@ def uncover_animals_for_talk(
       if animal_row is None or not animal_row.covered_by_talk:
          continue
 
-      clear_itinerary_animal_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
          cur,
          species=animal_row.species,
          exhibit=animal_row.exhibit,
@@ -130,14 +130,14 @@ def restore_covered_animals_after_talk_removed(
       if animal_row is None or not animal_row.covered_by_talk:
          continue
 
-      duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
+      duration_seconds = ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
          conn,
          animal_row.species,
          animal_row.exhibit,
          animal_row.enclosure_name )
 
       if duration_seconds is None:
-         clear_itinerary_animal_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
             cur,
             species=animal_row.species,
             exhibit=animal_row.exhibit,
@@ -149,7 +149,7 @@ def restore_covered_animals_after_talk_removed(
       end_time = DateValues.schedule_time_key_from_seconds(
          talk_block.start_seconds + duration_seconds )
 
-      update_itinerary_animal_cover_and_schedule(
+      ScheduleItineraryItemProvider.update_itinerary_animal_cover_and_schedule(
          cur,
          species=animal_row.species,
          exhibit=animal_row.exhibit,
@@ -194,7 +194,7 @@ def uncover_animals_for_unavailable_talks(
          if existing is None or not existing.covered_by_talk:
             continue
 
-         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
+         duration_seconds = ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
             conn,
             existing.species,
             existing.exhibit,

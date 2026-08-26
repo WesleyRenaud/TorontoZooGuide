@@ -4,13 +4,12 @@ from datetime import date
 
 from test_transportation_seed import EXPECTED_ROUTE_LEG_MARKERS
 
-from api.itinerary.data_access.fetch_itinerary_transportation_route_markers import fetch_itinerary_transportation_route_markers
-from api.itinerary.data_access.itinerary_transportation import insert_itinerary_transportation
-from api.itinerary.data_access.itinerary_transportation import insert_itinerary_transportation_legs
-from api.itinerary.data_access.itinerary_transportation_route_marker_mapper import route_marker_sequences_for_markers
-from api.itinerary.data_access.itinerary_transportation_route_markers import insert_itinerary_transportation_route_markers
-from api.itinerary.data_access.schedule_itinerary_transportation import apply_itinerary_transportation_schedule
-from api.itinerary.data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
+from api.itinerary.data_access.itinerary_transportation_provider import ItineraryTransportationProvider
+from api.itinerary.data_access.itinerary_transportation_route_marker_mapper import ItineraryTransportationRouteMarkerMapper
+from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
+from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
+from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
+from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from api.itinerary.domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
@@ -160,13 +159,13 @@ def test_schedule_persists_route_marker_sequences(
    cur = db.conn.cursor()
 
    try:
-      insert_itinerary_transportation(
+      ItineraryTransportationProvider.insert_itinerary_transportation(
          cur,
          transportation=ZOOMOBILE,
          old_likelihood=None,
          new_likelihood=3,
          added_as_attraction=True )
-      applied = apply_itinerary_transportation_schedule(
+      applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
          cur,
          name=ZOOMOBILE,
          added_as_attraction=True,
@@ -196,10 +195,10 @@ def test_schedule_persists_route_marker_sequences(
          """,
          ( ZOOMOBILE, ),
       ).fetchone()[ 'ROUTE' ]
-      sequences = route_marker_sequences_for_markers(
+      sequences = ItineraryTransportationRouteMarkerMapper.route_marker_sequences_for_markers(
          [
             marker
-            for marker in fetch_itinerary_transportation_route_markers( db.conn )
+            for marker in ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers( db.conn )
             if marker.transportation == ZOOMOBILE
          ]
       )
@@ -218,14 +217,14 @@ def test_clear_transportation_schedule_removes_route_markers(
    cur = db.conn.cursor()
 
    try:
-      insert_itinerary_transportation(
+      ItineraryTransportationProvider.insert_itinerary_transportation(
          cur,
          transportation=ZOOMOBILE,
          old_likelihood=None,
          new_likelihood=3,
          route='summer',
          added_as_attraction=True )
-      insert_itinerary_transportation_legs(
+      ItineraryTransportationProvider.insert_itinerary_transportation_legs(
          cur,
          transportation=ZOOMOBILE,
          added_as_attraction=True,
@@ -240,7 +239,7 @@ def test_clear_transportation_schedule_removes_route_markers(
             ),
          ],
       )
-      insert_itinerary_transportation_route_markers(
+      ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
          cur,
          transportation=ZOOMOBILE,
          added_as_attraction=True,
@@ -248,7 +247,7 @@ def test_clear_transportation_schedule_removes_route_markers(
             ordered_marker_ids( 'zm-s', 5, 85, 297 ),
          ],
       )
-      clear_itinerary_transportation_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
          cur,
          name=ZOOMOBILE,
          added_as_attraction=True )
@@ -263,6 +262,6 @@ def test_clear_transportation_schedule_removes_route_markers(
       ).fetchone()[ 'ROUTE' ]
 
       assert route is None
-      assert fetch_itinerary_transportation_route_markers( db.conn ) == []
+      assert ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers( db.conn ) == []
    finally:
       cur.close()

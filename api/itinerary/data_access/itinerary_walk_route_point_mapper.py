@@ -5,37 +5,44 @@ from ..routing.walk_route_point import WalkRoutePoint
 from ...types import Row
 
 
-def map_itinerary_walk_route_point_record( row: Row ) -> ItineraryWalkRoutePointRecord:
-   return ItineraryWalkRoutePointRecord(
-      point_sequence=int( row[ 'POINT_SEQUENCE' ] ),
-      walk_node_id=row[ 'WALK_NODE_ID' ],
-      x=float( row[ 'X' ] ),
-      y=float( row[ 'Y' ] ),
-      x_px=float( row[ 'X_PX' ] ),
-      y_px=float( row[ 'Y_PX' ] ) )
+class ItineraryWalkRoutePointMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> ItineraryWalkRoutePointRecord:
+      return ItineraryWalkRoutePointRecord(
+         point_sequence=int( row[ 'POINT_SEQUENCE' ] ),
+         walk_node_id=row[ 'WALK_NODE_ID' ],
+         x=float( row[ 'X' ] ),
+         y=float( row[ 'Y' ] ),
+         x_px=float( row[ 'X_PX' ] ),
+         y_px=float( row[ 'Y_PX' ] ) )
 
 
-def map_itinerary_walk_route_point_records(
-      rows: list[ Row ] ) -> list[ ItineraryWalkRoutePointRecord ]:
-   return [
-      map_itinerary_walk_route_point_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records(
+         cls, rows: list[ Row ] ) -> list[ ItineraryWalkRoutePointRecord ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
 
 
-def map_itinerary_walk_route_point(
-      record: ItineraryWalkRoutePointRecord ) -> WalkRoutePoint:
-   return WalkRoutePoint(
-      node_id=record.walk_node_id,
-      x=record.x,
-      y=record.y,
-      x_px=record.x_px,
-      y_px=record.y_px )
+   @classmethod
+   def map_to_walk_route_point(
+         cls,
+         record: ItineraryWalkRoutePointRecord ) -> WalkRoutePoint:
+      return WalkRoutePoint(
+         node_id=record.walk_node_id,
+         x=record.x,
+         y=record.y,
+         x_px=record.x_px,
+         y_px=record.y_px )
 
 
-def map_itinerary_walk_route_points(
-      records: list[ ItineraryWalkRoutePointRecord ] ) -> list[ WalkRoutePoint ]:
-   return [
-      map_itinerary_walk_route_point( record )
-      for record in records
-   ]
+   @classmethod
+   def map_to_walk_route_points(
+         cls,
+         records: list[ ItineraryWalkRoutePointRecord ] ) -> list[ WalkRoutePoint ]:
+      return [
+         cls.map_to_walk_route_point( record )
+         for record in records
+      ]

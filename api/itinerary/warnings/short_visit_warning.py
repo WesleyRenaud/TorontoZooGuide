@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..data_access.itinerary_status import is_itinerary_error_suppressed
+from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from .itinerary_suppressed_warnings import append_suppressed_warning
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
@@ -18,7 +18,7 @@ def short_visit_warning_is_required(
    if confirming_short_visit:
       return False
 
-   if is_itinerary_error_suppressed(
+   if ItineraryStatusProvider.is_itinerary_error_suppressed(
          conn,
          ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ):
       if suppressed_warnings is not None:

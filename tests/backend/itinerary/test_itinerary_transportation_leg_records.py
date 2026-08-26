@@ -5,8 +5,7 @@ from datetime import date
 from itinerary.support import schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_itinerary_transportation_leg_rows
-from api.itinerary.data_access.itinerary import fetch_itinerary_transportation_rows
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.domain.itinerary_transportations import build_itinerary_transportations
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
@@ -44,7 +43,7 @@ def test_fetch_legs_maps_to_itinerary_transportation_leg(
 ) -> None:
    _schedule_zoomobile_as_attraction( db )
 
-   legs = fetch_itinerary_transportation_leg_rows( db.conn )
+   legs = ItineraryProvider.fetch_itinerary_transportation_leg_rows( db.conn )
 
    assert len( legs ) == 5
    assert all( isinstance( leg, ItineraryTransportationLeg ) for leg in legs )
@@ -58,7 +57,7 @@ def test_build_itinerary_transportations_passes_legs_through(
 ) -> None:
    _schedule_zoomobile_as_attraction( db )
 
-   saved_transportations = fetch_itinerary_transportation_rows( db.conn )
+   saved_transportations = ItineraryProvider.fetch_itinerary_transportation_rows( db.conn )
    transportations = build_itinerary_transportations(
       saved_transportations,
       target_date=date( 2026, 6, 15 ),

@@ -17,7 +17,7 @@ CAROUSEL_AFTER_LION = schedule_time_after_seconds(
 )
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_itinerary_date
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
@@ -39,7 +39,7 @@ def test_departure_time_is_valid_for_zoo_hours(
       wild_encounters=[],
    ).success
 
-   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
    assert departure_time_is_valid_for_zoo_hours(
       '09:00',
@@ -74,7 +74,7 @@ def test_departure_time_allows_early_admission_window(
       confirming_early_admission=True,
    ).success
 
-   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
    assert departure_time_is_valid_for_zoo_hours(
       '09:08',

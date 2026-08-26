@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..results.itinerary_save_result import ItinerarySaveResult
 from .set_itinerary_context import build_set_itinerary_error_result
@@ -32,7 +32,7 @@ def validate_set_itinerary_zoo_hours(
    fixed_zoo_start_times = merge_fixed_zoo_schedule_start_times(
       fixed_zoo_schedule_start_times_from_save_input( save_input ),
       fixed_zoo_schedule_start_times_from_saved_itinerary(
-         fetch_saved_itinerary( conn ) ) )
+         ItineraryProvider.fetch_saved_itinerary( conn ) ) )
 
    arrival_time_error = arrival_time_is_valid_for_zoo_hours(
       save_input.arrival_time,

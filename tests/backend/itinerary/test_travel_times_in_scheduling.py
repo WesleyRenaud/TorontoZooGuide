@@ -6,9 +6,9 @@ from datetime import date
 from itinerary.support import CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, schedule_time_after_seconds, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
+from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.routing.walk_node_id_for_transportation import walk_node_id_for_transportation
@@ -873,7 +873,7 @@ def test_bulk_schedule_persists_floored_travel_minutes_on_walk_legs(
    expected_minutes = travel_time_minutes_from_length_px( path.length_px )
 
    assert result.success
-   persisted = fetch_itinerary_walk_route( db.conn )
+   persisted = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
    assert persisted.legs
    first_leg = persisted.legs[ 0 ]
    assert first_leg.from_item_key == ENTRANCE_ITEM_KEY

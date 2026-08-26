@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..data_access.transportation_day_loop import fetch_main_transportation_station
-from ..data_access.transportation_day_loop import fetch_transportation_active_route
-from ..data_access.transportation_day_loop import fetch_transportation_day_route
-from ..data_access.transportation_day_loop import fetch_transportation_route_legs
+from ..data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from .transportation_day_loop import TransportationDayLoop
 from .transportation_route_leg_segment import TransportationRouteLegSegment
 from ...types import Connection
@@ -16,7 +13,7 @@ def resolve_transportation_route_for_date(
       *,
       transportation: str,
       target_date: date ) -> str:
-   active_route = fetch_transportation_active_route(
+   active_route = TransportationDayLoopProvider.fetch_transportation_active_route(
       conn,
       transportation=transportation,
       target_date=target_date )
@@ -24,7 +21,7 @@ def resolve_transportation_route_for_date(
    if active_route is not None:
       return active_route
 
-   day_route = fetch_transportation_day_route(
+   day_route = TransportationDayLoopProvider.fetch_transportation_day_route(
       conn,
       transportation=transportation,
       month=target_date.month,
@@ -79,7 +76,7 @@ def fetch_transportation_day_loop(
       *,
       transportation: str,
       target_date: date ) -> TransportationDayLoop | None:
-   main_station = fetch_main_transportation_station( conn, transportation )
+   main_station = TransportationDayLoopProvider.fetch_main_transportation_station( conn, transportation )
 
    if main_station is None:
       return None
@@ -88,7 +85,7 @@ def fetch_transportation_day_loop(
       conn,
       transportation=transportation,
       target_date=target_date )
-   leg_rows = fetch_transportation_route_legs(
+   leg_rows = TransportationDayLoopProvider.fetch_transportation_route_legs(
       conn,
       transportation=transportation,
       route=route )

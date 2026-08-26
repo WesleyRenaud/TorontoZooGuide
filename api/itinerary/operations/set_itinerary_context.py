@@ -6,7 +6,7 @@ from typing import Any
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
@@ -55,7 +55,7 @@ def build_set_itinerary_current_itinerary(
       conn: Connection,
       itinerary_controller_kwargs: dict[ str, Any ] ) -> Itinerary:
    return build_current_itinerary(
-      fetch_saved_itinerary( conn ),
+      ItineraryProvider.fetch_saved_itinerary( conn ),
       **itinerary_controller_kwargs )
 
 

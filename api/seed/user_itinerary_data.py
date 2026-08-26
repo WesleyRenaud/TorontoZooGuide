@@ -1,22 +1,16 @@
 from __future__ import annotations
 
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_animals
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_attractions
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_date
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_events
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_exhibits
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_guardians_talks
-from ..itinerary.data_access.clear_itinerary import clear_itinerary_wild_encounters
-from ..itinerary.data_access.clear_itinerary_walk_route import clear_itinerary_walk_route
+from ..itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
+from ..itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from ..types import Cursor
 
 
 def clear_user_itinerary_data( cursor: Cursor ) -> None:
-   clear_itinerary_exhibits( cursor )
-   clear_itinerary_animals( cursor )
-   clear_itinerary_attractions( cursor )
-   clear_itinerary_guardians_talks( cursor )
-   clear_itinerary_wild_encounters( cursor )
-   clear_itinerary_events( cursor )
-   clear_itinerary_walk_route( cursor )
-   clear_itinerary_date( cursor )
+   ClearItineraryProvider.clear_itinerary_exhibits( cursor )
+   ClearItineraryProvider.clear_itinerary_animals( cursor )
+   ClearItineraryProvider.clear_itinerary_attractions( cursor )
+   ClearItineraryProvider.clear_itinerary_guardians_talks( cursor )
+   ClearItineraryProvider.clear_itinerary_wild_encounters( cursor )
+   ClearItineraryProvider.clear_itinerary_events( cursor )
+   ItineraryWalkRouteProvider.clear_itinerary_walk_route( cursor )
+   ClearItineraryProvider.clear_itinerary_date( cursor )

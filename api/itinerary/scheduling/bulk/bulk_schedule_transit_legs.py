@@ -3,7 +3,7 @@ from __future__ import annotations
 from .animals_for_bulk_schedule import transit_transportations_for_bulk_schedule
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
-from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_provider import ItineraryProvider
 from .transportation_transit_rides import apply_transportation_transit_rides
 from ....types import Connection
 
@@ -12,7 +12,7 @@ def apply_bulk_schedule_transit_legs(
       conn: Connection,
       *,
       prep: BulkScheduleWindowPrep ) -> None:
-   saved_after_pack = fetch_saved_itinerary( conn )
+   saved_after_pack = ItineraryProvider.fetch_saved_itinerary( conn )
    apply_transportation_transit_rides(
       conn,
       transit_rows=transit_transportations_for_bulk_schedule( saved_after_pack ),

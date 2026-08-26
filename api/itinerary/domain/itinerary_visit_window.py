@@ -1,13 +1,7 @@
 from __future__ import annotations
 
-from ..data_access.itinerary import fetch_itinerary_animal_rows
-from ..data_access.itinerary import fetch_itinerary_attraction_rows
-from ..data_access.itinerary import fetch_itinerary_event_rows
-from ..data_access.itinerary import fetch_itinerary_transportation_rows
-from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
-from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
+from ..data_access.itinerary_provider import ItineraryProvider
+from ..data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
 from ...types import Connection, ScheduleTimeKey
@@ -53,7 +47,7 @@ def clear_schedules_outside_visit_window(
    did_clear_schedule = False
 
    try:
-      for animal in fetch_itinerary_animal_rows( conn ):
+      for animal in ItineraryProvider.fetch_itinerary_animal_rows( conn ):
          if not schedule_time_occurs_outside_visit_window(
                animal.start_time,
                animal.end_time,
@@ -61,13 +55,13 @@ def clear_schedules_outside_visit_window(
                departure_time=departure_time ):
             continue
 
-         clear_itinerary_animal_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
             cur,
             species=animal.species,
             exhibit=animal.exhibit )
          did_clear_schedule = True
 
-      for attraction in fetch_itinerary_attraction_rows( conn ):
+      for attraction in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
          if not schedule_time_occurs_outside_visit_window(
                attraction.start_time,
                attraction.end_time,
@@ -75,12 +69,12 @@ def clear_schedules_outside_visit_window(
                departure_time=departure_time ):
             continue
 
-         clear_itinerary_attraction_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
          did_clear_schedule = True
 
-      for transportation in fetch_itinerary_transportation_rows( conn ):
+      for transportation in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
          if not schedule_time_occurs_outside_visit_window(
                transportation.start_time,
                transportation.end_time,
@@ -88,13 +82,13 @@ def clear_schedules_outside_visit_window(
                departure_time=departure_time ):
             continue
 
-         clear_itinerary_transportation_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
             cur,
             name=transportation.transportation,
             added_as_attraction=transportation.added_as_attraction )
          did_clear_schedule = True
 
-      for event in fetch_itinerary_event_rows( conn ):
+      for event in ItineraryProvider.fetch_itinerary_event_rows( conn ):
          if event.event_type in (
                ItineraryEventType.ARRIVAL,
                ItineraryEventType.DEPARTURE ):
@@ -107,7 +101,7 @@ def clear_schedules_outside_visit_window(
                departure_time=departure_time ):
             continue
 
-         delete_itinerary_event_schedule(
+         UnscheduleItineraryItemProvider.delete_itinerary_event_schedule(
             cur,
             event_type=event.event_type )
          did_clear_schedule = True

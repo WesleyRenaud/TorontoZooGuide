@@ -3,8 +3,7 @@ from __future__ import annotations
 from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
 from .enums import ItineraryTransportationStationRole
-from ..itinerary.data_access.itinerary_status import fetch_itinerary_statuses
-from ..itinerary.data_access.itinerary_status import fetch_suppressed_status_values
+from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ..types import Connection
 
@@ -29,7 +28,7 @@ def itinerary_config_to_dict(
          str,
          int | list[ str ] | dict[ str, str ] | list[ dict[ str, bool | str ] ],
       ]:
-   statuses = fetch_itinerary_statuses( conn ) if conn is not None else []
+   statuses = ItineraryStatusProvider.fetch_itinerary_statuses( conn ) if conn is not None else []
 
    config: dict[
          str,
@@ -70,7 +69,7 @@ def itinerary_config_to_dict(
          for status in statuses
       ],
       'suppressed_error_types': (
-         fetch_suppressed_status_values( conn )
+         ItineraryStatusProvider.fetch_suppressed_status_values( conn )
          if conn is not None
          else []
       ),

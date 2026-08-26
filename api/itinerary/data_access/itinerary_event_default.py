@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .itinerary_event_default_mapper import map_itinerary_event_default_records
+from .itinerary_event_default_mapper import ItineraryEventDefaultMapper
 from .itinerary_event_default_record import ItineraryEventDefaultRecord
 from ...types import Connection
 
@@ -20,4 +20,4 @@ def fetch_itinerary_event_default_records(
 
    cur.close()
 
-   return map_itinerary_event_default_records( rows )
+   return ItineraryEventDefaultMapper.map_records( rows )

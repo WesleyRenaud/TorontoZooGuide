@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_itinerary_with_lion_scheduled_at_1400, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
@@ -38,7 +38,7 @@ def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warn
       WILD_ENCOUNTER,
    }
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -74,6 +74,6 @@ def test_set_itinerary_blocks_talk_encounter_conflict_when_no_other_items_overla
       WILD_ENCOUNTER,
    }
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    assert not saved.guardians_talk_names()
    assert not saved.wild_encounter_names()

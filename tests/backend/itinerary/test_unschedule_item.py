@@ -23,7 +23,7 @@ PENGUIN_START_WITH_15_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 15 * 6
 PENGUIN_START_WITH_20_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 20 * 60 )
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -57,7 +57,7 @@ def test_unschedule_itinerary_animal_clears_times_but_keeps_row(
 
    assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal_row = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -67,7 +67,7 @@ def test_unschedule_itinerary_animal_clears_times_but_keeps_row(
 
    assert unschedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal_row = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
@@ -84,7 +84,7 @@ def test_unschedule_itinerary_attraction_clears_times(
       'attractions',
       CAROUSEL ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    attraction_row = next(
       row for row in saved.attraction_rows if row.attraction == CAROUSEL )
 
@@ -95,7 +95,7 @@ def test_unschedule_itinerary_attraction_clears_times(
       'attractions',
       CAROUSEL ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    attraction_row = next(
       row for row in saved.attraction_rows if row.attraction == CAROUSEL )
 
@@ -108,13 +108,13 @@ def test_unschedule_itinerary_event_deletes_row( db: DbControllers ) -> None:
 
    assert schedule_itinerary_item( 'lunch', '' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 1
 
    assert unschedule_itinerary_item( 'lunch', '' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 0
 
@@ -156,7 +156,7 @@ def test_unschedule_middle_animal_shifts_later_items_by_removed_duration(
 
    assert unschedule_itinerary_item( 'animals', CHEETAH_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animals_by_key = {
       ( row.species, row.exhibit, row.enclosure_name ): row
       for row in saved.animal_rows
@@ -211,7 +211,7 @@ def test_unschedule_middle_animal_preserves_deliberate_gap_after_shift(
 
    assert unschedule_itinerary_item( 'animals', CHEETAH_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    penguin = next(
       row for row in saved.animal_rows
       if row.species == 'African Penguin' )

@@ -5,16 +5,18 @@ from ...shared.enums import ItineraryEventType
 from ...types import Row
 
 
-def map_itinerary_event_default_record( row: Row ) -> ItineraryEventDefaultRecord:
-   return ItineraryEventDefaultRecord(
-      event_type=ItineraryEventType.normalize( row[ 'EVENT_TYPE' ] ),
-      default_duration_minutes=int( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] ),
-   )
+class ItineraryEventDefaultMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> ItineraryEventDefaultRecord:
+      return ItineraryEventDefaultRecord(
+         event_type=ItineraryEventType.normalize( row[ 'EVENT_TYPE' ] ),
+         default_duration_minutes=int( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] ),
+      )
 
 
-def map_itinerary_event_default_records(
-      rows: list[ Row ] ) -> list[ ItineraryEventDefaultRecord ]:
-   return [
-      map_itinerary_event_default_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records( cls, rows: list[ Row ] ) -> list[ ItineraryEventDefaultRecord ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]

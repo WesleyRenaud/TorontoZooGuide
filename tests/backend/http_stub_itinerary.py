@@ -92,10 +92,10 @@ class ItineraryStubMixin:
 
 
    def accept_itinerary( self, **kwargs: Any ) -> bool:
-         self.calls.append( ( 'accept_itinerary', kwargs ) )
+         self.calls.append( ( 'AcceptItineraryProvider.accept_itinerary', kwargs ) )
          return True
 
 
    def clear_itinerary( self ) -> bool:
-         self.calls.append( ( 'clear_itinerary', {} ) )
+         self.calls.append( ( 'ClearItineraryProvider.clear_itinerary', {} ) )
          return True

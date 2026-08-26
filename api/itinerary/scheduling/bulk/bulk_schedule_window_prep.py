@@ -11,9 +11,8 @@ from .bulk_schedule_walk_order import representative_walk_node_id
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import TimeBlock
-from ...data_access.itinerary import fetch_itinerary_date
-from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ..items.schedule_itinerary_helpers import PreparedScheduleWindow
@@ -105,7 +104,7 @@ def prepare_bulk_schedule_windows(
 
    clear_all_itinerary_schedules( conn )
 
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    anchor_seconds, day_end_seconds = prepared_window.window
    itinerary = build_current_itinerary(
       saved_itinerary,
@@ -126,7 +125,7 @@ def prepare_bulk_schedule_windows(
       day_end_seconds,
       boundary_stops )
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
-   visit_date = fetch_itinerary_date( conn )
+   visit_date = ItineraryProvider.fetch_itinerary_date( conn )
    zoo_hours_record = (
       None
       if visit_date is None

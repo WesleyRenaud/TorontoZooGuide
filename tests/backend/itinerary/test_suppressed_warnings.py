@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
+from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.warnings.itinerary_suppressed_warnings import append_suppressed_warning
@@ -35,7 +35,7 @@ def test_record_if_error_suppressed_tracks_only_suppressed_types(
       suppressed_warnings,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   suppress_itinerary_status(
+   ItineraryStatusProvider.suppress_itinerary_status(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 

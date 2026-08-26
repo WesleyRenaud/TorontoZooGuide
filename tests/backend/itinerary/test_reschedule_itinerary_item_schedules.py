@@ -9,7 +9,7 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -46,7 +46,7 @@ def test_reschedule_after_fixed_time_activity_only_reschedules_previously_schedu
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator,
-      saved_itinerary_before_clear=fetch_saved_itinerary( db.conn ),
+      saved_itinerary_before_clear=ItineraryProvider.fetch_saved_itinerary( db.conn ),
    )
 
    assert result.success

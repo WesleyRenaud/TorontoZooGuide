@@ -6,7 +6,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..conflicts.itinerary_unschedule_confirmations import find_itinerary_unschedule_requirements
 from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..domain.itinerary import build_current_itinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
@@ -40,14 +40,14 @@ def prepare_set_itinerary_context(
       old_visit_date=old_visit_date )
 
    saved_itinerary = (
-      fetch_saved_itinerary( conn )
+      ItineraryProvider.fetch_saved_itinerary( conn )
       if old_visit_date is not None
       else None )
 
    response_saved_itinerary = (
       saved_itinerary
       if saved_itinerary is not None
-      else fetch_saved_itinerary( conn ) )
+      else ItineraryProvider.fetch_saved_itinerary( conn ) )
 
    current_itinerary = build_current_itinerary(
       response_saved_itinerary,

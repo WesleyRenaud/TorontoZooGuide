@@ -3,8 +3,7 @@ from __future__ import annotations
 from .core.guest_item_schedule_status import itinerary_has_unscheduled_guest_items
 from .core.time_block import earliest_scheduled_start_seconds
 from .core.time_block import latest_scheduled_end_seconds
-from ..data_access.itinerary_time import set_itinerary_arrival_time
-from ..data_access.itinerary_time import set_itinerary_departure_time
+from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from .items.schedule_item_travel_time import entrance_travel_seconds_from_latest_item
 from .items.schedule_item_travel_time import entrance_travel_seconds_to_earliest_item
 from ...models import Itinerary
@@ -61,10 +60,10 @@ def clear_visit_times_if_became_incomplete(
       return
 
    if DateValues.normalize_schedule_time_key( current_itinerary.arrival_time ):
-      set_itinerary_arrival_time( conn, None )
+      ItineraryTimeProvider.set_itinerary_arrival_time( conn, None )
 
    if DateValues.normalize_schedule_time_key( current_itinerary.departure_time ):
-      set_itinerary_departure_time( conn, None )
+      ItineraryTimeProvider.set_itinerary_departure_time( conn, None )
 
 
 def _apply_visit_times_from_scheduled_endpoints(
@@ -90,7 +89,7 @@ def _apply_visit_times_from_scheduled_endpoints(
       departure_seconds )
 
    if itinerary.arrival_time != arrival_time:
-      set_itinerary_arrival_time( conn, arrival_time )
+      ItineraryTimeProvider.set_itinerary_arrival_time( conn, arrival_time )
 
    if itinerary.departure_time != departure_time:
-      set_itinerary_departure_time( conn, departure_time )
+      ItineraryTimeProvider.set_itinerary_departure_time( conn, departure_time )

@@ -5,7 +5,7 @@ from collections.abc import Callable
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ..attraction_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..domain.itinerary import build_current_itinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -37,7 +37,7 @@ def commit_itinerary_item_schedule_change(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
 
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    itinerary_before = build_current_itinerary(
       saved_itinerary,
       **itinerary_context )
@@ -98,7 +98,7 @@ def commit_itinerary_item_schedule_change(
       cur.close()
 
    itinerary_after = build_current_itinerary(
-      fetch_saved_itinerary( conn ),
+      ItineraryProvider.fetch_saved_itinerary( conn ),
       **itinerary_context )
    sync_visit_times_to_scheduled_endpoints_if_complete(
       conn,
@@ -107,7 +107,7 @@ def commit_itinerary_item_schedule_change(
       conn,
       previous_itinerary=itinerary_before,
       current_itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
    persist_itinerary_walk_route( conn, **itinerary_context )

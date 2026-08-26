@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import Any
 
 from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
-from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
-from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
-from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -29,7 +29,7 @@ from ...warnings.guardians_talk_without_animal_warning import guardians_talk_wit
 def _saved_guardians_talk_exists(
       saved_itinerary: SavedItinerary,
       guardians_talk_key: GuardiansTalkScheduleItemKey ) -> bool:
-   return find_saved_itinerary_schedule_item_row(
+   return SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       guardians_talk_key ) is not None
 
@@ -59,7 +59,7 @@ def _insert_scheduled_guardians_talk(
    cur = conn.cursor()
 
    try:
-      scheduled = insert_itinerary_guardians_talk(
+      scheduled = ScheduleItineraryItemProvider.insert_itinerary_guardians_talk(
          cur,
          talk_name=guardians_talk_key.name,
          start_time=guardians_talk_diff.start_time,
@@ -89,7 +89,7 @@ def schedule_guardians_talk_itinerary_item(
       confirming_guardians_talk_unschedule: bool,
       confirming_fixed_time_item_long_wait: bool,
       confirming_guardians_talk_without_animal: bool ) -> ItinerarySaveResult:
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
       return build_save_result(

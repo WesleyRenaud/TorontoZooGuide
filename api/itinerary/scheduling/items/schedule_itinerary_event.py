@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
-from ...data_access.itinerary import fetch_saved_itinerary
-from ...data_access.itinerary_default_duration import fetch_event_default_duration_seconds
-from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedule
+from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from ....models.itinerary_event import ItineraryEvent
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
@@ -27,7 +27,7 @@ def schedule_itinerary_event(
       event_type: ItineraryEventType,
       time_options: ParsedScheduleTimeOptions,
       itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    prepared_window = prepare_schedule_window(
       conn,
       saved_itinerary,
@@ -36,7 +36,7 @@ def schedule_itinerary_event(
    if isinstance( prepared_window, ItinerarySaveResult ):
       return prepared_window
 
-   if saved_schedule_item_is_already_scheduled(
+   if SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
          saved_itinerary,
          event_type ):
       return build_save_result(
@@ -46,7 +46,7 @@ def schedule_itinerary_event(
 
    duration_seconds = effective_duration_seconds(
       time_options.duration_minutes,
-      fetch_event_default_duration_seconds( conn, event_type ) )
+      ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds( conn, event_type ) )
 
    if duration_seconds is None:
       return build_save_result(
@@ -74,7 +74,7 @@ def schedule_itinerary_event(
    cur = conn.cursor()
 
    try:
-      insert_itinerary_event_schedule( cur, event )
+      ScheduleItineraryItemProvider.insert_itinerary_event_schedule( cur, event )
       conn.commit()
 
    finally:

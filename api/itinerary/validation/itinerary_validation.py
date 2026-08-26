@@ -6,18 +6,18 @@ from datetime import date
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
 from ..data_access.itinerary_animal_save_carryover_record import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from ..data_access.itinerary_attraction_save_carryover import itinerary_attraction_save_carryover
+from ..data_access.itinerary_attraction_save_carryover_mapper import ItineraryAttractionSaveCarryoverMapper
 from ..data_access.itinerary_event_record import ItineraryEventRecord
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from ..data_access.itinerary_transportation_save_carryover import itinerary_transportation_save_carryover
+from ..data_access.itinerary_transportation_save_carryover_mapper import ItineraryTransportationSaveCarryoverMapper
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ..domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
@@ -213,7 +213,7 @@ def validate_itinerary_attractions(
    diffs: list[ AttractionDiff ] = []
 
    for attraction_name in attractions:
-      carryover = itinerary_attraction_save_carryover(
+      carryover = ItineraryAttractionSaveCarryoverMapper.map_from_saved_attraction_rows(
          saved_attraction_rows,
          attraction_name,
          old_visit_date=old_visit_date )
@@ -290,7 +290,7 @@ def validate_itinerary_transportations(
    diffs: list[ TransportationDiff ] = []
 
    for transportation in transportations:
-      carryover = itinerary_transportation_save_carryover(
+      carryover = ItineraryTransportationSaveCarryoverMapper.map_from_saved_transportation_rows(
          saved_transportation_rows,
          transportation,
          old_visit_date=old_visit_date )
@@ -367,10 +367,9 @@ def split_attraction_names_for_itinerary_save(
       conn: Connection,
       attraction_names: list[ str ],
 ) -> tuple[ list[ str ], list[ str ] ]:
-   from ..data_access.attraction_also_transportation import (
-      fetch_also_transportation_attraction_names )
+   from ..data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
 
-   also_transportation_names = fetch_also_transportation_attraction_names( conn )
+   also_transportation_names = AttractionAlsoTransportationProvider.fetch_also_transportation_attraction_names( conn )
    plain_attractions: list[ str ] = []
    transportations: list[ str ] = []
 
@@ -461,7 +460,7 @@ def validate_itinerary_for_save(
       new_visit_date_temp: float | None = None,
       old_visit_date: DateKey | None = None ) -> ValidatedItinerary:
    arrival_time = save_input.arrival_time
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    has_saved_itinerary = old_visit_date is not None
    visit_date_is_changing = (
       has_saved_itinerary

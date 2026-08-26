@@ -4,7 +4,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk.animals_for_bulk_schedule import stops_for_bulk_schedule_matching_previous
 from .bulk.bulk_schedule_itinerary import bulk_schedule_itinerary
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .items.schedule_itinerary_helpers import build_itinerary_context
@@ -31,7 +31,7 @@ def reschedule_itinerary_items_after_fixed_time_activity_add(
       visit_date_temp=visit_date_temp )
    stops_to_schedule = stops_for_bulk_schedule_matching_previous(
       saved_itinerary_before_clear,
-      fetch_saved_itinerary( conn ) )
+      ItineraryProvider.fetch_saved_itinerary( conn ) )
 
    if not stops_to_schedule:
       return build_success_result( conn, **itinerary_context )

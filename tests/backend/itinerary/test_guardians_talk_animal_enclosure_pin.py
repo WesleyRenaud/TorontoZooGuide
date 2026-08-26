@@ -4,8 +4,8 @@ from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
-from api.itinerary.data_access.itinerary import fetch_itinerary_animal_rows
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.guardians_talk_covered_animals import apply_covered_by_talk_schedules
@@ -269,12 +269,12 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
    covered = viewing_spot_keys_to_cover_for_loop_pins(
       db.conn,
       [ loop_pin ],
-      fetch_itinerary_animal_rows( db.conn ) )
+      ItineraryProvider.fetch_itinerary_animal_rows( db.conn ) )
 
    apply_covered_by_talk_schedules( db.conn, covered )
    rows_by_enclosure = {
       row.enclosure_name: row
-      for row in fetch_itinerary_animal_rows( db.conn )
+      for row in ItineraryProvider.fetch_itinerary_animal_rows( db.conn )
    }
 
    assert rows_by_enclosure[ 'Outdoor' ].covered_by_talk is True
@@ -293,7 +293,7 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
          talk_block=TimeBlock(
             start_seconds=11 * 3600,
             end_seconds=11 * 3600 + 30 * 60 ),
-         animal_rows=fetch_itinerary_animal_rows( db.conn ) )
+         animal_rows=ItineraryProvider.fetch_itinerary_animal_rows( db.conn ) )
       db.conn.commit()
    finally:
       cur.close()
@@ -304,7 +304,7 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
 
    rows_by_enclosure = {
       row.enclosure_name: row
-      for row in fetch_itinerary_animal_rows( db.conn )
+      for row in ItineraryProvider.fetch_itinerary_animal_rows( db.conn )
    }
 
    assert rows_by_enclosure[ 'Outdoor' ].covered_by_talk is False

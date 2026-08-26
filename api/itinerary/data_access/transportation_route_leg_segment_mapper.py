@@ -4,17 +4,18 @@ from ..transportation.transportation_route_leg_segment import TransportationRout
 from ...types import Row
 
 
-def map_transportation_route_leg_segment(
-      row: Row ) -> TransportationRouteLegSegment:
-   return TransportationRouteLegSegment(
-      from_station=row[ 'FROM_STATION' ],
-      to_station=row[ 'TO_STATION' ],
-      duration_minutes=int( row[ 'DURATION_MINUTES' ] ) )
+class TransportationRouteLegSegmentMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> TransportationRouteLegSegment:
+      return TransportationRouteLegSegment(
+         from_station=row[ 'FROM_STATION' ],
+         to_station=row[ 'TO_STATION' ],
+         duration_minutes=int( row[ 'DURATION_MINUTES' ] ) )
 
 
-def map_transportation_route_leg_segments(
-      rows: list[ Row ] ) -> list[ TransportationRouteLegSegment ]:
-   return [
-      map_transportation_route_leg_segment( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records( cls, rows: list[ Row ] ) -> list[ TransportationRouteLegSegment ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
