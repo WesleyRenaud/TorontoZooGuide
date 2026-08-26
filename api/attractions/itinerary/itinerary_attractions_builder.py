@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
+from ...itinerary.data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...models import Attraction
 
 
@@ -17,7 +17,7 @@ class ItineraryAttractionsBuilder():
       }
       attractions = [
          attraction for attraction in attractions
-         if itinerary_name_key( attraction.name ) in attractions_filter
+         if ItineraryNameKeyBuilder.build( attraction.name ) in attractions_filter
       ]
       saved_attraction_by_name = {
          saved_attraction.name_key(): saved_attraction
@@ -25,7 +25,7 @@ class ItineraryAttractionsBuilder():
       }
       for attraction in attractions:
          saved_attraction = saved_attraction_by_name.get(
-            itinerary_name_key( attraction.name ) )
+            ItineraryNameKeyBuilder.build( attraction.name ) )
          if saved_attraction == None:
             continue
          attraction.old_likelihood = saved_attraction.old_likelihood

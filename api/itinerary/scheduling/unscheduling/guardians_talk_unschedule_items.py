@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
-from ...data_access.itinerary_name_key import itinerary_name_key
+from ...data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from .fixed_time_activity_unschedule_items import clear_saved_schedules_overlapping_time_blocks
@@ -26,7 +26,7 @@ def newly_added_active_guardians_talks(
       saved_itinerary: SavedItinerary,
       guardians_talks: list[ GuardiansTalkDiff ] ) -> list[ GuardiansTalkDiff ]:
    saved_names = {
-      itinerary_name_key( row.talk_name )
+      ItineraryNameKeyBuilder.build( row.talk_name )
       for row in saved_itinerary.guardians_talk_rows
       if not row.is_deleted
    }
@@ -35,7 +35,7 @@ def newly_added_active_guardians_talks(
       guardians_talk
       for guardians_talk in guardians_talks
       if (
-         itinerary_name_key( guardians_talk.name ) not in saved_names
+         ItineraryNameKeyBuilder.build( guardians_talk.name ) not in saved_names
          and not guardians_talk.is_deleted
          and time_block_from_schedule_times(
             guardians_talk.start_time,

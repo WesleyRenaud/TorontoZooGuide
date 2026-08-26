@@ -4,8 +4,8 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .itinerary_transportation_stations import attach_itinerary_transportation_stations
-from .itinerary_transportations import build_itinerary_transportations
+from .itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
+from .itinerary_transportations_builder import ItineraryTransportationsBuilder
 from ...models import Animal
 from ...models import Attraction
 from ...models import GuardiansTalk
@@ -102,7 +102,7 @@ def build_current_itinerary(
       for event in saved_itinerary.event_rows
    ]
 
-   transportations = build_itinerary_transportations(
+   transportations = ItineraryTransportationsBuilder.build(
       saved_itinerary.transportation_rows,
       target_date=saved_itinerary.itinerary_date(),
    )
@@ -113,7 +113,7 @@ def build_current_itinerary(
       animals=animals,
       attractions=attractions,
       transportations=transportations,
-      transportation_stations=attach_itinerary_transportation_stations(
+      transportation_stations=ItineraryTransportationStationsBuilder.attach_to_transportations(
          transportations ),
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,

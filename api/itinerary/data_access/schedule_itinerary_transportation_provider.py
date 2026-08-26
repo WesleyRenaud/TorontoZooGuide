@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
+from ..domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...shared.calendar_dates import DateValues
@@ -102,7 +102,7 @@ class ScheduleItineraryTransportationProvider():
          cur,
          transportation=name,
          added_as_attraction=added_as_attraction )
-      route_marker_sequences = build_transportation_route_marker_sequences(
+      route_marker_sequences = TransportationRouteMarkerSequencesBuilder.build(
          cur.connection,
          transportation=name,
          route=route,

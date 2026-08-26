@@ -4,7 +4,7 @@ from datetime import date
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from api.itinerary.domain.itinerary_transportations import build_itinerary_transportations
+from api.itinerary.domain.itinerary_transportations_builder import ItineraryTransportationsBuilder
 from api.search.coordinators.search_coordinator import SearchCoordinator
 from conftest import DbControllers
 
@@ -49,7 +49,7 @@ def test_search_includes_route_duration_for_also_transportation_attractions(
 def test_build_itinerary_transportations_includes_route_duration(
       db: DbControllers,
 ) -> None:
-   transportations = build_itinerary_transportations(
+   transportations = ItineraryTransportationsBuilder.build(
       [
          ItineraryTransportationRecord(
             transportation='Zoomobile',

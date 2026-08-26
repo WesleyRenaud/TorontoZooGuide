@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
-from ..data_access.itinerary_name_key import itinerary_name_key
+from ..data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
@@ -68,7 +68,7 @@ def newly_added_guardians_talks_without_matching_animal(
    return [
       talk
       for talk in missing_talks
-      if itinerary_name_key( talk.name ) not in saved_names
+      if ItineraryNameKeyBuilder.build( talk.name ) not in saved_names
    ]
 
 
