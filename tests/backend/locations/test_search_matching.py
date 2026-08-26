@@ -10,7 +10,7 @@ from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.pavilions.search.pavilions_matching_query import build_pavilions_matching_query
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
-from api.restrooms.search.restrooms_matching_query import build_restrooms_matching_query
+from api.restrooms.search.restrooms_matching_query_builder import RestroomsMatchingQueryBuilder
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from conftest import DbControllers
 
@@ -103,12 +103,12 @@ def test_matching_query_filters_and_handles_empty_query() -> None:
 
    assert [
       restroom.title
-      for restroom in build_restrooms_matching_query( restrooms, 'zootique' )
+      for restroom in RestroomsMatchingQueryBuilder.build( restrooms, 'zootique' )
    ] == [ 'Zootique Restroom' ]
 
    assert [
       restroom.title
-      for restroom in build_restrooms_matching_query( restrooms, '' )
+      for restroom in RestroomsMatchingQueryBuilder.build( restrooms, '' )
    ] == [
       'Zootique Restroom',
       'Entrance Restroom',
