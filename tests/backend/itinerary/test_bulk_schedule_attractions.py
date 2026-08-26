@@ -6,9 +6,9 @@ from datetime import date
 from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import attractions_for_bulk_schedule
 from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import stops_for_bulk_schedule
@@ -249,7 +249,7 @@ def test_attractions_for_bulk_schedule_handles_missing_and_scheduled_only(
       wild_encounters=[],
    ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    assert [
       attraction.attraction
       for attraction in attractions_for_bulk_schedule(

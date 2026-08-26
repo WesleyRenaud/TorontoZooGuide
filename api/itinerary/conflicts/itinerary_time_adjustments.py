@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
@@ -102,7 +102,7 @@ def adjust_set_itinerary_for_restrictive_hours(
       conn,
       save_input.date.isoformat() )
    saved_itinerary = (
-      fetch_saved_itinerary( conn ) if old_visit_date is not None else None )
+      ItineraryProvider.fetch_saved_itinerary( conn ) if old_visit_date is not None else None )
    adjustments: list[ ItineraryAdjustment ] = []
    updated_input = save_input
 

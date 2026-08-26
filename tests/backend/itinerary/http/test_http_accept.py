@@ -27,7 +27,7 @@ def test_accept_itinerary_endpoint_passes_animals_to_keep(
    assert response[ 'success' ] is True
    assert response[ 'itinerary' ][ 'date' ] == '2026-06-15'
    assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
-      'accept_itinerary',
+      'AcceptItineraryProvider.accept_itinerary',
       {
          'animals_to_keep': [
             {
@@ -59,7 +59,7 @@ def test_accept_itinerary_endpoint_passes_attractions_to_keep(
 
    assert response[ 'success' ] is True
    assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
-      'accept_itinerary',
+      'AcceptItineraryProvider.accept_itinerary',
       {
          'animals_to_keep': None,
          'attractions_to_keep': [ 'Conservation Carousel' ],

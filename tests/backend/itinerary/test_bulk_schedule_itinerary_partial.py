@@ -10,7 +10,7 @@ from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, expected_depa
 from api.connection import close_connection
 from api.connection import open_connection
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
@@ -76,7 +76,7 @@ def test_bulk_schedule_itinerary_returns_issue_when_day_runs_out(
    }
    assert scheduled_species == { 'Cheetah' }
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    lion_row = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' )
@@ -175,7 +175,7 @@ def test_bulk_schedule_itinerary_persists_partial_schedule_after_connection_clos
    close_connection( db.conn )
 
    reopened = open_connection( db_path=str( db_path ) )
-   saved = fetch_saved_itinerary( reopened )
+   saved = ItineraryProvider.fetch_saved_itinerary( reopened )
    scheduled_species = {
       row.species
       for row in saved.animal_rows

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..data_access.itinerary_status import is_itinerary_error_suppressed
+from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ...shared.enums import ItineraryErrorType
@@ -20,7 +20,7 @@ def record_if_error_suppressed(
       conn: Connection,
       suppressed_warnings: list[ ItineraryErrorType ],
       error_type: ItineraryErrorType ) -> bool:
-   if not is_itinerary_error_suppressed( conn, error_type ):
+   if not ItineraryStatusProvider.is_itinerary_error_suppressed( conn, error_type ):
       return False
 
    append_suppressed_warning( suppressed_warnings, error_type )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..data_access.itinerary import fetch_itinerary_date
+from ..data_access.itinerary_provider import ItineraryProvider
 from .resolve_transportation_day_loop import fetch_transportation_day_loop
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
@@ -9,7 +9,7 @@ from ...types import Connection
 def default_duration_seconds_for_transportation(
       conn: Connection,
       transportation: str ) -> int | None:
-   visit_date = fetch_itinerary_date( conn )
+   visit_date = ItineraryProvider.fetch_itinerary_date( conn )
    parsed_visit_date = DateValues.parse_date_value( visit_date )
 
    if parsed_visit_date is None:

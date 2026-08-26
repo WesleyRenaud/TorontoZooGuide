@@ -5,7 +5,7 @@ from datetime import date
 from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, remove_itinerary_item, schedule_itinerary_item, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from api.itinerary.transportation.resolve_transportation_day_loop import order_route_legs_from_station
@@ -207,7 +207,7 @@ def test_remove_transportation_as_transportation_keeps_attraction_role(
 
    assert remove_itinerary_item( 'transportations', f'{ ZOOMOBILE }||0' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert [
       ( row.transportation, row.added_as_attraction )
@@ -239,7 +239,7 @@ def test_remove_transportation_as_attraction_keeps_transportation_role(
 
    assert remove_itinerary_item( 'attractions', ZOOMOBILE ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert [
       ( row.transportation, row.added_as_attraction )
@@ -272,7 +272,7 @@ def test_schedule_zoomobile_expands_timed_legs(
       start_time='10:00 AM',
    ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    assert len( saved.transportation_rows ) == 1
    transportation = saved.transportation_rows[ 0 ]
    assert transportation.start_time == '10:00 AM'
@@ -319,7 +319,7 @@ def test_unschedule_zoomobile_clears_parent_times_and_legs(
 
    assert unschedule_itinerary_item( 'attractions', ZOOMOBILE ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    transportation = saved.transportation_rows[ 0 ]
    assert transportation.start_time is None
    assert transportation.end_time is None

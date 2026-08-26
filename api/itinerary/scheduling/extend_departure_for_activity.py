@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..data_access.itinerary import fetch_saved_itinerary
-from ..data_access.itinerary_time import set_itinerary_arrival_time
-from ..data_access.itinerary_time import set_itinerary_departure_time
+from ..data_access.itinerary_provider import ItineraryProvider
+from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from ..domain.itinerary import build_current_itinerary
 from ...shared.calendar_dates import DateValues
 from .sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
@@ -52,7 +51,7 @@ def ensure_arrival_covers_start_time(
    if not DateValues.time_value_is_before( start_time, current_arrival_time ):
       return False
 
-   return set_itinerary_arrival_time( conn, start_time )
+   return ItineraryTimeProvider.set_itinerary_arrival_time( conn, start_time )
 
 
 def ensure_departure_covers_end_time(
@@ -63,7 +62,7 @@ def ensure_departure_covers_end_time(
    if not DateValues.time_value_is_after( end_time, current_departure_time ):
       return False
 
-   return set_itinerary_departure_time( conn, end_time )
+   return ItineraryTimeProvider.set_itinerary_departure_time( conn, end_time )
 
 
 def cover_visit_times_for_scheduled_activity(
@@ -92,5 +91,5 @@ def cover_visit_times_for_scheduled_activity(
    seed_visit_times_to_scheduled_endpoints_if_complete(
       conn,
       build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )

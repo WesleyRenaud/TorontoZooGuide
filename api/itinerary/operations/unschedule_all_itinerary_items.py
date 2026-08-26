@@ -4,7 +4,7 @@ from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..domain.itinerary import build_current_itinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -32,7 +32,7 @@ def unschedule_all_itinerary_items(
       wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
 
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
    if not saved_itinerary_has_guest_scheduled_items( saved_itinerary ):
       return build_save_result(
@@ -44,5 +44,5 @@ def unschedule_all_itinerary_items(
 
    return ItinerarySaveResult(
       itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )

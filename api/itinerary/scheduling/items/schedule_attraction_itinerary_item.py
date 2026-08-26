@@ -8,9 +8,9 @@ from ....attractions.scheduling.attraction_hours_schedule_adjustment import Attr
 from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from ..core.find_next_available_slot import find_previous_available_slot
 from ..core.time_block import collect_time_blocks_from_itinerary
-from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
-from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ...domain.itinerary import build_current_itinerary
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
@@ -41,7 +41,7 @@ def schedule_attraction_itinerary_item(
       confirming_schedule_item_not_on_itinerary: bool,
       confirming_attraction_outside_operating_hours: bool,
       ) -> ItinerarySaveResult:
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    prepared_window = prepare_schedule_window(
       conn,
       saved_itinerary,
@@ -85,7 +85,7 @@ def schedule_attraction_itinerary_item(
    if membership_error is not None:
       return membership_error
 
-   if saved_schedule_item_is_already_scheduled(
+   if SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
          saved_itinerary,
          schedule_item_key ):
       return with_suppressed_warnings(

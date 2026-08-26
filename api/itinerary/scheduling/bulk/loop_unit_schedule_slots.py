@@ -5,14 +5,12 @@ from dataclasses import field
 
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
-from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from ...data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
-from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
+from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
-from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
-from ...data_access.schedule_itinerary_transportation import apply_itinerary_transportation_schedule
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
+from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_travel_time import inter_stop_travel_seconds
 from ....shared.calendar_dates import DateValues
@@ -103,7 +101,7 @@ def default_duration_seconds_for_loop_schedule_stop(
       conn: Connection,
       stop: LoopScheduleStop ) -> int | None:
    if isinstance( stop, ItineraryAttractionRecord ):
-      return fetch_attraction_default_duration_seconds(
+      return ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
          conn,
          stop.attraction )
 
@@ -112,7 +110,7 @@ def default_duration_seconds_for_loop_schedule_stop(
          conn,
          stop.transportation )
 
-   return fetch_enclosure_viewing_default_duration_seconds(
+   return ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
       conn,
       stop.species,
       stop.exhibit,
@@ -224,13 +222,13 @@ def _persist_loop_group_slots(
    try:
       for stop, start_time, end_time in scheduled_slots:
          if isinstance( stop, ItineraryAttractionRecord ):
-            persisted = update_itinerary_attraction_schedule(
+            persisted = ScheduleItineraryItemProvider.update_itinerary_attraction_schedule(
                cur,
                name=stop.attraction,
                start_time=start_time,
                end_time=end_time )
          elif isinstance( stop, ItineraryTransportationRecord ):
-            visit_date = fetch_itinerary_date( conn )
+            visit_date = ItineraryProvider.fetch_itinerary_date( conn )
             parsed_visit_date = DateValues.parse_date_value( visit_date )
             day_loop = (
                fetch_transportation_day_loop(
@@ -244,7 +242,7 @@ def _persist_loop_group_slots(
             if day_loop is None:
                persisted = False
             else:
-               persisted = apply_itinerary_transportation_schedule(
+               persisted = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
                   cur,
                   name=stop.transportation,
                   added_as_attraction=stop.added_as_attraction,
@@ -252,7 +250,7 @@ def _persist_loop_group_slots(
                   route=day_loop.route,
                   legs=day_loop.legs )
          else:
-            persisted = update_itinerary_animal_schedule(
+            persisted = ScheduleItineraryItemProvider.update_itinerary_animal_schedule(
                cur,
                species=stop.species,
                exhibit=stop.exhibit,

@@ -4,7 +4,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ..data_access.itinerary_save_input_mapper import map_named_strings
+from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ...models import Animal
 from ...models import AnimalDiff
 from ...shared.calendar_dates import DateValues
@@ -86,8 +86,8 @@ def apply_selected_exhibit_animals_on_date_change(
    exhibits contribute animals without that flag. Deselected exhibits are
    ignored.
    """
-   selected = map_named_strings( selected_exhibits )
-   previously_selected = set( map_named_strings( previously_selected_exhibits ) )
+   selected = ItinerarySaveInputMapper.map_named_strings( selected_exhibits )
+   previously_selected = set( ItinerarySaveInputMapper.map_named_strings( previously_selected_exhibits ) )
    continuing_exhibits = [
       exhibit
       for exhibit in selected

@@ -17,10 +17,10 @@ from .bulk_schedule_window_prep import bulk_schedule_start_state
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import time_block_from_schedule_times
-from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
@@ -65,7 +65,7 @@ def fixed_time_item_isolated_after_adding_with_simulated_bulk(
       ],
       itinerary_context: dict[ str, Any ] ) -> bool:
    """True when scheduling new_item leaves it isolated even after packing animals."""
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    current_itinerary = build_current_itinerary(
       saved_itinerary,
       **itinerary_context )
@@ -238,7 +238,7 @@ def pack_animals_into_itinerary_in_memory(
 
    prepared_window = prepare_zoo_hours_schedule_window(
       conn,
-      fetch_saved_itinerary( conn ),
+      ItineraryProvider.fetch_saved_itinerary( conn ),
       **itinerary_context )
 
    if isinstance( prepared_window, ItinerarySaveResult ):

@@ -8,7 +8,6 @@ import pytest
 import api.app_strings as app_strings
 from api.app_strings import clear_app_string_cache
 from api.app_strings import format_app_string
-from api.app_strings import format_app_string
 from api.app_strings import get_app_string_values
 from api.html_strings import clear_html_string_cache
 

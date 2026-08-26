@@ -5,15 +5,10 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ..attraction_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
-from ..data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from ..data_access.remove_itinerary_item import delete_itinerary_animal
-from ..data_access.remove_itinerary_item import delete_itinerary_attraction
-from ..data_access.remove_itinerary_item import delete_itinerary_event
-from ..data_access.remove_itinerary_item import delete_itinerary_guardians_talk
-from ..data_access.remove_itinerary_item import delete_itinerary_transportation
-from ..data_access.remove_itinerary_item import delete_itinerary_wild_encounter
+from ..data_access.remove_itinerary_item_provider import RemoveItineraryItemProvider
+from ..data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ..domain.itinerary import build_current_itinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -46,7 +41,7 @@ def _apply_remove(
       cur: Cursor,
       schedule_item_key: ScheduleItemKey ) -> None:
    if isinstance( schedule_item_key, AnimalScheduleItemKey ):
-      delete_itinerary_animal(
+      RemoveItineraryItemProvider.delete_itinerary_animal(
          cur,
          species=schedule_item_key.species,
          exhibit=schedule_item_key.exhibit,
@@ -54,43 +49,43 @@ def _apply_remove(
       return
 
    if isinstance( schedule_item_key, TransportationScheduleItemKey ):
-      delete_itinerary_transportation(
+      RemoveItineraryItemProvider.delete_itinerary_transportation(
          cur,
          name=schedule_item_key.name,
          added_as_attraction=schedule_item_key.added_as_attraction )
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
-      saved_row = find_saved_itinerary_schedule_item_row(
-         fetch_saved_itinerary( cur.connection ),
+      saved_row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+         ItineraryProvider.fetch_saved_itinerary( cur.connection ),
          schedule_item_key )
 
       if isinstance( saved_row, ItineraryTransportationRecord ):
-         delete_itinerary_transportation(
+         RemoveItineraryItemProvider.delete_itinerary_transportation(
             cur,
             name=schedule_item_key.name,
             added_as_attraction=saved_row.added_as_attraction )
          return
 
-      delete_itinerary_attraction(
+      RemoveItineraryItemProvider.delete_itinerary_attraction(
          cur,
          name=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
-      delete_itinerary_guardians_talk(
+      RemoveItineraryItemProvider.delete_itinerary_guardians_talk(
          cur,
          talk_name=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, WildEncounterScheduleItemKey ):
-      delete_itinerary_wild_encounter(
+      RemoveItineraryItemProvider.delete_itinerary_wild_encounter(
          cur,
          wild_encounter=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, ItineraryEventType ):
-      delete_itinerary_event( cur, event_type=schedule_item_key )
+      RemoveItineraryItemProvider.delete_itinerary_event( cur, event_type=schedule_item_key )
 
 
 def _remove_transit_transportation_and_reschedule(
@@ -102,7 +97,7 @@ def _remove_transit_transportation_and_reschedule(
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
-   saved_before = fetch_saved_itinerary( conn )
+   saved_before = ItineraryProvider.fetch_saved_itinerary( conn )
    itinerary_before = build_current_itinerary(
       saved_before,
       **itinerary_context )
@@ -114,7 +109,7 @@ def _remove_transit_transportation_and_reschedule(
    finally:
       cur.close()
 
-   saved_after = fetch_saved_itinerary( conn )
+   saved_after = ItineraryProvider.fetch_saved_itinerary( conn )
    stops_to_schedule = stops_for_bulk_schedule_matching_previous(
       saved_before,
       saved_after )
@@ -135,7 +130,7 @@ def _remove_transit_transportation_and_reschedule(
       conn,
       previous_itinerary=itinerary_before,
       current_itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
    persist_itinerary_walk_route( conn, **itinerary_context )
 

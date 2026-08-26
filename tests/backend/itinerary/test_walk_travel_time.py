@@ -3,7 +3,7 @@ from __future__ import annotations
 from itinerary.support import schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
+from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.walk_travel_time import travel_time_minutes_from_length_px
@@ -84,5 +84,5 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
       GRIZZLY_WALK_NODE_ID )
    assert first_leg.travel_time_minutes == expected_minutes
 
-   persisted_leg = fetch_itinerary_walk_route( db.conn ).legs[ 0 ]
+   persisted_leg = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).legs[ 0 ]
    assert persisted_leg.travel_time_minutes == first_leg.travel_time_minutes

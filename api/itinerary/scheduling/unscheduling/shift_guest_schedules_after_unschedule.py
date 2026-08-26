@@ -5,20 +5,12 @@ from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import time_block_from_seconds
 from ..core.time_block import time_blocks_overlap
 from ..core.time_block import TimeBlock
-from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
-from ...data_access.itinerary import fetch_itinerary_animal_rows
-from ...data_access.itinerary import fetch_itinerary_attraction_rows
-from ...data_access.itinerary import fetch_itinerary_event_rows
-from ...data_access.itinerary import fetch_itinerary_guardians_talk_rows
-from ...data_access.itinerary import fetch_itinerary_transportation_rows
-from ...data_access.itinerary import fetch_itinerary_wild_encounter_rows
-from ...data_access.itinerary_transportation import delete_itinerary_transportation_legs
-from ...data_access.itinerary_transportation import insert_itinerary_transportation_legs
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.itinerary_transportation_provider import ItineraryTransportationProvider
 from ...data_access.saved_itinerary import SavedItinerary
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
-from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
-from ...data_access.schedule_itinerary_item import update_itinerary_event_schedule
-from ...data_access.schedule_itinerary_transportation import update_itinerary_transportation_schedule
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
+from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from ..items.schedule_item_key import ScheduleItemKey
 from ....models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ....shared.calendar_dates import DateValues
@@ -54,7 +46,7 @@ def resolve_unscheduled_item_time_block(
       saved_itinerary: SavedItinerary,
       schedule_item_key: ScheduleItemKey,
       ) -> TimeBlock | None:
-   row = find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       schedule_item_key )
 
@@ -80,7 +72,7 @@ def _collect_fixed_activity_blocks(
       freed_block: TimeBlock | None ) -> list[ TimeBlock ]:
    occupied: list[ TimeBlock ] = []
 
-   for talk_row in fetch_itinerary_guardians_talk_rows( conn ):
+   for talk_row in ItineraryProvider.fetch_itinerary_guardians_talk_rows( conn ):
       if talk_row.is_deleted:
          continue
 
@@ -91,7 +83,7 @@ def _collect_fixed_activity_blocks(
       if block is not None:
          occupied.append( block )
 
-   for encounter_row in fetch_itinerary_wild_encounter_rows( conn ):
+   for encounter_row in ItineraryProvider.fetch_itinerary_wild_encounter_rows( conn ):
       if encounter_row.is_deleted:
          continue
 
@@ -141,7 +133,7 @@ def _guest_shift_would_overlap_fixed_activity(
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int,
       occupied_blocks: list[ TimeBlock ] ) -> bool:
-   for animal_row in fetch_itinerary_animal_rows( conn ):
+   for animal_row in ItineraryProvider.fetch_itinerary_animal_rows( conn ):
       if animal_row.covered_by_talk:
          continue
 
@@ -162,7 +154,7 @@ def _guest_shift_would_overlap_fixed_activity(
             occupied_blocks ):
          return True
 
-   for attraction_row in fetch_itinerary_attraction_rows( conn ):
+   for attraction_row in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
       if not has_itinerary_schedule_times(
             attraction_row.start_time,
             attraction_row.end_time ):
@@ -180,7 +172,7 @@ def _guest_shift_would_overlap_fixed_activity(
             occupied_blocks ):
          return True
 
-   for transportation_row in fetch_itinerary_transportation_rows( conn ):
+   for transportation_row in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
       if not has_itinerary_schedule_times(
             transportation_row.start_time,
             transportation_row.end_time ):
@@ -198,7 +190,7 @@ def _guest_shift_would_overlap_fixed_activity(
             occupied_blocks ):
          return True
 
-   for event_row in fetch_itinerary_event_rows( conn ):
+   for event_row in ItineraryProvider.fetch_itinerary_event_rows( conn ):
       if not _should_shift_guest_scheduled_event( event_row.event_type ):
          continue
 
@@ -228,7 +220,7 @@ def _shift_guest_scheduled_animal_rows(
       *,
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
-   for animal_row in fetch_itinerary_animal_rows( conn ):
+   for animal_row in ItineraryProvider.fetch_itinerary_animal_rows( conn ):
       if animal_row.covered_by_talk:
          continue
 
@@ -250,7 +242,7 @@ def _shift_guest_scheduled_animal_rows(
       if shifted_times is None:
          continue
 
-      update_itinerary_animal_schedule(
+      ScheduleItineraryItemProvider.update_itinerary_animal_schedule(
          cur,
          species=animal_row.species,
          exhibit=animal_row.exhibit,
@@ -266,7 +258,7 @@ def _shift_guest_scheduled_attraction_rows(
       *,
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
-   for attraction_row in fetch_itinerary_attraction_rows( conn ):
+   for attraction_row in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
       if not has_itinerary_schedule_times(
             attraction_row.start_time,
             attraction_row.end_time ):
@@ -285,7 +277,7 @@ def _shift_guest_scheduled_attraction_rows(
       if shifted_times is None:
          continue
 
-      update_itinerary_attraction_schedule(
+      ScheduleItineraryItemProvider.update_itinerary_attraction_schedule(
          cur,
          name=attraction_row.attraction,
          start_time=shifted_times[ 0 ],
@@ -299,7 +291,7 @@ def _shift_guest_scheduled_transportation_rows(
       *,
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
-   for transportation_row in fetch_itinerary_transportation_rows( conn ):
+   for transportation_row in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
       if not has_itinerary_schedule_times(
             transportation_row.start_time,
             transportation_row.end_time ):
@@ -346,16 +338,16 @@ def _shift_guest_scheduled_transportation_rows(
       if not shifted_legs:
          continue
 
-      delete_itinerary_transportation_legs(
+      ItineraryTransportationProvider.delete_itinerary_transportation_legs(
          cur,
          transportation=transportation_row.transportation,
          added_as_attraction=transportation_row.added_as_attraction )
-      insert_itinerary_transportation_legs(
+      ItineraryTransportationProvider.insert_itinerary_transportation_legs(
          cur,
          transportation=transportation_row.transportation,
          added_as_attraction=transportation_row.added_as_attraction,
          legs=shifted_legs )
-      update_itinerary_transportation_schedule(
+      ScheduleItineraryTransportationProvider.update_itinerary_transportation_schedule(
          cur,
          name=transportation_row.transportation,
          added_as_attraction=transportation_row.added_as_attraction,
@@ -370,7 +362,7 @@ def _shift_guest_scheduled_event_rows(
       *,
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
-   for event_row in fetch_itinerary_event_rows( conn ):
+   for event_row in ItineraryProvider.fetch_itinerary_event_rows( conn ):
       if not _should_shift_guest_scheduled_event( event_row.event_type ):
          continue
 
@@ -392,7 +384,7 @@ def _shift_guest_scheduled_event_rows(
       if shifted_times is None:
          continue
 
-      update_itinerary_event_schedule(
+      ScheduleItineraryItemProvider.update_itinerary_event_schedule(
          cur,
          event_type=event_row.event_type,
          start_time=shifted_times[ 0 ],

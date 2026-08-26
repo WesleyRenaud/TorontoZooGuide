@@ -3,15 +3,10 @@ from __future__ import annotations
 from ..animal_item_key import AnimalScheduleItemKey
 from ..attraction_item_key import AttractionScheduleItemKey
 from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
-from ..data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
-from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_guardians_talk_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
-from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
+from ..data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from ..data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
@@ -26,7 +21,7 @@ def _apply_unschedule(
       cur: Cursor,
       schedule_item_key: ScheduleItemKey ) -> None:
    if isinstance( schedule_item_key, AnimalScheduleItemKey ):
-      clear_itinerary_animal_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
          cur,
          species=schedule_item_key.species,
          exhibit=schedule_item_key.exhibit,
@@ -34,43 +29,43 @@ def _apply_unschedule(
       return
 
    if isinstance( schedule_item_key, TransportationScheduleItemKey ):
-      clear_itinerary_transportation_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
          cur,
          name=schedule_item_key.name,
          added_as_attraction=schedule_item_key.added_as_attraction )
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
-      saved_row = find_saved_itinerary_schedule_item_row(
-         fetch_saved_itinerary( cur.connection ),
+      saved_row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+         ItineraryProvider.fetch_saved_itinerary( cur.connection ),
          schedule_item_key )
 
       if isinstance( saved_row, ItineraryTransportationRecord ):
-         clear_itinerary_transportation_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
             cur,
             name=schedule_item_key.name,
             added_as_attraction=saved_row.added_as_attraction )
          return
 
-      clear_itinerary_attraction_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_attraction_schedule(
          cur,
          name=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
-      clear_itinerary_guardians_talk_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_guardians_talk_schedule(
          cur,
          talk_name=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, WildEncounterScheduleItemKey ):
-      clear_itinerary_wild_encounter_schedule(
+      UnscheduleItineraryItemProvider.clear_itinerary_wild_encounter_schedule(
          cur,
          wild_encounter=schedule_item_key.name )
       return
 
    if isinstance( schedule_item_key, ItineraryEventType ):
-      delete_itinerary_event_schedule( cur, event_type=schedule_item_key )
+      UnscheduleItineraryItemProvider.delete_itinerary_event_schedule( cur, event_type=schedule_item_key )
 
 
 def unschedule_itinerary_item(

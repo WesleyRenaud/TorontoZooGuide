@@ -9,7 +9,6 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
-from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph

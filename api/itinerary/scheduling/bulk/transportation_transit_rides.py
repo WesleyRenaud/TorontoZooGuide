@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from .bulk_schedule_walk_order import representative_walk_node_id
-from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_transportation_row
-from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_transportation import set_itinerary_transportation_bulk_transit_evaluated
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.itinerary_transportation_provider import ItineraryTransportationProvider
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
-from ...data_access.schedule_itinerary_transportation import apply_itinerary_transportation_ride_segments
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
+from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
+from ...data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from .planned_transit_ride import PlannedTransitRide
 from ...routing.transit_ride_endpoint import TransitRideEndpoint
 from ...routing.transportation_boarding_station import station_for_transportation_legs
@@ -23,7 +24,6 @@ from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.legs_along_day_loop import legs_along_day_loop
 from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
-from ...transportation.transportation_day_loop import TransportationDayLoop
 from ...transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from ...transportation_item_key import TransportationScheduleItemKey
 from ....types import Connection
@@ -52,7 +52,7 @@ def apply_transportation_transit_rides(
    walk_graph = load_walk_graph()
    adjacency = build_walk_graph_adjacency( walk_graph )
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
    for transit_row in transit_rows:
       parsed_visit_date = DateValues.parse_date_value( visit_date )
@@ -86,7 +86,7 @@ def apply_transportation_transit_rides(
          continue
 
       timeline_start_seconds, start_node_id = _transit_timeline_start(
-         find_saved_itinerary_transportation_row(
+         SavedItineraryScheduleItemRowFinder.find_saved_itinerary_transportation_row(
             saved_itinerary,
             TransportationScheduleItemKey(
                name=transit_row.transportation,
@@ -131,7 +131,7 @@ def apply_transportation_transit_rides(
       cur = conn.cursor()
 
       try:
-         set_itinerary_transportation_bulk_transit_evaluated(
+         ItineraryTransportationProvider.set_itinerary_transportation_bulk_transit_evaluated(
             cur,
             transportation=transit_row.transportation,
             added_as_attraction=transit_row.added_as_attraction,
@@ -495,7 +495,7 @@ def _apply_timeline(
 
    try:
       for animal, start_time, end_time in animal_updates:
-         update_itinerary_animal_schedule(
+         ScheduleItineraryItemProvider.update_itinerary_animal_schedule(
             cur,
             species=animal.species,
             exhibit=animal.exhibit,
@@ -503,7 +503,7 @@ def _apply_timeline(
             start_time=start_time,
             end_time=end_time )
 
-      apply_itinerary_transportation_ride_segments(
+      ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
          cur,
          name=transit_row.transportation,
          added_as_attraction=transit_row.added_as_attraction,

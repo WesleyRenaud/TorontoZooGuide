@@ -11,9 +11,8 @@ from ..core.resolve_schedule_slot import resolve_schedule_slot
 from ..core.scheduling_anchor import scheduling_anchor_seconds_covering_fixed_zoo_starts
 from ..core.scheduling_anchor import scheduling_day_end_seconds
 from ..core.time_block import collect_time_blocks_from_itinerary
-from ...data_access.itinerary import fetch_itinerary_date
-from ...data_access.itinerary import fetch_saved_itinerary
-from ...data_access.itinerary_status import is_itinerary_error_suppressed
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.itinerary_status_provider import ItineraryStatusProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
@@ -68,7 +67,7 @@ def build_save_result(
       reasons=reasons or [],
       suppressed_warnings=suppressed_warnings or [],
       itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
 
@@ -82,7 +81,7 @@ def build_success_result(
       adjustments=adjustments or [],
       suppressed_warnings=suppressed_warnings or [],
       itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
+         ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
 
@@ -98,7 +97,7 @@ def prepare_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
       **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
-   visit_date = fetch_itinerary_date( conn )
+   visit_date = ItineraryProvider.fetch_itinerary_date( conn )
 
    if visit_date is None:
       return build_save_result(
@@ -149,7 +148,7 @@ def prepare_zoo_hours_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
       **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
-   visit_date = fetch_itinerary_date( conn )
+   visit_date = ItineraryProvider.fetch_itinerary_date( conn )
 
    if visit_date is None:
       return build_save_result(
@@ -210,7 +209,7 @@ def zoo_hours_schedule_window_seconds(
 
 
 def _early_admission_scheduling_is_allowed( conn: Connection ) -> bool:
-   return is_itinerary_error_suppressed(
+   return ItineraryStatusProvider.is_itinerary_error_suppressed(
       conn,
       ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP )
 

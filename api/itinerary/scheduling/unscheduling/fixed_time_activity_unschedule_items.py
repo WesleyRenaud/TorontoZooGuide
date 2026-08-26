@@ -4,10 +4,7 @@ from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import time_blocks_overlap
 from ..core.time_block import TimeBlock
 from ...data_access.saved_itinerary import SavedItinerary
-from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ...data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ...data_access.unschedule_itinerary_item import clear_itinerary_transportation_schedule
-from ...data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
+from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ...data_access.validated_itinerary import ValidatedItinerary
 from ....types import Cursor
 from ....types import ScheduleTimeKey
@@ -107,7 +104,7 @@ def clear_saved_schedules_overlapping_time_blocks(
             animal.start_time,
             animal.end_time,
             activity_blocks ):
-         clear_itinerary_animal_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
             cur,
             species=animal.species,
             exhibit=animal.exhibit )
@@ -117,7 +114,7 @@ def clear_saved_schedules_overlapping_time_blocks(
             attraction.start_time,
             attraction.end_time,
             activity_blocks ):
-         clear_itinerary_attraction_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
 
@@ -126,7 +123,7 @@ def clear_saved_schedules_overlapping_time_blocks(
             transportation.start_time,
             transportation.end_time,
             activity_blocks ):
-         clear_itinerary_transportation_schedule(
+         UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
             cur,
             name=transportation.transportation,
             added_as_attraction=transportation.added_as_attraction )
@@ -136,6 +133,6 @@ def clear_saved_schedules_overlapping_time_blocks(
             event.start_time,
             event.end_time,
             activity_blocks ):
-         delete_itinerary_event_schedule(
+         UnscheduleItineraryItemProvider.delete_itinerary_event_schedule(
             cur,
             event_type=event.event_type )

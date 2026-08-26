@@ -5,7 +5,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
@@ -64,7 +64,7 @@ def test_remove_itinerary_animal_deletes_row( db: DbControllers ) -> None:
 
    assert remove_itinerary_item( 'animals', ANIMAL_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert not any(
       row.species == 'African Lion' and row.exhibit == 'Africa Savanna'
@@ -78,7 +78,7 @@ def test_remove_itinerary_attraction_deletes_row( db: DbControllers ) -> None:
       'attractions',
       CAROUSEL ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert not any( row.attraction == CAROUSEL for row in saved.attraction_rows )
 
@@ -90,7 +90,7 @@ def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> Non
       'guardians_talks',
       f'{ GUARDIANS_TALK }||10:00' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert not any( row.talk_name == GUARDIANS_TALK for row in saved.guardians_talk_rows )
 
@@ -102,7 +102,7 @@ def test_remove_itinerary_wild_encounter_deletes_row( db: DbControllers ) -> Non
       'wild_encounters',
       wild_encounter_wire( AFRICAN_RAINFOREST ) ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert not any(
       row.wild_encounter == AFRICAN_RAINFOREST
@@ -114,13 +114,13 @@ def test_remove_itinerary_event_deletes_row( db: DbControllers ) -> None:
 
    assert schedule_itinerary_item( 'lunch', '' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 1
 
    assert remove_itinerary_item( 'lunch', '' ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 0
 
@@ -162,7 +162,7 @@ def test_remove_middle_animal_shifts_later_items_by_removed_duration(
 
    assert remove_itinerary_item( 'animals', CHEETAH_KEY ).success
 
-   saved = fetch_saved_itinerary( db.conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animals_by_key = {
       ( row.species, row.exhibit, row.enclosure_name ): row
       for row in saved.animal_rows

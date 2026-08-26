@@ -5,8 +5,8 @@ from ...attractions.coordinators.attraction_coordinator import AttractionCoordin
 from .check_set_itinerary_save_warnings import check_set_itinerary_save_warnings
 from .commit_set_itinerary import commit_set_itinerary
 from ..conflicts.itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
-from ..data_access.itinerary import fetch_itinerary_date
-from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
+from ..data_access.itinerary_provider import ItineraryProvider
+from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .prepare_set_itinerary_context import prepare_set_itinerary_context
@@ -43,7 +43,7 @@ def set_itinerary(
       confirming_fixed_time_item_long_wait: bool = False,
       confirming_guardians_talk_without_animal: bool = False,
       confirming_attraction_without_animal: bool = False ) -> ItinerarySaveResult:
-   save_input = map_itinerary_save_input(
+   save_input = ItinerarySaveInputMapper.map_itinerary_save_input(
       date,
       arrival_time,
       departure_time,
@@ -53,7 +53,7 @@ def set_itinerary(
       guardians_talks,
       wild_encounters,
       transportations )
-   old_visit_date = fetch_itinerary_date( conn )
+   old_visit_date = ItineraryProvider.fetch_itinerary_date( conn )
 
    controller_kwargs = itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,

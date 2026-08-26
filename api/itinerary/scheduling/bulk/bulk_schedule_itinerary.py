@@ -9,8 +9,8 @@ from .bulk_schedule_transit_legs import apply_bulk_schedule_transit_legs
 from .bulk_schedule_window_prep import itinerary_has_items_to_rebuild
 from .bulk_schedule_window_prep import prepare_bulk_schedule_windows
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
-from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...data_access.itinerary_provider import ItineraryProvider
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_covered_animals import apply_covered_by_talk_schedules
 from ..items.schedule_itinerary_helpers import build_itinerary_context
@@ -50,7 +50,7 @@ def bulk_schedule_itinerary(
    if stops_to_schedule is None:
       stops_to_schedule = list( animals_to_schedule or [] )
 
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
    # Rebuild may have no animal/attraction stops when the day only has talks or
    # encounters. Fail only when the itinerary itself has no items.

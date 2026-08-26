@@ -77,7 +77,7 @@ def test_itinerary_endpoints_return_success_payloads(
       'points': [],
    }
    assert StubZooControllers.instances[ 0 ].calls[ -2 ] == (
-      'accept_itinerary',
+      'AcceptItineraryProvider.accept_itinerary',
       {
          'animals_to_keep': None,
          'attractions_to_keep': None,

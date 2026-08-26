@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from .listed_schedule_target import apply_listed_schedule
@@ -76,7 +76,7 @@ def commit_listed_schedule(
    finally:
       cur.close()
 
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    cover_visit_times_for_scheduled_activity(
       conn,
       start_time=start_time,

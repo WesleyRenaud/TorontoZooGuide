@@ -4,9 +4,9 @@ from typing import Any
 
 from ...animal_item_key import AnimalScheduleItemKey
 from ...attraction_item_key import AttractionScheduleItemKey
-from ...data_access.attraction_also_transportation import attraction_is_also_transportation
-from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
-from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .listed_schedule_target import resolve_listed_schedule_target
@@ -35,7 +35,7 @@ def schedule_listed_itinerary_item(
       itinerary_context: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
       ) -> ItinerarySaveResult:
-   saved_itinerary = fetch_saved_itinerary( conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    prepared_window = prepare_schedule_window(
       conn,
       saved_itinerary,
@@ -56,7 +56,7 @@ def schedule_listed_itinerary_item(
    if membership_error is not None:
       return membership_error
 
-   if saved_schedule_item_is_already_scheduled(
+   if SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
          saved_itinerary,
          schedule_item_key ):
       return with_suppressed_warnings(
@@ -126,7 +126,7 @@ def _walk_node_id_for_listed_item(
          enclosure_name=schedule_item_key.enclosure_name )
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):
-      if attraction_is_also_transportation(
+      if AttractionAlsoTransportationProvider.attraction_is_also_transportation(
             conn,
             schedule_item_key.name ):
          return walk_node_id_for_transportation( schedule_item_key.name )

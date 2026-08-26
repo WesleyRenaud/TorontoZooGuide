@@ -3,7 +3,7 @@ from __future__ import annotations
 from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_itinerary_date
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from api.itinerary.validation.itinerary_schedule_time_order_validation import departure_follows_arrival
@@ -28,7 +28,7 @@ def test_arrival_time_is_valid_for_zoo_hours(
       wild_encounters=[],
    ).success
 
-   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
    assert arrival_time_is_valid_for_zoo_hours(
       '09:00',

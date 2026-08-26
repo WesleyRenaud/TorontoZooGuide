@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..animal_item_key import AnimalScheduleItemKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from ..data_access.itinerary_status import is_itinerary_error_suppressed
+from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_suppressed_warnings import append_suppressed_warning
 from ..scheduling.items.schedule_item_key import ListedScheduleItemKey
@@ -46,7 +46,7 @@ def schedule_item_not_on_itinerary_warning_is_required(
    if confirming_schedule_item_not_on_itinerary:
       return False
 
-   if is_itinerary_error_suppressed(
+   if ItineraryStatusProvider.is_itinerary_error_suppressed(
          conn,
          ItineraryErrorType.ITEM_NOT_ON_ITINERARY ):
       if suppressed_warnings is not None:

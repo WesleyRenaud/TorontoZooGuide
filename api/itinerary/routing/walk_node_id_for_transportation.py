@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..data_access.itinerary import fetch_itinerary_date_record
-from ..data_access.transportation_day_loop import fetch_main_transportation_station
+from ..data_access.itinerary_provider import ItineraryProvider
+from ..data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...request_connection import get_connection
 from ...shared.calendar_dates import DateValues
@@ -48,7 +48,7 @@ def _default_boarding_station_name( transportation_name: str ) -> str | None:
    if conn is None:
       return None
 
-   date_record = fetch_itinerary_date_record( conn )
+   date_record = ItineraryProvider.fetch_itinerary_date_record( conn )
 
    if date_record is not None:
       visit_date = DateValues.parse_date_value( date_record.itinerary_date )
@@ -62,4 +62,4 @@ def _default_boarding_station_name( transportation_name: str ) -> str | None:
          if day_loop is not None and day_loop.legs:
             return day_loop.legs[ 0 ].from_station
 
-   return fetch_main_transportation_station( conn, transportation_name )
+   return TransportationDayLoopProvider.fetch_main_transportation_station( conn, transportation_name )

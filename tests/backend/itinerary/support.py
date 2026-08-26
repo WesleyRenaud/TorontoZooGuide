@@ -8,8 +8,8 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
@@ -409,7 +409,7 @@ def saved_animal_row(
       *,
       species: str,
       exhibit: str ) -> ItineraryAnimalRecord:
-   saved_itinerary = fetch_saved_itinerary( db.conn )
+   saved_itinerary = ItineraryProvider.fetch_saved_itinerary( db.conn )
 
    for row in saved_itinerary.animal_rows:
       if row.species == species and row.exhibit == exhibit:
