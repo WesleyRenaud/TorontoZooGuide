@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from ....attractions.data_access.attraction_animal import fetch_attraction_animal_links
+from ....attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary import fetch_saved_itinerary
@@ -40,7 +40,9 @@ def viewing_spot_keys_to_cover_for_attractions(
    covered: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ] = {}
 
    for attraction_name in attraction_names:
-      for link in fetch_attraction_animal_links( conn, attraction_name ):
+      for link in AttractionAnimalProvider.fetch_attraction_animal_links(
+            conn,
+            attraction_name ):
          spot_key = link.viewing_spot_key()
          animal_row = animal_by_key.get( spot_key )
 
@@ -105,7 +107,9 @@ def restore_covered_animals_after_attraction_removed(
    restored: list[ ItineraryAnimalRecord ] = []
    replacement_end_seconds: int | None = None
 
-   for link in fetch_attraction_animal_links( conn, attraction_name ):
+   for link in AttractionAnimalProvider.fetch_attraction_animal_links(
+         conn,
+         attraction_name ):
       animal_row = animal_by_key.get( link.viewing_spot_key() )
 
       if animal_row is None or not animal_row.covered_by_talk:
@@ -163,7 +167,9 @@ def uncover_animals_for_removed_attractions(
          attraction_row.start_time,
          attraction_row.end_time )
 
-      for link in fetch_attraction_animal_links( conn, attraction_row.attraction ):
+      for link in AttractionAnimalProvider.fetch_attraction_animal_links(
+            conn,
+            attraction_row.attraction ):
          existing = animals_by_spot.get( link.viewing_spot_key() )
 
          if existing is None or not existing.covered_by_talk:

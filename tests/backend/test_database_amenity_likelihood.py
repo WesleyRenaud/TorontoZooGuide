@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import pytest
 
-from api.attractions.domain.attraction import calculate_attraction_likelihood
+from api.attractions.domain.attraction_builder import AttractionBuilder
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.types import SeasonalMultiplier
@@ -18,7 +18,7 @@ LikelihoodCalculator = Callable[ [ SeasonalMultiplier ], int ]
    [
       RestaurantBuilder.calculate_likelihood,
       GiftShopBuilder.calculate_likelihood,
-      calculate_attraction_likelihood
+      AttractionBuilder.calculate_likelihood
    ]
 )
 def test_simple_likelihood_calculators_clamp_and_round(

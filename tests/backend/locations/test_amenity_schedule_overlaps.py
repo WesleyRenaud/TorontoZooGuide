@@ -4,7 +4,7 @@ from locations_support import apply_amenity_opening_schedule
 import pytest
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.attractions.data_access.attraction import fetch_attraction_schedule_records
+from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
@@ -131,7 +131,7 @@ def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_rang
          AttractionCoordinator,
          'attraction',
          'Conservation Carousel',
-         fetch_attraction_schedule_records,
+         AttractionProvider.fetch_attraction_schedule_records,
          'attraction'
       )
    ]
@@ -216,7 +216,7 @@ def test_opening_schedule_can_replace_overlapping_schedules(
          AttractionCoordinator,
          'attraction',
          'Conservation Carousel',
-         fetch_attraction_schedule_records,
+         AttractionProvider.fetch_attraction_schedule_records,
          'attraction'
       )
    ]

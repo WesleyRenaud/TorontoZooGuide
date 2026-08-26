@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.attractions.data_access.attraction import fetch_attraction_schedule_override_records
-from api.attractions.data_access.attraction import fetch_attraction_schedule_records
+from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
@@ -32,7 +31,7 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db:
       message='Closed this weekend.'
    )
 
-   override_records = fetch_attraction_schedule_override_records( db.conn )
+   override_records = AttractionProvider.fetch_attraction_schedule_override_records( db.conn )
    assert [
       (
          record.attraction,

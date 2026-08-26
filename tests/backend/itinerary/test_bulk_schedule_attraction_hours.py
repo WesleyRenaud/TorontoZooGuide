@@ -7,8 +7,7 @@ from itinerary.support import itinerary_animals_for_exhibits
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.attractions.data_access.attraction_record import AttractionRecord
-from api.attractions.scheduling.attraction_operating_hours import attraction_has_configured_operating_hours
-from api.attractions.scheduling.attraction_operating_hours import attraction_operating_hours_seconds
+from api.attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.models.attraction import Attraction
@@ -68,13 +67,13 @@ def test_attraction_operating_hours_falls_back_to_zoo_hours_when_unset() -> None
       weekday_multiplier=1.0,
       weekend_holiday_multiplier=1.0 )
 
-   assert not attraction_has_configured_operating_hours(
+   assert not AttractionOperatingHoursResolver.has_configured_operating_hours(
       record,
       visit_date=date( 2026, 6, 20 ) )
    zoo_hours = OperatingHours(
       open_seconds=9 * 3600,
       close_seconds=18 * 3600 )
-   assert attraction_operating_hours_seconds(
+   assert AttractionOperatingHoursResolver.operating_hours_seconds(
       record,
       visit_date=date( 2026, 6, 20 ),
       zoo_operating_hours=zoo_hours ) == zoo_hours
@@ -97,13 +96,13 @@ def test_attraction_operating_hours_uses_weekend_pair() -> None:
       weekend_holiday_start_time='11:00 AM',
       weekend_holiday_end_time='5:00 PM' )
 
-   assert attraction_has_configured_operating_hours(
+   assert AttractionOperatingHoursResolver.has_configured_operating_hours(
       record,
       visit_date=date( 2026, 6, 20 ) )
    zoo_hours = OperatingHours(
       open_seconds=9 * 3600,
       close_seconds=18 * 3600 )
-   assert attraction_operating_hours_seconds(
+   assert AttractionOperatingHoursResolver.operating_hours_seconds(
       record,
       visit_date=date( 2026, 6, 20 ),
       zoo_operating_hours=zoo_hours ) == OperatingHours(

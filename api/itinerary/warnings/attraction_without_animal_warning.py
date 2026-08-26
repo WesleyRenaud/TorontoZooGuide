@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...animals.search.animals_matching_query import species_exhibit_keys
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
-from ...attractions.data_access.attraction_animal import fetch_attraction_linked_animals
+from ...attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from ..data_access.itinerary_name_key import itinerary_name_key
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
@@ -31,7 +31,9 @@ def attractions_without_matching_animal(
    missing_attractions: list[ AttractionDiff ] = []
 
    for attraction in validated_itinerary.attractions:
-      linked_animals = fetch_attraction_linked_animals( conn, attraction.name )
+      linked_animals = AttractionAnimalProvider.fetch_attraction_linked_animals(
+         conn,
+         attraction.name )
 
       if not linked_animals:
          continue
