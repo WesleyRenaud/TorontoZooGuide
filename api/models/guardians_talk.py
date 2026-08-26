@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
+from ..shared.name_matching_query import normalize_search_key
 from ..shared.value_conversion import ValueConversion
 from ..types import Coordinate, ScheduleTimeKey
 
@@ -30,6 +31,10 @@ class GuardiansTalk:
       self.unavailable_message = unavailable_message
       self.is_deleted = is_deleted
       self.linked_animals = list( linked_animals or [] )
+
+
+   def name_key( self ) -> str:
+      return normalize_search_key( self.name )
 
 
    def to_dict( self ) -> dict[ str, object ]:

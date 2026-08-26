@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.guardians.domain.attach_guardians_talk_linked_animals import attach_guardians_talk_linked_animals
+from api.guardians.domain.guardians_talk_linked_animals_builder import GuardiansTalkLinkedAnimalsBuilder
 from api.models import GuardiansTalk
 from api.models.guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
 from conftest import DbControllers
@@ -10,7 +10,7 @@ def test_attach_guardians_talk_linked_animals_uses_seeded_links(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
-   talks = attach_guardians_talk_linked_animals(
+   talks = GuardiansTalkLinkedAnimalsBuilder.attach(
       db.conn,
       [
          GuardiansTalk(

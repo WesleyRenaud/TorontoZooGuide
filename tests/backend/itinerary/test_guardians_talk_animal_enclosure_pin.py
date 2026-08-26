@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from api.guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
+from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
 from api.itinerary.data_access.itinerary import fetch_itinerary_animal_rows
@@ -128,7 +128,7 @@ def test_seeded_guardians_talk_animal_enclosure_links( db: DbControllers ) -> No
    assert db.conn is not None
 
    for ( talk_name, species ), enclosure_name in EXPECTED_TALK_ENCLOSURE_LINKS.items():
-      links = fetch_guardians_talk_animal_links( db.conn, talk_name )
+      links = GuardiansTalkAnimalProvider.fetch_animal_links( db.conn, talk_name )
       matching = [
          link
          for link in links
@@ -316,7 +316,7 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
 def test_viewing_spot_index_for_talk_uses_linked_enclosure_before_talk_name_match(
       db: DbControllers ) -> None:
    assert db.conn is not None
-   links = fetch_guardians_talk_animal_links( db.conn, 'African Penguin' )
+   links = GuardiansTalkAnimalProvider.fetch_animal_links( db.conn, 'African Penguin' )
    master_route_loop = default_master_route_loop_by_id()[
       'africa_savanna_canadian_domain'
    ]

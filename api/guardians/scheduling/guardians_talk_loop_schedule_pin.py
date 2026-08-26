@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
+from ...guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from ...guardians.data_access.guardians_talk_animal_record import GuardiansTalkAnimalRecord
 from ...itinerary.routing.itinerary_stop import ItineraryStop
 from ...itinerary.routing.loop_schedule_pin import LoopSchedulePin
@@ -22,7 +22,7 @@ def resolve_guardians_talk_loop_pin(
    if start_seconds is None or end_seconds is None:
       return None
 
-   linked_animals = fetch_guardians_talk_animal_links(
+   linked_animals = GuardiansTalkAnimalProvider.fetch_animal_links(
       conn,
       guardians_talk.name )
    loops_by_id = default_master_route_loop_by_id()
