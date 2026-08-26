@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from ..data_access.event import fetch_events
-from ..data_access.event import insert_event
+from ..data_access.event_provider import EventProvider
 from ...models import Event
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
@@ -20,7 +19,7 @@ class EventCoordinator():
          day=day,
          year=year )
 
-      return fetch_events( get_connection(), target_date )
+      return EventProvider.fetch_events( get_connection(), target_date )
 
 
    @classmethod
@@ -32,7 +31,7 @@ class EventCoordinator():
          link: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      return insert_event(
+      return EventProvider.insert_event(
          get_connection(),
          event=Event(
             name=name,
