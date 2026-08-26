@@ -13,7 +13,7 @@ from ....shared.enums import ItineraryErrorType
 from ..sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
 from ..sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
 from ....types import Connection
-from ...warnings.bulk_schedule_itinerary_warning import build_bulk_schedule_itinerary_not_enough_time_issue
+from ...warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 
 
 def finalize_bulk_schedule_itinerary(
@@ -26,7 +26,7 @@ def finalize_bulk_schedule_itinerary(
 
    if remaining_stops:
       reasons = [
-         build_bulk_schedule_itinerary_not_enough_time_issue(
+         BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
             remaining_stops ),
       ]
 

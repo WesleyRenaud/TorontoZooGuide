@@ -23,8 +23,8 @@ from .schedule_itinerary_helpers import prepare_schedule_window
 from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ...warnings.itinerary_suppressed_warnings import with_suppressed_warnings
-from ...warnings.schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
+from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
+from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
 
 
 def schedule_listed_itinerary_item(
@@ -59,7 +59,7 @@ def schedule_listed_itinerary_item(
    if SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
          saved_itinerary,
          schedule_item_key ):
-      return with_suppressed_warnings(
+      return ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
          build_save_result(
             conn,
             ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
@@ -103,13 +103,13 @@ def schedule_listed_itinerary_item(
 
    start_time_key, end_time = slot
 
-   return with_suppressed_warnings(
+   return ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
       commit_listed_schedule(
          conn,
          schedule_item_key=schedule_item_key,
          start_time=start_time_key,
          end_time=end_time,
-         insert_if_missing=not saved_itinerary_has_schedule_item(
+         insert_if_missing=not ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
             saved_itinerary,
             schedule_item_key ),
          itinerary_context=itinerary_context ),

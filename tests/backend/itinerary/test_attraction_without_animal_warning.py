@@ -4,11 +4,10 @@ from collections.abc import Callable
 from datetime import date
 
 from api.animals.search.species_exhibit_key import SpeciesExhibitKey
+from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
-from api.itinerary.warnings.attraction_without_animal_warning import attraction_matches_species_exhibit_pairs
-from api.itinerary.warnings.attraction_without_animal_warning import attractions_without_matching_animal
-from api.itinerary.warnings.attraction_without_animal_warning import build_attraction_without_animal_issue_from_attractions
+from api.itinerary.warnings.attraction_without_animal_warning_builder import AttractionWithoutAnimalWarningBuilder
 from api.models.animal_diff import AnimalDiff
 from api.models.attraction_diff import AttractionDiff
 from api.shared.enums import ItineraryErrorType
@@ -48,30 +47,30 @@ def test_attractions_without_matching_animal_skips_unlinked_attractions(
       events=[],
    )
 
-   missing = attractions_without_matching_animal( validated, db.conn )
+   missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal( validated, db.conn )
 
    assert [ attraction.name for attraction in missing ] == [ KANGAROO_WALK_THRU ]
 
 
-def test_attraction_matches_species_exhibit_pairs() -> None:
-   assert attraction_matches_species_exhibit_pairs(
+def test_any_linked_in_species_exhibit_pairs() -> None:
+   assert SpeciesExhibitKeyBuilder.any_linked_in(
       [
          SpeciesExhibitKey.from_values(
             'Western Grey Kangaroo',
             'Australasia Outdoor' ),
       ],
-      linked_animals=[
+      [
          SpeciesExhibitKey.from_values(
             'Western Grey Kangaroo',
             'Australasia Outdoor' ),
       ] )
-   assert not attraction_matches_species_exhibit_pairs(
+   assert not SpeciesExhibitKeyBuilder.any_linked_in(
       [
          SpeciesExhibitKey.from_values(
             'Western Grey Kangaroo',
             'Wrong Exhibit' ),
       ],
-      linked_animals=[
+      [
          SpeciesExhibitKey.from_values(
             'Western Grey Kangaroo',
             'Australasia Outdoor' ),
@@ -79,7 +78,7 @@ def test_attraction_matches_species_exhibit_pairs() -> None:
 
 
 def test_build_attraction_without_animal_issue_from_attractions() -> None:
-   issue = build_attraction_without_animal_issue_from_attractions(
+   issue = AttractionWithoutAnimalWarningBuilder.build_issue_from_attractions(
       [
          AttractionDiff(
             name=KANGAROO_WALK_THRU,
@@ -242,6 +241,6 @@ def test_attractions_without_matching_animal_detects_linked_attraction(
       events=[],
    )
 
-   missing = attractions_without_matching_animal( validated, db.conn )
+   missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal( validated, db.conn )
 
    assert [ attraction.name for attraction in missing ] == [ KANGAROO_WALK_THRU ]

@@ -12,7 +12,7 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.scheduling.core.time_block import time_block_gap_seconds
 from api.itinerary.scheduling.core.time_block import TimeBlock
-from api.itinerary.warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
+from api.itinerary.warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
 from api.models import Animal
 from api.models import GuardiansTalk
 from api.shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
@@ -93,7 +93,7 @@ def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
          end_time='1:30 PM' ),
    ]
 
-   isolated = isolated_guardians_talks_from_itinerary( itinerary )
+   isolated = GuardiansTalkLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
 
    assert [ talk.name for talk in isolated ] == [ MEERKAT_TALK ]
    assert MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
@@ -118,7 +118,7 @@ def test_isolated_guardians_talks_ignores_talk_near_other_items() -> None:
          end_time='10:45 AM' ),
    ]
 
-   assert isolated_guardians_talks_from_itinerary( itinerary ) == []
+   assert GuardiansTalkLongWaitWarningBuilder.isolated_from_itinerary( itinerary ) == []
 
 
 def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(

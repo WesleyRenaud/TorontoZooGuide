@@ -9,7 +9,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
-from api.itinerary.warnings.wild_encounter_long_wait_warning import isolated_wild_encounters_from_itinerary
+from api.itinerary.warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
 from api.models import Animal
 from api.models import WildEncounter
 from api.shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
@@ -66,7 +66,7 @@ def test_isolated_wild_encounters_detects_encounter_far_from_other_items() -> No
          end_time='1:45 PM' ),
    ]
 
-   isolated = isolated_wild_encounters_from_itinerary( itinerary )
+   isolated = WildEncounterLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
 
    assert [ encounter.name for encounter in isolated ] == [ RHINO_ENCOUNTER ]
    assert MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
@@ -90,7 +90,7 @@ def test_isolated_wild_encounters_ignores_encounter_near_other_items() -> None:
          end_time='11:00 AM' ),
    ]
 
-   assert isolated_wild_encounters_from_itinerary( itinerary ) == []
+   assert WildEncounterLongWaitWarningBuilder.isolated_from_itinerary( itinerary ) == []
 
 
 def test_set_itinerary_warns_when_encounter_is_far_from_other_scheduled_encounter(
