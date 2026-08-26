@@ -6,7 +6,7 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.guardians.data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_talk
+from api.guardians.data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from conftest import DbControllers
 
 
@@ -58,7 +58,7 @@ def test_guardians_talk_schedule_can_replace_overlapping_schedules(
          message='Replacement schedule.' )
    )
 
-   schedule_records = fetch_guardians_talk_schedule_records_for_talk(
+   schedule_records = GuardiansTalkScheduleProvider.fetch_schedule_records_for_talk(
       db.conn,
       talk_name='African Lion',
       location='Africa Savanna' )
@@ -96,7 +96,7 @@ def test_guardians_talk_schedule_can_trim_existing_schedule_around_new_schedule(
          message='Special schedule.' )
    )
 
-   schedule_records = fetch_guardians_talk_schedule_records_for_talk(
+   schedule_records = GuardiansTalkScheduleProvider.fetch_schedule_records_for_talk(
       db.conn,
       talk_name='African Lion',
       location='Africa Savanna' )

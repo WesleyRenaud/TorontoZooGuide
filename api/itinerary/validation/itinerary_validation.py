@@ -24,7 +24,7 @@ from ..domain.build_transportation_route_marker_sequences import build_transport
 from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_window
 from ..domain.itinerary_visit_window import schedule_time_occurs_outside_visit_window
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ...guardians.itinerary.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from ...guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
 from ...models import Animal
 from ...models import AnimalDiff
 from ...models import AttractionDiff
@@ -466,7 +466,7 @@ def validate_itinerary_for_save(
    visit_date_is_changing = (
       has_saved_itinerary
       and old_visit_date != save_input.date.isoformat() )
-   guardians_talk_diffs = validate_guardians_talks_for_itinerary(
+   guardians_talk_diffs = GuardiansTalkItineraryValidationBuilder.validate_for_itinerary(
       save_input.guardians_talks,
       guardians_coordinator.get_guardians_talk_schedule(
          month=save_input.month(),

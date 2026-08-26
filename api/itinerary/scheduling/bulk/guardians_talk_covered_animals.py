@@ -9,7 +9,7 @@ from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_cover_and_schedule
 from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ....guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
+from ....guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from ....models import AnimalDiff
 from ....models import GuardiansTalkDiff
 from ...routing.loop_schedule_pin import LoopSchedulePin
@@ -42,7 +42,7 @@ def viewing_spot_keys_to_cover_for_loop_pins(
    for loop_pin in loop_pins:
       talk_name = loop_pin.stop.item_key
 
-      for link in fetch_guardians_talk_animal_links( conn, talk_name ):
+      for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
          spot_key = link.viewing_spot_key()
          animal_row = animal_by_key.get( spot_key )
 
@@ -93,7 +93,7 @@ def uncover_animals_for_talk(
    }
    uncovered: list[ ItineraryAnimalRecord ] = []
 
-   for link in fetch_guardians_talk_animal_links( conn, talk_name ):
+   for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
       animal_row = animal_by_key.get( link.viewing_spot_key() )
 
       if animal_row is None or not animal_row.covered_by_talk:
@@ -124,7 +124,7 @@ def restore_covered_animals_after_talk_removed(
    restored: list[ ItineraryAnimalRecord ] = []
    replacement_end_seconds: int | None = None
 
-   for link in fetch_guardians_talk_animal_links( conn, talk_name ):
+   for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
       animal_row = animal_by_key.get( link.viewing_spot_key() )
 
       if animal_row is None or not animal_row.covered_by_talk:
@@ -188,7 +188,7 @@ def uncover_animals_for_unavailable_talks(
       if talk_block is None:
          continue
 
-      for link in fetch_guardians_talk_animal_links( conn, talk.name ):
+      for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk.name ):
          existing = animals_by_spot.get( link.viewing_spot_key() )
 
          if existing is None or not existing.covered_by_talk:

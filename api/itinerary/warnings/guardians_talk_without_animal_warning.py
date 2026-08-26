@@ -5,7 +5,7 @@ from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuild
 from ..data_access.itinerary_name_key import itinerary_name_key
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ...guardians.data_access.guardians_talk_animal import fetch_guardians_talk_linked_animals
+from ...guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
@@ -37,7 +37,7 @@ def guardians_talks_without_matching_animal(
 
       if talk_matches_species_exhibit_pairs(
             animal_keys,
-            linked_animals=fetch_guardians_talk_linked_animals(
+            linked_animals=GuardiansTalkAnimalProvider.fetch_linked_animals(
                conn,
                talk.name ) ):
          continue
@@ -102,7 +102,7 @@ def guardians_talk_without_animal_warning_is_required_for_talk(
 
    return not talk_matches_species_exhibit_pairs(
       species_exhibit_pairs,
-      linked_animals=fetch_guardians_talk_linked_animals(
+      linked_animals=GuardiansTalkAnimalProvider.fetch_linked_animals(
          conn,
          talk.name ) )
 

@@ -6,7 +6,7 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.guardians.itinerary.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from api.guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.models import GuardiansTalk
@@ -28,7 +28,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
          is_available=True ),
    ]
 
-   result = validate_guardians_talks_for_itinerary(
+   result = GuardiansTalkItineraryValidationBuilder.validate_for_itinerary(
       guardians_talks_to_include=[
          ItineraryGuardiansTalkInput( name='African Lion', start_time='10:00' ),
          ItineraryGuardiansTalkInput( name='Amur Tiger', start_time='10:00' ),
@@ -114,7 +114,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       message=None
    )
 
-   talk_result = validate_guardians_talks_for_itinerary(
+   talk_result = GuardiansTalkItineraryValidationBuilder.validate_for_itinerary(
       [
          ItineraryGuardiansTalkInput( name=' african lion ', start_time='10:00' ),
          ItineraryGuardiansTalkInput( name='AMUR TIGER', start_time='09:00' ),

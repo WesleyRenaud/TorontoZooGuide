@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from api.guardians.search.guardians_talks_matching_query import build_guardians_talks_matching_query
+from api.guardians.search.guardians_talks_matching_query_builder import GuardiansTalksMatchingQueryBuilder
 from api.models import GuardiansTalk
 from api.models import Pavilion
 from api.models import Restroom
@@ -85,12 +85,12 @@ def test_matching_query_filters_and_handles_empty_query() -> None:
 
    assert [
       talk.name
-      for talk in build_guardians_talks_matching_query( guardians_talks, 'komodo' )
+      for talk in GuardiansTalksMatchingQueryBuilder.build( guardians_talks, 'komodo' )
    ] == [ 'Komodo Dragon' ]
 
    assert [
       talk.name
-      for talk in build_guardians_talks_matching_query( guardians_talks, '' )
+      for talk in GuardiansTalksMatchingQueryBuilder.build( guardians_talks, '' )
    ] == [
       'Komodo Dragon',
       'Arctic Wolf',
