@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.attractions.data_access.attraction_animal import fetch_attraction_animal_links
+from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from api.itinerary.attraction_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
@@ -26,7 +26,9 @@ KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
 
 def test_attraction_animal_seed_links_kangaroo_walk_thru(
       db: DbControllers ) -> None:
-   links = fetch_attraction_animal_links( db.conn, KANGAROO_WALK_THRU )
+   links = AttractionAnimalProvider.fetch_attraction_animal_links(
+      db.conn,
+      KANGAROO_WALK_THRU )
 
    assert [
       (

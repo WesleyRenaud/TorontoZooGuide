@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import date
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.attractions.data_access.attraction import fetch_attraction_schedule_records
+from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
-from api.attractions.domain.attraction import get_active_attraction_schedule_status
+from api.attractions.domain.attraction_builder import AttractionBuilder
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
@@ -68,10 +68,10 @@ def get_amenity_schedule_status(
          target_date=target_date,
          weekday=weekday )
 
-   return get_active_attraction_schedule_status(
+   return AttractionBuilder.get_active_schedule_status(
       schedule_records=[
          schedule_record
-         for schedule_record in fetch_attraction_schedule_records( db.conn )
+         for schedule_record in AttractionProvider.fetch_attraction_schedule_records( db.conn )
          if schedule_record.attraction == item_name
       ],
       attraction_name=item_name,

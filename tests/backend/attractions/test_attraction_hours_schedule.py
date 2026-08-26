@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.attractions.data_access.attraction_hours_schedule import fetch_attraction_hours_schedule_records
+from api.attractions.data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from api.request_connection import get_connection
 from conftest import DbControllers
 
@@ -45,7 +45,7 @@ def test_set_attraction_hours_schedule_saves_and_resolves_blank_dates(
          weekend_start='11:00 AM',
          weekend_end='4:00 PM' ) )
 
-   records = fetch_attraction_hours_schedule_records( get_connection() )
+   records = AttractionHoursScheduleProvider.fetch_hours_schedule_records( get_connection() )
    matching = [
       record
       for record in records
@@ -101,7 +101,7 @@ def test_replace_attraction_hours_schedule_overlaps(
 
    matching = [
       record
-      for record in fetch_attraction_hours_schedule_records( get_connection() )
+      for record in AttractionHoursScheduleProvider.fetch_hours_schedule_records( get_connection() )
       if record.attraction == ATTRACTION
    ]
 
@@ -137,7 +137,7 @@ def test_trim_attraction_hours_schedule_overlaps_copies_times(
    matching = sorted(
       [
          record
-         for record in fetch_attraction_hours_schedule_records( get_connection() )
+         for record in AttractionHoursScheduleProvider.fetch_hours_schedule_records( get_connection() )
          if record.attraction == ATTRACTION
       ],
       key=lambda record: record.schedule_start_date )

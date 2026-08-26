@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
+from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_transportation_row
 from ...data_access.itinerary import fetch_saved_itinerary
@@ -107,7 +107,7 @@ def apply_transportation_transit_rides(
       operating_hours = (
          None
          if zoo_operating_hours is None
-         else fetch_configured_attraction_operating_hours_seconds(
+         else AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
             conn,
             transit_row.transportation,
             visit_date=parsed_visit_date,

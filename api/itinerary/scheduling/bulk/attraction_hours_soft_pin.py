@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import date
 
-from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
+from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_pin_segments import viewing_spot_index_for_stop_in_loop
@@ -45,7 +45,7 @@ def resolve_attraction_hours_soft_pins(
       if loop_id is None:
          continue
 
-      attraction_hours = fetch_configured_attraction_operating_hours_seconds(
+      attraction_hours = AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
          conn,
          attraction_row.attraction,
          visit_date=parsed_visit_date,

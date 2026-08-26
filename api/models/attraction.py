@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..shared.name_matching_query import normalize_search_key
 from ..shared.value_conversion import ValueConversion
 from ..types import ScheduleTimeKey
 
@@ -45,6 +46,10 @@ class Attraction:
       self.close_time = close_time
       self.is_also_transportation = is_also_transportation
       self.route_duration_minutes = route_duration_minutes
+
+
+   def name_key( self ) -> str:
+      return normalize_search_key( self.name )
 
 
    def to_dict( self ) -> dict[ str, object ]:

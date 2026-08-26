@@ -5,7 +5,7 @@ from typing import Any
 from ...attraction_item_key import AttractionScheduleItemKey
 from .attraction_or_transportation_duration import default_duration_seconds_for_attraction_or_transportation
 from ....attractions.scheduling.attraction_hours_schedule_adjustment import AttractionHoursScheduleAdjustment
-from ....attractions.scheduling.attraction_operating_hours import fetch_configured_attraction_operating_hours_seconds
+from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from ..core.find_next_available_slot import find_previous_available_slot
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.find_saved_itinerary_schedule_item_row import saved_schedule_item_is_already_scheduled
@@ -54,7 +54,7 @@ def schedule_attraction_itinerary_item(
    attraction_hours = (
       None
       if prepared_window.zoo_operating_hours is None
-      else fetch_configured_attraction_operating_hours_seconds(
+      else AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
          conn,
          schedule_item_key.name,
          visit_date=prepared_window.visit_date,
