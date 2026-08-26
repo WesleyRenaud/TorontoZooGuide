@@ -4,14 +4,13 @@ from dataclasses import replace
 from datetime import date
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...animals.search.animals_matching_query import species_exhibit_key
-from ...animals.search.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ..data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
-from ..data_access.itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
+from ..data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
+from ..data_access.itinerary_animal_save_carryover_record import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_attraction_save_carryover import itinerary_attraction_save_carryover
 from ..data_access.itinerary_event_record import ItineraryEventRecord
@@ -70,8 +69,8 @@ def _preferred_habitat_for_removed_animal(
          threshold=0,
          exhibits_to_include=[ removed.exhibit ] )
       if (
-         species_exhibit_key( animal )
-         == species_exhibit_key_from_values( removed.species, removed.exhibit ) )
+         SpeciesExhibitKeyBuilder.from_animal( animal )
+         == SpeciesExhibitKeyBuilder.from_values( removed.species, removed.exhibit ) )
    ]
 
    if len( preferred_habitats ) != 1:
@@ -119,7 +118,7 @@ def validate_itinerary_animals(
    ] ] = []
 
    for animal in animals:
-      carryover = itinerary_animal_save_carryover(
+      carryover = ItineraryAnimalSaveCarryoverMapper.map_from_saved_animal_rows(
          saved_animal_rows,
          animal,
          old_visit_date=old_visit_date )

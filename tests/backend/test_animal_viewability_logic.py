@@ -3,11 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
-from api.animals.domain.animal_viewability import calculate_animal_likelihood
-from api.animals.domain.animal_viewability import get_active_exhibit_status
-from api.animals.domain.animal_viewability import get_active_limited_viewing_status
-from api.animals.domain.animal_viewability import get_active_off_display_status
-from api.animals.domain.animal_viewability import get_active_viewing_alert_status
+from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuilder
 from api.shared.enums import ScheduleStatus
 
 
@@ -61,7 +57,7 @@ def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRe
 
 
 def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs() -> None:
-   assert calculate_animal_likelihood(
+   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
       temp=-20,
       sigma=2,
       enclosure_type='indoor',
@@ -70,7 +66,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs() -> None
       exhibit_day_seasonal_availability_multiplier=1
    ) == 100
 
-   assert calculate_animal_likelihood(
+   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
       temp=-20,
       sigma=2,
       enclosure_type='indoor',
@@ -79,7 +75,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs() -> None
       exhibit_day_seasonal_availability_multiplier=0
    ) == 0
 
-   assert calculate_animal_likelihood(
+   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
       temp=20,
       sigma=2,
       enclosure_type='Outdoor',
@@ -88,7 +84,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs() -> None
       exhibit_day_seasonal_availability_multiplier=0.5
    ) == 12
 
-   assert calculate_animal_likelihood(
+   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
       temp=None,
       sigma=2,
       enclosure_type='Outdoor',
@@ -118,10 +114,10 @@ def test_active_status_helpers() -> None:
       closed_end='2026-06-30' )
    target_date = date( 2026, 6, 15 )
 
-   assert get_active_off_display_status( active_record, target_date ) == ( True, 'Temporarily hidden.' )
-   assert get_active_limited_viewing_status( active_record, target_date ) == ( True, 'Morning only.' )
-   assert get_active_viewing_alert_status( active_record, target_date ) == ( True, 'Low visibility.' )
-   assert get_active_exhibit_status( active_record, target_date ) == ( ScheduleStatus.CLOSED, 'Closed.' )
+   assert AnimalViewabilityBuilder.get_active_off_display_status( active_record, target_date ) == ( True, 'Temporarily hidden.' )
+   assert AnimalViewabilityBuilder.get_active_limited_viewing_status( active_record, target_date ) == ( True, 'Morning only.' )
+   assert AnimalViewabilityBuilder.get_active_viewing_alert_status( active_record, target_date ) == ( True, 'Low visibility.' )
+   assert AnimalViewabilityBuilder.get_active_exhibit_status( active_record, target_date ) == ( ScheduleStatus.CLOSED, 'Closed.' )
 
 
 def test_active_status_helpers_return_inactive_defaults() -> None:
@@ -161,13 +157,13 @@ def test_active_status_helpers_return_inactive_defaults() -> None:
       closed_end='2026-06-30' )
    target_date = date( 2026, 7, 15 )
 
-   assert get_active_off_display_status( inactive_record, target_date ) == ( False, None )
-   assert get_active_limited_viewing_status( inactive_record, target_date ) == ( False, None )
-   assert get_active_viewing_alert_status( inactive_record, target_date ) == ( False, None )
-   assert get_active_exhibit_status( inactive_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
+   assert AnimalViewabilityBuilder.get_active_off_display_status( inactive_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_limited_viewing_status( inactive_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_viewing_alert_status( inactive_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_exhibit_status( inactive_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
 
-   assert get_active_off_display_status( expired_record, target_date ) == ( False, None )
-   assert get_active_limited_viewing_status( expired_record, target_date ) == ( False, None )
-   assert get_active_viewing_alert_status( expired_record, target_date ) == ( False, None )
-   assert get_active_exhibit_status( expired_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
-   assert get_active_exhibit_status( expired_record, date( 2026, 6, 15 ) ) == ( ScheduleStatus.OPEN, None )
+   assert AnimalViewabilityBuilder.get_active_off_display_status( expired_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_limited_viewing_status( expired_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_viewing_alert_status( expired_record, target_date ) == ( False, None )
+   assert AnimalViewabilityBuilder.get_active_exhibit_status( expired_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
+   assert AnimalViewabilityBuilder.get_active_exhibit_status( expired_record, date( 2026, 6, 15 ) ) == ( ScheduleStatus.OPEN, None )

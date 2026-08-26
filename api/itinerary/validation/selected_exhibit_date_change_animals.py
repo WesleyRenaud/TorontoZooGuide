@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...animals.search.animals_matching_query import species_exhibit_key_from_values
-from ...animals.search.animals_matching_query import viewing_spot_key
+from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
+from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ...models import Animal
@@ -35,7 +35,7 @@ def _likelihoods_by_viewing_spot_for_exhibits(
       exhibits_to_include=list( selected_exhibits ) )
 
    return {
-      viewing_spot_key( animal ): animal.likelihood
+      ViewingSpotKeyBuilder.from_animal( animal ): animal.likelihood
       for animal in animals
       if animal.exhibit != None
    }
@@ -112,7 +112,7 @@ def apply_selected_exhibit_animals_on_date_change(
          continue
 
       if (
-            species_exhibit_key_from_values( animal.species, animal.exhibit )
+            SpeciesExhibitKeyBuilder.from_values( animal.species, animal.exhibit )
             in saved_species_exhibit_keys ):
          continue
 
@@ -141,7 +141,7 @@ def apply_selected_exhibit_animals_on_date_change(
          visit_date=visit_date,
          visit_date_temp=visit_date_temp,
          threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD ):
-      spot_key = viewing_spot_key( animal )
+      spot_key = ViewingSpotKeyBuilder.from_animal( animal )
 
       if spot_key in existing_keys:
          continue

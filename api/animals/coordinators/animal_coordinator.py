@@ -1,28 +1,25 @@
 from __future__ import annotations
 
-from ..data_access.animal_information import fetch_animal_information
-from ..data_access.animal_species_name import fetch_animal_species_names
-from ..data_access.animal_status import save_animal_off_display_status
-from ..data_access.animal_status import save_animal_on_display_status
-from ..data_access.animal_viewable_on_day import fetch_animals_viewable_on_day_records
-from ..data_access.animal_viewing_alert import delete_animal_viewing_alert
-from ..data_access.animal_viewing_alert import save_animal_viewing_alert
-from ..data_access.animal_viewing_scope import fetch_animal_viewing_scopes
-from ..data_access.animal_visibility_schedule import delete_animal_visibility_schedule
-from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
-from ..domain.animal_viewability import build_viewable_animals_on_day
-from ..domain.animal_viewability import resolve_animal_viewability_context
-from ..domain.filter_animal_records_for_itinerary import filter_animal_records_for_itinerary
+from ..data_access.animal_information_provider import AnimalInformationProvider
+from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
+from ..data_access.animal_status_provider import AnimalStatusProvider
+from ..data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
+from ..data_access.animal_viewing_alert_provider import AnimalViewingAlertProvider
+from ..data_access.animal_viewing_scope_provider import AnimalViewingScopeProvider
+from ..data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
+from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
+from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
+from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ..itinerary.itinerary_animals import build_itinerary_animals
+from ..itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from ...models import Animal
 from ...request_connection import get_connection
-from ..scheduling.animal_visibility_schedule import build_animal_limited_viewing_schedule
-from ..search.animals_matching_query import build_animals_matching_query
+from ..scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
+from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
 from ...shared.enums import AnimalViewingScope
-from ..status.animal_status import build_animal_off_display_status
-from ..status.animal_viewing_alert_builder import build_animal_viewing_alert
-from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
+from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
+from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class AnimalCoordinator():
@@ -39,22 +36,22 @@ class AnimalCoordinator():
          exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
 
       exhibits_to_include = exhibits_to_include or []
-      context = resolve_animal_viewability_context(
+      context = AnimalViewabilityContextBuilder.resolve(
          day=day,
          month=month,
          year=year,
          temp=temp )
 
-      animal_records = fetch_animals_viewable_on_day_records(
+      animal_records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
          get_connection(),
          context.calendar_month,
          context.day_of_month,
          exhibits_to_include=exhibits_to_include )
 
       if for_itinerary:
-         animal_records = filter_animal_records_for_itinerary( animal_records )
+         animal_records = ItineraryAnimalRecordsFilterBuilder.filter( animal_records )
 
-      return build_viewable_animals_on_day(
+      return AnimalViewabilityBuilder.build_viewable_animals_on_day(
          animal_records,
          target_date=context.target_date,
          temp=context.temp,
@@ -68,7 +65,7 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str ) -> Animal | None:
-      return fetch_animal_information(
+      return AnimalInformationProvider.fetch_animal_information(
          get_connection(),
          species=species,
          exhibit=exhibit )
@@ -76,7 +73,7 @@ class AnimalCoordinator():
 
    @classmethod
    def get_animal_species_names( cls ) -> list[ str ]:
-      return fetch_animal_species_names( get_connection() )
+      return AnimalSpeciesNameProvider.fetch_animal_species_names( get_connection() )
 
 
    @classmethod
@@ -84,7 +81,7 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str ) -> list[ AnimalViewingScope ]:
-      return fetch_animal_viewing_scopes(
+      return AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
          get_connection(),
          species=species,
          exhibit=exhibit )
@@ -99,7 +96,7 @@ class AnimalCoordinator():
          end_date: DateInput,
          message: str,
          viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
-      status = build_animal_off_display_status(
+      status = AnimalOffDisplayStatusBuilder.build(
          species=species,
          exhibit=exhibit,
          viewing_scope=viewing_scope,
@@ -107,7 +104,7 @@ class AnimalCoordinator():
          end_date=end_date,
          message=message )
 
-      return save_animal_off_display_status(
+      return AnimalStatusProvider.save_animal_off_display_status(
          get_connection(),
          species=status.species,
          exhibit=status.exhibit,
@@ -123,7 +120,7 @@ class AnimalCoordinator():
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
-      return save_animal_on_display_status(
+      return AnimalStatusProvider.save_animal_on_display_status(
          get_connection(),
          species=species,
          exhibit=exhibit,
@@ -140,7 +137,7 @@ class AnimalCoordinator():
          daily_start_time: str,
          daily_end_time: str,
          message: str ) -> bool:
-      schedule = build_animal_limited_viewing_schedule(
+      schedule = AnimalLimitedViewingScheduleBuilder.build(
          species=species,
          exhibit=exhibit,
          start_date=start_date,
@@ -149,7 +146,7 @@ class AnimalCoordinator():
          daily_end_time=daily_end_time,
          message=message )
 
-      return save_animal_limited_viewing_schedule(
+      return AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
          get_connection(),
          species=schedule.species,
          exhibit=schedule.exhibit,
@@ -162,7 +159,7 @@ class AnimalCoordinator():
 
    @classmethod
    def remove_animal_visibility_schedule( cls, species: str, exhibit: str ) -> bool:
-      return delete_animal_visibility_schedule(
+      return AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
          get_connection(),
          species=species,
          exhibit=exhibit )
@@ -176,14 +173,14 @@ class AnimalCoordinator():
          alert_start_date: DateInput,
          alert_end_date: DateInput,
          message: str ) -> bool:
-      alert = build_animal_viewing_alert(
+      alert = AnimalViewingAlertBuilder.build(
          species=species,
          exhibit=exhibit,
          alert_start_date=alert_start_date,
          alert_end_date=alert_end_date,
          message=message )
 
-      return save_animal_viewing_alert(
+      return AnimalViewingAlertProvider.save_animal_viewing_alert(
          get_connection(),
          species=alert.species,
          exhibit=alert.exhibit,
@@ -194,7 +191,7 @@ class AnimalCoordinator():
 
    @classmethod
    def remove_animal_viewing_alert( cls, species: str, exhibit: str ) -> bool:
-      return delete_animal_viewing_alert(
+      return AnimalViewingAlertProvider.delete_animal_viewing_alert(
          get_connection(),
          species=species,
          exhibit=exhibit )
@@ -226,7 +223,7 @@ class AnimalCoordinator():
          threshold=0,
          exhibits_to_include=exhibits_to_include )
 
-      return build_itinerary_animals(
+      return ItineraryAnimalsBuilder.build(
          viewable_animals,
          saved_animals )
 
@@ -252,4 +249,4 @@ class AnimalCoordinator():
          for_itinerary=for_itinerary,
          threshold=threshold )
 
-      return build_animals_matching_query( animals, query )
+      return AnimalsMatchingQueryBuilder.build( animals, query )

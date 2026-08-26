@@ -6,22 +6,25 @@ from ...shared.calendar_dates import DateValues
 from ...types import DateInput
 
 
-def build_animal_viewing_alert(
-      species: str,
-      exhibit: str,
-      alert_start_date: DateInput,
-      alert_end_date: DateInput,
-      message: str ) -> AnimalViewingAlert:
-   date_range = DateValues.resolve_open_ended_date_range(
-      start_date=alert_start_date,
-      end_date=alert_end_date )
+class AnimalViewingAlertBuilder():
+   @classmethod
+   def build(
+         cls,
+         species: str,
+         exhibit: str,
+         alert_start_date: DateInput,
+         alert_end_date: DateInput,
+         message: str ) -> AnimalViewingAlert:
+      date_range = DateValues.resolve_open_ended_date_range(
+         start_date=alert_start_date,
+         end_date=alert_end_date )
 
-   if not message:
-      message = format_app_string( 'guestStatus.animals.viewingAlert', species=species )
+      if not message:
+         message = format_app_string( 'guestStatus.animals.viewingAlert', species=species )
 
-   return AnimalViewingAlert(
-      species=species,
-      exhibit=exhibit,
-      start_date=date_range.start_date,
-      end_date=date_range.end_date,
-      message=message )
+      return AnimalViewingAlert(
+         species=species,
+         exhibit=exhibit,
+         start_date=date_range.start_date,
+         end_date=date_range.end_date,
+         message=message )

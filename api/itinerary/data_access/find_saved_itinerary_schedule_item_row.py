@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..animal_item_key import AnimalScheduleItemKey
-from ...animals.search.animals_matching_query import viewing_spot_key_from_values
+from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from ..attraction_item_key import AttractionScheduleItemKey
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from .itinerary_animal_record import ItineraryAnimalRecord
@@ -31,7 +31,7 @@ SavedItineraryScheduleItemRow = (
 def _animal_row_matches_schedule_item_key(
       animal_row: ItineraryAnimalRecord,
       schedule_item_key: AnimalScheduleItemKey ) -> bool:
-   return animal_row.viewing_spot_key() == viewing_spot_key_from_values(
+   return animal_row.viewing_spot_key() == ViewingSpotKeyBuilder.from_values(
       schedule_item_key.species,
       schedule_item_key.exhibit,
       schedule_item_key.enclosure_name )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.animals.itinerary.itinerary_animals import build_itinerary_animals
+from api.animals.itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -84,7 +84,7 @@ def test_itinerary_animals_keep_same_species_in_multiple_exhibits_for_map_marker
 
 
 def test_itinerary_filter_helpers_return_empty_without_filters( db: DbControllers ) -> None:
-   assert build_itinerary_animals( [], [] ) == []
+   assert ItineraryAnimalsBuilder.build( [], [] ) == []
    assert AnimalCoordinator.get_animals_for_saved_itinerary(
       day=15,
       month='June',

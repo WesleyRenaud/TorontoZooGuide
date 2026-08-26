@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.animals.search.animals_matching_query import viewing_spot_key_from_values
+from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.guardians.data_access.guardians_talk_animal import fetch_guardians_talk_animal_links
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
@@ -234,7 +234,7 @@ def test_cover_keys_only_match_seeded_penguin_enclosure(
       animal_rows )
 
    assert set( covered ) == {
-      viewing_spot_key_from_values(
+      ViewingSpotKeyBuilder.from_values(
          'African Penguin',
          'Africa Savanna',
          'Outdoor' ),

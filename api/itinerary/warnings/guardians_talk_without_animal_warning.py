@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...animals.search.animals_matching_query import species_exhibit_keys
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
+from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ..data_access.itinerary_name_key import itinerary_name_key
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
@@ -28,7 +28,7 @@ def talk_matches_species_exhibit_pairs(
 def guardians_talks_without_matching_animal(
       validated_itinerary: ValidatedItinerary,
       conn: Connection ) -> list[ GuardiansTalkDiff ]:
-   animal_keys = species_exhibit_keys( validated_itinerary.animals )
+   animal_keys = SpeciesExhibitKeyBuilder.from_animals( validated_itinerary.animals )
    missing_talks: list[ GuardiansTalkDiff ] = []
 
    for talk in validated_itinerary.guardians_talks:

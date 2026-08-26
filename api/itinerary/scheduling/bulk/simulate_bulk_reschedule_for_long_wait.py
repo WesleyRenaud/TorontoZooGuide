@@ -5,8 +5,7 @@ from copy import copy
 from datetime import date
 from typing import Any
 
-from ....animals.search.animals_matching_query import viewing_spot_key
-from ....animals.search.animals_matching_query import viewing_spot_key_from_values
+from ....animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from .animals_for_bulk_schedule import animals_for_bulk_schedule
 from .attraction_covered_animals import CoveredAnimalAttraction
 from .attraction_covered_animals import merge_covered_viewing_spot_keys
@@ -420,7 +419,7 @@ def _apply_slots_to_itinerary_animals(
       itinerary: Itinerary,
       slots: list[ LoopScheduleSlot ] ) -> None:
    animals_by_spot = {
-      viewing_spot_key( animal ): animal
+      ViewingSpotKeyBuilder.from_animal( animal ): animal
       for animal in itinerary.animals
    }
    attractions_by_name = {
@@ -440,7 +439,7 @@ def _apply_slots_to_itinerary_animals(
          continue
 
       animal = animals_by_spot.get(
-         viewing_spot_key_from_values(
+         ViewingSpotKeyBuilder.from_values(
             stop.species,
             stop.exhibit,
             stop.enclosure_name ) )
@@ -457,7 +456,7 @@ def _apply_talk_covered_to_itinerary_animals(
       covered_by_talk: dict[ ViewingSpotNameKey, CoveredAnimalTalk ],
    ) -> None:
    animals_by_spot = {
-      viewing_spot_key( animal ): animal
+      ViewingSpotKeyBuilder.from_animal( animal ): animal
       for animal in itinerary.animals
    }
 
@@ -477,7 +476,7 @@ def _apply_attraction_covered_to_itinerary_animals(
       covered_by_attraction: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ],
    ) -> None:
    animals_by_spot = {
-      viewing_spot_key( animal ): animal
+      ViewingSpotKeyBuilder.from_animal( animal ): animal
       for animal in itinerary.animals
    }
    attraction_by_name = {

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..shared.name_matching_query import normalize_search_key
 from ..shared.value_conversion import ValueConversion
 from ..types import ScheduleTimeKey
 
@@ -74,6 +75,10 @@ class Animal:
    @property
    def has_viewing_alert( self ) -> bool:
       return bool( self.viewing_alert_messages )
+
+
+   def name_key( self ) -> str:
+      return normalize_search_key( self.species )
 
 
    def to_dict( self ) -> dict[ str, object ]:

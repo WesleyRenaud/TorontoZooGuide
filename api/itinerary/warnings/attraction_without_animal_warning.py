@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...animals.search.animals_matching_query import species_exhibit_keys
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
+from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from ..data_access.itinerary_name_key import itinerary_name_key
 from ..data_access.saved_itinerary import SavedItinerary
@@ -27,7 +27,7 @@ def attraction_matches_species_exhibit_pairs(
 def attractions_without_matching_animal(
       validated_itinerary: ValidatedItinerary,
       conn: Connection ) -> list[ AttractionDiff ]:
-   animal_keys = species_exhibit_keys( validated_itinerary.animals )
+   animal_keys = SpeciesExhibitKeyBuilder.from_animals( validated_itinerary.animals )
    missing_attractions: list[ AttractionDiff ] = []
 
    for attraction in validated_itinerary.attractions:

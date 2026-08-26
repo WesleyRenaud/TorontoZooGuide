@@ -6,7 +6,7 @@ from datetime import date
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
+from api.itinerary.data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
 from api.itinerary.validation.itinerary_validation import validate_itinerary_animals
 from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from conftest import DbControllers
@@ -169,7 +169,7 @@ def test_validate_animals_resolves_likelihood_for_viewing_spot(
 
 
 def test_itinerary_animal_save_carryover_matches_species_exhibit_case_insensitively() -> None:
-   carryover = itinerary_animal_save_carryover(
+   carryover = ItineraryAnimalSaveCarryoverMapper.map_from_saved_animal_rows(
       [
          ItineraryAnimalRecord(
             species='African Lion',
