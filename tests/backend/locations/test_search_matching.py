@@ -7,7 +7,7 @@ from api.models import GuardiansTalk
 from api.models import Pavilion
 from api.models import Restroom
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
-from api.pavilions.search.pavilions_matching_query import build_pavilions_matching_query
+from api.pavilions.search.pavilions_matching_query_builder import PavilionsMatchingQueryBuilder
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.restrooms.search.restrooms_matching_query_builder import RestroomsMatchingQueryBuilder
@@ -67,12 +67,12 @@ def test_matching_query_filters_and_handles_empty_query() -> None:
 
    assert [
       pavilion.name
-      for pavilion in build_pavilions_matching_query( pavilions, 'americas' )
+      for pavilion in PavilionsMatchingQueryBuilder.build( pavilions, 'americas' )
    ] == [ 'Americas Pavilion' ]
 
    assert [
       pavilion.name
-      for pavilion in build_pavilions_matching_query( pavilions, '' )
+      for pavilion in PavilionsMatchingQueryBuilder.build( pavilions, '' )
    ] == [
       'Americas Pavilion',
       'Australasia Pavilion',

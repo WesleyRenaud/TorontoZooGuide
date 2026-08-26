@@ -4,15 +4,17 @@ from ...models import Defibrillator
 from ...types import Row
 
 
-def map_defibrillator_record( row: Row ) -> Defibrillator:
-   return Defibrillator(
-      x_coord=row[ 'X_COORD' ],
-      y_coord=row[ 'Y_COORD' ] )
+class DefibrillatorMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> Defibrillator:
+      return Defibrillator(
+         x_coord=row[ 'X_COORD' ],
+         y_coord=row[ 'Y_COORD' ] )
 
 
-
-def map_defibrillator_records( rows: list[ Row ] ) -> list[ Defibrillator ]:
-   return [
-      map_defibrillator_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records( cls, rows: list[ Row ] ) -> list[ Defibrillator ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
