@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .animal_viewability_mapper import map_animal_viewability_rows
+from .animal_viewability_mapper import AnimalViewabilityMapper
 from .animal_viewability_record import AnimalViewabilityRecord
 from ...types import Connection, VisitDay, VisitMonth
 
@@ -80,41 +80,46 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
          """
 
 
-def normalize_exhibits_to_include(
-      exhibits_to_include: list[ str ] | None ) -> list[ str ]:
-   return [
-      exhibit.strip() for exhibit in exhibits_to_include or []
-      if isinstance( exhibit, str ) and exhibit.strip() != ''
-   ]
+class AnimalViewableOnDayProvider():
+   @classmethod
+   def _normalize_exhibits_to_include(
+         cls,
+         exhibits_to_include: list[ str ] | None ) -> list[ str ]:
+      return [
+         exhibit.strip() for exhibit in exhibits_to_include or []
+         if isinstance( exhibit, str ) and exhibit.strip() != ''
+      ]
 
 
-def fetch_animals_viewable_on_day_records(
-      conn: Connection,
-      normalized_month: VisitMonth,
-      normalized_day: VisitDay,
-      exhibits_to_include: list[ str ] | None = None ) -> list[ AnimalViewabilityRecord ]:
-   """Load joined animal / exhibit / viewing records for viewability on a calendar day."""
-   cur = conn.cursor()
-   sql = _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL
-   exhibits_to_include = normalize_exhibits_to_include( exhibits_to_include )
-   parameters = [
-      normalized_month,
-      normalized_day,
-      normalized_month,
-      normalized_day,
-   ]
+   @classmethod
+   def fetch_animals_viewable_on_day_records(
+         cls,
+         conn: Connection,
+         normalized_month: VisitMonth,
+         normalized_day: VisitDay,
+         exhibits_to_include: list[ str ] | None = None ) -> list[ AnimalViewabilityRecord ]:
+      """Load joined animal / exhibit / viewing records for viewability on a calendar day."""
+      cur = conn.cursor()
+      sql = _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL
+      exhibits_to_include = cls._normalize_exhibits_to_include( exhibits_to_include )
+      parameters = [
+         normalized_month,
+         normalized_day,
+         normalized_month,
+         normalized_day,
+      ]
 
-   if exhibits_to_include:
-      exhibit_placeholders = ', '.join( '?' for _ in exhibits_to_include )
-      sql = f'{ sql } WHERE e.EXHIBIT IN ({ exhibit_placeholders })'
-      parameters.extend( exhibits_to_include )
+      if exhibits_to_include:
+         exhibit_placeholders = ', '.join( '?' for _ in exhibits_to_include )
+         sql = f'{ sql } WHERE e.EXHIBIT IN ({ exhibit_placeholders })'
+         parameters.extend( exhibits_to_include )
 
-   try:
-      data = cur.execute(
-         f'{ sql };',
-         parameters )
+      try:
+         data = cur.execute(
+            f'{ sql };',
+            parameters )
 
-      return map_animal_viewability_rows( data.fetchall() )
+         return AnimalViewabilityMapper.map_records( data.fetchall() )
 
-   finally:
-      cur.close()
+      finally:
+         cur.close()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from test_animal_viewability_logic import make_animal_viewability_record
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.animals.domain.filter_animal_records_for_itinerary import filter_animal_records_for_itinerary
+from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from conftest import DbControllers
 
@@ -32,7 +32,7 @@ def test_filter_animal_records_for_itinerary_excludes_zoomobile_only() -> None:
          is_zoomobile_only=True ),
    ]
 
-   filtered = filter_animal_records_for_itinerary( records )
+   filtered = ItineraryAnimalRecordsFilterBuilder.filter( records )
 
    assert [
       ( record.species, record.enclosure_name )

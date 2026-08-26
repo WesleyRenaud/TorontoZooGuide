@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.animals.search.animals_matching_query import viewing_spot_key
+from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from conftest import DbControllers
 
@@ -44,7 +44,7 @@ def test_animal_query_helpers_sort_results( db: DbControllers ) -> None:
       include_off_display_animals=True
    )
 
-   viewing_spots = [ viewing_spot_key( animal ) for animal in animals ]
+   viewing_spots = [ ViewingSpotKeyBuilder.from_animal( animal ) for animal in animals ]
 
    assert viewing_spots == sorted(
       viewing_spots,
