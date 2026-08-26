@@ -28,7 +28,7 @@ from ....types import Connection
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
 @dataclass( frozen=True )
@@ -130,7 +130,7 @@ def prepare_bulk_schedule_windows(
    zoo_hours_record = (
       None
       if visit_date is None
-      else fetch_zoo_hours_record( conn, visit_date ) )
+      else ZooHoursProvider.fetch_zoo_hours_record( conn, visit_date ) )
    zoo_operating_hours = (
       None
       if zoo_hours_record is None

@@ -28,7 +28,7 @@ from ....types import Connection
 from ....types import ScheduleTimeKey
 from ...validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -114,7 +114,7 @@ def prepare_schedule_window(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
-   zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, visit_date )
    zoo_operating_hours_value = (
       None
       if zoo_hours_record is None
@@ -165,7 +165,7 @@ def prepare_zoo_hours_schedule_window(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
-   zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, visit_date )
    zoo_operating_hours_value = (
       None
       if zoo_hours_record is None

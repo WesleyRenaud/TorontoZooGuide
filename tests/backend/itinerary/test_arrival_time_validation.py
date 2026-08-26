@@ -10,7 +10,7 @@ from api.itinerary.validation.itinerary_schedule_time_order_validation import de
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
-from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from conftest import DbControllers
 
 
@@ -28,7 +28,7 @@ def test_arrival_time_is_valid_for_zoo_hours(
       wild_encounters=[],
    ).success
 
-   zoo_hours_record = fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, fetch_itinerary_date( conn ) )
 
    assert arrival_time_is_valid_for_zoo_hours(
       '09:00',

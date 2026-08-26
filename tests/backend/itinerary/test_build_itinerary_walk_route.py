@@ -186,7 +186,7 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
    ).success
 
    with patch(
-         'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
+         'api.zoo_hours.data_access.zoo_hours_provider.ZooHoursProvider.fetch_zoo_hours_record',
          return_value=ZooHoursRecord(
             operating_date='2026-06-20',
             early_admission_time=None,
