@@ -5,7 +5,7 @@ from typing import TypeVar
 
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ..domain.itinerary import build_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...models import GuardiansTalk
 from ...models import Itinerary
 from ...models import WildEncounter
@@ -326,7 +326,7 @@ def _itinerary_with_fixed_time_items(
       *,
       guardians_talks: list[ GuardiansTalk ] | None = None,
       wild_encounters: list[ WildEncounter ] | None = None ) -> Itinerary:
-   return build_itinerary(
+   return ItineraryBuilder.build(
       date=itinerary.date,
       selected_exhibits=list( itinerary.selected_exhibits ),
       animals=list( itinerary.animals ),

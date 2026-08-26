@@ -6,7 +6,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ..attraction_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary_provider import ItineraryProvider
-from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -38,7 +38,7 @@ def commit_itinerary_item_schedule_change(
       wild_encounter_coordinator=WildEncounterCoordinator )
 
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
-   itinerary_before = build_current_itinerary(
+   itinerary_before = ItineraryBuilder.build_current(
       saved_itinerary,
       **itinerary_context )
    removed_block = (
@@ -97,7 +97,7 @@ def commit_itinerary_item_schedule_change(
    finally:
       cur.close()
 
-   itinerary_after = build_current_itinerary(
+   itinerary_after = ItineraryBuilder.build_current(
       ItineraryProvider.fetch_saved_itinerary( conn ),
       **itinerary_context )
    sync_visit_times_to_scheduled_endpoints_if_complete(
@@ -106,7 +106,7 @@ def commit_itinerary_item_schedule_change(
    clear_visit_times_if_became_incomplete(
       conn,
       previous_itinerary=itinerary_before,
-      current_itinerary=build_current_itinerary(
+      current_itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 

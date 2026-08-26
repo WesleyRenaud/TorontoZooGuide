@@ -9,7 +9,7 @@ from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ..data_access.remove_itinerary_item_provider import RemoveItineraryItemProvider
 from ..data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
-from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -98,7 +98,7 @@ def _remove_transit_transportation_and_reschedule(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
    saved_before = ItineraryProvider.fetch_saved_itinerary( conn )
-   itinerary_before = build_current_itinerary(
+   itinerary_before = ItineraryBuilder.build_current(
       saved_before,
       **itinerary_context )
    cur = conn.cursor()
@@ -123,13 +123,13 @@ def _remove_transit_transportation_and_reschedule(
 
    sync_visit_times_to_scheduled_endpoints_if_complete(
       conn,
-      build_current_itinerary(
+      ItineraryBuilder.build_current(
          saved_after,
          **itinerary_context ) )
    clear_visit_times_if_became_incomplete(
       conn,
       previous_itinerary=itinerary_before,
-      current_itinerary=build_current_itinerary(
+      current_itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
    persist_itinerary_walk_route( conn, **itinerary_context )

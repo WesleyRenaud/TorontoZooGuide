@@ -5,7 +5,7 @@ from ...attractions.coordinators.attraction_coordinator import AttractionCoordin
 from .build_itinerary_walk_route import build_itinerary_walk_route
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
-from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
 from ...types import Connection
@@ -27,7 +27,7 @@ def rebuild_and_persist_itinerary_walk_route(
       wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
-   itinerary = build_current_itinerary(
+   itinerary = ItineraryBuilder.build_current(
       saved_itinerary,
       **itinerary_context )
    walk_route = build_itinerary_walk_route( itinerary )

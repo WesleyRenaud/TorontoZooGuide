@@ -8,8 +8,8 @@ from ..conflicts.itinerary_unschedule_confirmations import find_itinerary_unsche
 from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
-from ..domain.itinerary import build_current_itinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .set_itinerary_context import SetItineraryContext
 from ...types import Connection
@@ -49,7 +49,7 @@ def prepare_set_itinerary_context(
       if saved_itinerary is not None
       else ItineraryProvider.fetch_saved_itinerary( conn ) )
 
-   current_itinerary = build_current_itinerary(
+   current_itinerary = ItineraryBuilder.build_current(
       response_saved_itinerary,
       **itinerary_controller_kwargs )
 

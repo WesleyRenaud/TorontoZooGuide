@@ -5,8 +5,8 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LI
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
-from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
-from api.itinerary.validation.itinerary_schedule_time_order_validation import departure_follows_arrival
+from api.itinerary.validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
+from api.itinerary.validation.itinerary_schedule_time_order_validation_builder import ItineraryScheduleTimeOrderValidationBuilder
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
@@ -30,27 +30,27 @@ def test_arrival_time_is_valid_for_zoo_hours(
 
    zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
 
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       '09:00',
       zoo_hours_record,
       departure_time='17:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       '17:00',
       zoo_hours_record,
       departure_time='17:00' ) == ItineraryErrorType.TIME_ORDER_INVALID
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       '10:00',
       zoo_hours_record,
       departure_time='17:00' ) == ItineraryErrorType.SUCCESS
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       '10:00',
       zoo_hours_record,
       departure_time=None ) == ItineraryErrorType.SUCCESS
 
 
 def test_departure_follows_arrival_when_other_time_is_unset() -> None:
-   assert departure_follows_arrival( '10:00', None )
-   assert departure_follows_arrival( None, '17:00' )
+   assert ItineraryScheduleTimeOrderValidationBuilder.departure_follows_arrival( '10:00', None )
+   assert ItineraryScheduleTimeOrderValidationBuilder.departure_follows_arrival( None, '17:00' )
 
 
 def test_set_arrival_time_returns_validation_error_types(

@@ -14,8 +14,8 @@ from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_status_provider import ItineraryStatusProvider
 from ...data_access.saved_itinerary import SavedItinerary
-from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
+from ...domain.itinerary_builder import ItineraryBuilder
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -25,7 +25,7 @@ from ....shared.enums import ItineraryErrorType
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection
 from ....types import ScheduleTimeKey
-from ...validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
+from ...validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -66,7 +66,7 @@ def build_save_result(
       status=status,
       reasons=reasons or [],
       suppressed_warnings=suppressed_warnings or [],
-      itinerary=build_current_itinerary(
+      itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
@@ -80,7 +80,7 @@ def build_success_result(
    return ItinerarySaveResult(
       adjustments=adjustments or [],
       suppressed_warnings=suppressed_warnings or [],
-      itinerary=build_current_itinerary(
+      itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
@@ -120,7 +120,7 @@ def prepare_schedule_window(
       else zoo_hours_record.operating_hours() )
    allow_early_admission = _early_admission_scheduling_is_allowed( conn )
 
-   fixed_zoo_start_times = fixed_zoo_schedule_start_times_from_saved_itinerary(
+   fixed_zoo_start_times = FixedZooScheduleStartTimesBuilder.from_saved_itinerary(
       saved_itinerary )
    anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
       zoo_hours_record,
@@ -174,7 +174,7 @@ def prepare_zoo_hours_schedule_window(
    window = zoo_hours_schedule_window_seconds(
       zoo_hours_record,
       fixed_zoo_start_times=(
-         fixed_zoo_schedule_start_times_from_saved_itinerary( saved_itinerary ) ),
+         FixedZooScheduleStartTimesBuilder.from_saved_itinerary( saved_itinerary ) ),
       allow_early_admission=allow_early_admission )
 
    if window is None:
@@ -228,7 +228,7 @@ def resolve_slot_times(
    if earliest_start_seconds is not None:
       anchor_seconds = max( anchor_seconds, earliest_start_seconds )
 
-   itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
+   itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
    slot = resolve_schedule_slot(
       blockers,
@@ -326,7 +326,7 @@ def _resolve_extension_slot_before_or_after_visit(
       itinerary_context: dict[ str, Any ],
    ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
    """After the visit window is full, try duration before arrival, then after departure."""
-   itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
+   itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
    day_start_seconds, day_end_seconds = day_hours_window
    arrival_seconds, departure_seconds = visit_window

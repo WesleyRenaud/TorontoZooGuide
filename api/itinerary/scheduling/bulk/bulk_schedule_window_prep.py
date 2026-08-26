@@ -14,7 +14,7 @@ from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
-from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_builder import ItineraryBuilder
 from ..items.schedule_itinerary_helpers import PreparedScheduleWindow
 from ....models import Itinerary
 from ...routing.loop_schedule_pin import LoopSchedulePin
@@ -98,7 +98,7 @@ def prepare_bulk_schedule_windows(
       *,
       prepared_window: PreparedScheduleWindow,
       itinerary_context: dict[ str, Any ] ) -> BulkScheduleWindowPrep:
-   previous_itinerary = build_current_itinerary(
+   previous_itinerary = ItineraryBuilder.build_current(
       prepared_window.saved_itinerary,
       **itinerary_context )
 
@@ -106,7 +106,7 @@ def prepare_bulk_schedule_windows(
 
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
    anchor_seconds, day_end_seconds = prepared_window.window
-   itinerary = build_current_itinerary(
+   itinerary = ItineraryBuilder.build_current(
       saved_itinerary,
       **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
