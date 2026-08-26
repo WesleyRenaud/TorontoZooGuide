@@ -8,7 +8,7 @@ from ..scheduling.guardians_talk_day_schedule_finder import GuardiansTalkDaySche
 from ...types import ScheduleTimeKey
 
 
-class GuardiansTalkItineraryValidationBuilder():
+class GuardiansTalkItineraryValidator():
    @classmethod
    def build_diff_for_visit_day(
          cls,

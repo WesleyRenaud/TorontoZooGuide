@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.itinerary.validation.itinerary_validation import validate_itinerary_attractions
+from api.itinerary.validation.itinerary_attraction_validator import ItineraryAttractionValidator
 from conftest import DbControllers
 
 
@@ -19,7 +19,7 @@ def test_validate_attractions_removes_closed_entries(
       message='Unavailable.'
    )
 
-   result = validate_itinerary_attractions(
+   result = ItineraryAttractionValidator.validate(
       AttractionCoordinator,
       attractions=[ 'Conservation Carousel', 'Greenhouse' ],
       new_visit_date=date( 2026, 6, 15 ),
@@ -65,7 +65,7 @@ def test_validate_attractions_removes_closure_override_entries(
       message='Unavailable.'
    )
 
-   result = validate_itinerary_attractions(
+   result = ItineraryAttractionValidator.validate(
       AttractionCoordinator,
       attractions=[ 'Conservation Carousel' ],
       new_visit_date=date( 2026, 6, 15 ),

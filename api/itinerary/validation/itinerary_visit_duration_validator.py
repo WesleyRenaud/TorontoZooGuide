@@ -5,7 +5,7 @@ from ...shared.constants import MIN_ITINERARY_VISIT_DURATION_MINUTES
 from ...types import ScheduleTimeKey
 
 
-class ItineraryVisitDurationValidationBuilder():
+class ItineraryVisitDurationValidator():
    @classmethod
    def is_shorter_than_minimum(
          cls,

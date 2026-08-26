@@ -6,13 +6,13 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
+from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from api.wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
+from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 from conftest import DbControllers
 
 
@@ -28,7 +28,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
          is_available=True ),
    ]
 
-   result = GuardiansTalkItineraryValidationBuilder.validate_for_itinerary(
+   result = GuardiansTalkItineraryValidator.validate_for_itinerary(
       guardians_talks_to_include=[
          ItineraryGuardiansTalkInput( name='African Lion', start_time='10:00' ),
          ItineraryGuardiansTalkInput( name='Amur Tiger', start_time='10:00' ),
@@ -63,7 +63,7 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries() -> 
          unavailable_message='Unavailable.' ),
    ]
 
-   result = WildEncounterItineraryValidationBuilder.validate_for_itinerary(
+   result = WildEncounterItineraryValidator.validate_for_itinerary(
       wild_encounters_to_include=[
          WildEncounterScheduleItemKey( name='African Rainforest', start_time='14:00' ),
          WildEncounterScheduleItemKey( name='Kangaroo', start_time='13:00' ),
@@ -114,7 +114,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       message=None
    )
 
-   talk_result = GuardiansTalkItineraryValidationBuilder.validate_for_itinerary(
+   talk_result = GuardiansTalkItineraryValidator.validate_for_itinerary(
       [
          ItineraryGuardiansTalkInput( name=' african lion ', start_time='10:00' ),
          ItineraryGuardiansTalkInput( name='AMUR TIGER', start_time='09:00' ),
@@ -124,7 +124,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
          day=15,
          year=2026 )
    )
-   encounter_result = WildEncounterItineraryValidationBuilder.validate_for_itinerary(
+   encounter_result = WildEncounterItineraryValidator.validate_for_itinerary(
       [
          WildEncounterScheduleItemKey( name=' kangaroo ', start_time='09:00' ),
          WildEncounterScheduleItemKey( name='AFRICAN RAINFOREST', start_time='14:00' ),

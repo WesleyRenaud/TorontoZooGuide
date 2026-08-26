@@ -9,8 +9,8 @@ from .set_itinerary_context import build_set_itinerary_error_result
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
-from ..validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
-from ..validation.itinerary_departure_time_validation_builder import ItineraryDepartureTimeValidationBuilder
+from ..validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
+from ..validation.itinerary_departure_time_validator import ItineraryDepartureTimeValidator
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
@@ -32,7 +32,7 @@ def validate_set_itinerary_zoo_hours(
       FixedZooScheduleStartTimesBuilder.from_saved_itinerary(
          ItineraryProvider.fetch_saved_itinerary( conn ) ) )
 
-   arrival_time_error = ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
+   arrival_time_error = ItineraryArrivalTimeValidator.validate_for_zoo_hours(
       save_input.arrival_time,
       zoo_hours_record,
       departure_time=save_input.departure_time,
@@ -44,7 +44,7 @@ def validate_set_itinerary_zoo_hours(
          arrival_time_error,
          itinerary_controller_kwargs )
 
-   departure_time_error = ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
+   departure_time_error = ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       save_input.departure_time,
       zoo_hours_record,
       arrival_time=save_input.arrival_time )

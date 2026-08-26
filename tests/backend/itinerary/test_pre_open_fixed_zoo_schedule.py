@@ -7,7 +7,7 @@ from itinerary.support import entrance_travel_seconds_to_map_location, LION_ITIN
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
-from api.itinerary.validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
+from api.itinerary.validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.map_location_kind import MapLocationKind
@@ -141,11 +141,11 @@ def test_arrival_validation_allows_fixed_zoo_start_before_open(
 
    zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( db.conn, '2026-06-15' )
 
-   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
       PRE_OPEN_ENCOUNTER_TIME,
       zoo_hours_record,
       departure_time='17:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
+   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
       PRE_OPEN_ENCOUNTER_TIME,
       zoo_hours_record,
       departure_time='17:00',

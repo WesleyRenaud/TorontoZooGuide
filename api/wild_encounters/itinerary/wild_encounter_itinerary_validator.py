@@ -8,7 +8,7 @@ from ..scheduling.wild_encounter_day_schedule_finder import WildEncounterDaySche
 from ...types import ScheduleTimeKey
 
 
-class WildEncounterItineraryValidationBuilder():
+class WildEncounterItineraryValidator():
    @classmethod
    def build_diff_for_visit_day(
          cls,

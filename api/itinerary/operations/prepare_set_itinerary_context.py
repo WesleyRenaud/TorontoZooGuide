@@ -13,7 +13,7 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .set_itinerary_context import SetItineraryContext
 from ...types import Connection
-from ..validation.itinerary_validation import validate_itinerary_for_save
+from ..validation.itinerary_save_validator import ItinerarySaveValidator
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -29,7 +29,7 @@ def prepare_set_itinerary_context(
       visit_date_temp: float | None,
       itinerary_controller_kwargs: dict[ str, Any ],
       adjustments: list[ ItineraryAdjustment ] | None = None ) -> SetItineraryContext:
-   validated_itinerary = validate_itinerary_for_save(
+   validated_itinerary = ItinerarySaveValidator.validate_for_save(
       conn,
       save_input,
       animal_coordinator,

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from .itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
-from .itinerary_schedule_time_order_validation_builder import ItineraryScheduleTimeOrderValidationBuilder
+from .itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
+from .itinerary_schedule_time_order_validator import ItineraryScheduleTimeOrderValidator
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import ScheduleTimeKey
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
-class ItineraryDepartureTimeValidationBuilder():
+class ItineraryDepartureTimeValidator():
    @classmethod
    def validate_for_zoo_hours(
          cls,
@@ -18,7 +18,7 @@ class ItineraryDepartureTimeValidationBuilder():
          arrival_time: ScheduleTimeKey ) -> ItineraryErrorType:
       departure_minutes = DateValues.time_value_in_minutes( departure_time )
       earliest_minutes = DateValues.time_value_in_minutes(
-         ItineraryArrivalTimeValidationBuilder.earliest_arrival_time(
+         ItineraryArrivalTimeValidator.earliest_arrival_time(
             zoo_hours_record ) )
       close_minutes = DateValues.time_value_in_minutes( zoo_hours_record.close_time )
 
@@ -30,7 +30,7 @@ class ItineraryDepartureTimeValidationBuilder():
       ):
          return ItineraryErrorType.TIME_OUT_OF_BOUNDS
 
-      if not ItineraryScheduleTimeOrderValidationBuilder.departure_follows_arrival(
+      if not ItineraryScheduleTimeOrderValidator.departure_follows_arrival(
             arrival_time,
             departure_time ):
          return ItineraryErrorType.TIME_ORDER_INVALID

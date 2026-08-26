@@ -7,7 +7,7 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
-from api.itinerary.validation.itinerary_validation import validate_itinerary_animals
+from api.itinerary.validation.itinerary_animal_validator import ItineraryAnimalValidator
 from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from conftest import DbControllers
 
@@ -24,7 +24,7 @@ def test_validate_animals_removes_unavailable_entries(
       message='Unavailable.'
    )
 
-   result = validate_itinerary_animals(
+   result = ItineraryAnimalValidator.validate(
       AnimalCoordinator,
       animals=[
          ItineraryAnimalInput(
@@ -61,7 +61,7 @@ def test_validate_animals_on_date_change_keeps_below_min_likelihood_until_accept
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 1, 15 ) )
 
-   result = validate_itinerary_animals(
+   result = ItineraryAnimalValidator.validate(
       AnimalCoordinator,
       animals=[
          ItineraryAnimalInput(
@@ -139,7 +139,7 @@ def test_validate_animals_resolves_likelihood_for_viewing_spot(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 1, 15 ) )
 
-   result = validate_itinerary_animals(
+   result = ItineraryAnimalValidator.validate(
       AnimalCoordinator,
       animals=[
          ItineraryAnimalInput(
