@@ -4,18 +4,21 @@ from ...models import Event
 from ...types import Row
 
 
-def map_event_record( row: Row ) -> Event:
-   return Event(
-      name=row[ 'NAME' ],
-      location=row[ 'LOCATION' ],
-      description=row[ 'DESCRIPTION' ],
-      link=row[ 'LINK' ],
-      start_date=row[ 'START_DATE' ],
-      end_date=row[ 'END_DATE' ] )
+class EventMapper():
+   @classmethod
+   def map_record( cls, row: Row ) -> Event:
+      return Event(
+         name=row[ 'NAME' ],
+         location=row[ 'LOCATION' ],
+         description=row[ 'DESCRIPTION' ],
+         link=row[ 'LINK' ],
+         start_date=row[ 'START_DATE' ],
+         end_date=row[ 'END_DATE' ] )
 
 
-def map_event_records( rows: list[ Row ] ) -> list[ Event ]:
-   return [
-      map_event_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records( cls, rows: list[ Row ] ) -> list[ Event ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
