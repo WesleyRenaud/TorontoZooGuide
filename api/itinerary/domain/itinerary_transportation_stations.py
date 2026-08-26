@@ -6,7 +6,7 @@ from ...models.itinerary_transportation_station import ItineraryTransportationSt
 from ...request_connection import get_connection
 from ...shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
 from ...shared.enums.sequence_index import SequenceIndex
-from ...transportation.data_access.transportation_station import fetch_transportation_station_records
+from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.data_access.transportation_station_record import TransportationStationRecord
 
 
@@ -91,7 +91,7 @@ def build_stations_for_transportation(
       return []
 
    records_by_name = _station_record_by_name(
-      fetch_transportation_station_records(
+      TransportationStationProvider.fetch_transportation_station_records(
          get_connection(),
          transportation.name,
       ) )

@@ -6,8 +6,8 @@ from ...itinerary.data_access.itinerary_transportation_record import ItineraryTr
 from .itinerary_transportation_marker_coords import itinerary_transportation_marker_coords
 from ...models.itinerary_transportation import ItineraryTransportation
 from ...request_connection import get_connection
-from ...transportation.data_access.transportation import fetch_transportation_records
-from ...transportation.data_access.transportation_station import fetch_main_transportation_station_record
+from ...transportation.data_access.transportation_provider import TransportationProvider
+from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ..transportation.route_duration_minutes import transportation_route_duration_minutes
 
 
@@ -19,11 +19,13 @@ def build_itinerary_transportations(
    conn = get_connection()
    attraction_coords_by_name = {
       record.name: ( record.x_coord, record.y_coord )
-      for record in fetch_transportation_records( conn, target_date )
+      for record in TransportationProvider.fetch_transportation_records(
+         conn,
+         target_date )
    }
 
    for saved in saved_transportations:
-      main_station_record = fetch_main_transportation_station_record(
+      main_station_record = TransportationStationProvider.fetch_main_transportation_station_record(
          conn,
          saved.transportation )
       x_coord, y_coord = itinerary_transportation_marker_coords(

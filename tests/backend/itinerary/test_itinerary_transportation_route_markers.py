@@ -15,7 +15,7 @@ from api.itinerary.domain.build_transportation_route_marker_sequences import bui
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.transportation_name import TransportationName
-from api.transportation.data_access.transportation_route_leg_marker import fetch_transportation_route_leg_marker_ids
+from api.transportation.data_access.transportation_route_leg_marker_provider import TransportationRouteLegMarkerProvider
 from conftest import DbControllers
 
 
@@ -46,7 +46,7 @@ def ordered_marker_ids(
 
 def test_fetch_transportation_route_leg_marker_ids_preserves_travel_order(
       db: DbControllers ) -> None:
-   marker_ids_result = fetch_transportation_route_leg_marker_ids(
+   marker_ids_result = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       db.conn,
       transportation=ZOOMOBILE,
       route='summer',
@@ -70,7 +70,7 @@ def test_fetch_transportation_route_leg_marker_ids_preserves_travel_order(
 
 def test_fetch_wraparound_leg_markers_preserve_travel_order(
       db: DbControllers ) -> None:
-   marker_ids_result = fetch_transportation_route_leg_marker_ids(
+   marker_ids_result = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       db.conn,
       transportation=ZOOMOBILE,
       route='summer',
