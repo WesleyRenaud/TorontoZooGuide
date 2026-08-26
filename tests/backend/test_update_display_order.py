@@ -5,8 +5,8 @@ from datetime import date
 
 from api.models import Update
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
-from api.updates.domain.update_sort import sort_updates_for_display
 from api.updates.domain.update_type import UpdateType
+from api.updates.domain.updates_display_builder import UpdatesDisplayBuilder
 from conftest import DbControllers
 
 
@@ -70,7 +70,7 @@ def test_sort_updates_for_display_groups_by_type_then_sooner_end_date() -> None:
          end_date='2026-07-01' ),
    ]
 
-   assert [ update.title for update in sort_updates_for_display( updates ) ] == [
+   assert [ update.title for update in UpdatesDisplayBuilder.sort_for_display( updates ) ] == [
       'Closure B',
       'Closure A',
       'Sooner birth',
