@@ -19,7 +19,7 @@ from ..warnings.guardians_talk_without_animal_warning import guardians_talk_with
 from ..warnings.guardians_talk_without_animal_warning import newly_added_guardians_talks_without_matching_animal
 from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ..warnings.short_visit_warning import short_visit_warning_is_required
-from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
 def check_set_itinerary_save_warnings(
@@ -40,7 +40,7 @@ def check_set_itinerary_save_warnings(
    controller_kwargs = context.itinerary_controller_kwargs
    suppressed_warnings: list[ ItineraryErrorType ] = []
    zoo_hours_record = (
-      fetch_zoo_hours_record(
+      ZooHoursProvider.fetch_zoo_hours_record(
          context.conn,
          save_input.date.isoformat() )
       if save_input.arrival_time is not None

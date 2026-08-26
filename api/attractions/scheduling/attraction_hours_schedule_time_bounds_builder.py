@@ -5,7 +5,7 @@ from .attraction_hours_time_bounds import AttractionHoursTimeBounds
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...types import Connection, DateInput, DateKey, ScheduleTimeKey, TimeInput
-from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_records_between
+from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -60,7 +60,7 @@ class AttractionHoursScheduleTimeBoundsBuilder():
          start_date: DateInput = None,
          end_date: DateInput = None ) -> AttractionHoursScheduleTimeBounds:
       range_start, range_end = cls.resolve_date_range( start_date, end_date )
-      records = fetch_zoo_hours_records_between( conn, range_start, range_end )
+      records = ZooHoursProvider.fetch_zoo_hours_records_between( conn, range_start, range_end )
       weekday_bounds = cls._build_time_bounds(
          cls._records_for_day_kind( records, weekend_or_holiday=False ) )
       weekend_holiday_bounds = cls._build_time_bounds(

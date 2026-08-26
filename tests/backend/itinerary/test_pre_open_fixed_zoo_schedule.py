@@ -11,7 +11,7 @@ from api.itinerary.validation.itinerary_arrival_time_validation import arrival_t
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.map_location_kind import MapLocationKind
-from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from conftest import DbControllers
 
 PRE_OPEN_ENCOUNTER_TIME = '08:45'
@@ -139,7 +139,7 @@ def test_arrival_validation_allows_fixed_zoo_start_before_open(
       wild_encounters=[],
    ).success
 
-   zoo_hours_record = fetch_zoo_hours_record( db.conn, '2026-06-15' )
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( db.conn, '2026-06-15' )
 
    assert arrival_time_is_valid_for_zoo_hours(
       PRE_OPEN_ENCOUNTER_TIME,

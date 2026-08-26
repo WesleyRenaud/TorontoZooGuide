@@ -196,7 +196,7 @@ def test_schedule_itinerary_item_returns_no_available_slot_when_zoo_hours_are_fu
    )
 
    with patch(
-         'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
+         'api.zoo_hours.data_access.zoo_hours_provider.ZooHoursProvider.fetch_zoo_hours_record',
          return_value=five_minute_zoo_hours ):
       result = schedule_itinerary_item(
          item_type='animals',

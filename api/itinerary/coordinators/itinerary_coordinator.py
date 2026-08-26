@@ -38,7 +38,7 @@ from ..warnings.early_admission_warning import early_admission_warning_is_requir
 from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
 class ItineraryCoordinator():
@@ -262,7 +262,7 @@ class ItineraryCoordinator():
          return cls._time_set_result( conn )
 
       saved_itinerary = fetch_saved_itinerary( conn )
-      zoo_hours_record = fetch_zoo_hours_record(
+      zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
          conn,
          fetch_itinerary_date( conn ) )
 
@@ -321,7 +321,7 @@ class ItineraryCoordinator():
          return cls._time_set_result( conn )
 
       saved_itinerary = fetch_saved_itinerary( conn )
-      zoo_hours_record = fetch_zoo_hours_record(
+      zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
          conn,
          fetch_itinerary_date( conn ) )
 

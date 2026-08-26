@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..data_access.zoo_hours import fetch_zoo_hours_record
-from ..domain.zoo_hours import build_zoo_hours
+from ..data_access.zoo_hours_provider import ZooHoursProvider
+from ..domain.zoo_hours_builder import ZooHoursBuilder
 from ...models import ZooHours
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
@@ -20,11 +20,11 @@ class ZooHoursCoordinator():
          day,
          year )
 
-      zoo_hours_record = fetch_zoo_hours_record(
+      zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
          get_connection(),
          operating_date )
 
       if zoo_hours_record == None:
          return None
 
-      return build_zoo_hours( zoo_hours_record )
+      return ZooHoursBuilder.build( zoo_hours_record )

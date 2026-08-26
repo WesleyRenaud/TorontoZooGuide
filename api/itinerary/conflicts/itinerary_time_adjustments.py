@@ -11,7 +11,7 @@ from ..domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
 from ..validation.itinerary_arrival_time_validation import earliest_arrival_time
-from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -98,7 +98,7 @@ def adjust_set_itinerary_for_restrictive_hours(
    if old_visit_date == save_input.date.isoformat():
       return ( save_input, [] )
 
-   zoo_hours_record = fetch_zoo_hours_record(
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
       conn,
       save_input.date.isoformat() )
    saved_itinerary = (

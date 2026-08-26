@@ -14,7 +14,7 @@ from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_s
 from api.itinerary.transportation_item_key import TransportationScheduleItemKey
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
-from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from conftest import DbControllers
 
 
@@ -82,7 +82,7 @@ def test_map_schedule_item_key_from_wire_transportation_key() -> None:
 
 
 def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
-   zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
+   zoo_hours = ZooHoursProvider.fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
    assert scheduling_anchor_seconds( zoo_hours, '09:00' ) == 9 * 3600
    assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600 + 30 * 60
@@ -90,7 +90,7 @@ def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
 
 def test_scheduling_anchor_uses_open_time_without_early_admission_permission(
       db: DbControllers ) -> None:
-   zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
+   zoo_hours = ZooHoursProvider.fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
    assert zoo_hours.early_admission_time == '09:00'
    assert zoo_hours.open_time == '09:30'
@@ -99,7 +99,7 @@ def test_scheduling_anchor_uses_open_time_without_early_admission_permission(
 
 def test_scheduling_anchor_uses_early_admission_when_allowed(
       db: DbControllers ) -> None:
-   zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
+   zoo_hours = ZooHoursProvider.fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
    assert zoo_hours.early_admission_time == '09:00'
    assert zoo_hours.open_time == '09:30'

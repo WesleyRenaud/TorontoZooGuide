@@ -29,7 +29,7 @@ FIVE_MINUTE_ZOO_HOURS = ZooHoursRecord(
 
 def _bulk_schedule_with_five_minute_zoo_hours() -> ItinerarySaveResult:
    with patch(
-         'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
+         'api.zoo_hours.data_access.zoo_hours_provider.ZooHoursProvider.fetch_zoo_hours_record',
          return_value=FIVE_MINUTE_ZOO_HOURS ):
       return ItineraryCoordinator.bulk_schedule_itinerary()
 

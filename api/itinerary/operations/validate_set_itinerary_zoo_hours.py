@@ -13,7 +13,7 @@ from ..validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start
 from ..validation.fixed_zoo_schedule_start_times import merge_fixed_zoo_schedule_start_times
 from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from ..validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
-from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
 def validate_set_itinerary_zoo_hours(
@@ -26,7 +26,7 @@ def validate_set_itinerary_zoo_hours(
    ):
       return None
 
-   zoo_hours_record = fetch_zoo_hours_record(
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
       conn,
       save_input.date.isoformat() )
    fixed_zoo_start_times = merge_fixed_zoo_schedule_start_times(
