@@ -1,7 +1,7 @@
 from api.guardians.scheduling.collapse_guardians_talks_for_map import collapse_guardians_talks_for_map
 from api.models import GuardiansTalk
 from api.models import WildEncounter
-from api.wild_encounters.scheduling.collapse_wild_encounters_for_map import collapse_wild_encounters_for_map
+from api.wild_encounters.scheduling.collapse_wild_encounters_for_map_builder import CollapseWildEncountersForMapBuilder
 
 
 def test_collapse_guardians_talks_for_map_merges_times_for_same_talk() -> None:
@@ -53,7 +53,7 @@ def test_collapse_wild_encounters_for_map_merges_times_for_same_encounter() -> N
          y_coord=6.0 ),
    ]
 
-   collapsed = collapse_wild_encounters_for_map( encounters )
+   collapsed = CollapseWildEncountersForMapBuilder.build( encounters )
 
    assert len( collapsed ) == 1
    assert collapsed[ 0 ][ 'start_time' ] == '11:00 AM'

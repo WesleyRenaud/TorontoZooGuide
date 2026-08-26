@@ -18,7 +18,7 @@ from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.master_route import default_master_route_loop_by_id
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from api.wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin import fetch_wild_encounter_meeting_spot_loop_pins_by_name
+from api.wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider
 from api.wild_encounters.scheduling.wild_encounter_loop_schedule_pin import resolve_wild_encounter_loop_pin
 from conftest import DbControllers
 
@@ -61,7 +61,7 @@ def _set_saturday_grizzly_encounter_schedule(
 
 def test_resolve_wild_encounter_loop_pin_returns_none_for_unpinned_meeting_spot(
       db: DbControllers ) -> None:
-   meeting_spot_loop_pins_by_name = fetch_wild_encounter_meeting_spot_loop_pins_by_name(
+   meeting_spot_loop_pins_by_name = WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
       db.conn )
    wild_encounter = WildEncounter(
       name='Guardians of White Rhinos',
@@ -86,7 +86,7 @@ def test_resolve_wild_encounter_loop_pin_returns_none_for_unpinned_meeting_spot(
 
 def test_resolve_wild_encounter_loop_pin_maps_canadian_domain_between_zebra_and_raccoon(
       db: DbControllers ) -> None:
-   meeting_spot_loop_pins_by_name = fetch_wild_encounter_meeting_spot_loop_pins_by_name(
+   meeting_spot_loop_pins_by_name = WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
       db.conn )
    meeting_spot_loop_pin = meeting_spot_loop_pins_by_name[
       CANADIAN_DOMAIN_MEETING_SPOT ]
@@ -126,7 +126,7 @@ def test_resolve_wild_encounter_loop_pin_maps_canadian_domain_between_zebra_and_
 
 def test_resolve_wild_encounter_loop_pin_maps_mayan_temple_encounters_to_tundra_loop(
       db: DbControllers ) -> None:
-   meeting_spot_loop_pins_by_name = fetch_wild_encounter_meeting_spot_loop_pins_by_name(
+   meeting_spot_loop_pins_by_name = WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
       db.conn )
    meeting_spot_loop_pin = meeting_spot_loop_pins_by_name[
       MAYAN_TEMPLE_MEETING_SPOT ]
@@ -188,7 +188,7 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
    encounter_start_seconds = DateValues.time_value_in_seconds( '1:00 PM' )
    encounter_end_seconds = DateValues.time_value_in_seconds( '1:45 PM' )
    loop_id = CANADIAN_DOMAIN_SAVANNA_LOOP
-   encounter_pin_index = fetch_wild_encounter_meeting_spot_loop_pins_by_name(
+   encounter_pin_index = WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
       db.conn )[ CANADIAN_DOMAIN_MEETING_SPOT ].loop_viewing_spot_index
 
    assert encounter_start_seconds is not None

@@ -12,7 +12,7 @@ from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from api.wild_encounters.itinerary.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from api.wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
 from conftest import DbControllers
 
 
@@ -63,7 +63,7 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries() -> 
          unavailable_message='Unavailable.' ),
    ]
 
-   result = validate_wild_encounters_for_itinerary(
+   result = WildEncounterItineraryValidationBuilder.validate_for_itinerary(
       wild_encounters_to_include=[
          WildEncounterScheduleItemKey( name='African Rainforest', start_time='14:00' ),
          WildEncounterScheduleItemKey( name='Kangaroo', start_time='13:00' ),
@@ -124,7 +124,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
          day=15,
          year=2026 )
    )
-   encounter_result = validate_wild_encounters_for_itinerary(
+   encounter_result = WildEncounterItineraryValidationBuilder.validate_for_itinerary(
       [
          WildEncounterScheduleItemKey( name=' kangaroo ', start_time='09:00' ),
          WildEncounterScheduleItemKey( name='AFRICAN RAINFOREST', start_time='14:00' ),
