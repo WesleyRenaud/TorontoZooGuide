@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..shared.name_matching_query import normalize_search_key
 from ..shared.value_conversion import ValueConversion
 
 
@@ -22,6 +23,10 @@ class GiftShop:
       self.is_closed = is_closed
       self.closed_message = closed_message
       self.likelihood = likelihood
+
+
+   def name_key( self ) -> str:
+      return normalize_search_key( self.name )
 
 
    def to_dict( self ) -> dict[ str, object ]:

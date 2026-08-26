@@ -7,6 +7,7 @@ from typing import TypeVar
 from .build_closed_opening_schedule_fields import build_closed_opening_schedule_fields
 from .build_closure_override_fields import build_closure_override_fields
 from .build_opening_schedule_weekday_fields import build_opening_schedule_weekday_fields
+from .enums import AmenityNameField
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
 from ..types import DateInput
 
@@ -17,7 +18,7 @@ TScheduleOverride = TypeVar( 'TScheduleOverride' )
 
 @dataclass( frozen=True )
 class AmenityStatusBuilders( Generic[ TOpeningSchedule, TScheduleOverride ] ):
-   name_field: str
+   name_field: AmenityNameField
    opening_schedule_class: type[ TOpeningSchedule ]
    schedule_override_class: type[ TScheduleOverride ]
 

@@ -1,3 +1,4 @@
+from .amenity_name_field import AmenityNameField
 from .animal_viewing_scope import AnimalViewingScope
 from .enclosure_type import EnclosureType
 from .itinerary_error_type import ItineraryErrorType
@@ -12,6 +13,7 @@ from .transportation_route import TransportationRouteId
 from .transportation_route import TransportationRouteSource
 
 __all__ = [
+   'AmenityNameField',
    'AnimalViewingScope',
    'EnclosureType',
    'ItineraryErrorType',
