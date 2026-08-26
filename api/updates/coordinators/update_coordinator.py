@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from ..data_access.update import edit_update_record
-from ..data_access.update import fetch_updates
-from ..data_access.update import insert_update
-from ..data_access.update import update_end_date
-from ..domain.update import filter_updates_started_on_or_before
-from ..domain.update_sort import sort_updates_for_display
+from ..data_access.update_provider import UpdateProvider
+from ..domain.updates_display_builder import UpdatesDisplayBuilder
 from ...models import Update
-from ..operations.update_creation import build_update_create_input
-from ..operations.update_editing import build_update_edit_input
-from ..operations.update_ending import build_update_end_input
+from ..operations.update_create_input_builder import UpdateCreateInputBuilder
+from ..operations.update_edit_input_builder import UpdateEditInputBuilder
+from ..operations.update_end_input_builder import UpdateEndInputBuilder
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
@@ -28,10 +24,10 @@ class UpdateCoordinator():
          day=day,
          year=year )
 
-      updates = fetch_updates( get_connection(), target_date )
+      updates = UpdateProvider.fetch_updates( get_connection(), target_date )
 
-      return sort_updates_for_display(
-         filter_updates_started_on_or_before(
+      return UpdatesDisplayBuilder.sort_for_display(
+         UpdatesDisplayBuilder.filter_started_on_or_before(
             updates,
             target_date ) )
 
@@ -40,8 +36,8 @@ class UpdateCoordinator():
    def get_unexpired_updates( cls ) -> list[ Update ]:
       as_of_date = DateValues.today_date_key()
 
-      return sort_updates_for_display(
-         fetch_updates( get_connection(), as_of_date ) )
+      return UpdatesDisplayBuilder.sort_for_display(
+         UpdateProvider.fetch_updates( get_connection(), as_of_date ) )
 
 
    @classmethod
@@ -52,14 +48,14 @@ class UpdateCoordinator():
          update_type: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      update = build_update_create_input(
+      update = UpdateCreateInputBuilder.build(
          title=title,
          description=description,
          update_type=update_type,
          start_date=start_date,
          end_date=end_date )
 
-      return insert_update(
+      return UpdateProvider.insert_update(
          get_connection(),
          update=update )
 
@@ -70,12 +66,12 @@ class UpdateCoordinator():
          title: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      update = build_update_end_input(
+      update = UpdateEndInputBuilder.build(
          title=title,
          start_date=start_date,
          end_date=end_date )
 
-      return update_end_date(
+      return UpdateProvider.update_end_date(
          get_connection(),
          update=update )
 
@@ -88,13 +84,13 @@ class UpdateCoordinator():
          description: str,
          update_type: str,
          end_date: DateInput ) -> bool:
-      update = build_update_edit_input(
+      update = UpdateEditInputBuilder.build(
          title=title,
          start_date=start_date,
          description=description,
          update_type=update_type,
          end_date=end_date )
 
-      return edit_update_record(
+      return UpdateProvider.edit_update_record(
          get_connection(),
          update=update )
