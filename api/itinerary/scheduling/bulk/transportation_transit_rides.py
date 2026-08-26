@@ -20,7 +20,7 @@ from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIE
 from ....shared.constants import TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION
 from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.operating_hours import OperatingHours
-from ....transportation.data_access.transportation_station import fetch_transportation_station_records
+from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.legs_along_day_loop import legs_along_day_loop
 from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ...transportation.transportation_day_loop import TransportationDayLoop
@@ -181,7 +181,9 @@ def _station_walk_node_ids(
    }
    station_nodes: dict[ str, str ] = {}
 
-   for station in fetch_transportation_station_records( conn, transportation ):
+   for station in TransportationStationProvider.fetch_transportation_station_records(
+         conn,
+         transportation ):
       if station.name not in route_stations:
          continue
 

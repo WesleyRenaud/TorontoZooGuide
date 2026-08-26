@@ -4,21 +4,26 @@ from .transportation_station_status_record import TransportationStationStatusRec
 from ...types import Row
 
 
-def map_transportation_station_status_record(
-      row: Row,
-) -> TransportationStationStatusRecord:
-   return TransportationStationStatusRecord(
-      station=row[ 'STATION' ],
-      closed_start=row[ 'CLOSED_START' ],
-      closed_end=row[ 'CLOSED_END' ],
-      is_closed=row[ 'IS_CLOSED' ],
-      closed_message=row[ 'CLOSED_MESSAGE' ] )
+class TransportationStationStatusMapper():
+   @classmethod
+   def map_record(
+         cls,
+         row: Row,
+   ) -> TransportationStationStatusRecord:
+      return TransportationStationStatusRecord(
+         station=row[ 'STATION' ],
+         closed_start=row[ 'CLOSED_START' ],
+         closed_end=row[ 'CLOSED_END' ],
+         is_closed=row[ 'IS_CLOSED' ],
+         closed_message=row[ 'CLOSED_MESSAGE' ] )
 
 
-def map_transportation_station_status_records(
-      rows: list[ Row ],
-) -> list[ TransportationStationStatusRecord ]:
-   return [
-      map_transportation_station_status_record( row )
-      for row in rows
-   ]
+   @classmethod
+   def map_records(
+         cls,
+         rows: list[ Row ],
+   ) -> list[ TransportationStationStatusRecord ]:
+      return [
+         cls.map_record( row )
+         for row in rows
+      ]
