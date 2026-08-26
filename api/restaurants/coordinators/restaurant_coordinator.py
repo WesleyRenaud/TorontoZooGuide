@@ -1,40 +1,32 @@
 from __future__ import annotations
 
-from ..data_access.restaurant import fetch_restaurant_names
-from ..data_access.restaurant import fetch_restaurant_records
-from ..data_access.restaurant import fetch_restaurant_schedule_override_records
-from ..data_access.restaurant import fetch_restaurant_schedule_records
-from ..data_access.restaurant_schedule import save_restaurant_opening_schedule
-from ..data_access.restaurant_schedule import save_restaurant_schedule_override
-from ..domain.restaurant import build_restaurants
-from ..domain.restaurant import resolve_restaurant_context
+from ..data_access.restaurant_provider import RestaurantProvider
+from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
+from ..domain.restaurant_builder import RestaurantBuilder
 from ...models import Restaurant
 from ...request_connection import get_connection
-from ..scheduling.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
-from ..scheduling.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
-from ..search.restaurants_matching_query import build_restaurants_matching_query
+from ..scheduling.restaurant_schedule_conflict_resolver import RestaurantScheduleConflictResolver
+from ..search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
-from ..status.restaurant_status import build_restaurant_closed_schedule
-from ..status.restaurant_status import build_restaurant_closure_override
-from ..status.restaurant_status import build_restaurant_opening_schedule
+from ..status.restaurant_status_builder import RestaurantStatusBuilder
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 _mutations = AmenityCoordinatorMutations(
-   build_closed_schedule=build_restaurant_closed_schedule,
-   build_opening_schedule=build_restaurant_opening_schedule,
-   build_closure_override=build_restaurant_closure_override,
-   save_opening_schedule=save_restaurant_opening_schedule,
-   save_schedule_override=save_restaurant_schedule_override,
-   save_replacing_overlaps=save_restaurant_opening_schedule_replacing_overlaps,
-   save_trimming_overlaps=save_restaurant_opening_schedule_trimming_overlaps,
+   build_closed_schedule=RestaurantStatusBuilder.build_closed_schedule,
+   build_opening_schedule=RestaurantStatusBuilder.build_opening_schedule,
+   build_closure_override=RestaurantStatusBuilder.build_closure_override,
+   save_opening_schedule=RestaurantScheduleProvider.save_opening_schedule,
+   save_schedule_override=RestaurantScheduleProvider.save_schedule_override,
+   save_replacing_overlaps=RestaurantScheduleConflictResolver.save_replacing_overlaps,
+   save_trimming_overlaps=RestaurantScheduleConflictResolver.save_trimming_overlaps,
 )
 
 
 class RestaurantCoordinator():
    @classmethod
    def get_restaurant_names( cls ) -> list[ str ]:
-      return fetch_restaurant_names( get_connection() )
+      return RestaurantProvider.fetch_restaurant_names( get_connection() )
 
 
    @classmethod
@@ -46,18 +38,18 @@ class RestaurantCoordinator():
          include_closed_restaurants: bool,
          restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
 
-      context = resolve_restaurant_context(
+      context = RestaurantBuilder.resolve_context(
          month=month,
          day=day,
          year=year )
 
-      return build_restaurants(
-         restaurant_records=fetch_restaurant_records(
+      return RestaurantBuilder.build_restaurants(
+         restaurant_records=RestaurantProvider.fetch_restaurant_records(
             get_connection(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=fetch_restaurant_schedule_records( get_connection() ),
-         schedule_override_records=fetch_restaurant_schedule_override_records(
+         schedule_records=RestaurantProvider.fetch_restaurant_schedule_records( get_connection() ),
+         schedule_override_records=RestaurantProvider.fetch_restaurant_schedule_override_records(
             get_connection() ),
          context=context,
          include_closed_restaurants=include_closed_restaurants,
@@ -79,7 +71,7 @@ class RestaurantCoordinator():
          include_closed_restaurants=include_closed_restaurants,
          year=year )
 
-      return build_restaurants_matching_query(
+      return RestaurantsMatchingQueryBuilder.build(
          restaurants,
          query )
 

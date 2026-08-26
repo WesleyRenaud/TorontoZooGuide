@@ -7,13 +7,13 @@ from api.attractions.data_access.attraction import fetch_attraction_schedule_rec
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.domain.attraction import get_active_attraction_schedule_status
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
+from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
-from api.giftshops.domain.gift_shop import get_active_gift_shop_schedule_status
+from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
-from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
+from api.restaurants.data_access.restaurant_provider import RestaurantProvider
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
-from api.restaurants.domain.restaurant import get_active_restaurant_schedule_status
+from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.shared.enums import ScheduleStatus
 from conftest import DbControllers
 
@@ -49,20 +49,20 @@ def get_amenity_schedule_status(
       weekday: int ) -> tuple[ ScheduleStatus, str | None ]:
 
    if method_name == 'get_active_restaurant_schedule_status':
-      return get_active_restaurant_schedule_status(
+      return RestaurantBuilder.get_active_schedule_status(
          schedule_records=[
             schedule_record
-            for schedule_record in fetch_restaurant_schedule_records( db.conn )
+            for schedule_record in RestaurantProvider.fetch_restaurant_schedule_records( db.conn )
             if schedule_record.restaurant == item_name
          ],
          target_date=target_date,
          weekday=weekday )
 
    if method_name == 'get_active_gift_shop_schedule_status':
-      return get_active_gift_shop_schedule_status(
+      return GiftShopBuilder.get_active_schedule_status(
          schedule_records=[
             schedule_record
-            for schedule_record in fetch_gift_shop_schedule_records( db.conn )
+            for schedule_record in GiftShopProvider.fetch_gift_shop_schedule_records( db.conn )
             if schedule_record.gift_shop == item_name
          ],
          target_date=target_date,

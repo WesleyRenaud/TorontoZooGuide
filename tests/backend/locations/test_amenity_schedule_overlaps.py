@@ -6,9 +6,9 @@ import pytest
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
+from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
-from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
+from api.restaurants.data_access.restaurant_provider import RestaurantProvider
 from conftest import DbControllers
 
 def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbControllers ) -> None:
@@ -117,14 +117,14 @@ def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_rang
          RestaurantCoordinator,
          'restaurant',
          'Africa Restaurant',
-         fetch_restaurant_schedule_records,
+         RestaurantProvider.fetch_restaurant_schedule_records,
          'restaurant'
       ),
       (
          GiftShopCoordinator,
          'gift_shop',
          'Zootique',
-         fetch_gift_shop_schedule_records,
+         GiftShopProvider.fetch_gift_shop_schedule_records,
          'gift_shop'
       ),
       (
@@ -202,14 +202,14 @@ def test_opening_schedule_can_replace_overlapping_schedules(
          RestaurantCoordinator,
          'restaurant',
          'Africa Restaurant',
-         fetch_restaurant_schedule_records,
+         RestaurantProvider.fetch_restaurant_schedule_records,
          'restaurant'
       ),
       (
          GiftShopCoordinator,
          'gift_shop',
          'Zootique',
-         fetch_gift_shop_schedule_records,
+         GiftShopProvider.fetch_gift_shop_schedule_records,
          'gift_shop'
       ),
       (

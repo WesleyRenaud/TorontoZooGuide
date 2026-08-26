@@ -3,11 +3,12 @@ from __future__ import annotations
 from ..scheduling.attraction_opening_schedule import AttractionOpeningSchedule
 from ..scheduling.attraction_schedule_override import AttractionScheduleOverride
 from ...shared.build_amenity_status_builders import AmenityStatusBuilders
+from ...shared.enums import AmenityNameField
 from ...types import DateInput
 
 
 _builders = AmenityStatusBuilders(
-   name_field='attraction',
+   name_field=AmenityNameField.ATTRACTION,
    opening_schedule_class=AttractionOpeningSchedule,
    schedule_override_class=AttractionScheduleOverride,
 )

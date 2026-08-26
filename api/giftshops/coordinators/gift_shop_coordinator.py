@@ -1,40 +1,32 @@
 from __future__ import annotations
 
-from ..data_access.gift_shop import fetch_gift_shop_names
-from ..data_access.gift_shop import fetch_gift_shop_records
-from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
-from ..data_access.gift_shop import fetch_gift_shop_schedule_records
-from ..data_access.gift_shop_schedule import save_gift_shop_opening_schedule
-from ..data_access.gift_shop_schedule import save_gift_shop_schedule_override
-from ..domain.gift_shop import build_gift_shops
-from ..domain.gift_shop import resolve_gift_shop_context
+from ..data_access.gift_shop_provider import GiftShopProvider
+from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
+from ..domain.gift_shop_builder import GiftShopBuilder
 from ...models import GiftShop
 from ...request_connection import get_connection
-from ..scheduling.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
-from ..scheduling.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
-from ..search.gift_shops_matching_query import build_gift_shops_matching_query
+from ..scheduling.gift_shop_schedule_conflict_resolver import GiftShopScheduleConflictResolver
+from ..search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
-from ..status.gift_shop_status import build_gift_shop_closed_schedule
-from ..status.gift_shop_status import build_gift_shop_closure_override
-from ..status.gift_shop_status import build_gift_shop_opening_schedule
+from ..status.gift_shop_status_builder import GiftShopStatusBuilder
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 _mutations = AmenityCoordinatorMutations(
-   build_closed_schedule=build_gift_shop_closed_schedule,
-   build_opening_schedule=build_gift_shop_opening_schedule,
-   build_closure_override=build_gift_shop_closure_override,
-   save_opening_schedule=save_gift_shop_opening_schedule,
-   save_schedule_override=save_gift_shop_schedule_override,
-   save_replacing_overlaps=save_gift_shop_opening_schedule_replacing_overlaps,
-   save_trimming_overlaps=save_gift_shop_opening_schedule_trimming_overlaps,
+   build_closed_schedule=GiftShopStatusBuilder.build_closed_schedule,
+   build_opening_schedule=GiftShopStatusBuilder.build_opening_schedule,
+   build_closure_override=GiftShopStatusBuilder.build_closure_override,
+   save_opening_schedule=GiftShopScheduleProvider.save_opening_schedule,
+   save_schedule_override=GiftShopScheduleProvider.save_schedule_override,
+   save_replacing_overlaps=GiftShopScheduleConflictResolver.save_replacing_overlaps,
+   save_trimming_overlaps=GiftShopScheduleConflictResolver.save_trimming_overlaps,
 )
 
 
 class GiftShopCoordinator():
    @classmethod
    def get_gift_shop_names( cls ) -> list[ str ]:
-      return fetch_gift_shop_names( get_connection() )
+      return GiftShopProvider.fetch_gift_shop_names( get_connection() )
 
 
    @classmethod
@@ -46,18 +38,18 @@ class GiftShopCoordinator():
          include_closed_gift_shops: bool,
          gift_shops_to_include: list[ str ] | None = None ) -> list[ GiftShop ]:
 
-      context = resolve_gift_shop_context(
-         day=day,
+      context = GiftShopBuilder.resolve_context(
          month=month,
+         day=day,
          year=year )
 
-      return build_gift_shops(
-         gift_shop_records=fetch_gift_shop_records(
+      return GiftShopBuilder.build_gift_shops(
+         gift_shop_records=GiftShopProvider.fetch_gift_shop_records(
             get_connection(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=fetch_gift_shop_schedule_records( get_connection() ),
-         schedule_override_records=fetch_gift_shop_schedule_override_records(
+         schedule_records=GiftShopProvider.fetch_gift_shop_schedule_records( get_connection() ),
+         schedule_override_records=GiftShopProvider.fetch_gift_shop_schedule_override_records(
             get_connection() ),
          context=context,
          include_closed_gift_shops=include_closed_gift_shops,
@@ -78,7 +70,7 @@ class GiftShopCoordinator():
          year=year,
          include_closed_gift_shops=True )
 
-      return build_gift_shops_matching_query(
+      return GiftShopsMatchingQueryBuilder.build(
          gift_shops,
          query )
 

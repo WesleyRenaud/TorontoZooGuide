@@ -5,8 +5,8 @@ from collections.abc import Callable
 import pytest
 
 from api.attractions.domain.attraction import calculate_attraction_likelihood
-from api.giftshops.domain.gift_shop import calculate_gift_shop_likelihood
-from api.restaurants.domain.restaurant import calculate_restaurant_likelihood
+from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
+from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.types import SeasonalMultiplier
 
 
@@ -16,8 +16,8 @@ LikelihoodCalculator = Callable[ [ SeasonalMultiplier ], int ]
 @pytest.mark.parametrize(
    'calculate_likelihood',
    [
-      calculate_restaurant_likelihood,
-      calculate_gift_shop_likelihood,
+      RestaurantBuilder.calculate_likelihood,
+      GiftShopBuilder.calculate_likelihood,
       calculate_attraction_likelihood
    ]
 )
