@@ -44,14 +44,7 @@ from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
-from ...warnings.fixed_time_item_long_wait_warning import filter_newly_added_fixed_time_items
-from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_is_isolated_after_adding
-from ...warnings.fixed_time_item_long_wait_warning import FIXED_TIME_ITEM_LONG_WAIT_TYPES
-from ...warnings.fixed_time_item_long_wait_warning import fixed_time_items_from_validated
-from ...warnings.fixed_time_item_long_wait_warning import fixed_time_long_wait_issue_item
-from ...warnings.fixed_time_item_long_wait_warning import isolated_fixed_time_items_from_itinerary
-from ...warnings.fixed_time_item_long_wait_warning import isolated_fixed_time_items_from_validated_itinerary
-from ...warnings.fixed_time_item_long_wait_warning import time_block_is_isolated_on_schedule
+from ...warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
 
 
 def fixed_time_item_isolated_after_adding_with_simulated_bulk(
@@ -69,7 +62,7 @@ def fixed_time_item_isolated_after_adding_with_simulated_bulk(
       saved_itinerary,
       **itinerary_context )
 
-   if not fixed_time_item_is_isolated_after_adding( current_itinerary, new_item ):
+   if not FixedTimeItemLongWaitWarningBuilder.is_isolated_after_adding( current_itinerary, new_item ):
       return False
 
    animals_to_schedule = animals_for_bulk_schedule(
@@ -103,7 +96,7 @@ def fixed_time_item_isolated_after_adding_with_simulated_bulk(
    if new_item_block is None:
       return False
 
-   return time_block_is_isolated_on_schedule(
+   return FixedTimeItemLongWaitWarningBuilder.time_block_is_isolated_on_schedule(
       new_item_block,
       collect_time_blocks_from_itinerary( packed_itinerary ) )
 
@@ -121,7 +114,7 @@ def newly_added_fixed_time_item_long_wait_reason(
             validated_itinerary,
             item_type,
             saved_itinerary=saved_itinerary )
-         for item_type in FIXED_TIME_ITEM_LONG_WAIT_TYPES
+         for item_type in FixedTimeItemLongWaitWarningBuilder.LONG_WAIT_ITEM_TYPES
    ):
       return None
 
@@ -158,14 +151,14 @@ def newly_added_fixed_time_item_long_wait_reason(
 
    issue_items = []
 
-   for item_type in FIXED_TIME_ITEM_LONG_WAIT_TYPES:
+   for item_type in FixedTimeItemLongWaitWarningBuilder.LONG_WAIT_ITEM_TYPES:
       for item in _newly_added_long_wait_items_for_type(
             validated_itinerary,
             item_type,
             packed_itinerary=packed_itinerary,
             saved_itinerary=saved_itinerary ):
          issue_items.append(
-            fixed_time_long_wait_issue_item( item_type, item ) )
+            FixedTimeItemLongWaitWarningBuilder.build_issue_item( item_type, item ) )
 
    if not issue_items:
       return None
@@ -180,7 +173,7 @@ def _has_newly_added_isolated_fixed_time_items(
       item_type: ItinerarySaveIssueItemType,
       *,
       saved_itinerary: SavedItinerary | None ) -> bool:
-   isolated_items = isolated_fixed_time_items_from_validated_itinerary(
+   isolated_items = FixedTimeItemLongWaitWarningBuilder.isolated_from_validated_itinerary(
       validated_itinerary,
       item_type )
 
@@ -188,7 +181,7 @@ def _has_newly_added_isolated_fixed_time_items(
       return bool( isolated_items )
 
    return bool(
-      filter_newly_added_fixed_time_items(
+      FixedTimeItemLongWaitWarningBuilder.filter_newly_added_items(
          saved_itinerary,
          isolated_items,
          item_type ) )
@@ -201,17 +194,17 @@ def _newly_added_long_wait_items_for_type(
       packed_itinerary: Itinerary | None,
       saved_itinerary: SavedItinerary | None ) -> list[ Any ]:
    if packed_itinerary is None:
-      isolated_items = isolated_fixed_time_items_from_validated_itinerary(
+      isolated_items = FixedTimeItemLongWaitWarningBuilder.isolated_from_validated_itinerary(
          validated_itinerary,
          item_type )
    else:
-      isolated_after_pack = isolated_fixed_time_items_from_itinerary(
+      isolated_after_pack = FixedTimeItemLongWaitWarningBuilder.isolated_from_itinerary(
          packed_itinerary,
          item_type )
       isolated_names = { item.name for item in isolated_after_pack }
       isolated_items = [
          item
-         for item in fixed_time_items_from_validated(
+         for item in FixedTimeItemLongWaitWarningBuilder.items_from_validated(
             validated_itinerary,
             item_type )
          if not item.is_deleted and item.name in isolated_names
@@ -220,7 +213,7 @@ def _newly_added_long_wait_items_for_type(
    if saved_itinerary is None:
       return isolated_items
 
-   return filter_newly_added_fixed_time_items(
+   return FixedTimeItemLongWaitWarningBuilder.filter_newly_added_items(
       saved_itinerary,
       isolated_items,
       item_type )

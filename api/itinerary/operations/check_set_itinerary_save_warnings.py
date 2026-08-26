@@ -11,7 +11,7 @@ from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
 from ..warnings.attraction_without_animal_warning_builder import AttractionWithoutAnimalWarningBuilder
 from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
-from ..warnings.fixed_time_item_long_wait_warning import validated_itinerary_has_unscheduled_listed_items
+from ..warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
 from ..warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from ..warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
@@ -140,7 +140,7 @@ def check_set_itinerary_save_warnings(
 
    if (
          not confirming_fixed_time_item_long_wait
-         and not validated_itinerary_has_unscheduled_listed_items(
+         and not FixedTimeItemLongWaitWarningBuilder.has_unscheduled_listed_items(
             context.validated_itinerary )
    ):
       long_wait_reason = newly_added_fixed_time_item_long_wait_reason(
