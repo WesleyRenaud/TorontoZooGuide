@@ -8,8 +8,8 @@ from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
-from ..domain.itinerary import build_current_itinerary
-from ..domain.itinerary_visit_window import clear_schedules_outside_visit_window
+from ..domain.itinerary_builder import ItineraryBuilder
+from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Itinerary
 from ..operations import remove_itinerary_item as remove_itinerary_item_logic
@@ -28,9 +28,9 @@ from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
-from ..validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
-from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
-from ..validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
+from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
+from ..validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
+from ..validation.itinerary_departure_time_validation_builder import ItineraryDepartureTimeValidationBuilder
 from ..warnings.early_admission_warning import early_admission_warning_is_required
 from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -41,7 +41,7 @@ from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 class ItineraryCoordinator():
    @classmethod
    def _current_itinerary( cls, conn: Connection ) -> Itinerary:
-      return build_current_itinerary(
+      return ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
@@ -56,7 +56,7 @@ class ItineraryCoordinator():
          suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> ItineraryTimeSetResult:
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
-      clear_schedules_outside_visit_window(
+      ItineraryVisitWindowBuilder.clear_schedules_outside(
          conn,
          arrival_time=saved_itinerary.arrival_time,
          departure_time=saved_itinerary.departure_time )
@@ -73,7 +73,7 @@ class ItineraryCoordinator():
 
    @classmethod
    def get_itinerary( cls, visit_date_temp: float | None = None ) -> Itinerary:
-      return build_current_itinerary(
+      return ItineraryBuilder.build_current(
          saved_itinerary=ItineraryProvider.fetch_saved_itinerary( get_connection() ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
@@ -263,12 +263,12 @@ class ItineraryCoordinator():
          conn,
          ItineraryProvider.fetch_itinerary_date( conn ) )
 
-      validation_error = arrival_time_is_valid_for_zoo_hours(
+      validation_error = ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
          normalized_arrival_time,
          zoo_hours_record,
          departure_time=saved_itinerary.departure_time,
          fixed_zoo_start_times=(
-            fixed_zoo_schedule_start_times_from_saved_itinerary(
+            FixedZooScheduleStartTimesBuilder.from_saved_itinerary(
                saved_itinerary ) ) )
 
       if validation_error != ItineraryErrorType.SUCCESS:
@@ -322,7 +322,7 @@ class ItineraryCoordinator():
          conn,
          ItineraryProvider.fetch_itinerary_date( conn ) )
 
-      validation_error = departure_time_is_valid_for_zoo_hours(
+      validation_error = ItineraryDepartureTimeValidationBuilder.validate_for_zoo_hours(
          normalized_departure_time,
          zoo_hours_record,
          arrival_time=saved_itinerary.arrival_time )

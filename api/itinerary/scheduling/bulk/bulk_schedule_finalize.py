@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...data_access.itinerary_provider import ItineraryProvider
-from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_builder import ItineraryBuilder
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from .loop_schedule_stop import LoopScheduleStop
 from ....models import Itinerary
@@ -32,14 +32,14 @@ def finalize_bulk_schedule_itinerary(
 
    sync_visit_times_to_scheduled_endpoints_if_complete(
       conn,
-      build_current_itinerary(
+      ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
    clear_visit_times_if_became_incomplete(
       conn,
       previous_itinerary=previous_itinerary,
-      current_itinerary=build_current_itinerary(
+      current_itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
@@ -48,6 +48,6 @@ def finalize_bulk_schedule_itinerary(
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
       reasons=reasons,
-      itinerary=build_current_itinerary(
+      itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )

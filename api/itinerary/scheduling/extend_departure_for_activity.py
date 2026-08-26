@@ -4,7 +4,7 @@ from typing import Any
 
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_time_provider import ItineraryTimeProvider
-from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...shared.calendar_dates import DateValues
 from .sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
 from ...types import Connection
@@ -90,6 +90,6 @@ def cover_visit_times_for_scheduled_activity(
 
    seed_visit_times_to_scheduled_endpoints_if_complete(
       conn,
-      build_current_itinerary(
+      ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )

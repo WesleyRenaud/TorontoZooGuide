@@ -10,7 +10,7 @@ from ..domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
 from ..domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
-from ..validation.itinerary_arrival_time_validation import earliest_arrival_time
+from ..validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
@@ -27,7 +27,7 @@ def _arrival_adjustment_for_restrictive_hours(
       return None
 
    arrival_minutes = DateValues.time_value_in_minutes( save_input.arrival_time )
-   earliest_time = earliest_arrival_time( zoo_hours_record )
+   earliest_time = ItineraryArrivalTimeValidationBuilder.earliest_arrival_time( zoo_hours_record )
    earliest_minutes = DateValues.time_value_in_minutes( earliest_time )
    last_admission_minutes = DateValues.time_value_in_minutes(
       zoo_hours_record.last_admission_time )

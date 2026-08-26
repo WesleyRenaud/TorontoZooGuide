@@ -11,7 +11,7 @@ from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
-from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_builder import ItineraryBuilder
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
@@ -217,7 +217,7 @@ def _resolve_adjusted_attraction_slot(
          start_time=None,
          itinerary_context=itinerary_context )
 
-   itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
+   itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
    anchor_seconds, day_end_seconds = schedule_window
    slot = find_previous_available_slot(

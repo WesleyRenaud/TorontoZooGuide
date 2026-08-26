@@ -7,7 +7,7 @@ from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_it
 from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary import empty_itinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.warnings.wild_encounter_long_wait_warning import isolated_wild_encounters_from_itinerary
 from api.models import Animal
@@ -43,7 +43,7 @@ def _set_rainforest_and_rhino_schedules() -> None:
 
 
 def test_isolated_wild_encounters_detects_encounter_far_from_other_items() -> None:
-   itinerary = empty_itinerary()
+   itinerary = ItineraryBuilder.empty()
    itinerary.animals = [
       Animal(
          species='African Lion',
@@ -73,7 +73,7 @@ def test_isolated_wild_encounters_detects_encounter_far_from_other_items() -> No
 
 
 def test_isolated_wild_encounters_ignores_encounter_near_other_items() -> None:
-   itinerary = empty_itinerary()
+   itinerary = ItineraryBuilder.empty()
    itinerary.animals = [
       Animal(
          species='African Lion',

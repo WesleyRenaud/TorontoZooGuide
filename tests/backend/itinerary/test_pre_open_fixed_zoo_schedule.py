@@ -6,8 +6,8 @@ from datetime import date
 from itinerary.support import entrance_travel_seconds_to_map_location, LION_ITINERARY_ENTRY, schedule_itinerary_item, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary_visit_window import clear_schedules_outside_visit_window
-from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
+from api.itinerary.domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
+from api.itinerary.validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.map_location_kind import MapLocationKind
@@ -141,11 +141,11 @@ def test_arrival_validation_allows_fixed_zoo_start_before_open(
 
    zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( db.conn, '2026-06-15' )
 
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       PRE_OPEN_ENCOUNTER_TIME,
       zoo_hours_record,
       departure_time='17:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert arrival_time_is_valid_for_zoo_hours(
+   assert ItineraryArrivalTimeValidationBuilder.validate_for_zoo_hours(
       PRE_OPEN_ENCOUNTER_TIME,
       zoo_hours_record,
       departure_time='17:00',
@@ -172,7 +172,7 @@ def test_clear_schedules_outside_visit_window_keeps_pre_open_wild_encounter(
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   clear_schedules_outside_visit_window(
+   ItineraryVisitWindowBuilder.clear_schedules_outside(
       db.conn,
       arrival_time='09:30',
       departure_time='17:00' )

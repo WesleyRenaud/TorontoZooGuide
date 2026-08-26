@@ -8,7 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary import empty_itinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.itinerary.scheduling.core.time_block import time_block_gap_seconds
 from api.itinerary.scheduling.core.time_block import TimeBlock
@@ -68,7 +68,7 @@ def test_time_block_gap_seconds_between_non_overlapping_blocks() -> None:
 
 
 def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
-   itinerary = empty_itinerary()
+   itinerary = ItineraryBuilder.empty()
    itinerary.animals = [
       Animal(
          species='African Lion',
@@ -100,7 +100,7 @@ def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
 
 
 def test_isolated_guardians_talks_ignores_talk_near_other_items() -> None:
-   itinerary = empty_itinerary()
+   itinerary = ItineraryBuilder.empty()
    itinerary.animals = [
       Animal(
          species='African Lion',

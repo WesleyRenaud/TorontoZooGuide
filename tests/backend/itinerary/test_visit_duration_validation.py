@@ -1,6 +1,6 @@
-from api.itinerary.validation.itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
+from api.itinerary.validation.itinerary_visit_duration_validation_builder import ItineraryVisitDurationValidationBuilder
 
 
 def test_itinerary_visit_is_shorter_than_minimum() -> None:
-   assert itinerary_visit_is_shorter_than_minimum( '09:30', '11:00' )
-   assert not itinerary_visit_is_shorter_than_minimum( '09:30', '11:30' )
+   assert ItineraryVisitDurationValidationBuilder.is_shorter_than_minimum( '09:30', '11:00' )
+   assert not ItineraryVisitDurationValidationBuilder.is_shorter_than_minimum( '09:30', '11:30' )

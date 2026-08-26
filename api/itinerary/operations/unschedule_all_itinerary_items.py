@@ -5,7 +5,7 @@ from typing import Any
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary_provider import ItineraryProvider
-from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
@@ -43,6 +43,6 @@ def unschedule_all_itinerary_items(
    clear_all_itinerary_schedules( conn )
 
    return ItinerarySaveResult(
-      itinerary=build_current_itinerary(
+      itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )

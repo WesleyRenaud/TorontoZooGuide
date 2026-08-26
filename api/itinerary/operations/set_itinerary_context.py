@@ -10,8 +10,8 @@ from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ..domain.itinerary import build_current_itinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
+from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -54,7 +54,7 @@ def itinerary_controller_kwargs(
 def build_set_itinerary_current_itinerary(
       conn: Connection,
       itinerary_controller_kwargs: dict[ str, Any ] ) -> Itinerary:
-   return build_current_itinerary(
+   return ItineraryBuilder.build_current(
       ItineraryProvider.fetch_saved_itinerary( conn ),
       **itinerary_controller_kwargs )
 

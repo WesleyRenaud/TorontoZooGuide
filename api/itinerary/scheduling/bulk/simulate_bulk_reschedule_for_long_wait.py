@@ -24,8 +24,7 @@ from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
-from ...domain.itinerary import build_current_itinerary
-from ...domain.itinerary import build_itinerary
+from ...domain.itinerary_builder import ItineraryBuilder
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from .guardians_talk_covered_animals import CoveredAnimalTalk
 from .guardians_talk_covered_animals import filter_animals_excluding_covered
@@ -66,7 +65,7 @@ def fixed_time_item_isolated_after_adding_with_simulated_bulk(
       itinerary_context: dict[ str, Any ] ) -> bool:
    """True when scheduling new_item leaves it isolated even after packing animals."""
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
-   current_itinerary = build_current_itinerary(
+   current_itinerary = ItineraryBuilder.build_current(
       saved_itinerary,
       **itinerary_context )
 
@@ -324,7 +323,7 @@ def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:
       cleared_attraction.end_time = None
       cleared_attractions.append( cleared_attraction )
 
-   return build_itinerary(
+   return ItineraryBuilder.build(
       date=itinerary.date,
       selected_exhibits=list( itinerary.selected_exhibits ),
       animals=cleared_animals,
@@ -401,7 +400,7 @@ def _build_itinerary_from_proposed_items(
       'wild_encounter_coordinator'
    ].get_wild_encounters_for_saved_itinerary( encounter_rows )
 
-   return build_itinerary(
+   return ItineraryBuilder.build(
       date=visit_date,
       selected_exhibits=[],
       animals=animals,

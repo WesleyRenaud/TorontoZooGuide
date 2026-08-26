@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.itinerary.domain.itinerary import build_itinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_walk_route_completion import itinerary_has_unscheduled_guest_items
 from api.itinerary.routing.itinerary_walk_route_completion import should_append_return_to_entrance_walk_route_leg
 from api.models import Animal
@@ -9,7 +9,7 @@ from api.models import ItineraryTransportation
 
 
 def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_animals_and_attractions() -> None:
-   itinerary = build_itinerary(
+   itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[
@@ -37,7 +37,7 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_animals_and_a
 
 
 def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_transportation() -> None:
-   itinerary = build_itinerary(
+   itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[
@@ -64,7 +64,7 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_transportatio
 
 
 def test_itinerary_has_unscheduled_guest_items_ignores_bulk_evaluated_transit_transportation() -> None:
-   itinerary = build_itinerary(
+   itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[
@@ -92,7 +92,7 @@ def test_itinerary_has_unscheduled_guest_items_ignores_bulk_evaluated_transit_tr
 
 
 def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_scheduled() -> None:
-   itinerary = build_itinerary(
+   itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[
@@ -127,7 +127,7 @@ def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_sch
 
 
 def test_should_append_return_to_entrance_only_when_all_guest_items_are_scheduled() -> None:
-   partial_itinerary = build_itinerary(
+   partial_itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[
@@ -148,7 +148,7 @@ def test_should_append_return_to_entrance_only_when_all_guest_items_are_schedule
       events=[],
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
-   complete_itinerary = build_itinerary(
+   complete_itinerary = ItineraryBuilder.build(
       date='2026-06-20',
       selected_exhibits=[],
       animals=[

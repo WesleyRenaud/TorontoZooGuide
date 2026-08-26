@@ -20,8 +20,7 @@ from ..data_access.itinerary_transportation_record import ItineraryTransportatio
 from ..data_access.itinerary_transportation_save_carryover_mapper import ItineraryTransportationSaveCarryoverMapper
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_window
-from ..domain.itinerary_visit_window import schedule_time_occurs_outside_visit_window
+from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ..domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
@@ -37,7 +36,7 @@ from ..scheduling.bulk.attraction_covered_animals import uncover_animals_for_rem
 from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
-from .selected_exhibit_date_change_animals import apply_selected_exhibit_animals_on_date_change
+from .selected_exhibit_date_change_animals_builder import SelectedExhibitDateChangeAnimalsBuilder
 from ...shared.enums import ItineraryEventType
 from ...shared.value_conversion import ValueConversion
 from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
@@ -125,7 +124,7 @@ def validate_itinerary_animals(
       start_time, end_time = (
          ( carryover.start_time, carryover.end_time )
          if visit_date_is_changing
-         else cleared_schedule_times_for_visit_window(
+         else ItineraryVisitWindowBuilder.cleared_schedule_times(
             carryover.start_time,
             carryover.end_time,
             arrival_time=arrival_time,
@@ -224,7 +223,7 @@ def validate_itinerary_attractions(
       start_time, end_time = (
          ( carryover.start_time, carryover.end_time )
          if visit_date_is_changing
-         else cleared_schedule_times_for_visit_window(
+         else ItineraryVisitWindowBuilder.cleared_schedule_times(
             carryover.start_time,
             carryover.end_time,
             arrival_time=arrival_time,
@@ -301,7 +300,7 @@ def validate_itinerary_transportations(
       start_time, end_time = (
          ( carryover.start_time, carryover.end_time )
          if visit_date_is_changing
-         else cleared_schedule_times_for_visit_window(
+         else ItineraryVisitWindowBuilder.cleared_schedule_times(
             carryover.start_time,
             carryover.end_time,
             arrival_time=arrival_time,
@@ -391,7 +390,7 @@ def guardians_talk_diffs_within_visit_window(
    return [
       talk
       for talk in guardians_talks
-      if not schedule_time_occurs_outside_visit_window(
+      if not ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             talk.start_time,
             talk.end_time,
             arrival_time=arrival_time,
@@ -408,7 +407,7 @@ def wild_encounter_diffs_within_visit_window(
    return [
       encounter
       for encounter in wild_encounters
-      if not schedule_time_occurs_outside_visit_window(
+      if not ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             encounter.start_time,
             encounter.end_time,
             arrival_time=arrival_time,
@@ -430,7 +429,7 @@ def itinerary_events_from_saved_rows(
             ItineraryEventType.DEPARTURE ):
          continue
 
-      if schedule_time_occurs_outside_visit_window(
+      if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             event.start_time,
             event.end_time,
             arrival_time=arrival_time,
@@ -523,7 +522,7 @@ def validate_itinerary_for_save(
       visit_date_is_changing=visit_date_is_changing )
 
    if visit_date_is_changing:
-      validated_animals = apply_selected_exhibit_animals_on_date_change(
+      validated_animals = SelectedExhibitDateChangeAnimalsBuilder.apply_on_date_change(
          animal_coordinator,
          existing_animals=validated_animals,
          selected_exhibits=save_input.selected_exhibits,
@@ -660,7 +659,7 @@ def _visit_window_cuts_off_saved_schedules(
    # the same zoo-hours slot (so they stay inside the visit window), and if not
    # offered they are dropped during validation rather than left cut off.
    for animal in saved_itinerary.animal_rows:
-      if schedule_time_occurs_outside_visit_window(
+      if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             animal.start_time,
             animal.end_time,
             arrival_time=arrival_time,
@@ -668,7 +667,7 @@ def _visit_window_cuts_off_saved_schedules(
          return True
 
    for attraction in saved_itinerary.attraction_rows:
-      if schedule_time_occurs_outside_visit_window(
+      if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             attraction.start_time,
             attraction.end_time,
             arrival_time=arrival_time,
@@ -676,7 +675,7 @@ def _visit_window_cuts_off_saved_schedules(
          return True
 
    for transportation in saved_itinerary.transportation_rows:
-      if schedule_time_occurs_outside_visit_window(
+      if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             transportation.start_time,
             transportation.end_time,
             arrival_time=arrival_time,
@@ -689,7 +688,7 @@ def _visit_window_cuts_off_saved_schedules(
             ItineraryEventType.DEPARTURE ):
          continue
 
-      if schedule_time_occurs_outside_visit_window(
+      if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
             event.start_time,
             event.end_time,
             arrival_time=arrival_time,

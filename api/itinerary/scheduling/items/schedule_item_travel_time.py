@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from ..core.time_block import earliest_scheduled_start_seconds
 from ..core.time_block import latest_scheduled_end_seconds
 from ...data_access.saved_itinerary import SavedItinerary
-from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_builder import ItineraryBuilder
 from ....models import Itinerary
 from ...routing.transit_ride_endpoint import TransitRideEndpoint
 from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
@@ -241,7 +241,7 @@ def _previous_stop_end_and_walk_node(
       before_start_seconds: int | None ) -> tuple[ int, str ]:
    walk_graph = load_walk_graph()
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
-   itinerary = build_current_itinerary( saved_itinerary, **itinerary_context )
+   itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
    previous_candidates: list[ tuple[ int, str ] ] = [
       ( visit_anchor_seconds, entrance_node_id ),
    ]
