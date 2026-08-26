@@ -17,7 +17,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule
 from api.itinerary.scheduling.bulk.loop_schedule_unit import walk_node_id_for_loop_schedule_stop
 from api.itinerary.scheduling.bulk.sort_stops_by_master_route import sort_stops_by_master_route
 from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
-from api.itinerary.warnings.bulk_schedule_itinerary_warning import build_bulk_schedule_itinerary_not_enough_time_issue
+from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -201,7 +201,7 @@ def test_sort_stops_by_master_route_orders_unmapped_attractions_by_name() -> Non
 
 
 def test_build_bulk_schedule_not_enough_time_issue_includes_attractions() -> None:
-   issue = build_bulk_schedule_itinerary_not_enough_time_issue(
+   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
       [
          ItineraryAnimalRecord(
             species='African Lion',

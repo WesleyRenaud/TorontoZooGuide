@@ -43,8 +43,8 @@ from ..transportation.expand_timed_transportation_legs import expand_timed_trans
 from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ..transportation.resolve_transportation_day_loop import resolve_transportation_route_for_date
 from ...types import Connection, DateKey, ScheduleTimeKey
-from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
-from ..warnings.wild_encounter_unschedule_warning import new_wild_encounters_overlapping_saved_schedule
+from ..warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
+from ..warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...wild_encounters.itinerary.wild_encounter_itinerary_validation_builder import WildEncounterItineraryValidationBuilder
 
@@ -617,12 +617,12 @@ def itinerary_needs_schedule_reschedule(
    # Match schedule-item: rebuild when a new talk/encounter overlaps guest
    # schedules. Removals alone do not. Visit-window edits only rebuild when
    # they cut off already-scheduled guest items (e.g. date-change arrival).
-   if new_guardians_talks_overlapping_saved_schedule(
+   if GuardiansTalkUnscheduleWarningBuilder.new_talks_overlapping_saved_schedule(
          saved_itinerary,
          validated_itinerary ):
       return True
 
-   if new_wild_encounters_overlapping_saved_schedule(
+   if WildEncounterUnscheduleWarningBuilder.new_encounters_overlapping_saved_schedule(
          saved_itinerary,
          validated_itinerary ):
       return True

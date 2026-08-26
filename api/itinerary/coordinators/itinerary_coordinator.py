@@ -31,8 +31,8 @@ from ...types import Connection, DateInput, DurationInput, TimeInput
 from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
 from ..validation.itinerary_arrival_time_validation_builder import ItineraryArrivalTimeValidationBuilder
 from ..validation.itinerary_departure_time_validation_builder import ItineraryDepartureTimeValidationBuilder
-from ..warnings.early_admission_warning import early_admission_warning_is_required
-from ..warnings.short_visit_warning import short_visit_warning_is_required
+from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
+from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
@@ -276,7 +276,7 @@ class ItineraryCoordinator():
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
 
-      if early_admission_warning_is_required(
+      if EarlyAdmissionWarningBuilder.is_required(
             conn,
             normalized_arrival_time,
             zoo_hours_record,
@@ -286,7 +286,7 @@ class ItineraryCoordinator():
             status=ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
             suppressed_warnings=suppressed_warnings )
 
-      if short_visit_warning_is_required(
+      if ShortVisitWarningBuilder.is_required(
             conn,
             normalized_arrival_time,
             saved_itinerary.departure_time,
@@ -332,7 +332,7 @@ class ItineraryCoordinator():
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
 
-      if short_visit_warning_is_required(
+      if ShortVisitWarningBuilder.is_required(
             conn,
             saved_itinerary.arrival_time,
             normalized_departure_time,

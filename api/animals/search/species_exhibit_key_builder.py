@@ -26,3 +26,14 @@ class SpeciesExhibitKeyBuilder():
          cls.from_values( animal.species, animal.exhibit )
          for animal in animals
       ]
+
+
+   @classmethod
+   def any_linked_in(
+         cls,
+         animal_keys: list[ SpeciesExhibitKey ],
+         linked_animals: list[ SpeciesExhibitKey ] ) -> bool:
+      return any(
+         linked_animal in animal_keys
+         for linked_animal in linked_animals
+      )

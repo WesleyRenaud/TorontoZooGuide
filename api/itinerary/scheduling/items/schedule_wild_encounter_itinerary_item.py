@@ -18,8 +18,8 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
-from ...warnings.wild_encounter_long_wait_warning import wild_encounter_long_wait_reason_after_adding_with_simulated_bulk
-from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
+from ...warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
+from ...warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 from ...wild_encounter_item_key import WildEncounterScheduleItemKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -120,11 +120,11 @@ def schedule_wild_encounter_itinerary_item(
 
    if has_overlap and not confirming_wild_encounter_unschedule:
       pending_reasons.append(
-         build_wild_encounter_unschedule_issue( [ wild_encounter_diff ] ) )
+         WildEncounterUnscheduleWarningBuilder.build_issue( [ wild_encounter_diff ] ) )
 
    if not confirming_fixed_time_item_long_wait:
       long_wait_reason = (
-         wild_encounter_long_wait_reason_after_adding_with_simulated_bulk(
+         WildEncounterLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk(
             conn,
             wild_encounter_diff,
             itinerary_context=itinerary_context )

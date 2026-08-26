@@ -20,10 +20,10 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from ...warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_reason_after_adding_with_simulated_bulk
-from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
-from ...warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
-from ...warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
+from ...warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
+from ...warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
+from ...warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
+from ...warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 
 
 def _saved_guardians_talk_exists(
@@ -122,21 +122,21 @@ def schedule_guardians_talk_itinerary_item(
 
    if has_overlap and not confirming_guardians_talk_unschedule:
       pending_reasons.append(
-         build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ) )
+         GuardiansTalkUnscheduleWarningBuilder.build_issue( [ guardians_talk_diff ] ) )
 
-   if guardians_talk_without_animal_warning_is_required_for_talk(
+   if GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
          guardians_talk_diff,
          saved_itinerary.species_exhibit_pairs(),
          conn,
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) ):
       pending_reasons.append(
-         build_guardians_talk_without_animal_issue_from_talks(
+         GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks(
             [ guardians_talk_diff ] ) )
 
    if not confirming_fixed_time_item_long_wait:
       long_wait_reason = (
-         guardians_talk_long_wait_reason_after_adding_with_simulated_bulk(
+         GuardiansTalkLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk(
             conn,
             guardians_talk_diff,
             itinerary_context=itinerary_context )

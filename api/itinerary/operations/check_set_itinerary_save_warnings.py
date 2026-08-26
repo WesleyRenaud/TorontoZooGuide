@@ -9,16 +9,12 @@ from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
-from ..warnings.attraction_without_animal_warning import attraction_without_animal_warning_is_required
-from ..warnings.attraction_without_animal_warning import build_attraction_without_animal_issue_from_attractions
-from ..warnings.attraction_without_animal_warning import newly_added_attractions_without_matching_animal
-from ..warnings.early_admission_warning import early_admission_warning_is_required
+from ..warnings.attraction_without_animal_warning_builder import AttractionWithoutAnimalWarningBuilder
+from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
 from ..warnings.fixed_time_item_long_wait_warning import validated_itinerary_has_unscheduled_listed_items
-from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
-from ..warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required
-from ..warnings.guardians_talk_without_animal_warning import newly_added_guardians_talks_without_matching_animal
-from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
-from ..warnings.short_visit_warning import short_visit_warning_is_required
+from ..warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
+from ..warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
+from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
@@ -48,7 +44,7 @@ def check_set_itinerary_save_warnings(
 
    if (
          save_input.arrival_time is not None
-         and early_admission_warning_is_required(
+         and EarlyAdmissionWarningBuilder.is_required(
             context.conn,
             save_input.arrival_time,
             zoo_hours_record,
@@ -67,7 +63,7 @@ def check_set_itinerary_save_warnings(
    if (
          save_input.arrival_time is not None
          and save_input.departure_time is not None
-         and short_visit_warning_is_required(
+         and ShortVisitWarningBuilder.is_required(
             context.conn,
             save_input.arrival_time,
             save_input.departure_time,
@@ -95,7 +91,7 @@ def check_set_itinerary_save_warnings(
    if schedule_conflict_warning is not None:
       return (
          updated_context,
-         with_suppressed_warnings(
+         ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
             schedule_conflict_warning,
             suppressed_warnings ),
       )
@@ -114,32 +110,32 @@ def check_set_itinerary_save_warnings(
       if unschedule_warning is not None:
          pending_reasons.extend( unschedule_warning.reasons )
 
-   if guardians_talk_without_animal_warning_is_required(
+   if GuardiansTalkWithoutAnimalWarningBuilder.is_required(
          context.validated_itinerary,
          context.conn,
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ),
          saved_itinerary=context.saved_itinerary ):
-      missing_animal_talks = newly_added_guardians_talks_without_matching_animal(
+      missing_animal_talks = GuardiansTalkWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
          context.validated_itinerary,
          context.conn,
          saved_itinerary=context.saved_itinerary )
       pending_reasons.append(
-         build_guardians_talk_without_animal_issue_from_talks(
+         GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks(
             missing_animal_talks ) )
 
-   if attraction_without_animal_warning_is_required(
+   if AttractionWithoutAnimalWarningBuilder.is_required(
          context.validated_itinerary,
          context.conn,
          confirming_attraction_without_animal=(
             confirming_attraction_without_animal ),
          saved_itinerary=context.saved_itinerary ):
-      missing_animal_attractions = newly_added_attractions_without_matching_animal(
+      missing_animal_attractions = AttractionWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
          context.validated_itinerary,
          context.conn,
          saved_itinerary=context.saved_itinerary )
       pending_reasons.append(
-         build_attraction_without_animal_issue_from_attractions(
+         AttractionWithoutAnimalWarningBuilder.build_issue_from_attractions(
             missing_animal_attractions ) )
 
    if (
@@ -160,7 +156,7 @@ def check_set_itinerary_save_warnings(
    if pending_reasons:
       return (
          updated_context,
-         with_suppressed_warnings(
+         ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
             ItinerarySaveResult(
                status=pending_reasons[ 0 ].code,
                reasons=pending_reasons,

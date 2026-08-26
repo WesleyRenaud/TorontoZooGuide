@@ -14,7 +14,7 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import ScheduleTimeKey
-from ...warnings.schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
+from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
 
 
 def prepare_schedule_item_on_itinerary(
@@ -27,7 +27,7 @@ def prepare_schedule_item_on_itinerary(
       ) -> tuple[ list[ ItineraryErrorType ], ItinerarySaveResult | None ]:
    suppressed_warnings: list[ ItineraryErrorType ] = []
 
-   if schedule_item_not_on_itinerary_warning_is_required(
+   if ScheduleItemNotOnItineraryWarningBuilder.is_required(
          conn,
          saved_itinerary,
          schedule_item_key,

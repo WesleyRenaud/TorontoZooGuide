@@ -7,13 +7,11 @@ from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, L
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.animals.search.species_exhibit_key import SpeciesExhibitKey
+from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
-from api.itinerary.warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
-from api.itinerary.warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
-from api.itinerary.warnings.guardians_talk_without_animal_warning import guardians_talks_without_matching_animal
-from api.itinerary.warnings.guardians_talk_without_animal_warning import talk_matches_species_exhibit_pairs
+from api.itinerary.warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
@@ -64,7 +62,7 @@ def test_guardians_talks_without_matching_animal_skips_deleted_talks(
       events=[],
    )
 
-   missing = guardians_talks_without_matching_animal( validated, db.conn )
+   missing = GuardiansTalkWithoutAnimalWarningBuilder.talks_without_matching_animal( validated, db.conn )
 
    assert [ talk.name for talk in missing ] == [ LION_TALK ]
 
@@ -76,7 +74,7 @@ def test_talk_without_animal_warning_skips_deleted_talk(
       is_deleted=True,
       location='Africa Savanna' )
 
-   assert not guardians_talk_without_animal_warning_is_required_for_talk(
+   assert not GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
       talk,
       set(),
       db.conn,
@@ -91,7 +89,7 @@ def test_build_guardians_talk_without_animal_issue_from_talks() -> None:
       end_time='12:30 PM',
       location='Africa Savanna' )
 
-   issue = build_guardians_talk_without_animal_issue_from_talks( [ talk ] )
+   issue = GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks( [ talk ] )
 
    assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
    assert len( issue.items ) == 1
@@ -396,19 +394,19 @@ def test_talk_matches_associated_species_exhibit_pairs() -> None:
       'Golden Lion Tamarin',
       'Americas Pavilion' )
 
-   assert not talk_matches_species_exhibit_pairs(
+   assert not SpeciesExhibitKeyBuilder.any_linked_in(
       [ tamarin_key ],
-      linked_animals=[] )
-   assert not talk_matches_species_exhibit_pairs(
+      [] )
+   assert not SpeciesExhibitKeyBuilder.any_linked_in(
       [ tamarin_key ],
-      linked_animals=[
+      [
          SpeciesExhibitKey.from_values(
             'Golden Lion Tamarin',
             'Africa Savanna' ),
       ] )
-   assert talk_matches_species_exhibit_pairs(
+   assert SpeciesExhibitKeyBuilder.any_linked_in(
       [ tamarin_key ],
-      linked_animals=[
+      [
          SpeciesExhibitKey.from_values(
             'Golden Lion Tamarin',
             'Americas Pavilion' ),
