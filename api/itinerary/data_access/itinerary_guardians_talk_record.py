@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_name_key import itinerary_name_key
+from .itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...types import ScheduleTimeKey
 
 
@@ -15,4 +15,4 @@ class ItineraryGuardiansTalkRecord:
 
 
    def name_key( self ) -> str:
-      return itinerary_name_key( self.talk_name )
+      return ItineraryNameKeyBuilder.build( self.talk_name )

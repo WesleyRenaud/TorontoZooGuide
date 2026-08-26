@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from api.itinerary.data_access.itinerary_event_default import fetch_itinerary_event_default_records
+from api.itinerary.data_access.itinerary_event_default_provider import ItineraryEventDefaultProvider
 from api.seed.tables import itinerary_event_default
 from api.shared.enums import ItineraryEventType
 
@@ -20,7 +20,7 @@ def test_itinerary_event_defaults_are_seeded() -> None:
    itinerary_event_default.create_table( cursor )
    itinerary_event_default.insert_rows( cursor )
 
-   records = fetch_itinerary_event_default_records( conn )
+   records = ItineraryEventDefaultProvider.fetch_records( conn )
 
    assert len( records ) == len( itinerary_event_default.itinerary_event_defaults )
    assert {

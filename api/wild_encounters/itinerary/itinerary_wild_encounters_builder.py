@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..domain.wild_encounter_sort_builder import WildEncounterSortBuilder
-from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
+from ...itinerary.data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...models import WildEncounter
 
@@ -19,7 +19,7 @@ class ItineraryWildEncountersBuilder():
 
       for wild_encounter in wild_encounters:
          saved_encounter = wild_encounter_by_name.get(
-            itinerary_name_key( wild_encounter.name ) )
+            ItineraryNameKeyBuilder.build( wild_encounter.name ) )
 
          if saved_encounter == None:
             continue

@@ -7,7 +7,7 @@ from itinerary.support import schedule_itinerary_item
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
-from api.itinerary.domain.itinerary_transportations import build_itinerary_transportations
+from api.itinerary.domain.itinerary_transportations_builder import ItineraryTransportationsBuilder
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from conftest import DbControllers
 
@@ -58,7 +58,7 @@ def test_build_itinerary_transportations_passes_legs_through(
    _schedule_zoomobile_as_attraction( db )
 
    saved_transportations = ItineraryProvider.fetch_itinerary_transportation_rows( db.conn )
-   transportations = build_itinerary_transportations(
+   transportations = ItineraryTransportationsBuilder.build(
       saved_transportations,
       target_date=date( 2026, 6, 15 ),
    )

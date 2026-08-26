@@ -3,7 +3,7 @@ from __future__ import annotations
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
-from ..data_access.itinerary_name_key import itinerary_name_key
+from ..data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.attraction_diff import AttractionDiff
@@ -68,7 +68,7 @@ def newly_added_attractions_without_matching_animal(
    return [
       attraction
       for attraction in missing_attractions
-      if itinerary_name_key( attraction.name ) not in saved_names
+      if ItineraryNameKeyBuilder.build( attraction.name ) not in saved_names
    ]
 
 

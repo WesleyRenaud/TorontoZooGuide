@@ -9,7 +9,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
-from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalkRouteMatcher
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.shared.calendar_dates import DateValues
@@ -202,7 +202,7 @@ def test_confirmed_wild_encounter_reschedule_persists_walk_route(
    expected_route = build_itinerary_walk_route( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
-   assert walk_route_matches( expected_route, persisted_route )
+   assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
    assert any(
       stop.item_key == WILD_ENCOUNTER
       for stop in persisted_route.stops )

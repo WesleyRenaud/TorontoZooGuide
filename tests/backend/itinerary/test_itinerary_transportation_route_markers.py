@@ -10,7 +10,7 @@ from api.itinerary.data_access.itinerary_transportation_route_marker_provider im
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
-from api.itinerary.domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
+from api.itinerary.domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.transportation_name import TransportationName
@@ -92,7 +92,7 @@ def test_fetch_wraparound_leg_markers_preserve_travel_order(
 
 def test_build_sequences_splits_discontinuous_legs(
       db: DbControllers ) -> None:
-   sequences = build_transportation_route_marker_sequences(
+   sequences = TransportationRouteMarkerSequencesBuilder.build(
       db.conn,
       transportation=ZOOMOBILE,
       route='summer',
@@ -123,7 +123,7 @@ def test_build_sequences_splits_discontinuous_legs(
 
 def test_build_sequences_concatenates_consecutive_legs(
       db: DbControllers ) -> None:
-   sequences = build_transportation_route_marker_sequences(
+   sequences = TransportationRouteMarkerSequencesBuilder.build(
       db.conn,
       transportation=ZOOMOBILE,
       route='summer',

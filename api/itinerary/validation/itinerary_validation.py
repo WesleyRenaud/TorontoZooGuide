@@ -20,9 +20,9 @@ from ..data_access.itinerary_transportation_record import ItineraryTransportatio
 from ..data_access.itinerary_transportation_save_carryover_mapper import ItineraryTransportationSaveCarryoverMapper
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ..domain.build_transportation_route_marker_sequences import build_transportation_route_marker_sequences
 from ..domain.itinerary_visit_window import cleared_schedule_times_for_visit_window
 from ..domain.itinerary_visit_window import schedule_time_occurs_outside_visit_window
+from ..domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians.itinerary.guardians_talk_itinerary_validation_builder import GuardiansTalkItineraryValidationBuilder
 from ...models import Animal
@@ -349,7 +349,7 @@ def validate_itinerary_transportations(
             end_time=end_time,
             legs=legs,
             route=route,
-            route_marker_sequences=build_transportation_route_marker_sequences(
+            route_marker_sequences=TransportationRouteMarkerSequencesBuilder.build(
                conn,
                transportation=transportation.name,
                route=route,

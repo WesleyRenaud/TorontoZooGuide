@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..domain.itinerary_transportation_stations import group_consecutive_transportation_leg_sequences
+from ..domain.itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
 from .itinerary_stop import ItineraryStop
 from ...models import Itinerary
 from ...models.itinerary_transportation import ItineraryTransportation
@@ -110,7 +110,7 @@ def _transit_ride_station_anchors(
       transportation: ItineraryTransportation,
 ) -> list[ WalkRouteAnchor ]:
    anchors: list[ WalkRouteAnchor ] = []
-   sequences = group_consecutive_transportation_leg_sequences(
+   sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences(
       transportation.legs )
 
    for sequence_index, sequence in enumerate( sequences ):

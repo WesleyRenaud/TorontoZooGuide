@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
-from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
+from ...itinerary.data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...models import GuardiansTalk
 
 
@@ -18,7 +18,7 @@ class ItineraryGuardiansTalksBuilder():
 
       for guardians_talk in guardians_talks:
          saved_talk = guardians_talk_by_name.get(
-            itinerary_name_key( guardians_talk.name ) )
+            ItineraryNameKeyBuilder.build( guardians_talk.name ) )
 
          if saved_talk == None:
             continue

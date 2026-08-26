@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 
-from .itinerary_name_key import itinerary_name_key
+from .itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.enums import ScheduleItemKind
 from ...types import ScheduleTimeKey
@@ -26,7 +26,7 @@ class ItineraryTransportationRecord:
 
 
    def name_key( self ) -> str:
-      return itinerary_name_key( self.transportation )
+      return ItineraryNameKeyBuilder.build( self.transportation )
 
 
    def master_route_stop_key( self ) -> AttractionMasterRouteStopKey:

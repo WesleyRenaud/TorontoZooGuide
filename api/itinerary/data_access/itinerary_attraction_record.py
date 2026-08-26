@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_name_key import itinerary_name_key
+from .itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...types import ScheduleTimeKey
 from ...walk_graph.domain.master_route_stop_key import attraction_master_route_stop_key
 from ...walk_graph.domain.master_route_stop_key import AttractionMasterRouteStopKey
@@ -18,7 +18,7 @@ class ItineraryAttractionRecord:
 
 
    def name_key( self ) -> str:
-      return itinerary_name_key( self.attraction )
+      return ItineraryNameKeyBuilder.build( self.attraction )
 
 
    def master_route_stop_key( self ) -> AttractionMasterRouteStopKey:

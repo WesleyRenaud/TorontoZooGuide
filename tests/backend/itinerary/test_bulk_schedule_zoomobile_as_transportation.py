@@ -10,7 +10,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
-from api.itinerary.domain.itinerary_transportation_stations import group_consecutive_transportation_leg_sequences
+from api.itinerary.domain.itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
 from api.models import Itinerary
 from api.models.animal import Animal
 from api.models.itinerary_transportation import ItineraryTransportation
@@ -79,7 +79,7 @@ def _ride_board_alight_pairs(
 ) -> list[ tuple[ str, str ] ]:
    return [
       ( sequence[ 0 ].from_station, sequence[ -1 ].to_station )
-      for sequence in group_consecutive_transportation_leg_sequences( legs )
+      for sequence in ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( legs )
    ]
 
 
@@ -166,7 +166,7 @@ def test_bulk_schedule_domain_only_uses_zoomobile_to_cut_long_walk(
    assert rides[ -1 ][ 1 ] == MAIN
    assert rides[ -1 ][ 0 ] in { DOMAIN, AFRICA, TUNDRA }
 
-   sequences = group_consecutive_transportation_leg_sequences( zoomobile.legs )
+   sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( zoomobile.legs )
    domain_animals = _scheduled_animals_in_regions(
       result.itinerary,
       { 'Canadian Domain' } )
