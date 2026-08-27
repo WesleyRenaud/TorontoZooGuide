@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..itinerary.transportation.route_duration_minutes import transportation_route_duration_minutes
+from ..itinerary.transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
 from ..models import Attraction
 from ..request_connection import get_connection
 from ..shared.calendar_dates import CalendarDates
@@ -20,7 +20,7 @@ def enrich_transportation_attraction_route_durations(
       if not attraction.is_also_transportation:
          continue
 
-      attraction.route_duration_minutes = transportation_route_duration_minutes(
+      attraction.route_duration_minutes = TransportationRouteDurationResolver.minutes(
          conn,
          transportation=attraction.name,
          target_date=target_date,

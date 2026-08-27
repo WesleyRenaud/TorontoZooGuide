@@ -12,7 +12,7 @@ from ...data_access.schedule_itinerary_transportation_provider import ScheduleIt
 from .listed_schedule_target import ListedScheduleTarget
 from .schedule_item_key import ListedScheduleItemKey
 from ....shared.calendar_dates import DateValues
-from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
+from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from ....types import Connection
 from ....types import Cursor
 from ....types import ScheduleTimeKey
@@ -80,7 +80,7 @@ class ListedScheduleTargetResolver():
             if parsed_visit_date is None:
                return False
 
-            day_loop = fetch_transportation_day_loop(
+            day_loop = TransportationDayLoopFetcher.fetch(
                cur.connection,
                transportation=schedule_item_key.name,
                target_date=parsed_visit_date )

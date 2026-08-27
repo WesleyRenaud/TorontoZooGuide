@@ -6,7 +6,7 @@ from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...request_connection import get_connection
 from ...shared.calendar_dates import DateValues
 from .transit_ride_endpoint import TransitRideEndpoint
-from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
+from ..transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from .transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from .transportation_station_walk_node_resolver import TransportationStationWalkNodeResolver
 
@@ -62,7 +62,7 @@ class TransportationWalkNodeResolver():
          visit_date = DateValues.parse_date_value( date_record.itinerary_date )
 
          if visit_date is not None:
-            day_loop = fetch_transportation_day_loop(
+            day_loop = TransportationDayLoopFetcher.fetch(
                conn,
                transportation=transportation_name,
                target_date=visit_date )

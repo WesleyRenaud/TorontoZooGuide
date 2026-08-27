@@ -21,9 +21,9 @@ from ....shared.constants import TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACT
 from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
-from ...transportation.legs_along_day_loop import legs_along_day_loop
-from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
 from ...transportation.transportation_day_loop import TransportationDayLoop
+from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
+from ...transportation.transportation_day_loop_leg_selector import TransportationDayLoopLegSelector
 from ...transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from ...transportation_item_key import TransportationScheduleItemKey
 from ....types import Connection
@@ -63,7 +63,7 @@ class TransportationTransitRideApplier():
          if parsed_visit_date is None:
             continue
 
-         day_loop = fetch_transportation_day_loop(
+         day_loop = TransportationDayLoopFetcher.fetch(
             conn,
             transportation=transit_row.transportation,
             target_date=parsed_visit_date )
@@ -328,7 +328,7 @@ class TransportationTransitRideApplier():
             if board_station == alight_station:
                continue
 
-            legs = legs_along_day_loop(
+            legs = TransportationDayLoopLegSelector.select(
                day_loop,
                board_station,
                alight_station )
