@@ -4,9 +4,9 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk import attraction_hours_soft_pin as soft_pin_module
 from api.itinerary.scheduling.bulk import schedule_animals_by_master_route_loop as schedule_module
 from api.itinerary.scheduling.bulk import schedule_loop_unit_with_attraction_hours as hours_module
+from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from api.shared.operating_hours import OperatingHours
@@ -27,7 +27,7 @@ def _loop_unit(
 
 
 def test_resolve_attraction_hours_soft_pins_rejects_invalid_visit_date() -> None:
-   assert soft_pin_module.resolve_attraction_hours_soft_pins(
+   assert AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[],
       loop_units=[],
@@ -44,7 +44,7 @@ def test_attach_attraction_hours_soft_pins_noop_without_pins() -> None:
          end_seconds=12 * 3600 ),
    ]
 
-   assert soft_pin_module.attach_attraction_hours_soft_pins_to_schedule_windows(
+   assert AttractionHoursSoftPinResolver.attach_to_windows(
       windows,
       [] ) is windows
 
@@ -63,7 +63,7 @@ def test_attach_attraction_hours_soft_pins_filters_by_window_overlap() -> None:
       start_seconds=11 * 3600,
       end_seconds=15 * 3600 )
 
-   attached = soft_pin_module.attach_attraction_hours_soft_pins_to_schedule_windows(
+   attached = AttractionHoursSoftPinResolver.attach_to_windows(
       [ morning, afternoon ],
       [ soft_pin ] )
 
@@ -80,7 +80,7 @@ def test_loop_id_by_attraction_name_skips_null_loop_and_animal_stops() -> None:
       old_likelihood=None,
       new_likelihood=100 )
 
-   loop_ids = soft_pin_module._loop_id_by_attraction_name(
+   loop_ids = AttractionHoursSoftPinResolver._loop_id_by_attraction_name(
       [
          _loop_unit( None, [ attraction ] ),
          _loop_unit( 'zoomobile', [ animal, attraction ] ),
@@ -101,7 +101,7 @@ def test_stops_before_attraction_hours_soft_pin_skips_unknown_indexes() -> None:
       old_likelihood=None,
       new_likelihood=100 )
 
-   assert soft_pin_module.stops_before_attraction_hours_soft_pin(
+   assert AttractionHoursSoftPinResolver.stops_before(
       [ attraction ],
       loop_id='unknown-loop',
       soft_pin=soft_pin ) == []
@@ -333,7 +333,7 @@ def test_attraction_hours_loop_earliest_start_seconds_early_exits() -> None:
 
 
 def test_resolve_skips_attraction_not_on_any_loop() -> None:
-   soft_pins = soft_pin_module.resolve_attraction_hours_soft_pins(
+   soft_pins = AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[
          ItineraryAttractionRecord(

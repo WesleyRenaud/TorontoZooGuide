@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
-from .bulk_schedule_loop_pins import keep_completable_loop_pins
-from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
+from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
@@ -116,7 +115,7 @@ def prepare_bulk_schedule_windows(
       saved_itinerary.animal_rows,
       anchor_seconds )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
-   boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+   boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
       conn,
       itinerary,
       fixed_time_stops )
@@ -124,7 +123,7 @@ def prepare_bulk_schedule_windows(
       start_state.schedule_anchor_seconds,
       day_end_seconds,
       boundary_stops )
-   loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
+   loop_pins = BulkScheduleLoopPinAttacher.keep_completable( schedule_windows, loop_pins )
    visit_date = ItineraryProvider.fetch_itinerary_date( conn )
    zoo_hours_record = (
       None

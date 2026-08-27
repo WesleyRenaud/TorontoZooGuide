@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .attraction_hours_soft_pin import stops_before_attraction_hours_soft_pin
+from .attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -76,7 +76,7 @@ def attraction_hours_loop_earliest_start_seconds(
       return None
 
    first_soft_pin = unit_soft_pins[ 0 ]
-   before_stops = stops_before_attraction_hours_soft_pin(
+   before_stops = AttractionHoursSoftPinResolver.stops_before(
       list( prepared_unit.unit.stops ),
       loop_id=loop_id,
       soft_pin=first_soft_pin )
@@ -145,7 +145,7 @@ def _schedule_stops_around_attraction_hours(
 
       before_stops = [
          stop
-         for stop in stops_before_attraction_hours_soft_pin(
+         for stop in AttractionHoursSoftPinResolver.stops_before(
             stops,
             loop_id=loop_id,
             soft_pin=soft_pin )

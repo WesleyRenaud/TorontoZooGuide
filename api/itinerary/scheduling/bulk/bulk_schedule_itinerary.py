@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
-from .attraction_covered_animals import apply_covered_by_attraction_schedules
+from .attraction_animal_coverer import AttractionAnimalCoverer
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_finalize_builder import BulkScheduleFinalizeBuilder
 from .bulk_schedule_loop_packing import pack_stops_into_bulk_schedule
@@ -12,7 +12,7 @@ from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .guardians_talk_covered_animals import apply_covered_by_talk_schedules
+from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
@@ -85,8 +85,8 @@ def bulk_schedule_itinerary(
          previous_itinerary=prep.previous_itinerary,
          itinerary_context=itinerary_context )
 
-   apply_covered_by_talk_schedules( conn, packing.covered_by_talk )
-   apply_covered_by_attraction_schedules( conn, packing.covered_by_attraction )
+   GuardiansTalkAnimalCoverer.apply( conn, packing.covered_by_talk )
+   AttractionAnimalCoverer.apply( conn, packing.covered_by_attraction )
    BulkScheduleTransitLegsBuilder.apply( conn, prep=prep )
 
    return BulkScheduleFinalizeBuilder.finalize(

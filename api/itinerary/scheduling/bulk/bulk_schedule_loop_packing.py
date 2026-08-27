@@ -2,16 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .attraction_covered_animals import CoveredAnimalAttraction
-from .attraction_covered_animals import merge_covered_viewing_spot_keys
-from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
-from .attraction_hours_soft_pin import attach_attraction_hours_soft_pins_to_schedule_windows
-from .attraction_hours_soft_pin import resolve_attraction_hours_soft_pins
-from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
+from .attraction_animal_coverer import AttractionAnimalCoverer
+from .attraction_animal_coverer import CoveredAnimalAttraction
+from .attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
+from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
-from .guardians_talk_covered_animals import CoveredAnimalTalk
-from .guardians_talk_covered_animals import filter_animals_excluding_covered
-from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
+from .guardians_talk_animal_coverer import CoveredAnimalTalk
+from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import build_loop_schedule_units
@@ -40,21 +37,21 @@ def pack_stops_into_bulk_schedule(
    animals_to_schedule = LoopScheduleStopExtractor.animals_from( stops_to_schedule )
    attractions_to_pack = LoopScheduleStopExtractor.attractions_from( stops_to_schedule )
    transportations_to_pack = LoopScheduleStopExtractor.transportations_from( stops_to_schedule )
-   covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
+   covered_by_talk = GuardiansTalkAnimalCoverer.keys_to_cover(
       conn,
       prep.loop_pins,
       animals_to_schedule )
-   covered_by_attraction = viewing_spot_keys_to_cover_for_attractions(
+   covered_by_attraction = AttractionAnimalCoverer.keys_to_cover(
       conn,
       [
          attraction_row.attraction
          for attraction_row in attractions_to_pack
       ],
       animals_to_schedule )
-   covered_keys = merge_covered_viewing_spot_keys(
+   covered_keys = AttractionAnimalCoverer.merge_keys(
       covered_by_talk,
       covered_by_attraction )
-   animals_to_pack = filter_animals_excluding_covered(
+   animals_to_pack = GuardiansTalkAnimalCoverer.excluding_covered(
       animals_to_schedule,
       covered_keys )
    stops_to_pack = [
@@ -64,14 +61,14 @@ def pack_stops_into_bulk_schedule(
    ]
    sorted_loop_groups = MasterRouteLoopStopGrouper.group( stops_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
-   schedule_windows = attach_loop_pins_to_schedule_windows(
+   schedule_windows = BulkScheduleLoopPinAttacher.attach_to_windows(
       prep.schedule_windows,
       prep.loop_pins )
 
    if (
          prep.visit_date is not None
          and prep.zoo_operating_hours is not None ):
-      soft_pins = resolve_attraction_hours_soft_pins(
+      soft_pins = AttractionHoursSoftPinResolver.resolve(
          conn,
          attractions=[
             *attractions_to_pack,
@@ -81,7 +78,7 @@ def pack_stops_into_bulk_schedule(
          visit_date=prep.visit_date,
          zoo_operating_hours=prep.zoo_operating_hours )
 
-      schedule_windows = attach_attraction_hours_soft_pins_to_schedule_windows(
+      schedule_windows = AttractionHoursSoftPinResolver.attach_to_windows(
          schedule_windows,
          soft_pins )
 

@@ -10,7 +10,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.itinerary_stop import ItineraryStop
-from api.itinerary.scheduling.bulk.loop_pin_segments import viewing_spot_index_for_stop_in_loop
+from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.models import Animal
 from api.models import WildEncounter
 from api.shared.calendar_dates import DateValues
@@ -33,7 +33,7 @@ TUNDRA_TREK_MAYAN_TEMPLE_LOOP = 'tundra_trek_mayan_temple'
 def _animal_viewing_spot_index(
       loop_id: str,
       animal: Animal ) -> int | None:
-   return viewing_spot_index_for_stop_in_loop(
+   return LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       loop_id,
       ItineraryAnimalRecord(
          species=animal.species,

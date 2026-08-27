@@ -6,12 +6,9 @@ from datetime import date
 from typing import Any
 
 from ....animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from .attraction_covered_animals import CoveredAnimalAttraction
-from .attraction_covered_animals import merge_covered_viewing_spot_keys
-from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
-from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
-from .bulk_schedule_loop_pins import keep_completable_loop_pins
-from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
+from .attraction_animal_coverer import AttractionAnimalCoverer
+from .attraction_animal_coverer import CoveredAnimalAttraction
+from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_stop_selector import BulkScheduleStopSelector
 from .bulk_schedule_window_prep import bulk_schedule_start_state
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
@@ -25,9 +22,8 @@ from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounte
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
-from .guardians_talk_covered_animals import CoveredAnimalTalk
-from .guardians_talk_covered_animals import filter_animals_excluding_covered
-from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
+from .guardians_talk_animal_coverer import CoveredAnimalTalk
+from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
 from .loop_unit_schedule_slots import LoopScheduleSlot
@@ -245,7 +241,7 @@ def pack_animals_into_itinerary_in_memory(
       [],
       anchor_seconds )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( packing_itinerary )
-   boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+   boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
       conn,
       packing_itinerary,
       fixed_time_stops )
@@ -253,27 +249,27 @@ def pack_animals_into_itinerary_in_memory(
       start_state.schedule_anchor_seconds,
       day_end_seconds,
       boundary_stops )
-   loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
-   covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
+   loop_pins = BulkScheduleLoopPinAttacher.keep_completable( schedule_windows, loop_pins )
+   covered_by_talk = GuardiansTalkAnimalCoverer.keys_to_cover(
       conn,
       loop_pins,
       animals_to_schedule )
-   covered_by_attraction = viewing_spot_keys_to_cover_for_attractions(
+   covered_by_attraction = AttractionAnimalCoverer.keys_to_cover(
       conn,
       [
          attraction.name
          for attraction in packing_itinerary.attractions
       ],
       animals_to_schedule )
-   covered_keys = merge_covered_viewing_spot_keys(
+   covered_keys = AttractionAnimalCoverer.merge_keys(
       covered_by_talk,
       covered_by_attraction )
-   animals_to_pack = filter_animals_excluding_covered(
+   animals_to_pack = GuardiansTalkAnimalCoverer.excluding_covered(
       animals_to_schedule,
       covered_keys )
    sorted_loop_groups = MasterRouteLoopAnimalGrouper.group( animals_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
-   schedule_windows = attach_loop_pins_to_schedule_windows(
+   schedule_windows = BulkScheduleLoopPinAttacher.attach_to_windows(
       schedule_windows,
       loop_pins )
 

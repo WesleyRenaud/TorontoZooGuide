@@ -15,9 +15,8 @@ from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
 from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
-from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
-from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
-from api.itinerary.scheduling.bulk.loop_pin_segments import viewing_spot_index_for_stop_in_loop
+from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
+from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.models import Animal
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -32,7 +31,7 @@ AFRICA_SAVANNA = 'Africa Savanna'
 def _animal_viewing_spot_index(
       loop_id: str,
       animal: Animal ) -> int | None:
-   return viewing_spot_index_for_stop_in_loop(
+   return LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       loop_id,
       ItineraryAnimalRecord(
          species=animal.species,
@@ -93,11 +92,11 @@ def test_partition_keeps_loop_pin_talk_inside_single_schedule_window(
    assert day_end_seconds is not None
 
    fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
-   boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+   boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
       db.conn,
       itinerary,
       fixed_time_stops )
-   windows = attach_loop_pins_to_schedule_windows(
+   windows = BulkScheduleLoopPinAttacher.attach_to_windows(
       partition_itinerary_schedule_windows(
          anchor_seconds,
          day_end_seconds,

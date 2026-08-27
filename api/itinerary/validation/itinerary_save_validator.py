@@ -15,8 +15,8 @@ from .itinerary_save_attraction_split_builder import ItinerarySaveAttractionSpli
 from .itinerary_schedule_reschedule_resolver import ItineraryScheduleRescheduleResolver
 from .itinerary_transportation_validator import ItineraryTransportationValidator
 from .itinerary_visit_window_content_builder import ItineraryVisitWindowContentBuilder
-from ..scheduling.bulk.attraction_covered_animals import uncover_animals_for_removed_attractions
-from ..scheduling.bulk.guardians_talk_covered_animals import uncover_animals_for_unavailable_talks
+from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
+from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
 from .selected_exhibit_date_change_animals_builder import SelectedExhibitDateChangeAnimalsBuilder
@@ -113,7 +113,7 @@ class ItinerarySaveValidator():
             visit_date_temp=new_visit_date_temp )
 
       if validated_animals:
-         validated_animals = uncover_animals_for_unavailable_talks(
+         validated_animals = GuardiansTalkAnimalCoverer.uncover_for_unavailable_talks(
             conn,
             validated_animals,
             guardians_talk_diffs )
@@ -123,7 +123,7 @@ class ItinerarySaveValidator():
             for attraction_row in saved_itinerary.attraction_rows
             if attraction_row.attraction not in kept_attraction_names
          ]
-         validated_animals = uncover_animals_for_removed_attractions(
+         validated_animals = AttractionAnimalCoverer.uncover_for_removed(
             conn,
             validated_animals,
             removed_attraction_rows )

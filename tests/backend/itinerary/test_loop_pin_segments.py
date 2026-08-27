@@ -4,11 +4,9 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
-from api.itinerary.scheduling.bulk.loop_pin_segments import loop_pin_schedule_steps
-from api.itinerary.scheduling.bulk.loop_pin_segments import loop_pin_segment_index_for_viewing_spot
-from api.itinerary.scheduling.bulk.loop_pin_segments import LoopPinGapStep
-from api.itinerary.scheduling.bulk.loop_pin_segments import LoopPinStopSegment
-from api.itinerary.scheduling.bulk.loop_pin_segments import split_stops_into_loop_pin_segments
+from api.itinerary.scheduling.bulk.loop_pin_gap_step import LoopPinGapStep
+from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
+from api.itinerary.scheduling.bulk.loop_pin_stop_segment import LoopPinStopSegment
 from api.shared.enums import ScheduleItemKind
 
 
@@ -43,16 +41,16 @@ def _hyena_loop_pin() -> LoopSchedulePin:
 
 
 def test_loop_pin_segment_index_places_animals_before_and_after_pin() -> None:
-   assert loop_pin_segment_index_for_viewing_spot(
+   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       3,
       pin_boundaries=[ 5 ] ) == 0
-   assert loop_pin_segment_index_for_viewing_spot(
+   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       5,
       pin_boundaries=[ 5 ] ) == 0
-   assert loop_pin_segment_index_for_viewing_spot(
+   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       20,
       pin_boundaries=[ 5 ] ) == 1
-   assert loop_pin_segment_index_for_viewing_spot(
+   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       None,
       pin_boundaries=[ 5 ] ) == 1
 
@@ -70,7 +68,7 @@ def test_split_stops_into_loop_pin_segments_groups_savanna_animals() -> None:
       exhibit='Africa Savanna',
    )
 
-   segments = split_stops_into_loop_pin_segments(
+   segments = LoopPinSegmentSplitter.split_stops(
       [ cheetah, penguin ],
       loop_id=loop_id,
       loop_pins=[ loop_pin ],
@@ -94,7 +92,7 @@ def test_loop_pin_schedule_steps_alternates_segments_and_gaps() -> None:
    )
    window_end_seconds = 61200
 
-   steps = loop_pin_schedule_steps(
+   steps = LoopPinSegmentSplitter.schedule_steps(
       [ penguin, cheetah ],
       loop_id=loop_id,
       loop_pins=[ loop_pin ],
@@ -148,7 +146,7 @@ def test_split_stops_into_loop_pin_segments_keeps_woven_attraction_with_post_pin
       end_seconds=48600,
    )
 
-   segments = split_stops_into_loop_pin_segments(
+   segments = LoopPinSegmentSplitter.split_stops(
       [ kangaroo, walk_thru, tiger ],
       loop_id=loop_id,
       loop_pins=[ loop_pin ],
