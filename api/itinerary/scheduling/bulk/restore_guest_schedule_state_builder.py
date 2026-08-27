@@ -9,7 +9,7 @@ from ...routing.itinerary_walk_route import ItineraryWalkRoute
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ....types import ScheduleTimeKey
-from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
+from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 
 
 class RestoreGuestScheduleStateBuilder():
@@ -32,7 +32,7 @@ class RestoreGuestScheduleStateBuilder():
          conn: Connection,
          saved_itinerary: SavedItinerary,
          walk_route: ItineraryWalkRoute ) -> None:
-      clear_all_itinerary_schedules( conn )
+      ItineraryScheduleClearer.clear_all( conn )
 
       cur = conn.cursor()
 

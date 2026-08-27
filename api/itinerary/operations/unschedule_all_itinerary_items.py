@@ -10,8 +10,8 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
-from ..scheduling.unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
-from ..scheduling.unscheduling.guest_scheduled_itinerary_items import saved_itinerary_has_guest_scheduled_items
+from ..scheduling.unscheduling.guest_scheduled_itinerary_item_checker import GuestScheduledItineraryItemChecker
+from ..scheduling.unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -34,13 +34,13 @@ def unschedule_all_itinerary_items(
 
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
-   if not saved_itinerary_has_guest_scheduled_items( saved_itinerary ):
+   if not GuestScheduledItineraryItemChecker.has_items( saved_itinerary ):
       return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
          **itinerary_context )
 
-   clear_all_itinerary_schedules( conn )
+   ItineraryScheduleClearer.clear_all( conn )
 
    return ItinerarySaveResult(
       itinerary=ItineraryBuilder.build_current(

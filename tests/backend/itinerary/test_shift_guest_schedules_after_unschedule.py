@@ -7,18 +7,18 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.core.time_block import TimeBlock
-from api.itinerary.scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block, shifted_schedule_times
+from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.shared.enums import ItineraryEventType
 
 
 def test_shifted_schedule_times_moves_block_earlier() -> None:
-   shifted = shifted_schedule_times( '10:45 AM', '11:00 AM', -15 * 60 )
+   shifted = GuestScheduleShiftApplier.shifted_schedule_times( '10:45 AM', '11:00 AM', -15 * 60 )
 
    assert shifted == ( '10:30 AM', '10:45 AM' )
 
 
 def test_shifted_schedule_times_returns_none_for_invalid_shift() -> None:
-   assert shifted_schedule_times( '10:00 AM', '10:15 AM', -11 * 3600 ) is None
+   assert GuestScheduleShiftApplier.shifted_schedule_times( '10:00 AM', '10:15 AM', -11 * 3600 ) is None
 
 
 def test_resolve_unscheduled_item_time_block_for_animal() -> None:
@@ -39,7 +39,7 @@ def test_resolve_unscheduled_item_time_block_for_animal() -> None:
       wild_encounter_rows=(),
    )
 
-   block = resolve_unscheduled_item_time_block(
+   block = GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
       saved_itinerary,
       AnimalScheduleItemKey(
          species='Masai Giraffe',
@@ -72,7 +72,7 @@ def test_resolve_unscheduled_item_time_block_for_attraction() -> None:
       wild_encounter_rows=(),
    )
 
-   block = resolve_unscheduled_item_time_block(
+   block = GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
       saved_itinerary,
       AttractionScheduleItemKey( name='Conservation Carousel' ),
    )
@@ -101,7 +101,7 @@ def test_resolve_unscheduled_item_time_block_for_event() -> None:
       ),
    )
 
-   block = resolve_unscheduled_item_time_block(
+   block = GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
       saved_itinerary,
       ItineraryEventType.LUNCH,
    )

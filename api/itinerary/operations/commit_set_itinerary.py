@@ -10,7 +10,7 @@ from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
-from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
+from ..scheduling.unscheduling.guardians_talk_schedule_trimmer import GuardiansTalkScheduleTrimmer
 from .set_itinerary_context import build_set_itinerary_current_itinerary
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
@@ -23,7 +23,7 @@ def commit_set_itinerary(
    validated_itinerary = context.validated_itinerary
 
    if overriding_conflicting_guardians_talks:
-      trimmed_guardians_talks = apply_guardians_talk_trimming(
+      trimmed_guardians_talks = GuardiansTalkScheduleTrimmer.apply(
          validated_itinerary.guardians_talks,
          validated_itinerary.wild_encounters )
       validated_itinerary = replace(
