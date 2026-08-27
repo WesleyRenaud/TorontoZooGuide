@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..conflicts.itinerary_unschedule_confirmations import apply_confirmed_itinerary_unschedule_changes
-from ..conflicts.wild_encounter_time_conflicts import find_schedule_time_conflict_issues
+from ..conflicts.itinerary_unschedule_change_applier import ItineraryUnscheduleChangeApplier
+from ..conflicts.schedule_time_conflict_issue_finder import ScheduleTimeConflictIssueFinder
 from ..data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..data_access.save_itinerary_provider import SaveItineraryProvider
 from .itinerary_save_context import ItinerarySaveContext
@@ -34,11 +34,11 @@ class ItinerarySaveCommitter():
             guardians_talks=trimmed_guardians_talks )
 
       if context.saved_itinerary is not None:
-         validated_itinerary = apply_confirmed_itinerary_unschedule_changes(
+         validated_itinerary = ItineraryUnscheduleChangeApplier.apply(
             validated_itinerary,
             context.unschedule_requirements )
 
-      remaining_conflicts = find_schedule_time_conflict_issues(
+      remaining_conflicts = ScheduleTimeConflictIssueFinder.find(
          validated_itinerary.guardians_talks,
          validated_itinerary.wild_encounters )
 

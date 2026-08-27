@@ -4,8 +4,8 @@ from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..conflicts.itinerary_unschedule_confirmations import find_itinerary_unschedule_requirements
-from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
+from ..conflicts.itinerary_unschedule_requirements import ItineraryUnscheduleRequirements
+from ..conflicts.itinerary_unschedule_requirements_finder import ItineraryUnscheduleRequirementsFinder
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..domain.itinerary_adjustment import ItineraryAdjustment
@@ -57,7 +57,7 @@ class ItinerarySaveContextPreparer():
          **itinerary_controller_kwargs )
 
       unschedule_requirements = (
-         find_itinerary_unschedule_requirements(
+         ItineraryUnscheduleRequirementsFinder.find(
             saved_itinerary,
             validated_itinerary )
          if saved_itinerary is not None

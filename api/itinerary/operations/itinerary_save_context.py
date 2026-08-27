@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
+from ..conflicts.itinerary_unschedule_requirements import ItineraryUnscheduleRequirements
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
