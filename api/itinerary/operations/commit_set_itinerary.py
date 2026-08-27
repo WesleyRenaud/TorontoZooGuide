@@ -7,10 +7,9 @@ from ..conflicts.wild_encounter_time_conflicts import find_schedule_time_conflic
 from ..data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..data_access.save_itinerary_provider import SaveItineraryProvider
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ..scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
-from ..scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
-from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
-from ..scheduling.sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
+from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .set_itinerary_context import build_set_itinerary_current_itinerary
 from .set_itinerary_context import SetItineraryContext
@@ -55,15 +54,15 @@ def commit_set_itinerary(
       selected_exhibits=context.save_input.selected_exhibits )
 
    if context.validated_itinerary.needs_schedule_reschedule:
-      reschedule_result = reschedule_itinerary_items_after_fixed_time_activity_add(
+      reschedule_result = FixedTimeActivityRescheduler.reschedule_after_add(
          context.conn,
          saved_itinerary_before_clear=context.saved_itinerary,
          **context.itinerary_controller_kwargs )
       itinerary = reschedule_result.itinerary
-      seed_visit_times_to_scheduled_endpoints_if_complete(
+      ScheduledEndpointVisitTimesSyncer.seed_if_complete(
          context.conn,
          itinerary )
-      clear_visit_times_if_became_incomplete(
+      ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
          context.conn,
          previous_itinerary=context.current_itinerary,
          current_itinerary=build_set_itinerary_current_itinerary(
@@ -83,10 +82,10 @@ def commit_set_itinerary(
          context.conn,
          context.itinerary_controller_kwargs )
 
-      seed_visit_times_to_scheduled_endpoints_if_complete(
+      ScheduledEndpointVisitTimesSyncer.seed_if_complete(
          context.conn,
          itinerary )
-      clear_visit_times_if_became_incomplete(
+      ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
          context.conn,
          previous_itinerary=context.current_itinerary,
          current_itinerary=build_set_itinerary_current_itinerary(

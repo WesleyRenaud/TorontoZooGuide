@@ -16,7 +16,7 @@ from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_n
 from api.itinerary.scheduling.core.time_block import latest_scheduled_end_seconds
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
-from api.itinerary.scheduling.items.schedule_item_travel_time import entrance_travel_seconds_from_latest_item
+from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
@@ -242,7 +242,7 @@ def expected_departure_time_for_itinerary( itinerary: Itinerary ) -> str:
    assert latest_end_seconds is not None
    departure_time = DateValues.schedule_time_key_from_seconds(
       latest_end_seconds
-      + entrance_travel_seconds_from_latest_item( itinerary ) )
+      + ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item( itinerary ) )
    assert departure_time is not None
    return departure_time
 

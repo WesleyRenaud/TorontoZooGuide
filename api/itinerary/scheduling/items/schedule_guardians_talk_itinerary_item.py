@@ -7,16 +7,16 @@ from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
-from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
+from ..fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ....models.guardians_talk_diff import GuardiansTalkDiff
-from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import persist_itinerary_walk_route
+from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
@@ -160,7 +160,7 @@ def schedule_guardians_talk_itinerary_item(
    if insert_error is not None:
       return insert_error
 
-   cover_visit_times_for_scheduled_activity(
+   ScheduledActivityVisitTimesCoverer.cover_for_activity(
       conn,
       start_time=guardians_talk_diff.start_time,
       end_time=guardians_talk_diff.end_time,
@@ -169,7 +169,7 @@ def schedule_guardians_talk_itinerary_item(
       itinerary_context=itinerary_context )
 
    if has_overlap and confirming_guardians_talk_unschedule:
-      return reschedule_itinerary_items_after_fixed_time_activity_add(
+      return FixedTimeActivityRescheduler.reschedule_after_add(
          conn,
          saved_itinerary_before_clear=saved_itinerary,
          **itinerary_context )

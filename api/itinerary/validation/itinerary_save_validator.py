@@ -17,8 +17,7 @@ from .itinerary_transportation_validator import ItineraryTransportationValidator
 from .itinerary_visit_window_content_builder import ItineraryVisitWindowContentBuilder
 from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
-from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
-from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
+from ..scheduling.scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from .selected_exhibit_date_change_animals_builder import SelectedExhibitDateChangeAnimalsBuilder
 from ...types import Connection, DateKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -83,10 +82,10 @@ class ItinerarySaveValidator():
       ]
 
       if not visit_date_is_changing:
-         arrival_time = arrival_time_covering_schedule_starts(
+         arrival_time = ScheduledActivityVisitTimesCoverer.arrival_covering_starts(
             arrival_time,
             fixed_time_activity_start_times )
-         departure_time = departure_time_covering_schedule_ends(
+         departure_time = ScheduledActivityVisitTimesCoverer.departure_covering_ends(
             departure_time,
             fixed_time_activity_end_times )
 

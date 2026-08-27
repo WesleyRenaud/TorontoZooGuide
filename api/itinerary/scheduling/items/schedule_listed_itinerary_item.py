@@ -14,9 +14,7 @@ from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from .schedule_item_key import ListedScheduleItemKey
-from .schedule_item_travel_time import earliest_schedule_start_seconds_with_travel
-from .schedule_item_travel_time import walk_node_id_for_animal
-from .schedule_item_travel_time import walk_node_id_for_attraction
+from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import prepare_schedule_window
@@ -82,7 +80,7 @@ def schedule_listed_itinerary_item(
       conn,
       schedule_item_key )
    visit_anchor_seconds = prepared_window.window[ 0 ]
-   earliest_start_seconds = earliest_schedule_start_seconds_with_travel(
+   earliest_start_seconds = ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
       saved_itinerary,
       candidate_walk_node_id=candidate_walk_node_id,
       visit_anchor_seconds=visit_anchor_seconds,
@@ -120,7 +118,7 @@ def _walk_node_id_for_listed_item(
       conn: Connection,
       schedule_item_key: ListedScheduleItemKey ) -> str | None:
    if isinstance( schedule_item_key, AnimalScheduleItemKey ):
-      return walk_node_id_for_animal(
+      return ScheduleItemTravelTimeCalculator.walk_node_id_for_animal(
          species=schedule_item_key.species,
          exhibit=schedule_item_key.exhibit,
          enclosure_name=schedule_item_key.enclosure_name )
@@ -131,6 +129,6 @@ def _walk_node_id_for_listed_item(
             schedule_item_key.name ):
          return walk_node_id_for_transportation( schedule_item_key.name )
 
-      return walk_node_id_for_attraction( schedule_item_key.name )
+      return ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( schedule_item_key.name )
 
    return None

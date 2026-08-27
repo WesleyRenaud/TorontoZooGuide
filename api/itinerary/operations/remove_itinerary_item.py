@@ -19,8 +19,7 @@ from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
 from ..scheduling.items.schedule_itinerary_helpers import build_success_result
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
-from ..scheduling.sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
-from ..scheduling.sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
+from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ...shared.enums import ItineraryEventType
 from ..transportation_item_key import TransportationScheduleItemKey
 from ...types import Connection
@@ -121,12 +120,12 @@ def _remove_transit_transportation_and_reschedule(
          confirming_fixed_time_item_long_wait=True,
          **itinerary_context )
 
-   sync_visit_times_to_scheduled_endpoints_if_complete(
+   ScheduledEndpointVisitTimesSyncer.sync_if_complete(
       conn,
       ItineraryBuilder.build_current(
          saved_after,
          **itinerary_context ) )
-   clear_visit_times_if_became_incomplete(
+   ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
       conn,
       previous_itinerary=itinerary_before,
       current_itinerary=ItineraryBuilder.build_current(
