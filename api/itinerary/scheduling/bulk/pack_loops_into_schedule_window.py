@@ -2,13 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .loop_schedule_unit import loop_schedule_unit_orientations
-from .loop_schedule_unit import loop_schedule_unit_reversed
+from .loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from .loop_schedule_unit import LoopScheduleUnit
-from .loop_unit_schedule_slots import prepare_loop_schedule_stops
-from .loop_unit_schedule_slots import total_occupied_seconds
-from .loop_unit_travel_time import approach_travel_seconds_to_unit
-from .loop_unit_travel_time import packed_units_occupied_seconds
+from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
+from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....types import Connection
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
@@ -35,7 +32,7 @@ def prepare_loop_schedule_units(
    adjacency = build_walk_graph_adjacency( walk_graph )
 
    for unit in units:
-      prepared_stops = prepare_loop_schedule_stops(
+      prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
          walk_graph,
          unit.stops,
@@ -47,7 +44,7 @@ def prepare_loop_schedule_units(
       prepared_units.append(
          PreparedLoopScheduleUnit(
             unit=unit,
-            occupied_seconds=total_occupied_seconds( prepared_stops ) ) )
+            occupied_seconds=LoopScheduleSlotAssigner.total_occupied_seconds( prepared_stops ) ) )
 
    return prepared_units
 
@@ -151,7 +148,7 @@ def pack_all_loops_before_deadline(
    if not prepared_units or window_start_seconds >= deadline_seconds:
       return None
 
-   occupied_seconds = packed_units_occupied_seconds(
+   occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       prepared_units,
       from_node_id=current_node_id )
@@ -203,7 +200,7 @@ def _pack_loops_with_terminal_unit(
       terminal_side_cluster_id=terminal_unit.unit.side_cluster_id,
       departure_side_cluster_id=departure_side_cluster_id )
 
-   occupied_seconds = packed_units_occupied_seconds(
+   occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       [ *prefix_units, terminal_unit ],
       from_node_id=current_node_id )
@@ -240,7 +237,7 @@ def _greedy_prefix_units_before_terminal(
          unit
          for unit in remaining_units
          if (
-               approach_travel_seconds_to_unit(
+               LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
                   walk_graph,
                   walk_node_id,
                   unit.unit,
@@ -272,7 +269,7 @@ def _greedy_prefix_units_before_terminal(
          adjacency=adjacency )
       packed_units.append( next_unit )
       cursor_seconds += (
-         approach_travel_seconds_to_unit(
+         LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
             walk_graph,
             walk_node_id,
             next_unit.unit,
@@ -318,7 +315,7 @@ def _pack_loops_for_open_window(
          unit
          for unit in remaining_units
          if (
-               approach_travel_seconds_to_unit(
+               LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
                   walk_graph,
                   walk_node_id,
                   unit.unit,
@@ -353,7 +350,7 @@ def _pack_loops_for_open_window(
          adjacency=adjacency )
       packed_units.append( next_unit )
       cursor_seconds += (
-         approach_travel_seconds_to_unit(
+         LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
             walk_graph,
             walk_node_id,
             next_unit.unit,
@@ -376,7 +373,7 @@ def _anchored_sequence_score(
       current_node_id: str,
       anchor_node_id: str ) -> tuple[ float, float, str ]:
    terminal_unit = sequence[ -1 ]
-   occupied_seconds = packed_units_occupied_seconds(
+   occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       sequence,
       from_node_id=current_node_id )
@@ -608,7 +605,7 @@ def _soft_pins_fit_before_close(
 
       if (
             cursor_seconds
-            + packed_units_occupied_seconds(
+            + LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
                walk_graph,
                units_before_soft_end,
                from_node_id=current_node_id )
@@ -708,7 +705,7 @@ def _prepared_unit_orientations(
       _prepared_unit_with_loop_schedule_unit(
          prepared_unit,
          loop_unit )
-      for loop_unit in loop_schedule_unit_orientations( prepared_unit.unit )
+      for loop_unit in LoopScheduleUnitBuilder.orientations( prepared_unit.unit )
    ]
 
 
@@ -737,7 +734,7 @@ def _prepared_unit_with_best_approach_orientation(
    if reverse_distance < forward_distance:
       return _prepared_unit_with_loop_schedule_unit(
          prepared_unit,
-         loop_schedule_unit_reversed( unit ) )
+         LoopScheduleUnitBuilder.reversed( unit ) )
 
    return prepared_unit
 

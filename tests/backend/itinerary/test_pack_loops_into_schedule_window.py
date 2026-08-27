@@ -4,7 +4,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
-from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
+from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
@@ -31,7 +31,7 @@ def _prepared_loop_unit(
       *,
       stops: list[ LoopScheduleStop ],
       duration_seconds: int ) -> PreparedLoopScheduleUnit:
-   loop_unit = build_loop_schedule_units( [ stops ] )[ 0 ]
+   loop_unit = LoopScheduleUnitBuilder.build( [ stops ] )[ 0 ]
 
    return PreparedLoopScheduleUnit(
       unit=loop_unit,
@@ -173,7 +173,7 @@ def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anch
 
 
 def test_pack_loops_into_schedule_window_uses_itinerary_animal_nodes_for_partial_loop_endpoints() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(

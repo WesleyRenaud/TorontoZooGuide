@@ -17,13 +17,9 @@ from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_n
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_for_shortest_path
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_from_length_px
 from api.itinerary.routing.walk_travel_time import WALK_PX_PER_MINUTE
-from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
-from api.itinerary.scheduling.bulk.loop_unit_schedule_slots import assign_contiguous_slots
-from api.itinerary.scheduling.bulk.loop_unit_schedule_slots import assign_contiguous_slots_ending_by
-from api.itinerary.scheduling.bulk.loop_unit_travel_time import approach_travel_seconds_to_unit
-from api.itinerary.scheduling.bulk.loop_unit_travel_time import inter_stop_travel_seconds
-from api.itinerary.scheduling.bulk.loop_unit_travel_time import packed_units_occupied_seconds
-from api.itinerary.scheduling.bulk.loop_unit_travel_time import total_inter_stop_travel_seconds
+from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
+from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
+from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import prepare_loop_schedule_units
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
@@ -96,7 +92,7 @@ def _prepared_loop_unit(
       stops: list[ ItineraryAnimalRecord ],
       duration_seconds: int ) -> PreparedLoopScheduleUnit:
    return PreparedLoopScheduleUnit(
-      unit=build_loop_schedule_units( [ stops ] )[ 0 ],
+      unit=LoopScheduleUnitBuilder.build( [ stops ] )[ 0 ],
       occupied_seconds=duration_seconds,
    )
 
@@ -199,7 +195,7 @@ def test_assign_contiguous_slots_inserts_inter_stop_travel_gaps() -> None:
          travel_before_seconds=540 ),
    ]
    start_seconds = _seconds( '9:30 AM' )
-   slots, end_seconds = assign_contiguous_slots(
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous(
       stops,
       start_seconds=start_seconds )
 
@@ -222,7 +218,7 @@ def test_assign_contiguous_slots_without_travel_stays_flush() -> None:
          travel_before_seconds=0 ),
    ]
    start_seconds = _seconds( '9:30 AM' )
-   slots, end_seconds = assign_contiguous_slots(
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous(
       stops,
       start_seconds=start_seconds )
 
@@ -245,7 +241,7 @@ def test_assign_contiguous_slots_zero_travel_keeps_flush_behavior() -> None:
          travel_before_seconds=0 ),
    ]
    start_seconds = _seconds( '10:00 AM' )
-   slots, end_seconds = assign_contiguous_slots(
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous(
       stops,
       start_seconds=start_seconds )
 
@@ -267,7 +263,7 @@ def test_assign_contiguous_slots_ending_by_reserves_travel_before_deadline() -> 
          travel_before_seconds=540 ),
    ]
    deadline_seconds = _seconds( '11:00 AM' )
-   assignment = assign_contiguous_slots_ending_by(
+   assignment = LoopScheduleSlotAssigner.assign_contiguous_ending_by(
       stops,
       end_seconds=deadline_seconds )
 
@@ -283,7 +279,7 @@ def test_assign_contiguous_slots_ending_by_reserves_travel_before_deadline() -> 
 
 def test_approach_travel_seconds_to_unit_is_zero_from_entry_node() -> None:
    walk_graph = load_walk_graph()
-   unit = build_loop_schedule_units(
+   unit = LoopScheduleUnitBuilder.build(
       [
          [
             _animal_record(
@@ -292,7 +288,7 @@ def test_approach_travel_seconds_to_unit_is_zero_from_entry_node() -> None:
          ],
       ] )[ 0 ]
    assert unit.entry_walk_node_id is not None
-   assert approach_travel_seconds_to_unit(
+   assert LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       walk_graph,
       unit.entry_walk_node_id,
       unit ) == 0
@@ -300,7 +296,7 @@ def test_approach_travel_seconds_to_unit_is_zero_from_entry_node() -> None:
 
 def test_approach_travel_seconds_to_unit_from_entrance_matches_helper() -> None:
    walk_graph = load_walk_graph()
-   unit = build_loop_schedule_units(
+   unit = LoopScheduleUnitBuilder.build(
       [
          [
             _animal_record(
@@ -308,7 +304,7 @@ def test_approach_travel_seconds_to_unit_from_entrance_matches_helper() -> None:
                exhibit='Indo-Malaya Outdoor' ),
          ],
       ] )[ 0 ]
-   assert approach_travel_seconds_to_unit(
+   assert LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       walk_graph,
       str( walk_graph[ 'entrance_node_id' ] ),
       unit ) == CHEETAH_INDO_TRAVEL_SECONDS
@@ -320,7 +316,7 @@ def test_inter_stop_travel_seconds_between_two_animals() -> None:
       _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ),
       _animal_record( species='African Lion', exhibit='Africa Savanna' ),
    ]
-   travels = inter_stop_travel_seconds( walk_graph, stops )
+   travels = LoopUnitTravelTimeCalculator.inter_stop_seconds( walk_graph, stops )
    expected = _travel_seconds_between_animals(
       from_species='Cheetah',
       from_exhibit='Indo-Malaya Outdoor',
@@ -328,8 +324,8 @@ def test_inter_stop_travel_seconds_between_two_animals() -> None:
       to_exhibit='Africa Savanna' )
 
    assert travels == [ 0, expected ]
-   assert total_inter_stop_travel_seconds( walk_graph, stops ) == expected
-   assert inter_stop_travel_seconds( walk_graph, stops[ :1 ] ) == [ 0 ]
+   assert LoopUnitTravelTimeCalculator.total_inter_stop_seconds( walk_graph, stops ) == expected
+   assert LoopUnitTravelTimeCalculator.inter_stop_seconds( walk_graph, stops[ :1 ] ) == [ 0 ]
 
 
 def test_packed_units_occupied_seconds_includes_approach_and_duration() -> None:
@@ -342,15 +338,15 @@ def test_packed_units_occupied_seconds_includes_approach_and_duration() -> None:
       stops=[ _animal_record( species='African Lion', exhibit='Africa Savanna' ) ],
       duration_seconds=480 )
 
-   occupied = packed_units_occupied_seconds(
+   occupied = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       [ indo_unit, africa_unit ],
       from_node_id=entrance_node_id )
-   first_approach = approach_travel_seconds_to_unit(
+   first_approach = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       walk_graph,
       entrance_node_id,
       indo_unit.unit )
-   second_approach = approach_travel_seconds_to_unit(
+   second_approach = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       walk_graph,
       indo_unit.unit.exit_walk_node_id or entrance_node_id,
       africa_unit.unit )
@@ -1017,7 +1013,7 @@ def test_early_admission_bulk_delays_from_nine_am_anchor(
 def test_prepare_loop_schedule_units_adds_inter_stop_travel_to_duration(
       db: DbControllers ) -> None:
    walk_graph = load_walk_graph()
-   units = build_loop_schedule_units(
+   units = LoopScheduleUnitBuilder.build(
       [
          [
             _animal_record( species='African Lion', exhibit='Africa Savanna' ),
@@ -1034,10 +1030,10 @@ def test_prepare_loop_schedule_units_adds_inter_stop_travel_to_duration(
    assert prepared is not None
    assert len( prepared ) == 1
 
-   viewing_only = prepared[ 0 ].occupied_seconds - total_inter_stop_travel_seconds(
+   viewing_only = prepared[ 0 ].occupied_seconds - LoopUnitTravelTimeCalculator.total_inter_stop_seconds(
       walk_graph,
       units[ 0 ].stops )
-   travel = total_inter_stop_travel_seconds( walk_graph, units[ 0 ].stops )
+   travel = LoopUnitTravelTimeCalculator.total_inter_stop_seconds( walk_graph, units[ 0 ].stops )
 
    assert travel > 0
    assert prepared[ 0 ].occupied_seconds == viewing_only + travel

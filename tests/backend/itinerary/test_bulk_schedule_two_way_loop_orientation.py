@@ -6,7 +6,7 @@ from datetime import date
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
+from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import prepare_loop_schedule_units
@@ -135,7 +135,7 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
    ]
    prepared_units = prepare_loop_schedule_units(
       db.conn,
-      build_loop_schedule_units(
+      LoopScheduleUnitBuilder.build(
          MasterRouteLoopAnimalGrouper.group( animal_rows ) ),
       walk_graph=walk_graph )
 

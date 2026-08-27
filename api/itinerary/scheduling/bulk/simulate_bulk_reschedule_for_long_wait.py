@@ -25,9 +25,9 @@ from ...domain.itinerary_builder import ItineraryBuilder
 from .guardians_talk_animal_coverer import CoveredAnimalTalk
 from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
-from .loop_schedule_unit import build_loop_schedule_units
-from .loop_unit_schedule_slots import LoopScheduleSlot
-from .loop_unit_schedule_slots import LoopScheduleSlotSink
+from .loop_schedule_slot import LoopScheduleSlot
+from .loop_schedule_slot_sink import LoopScheduleSlotSink
+from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
@@ -268,7 +268,7 @@ def pack_animals_into_itinerary_in_memory(
       animals_to_schedule,
       covered_keys )
    sorted_loop_groups = MasterRouteLoopAnimalGrouper.group( animals_to_pack )
-   loop_units = build_loop_schedule_units( sorted_loop_groups )
+   loop_units = LoopScheduleUnitBuilder.build( sorted_loop_groups )
    schedule_windows = BulkScheduleLoopPinAttacher.attach_to_windows(
       schedule_windows,
       loop_pins )
