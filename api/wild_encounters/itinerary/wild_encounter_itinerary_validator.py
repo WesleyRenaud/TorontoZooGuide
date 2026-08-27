@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...itinerary.scheduling import schedule_wild_encounter_for_itinerary
+from ...itinerary.scheduling.core.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 from ...itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...models import WildEncounter
 from ...models import WildEncounterDiff
@@ -17,7 +17,7 @@ class WildEncounterItineraryValidator():
          *,
          start_time_override: ScheduleTimeKey = None,
          end_time_override: ScheduleTimeKey = None ) -> WildEncounterDiff:
-      return schedule_wild_encounter_for_itinerary(
+      return ScheduledOccurrenceBuilder.wild_encounter(
          name,
          encounter,
          start_time_override=start_time_override,

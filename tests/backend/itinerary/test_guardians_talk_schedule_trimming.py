@@ -1,5 +1,5 @@
 from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
-from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
+from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimmer import GuardiansTalkScheduleTrimmer
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
@@ -43,7 +43,7 @@ def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None
       ),
    )
 
-   trimmed_talks = apply_guardians_talk_trimming( [ talk ], [ encounter ] )
+   trimmed_talks = GuardiansTalkScheduleTrimmer.apply( [ talk ], [ encounter ] )
 
    assert trimmed_talks[ 0 ].start_time == '1:45 PM'
    assert trimmed_talks[ 0 ].end_time == '2:00 PM'
@@ -75,7 +75,7 @@ def test_apply_guardians_talk_trimming_gives_earlier_talk_precedence() -> None:
       ),
    )
 
-   trimmed_talks = apply_guardians_talk_trimming(
+   trimmed_talks = GuardiansTalkScheduleTrimmer.apply(
       [ first_talk, second_talk ],
       [],
    )

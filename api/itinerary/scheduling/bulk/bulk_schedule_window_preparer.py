@@ -17,7 +17,7 @@ from ...routing.partition_itinerary_schedule_windows import partition_itinerary_
 from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
-from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
+from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
@@ -86,7 +86,7 @@ class BulkScheduleWindowPreparer():
          prepared_window.saved_itinerary,
          **itinerary_context )
 
-      clear_all_itinerary_schedules( conn )
+      ItineraryScheduleClearer.clear_all( conn )
 
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
       anchor_seconds, day_end_seconds = prepared_window.window

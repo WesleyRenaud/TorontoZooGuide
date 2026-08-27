@@ -16,9 +16,7 @@ from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResult
 from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
-from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import apply_guest_schedule_shift_for_unschedule
-from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block
-from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import shift_guest_scheduled_items_after_unschedule
+from ..scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from ...types import Connection
 from ...types import Cursor
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -40,7 +38,7 @@ def commit_itinerary_item_schedule_change(
       saved_itinerary,
       **itinerary_context )
    removed_block = (
-      resolve_unscheduled_item_time_block(
+      GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
          saved_itinerary,
          schedule_item_key )
       if schedule_item_key is not None
@@ -73,7 +71,7 @@ def commit_itinerary_item_schedule_change(
                restored_covered_animals is not None
                and restored_covered_animals.replacement_end_seconds is not None
                and removed_block is not None ):
-            shift_guest_scheduled_items_after_unschedule(
+            GuestScheduleShiftApplier.shift_items_after_unschedule(
                conn,
                cur,
                anchor_end_seconds=removed_block.end_seconds,
@@ -82,7 +80,7 @@ def commit_itinerary_item_schedule_change(
                   - removed_block.end_seconds ),
                freed_block=removed_block )
          else:
-            apply_guest_schedule_shift_for_unschedule(
+            GuestScheduleShiftApplier.apply_for_unschedule(
                conn,
                cur,
                saved_itinerary=saved_itinerary,

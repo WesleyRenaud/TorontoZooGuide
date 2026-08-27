@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..core.scheduled_occurrence import schedule_wild_encounter_for_itinerary
+from ..core.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
@@ -15,7 +15,7 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
+from ..unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
 from ...warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 from ...wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -47,7 +47,7 @@ class WildEncounterItineraryItemScheduler():
          encounter_name=wild_encounter_key.name,
          start_time=wild_encounter_key.start_time )
 
-      return schedule_wild_encounter_for_itinerary(
+      return ScheduledOccurrenceBuilder.wild_encounter(
          wild_encounter_key.name,
          encounter )
 
@@ -119,7 +119,7 @@ class WildEncounterItineraryItemScheduler():
             ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
             **itinerary_context )
 
-      has_overlap = saved_itinerary_has_overlap_with_wild_encounters(
+      has_overlap = WildEncounterUnschedulePreparer.saved_itinerary_has_overlap(
          saved_itinerary,
          [ wild_encounter_diff ] )
 

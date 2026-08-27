@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
+from ..core.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
@@ -17,7 +17,7 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
+from ..unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
 from ...warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
 from ...warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
 from ...warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
@@ -47,7 +47,7 @@ class GuardiansTalkItineraryItemScheduler():
          talk_name=guardians_talk_key.name,
          start_time=guardians_talk_key.start_time )
 
-      return schedule_guardians_talk_for_itinerary(
+      return ScheduledOccurrenceBuilder.guardians_talk(
          guardians_talk_key.name,
          talk )
 
@@ -120,7 +120,7 @@ class GuardiansTalkItineraryItemScheduler():
             ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
             **itinerary_context )
 
-      has_overlap = saved_itinerary_has_overlap_with_guardians_talks(
+      has_overlap = GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap(
          saved_itinerary,
          [ guardians_talk_diff ] )
 

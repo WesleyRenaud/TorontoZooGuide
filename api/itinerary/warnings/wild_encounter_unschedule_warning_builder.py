@@ -5,8 +5,7 @@ from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
-from ..scheduling.unscheduling.wild_encounter_unschedule_items import newly_added_active_wild_encounters
-from ..scheduling.unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
+from ..scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...shared.enums import ItineraryErrorType
 
 
@@ -16,14 +15,14 @@ class WildEncounterUnscheduleWarningBuilder():
          cls,
          saved_itinerary: SavedItinerary,
          validated_itinerary: ValidatedItinerary ) -> list[ WildEncounterDiff ]:
-      new_wild_encounters = newly_added_active_wild_encounters(
+      new_wild_encounters = WildEncounterUnschedulePreparer.newly_added_active(
          saved_itinerary,
          validated_itinerary.wild_encounters )
 
       if not new_wild_encounters:
          return []
 
-      if not saved_itinerary_has_overlap_with_wild_encounters(
+      if not WildEncounterUnschedulePreparer.saved_itinerary_has_overlap(
             saved_itinerary,
             new_wild_encounters ):
          return []

@@ -8,9 +8,9 @@ from ...models import Itinerary
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.unscheduling.fixed_time_activity_unschedule_items import prepare_validated_itinerary_for_fixed_time_activity_reschedule
-from ..scheduling.unscheduling.guardians_talk_unschedule_items import guardians_talk_time_blocks
-from ..scheduling.unscheduling.wild_encounter_unschedule_items import wild_encounter_time_blocks
+from ..scheduling.unscheduling.fixed_time_activity_unschedule_preparer import FixedTimeActivityUnschedulePreparer
+from ..scheduling.unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
+from ..scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ..warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
 from ..warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 
@@ -69,13 +69,13 @@ def apply_confirmed_itinerary_unschedule_changes(
       validated_itinerary: ValidatedItinerary,
       requirements: ItineraryUnscheduleRequirements ) -> ValidatedItinerary:
    activity_blocks = [
-      *guardians_talk_time_blocks( requirements.talks ),
-      *wild_encounter_time_blocks( requirements.encounters ),
+      *GuardiansTalkUnschedulePreparer.time_blocks( requirements.talks ),
+      *WildEncounterUnschedulePreparer.time_blocks( requirements.encounters ),
    ]
 
    if not activity_blocks:
       return validated_itinerary
 
-   return prepare_validated_itinerary_for_fixed_time_activity_reschedule(
+   return FixedTimeActivityUnschedulePreparer.prepare_validated_for_reschedule(
       validated_itinerary,
       activity_blocks )

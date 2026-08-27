@@ -15,8 +15,8 @@ from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from ..scheduling.core.time_block import TimeBlock
 from ..scheduling.core.time_block_builder import TimeBlockBuilder
-from ..scheduling.unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
-from ..scheduling.unscheduling.wild_encounter_unschedule_items import newly_added_active_wild_encounters
+from ..scheduling.unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
+from ..scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
 from ...shared.duration_values import duration_minutes_to_seconds
@@ -221,10 +221,10 @@ class FixedTimeItemLongWaitWarningBuilder():
          items: list[ Any ],
          item_type: ItinerarySaveIssueItemType ) -> list[ Any ]:
       if item_type == ItinerarySaveIssueItemType.GUARDIANS_TALK:
-         return newly_added_active_guardians_talks( saved_itinerary, items )
+         return GuardiansTalkUnschedulePreparer.newly_added_active( saved_itinerary, items )
 
       if item_type == ItinerarySaveIssueItemType.WILD_ENCOUNTER:
-         return newly_added_active_wild_encounters( saved_itinerary, items )
+         return WildEncounterUnschedulePreparer.newly_added_active( saved_itinerary, items )
 
       return []
 

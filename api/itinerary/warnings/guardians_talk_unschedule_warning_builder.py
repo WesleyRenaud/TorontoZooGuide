@@ -5,8 +5,7 @@ from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
-from ..scheduling.unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
-from ..scheduling.unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
+from ..scheduling.unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
 from ...shared.enums import ItineraryErrorType
 
 
@@ -21,14 +20,14 @@ class GuardiansTalkUnscheduleWarningBuilder():
       if confirming_guardians_talk_unschedule:
          return False
 
-      new_guardians_talks = newly_added_active_guardians_talks(
+      new_guardians_talks = GuardiansTalkUnschedulePreparer.newly_added_active(
          saved_itinerary,
          validated_itinerary.guardians_talks )
 
       if not new_guardians_talks:
          return False
 
-      return saved_itinerary_has_overlap_with_guardians_talks(
+      return GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap(
          saved_itinerary,
          new_guardians_talks )
 
@@ -38,14 +37,14 @@ class GuardiansTalkUnscheduleWarningBuilder():
          cls,
          saved_itinerary: SavedItinerary,
          validated_itinerary: ValidatedItinerary ) -> list[ GuardiansTalkDiff ]:
-      new_guardians_talks = newly_added_active_guardians_talks(
+      new_guardians_talks = GuardiansTalkUnschedulePreparer.newly_added_active(
          saved_itinerary,
          validated_itinerary.guardians_talks )
 
       if not new_guardians_talks:
          return []
 
-      if not saved_itinerary_has_overlap_with_guardians_talks(
+      if not GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap(
             saved_itinerary,
             new_guardians_talks ):
          return []
