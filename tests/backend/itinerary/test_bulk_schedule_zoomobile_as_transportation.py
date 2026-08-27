@@ -369,7 +369,7 @@ def test_bulk_schedule_marks_transit_zoomobile_evaluated_when_no_rides_used(
    _save_transit_zoomobile_itinerary( region_names=[ 'Canadian Domain' ] )
 
    monkeypatch.setattr(
-      'api.itinerary.scheduling.bulk.transportation_transit_rides._plan_rides_for_anchors',
+      'api.itinerary.scheduling.bulk.transportation_transit_ride_applier.TransportationTransitRideApplier._plan_rides_for_anchors',
       lambda **_kwargs: ( [], None ),
    )
 

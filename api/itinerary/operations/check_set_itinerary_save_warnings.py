@@ -5,7 +5,7 @@ from dataclasses import replace
 from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
 from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added_fixed_time_item_long_wait_reason
+from ..scheduling.bulk.bulk_reschedule_long_wait_simulator import BulkRescheduleLongWaitSimulator
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
@@ -143,7 +143,7 @@ def check_set_itinerary_save_warnings(
          and not FixedTimeItemLongWaitWarningBuilder.has_unscheduled_listed_items(
             context.validated_itinerary )
    ):
-      long_wait_reason = newly_added_fixed_time_item_long_wait_reason(
+      long_wait_reason = BulkRescheduleLongWaitSimulator.newly_added_reason(
          context.conn,
          context.validated_itinerary,
          visit_date=context.save_input.date,

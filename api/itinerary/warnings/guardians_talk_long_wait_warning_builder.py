@@ -7,7 +7,7 @@ from ...models import GuardiansTalk
 from ...models import Itinerary
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
-from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import fixed_time_item_isolated_after_adding_with_simulated_bulk
+from ..scheduling.bulk.bulk_reschedule_long_wait_simulator import BulkRescheduleLongWaitSimulator
 from ...shared.enums import ItinerarySaveIssueItemType
 from ...types import Connection
 
@@ -30,7 +30,7 @@ class GuardiansTalkLongWaitWarningBuilder():
          *,
          itinerary_context: dict[ str, Any ],
          ) -> ItineraryResultReason | None:
-      if not fixed_time_item_isolated_after_adding_with_simulated_bulk(
+      if not BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
             conn,
             new_talk,
             propose_on_itinerary=FixedTimeItemLongWaitWarningBuilder.propose_guardians_talk_on_itinerary,

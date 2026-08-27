@@ -4,7 +4,7 @@ from .bulk_schedule_stop_selector import BulkScheduleStopSelector
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ...data_access.itinerary_provider import ItineraryProvider
-from .transportation_transit_rides import apply_transportation_transit_rides
+from .transportation_transit_ride_applier import TransportationTransitRideApplier
 from ....types import Connection
 
 
@@ -16,7 +16,7 @@ class BulkScheduleTransitLegsBuilder():
          *,
          prep: BulkScheduleWindowPrep ) -> None:
       saved_after_pack = ItineraryProvider.fetch_saved_itinerary( conn )
-      apply_transportation_transit_rides(
+      TransportationTransitRideApplier.apply(
          conn,
          transit_rows=BulkScheduleStopSelector.transit_transportations(
             saved_after_pack ),
