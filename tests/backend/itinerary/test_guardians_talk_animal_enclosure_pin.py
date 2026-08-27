@@ -8,9 +8,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
-from api.itinerary.scheduling.bulk.guardians_talk_covered_animals import apply_covered_by_talk_schedules
-from api.itinerary.scheduling.bulk.guardians_talk_covered_animals import restore_covered_animals_after_talk_removed
-from api.itinerary.scheduling.bulk.guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
+from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
@@ -228,7 +226,7 @@ def test_cover_keys_only_match_seeded_penguin_enclosure(
       start_seconds=11 * 3600,
       end_seconds=11 * 3600 + 30 * 60 )
 
-   covered = viewing_spot_keys_to_cover_for_loop_pins(
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
       db.conn,
       [ loop_pin ],
       animal_rows )
@@ -266,12 +264,12 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
       stop=_talk_stop( name='African Penguin' ),
       start_seconds=11 * 3600,
       end_seconds=11 * 3600 + 30 * 60 )
-   covered = viewing_spot_keys_to_cover_for_loop_pins(
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
       db.conn,
       [ loop_pin ],
       ItineraryProvider.fetch_itinerary_animal_rows( db.conn ) )
 
-   apply_covered_by_talk_schedules( db.conn, covered )
+   GuardiansTalkAnimalCoverer.apply( db.conn, covered )
    rows_by_enclosure = {
       row.enclosure_name: row
       for row in ItineraryProvider.fetch_itinerary_animal_rows( db.conn )
@@ -286,7 +284,7 @@ def test_apply_and_uncover_penguin_outdoor_leaves_indoor_untouched(
    cur = db.conn.cursor()
 
    try:
-      restored = restore_covered_animals_after_talk_removed(
+      restored = GuardiansTalkAnimalCoverer.restore_after_removed(
          cur,
          db.conn,
          talk_name='African Penguin',

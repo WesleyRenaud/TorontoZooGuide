@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import replace
 
-from .attraction_hours_soft_pin import attraction_hours_by_name_from_soft_pins
+from .attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .loop_schedule_stop import LoopScheduleStop
@@ -83,7 +83,7 @@ def schedule_animals_by_master_route_loop(
       for soft_pin in schedule_window.attraction_hours_soft_pins
    }
    held_constrained_loop_ids = held_pinned_loop_ids | held_soft_pin_loop_ids
-   hours_by_attraction_name = attraction_hours_by_name_from_soft_pins(
+   hours_by_attraction_name = AttractionHoursSoftPinResolver.hours_by_name(
       [
          soft_pin
          for schedule_window in schedule_windows

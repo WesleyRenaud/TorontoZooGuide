@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from ..core.time_block import TimeBlock
-from .loop_pin_segments import animals_before_first_loop_pin
-from .loop_pin_segments import loop_pin_schedule_steps
-from .loop_pin_segments import LoopPinGapStep
-from .loop_pin_segments import LoopPinStopSegment
+from .loop_pin_gap_step import LoopPinGapStep
+from .loop_pin_segment_splitter import LoopPinSegmentSplitter
+from .loop_pin_stop_segment import LoopPinStopSegment
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
@@ -72,7 +71,7 @@ def pinned_loop_earliest_start_seconds(
       return None
 
    first_pin = unit_pins[ 0 ]
-   before_pin_animals = animals_before_first_loop_pin(
+   before_pin_animals = LoopPinSegmentSplitter.animals_before_first_pin(
       list( prepared_unit.unit.stops ),
       loop_id=loop_id,
       loop_pins=unit_pins )
@@ -124,7 +123,7 @@ def _schedule_animals_around_loop_pins(
    if loop_id is None:
       raise LoopUnitSchedulePersistError( animals )
 
-   schedule_steps = loop_pin_schedule_steps(
+   schedule_steps = LoopPinSegmentSplitter.schedule_steps(
       animals,
       loop_id=loop_id,
       loop_pins=loop_pins,

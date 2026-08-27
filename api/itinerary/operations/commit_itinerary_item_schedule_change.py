@@ -10,8 +10,8 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.bulk.attraction_covered_animals import restore_covered_animals_after_attraction_removed
-from ..scheduling.bulk.guardians_talk_covered_animals import restore_covered_animals_after_talk_removed
+from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
+from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
 from ..scheduling.items.schedule_itinerary_helpers import build_success_result
@@ -55,7 +55,7 @@ def commit_itinerary_item_schedule_change(
          if (
                isinstance( schedule_item_key, GuardiansTalkScheduleItemKey )
                and removed_block is not None ):
-            restored_covered_animals = restore_covered_animals_after_talk_removed(
+            restored_covered_animals = GuardiansTalkAnimalCoverer.restore_after_removed(
                cur,
                conn,
                talk_name=schedule_item_key.name,
@@ -64,7 +64,7 @@ def commit_itinerary_item_schedule_change(
          elif (
                isinstance( schedule_item_key, AttractionScheduleItemKey )
                and removed_block is not None ):
-            restored_covered_animals = restore_covered_animals_after_attraction_removed(
+            restored_covered_animals = AttractionAnimalCoverer.restore_after_removed(
                cur,
                conn,
                attraction_name=schedule_item_key.name,

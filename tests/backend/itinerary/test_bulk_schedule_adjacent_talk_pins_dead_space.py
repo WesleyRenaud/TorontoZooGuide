@@ -16,7 +16,7 @@ from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import keep_completable_loop_pins
+from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from api.models import Animal
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -130,7 +130,7 @@ def test_keep_completable_loop_pins_drops_pin_without_post_talk_window() -> None
          end_seconds=17 * 3600 ),
    ]
 
-   kept_pins = keep_completable_loop_pins(
+   kept_pins = BulkScheduleLoopPinAttacher.keep_completable(
       schedule_windows,
       [ zebra_pin, camel_pin ] )
 
@@ -153,7 +153,7 @@ def test_keep_completable_loop_pins_keeps_pin_with_post_talk_window() -> None:
          end_seconds=17 * 3600 ),
    ]
 
-   kept_pins = keep_completable_loop_pins( schedule_windows, [ zebra_pin ] )
+   kept_pins = BulkScheduleLoopPinAttacher.keep_completable( schedule_windows, [ zebra_pin ] )
 
    assert kept_pins == [ zebra_pin ]
 
