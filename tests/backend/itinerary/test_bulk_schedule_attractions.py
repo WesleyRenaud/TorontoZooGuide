@@ -11,8 +11,7 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
-from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
-from api.itinerary.scheduling.bulk.loop_schedule_unit import walk_node_id_for_loop_schedule_stop
+from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
 from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
@@ -151,7 +150,7 @@ def test_build_loop_schedule_units_orders_woven_attraction_between_animals() -> 
          old_likelihood=None,
          new_likelihood=100 ),
    ]
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopStopGrouper.group( stops ) )
 
    australasia = next(
@@ -224,7 +223,7 @@ def test_build_bulk_schedule_not_enough_time_issue_includes_attractions() -> Non
 
 
 def test_walk_node_id_for_unknown_attraction_is_none() -> None:
-   assert walk_node_id_for_loop_schedule_stop(
+   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
       ItineraryAttractionRecord(
          attraction='Not A Real Attraction',
          old_likelihood=None,

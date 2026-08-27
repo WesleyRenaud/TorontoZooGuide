@@ -11,8 +11,8 @@ from .guardians_talk_animal_coverer import CoveredAnimalTalk
 from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
-from .loop_schedule_unit import build_loop_schedule_units
 from .loop_schedule_unit import LoopScheduleUnit
+from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
@@ -60,7 +60,7 @@ def pack_stops_into_bulk_schedule(
       *transportations_to_pack,
    ]
    sorted_loop_groups = MasterRouteLoopStopGrouper.group( stops_to_pack )
-   loop_units = build_loop_schedule_units( sorted_loop_groups )
+   loop_units = LoopScheduleUnitBuilder.build( sorted_loop_groups )
    schedule_windows = BulkScheduleLoopPinAttacher.attach_to_windows(
       prep.schedule_windows,
       prep.loop_pins )

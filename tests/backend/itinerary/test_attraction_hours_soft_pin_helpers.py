@@ -5,9 +5,9 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk import schedule_animals_by_master_route_loop as schedule_module
-from api.itinerary.scheduling.bulk import schedule_loop_unit_with_attraction_hours as hours_module
 from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.itinerary.scheduling.bulk.loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from api.shared.operating_hours import OperatingHours
 
@@ -261,7 +261,7 @@ def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
 
-   stops, cursor = hours_module.schedule_prepared_loop_unit_with_attraction_hours(
+   stops, cursor = LoopUnitAttractionHoursScheduler.schedule(
       object(),
       prepared,
       [ soft_pin ],
@@ -275,7 +275,7 @@ def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None
    prepared_with_loop = PreparedLoopScheduleUnit(
       unit=_loop_unit( 'other-loop', [ attraction ] ),
       occupied_seconds=30 * 60 )
-   stops, cursor = hours_module.schedule_prepared_loop_unit_with_attraction_hours(
+   stops, cursor = LoopUnitAttractionHoursScheduler.schedule(
       object(),
       prepared_with_loop,
       [ soft_pin ],
@@ -286,7 +286,7 @@ def test_schedule_prepared_loop_unit_with_attraction_hours_early_exits() -> None
    assert stops == [ attraction ]
    assert cursor == 9 * 3600
 
-   stops, cursor = hours_module.schedule_prepared_loop_unit_with_attraction_hours(
+   stops, cursor = LoopUnitAttractionHoursScheduler.schedule(
       object(),
       prepared_with_loop,
       [],
@@ -310,21 +310,21 @@ def test_attraction_hours_loop_earliest_start_seconds_early_exits() -> None:
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
 
-   assert hours_module.attraction_hours_loop_earliest_start_seconds(
+   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( None, [ attraction ] ),
          occupied_seconds=30 * 60 ),
       [ soft_pin ] ) is None
 
-   assert hours_module.attraction_hours_loop_earliest_start_seconds(
+   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'other-loop', [ attraction ] ),
          occupied_seconds=30 * 60 ),
       [ soft_pin ] ) is None
 
-   assert hours_module.attraction_hours_loop_earliest_start_seconds(
+   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'zoomobile', [ attraction ] ),
@@ -368,11 +368,11 @@ def test_attraction_stop_for_soft_pin_and_duration_helpers() -> None:
       open_seconds=9 * 3600 + 30 * 60,
       close_seconds=18 * 3600 )
 
-   assert hours_module._attraction_stop_for_soft_pin( [ attraction ], soft_pin ) is attraction
-   assert hours_module._attraction_stop_for_soft_pin( [ attraction ], other ) is None
-   assert hours_module._stop_is_soft_pinned_attraction(
+   assert LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin( [ attraction ], soft_pin ) is attraction
+   assert LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin( [ attraction ], other ) is None
+   assert LoopUnitAttractionHoursScheduler._stop_is_soft_pinned_attraction(
       attraction,
       { 'Zoomobile' } ) is True
-   assert hours_module._still_unscheduled_stops(
+   assert LoopUnitAttractionHoursScheduler._still_unscheduled_stops(
       [ attraction ],
       scheduled_stop_ids={ id( attraction ) } ) == []

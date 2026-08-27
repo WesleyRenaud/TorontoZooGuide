@@ -6,17 +6,15 @@ from dataclasses import replace
 from .attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from .loop_schedule_slot_assigner import LoopScheduleSlotAssigner
+from .loop_schedule_slot_sink import LoopScheduleSlotSink
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import LoopScheduleUnit
+from .loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler
+from .loop_unit_pin_scheduler import LoopUnitPinScheduler
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
-from .loop_unit_schedule_slots import assign_contiguous_slots_respecting_attraction_hours
-from .loop_unit_schedule_slots import LoopScheduleSlotSink
-from .loop_unit_schedule_slots import prepare_loop_schedule_stops
-from .loop_unit_schedule_slots import save_loop_slots
-from .loop_unit_schedule_slots import total_occupied_seconds
-from .loop_unit_travel_time import approach_travel_seconds_to_unit
-from .loop_unit_travel_time import packed_units_occupied_seconds
+from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from .pack_loops_into_schedule_window import pack_all_loops_before_deadline
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from .pack_loops_into_schedule_window import prepare_loop_schedule_units
@@ -25,10 +23,6 @@ from .pack_loops_into_schedule_window import remove_matching_prepared_loop_unit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from .schedule_loop_unit_with_attraction_hours import attraction_hours_loop_earliest_start_seconds
-from .schedule_loop_unit_with_attraction_hours import schedule_prepared_loop_unit_with_attraction_hours
-from .schedule_loop_unit_with_pins import pinned_loop_earliest_start_seconds
-from .schedule_loop_unit_with_pins import schedule_prepared_loop_unit_with_pins
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection
@@ -385,7 +379,7 @@ def _process_schedule_window(
          free_pack_moved_past_open = True
 
       for prepared_unit in packed_units:
-         approach_seconds = approach_travel_seconds_to_unit(
+         approach_seconds = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
             walk_graph,
             window_state.current_node_id,
             prepared_unit.unit )
@@ -1025,7 +1019,7 @@ def _pack_non_pinned_loops_before_pinned_deadline(
    if packed_units is None:
       return window_state.cursor_seconds, False
 
-   occupied_seconds = packed_units_occupied_seconds(
+   occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       packed_units,
       from_node_id=window_state.current_node_id )
@@ -1038,7 +1032,7 @@ def _pack_non_pinned_loops_before_pinned_deadline(
       next_cursor_seconds = pinned_deadline_seconds
 
    for prepared_unit in packed_units:
-      approach_seconds = approach_travel_seconds_to_unit(
+      approach_seconds = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
          walk_graph,
          window_state.current_node_id,
          prepared_unit.unit )
@@ -1108,7 +1102,7 @@ def _build_constrained_earliest_start_cache(
       earliest_starts: list[ int ] = []
 
       if loop_id in hard_pin_loop_ids:
-         hard_earliest = pinned_loop_earliest_start_seconds(
+         hard_earliest = LoopUnitPinScheduler.earliest_start_seconds(
             conn,
             prepared_unit,
             hard_pins )
@@ -1117,7 +1111,7 @@ def _build_constrained_earliest_start_cache(
             earliest_starts.append( hard_earliest )
 
       if loop_id in soft_pin_loop_ids and loop_id not in hard_pin_loop_ids:
-         soft_earliest = attraction_hours_loop_earliest_start_seconds(
+         soft_earliest = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
             conn,
             prepared_unit,
             soft_pins )
@@ -1152,7 +1146,7 @@ def _drain_ready_pinned_loop_units(
             pinned_loop_ids,
             pinned_earliest_start_cache=pinned_earliest_start_cache,
             cursor_seconds=schedule_cursor_seconds ):
-         unscheduled_animals, new_cursor_seconds = schedule_prepared_loop_unit_with_pins(
+         unscheduled_animals, new_cursor_seconds = LoopUnitPinScheduler.schedule(
             conn,
             prepared_unit,
             schedule_window.loop_pins,
@@ -1225,12 +1219,12 @@ def _drain_ready_soft_pin_loop_units(
          approach_seconds = 0
 
          if LoopScheduleStopExtractor.transportations_from( list( prepared_unit.unit.stops ) ):
-            approach_seconds = approach_travel_seconds_to_unit(
+            approach_seconds = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
                walk_graph,
                resolved_current_node_id,
                prepared_unit.unit )
          unscheduled_stops, new_cursor_seconds = (
-            schedule_prepared_loop_unit_with_attraction_hours(
+            LoopUnitAttractionHoursScheduler.schedule(
                conn,
                prepared_unit,
                schedule_window.attraction_hours_soft_pins,
@@ -1330,7 +1324,7 @@ def _keep_partial_pinned_loop_progress(
       remaining_units[ index ] = replacement
       pinned_earliest_start_cache.pop( id( prepared_unit ), None )
       pinned_earliest_start_cache[ id( replacement ) ] = (
-         pinned_loop_earliest_start_seconds(
+         LoopUnitPinScheduler.earliest_start_seconds(
             conn,
             replacement,
             loop_pins ) )
@@ -1368,7 +1362,7 @@ def _keep_partial_soft_pin_loop_progress(
       remaining_units[ index ] = replacement
       pinned_earliest_start_cache.pop( id( prepared_unit ), None )
       pinned_earliest_start_cache[ id( replacement ) ] = (
-         attraction_hours_loop_earliest_start_seconds(
+         LoopUnitAttractionHoursScheduler.earliest_start_seconds(
             conn,
             replacement,
             soft_pins ) )
@@ -1381,7 +1375,7 @@ def _prepared_loop_unit_from_stops(
       conn: Connection,
       loop_unit: LoopScheduleUnit,
       stops: list[ LoopScheduleStop ] ) -> PreparedLoopScheduleUnit | None:
-   prepared_stops = prepare_loop_schedule_stops(
+   prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
       conn,
       load_walk_graph(),
       stops )
@@ -1391,7 +1385,7 @@ def _prepared_loop_unit_from_stops(
 
    return PreparedLoopScheduleUnit(
       unit=replace( loop_unit, stops=stops ),
-      occupied_seconds=total_occupied_seconds( prepared_stops ) )
+      occupied_seconds=LoopScheduleSlotAssigner.total_occupied_seconds( prepared_stops ) )
 
 
 def _pinned_loop_ids_in_window(
@@ -1616,7 +1610,7 @@ def _schedule_start_seconds_for_packed_units(
    if not should_right_align:
       return window_start_seconds
 
-   occupied_seconds = packed_units_occupied_seconds(
+   occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
       walk_graph,
       packed_units,
       from_node_id=current_node_id )
@@ -1637,7 +1631,7 @@ def _schedule_prepared_loop_unit(
       hours_by_attraction_name: dict[ str, OperatingHours ] | None = None,
       slot_sink: LoopScheduleSlotSink | None = None ) -> list[ LoopScheduleStop ]:
    animals = list( prepared_unit.unit.stops )
-   prepared_stops = prepare_loop_schedule_stops(
+   prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
       conn,
       walk_graph,
       animals )
@@ -1647,11 +1641,11 @@ def _schedule_prepared_loop_unit(
 
    if (
          end_seconds is not None
-         and start_seconds + total_occupied_seconds( prepared_stops ) > end_seconds ):
+         and start_seconds + LoopScheduleSlotAssigner.total_occupied_seconds( prepared_stops ) > end_seconds ):
       return animals
 
    animal_slots, slot_end_seconds = (
-      assign_contiguous_slots_respecting_attraction_hours(
+      LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
          prepared_stops,
          start_seconds=start_seconds,
          hours_by_attraction_name=hours_by_attraction_name ) )
@@ -1662,7 +1656,7 @@ def _schedule_prepared_loop_unit(
    if end_seconds is not None and slot_end_seconds > end_seconds:
       return animals
 
-   if not save_loop_slots(
+   if not LoopScheduleSlotAssigner.save(
          conn,
          blockers,
          animal_slots,

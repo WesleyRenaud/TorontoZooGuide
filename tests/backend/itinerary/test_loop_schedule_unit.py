@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
-from api.itinerary.scheduling.bulk.loop_schedule_unit import loop_schedule_unit_reversed
+from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 
 
@@ -34,7 +33,7 @@ def test_build_loop_schedule_units_assigns_loop_id_side_cluster_and_walk_endpoin
          ),
       ],
    )
-   loop_units = build_loop_schedule_units( loop_groups )
+   loop_units = LoopScheduleUnitBuilder.build( loop_groups )
 
    assert len( loop_units ) == 2
 
@@ -55,7 +54,7 @@ def test_build_loop_schedule_units_assigns_loop_id_side_cluster_and_walk_endpoin
 
 
 def test_build_loop_schedule_units_uses_itinerary_animals_for_partial_loop_endpoints() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
@@ -73,7 +72,7 @@ def test_build_loop_schedule_units_uses_itinerary_animals_for_partial_loop_endpo
 
 
 def test_build_loop_schedule_units_store_two_way_traversal() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
@@ -95,7 +94,7 @@ def test_build_loop_schedule_units_store_two_way_traversal() -> None:
 
 
 def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
@@ -109,7 +108,7 @@ def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
          ],
       ),
    )
-   reversed_unit = loop_schedule_unit_reversed( loop_units[ 0 ] )
+   reversed_unit = LoopScheduleUnitBuilder.reversed( loop_units[ 0 ] )
 
    assert reversed_unit.entry_walk_node_id == 'v-0955'
    assert reversed_unit.exit_walk_node_id == 'v-1018'
@@ -120,7 +119,7 @@ def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
 
 
 def test_build_loop_schedule_units_orders_animals_by_loop_viewing_spot_index() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       [
          [
             _animal_record(
@@ -145,7 +144,7 @@ def test_build_loop_schedule_units_orders_animals_by_loop_viewing_spot_index() -
 
 
 def test_build_loop_schedule_units_leaves_unmapped_animals_without_side_cluster() -> None:
-   loop_units = build_loop_schedule_units(
+   loop_units = LoopScheduleUnitBuilder.build(
       [
          [
             _animal_record(
