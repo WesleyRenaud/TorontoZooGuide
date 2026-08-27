@@ -1,0 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from ...shared.enums import ItineraryErrorType
+
+
+@dataclass( frozen=True )
+class SuppressItineraryWarningResult:
+   status: ItineraryErrorType = ItineraryErrorType.SUCCESS
+
+
+   @property
+   def success( self ) -> bool:
+      return self.status == ItineraryErrorType.SUCCESS
