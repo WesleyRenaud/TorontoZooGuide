@@ -10,12 +10,10 @@ from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryIte
 from ..fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
-from .schedule_itinerary_helpers import build_save_result
-from .schedule_itinerary_helpers import build_success_result
-from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
@@ -67,7 +65,7 @@ def _insert_scheduled_guardians_talk(
       )
 
       if not scheduled:
-         return build_save_result(
+         return ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.SAVE_FAILED,
             **itinerary_context )
@@ -91,13 +89,13 @@ def schedule_guardians_talk_itinerary_item(
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
    if _saved_guardians_talk_exists( saved_itinerary, guardians_talk_key ):
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
          **itinerary_context )
@@ -108,7 +106,7 @@ def schedule_guardians_talk_itinerary_item(
       itinerary_context[ 'guardians_coordinator' ] )
 
    if guardians_talk_diff.is_deleted:
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
          **itinerary_context )
@@ -145,7 +143,7 @@ def schedule_guardians_talk_itinerary_item(
          pending_reasons.append( long_wait_reason )
 
    if pending_reasons:
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          pending_reasons[ 0 ].code,
          reasons=pending_reasons,
@@ -174,6 +172,6 @@ def schedule_guardians_talk_itinerary_item(
          saved_itinerary_before_clear=saved_itinerary,
          **itinerary_context )
 
-   persist_itinerary_walk_route( conn, **itinerary_context )
+   ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
 
-   return build_success_result( conn, **itinerary_context )
+   return ItinerarySaveResultBuilder.success_result( conn, **itinerary_context )

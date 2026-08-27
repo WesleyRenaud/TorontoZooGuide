@@ -4,12 +4,10 @@ from typing import Any
 
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .listed_schedule_target import apply_listed_schedule
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_item_key import ListedScheduleItemKey
-from .schedule_itinerary_helpers import build_save_result
-from .schedule_itinerary_helpers import build_success_result
-from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
@@ -37,7 +35,7 @@ def prepare_schedule_item_on_itinerary(
          suppressed_warnings=suppressed_warnings ):
       return (
          suppressed_warnings,
-         build_save_result(
+         ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
             suppressed_warnings=suppressed_warnings,
@@ -66,7 +64,7 @@ def commit_listed_schedule(
          insert_if_missing )
 
       if not scheduled:
-         return build_save_result(
+         return ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
             **itinerary_context )
@@ -85,6 +83,6 @@ def commit_listed_schedule(
       current_departure_time=saved_itinerary.departure_time,
       itinerary_context=itinerary_context )
 
-   persist_itinerary_walk_route( conn, **itinerary_context )
+   ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
 
-   return build_success_result( conn, **itinerary_context )
+   return ItinerarySaveResultBuilder.success_result( conn, **itinerary_context )

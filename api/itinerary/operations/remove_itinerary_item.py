@@ -15,10 +15,9 @@ from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from ..scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
+from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
-from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
-from ..scheduling.items.schedule_itinerary_helpers import build_success_result
-from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ...shared.enums import ItineraryEventType
 from ..transportation_item_key import TransportationScheduleItemKey
@@ -91,7 +90,7 @@ def _remove_transit_transportation_and_reschedule(
       conn: Connection,
       schedule_item_key: TransportationScheduleItemKey,
 ) -> ItinerarySaveResult:
-   itinerary_context = build_itinerary_context(
+   itinerary_context = ItineraryScheduleContextBuilder.build(
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
@@ -131,9 +130,9 @@ def _remove_transit_transportation_and_reschedule(
       current_itinerary=ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
-   persist_itinerary_walk_route( conn, **itinerary_context )
+   ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
 
-   return build_success_result( conn, **itinerary_context )
+   return ItinerarySaveResultBuilder.success_result( conn, **itinerary_context )
 
 
 def remove_itinerary_item(

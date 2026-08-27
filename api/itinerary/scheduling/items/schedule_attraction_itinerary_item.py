@@ -12,16 +12,14 @@ from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ...domain.itinerary_builder import ItineraryBuilder
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
-from .schedule_itinerary_helpers import build_save_result
-from .schedule_itinerary_helpers import effective_duration_seconds
-from .schedule_itinerary_helpers import prepare_schedule_window
-from .schedule_itinerary_helpers import resolve_slot_times
-from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
+from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
+from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ....shared.operating_hours import OperatingHours
@@ -41,7 +39,7 @@ def schedule_attraction_itinerary_item(
       confirming_attraction_outside_operating_hours: bool,
       ) -> ItinerarySaveResult:
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
-   prepared_window = prepare_schedule_window(
+   prepared_window = ScheduleWindowPreparer.prepare(
       conn,
       saved_itinerary,
       **itinerary_context )
@@ -67,7 +65,7 @@ def schedule_attraction_itinerary_item(
          min( schedule_window[ 1 ], attraction_hours.close_seconds ) )
 
       if schedule_window[ 0 ] >= schedule_window[ 1 ]:
-         return build_save_result(
+         return ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.NO_AVAILABLE_SLOT,
             **itinerary_context )
@@ -88,20 +86,20 @@ def schedule_attraction_itinerary_item(
          saved_itinerary,
          schedule_item_key ):
       return ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
-         build_save_result(
+         ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
             **itinerary_context ),
          suppressed_warnings )
 
-   duration_seconds = effective_duration_seconds(
+   duration_seconds = ScheduleSlotTimeResolver.effective_duration_seconds(
       time_options.duration_minutes,
       default_duration_seconds_for_attraction_or_transportation(
          conn,
          schedule_item_key.name ) )
 
    if duration_seconds is None:
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
@@ -115,7 +113,7 @@ def schedule_attraction_itinerary_item(
          hours_adjustment is not None
          and not confirming_attraction_outside_operating_hours ):
       return ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
-         build_save_result(
+         ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS,
             **itinerary_context ),
@@ -137,7 +135,7 @@ def schedule_attraction_itinerary_item(
          visit_anchor_seconds=schedule_window[ 0 ],
          itinerary_context=itinerary_context,
          start_time=time_options.start_time )
-      slot, slot_error = resolve_slot_times_allowing_visit_extension(
+      slot, slot_error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
          conn,
          saved_itinerary,
          schedule_window,
@@ -208,7 +206,7 @@ def _resolve_adjusted_attraction_slot(
       itinerary_context: dict[ str, Any ],
 ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
    if hours_adjustment == AttractionHoursScheduleAdjustment.BEFORE_OPEN:
-      return resolve_slot_times(
+      return ScheduleSlotTimeResolver.resolve(
          conn,
          saved_itinerary,
          schedule_window,
@@ -226,7 +224,7 @@ def _resolve_adjusted_attraction_slot(
       day_start_seconds=anchor_seconds )
 
    if slot is None:
-      return None, build_save_result(
+      return None, ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.NO_AVAILABLE_SLOT,
          **itinerary_context )

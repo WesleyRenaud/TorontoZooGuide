@@ -7,8 +7,8 @@ from .bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .items.schedule_itinerary_helpers import build_itinerary_context
-from .items.schedule_itinerary_helpers import build_success_result
+from .items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from .items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ...types import Connection
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -26,7 +26,7 @@ class FixedTimeActivityRescheduler():
          wild_encounter_coordinator: type[ WildEncounterCoordinator ],
          visit_date_temp: float | None = None,
          saved_itinerary_before_clear: SavedItinerary | None ) -> ItinerarySaveResult:
-      itinerary_context = build_itinerary_context(
+      itinerary_context = ItineraryScheduleContextBuilder.build(
          animal_coordinator=animal_coordinator,
          attraction_coordinator=attraction_coordinator,
          guardians_coordinator=guardians_coordinator,
@@ -37,7 +37,7 @@ class FixedTimeActivityRescheduler():
          ItineraryProvider.fetch_saved_itinerary( conn ) )
 
       if not stops_to_schedule:
-         return build_success_result( conn, **itinerary_context )
+         return ItinerarySaveResultBuilder.success_result( conn, **itinerary_context )
 
       return BulkScheduleItineraryRunner.run(
          conn,

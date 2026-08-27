@@ -12,7 +12,7 @@ from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
-from ..items.schedule_itinerary_helpers import PreparedScheduleWindow
+from ..items.prepared_schedule_window import PreparedScheduleWindow
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
 from ....shared.calendar_dates import DateValues

@@ -4,7 +4,7 @@ from typing import Any
 
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...domain.itinerary_builder import ItineraryBuilder
-from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
+from ..items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .loop_schedule_stop import LoopScheduleStop
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
@@ -45,7 +45,7 @@ class BulkScheduleFinalizeBuilder():
             ItineraryProvider.fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
-      persist_itinerary_walk_route( conn, **itinerary_context )
+      ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
          status=ItineraryErrorType.SUCCESS,
