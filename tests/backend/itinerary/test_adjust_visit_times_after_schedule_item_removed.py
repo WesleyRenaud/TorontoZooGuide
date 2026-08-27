@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds, set_guardians_talk_schedule, set_wild_encounter_schedule, unschedule_itinerary_item, WILD_ENCOUNTER, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -20,7 +20,7 @@ LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
 )
 CHEETAH_START = schedule_time_after_seconds(
    '10:15 AM',
-   travel_time_seconds_between_nodes(
+   WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
       walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
       walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
@@ -28,7 +28,7 @@ CHEETAH_START = schedule_time_after_seconds(
 )
 PENGUIN_START = schedule_time_after_seconds(
    schedule_time_after_seconds( CHEETAH_START, 15 * 60 ),
-   travel_time_seconds_between_nodes(
+   WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
       walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
       walk_node_id_for_viewing_spot( 'African Penguin', 'Africa Savanna', 'Outdoor' ),

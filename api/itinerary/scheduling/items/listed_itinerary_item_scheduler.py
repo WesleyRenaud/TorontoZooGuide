@@ -12,7 +12,7 @@ from .listed_schedule_item_persister import ListedScheduleItemPersister
 from .listed_schedule_target_resolver import ListedScheduleTargetResolver
 from .parsed_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
-from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
+from ...routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from .schedule_item_key import ListedScheduleItemKey
 from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
@@ -130,7 +130,7 @@ class ListedItineraryItemScheduler():
          if AttractionAlsoTransportationProvider.attraction_is_also_transportation(
                conn,
                schedule_item_key.name ):
-            return walk_node_id_for_transportation( schedule_item_key.name )
+            return TransportationWalkNodeResolver.resolve( schedule_item_key.name )
 
          return ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( schedule_item_key.name )
 

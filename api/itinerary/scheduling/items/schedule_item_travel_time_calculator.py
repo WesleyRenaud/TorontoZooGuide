@@ -5,8 +5,8 @@ from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
 from ....models import Itinerary
 from ...routing.transit_ride_endpoint import TransitRideEndpoint
-from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
-from ...routing.walk_travel_time import travel_time_seconds_between_nodes
+from ...routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
+from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_walk_stop import ScheduledWalkStop
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
@@ -40,7 +40,7 @@ class ScheduleItemTravelTimeCalculator():
                if start_time is not None
                else None ) ) )
 
-      travel_seconds = travel_time_seconds_between_nodes(
+      travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
          previous_node_id,
          candidate_walk_node_id )
@@ -59,7 +59,7 @@ class ScheduleItemTravelTimeCalculator():
 
       walk_graph = load_walk_graph()
 
-      return travel_time_seconds_between_nodes(
+      return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
          str( walk_graph[ 'entrance_node_id' ] ),
          walk_node_id )
@@ -74,7 +74,7 @@ class ScheduleItemTravelTimeCalculator():
 
       walk_graph = load_walk_graph()
 
-      return travel_time_seconds_between_nodes(
+      return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
          walk_node_id,
          str( walk_graph[ 'entrance_node_id' ] ) )
@@ -136,7 +136,7 @@ class ScheduleItemTravelTimeCalculator():
          if end_seconds != latest_end_seconds:
             continue
 
-         walk_node_id = walk_node_id_for_transportation(
+         walk_node_id = TransportationWalkNodeResolver.resolve(
             transportation.name,
             legs=transportation.legs,
             endpoint=TransitRideEndpoint.OFFBOARDING )
@@ -182,7 +182,7 @@ class ScheduleItemTravelTimeCalculator():
             stops,
             start_time=transportation.start_time,
             end_time=transportation.end_time,
-            walk_node_id=walk_node_id_for_transportation(
+            walk_node_id=TransportationWalkNodeResolver.resolve(
                transportation.name,
                legs=transportation.legs ) )
 

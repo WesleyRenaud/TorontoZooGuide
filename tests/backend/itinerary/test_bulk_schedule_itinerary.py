@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -44,7 +44,7 @@ def _travel_seconds_between_animals(
    assert from_node_id is not None
    assert to_node_id is not None
 
-   return travel_time_seconds_between_nodes(
+   return WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       from_node_id,
       to_node_id )

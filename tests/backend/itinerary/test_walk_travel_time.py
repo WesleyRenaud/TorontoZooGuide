@@ -6,9 +6,9 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
-from api.itinerary.routing.walk_travel_time import travel_time_minutes_from_length_px
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_from_length_px
-from api.itinerary.routing.walk_travel_time import WALK_PX_PER_MINUTE
+from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.shortest_path import shortest_path
@@ -24,17 +24,17 @@ GRIZZLY_WALK_NODE_ID = 'v-0623'
 
 
 def test_travel_time_minutes_from_length_px_uses_floor() -> None:
-   assert travel_time_minutes_from_length_px( 0 ) == 0
-   assert travel_time_minutes_from_length_px( -10 ) == 0
-   assert travel_time_minutes_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
-   assert travel_time_minutes_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 1
-   assert travel_time_minutes_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 1
+   assert WalkTravelTimeCalculator.minutes_from_length_px( 0 ) == 0
+   assert WalkTravelTimeCalculator.minutes_from_length_px( -10 ) == 0
+   assert WalkTravelTimeCalculator.minutes_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
+   assert WalkTravelTimeCalculator.minutes_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 1
+   assert WalkTravelTimeCalculator.minutes_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 1
 
 
 def test_travel_time_seconds_from_length_px_multiplies_floored_minutes() -> None:
-   assert travel_time_seconds_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
-   assert travel_time_seconds_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 60
-   assert travel_time_seconds_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 60
 
 
 def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
@@ -55,7 +55,7 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
    assert expected_path is not None
-   expected_minutes = travel_time_minutes_from_length_px( expected_path.length_px )
+   expected_minutes = WalkTravelTimeCalculator.minutes_from_length_px( expected_path.length_px )
    assert 30 <= expected_minutes <= 32
 
    assert schedule_itinerary_item(

@@ -12,7 +12,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
 from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
@@ -216,7 +216,7 @@ def entrance_travel_seconds_to_animal(
    if walk_node_id is None:
       return 0
 
-   return travel_time_seconds_between_nodes(
+   return WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       walk_node_id )
@@ -231,7 +231,7 @@ def entrance_travel_seconds_to_map_location(
    if walk_node is None:
       return 0
 
-   return travel_time_seconds_between_nodes(
+   return WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       walk_node.walk_node_id )

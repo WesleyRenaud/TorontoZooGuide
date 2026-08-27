@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from api.itinerary.routing.itinerary_fixed_time_stop import itinerary_fixed_time_stop_from_itinerary_stop
-from api.itinerary.routing.itinerary_fixed_time_stop import itinerary_fixed_time_stops_from_itinerary_stops
+from api.itinerary.routing.itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
+from api.itinerary.routing.itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.shared.enums import ScheduleItemKind
 
@@ -17,7 +17,7 @@ def test_itinerary_fixed_time_stop_from_itinerary_stop_parses_schedule_times() -
       end_time='11:45 AM',
    )
 
-   fixed_time_stop = itinerary_fixed_time_stop_from_itinerary_stop( stop )
+   fixed_time_stop = ItineraryFixedTimeStopBuilder.from_itinerary_stop( stop )
 
    assert fixed_time_stop is not None
    assert fixed_time_stop.stop is stop
@@ -26,7 +26,7 @@ def test_itinerary_fixed_time_stop_from_itinerary_stop_parses_schedule_times() -
 
 
 def test_itinerary_fixed_time_stops_from_itinerary_stops_skips_unscheduled_stops() -> None:
-   fixed_time_stops = itinerary_fixed_time_stops_from_itinerary_stops(
+   fixed_time_stops = ItineraryFixedTimeStopBuilder.from_itinerary_stops(
       [
          ItineraryStop(
             schedule_item_kind=ScheduleItemKind.ANIMAL,

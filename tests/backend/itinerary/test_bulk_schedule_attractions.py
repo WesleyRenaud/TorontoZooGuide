@@ -9,7 +9,7 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
@@ -57,7 +57,7 @@ def test_bulk_schedule_packs_attraction_only_loop(
       if attraction.name == SPLASH_ISLAND )
    assert splash.start_time == schedule_time_after_seconds(
       '9:30 AM',
-      travel_time_seconds_between_nodes(
+      WalkTravelTimeCalculator.seconds_between_nodes(
          load_walk_graph(),
          load_walk_graph()[ 'entrance_node_id' ],
          ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( SPLASH_ISLAND ),

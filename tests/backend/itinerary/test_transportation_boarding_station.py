@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
-from api.itinerary.routing.transportation_boarding_station import boarding_station_for_transportation_legs
-from api.itinerary.routing.transportation_boarding_station import station_for_transportation_legs
+from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
+from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 
 
@@ -31,11 +31,11 @@ def test_boarding_station_is_first_leg_from_station() -> None:
          False ),
    ]
 
-   assert boarding_station_for_transportation_legs( legs ) == (
+   assert TransportationBoardingStationResolver.boarding_station_for_legs( legs ) == (
       'Main Zoomobile Station' )
-   assert station_for_transportation_legs(
+   assert TransportationBoardingStationResolver.station_for_legs(
       legs,
       TransitRideEndpoint.ONBOARDING ) == 'Main Zoomobile Station'
-   assert station_for_transportation_legs(
+   assert TransportationBoardingStationResolver.station_for_legs(
       legs,
       TransitRideEndpoint.OFFBOARDING ) == 'Eurasia Zoomobile Station'

@@ -6,7 +6,7 @@ from ...data_access.itinerary_transportation_record import ItineraryTransportati
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import LoopScheduleUnit
-from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
+from ...routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
@@ -71,7 +71,7 @@ class LoopScheduleUnitBuilder():
          cls,
          stop: LoopScheduleStop ) -> str | None:
       if isinstance( stop, ItineraryTransportationRecord ):
-         return walk_node_id_for_transportation( stop.transportation )
+         return TransportationWalkNodeResolver.resolve( stop.transportation )
 
       if isinstance( stop, ItineraryAttractionRecord ):
          walk_node = walk_node_for_map_location(

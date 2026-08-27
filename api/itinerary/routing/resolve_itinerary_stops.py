@@ -6,6 +6,7 @@ from .itinerary_stop import ItineraryStop
 from ...models import Itinerary
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleItemKind
+from .transportation_walk_node_resolver import TransportationWalkNodeResolver
 from ...types import ScheduleTimeKey
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
 from ...walk_graph.domain.map_location_kind import MapLocationKind
@@ -14,7 +15,6 @@ from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
 from ...walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
-from .walk_node_id_for_transportation import walk_node_id_for_transportation
 
 
 def resolve_entrance_itinerary_stop() -> ItineraryStop:
@@ -80,7 +80,7 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
          _stop_from_map_location(
             schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
             item_key=transportation.name,
-            walk_node_id=walk_node_id_for_transportation(
+            walk_node_id=TransportationWalkNodeResolver.resolve(
                transportation.name,
                legs=transportation.legs ),
             x_coord=transportation.x_coord,

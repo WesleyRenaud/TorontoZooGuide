@@ -17,16 +17,3 @@ class WalkRouteAnchor:
    # Onboarding/offboarding pair for one transportation ride sequence.
    transit_ride_key: str | None = None
    transit_endpoint: TransitRideEndpoint | None = None
-
-
-def is_transit_station_ride_gap(
-      previous: WalkRouteAnchor,
-      current: WalkRouteAnchor,
-) -> bool:
-   """True when the gap is covered by a ride, not a walk."""
-   return (
-      previous.transit_ride_key is not None
-      and previous.transit_ride_key == current.transit_ride_key
-      and previous.transit_endpoint is TransitRideEndpoint.ONBOARDING
-      and current.transit_endpoint is TransitRideEndpoint.OFFBOARDING
-   )

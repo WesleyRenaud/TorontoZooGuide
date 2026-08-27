@@ -11,12 +11,12 @@ from api.itinerary.data_access.itinerary_transportation_input import ItineraryTr
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.routing.walk_node_id_for_transportation import walk_node_id_for_transportation
-from api.itinerary.routing.walk_travel_time import travel_time_minutes_from_length_px
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_for_shortest_path
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_from_length_px
-from api.itinerary.routing.walk_travel_time import WALK_PX_PER_MINUTE
+from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
+from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
@@ -116,7 +116,7 @@ def _travel_seconds_between_animals(
    assert from_node_id is not None
    assert to_node_id is not None
 
-   return travel_time_seconds_between_nodes(
+   return WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       from_node_id,
       to_node_id )
@@ -133,11 +133,11 @@ def _seconds( schedule_time: str | None ) -> int:
 
 
 def test_travel_time_seconds_from_length_px_uses_floored_minutes() -> None:
-   assert travel_time_seconds_from_length_px( 0 ) == 0
-   assert travel_time_seconds_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
-   assert travel_time_seconds_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 60
-   assert travel_time_seconds_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 60
-   assert travel_time_seconds_from_length_px( 2.9 * WALK_PX_PER_MINUTE ) == 120
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 0 ) == 0
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 2.9 * WALK_PX_PER_MINUTE ) == 120
 
 
 def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
@@ -147,7 +147,7 @@ def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
       'Africa Savanna',
       None )
    assert lion_node_id is not None
-   assert travel_time_seconds_between_nodes(
+   assert WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       lion_node_id,
       lion_node_id ) == 0
@@ -160,18 +160,18 @@ def test_travel_time_seconds_between_nodes_matches_floor_helper() -> None:
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
    assert path is not None
-   assert travel_time_seconds_between_nodes(
+   assert WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
-      GRIZZLY_WALK_NODE_ID ) == travel_time_seconds_from_length_px( path.length_px )
-   assert travel_time_seconds_for_shortest_path( path ) == (
-      travel_time_minutes_from_length_px( path.length_px ) * 60 )
-   assert travel_time_seconds_for_shortest_path( None ) == 0
+      GRIZZLY_WALK_NODE_ID ) == WalkTravelTimeCalculator.seconds_from_length_px( path.length_px )
+   assert WalkTravelTimeCalculator.seconds_for_shortest_path( path ) == (
+      WalkTravelTimeCalculator.minutes_from_length_px( path.length_px ) * 60 )
+   assert WalkTravelTimeCalculator.seconds_for_shortest_path( None ) == 0
 
 
 def test_travel_time_seconds_between_unreachable_nodes_is_zero() -> None:
    walk_graph = load_walk_graph()
-   assert travel_time_seconds_between_nodes(
+   assert WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       'not-a-real-node' ) == 0
@@ -443,7 +443,7 @@ def test_auto_schedule_delays_first_animal_by_entrance_travel(
       key=GRIZZLY_KEY )
 
    walk_graph = load_walk_graph()
-   expected_travel_seconds = travel_time_seconds_between_nodes(
+   expected_travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
@@ -625,7 +625,7 @@ def test_auto_schedule_attraction_after_animal_includes_travel(
       CAROUSEL )
    assert lion_node_id is not None
    assert carousel_node is not None
-   travel_seconds = travel_time_seconds_between_nodes(
+   travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       lion_node_id,
       carousel_node.walk_node_id )
@@ -671,7 +671,7 @@ def test_auto_schedule_animal_after_zoomobile_transportation_includes_travel(
    lion = result.itinerary.animals[ 0 ]
    zoomobile = result.itinerary.transportations[ 0 ]
    walk_graph = load_walk_graph()
-   zoomobile_node_id = walk_node_id_for_transportation(
+   zoomobile_node_id = TransportationWalkNodeResolver.resolve(
       ZOOMOBILE,
       legs=zoomobile.legs )
    lion_node_id = walk_node_id_for_viewing_spot(
@@ -680,7 +680,7 @@ def test_auto_schedule_animal_after_zoomobile_transportation_includes_travel(
       None )
    assert zoomobile_node_id is not None
    assert lion_node_id is not None
-   travel_seconds = travel_time_seconds_between_nodes(
+   travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       zoomobile_node_id,
       lion_node_id )
@@ -720,7 +720,7 @@ def test_bulk_schedule_animal_then_zoomobile_includes_travel(
       'African Lion',
       'Africa Savanna',
       None )
-   zoomobile_node_id = walk_node_id_for_transportation( ZOOMOBILE )
+   zoomobile_node_id = TransportationWalkNodeResolver.resolve( ZOOMOBILE )
 
    assert result.success
    assert lion.start_time is not None
@@ -741,7 +741,7 @@ def test_bulk_schedule_animal_then_zoomobile_includes_travel(
       earlier_end = zoomobile.end_time
       later_start = lion.start_time
 
-   travel_seconds = travel_time_seconds_between_nodes(
+   travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       from_node_id,
       to_node_id )
@@ -865,7 +865,7 @@ def test_bulk_schedule_persists_floored_travel_minutes_on_walk_legs(
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
    assert path is not None
-   expected_minutes = travel_time_minutes_from_length_px( path.length_px )
+   expected_minutes = WalkTravelTimeCalculator.minutes_from_length_px( path.length_px )
 
    assert result.success
    persisted = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )

@@ -1,33 +1,33 @@
 from __future__ import annotations
 
 from ..animal_item_key import parse_animal_schedule_item_key
-from .append_return_to_entrance_walk_route_leg import append_return_to_entrance_walk_route_leg
 from .build_walk_route_anchors import build_walk_route_anchors
-from .itinerary_walk_route import empty_itinerary_walk_route
 from .itinerary_walk_route import ItineraryWalkRoute
-from .itinerary_walk_route_completion import should_append_return_to_entrance_walk_route_leg
+from .itinerary_walk_route_builder import ItineraryWalkRouteBuilder
+from .itinerary_walk_route_completion_checker import ItineraryWalkRouteCompletionChecker
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...models import Itinerary
+from .return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from ...shared.enums import ScheduleItemKind
+from .transit_station_ride_gap_checker import TransitStationRideGapChecker
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
 from ...walk_graph.shortest_path import build_walk_graph_adjacency
 from ...walk_graph.shortest_path import shortest_path
-from .walk_route_anchor import is_transit_station_ride_gap
 from .walk_route_anchor import WalkRouteAnchor
 from .walk_route_leg import WalkRouteLeg
 from .walk_route_point import WalkRoutePoint
-from .walk_route_polyline import append_walk_route_leg_node_ids
-from .walk_travel_time import walk_route_leg_with_travel_time
+from .walk_route_polyline_builder import WalkRoutePolylineBuilder
+from .walk_travel_time_calculator import WalkTravelTimeCalculator
 
 
 def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
    ordered_anchors = build_walk_route_anchors( itinerary )
 
    if not ordered_anchors:
-      return empty_itinerary_walk_route()
+      return ItineraryWalkRouteBuilder.empty()
 
    walk_graph = load_walk_graph()
    adjacency = build_walk_graph_adjacency( walk_graph )
@@ -54,7 +54,7 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
       if next_node_id is None:
          continue
 
-      if is_transit_station_ride_gap( previous_anchor, next_anchor ):
+      if TransitStationRideGapChecker.is_gap( previous_anchor, next_anchor ):
          route_stops.append(
             ItineraryWalkRouteStop.from_walk_route_anchor(
                next_anchor,
@@ -73,14 +73,14 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
          continue
 
       legs.append(
-         walk_route_leg_with_travel_time(
+         WalkTravelTimeCalculator.route_leg_with_travel_time(
             from_item_key=route_stops[ -1 ].item_key,
             to_item_key=next_anchor.item_key,
             from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
             to_schedule_item_kind=next_anchor.schedule_item_kind,
             node_ids=leg_path.node_ids,
             length_px=leg_path.length_px ) )
-      append_walk_route_leg_node_ids( route_node_ids, leg_path.node_ids )
+      WalkRoutePolylineBuilder.append_leg_node_ids( route_node_ids, leg_path.node_ids )
       route_stops.append(
          ItineraryWalkRouteStop.from_walk_route_anchor(
             next_anchor,
@@ -89,10 +89,10 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
       previous_anchor = next_anchor
 
    if not legs:
-      return empty_itinerary_walk_route()
+      return ItineraryWalkRouteBuilder.empty()
 
-   if should_append_return_to_entrance_walk_route_leg( itinerary ):
-      append_return_to_entrance_walk_route_leg(
+   if ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg( itinerary ):
+      ReturnToEntranceWalkRouteLegAppender.append(
          walk_graph,
          entrance_anchor=entrance_anchor,
          entrance_node_id=entrance_node_id,

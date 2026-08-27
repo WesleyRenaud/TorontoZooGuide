@@ -19,10 +19,3 @@ class ItineraryWalkRoute:
          'legs': [ leg.to_dict() for leg in self.legs ],
          'points': [ point.to_dict() for point in self.points ],
       }
-
-
-def empty_itinerary_walk_route() -> ItineraryWalkRoute:
-   return ItineraryWalkRoute(
-      stops=[],
-      legs=[],
-      points=[] )
