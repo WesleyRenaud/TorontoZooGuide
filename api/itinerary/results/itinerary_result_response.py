@@ -3,7 +3,7 @@ from __future__ import annotations
 from .build_itinerary_path import build_itinerary_path
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_set_result import ItineraryTimeSetResult
-from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResult
+from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
 from ...shared.constants import itinerary_config_to_dict
 from ...types import Connection
 

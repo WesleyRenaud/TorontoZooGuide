@@ -12,12 +12,12 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Itinerary
-from ..operations import remove_itinerary_item as remove_itinerary_item_logic
 from ..operations import set_itinerary as set_itinerary_logic
-from ..operations import suppress_itinerary_warning as suppress_itinerary_warning_logic
-from ..operations import unschedule_all_itinerary_items as unschedule_all_itinerary_items_logic
-from ..operations import unschedule_itinerary_item as unschedule_itinerary_item_logic
-from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResult
+from ..operations.all_itinerary_items_unscheduler import AllItineraryItemsUnscheduler
+from ..operations.itinerary_item_remover import ItineraryItemRemover
+from ..operations.itinerary_item_unscheduler import ItineraryItemUnscheduler
+from ..operations.itinerary_warning_suppressor import ItineraryWarningSuppressor
+from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
 from ...request_connection import get_connection
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
@@ -207,7 +207,7 @@ class ItineraryCoordinator():
    def unschedule_all_itinerary_items(
          cls,
          visit_date_temp: float | None = None ) -> ItinerarySaveResult:
-      return unschedule_all_itinerary_items_logic.unschedule_all_itinerary_items(
+      return AllItineraryItemsUnscheduler.unschedule_all(
          get_connection(),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
@@ -220,7 +220,7 @@ class ItineraryCoordinator():
    def unschedule_itinerary_item(
          cls,
          schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
-      return unschedule_itinerary_item_logic.unschedule_itinerary_item(
+      return ItineraryItemUnscheduler.unschedule(
          get_connection(),
          schedule_item_key )
 
@@ -229,7 +229,7 @@ class ItineraryCoordinator():
    def remove_itinerary_item(
          cls,
          schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
-      return remove_itinerary_item_logic.remove_itinerary_item(
+      return ItineraryItemRemover.remove(
          get_connection(),
          schedule_item_key )
 
@@ -238,7 +238,7 @@ class ItineraryCoordinator():
    def suppress_itinerary_warning(
          cls,
          warning_type: str ) -> SuppressItineraryWarningResult:
-      return suppress_itinerary_warning_logic.suppress_itinerary_warning(
+      return ItineraryWarningSuppressor.suppress(
          get_connection(),
          warning_type )
 
