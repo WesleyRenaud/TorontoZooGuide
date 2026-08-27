@@ -6,7 +6,6 @@ from ...data_access.itinerary_default_duration_provider import ItineraryDefaultD
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
-from ..extend_departure_for_activity import cover_visit_times_for_scheduled_activity
 from ....models.itinerary_event import ItineraryEvent
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -16,6 +15,7 @@ from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from .schedule_itinerary_helpers import prepare_schedule_window
 from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
+from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItineraryEventType
 from ....types import Connection
@@ -80,7 +80,7 @@ def schedule_itinerary_event(
    finally:
       cur.close()
 
-   cover_visit_times_for_scheduled_activity(
+   ScheduledActivityVisitTimesCoverer.cover_for_activity(
       conn,
       start_time=start_time_key,
       end_time=end_time,

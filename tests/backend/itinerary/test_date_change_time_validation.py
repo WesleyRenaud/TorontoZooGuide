@@ -3,7 +3,7 @@ from __future__ import annotations
 from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
+from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 
@@ -31,7 +31,7 @@ CAROUSEL_AFTER_LION_AFTERNOON = schedule_time_after_seconds(
    travel_time_seconds_between_nodes(
       load_walk_graph(),
       walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
-      walk_node_id_for_attraction( CAROUSEL ),
+      ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( CAROUSEL ),
    ),
 )
 

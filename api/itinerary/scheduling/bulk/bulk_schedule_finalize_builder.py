@@ -9,9 +9,8 @@ from .loop_schedule_stop import LoopScheduleStop
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
+from ..scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ....shared.enums import ItineraryErrorType
-from ..sync_visit_times_to_scheduled_endpoints import clear_visit_times_if_became_incomplete
-from ..sync_visit_times_to_scheduled_endpoints import sync_visit_times_to_scheduled_endpoints_if_complete
 from ....types import Connection
 from ...warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 
@@ -33,13 +32,13 @@ class BulkScheduleFinalizeBuilder():
                remaining_stops ),
          ]
 
-      sync_visit_times_to_scheduled_endpoints_if_complete(
+      ScheduledEndpointVisitTimesSyncer.sync_if_complete(
          conn,
          ItineraryBuilder.build_current(
             ItineraryProvider.fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
-      clear_visit_times_if_became_incomplete(
+      ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
          conn,
          previous_itinerary=previous_itinerary,
          current_itinerary=ItineraryBuilder.build_current(

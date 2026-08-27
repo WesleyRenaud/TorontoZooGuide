@@ -16,8 +16,7 @@ from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
-from .schedule_item_travel_time import earliest_schedule_start_seconds_with_travel
-from .schedule_item_travel_time import walk_node_id_for_attraction
+from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import prepare_schedule_window
@@ -131,9 +130,9 @@ def schedule_attraction_itinerary_item(
          hours_adjustment=hours_adjustment,
          itinerary_context=itinerary_context )
    else:
-      earliest_start_seconds = earliest_schedule_start_seconds_with_travel(
+      earliest_start_seconds = ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
          saved_itinerary,
-         candidate_walk_node_id=walk_node_id_for_attraction(
+         candidate_walk_node_id=ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
             schedule_item_key.name ),
          visit_anchor_seconds=schedule_window[ 0 ],
          itinerary_context=itinerary_context,

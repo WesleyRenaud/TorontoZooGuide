@@ -14,7 +14,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkSchedu
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
-from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
+from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
@@ -60,7 +60,7 @@ def test_bulk_schedule_packs_attraction_only_loop(
       travel_time_seconds_between_nodes(
          load_walk_graph(),
          load_walk_graph()[ 'entrance_node_id' ],
-         walk_node_id_for_attraction( SPLASH_ISLAND ),
+         ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( SPLASH_ISLAND ),
       ),
    )
    assert splash.end_time is not None
