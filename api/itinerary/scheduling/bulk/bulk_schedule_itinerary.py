@@ -3,9 +3,9 @@ from __future__ import annotations
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attraction_covered_animals import apply_covered_by_attraction_schedules
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .bulk_schedule_finalize import finalize_bulk_schedule_itinerary
+from .bulk_schedule_finalize_builder import BulkScheduleFinalizeBuilder
 from .bulk_schedule_loop_packing import pack_stops_into_bulk_schedule
-from .bulk_schedule_transit_legs import apply_bulk_schedule_transit_legs
+from .bulk_schedule_transit_legs_builder import BulkScheduleTransitLegsBuilder
 from .bulk_schedule_window_prep import itinerary_has_items_to_rebuild
 from .bulk_schedule_window_prep import prepare_bulk_schedule_windows
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
@@ -80,16 +80,16 @@ def bulk_schedule_itinerary(
 
    if not packing.loop_units and not (
          packing.covered_by_talk or packing.covered_by_attraction ):
-      return finalize_bulk_schedule_itinerary(
+      return BulkScheduleFinalizeBuilder.finalize(
          conn,
          previous_itinerary=prep.previous_itinerary,
          itinerary_context=itinerary_context )
 
    apply_covered_by_talk_schedules( conn, packing.covered_by_talk )
    apply_covered_by_attraction_schedules( conn, packing.covered_by_attraction )
-   apply_bulk_schedule_transit_legs( conn, prep=prep )
+   BulkScheduleTransitLegsBuilder.apply( conn, prep=prep )
 
-   return finalize_bulk_schedule_itinerary(
+   return BulkScheduleFinalizeBuilder.finalize(
       conn,
       previous_itinerary=prep.previous_itinerary,
       itinerary_context=itinerary_context,

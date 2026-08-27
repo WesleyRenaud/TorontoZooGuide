@@ -8,7 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_row
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.scheduling.bulk.group_animals_by_master_route_loop import group_animals_by_master_route_loop
+from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -29,8 +29,8 @@ def _animal_record(
    )
 
 
-def test_group_animals_by_master_route_loop_groups_same_loop_and_splits_unmapped() -> None:
-   groups = group_animals_by_master_route_loop(
+def test_master_route_loop_animal_grouper_groups_same_loop_and_splits_unmapped() -> None:
+   groups = MasterRouteLoopAnimalGrouper.group(
       [
          _animal_record(
             species='African Lion',

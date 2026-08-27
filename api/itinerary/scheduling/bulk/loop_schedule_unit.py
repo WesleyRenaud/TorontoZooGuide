@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
-from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
+from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
@@ -122,14 +122,14 @@ def _stops_in_master_route_loop_order(
    stops_in_loop = [
       stop
       for stop in stops
-      if loop_schedule_stop_key( stop ) in loop_index_by_stop_key
+      if LoopScheduleStopExtractor.stop_key( stop ) in loop_index_by_stop_key
    ]
 
    if not stops_in_loop:
       return list( stops )
 
    stops_in_loop.sort(
-      key=lambda stop: loop_index_by_stop_key[ loop_schedule_stop_key( stop ) ] )
+      key=lambda stop: loop_index_by_stop_key[ LoopScheduleStopExtractor.stop_key( stop ) ] )
 
    return stops_in_loop
 
@@ -159,7 +159,7 @@ def _loop_id_for_stops(
       stops: list[ LoopScheduleStop ],
       loop_ids_by_stop_key: dict ) -> str | None:
    for stop in stops:
-      loop_id = loop_ids_by_stop_key.get( loop_schedule_stop_key( stop ) )
+      loop_id = loop_ids_by_stop_key.get( LoopScheduleStopExtractor.stop_key( stop ) )
 
       if loop_id is not None:
          return loop_id

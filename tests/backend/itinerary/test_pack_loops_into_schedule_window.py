@@ -3,9 +3,9 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk.group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
+from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
@@ -174,7 +174,7 @@ def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anch
 
 def test_pack_loops_into_schedule_window_uses_itinerary_animal_nodes_for_partial_loop_endpoints() -> None:
    loop_units = build_loop_schedule_units(
-      group_animals_by_master_route_loop(
+      MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
                species='Amur Tiger',

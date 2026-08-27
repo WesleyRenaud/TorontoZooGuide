@@ -10,12 +10,11 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import attractions_for_bulk_schedule
-from api.itinerary.scheduling.bulk.animals_for_bulk_schedule import stops_for_bulk_schedule
-from api.itinerary.scheduling.bulk.group_stops_by_master_route_loop import group_stops_by_master_route_loop
+from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
 from api.itinerary.scheduling.bulk.loop_schedule_unit import walk_node_id_for_loop_schedule_stop
-from api.itinerary.scheduling.bulk.sort_stops_by_master_route import sort_stops_by_master_route
+from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
+from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
 from api.itinerary.scheduling.items.schedule_item_travel_time import walk_node_id_for_attraction
 from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
@@ -153,7 +152,7 @@ def test_build_loop_schedule_units_orders_woven_attraction_between_animals() -> 
          new_likelihood=100 ),
    ]
    loop_units = build_loop_schedule_units(
-      group_stops_by_master_route_loop( stops ) )
+      MasterRouteLoopStopGrouper.group( stops ) )
 
    australasia = next(
       unit
@@ -173,7 +172,7 @@ def test_build_loop_schedule_units_orders_woven_attraction_between_animals() -> 
    ]
 
 
-def test_sort_stops_by_master_route_orders_unmapped_attractions_by_name() -> None:
+def test_master_route_stop_sorter_orders_unmapped_attractions_by_name() -> None:
    unmapped_b = ItineraryAttractionRecord(
       attraction='ZZZ Unmapped Attraction B',
       old_likelihood=None,
@@ -188,7 +187,7 @@ def test_sort_stops_by_master_route_orders_unmapped_attractions_by_name() -> Non
       old_likelihood=None,
       new_likelihood=100 )
 
-   ordered = sort_stops_by_master_route( [ unmapped_b, lion, unmapped_a ] )
+   ordered = MasterRouteStopSorter.sort( [ unmapped_b, lion, unmapped_a ] )
 
    assert ordered[ 0 ].species == 'African Lion'
    assert [
@@ -234,10 +233,10 @@ def test_walk_node_id_for_unknown_attraction_is_none() -> None:
 
 def test_attractions_for_bulk_schedule_handles_missing_and_scheduled_only(
       db: DbControllers ) -> None:
-   assert attractions_for_bulk_schedule(
+   assert BulkScheduleStopSelector.attractions(
       None,
       only_previously_scheduled=False ) == []
-   assert stops_for_bulk_schedule(
+   assert BulkScheduleStopSelector.stops(
       None,
       only_previously_scheduled=False ) == []
 
@@ -252,10 +251,10 @@ def test_attractions_for_bulk_schedule_handles_missing_and_scheduled_only(
    saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    assert [
       attraction.attraction
-      for attraction in attractions_for_bulk_schedule(
+      for attraction in BulkScheduleStopSelector.attractions(
          saved,
          only_previously_scheduled=False )
    ] == [ CAROUSEL ]
-   assert attractions_for_bulk_schedule(
+   assert BulkScheduleStopSelector.attractions(
       saved,
       only_previously_scheduled=True ) == []

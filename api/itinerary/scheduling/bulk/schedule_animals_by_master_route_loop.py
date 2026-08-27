@@ -7,7 +7,7 @@ from .attraction_hours_soft_pin import attraction_hours_by_name_from_soft_pins
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .loop_schedule_stop import LoopScheduleStop
-from .loop_schedule_stop import transportations_from_stops
+from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots_respecting_attraction_hours
@@ -1224,7 +1224,7 @@ def _drain_ready_soft_pin_loop_units(
             cursor_seconds=schedule_cursor_seconds ):
          approach_seconds = 0
 
-         if transportations_from_stops( list( prepared_unit.unit.stops ) ):
+         if LoopScheduleStopExtractor.transportations_from( list( prepared_unit.unit.stops ) ):
             approach_seconds = approach_travel_seconds_to_unit(
                walk_graph,
                resolved_current_node_id,
