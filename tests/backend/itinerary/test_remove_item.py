@@ -6,7 +6,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 from conftest import DbControllers
@@ -17,7 +17,7 @@ GUARDIANS_TALK = 'African Lion'
 AFRICAN_RAINFOREST = 'African Rainforest'
 CHEETAH_START = schedule_time_after_seconds(
    '10:15 AM',
-   travel_time_seconds_between_nodes(
+   WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
       walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
       walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),

@@ -7,7 +7,7 @@ from itinerary.support import entrance_travel_seconds_to_animal, expected_depart
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -19,7 +19,7 @@ from conftest import DbControllers
 SPLASH_ISLAND = 'Splash Island'
 SPLASH_OPEN_WITH_ENTRANCE_TRAVEL = schedule_time_after_seconds(
    '12:00 PM',
-   travel_time_seconds_between_nodes(
+   WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
       load_walk_graph()[ 'entrance_node_id' ],
       ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( SPLASH_ISLAND ),

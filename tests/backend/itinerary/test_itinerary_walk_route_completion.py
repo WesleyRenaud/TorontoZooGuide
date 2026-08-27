@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
-from api.itinerary.routing.itinerary_walk_route_completion import should_append_return_to_entrance_walk_route_leg
+from api.itinerary.routing.itinerary_walk_route_completion_checker import ItineraryWalkRouteCompletionChecker
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.models import Animal
 from api.models import Attraction
@@ -167,5 +167,5 @@ def test_should_append_return_to_entrance_only_when_all_guest_items_are_schedule
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert not should_append_return_to_entrance_walk_route_leg( partial_itinerary )
-   assert should_append_return_to_entrance_walk_route_leg( complete_itinerary )
+   assert not ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg( partial_itinerary )
+   assert ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg( complete_itinerary )

@@ -9,7 +9,7 @@ from itinerary.support import schedule_time_after_seconds
 from itinerary.support import schedule_time_before_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -50,7 +50,7 @@ def _travel_seconds_between_animals(
       to_enclosure_name )
    assert from_node_id is not None
    assert to_node_id is not None
-   return travel_time_seconds_between_nodes(
+   return WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       from_node_id,
       to_node_id )

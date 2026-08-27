@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from ..domain.itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
 from .itinerary_stop import ItineraryStop
+from .itinerary_stop_walk_route_sorter import ItineraryStopWalkRouteSorter
 from ...models import Itinerary
 from ...models.itinerary_transportation import ItineraryTransportation
-from .order_itinerary_stops_for_walk_route import order_itinerary_stops_for_walk_route
 from .resolve_itinerary_stops import resolve_entrance_itinerary_stop
 from .resolve_itinerary_stops import resolve_itinerary_stops
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleItemKind
 from .transit_ride_endpoint import TransitRideEndpoint
-from .walk_node_id_for_transportation import walk_node_id_for_transportation
-from .walk_node_id_for_transportation_station import walk_node_id_for_transportation_station
+from .transportation_station_walk_node_resolver import TransportationStationWalkNodeResolver
+from .transportation_walk_node_resolver import TransportationWalkNodeResolver
 from .walk_route_anchor import WalkRouteAnchor
 
 
@@ -22,7 +22,7 @@ def build_walk_route_anchors( itinerary: Itinerary ) -> list[ WalkRouteAnchor ]:
    Attraction-mode transportation stays a single boarding pin.
    """
    resolved_stops = resolve_itinerary_stops( itinerary )
-   content_stops = order_itinerary_stops_for_walk_route(
+   content_stops = ItineraryStopWalkRouteSorter.sort(
       [
          stop
          for stop in resolved_stops
@@ -91,7 +91,7 @@ def _attraction_mode_transportation_anchor(
    if not DateValues.normalize_schedule_time_key( transportation.end_time ):
       return None
 
-   walk_node_id = walk_node_id_for_transportation(
+   walk_node_id = TransportationWalkNodeResolver.resolve(
       transportation.name,
       legs=transportation.legs )
 
@@ -116,10 +116,10 @@ def _transit_ride_station_anchors(
    for sequence_index, sequence in enumerate( sequences ):
       onboarding_station = sequence[ 0 ].from_station
       offboarding_station = sequence[ -1 ].to_station
-      onboarding_node_id = walk_node_id_for_transportation_station(
+      onboarding_node_id = TransportationStationWalkNodeResolver.resolve(
          transportation.name,
          onboarding_station )
-      offboarding_node_id = walk_node_id_for_transportation_station(
+      offboarding_node_id = TransportationStationWalkNodeResolver.resolve(
          transportation.name,
          offboarding_station )
       ride_key = f'{ transportation.name }||{ sequence_index }'

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from api.itinerary.routing.append_return_to_entrance_walk_route_leg import append_return_to_entrance_walk_route_leg
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
+from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -24,7 +24,7 @@ def test_append_return_to_entrance_walk_route_leg_skips_when_already_at_entrance
    legs = []
    route_node_ids: list[ str ] = []
 
-   append_return_to_entrance_walk_route_leg(
+   ReturnToEntranceWalkRouteLegAppender.append(
       walk_graph,
       entrance_anchor=entrance_anchor,
       entrance_node_id=entrance_node_id,
@@ -67,7 +67,7 @@ def test_append_return_to_entrance_walk_route_leg_appends_shortest_path_back() -
 
    assert expected_node_ids is not None
 
-   append_return_to_entrance_walk_route_leg(
+   ReturnToEntranceWalkRouteLegAppender.append(
       walk_graph,
       entrance_anchor=entrance_anchor,
       entrance_node_id=entrance_node_id,

@@ -11,9 +11,9 @@ from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryIte
 from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from .planned_transit_ride import PlannedTransitRide
 from ...routing.transit_ride_endpoint import TransitRideEndpoint
-from ...routing.transportation_boarding_station import station_for_transportation_legs
-from ...routing.walk_travel_time import travel_time_minutes_from_length_px
-from ...routing.walk_travel_time import travel_time_seconds_between_nodes
+from ...routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
+from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_animal_anchor import ScheduledAnimalAnchor
 from ....shared.calendar_dates import DateValues
 from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
@@ -166,7 +166,7 @@ class TransportationTransitRideApplier():
          return timeline_start_seconds, entrance_node_id
 
       alight_node_id = station_walk_nodes.get(
-         station_for_transportation_legs(
+         TransportationBoardingStationResolver.station_for_legs(
             companion_attraction_row.legs,
             TransitRideEndpoint.OFFBOARDING ) )
 
@@ -311,7 +311,7 @@ class TransportationTransitRideApplier():
          TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION * direct_walk_px )
       max_ride_minutes = (
          TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
-         * travel_time_minutes_from_length_px( direct_walk_px ) )
+         * WalkTravelTimeCalculator.minutes_from_length_px( direct_walk_px ) )
       best_ride: PlannedTransitRide | None = None
 
       for board_station, board_node_id in station_walk_nodes.items():
@@ -381,7 +381,7 @@ class TransportationTransitRideApplier():
       if board_node_id is None:
          return 0
 
-      return travel_time_seconds_between_nodes(
+      return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
          from_node_id,
          board_node_id,

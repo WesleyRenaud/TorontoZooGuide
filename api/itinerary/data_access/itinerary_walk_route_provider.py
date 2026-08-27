@@ -6,9 +6,9 @@ from .itinerary_walk_route_point_mapper import ItineraryWalkRoutePointMapper
 from .itinerary_walk_route_point_record import ItineraryWalkRoutePointRecord
 from .itinerary_walk_route_stop_mapper import ItineraryWalkRouteStopMapper
 from .itinerary_walk_route_stop_record import ItineraryWalkRouteStopRecord
-from ..routing.itinerary_walk_route import empty_itinerary_walk_route
 from ..routing.itinerary_walk_route import ItineraryWalkRoute
-from ..routing.walk_route_polyline import inclusive_point_slices_for_walk_route_legs
+from ..routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
+from ..routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from ...types import Connection, Cursor
 
 
@@ -92,7 +92,7 @@ class ItineraryWalkRouteProvider():
       leg_rows = cls.fetch_itinerary_walk_route_leg_rows( conn )
 
       if not leg_rows:
-         return empty_itinerary_walk_route()
+         return ItineraryWalkRouteBuilder.empty()
 
       stop_rows = cls.fetch_itinerary_walk_route_stop_rows( conn )
       point_rows = cls.fetch_itinerary_walk_route_point_rows( conn )
@@ -208,7 +208,7 @@ class ItineraryWalkRouteProvider():
          cls,
          cur: Cursor,
          walk_route: ItineraryWalkRoute ) -> None:
-      leg_point_slices = inclusive_point_slices_for_walk_route_legs(
+      leg_point_slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
          walk_route.legs )
 
       for leg_sequence, ( leg, point_slice ) in enumerate(

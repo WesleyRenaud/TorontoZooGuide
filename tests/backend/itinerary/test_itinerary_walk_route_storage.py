@@ -14,7 +14,7 @@ from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalk
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.results.itinerary_result_response import itinerary_result_to_dict
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
-from api.itinerary.routing.itinerary_walk_route import empty_itinerary_walk_route
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -78,7 +78,7 @@ def test_fetch_itinerary_walk_route_returns_empty_when_unpersisted(
       db: DbControllers ) -> None:
    walk_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
-   assert walk_route == empty_itinerary_walk_route()
+   assert walk_route == ItineraryWalkRouteBuilder.empty()
 
 
 def test_rebuild_and_persist_itinerary_walk_route_round_trips_route(
@@ -138,7 +138,7 @@ def test_clear_itinerary_clears_walk_route(
    assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).legs
 
    assert ItineraryCoordinator.clear_itinerary()
-   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ) == empty_itinerary_walk_route()
+   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ) == ItineraryWalkRouteBuilder.empty()
 
 
 def test_itinerary_result_to_dict_includes_itinerary_path(

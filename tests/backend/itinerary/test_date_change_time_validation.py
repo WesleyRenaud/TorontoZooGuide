@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, entrance_travel_seconds_to_animal, expected_departure_time_for_itinerary, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, schedule_time_after_seconds, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
-from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
@@ -13,7 +13,7 @@ LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
 )
 LION_START_AFTER_915 = schedule_time_after_seconds( '9:15 AM', LION_TRAVEL_SECONDS )
 LION_START_AFTER_930 = schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS )
-LION_CHEETAH_TRAVEL_SECONDS = travel_time_seconds_between_nodes(
+LION_CHEETAH_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
    load_walk_graph(),
    walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
    walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
@@ -28,7 +28,7 @@ EXPECTED_REPACKED_CHEETAH_END = schedule_time_after_seconds(
 LION_END_AFTER_915 = schedule_time_after_seconds( LION_START_AFTER_915, 8 * 60 )
 CAROUSEL_AFTER_LION_AFTERNOON = schedule_time_after_seconds(
    schedule_time_after_seconds( '3:45 PM', 8 * 60 ),
-   travel_time_seconds_between_nodes(
+   WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
       walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
       ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( CAROUSEL ),

@@ -3,7 +3,7 @@ from __future__ import annotations
 from .itinerary_walk_route_leg_record import ItineraryWalkRouteLegRecord
 from ..routing.walk_route_leg import WalkRouteLeg
 from ..routing.walk_route_point import WalkRoutePoint
-from ..routing.walk_route_polyline import walk_route_node_ids_for_point_slice
+from ..routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from ...shared.enums import ScheduleItemKind
 from ...types import Row
 
@@ -43,7 +43,7 @@ class ItineraryWalkRouteLegMapper():
          to_item_key=record.to_item_key,
          from_schedule_item_kind=record.from_schedule_item_kind,
          to_schedule_item_kind=record.to_schedule_item_kind,
-         node_ids=walk_route_node_ids_for_point_slice(
+         node_ids=WalkRoutePolylineBuilder.node_ids_for_point_slice(
             points,
             from_point_sequence=record.from_point_sequence,
             to_point_sequence=record.to_point_sequence ),

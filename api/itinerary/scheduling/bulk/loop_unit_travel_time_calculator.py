@@ -3,7 +3,7 @@ from __future__ import annotations
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
-from ...routing.walk_travel_time import travel_time_seconds_between_nodes
+from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
 
@@ -22,7 +22,7 @@ class LoopUnitTravelTimeCalculator():
       if entry_walk_node_id is None or entry_walk_node_id == from_node_id:
          return 0
 
-      return travel_time_seconds_between_nodes(
+      return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
          from_node_id,
          entry_walk_node_id,
@@ -50,7 +50,7 @@ class LoopUnitTravelTimeCalculator():
             travels.append( 0 )
          else:
             travels.append(
-               travel_time_seconds_between_nodes(
+               WalkTravelTimeCalculator.seconds_between_nodes(
                   walk_graph,
                   previous_node_id,
                   next_node_id,

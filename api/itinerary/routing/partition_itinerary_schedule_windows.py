@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from .attraction_hours_soft_pin import AttractionHoursSoftPin
-from .itinerary_fixed_time_stop import itinerary_fixed_time_stops_from_itinerary_stops
 from .itinerary_fixed_time_stop import ItineraryFixedTimeStop
+from .itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
 from .itinerary_stop import ItineraryStop
 from .loop_schedule_pin import LoopSchedulePin
 
@@ -26,7 +26,7 @@ def partition_itinerary_schedule_windows(
       anchor_seconds: int,
       day_end_seconds: int,
       fixed_time_stops: list[ ItineraryStop ] ) -> list[ ItineraryScheduleWindow ]:
-   fixed_time_entries = itinerary_fixed_time_stops_from_itinerary_stops(
+   fixed_time_entries = ItineraryFixedTimeStopBuilder.from_itinerary_stops(
       fixed_time_stops )
    fixed_time_entries.sort( key=lambda entry: entry.start_seconds )
 

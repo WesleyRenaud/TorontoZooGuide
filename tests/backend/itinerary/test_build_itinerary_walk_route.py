@@ -15,10 +15,10 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
-from api.itinerary.routing.order_itinerary_stops_for_walk_route import order_itinerary_stops_for_walk_route
+from api.itinerary.routing.itinerary_stop_walk_route_sorter import ItineraryStopWalkRouteSorter
 from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
-from api.itinerary.routing.walk_route_polyline import inclusive_point_slices_for_walk_route_legs
-from api.itinerary.routing.walk_route_polyline import walk_route_node_ids_for_point_slice
+from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
+from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -48,7 +48,7 @@ def test_order_itinerary_stops_for_walk_route_returns_empty_without_scheduled_st
       confirming_early_admission=True,
    ).success
 
-   ordered_stops = order_itinerary_stops_for_walk_route(
+   ordered_stops = ItineraryStopWalkRouteSorter.sort(
       resolve_itinerary_stops( ItineraryCoordinator.get_itinerary() ) )
 
    assert ordered_stops == []
@@ -75,7 +75,7 @@ def test_order_itinerary_stops_for_walk_route_sorts_scheduled_stops_by_start_tim
       start_time='14:00',
    ).success
 
-   ordered_stops = order_itinerary_stops_for_walk_route(
+   ordered_stops = ItineraryStopWalkRouteSorter.sort(
       resolve_itinerary_stops( ItineraryCoordinator.get_itinerary() ) )
 
    assert [ stop.item_key for stop in ordered_stops ] == [
@@ -348,8 +348,8 @@ def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
 
    for leg, ( from_point_sequence, to_point_sequence ) in zip(
          walk_route.legs,
-         inclusive_point_slices_for_walk_route_legs( walk_route.legs ) ):
-      assert walk_route_node_ids_for_point_slice(
+         WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( walk_route.legs ) ):
+      assert WalkRoutePolylineBuilder.node_ids_for_point_slice(
          walk_route.points,
          from_point_sequence=from_point_sequence,
          to_point_sequence=to_point_sequence ) == leg.node_ids
@@ -418,8 +418,8 @@ def test_build_itinerary_walk_route_skips_walk_during_zoomobile_rides(
 
    for leg, ( from_point_sequence, to_point_sequence ) in zip(
          walk_route.legs,
-         inclusive_point_slices_for_walk_route_legs( walk_route.legs ) ):
-      assert walk_route_node_ids_for_point_slice(
+         WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( walk_route.legs ) ):
+      assert WalkRoutePolylineBuilder.node_ids_for_point_slice(
          walk_route.points,
          from_point_sequence=from_point_sequence,
          to_point_sequence=to_point_sequence ) == leg.node_ids
