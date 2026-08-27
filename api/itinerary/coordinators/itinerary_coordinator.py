@@ -12,10 +12,10 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Itinerary
-from ..operations import set_itinerary as set_itinerary_logic
 from ..operations.all_itinerary_items_unscheduler import AllItineraryItemsUnscheduler
 from ..operations.itinerary_item_remover import ItineraryItemRemover
 from ..operations.itinerary_item_unscheduler import ItineraryItemUnscheduler
+from ..operations.itinerary_setter import ItinerarySetter
 from ..operations.itinerary_warning_suppressor import ItineraryWarningSuppressor
 from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
 from ...request_connection import get_connection
@@ -103,7 +103,7 @@ class ItineraryCoordinator():
          confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False,
          confirming_attraction_without_animal: bool = False ) -> ItinerarySaveResult:
-      return set_itinerary_logic.set_itinerary(
+      return ItinerarySetter.set(
          get_connection(),
          date=date,
          arrival_time=arrival_time,
