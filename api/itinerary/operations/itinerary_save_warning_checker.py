@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
-from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
+from ..conflicts.itinerary_schedule_time_conflict_warning_builder import ItineraryScheduleTimeConflictWarningBuilder
+from ..conflicts.itinerary_unschedule_confirmation_warning_builder import ItineraryUnscheduleConfirmationWarningBuilder
 from .itinerary_save_context import ItinerarySaveContext
 from .itinerary_save_context_builder import ItinerarySaveContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -84,7 +84,7 @@ class ItinerarySaveWarningChecker():
 
       updated_context = replace( context, suppressed_warnings=suppressed_warnings )
 
-      schedule_conflict_warning = schedule_time_conflict_warning(
+      schedule_conflict_warning = ItineraryScheduleTimeConflictWarningBuilder.build(
          context.validated_itinerary.guardians_talks,
          context.validated_itinerary.wild_encounters,
          context.current_itinerary,
@@ -102,7 +102,7 @@ class ItinerarySaveWarningChecker():
       pending_reasons = []
 
       if context.saved_itinerary is not None:
-         unschedule_warning = unschedule_confirmation_warning(
+         unschedule_warning = ItineraryUnscheduleConfirmationWarningBuilder.build(
             context.unschedule_requirements,
             context.current_itinerary,
             confirming_guardians_talk_unschedule=(

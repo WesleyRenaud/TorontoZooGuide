@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..conflicts.itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
+from ..conflicts.itinerary_save_restrictive_hours_adjuster import ItinerarySaveRestrictiveHoursAdjuster
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
@@ -64,7 +64,7 @@ class ItinerarySetter():
          guardians_coordinator=guardians_coordinator,
          wild_encounter_coordinator=wild_encounter_coordinator,
          visit_date_temp=visit_date_temp )
-      save_input, adjustments = adjust_set_itinerary_for_restrictive_hours(
+      save_input, adjustments = ItinerarySaveRestrictiveHoursAdjuster.adjust(
          conn,
          save_input,
          old_visit_date=old_visit_date )
