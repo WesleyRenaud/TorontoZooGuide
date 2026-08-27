@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Collection
 
-from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
@@ -186,7 +186,7 @@ class GuardiansTalkAnimalCoverer():
          if not talk.is_deleted:
             continue
 
-         talk_block = time_block_from_schedule_times(
+         talk_block = TimeBlockBuilder.from_schedule_times(
             talk.start_time,
             talk.end_time )
 

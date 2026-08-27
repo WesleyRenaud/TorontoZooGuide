@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from .core.guest_item_schedule_status import itinerary_has_unscheduled_guest_items
-from .core.time_block import earliest_scheduled_start_seconds
-from .core.time_block import latest_scheduled_end_seconds
+from .core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
+from .core.time_block_builder import TimeBlockBuilder
 from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from .items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from ...models import Itinerary
@@ -19,10 +18,10 @@ class ScheduledEndpointVisitTimesSyncer():
       mark an itinerary incomplete. An empty day with no scheduled blocks is not
       considered fully scheduled.
       """
-      if itinerary_has_unscheduled_guest_items( itinerary ):
+      if GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary ):
          return False
 
-      return earliest_scheduled_start_seconds( itinerary ) is not None
+      return TimeBlockBuilder.earliest_start_seconds( itinerary ) is not None
 
 
    @classmethod
@@ -81,8 +80,8 @@ class ScheduledEndpointVisitTimesSyncer():
       if not cls.is_fully_scheduled( itinerary ):
          return
 
-      earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
-      latest_end_seconds = latest_scheduled_end_seconds( itinerary )
+      earliest_start_seconds = TimeBlockBuilder.earliest_start_seconds( itinerary )
+      latest_end_seconds = TimeBlockBuilder.latest_end_seconds( itinerary )
 
       if earliest_start_seconds is None or latest_end_seconds is None:
          return

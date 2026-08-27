@@ -7,7 +7,7 @@ from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_trav
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -281,7 +281,7 @@ def test_bulk_schedule_itinerary_rebuild_reschedules_when_all_animals_are_alread
    assert {
       animal.species
       for animal in result.itinerary.animals
-      if has_itinerary_schedule_times( animal.start_time, animal.end_time )
+      if GuestItemScheduleStatusChecker.has_schedule_times( animal.start_time, animal.end_time )
    } == { 'African Lion', 'African Penguin' }
 
 

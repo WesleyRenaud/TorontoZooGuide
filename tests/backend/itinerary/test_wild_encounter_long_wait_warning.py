@@ -8,7 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.itinerary.warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
 from api.models import Animal
 from api.models import WildEncounter
@@ -290,6 +290,6 @@ def test_bulk_schedule_skips_long_wait_warning_for_already_saved_encounters(
       RHINO_ENCOUNTER,
    ]
    assert all(
-      has_itinerary_schedule_times( animal.start_time, animal.end_time )
+      GuestItemScheduleStatusChecker.has_schedule_times( animal.start_time, animal.end_time )
       for animal in result.itinerary.animals
    )

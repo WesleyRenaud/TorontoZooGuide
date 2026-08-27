@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
-from api.itinerary.routing.itinerary_walk_route_completion import itinerary_has_unscheduled_guest_items
 from api.itinerary.routing.itinerary_walk_route_completion import should_append_return_to_entrance_walk_route_leg
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.models import Animal
 from api.models import Attraction
 from api.models import ItineraryTransportation
@@ -33,7 +33,7 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_animals_and_a
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert itinerary_has_unscheduled_guest_items( itinerary )
+   assert GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
 
 
 def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_transportation() -> None:
@@ -60,7 +60,7 @@ def test_itinerary_has_unscheduled_guest_items_detects_unscheduled_transportatio
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert itinerary_has_unscheduled_guest_items( itinerary )
+   assert GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
 
 
 def test_itinerary_has_unscheduled_guest_items_ignores_bulk_evaluated_transit_transportation() -> None:
@@ -88,7 +88,7 @@ def test_itinerary_has_unscheduled_guest_items_ignores_bulk_evaluated_transit_tr
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert not itinerary_has_unscheduled_guest_items( itinerary )
+   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
 
 
 def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_scheduled() -> None:
@@ -123,7 +123,7 @@ def test_itinerary_has_unscheduled_guest_items_is_false_when_guest_items_are_sch
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert not itinerary_has_unscheduled_guest_items( itinerary )
+   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
 
 
 def test_should_append_return_to_entrance_only_when_all_guest_items_are_scheduled() -> None:

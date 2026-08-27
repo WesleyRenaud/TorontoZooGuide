@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -60,7 +60,7 @@ class LoopScheduleSlotAssigner():
          cls,
          conn: Connection,
          stop: LoopScheduleStop ) -> int | None:
-      stored_block = time_block_from_schedule_times(
+      stored_block = TimeBlockBuilder.from_schedule_times(
          stop.start_time,
          stop.end_time )
 

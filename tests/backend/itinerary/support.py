@@ -13,7 +13,7 @@ from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
-from api.itinerary.scheduling.core.time_block import latest_scheduled_end_seconds
+from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
@@ -238,7 +238,7 @@ def entrance_travel_seconds_to_map_location(
 
 
 def expected_departure_time_for_itinerary( itinerary: Itinerary ) -> str:
-   latest_end_seconds = latest_scheduled_end_seconds( itinerary )
+   latest_end_seconds = TimeBlockBuilder.latest_end_seconds( itinerary )
    assert latest_end_seconds is not None
    departure_time = DateValues.schedule_time_key_from_seconds(
       latest_end_seconds

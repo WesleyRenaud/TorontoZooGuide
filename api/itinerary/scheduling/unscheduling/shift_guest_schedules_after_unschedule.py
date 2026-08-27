@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from ..core.guest_item_schedule_status import has_itinerary_schedule_times
-from ..core.time_block import time_block_from_schedule_times
-from ..core.time_block import time_block_from_seconds
-from ..core.time_block import time_blocks_overlap
+from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_transportation_provider import ItineraryTransportationProvider
 from ...data_access.saved_itinerary import SavedItinerary
@@ -24,12 +22,12 @@ def shifted_schedule_times(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       delta_seconds: int ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
-   block = time_block_from_schedule_times( start_time, end_time )
+   block = TimeBlockBuilder.from_schedule_times( start_time, end_time )
 
    if block is None:
       return None
 
-   shifted_block = time_block_from_seconds(
+   shifted_block = TimeBlockBuilder.from_seconds(
       block.start_seconds + delta_seconds,
       block.end_seconds + delta_seconds )
 
@@ -53,7 +51,7 @@ def resolve_unscheduled_item_time_block(
    if row is None:
       return None
 
-   return time_block_from_schedule_times(
+   return TimeBlockBuilder.from_schedule_times(
       row.start_time,
       row.end_time )
 
@@ -76,7 +74,7 @@ def _collect_fixed_activity_blocks(
       if talk_row.is_deleted:
          continue
 
-      block = time_block_from_schedule_times(
+      block = TimeBlockBuilder.from_schedule_times(
          talk_row.start_time,
          talk_row.end_time )
 
@@ -87,7 +85,7 @@ def _collect_fixed_activity_blocks(
       if encounter_row.is_deleted:
          continue
 
-      block = time_block_from_schedule_times(
+      block = TimeBlockBuilder.from_schedule_times(
          encounter_row.start_time,
          encounter_row.end_time )
 
@@ -114,7 +112,7 @@ def _shifted_block_overlaps_occupied(
    if shifted_times is None:
       return True
 
-   shifted_block = time_block_from_schedule_times(
+   shifted_block = TimeBlockBuilder.from_schedule_times(
       shifted_times[ 0 ],
       shifted_times[ 1 ] )
 
@@ -122,7 +120,7 @@ def _shifted_block_overlaps_occupied(
       return True
 
    return any(
-      time_blocks_overlap( shifted_block, occupied_block )
+      TimeBlockBuilder.overlap( shifted_block, occupied_block )
       for occupied_block in occupied_blocks
    )
 
@@ -137,7 +135,7 @@ def _guest_shift_would_overlap_fixed_activity(
       if animal_row.covered_by_talk:
          continue
 
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             animal_row.start_time,
             animal_row.end_time ):
          continue
@@ -155,7 +153,7 @@ def _guest_shift_would_overlap_fixed_activity(
          return True
 
    for attraction_row in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             attraction_row.start_time,
             attraction_row.end_time ):
          continue
@@ -173,7 +171,7 @@ def _guest_shift_would_overlap_fixed_activity(
          return True
 
    for transportation_row in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             transportation_row.start_time,
             transportation_row.end_time ):
          continue
@@ -194,7 +192,7 @@ def _guest_shift_would_overlap_fixed_activity(
       if not _should_shift_guest_scheduled_event( event_row.event_type ):
          continue
 
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             event_row.start_time,
             event_row.end_time ):
          continue
@@ -224,7 +222,7 @@ def _shift_guest_scheduled_animal_rows(
       if animal_row.covered_by_talk:
          continue
 
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             animal_row.start_time,
             animal_row.end_time ):
          continue
@@ -259,7 +257,7 @@ def _shift_guest_scheduled_attraction_rows(
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
    for attraction_row in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             attraction_row.start_time,
             attraction_row.end_time ):
          continue
@@ -292,7 +290,7 @@ def _shift_guest_scheduled_transportation_rows(
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
    for transportation_row in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             transportation_row.start_time,
             transportation_row.end_time ):
          continue
@@ -366,7 +364,7 @@ def _shift_guest_scheduled_event_rows(
       if not _should_shift_guest_scheduled_event( event_row.event_type ):
          continue
 
-      if not has_itinerary_schedule_times(
+      if not GuestItemScheduleStatusChecker.has_schedule_times(
             event_row.start_time,
             event_row.end_time ):
          continue

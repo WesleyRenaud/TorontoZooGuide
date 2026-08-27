@@ -1,4 +1,4 @@
-from api.itinerary.scheduling.core.resolve_schedule_slot import resolve_schedule_slot
+from api.itinerary.scheduling.core.schedule_slot_resolver import ScheduleSlotResolver
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.items.parse_schedule_time_options import parse_schedule_time_options
 from api.itinerary.scheduling.items.parse_schedule_time_options import ParsedScheduleTimeOptions
@@ -10,7 +10,7 @@ DURATION_SECONDS = 8 * 60
 
 
 def test_resolve_schedule_slot_uses_anchor_when_start_time_is_unset() -> None:
-   slot = resolve_schedule_slot(
+   slot = ScheduleSlotResolver.resolve(
       [],
       anchor_seconds=ANCHOR_SECONDS,
       duration_seconds=DURATION_SECONDS,
@@ -26,7 +26,7 @@ def test_resolve_schedule_slot_honors_requested_start_time() -> None:
          end_seconds=9 * 3600 + 38 * 60 ),
    ]
 
-   slot = resolve_schedule_slot(
+   slot = ScheduleSlotResolver.resolve(
       blockers,
       anchor_seconds=ANCHOR_SECONDS,
       duration_seconds=DURATION_SECONDS,
@@ -43,7 +43,7 @@ def test_resolve_schedule_slot_returns_none_when_requested_slot_overlaps() -> No
          end_seconds=10 * 3600 + 8 * 60 ),
    ]
 
-   assert resolve_schedule_slot(
+   assert ScheduleSlotResolver.resolve(
       blockers,
       anchor_seconds=ANCHOR_SECONDS,
       duration_seconds=DURATION_SECONDS,

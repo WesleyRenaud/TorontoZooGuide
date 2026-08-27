@@ -13,11 +13,8 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
-from ..scheduling.core.time_block import collect_time_blocks_from_itinerary
-from ..scheduling.core.time_block import collect_time_blocks_from_validated_itinerary
-from ..scheduling.core.time_block import time_block_from_schedule_times
-from ..scheduling.core.time_block import time_block_gap_seconds
 from ..scheduling.core.time_block import TimeBlock
+from ..scheduling.core.time_block_builder import TimeBlockBuilder
 from ..scheduling.unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
 from ..scheduling.unscheduling.wild_encounter_unschedule_items import newly_added_active_wild_encounters
 from ...shared.calendar_dates import DateValues
@@ -53,7 +50,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          return False
 
       nearest_gap_seconds = min(
-         time_block_gap_seconds( activity_block, other_block )
+         TimeBlockBuilder.gap_seconds( activity_block, other_block )
          for other_block in other_blocks )
 
       return nearest_gap_seconds > duration_minutes_to_seconds( max_wait_minutes )
@@ -105,7 +102,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          item_type: ItinerarySaveIssueItemType ) -> list[ Any ]:
       return cls._isolated_fixed_time_items(
          cls.items_from_itinerary( itinerary, item_type ),
-         collect_time_blocks_from_itinerary( itinerary ) )
+         TimeBlockBuilder.collect_from_itinerary( itinerary ) )
 
 
    @classmethod
@@ -115,7 +112,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          item_type: ItinerarySaveIssueItemType ) -> list[ Any ]:
       return cls._isolated_fixed_time_items(
          cls.items_from_validated( validated_itinerary, item_type ),
-         collect_time_blocks_from_validated_itinerary( validated_itinerary ) )
+         TimeBlockBuilder.collect_from_validated_itinerary( validated_itinerary ) )
 
 
    @classmethod
@@ -143,7 +140,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          cls,
          itinerary: Itinerary,
          new_item: ItemT ) -> bool:
-      new_item_block = time_block_from_schedule_times(
+      new_item_block = TimeBlockBuilder.from_schedule_times(
          new_item.start_time,
          new_item.end_time )
 
@@ -152,7 +149,7 @@ class FixedTimeItemLongWaitWarningBuilder():
 
       return cls.time_block_is_isolated(
          new_item_block,
-         collect_time_blocks_from_itinerary( itinerary ) )
+         TimeBlockBuilder.collect_from_itinerary( itinerary ) )
 
 
    @classmethod
@@ -333,7 +330,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          if item.is_deleted:
             continue
 
-         item_block = time_block_from_schedule_times(
+         item_block = TimeBlockBuilder.from_schedule_times(
             item.start_time,
             item.end_time )
 

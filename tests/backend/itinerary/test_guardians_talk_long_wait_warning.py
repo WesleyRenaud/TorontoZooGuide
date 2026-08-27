@@ -9,9 +9,9 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
-from api.itinerary.scheduling.core.time_block import time_block_gap_seconds
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.itinerary.scheduling.core.time_block import TimeBlock
+from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
 from api.models import Animal
 from api.models import GuardiansTalk
@@ -63,8 +63,8 @@ def test_time_block_gap_seconds_between_non_overlapping_blocks() -> None:
       start_seconds=11 * 3600,
       end_seconds=11 * 3600 + 30 * 60 )
 
-   assert time_block_gap_seconds( morning, afternoon ) == 90 * 60
-   assert time_block_gap_seconds( afternoon, morning ) == 90 * 60
+   assert TimeBlockBuilder.gap_seconds( morning, afternoon ) == 90 * 60
+   assert TimeBlockBuilder.gap_seconds( afternoon, morning ) == 90 * 60
 
 
 def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
@@ -242,7 +242,7 @@ def test_schedule_talk_skips_long_wait_when_bulk_pack_would_close_gap(
 
    assert animal_times_before
    assert all(
-      has_itinerary_schedule_times( start_time, end_time )
+      GuestItemScheduleStatusChecker.has_schedule_times( start_time, end_time )
       for _, start_time, end_time in animal_times_before
    )
 
@@ -371,7 +371,7 @@ def test_bulk_schedule_skips_long_wait_warning_for_already_saved_talks(
    assert result.status == ItineraryErrorType.SUCCESS
    assert [ talk.name for talk in result.itinerary.guardians_talks ] == [ ZEBRA_TALK ]
    assert all(
-      has_itinerary_schedule_times( animal.start_time, animal.end_time )
+      GuestItemScheduleStatusChecker.has_schedule_times( animal.start_time, animal.end_time )
       for animal in result.itinerary.animals
    )
 
