@@ -4,10 +4,9 @@ from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attraction_animal_coverer import AttractionAnimalCoverer
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_finalize_builder import BulkScheduleFinalizeBuilder
-from .bulk_schedule_loop_packing import pack_stops_into_bulk_schedule
+from .bulk_schedule_loop_packer import BulkScheduleLoopPacker
 from .bulk_schedule_transit_legs_builder import BulkScheduleTransitLegsBuilder
-from .bulk_schedule_window_prep import itinerary_has_items_to_rebuild
-from .bulk_schedule_window_prep import prepare_bulk_schedule_windows
+from .bulk_schedule_window_preparer import BulkScheduleWindowPreparer
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
@@ -54,7 +53,7 @@ def bulk_schedule_itinerary(
 
    # Rebuild may have no animal/attraction stops when the day only has talks or
    # encounters. Fail only when the itinerary itself has no items.
-   if not stops_to_schedule and not itinerary_has_items_to_rebuild(
+   if not stops_to_schedule and not BulkScheduleWindowPreparer.has_items_to_rebuild(
          saved_itinerary ):
       return build_save_result(
          conn,
@@ -69,11 +68,11 @@ def bulk_schedule_itinerary(
    if isinstance( prepared_window, ItinerarySaveResult ):
       return prepared_window
 
-   prep = prepare_bulk_schedule_windows(
+   prep = BulkScheduleWindowPreparer.prepare_windows(
       conn,
       prepared_window=prepared_window,
       itinerary_context=itinerary_context )
-   packing = pack_stops_into_bulk_schedule(
+   packing = BulkScheduleLoopPacker.pack_stops(
       conn,
       prep=prep,
       stops_to_schedule=stops_to_schedule )

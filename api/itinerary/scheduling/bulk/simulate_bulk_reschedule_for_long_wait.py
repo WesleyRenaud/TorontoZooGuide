@@ -10,7 +10,7 @@ from .attraction_animal_coverer import AttractionAnimalCoverer
 from .attraction_animal_coverer import CoveredAnimalAttraction
 from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_stop_selector import BulkScheduleStopSelector
-from .bulk_schedule_window_prep import bulk_schedule_start_state
+from .bulk_schedule_window_preparer import BulkScheduleWindowPreparer
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import time_block_from_schedule_times
@@ -29,12 +29,12 @@ from .loop_schedule_slot import LoopScheduleSlot
 from .loop_schedule_slot_sink import LoopScheduleSlotSink
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
+from .master_route_loop_scheduler import MasterRouteLoopScheduler
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
-from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
@@ -236,7 +236,7 @@ def pack_animals_into_itinerary_in_memory(
    packing_itinerary = _itinerary_with_cleared_animal_times( itinerary )
    blockers = collect_time_blocks_from_itinerary( packing_itinerary )
    walk_graph = load_walk_graph()
-   start_state = bulk_schedule_start_state(
+   start_state = BulkScheduleWindowPreparer.start_state(
       walk_graph,
       [],
       anchor_seconds )
@@ -275,7 +275,7 @@ def pack_animals_into_itinerary_in_memory(
 
    if loop_units:
       slot_sink = LoopScheduleSlotSink( persist=False )
-      schedule_animals_by_master_route_loop(
+      MasterRouteLoopScheduler.schedule(
          conn,
          loop_units,
          blockers=blockers,

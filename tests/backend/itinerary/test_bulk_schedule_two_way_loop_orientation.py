@@ -7,9 +7,8 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
+from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import prepare_loop_schedule_units
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -133,7 +132,7 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
       )
       for entry in AMERICAS_PAVILION_TO_EURASIA_ITINERARY
    ]
-   prepared_units = prepare_loop_schedule_units(
+   prepared_units = LoopWindowPacker.prepare_units(
       db.conn,
       LoopScheduleUnitBuilder.build(
          MasterRouteLoopAnimalGrouper.group( animal_rows ) ),
@@ -152,7 +151,7 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
 
    assert americas_exit is not None
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,

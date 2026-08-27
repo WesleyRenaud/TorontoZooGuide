@@ -8,7 +8,7 @@ from .loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from .loop_schedule_slot_sink import LoopScheduleSlotSink
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
-from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
