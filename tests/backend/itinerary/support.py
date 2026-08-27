@@ -14,8 +14,8 @@ from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.routing.walk_travel_time import travel_time_seconds_between_nodes
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
-from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
+from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.models import Itinerary
@@ -186,7 +186,7 @@ def guardians_talk_wire(
 def parsed_schedule_item(
       item_type: str,
       wire_key: str ) -> ScheduleItemKey | None:
-   return map_schedule_item_key_from_wire( item_type, wire_key )
+   return ScheduleItemKeyMapper.from_wire( item_type, wire_key )
 
 
 def schedule_itinerary_item(

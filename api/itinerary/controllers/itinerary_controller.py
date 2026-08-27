@@ -8,7 +8,7 @@ from ..results.build_itinerary_path import build_itinerary_path
 from ..results.itinerary_result_response import itinerary_result_to_dict
 from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
 from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
-from ..scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
+from ..scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from ...shared.api_error_response import apply_api_error
 from ...shared.constants import itinerary_config_to_dict
 from ...shared.enums.api_error_type import ApiErrorType
@@ -93,7 +93,7 @@ class ItineraryController():
    def schedule_itinerary_item( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      schedule_item_key = map_schedule_item_key_from_wire(
+      schedule_item_key = ScheduleItemKeyMapper.from_wire(
          data.get( 'itemType' ),
          data.get( 'key' ) )
       start_time = data.get( 'startTime' )
@@ -181,7 +181,7 @@ class ItineraryController():
    def unschedule_itinerary_item( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      schedule_item_key = map_schedule_item_key_from_wire(
+      schedule_item_key = ScheduleItemKeyMapper.from_wire(
          data.get( 'itemType' ),
          data.get( 'key' ) )
 
@@ -199,7 +199,7 @@ class ItineraryController():
    def remove_item_from_itinerary( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      schedule_item_key = map_schedule_item_key_from_wire(
+      schedule_item_key = ScheduleItemKeyMapper.from_wire(
          data.get( 'itemType' ),
          data.get( 'key' ) )
 

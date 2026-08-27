@@ -23,7 +23,7 @@ from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from ..scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
-from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
+from ..scheduling.items.itinerary_item_scheduler import ItineraryItemScheduler
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
@@ -146,7 +146,7 @@ class ItineraryCoordinator():
          confirming_wild_encounter_unschedule: bool = False,
          confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False ) -> ItinerarySaveResult:
-      return schedule_itinerary_item_logic.schedule_itinerary_item(
+      return ItineraryItemScheduler.schedule(
          get_connection(),
          schedule_item_key,
          start_time=start_time,

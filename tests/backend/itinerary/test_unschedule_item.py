@@ -25,7 +25,7 @@ PENGUIN_START_WITH_20_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 20 * 6
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
-from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
+from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
@@ -236,13 +236,13 @@ def test_set_arrival_time_none_clears_arrival_time( db: DbControllers ) -> None:
 
 
 def test_map_schedule_item_key_from_wire_guardians_and_wild_kinds() -> None:
-   guardians_key = map_schedule_item_key_from_wire(
+   guardians_key = ScheduleItemKeyMapper.from_wire(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
       'Gorilla Guardians||10:00' )
 
    assert guardians_key == GuardiansTalkScheduleItemKey( name='Gorilla Guardians', start_time='10:00' )
 
-   wild_key = map_schedule_item_key_from_wire(
+   wild_key = ScheduleItemKeyMapper.from_wire(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,
       'African Rainforest||14:00' )
 
