@@ -7,6 +7,7 @@ from ...attraction_item_key import AttractionScheduleItemKey
 from ...data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .listed_schedule_target import resolve_listed_schedule_target
@@ -15,10 +16,8 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.walk_node_id_for_transportation import walk_node_id_for_transportation
 from .schedule_item_key import ListedScheduleItemKey
 from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
-from .schedule_itinerary_helpers import build_save_result
-from .schedule_itinerary_helpers import effective_duration_seconds
-from .schedule_itinerary_helpers import prepare_schedule_window
-from .schedule_itinerary_helpers import resolve_slot_times_allowing_visit_extension
+from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
+from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
@@ -34,7 +33,7 @@ def schedule_listed_itinerary_item(
       confirming_schedule_item_not_on_itinerary: bool,
       ) -> ItinerarySaveResult:
    saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
-   prepared_window = prepare_schedule_window(
+   prepared_window = ScheduleWindowPreparer.prepare(
       conn,
       saved_itinerary,
       **itinerary_context )
@@ -58,7 +57,7 @@ def schedule_listed_itinerary_item(
          saved_itinerary,
          schedule_item_key ):
       return ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
-         build_save_result(
+         ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
             **itinerary_context ),
@@ -66,12 +65,12 @@ def schedule_listed_itinerary_item(
 
    target = resolve_listed_schedule_target( conn, schedule_item_key )
 
-   duration_seconds = effective_duration_seconds(
+   duration_seconds = ScheduleSlotTimeResolver.effective_duration_seconds(
       time_options.duration_minutes,
       target.default_duration_seconds )
 
    if duration_seconds is None:
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
@@ -87,7 +86,7 @@ def schedule_listed_itinerary_item(
       itinerary_context=itinerary_context,
       start_time=time_options.start_time )
 
-   slot, slot_error = resolve_slot_times_allowing_visit_extension(
+   slot, slot_error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
       conn,
       saved_itinerary,
       prepared_window.window,

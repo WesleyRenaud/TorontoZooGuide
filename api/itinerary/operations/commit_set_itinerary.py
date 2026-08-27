@@ -8,7 +8,7 @@ from ..data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..data_access.save_itinerary_provider import SaveItineraryProvider
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
-from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
+from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .set_itinerary_context import build_set_itinerary_current_itinerary
@@ -99,7 +99,7 @@ def commit_set_itinerary(
          suppressed_warnings=context.suppressed_warnings,
          itinerary=itinerary )
 
-   persist_itinerary_walk_route(
+   ItinerarySaveResultBuilder.persist_walk_route(
       context.conn,
       **context.itinerary_controller_kwargs )
 

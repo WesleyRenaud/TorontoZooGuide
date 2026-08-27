@@ -5,14 +5,14 @@ from ...attraction_item_key import AttractionScheduleItemKey
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
+from .itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from .parse_schedule_time_options import parse_schedule_time_options
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_attraction_itinerary_item import schedule_attraction_itinerary_item
 from .schedule_guardians_talk_itinerary_item import schedule_guardians_talk_itinerary_item
 from .schedule_item_key import ScheduleItemKey
 from .schedule_itinerary_event import schedule_itinerary_event
-from .schedule_itinerary_helpers import build_itinerary_context
-from .schedule_itinerary_helpers import build_save_result
 from .schedule_listed_itinerary_item import schedule_listed_itinerary_item
 from .schedule_wild_encounter_itinerary_item import schedule_wild_encounter_itinerary_item
 from ....shared.enums import ItineraryErrorType
@@ -40,14 +40,14 @@ def schedule_itinerary_item(
       confirming_wild_encounter_unschedule: bool,
       confirming_fixed_time_item_long_wait: bool,
       confirming_guardians_talk_without_animal: bool ) -> ItinerarySaveResult:
-   itinerary_context = build_itinerary_context(
+   itinerary_context = ItineraryScheduleContextBuilder.build(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
       wild_encounter_coordinator=wild_encounter_coordinator )
 
    if schedule_item_key is None:
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
@@ -57,7 +57,7 @@ def schedule_itinerary_item(
       duration_minutes )
 
    if isinstance( parsed_schedule_options, ItineraryErrorType ):
-      return build_save_result(
+      return ItinerarySaveResultBuilder.save_result(
          conn,
          parsed_schedule_options,
          **itinerary_context )

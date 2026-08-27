@@ -12,9 +12,9 @@ from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
-from ..items.schedule_itinerary_helpers import build_itinerary_context
-from ..items.schedule_itinerary_helpers import build_save_result
-from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
+from ..items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from ..items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
+from ..items.schedule_window_preparer import ScheduleWindowPreparer
 from .loop_schedule_stop import LoopScheduleStop
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.enums import ItineraryErrorType
@@ -42,7 +42,7 @@ class BulkScheduleItineraryRunner():
          confirming_fixed_time_item_long_wait: bool = False,
          animals_to_schedule: list[ ItineraryAnimalRecord ] | None = None,
          stops_to_schedule: list[ LoopScheduleStop ] | None = None ) -> ItinerarySaveResult:
-      itinerary_context = build_itinerary_context(
+      itinerary_context = ItineraryScheduleContextBuilder.build(
          animal_coordinator=animal_coordinator,
          attraction_coordinator=attraction_coordinator,
          guardians_coordinator=guardians_coordinator,
@@ -58,12 +58,12 @@ class BulkScheduleItineraryRunner():
       # encounters. Fail only when the itinerary itself has no items.
       if not stops_to_schedule and not BulkScheduleWindowPreparer.has_items_to_rebuild(
             saved_itinerary ):
-         return build_save_result(
+         return ItinerarySaveResultBuilder.save_result(
             conn,
             ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
             **itinerary_context )
 
-      prepared_window = prepare_zoo_hours_schedule_window(
+      prepared_window = ScheduleWindowPreparer.prepare_zoo_hours(
          conn,
          saved_itinerary,
          **itinerary_context )

@@ -24,7 +24,7 @@ from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
 from .guardians_talk_animal_coverer import CoveredAnimalTalk
 from .guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
-from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
+from ..items.schedule_window_preparer import ScheduleWindowPreparer
 from .loop_schedule_slot import LoopScheduleSlot
 from .loop_schedule_slot_sink import LoopScheduleSlotSink
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
@@ -234,7 +234,7 @@ class BulkRescheduleLongWaitSimulator():
       if not animals_to_schedule:
          return itinerary
 
-      prepared_window = prepare_zoo_hours_schedule_window(
+      prepared_window = ScheduleWindowPreparer.prepare_zoo_hours(
          conn,
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context )

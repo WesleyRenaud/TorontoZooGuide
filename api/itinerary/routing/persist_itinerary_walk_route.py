@@ -7,7 +7,7 @@ from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
+from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ...types import Connection
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -20,7 +20,7 @@ def rebuild_and_persist_itinerary_walk_route(
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> bool:
-   itinerary_context = build_itinerary_context(
+   itinerary_context = ItineraryScheduleContextBuilder.build(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,

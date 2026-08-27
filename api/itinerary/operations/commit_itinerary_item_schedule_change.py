@@ -12,10 +12,9 @@ from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
+from ..scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
-from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
-from ..scheduling.items.schedule_itinerary_helpers import build_success_result
-from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import apply_guest_schedule_shift_for_unschedule
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block
@@ -30,7 +29,7 @@ def commit_itinerary_item_schedule_change(
       schedule_item_key: ScheduleItemKey | None,
       apply_change: Callable[ [ Cursor, ScheduleItemKey ], None ],
       ) -> ItinerarySaveResult:
-   itinerary_context = build_itinerary_context(
+   itinerary_context = ItineraryScheduleContextBuilder.build(
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
@@ -109,9 +108,9 @@ def commit_itinerary_item_schedule_change(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          **itinerary_context ) )
 
-   persist_itinerary_walk_route( conn, **itinerary_context )
+   ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
 
-   return build_success_result(
+   return ItinerarySaveResultBuilder.success_result(
       conn,
       adjustments=[],
       **itinerary_context )
