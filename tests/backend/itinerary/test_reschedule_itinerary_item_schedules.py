@@ -10,7 +10,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -58,9 +58,9 @@ def test_reschedule_after_fixed_time_activity_only_reschedules_previously_schedu
       animal for animal in result.itinerary.animals
       if animal.species == 'African Penguin' )
 
-   assert has_itinerary_schedule_times( lion.start_time, lion.end_time )
+   assert GuestItemScheduleStatusChecker.has_schedule_times( lion.start_time, lion.end_time )
    assert lion.start_time != '10:00'
-   assert not has_itinerary_schedule_times( penguin.start_time, penguin.end_time )
+   assert not GuestItemScheduleStatusChecker.has_schedule_times( penguin.start_time, penguin.end_time )
 
 
 def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
@@ -102,8 +102,8 @@ def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Penguin' )
 
-   assert has_itinerary_schedule_times( lion.start_time, lion.end_time )
-   assert has_itinerary_schedule_times( penguin.start_time, penguin.end_time )
+   assert GuestItemScheduleStatusChecker.has_schedule_times( lion.start_time, lion.end_time )
+   assert GuestItemScheduleStatusChecker.has_schedule_times( penguin.start_time, penguin.end_time )
 
 
 def test_bulk_schedule_schedules_animals_and_attractions_and_clears_events(
@@ -140,9 +140,9 @@ def test_bulk_schedule_schedules_animals_and_attractions_and_clears_events(
       attraction for attraction in result.itinerary.attractions
       if attraction.name == CAROUSEL )
 
-   assert has_itinerary_schedule_times(
+   assert GuestItemScheduleStatusChecker.has_schedule_times(
       carousel.start_time,
       carousel.end_time )
 
    lion = result.itinerary.animals[ 0 ]
-   assert has_itinerary_schedule_times( lion.start_time, lion.end_time )
+   assert GuestItemScheduleStatusChecker.has_schedule_times( lion.start_time, lion.end_time )

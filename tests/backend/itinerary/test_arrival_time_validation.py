@@ -4,7 +4,7 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LI
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.itinerary.validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from api.itinerary.validation.itinerary_schedule_time_order_validator import ItineraryScheduleTimeOrderValidator
 from api.shared.calendar_dates import DateValues
@@ -156,7 +156,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       attraction
       for attraction in itinerary.attractions
       if attraction.name == CAROUSEL )
-   assert has_itinerary_schedule_times(
+   assert GuestItemScheduleStatusChecker.has_schedule_times(
       carousel.start_time,
       carousel.end_time )
    assert not DateValues.time_value_is_before(

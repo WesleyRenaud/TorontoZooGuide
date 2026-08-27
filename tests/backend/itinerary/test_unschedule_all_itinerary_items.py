@@ -4,7 +4,7 @@ from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_ta
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
@@ -41,10 +41,10 @@ def test_unschedule_all_itinerary_items_clears_schedules_but_keeps_itinerary_row
    attraction_row = next(
       row for row in saved.attraction_rows if row.attraction == CAROUSEL )
 
-   assert not has_itinerary_schedule_times(
+   assert not GuestItemScheduleStatusChecker.has_schedule_times(
       animal_row.start_time,
       animal_row.end_time )
-   assert not has_itinerary_schedule_times(
+   assert not GuestItemScheduleStatusChecker.has_schedule_times(
       attraction_row.start_time,
       attraction_row.end_time )
    assert not saved.event_rows
@@ -151,7 +151,7 @@ def test_unschedule_all_itinerary_items_returns_error_when_nothing_guest_schedul
    saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
    animal_row = saved.animal_rows[ 0 ]
 
-   assert not has_itinerary_schedule_times(
+   assert not GuestItemScheduleStatusChecker.has_schedule_times(
       animal_row.start_time,
       animal_row.end_time )
    assert not saved.event_rows

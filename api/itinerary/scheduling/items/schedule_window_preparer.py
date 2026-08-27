@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..core.scheduling_anchor import scheduling_anchor_seconds_covering_fixed_zoo_starts
-from ..core.scheduling_anchor import scheduling_day_end_seconds
+from ..core.scheduling_anchor_resolver import SchedulingAnchorResolver
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_status_provider import ItineraryStatusProvider
 from ...data_access.saved_itinerary import SavedItinerary
@@ -51,12 +50,12 @@ class ScheduleWindowPreparer():
 
       fixed_zoo_start_times = FixedZooScheduleStartTimesBuilder.from_saved_itinerary(
          saved_itinerary )
-      anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
+      anchor_seconds = SchedulingAnchorResolver.covering_fixed_zoo_starts(
          zoo_hours_record,
          saved_itinerary.arrival_time,
          fixed_zoo_start_times,
          allow_early_admission=allow_early_admission )
-      day_end_seconds = scheduling_day_end_seconds(
+      day_end_seconds = SchedulingAnchorResolver.day_end_seconds(
          zoo_hours_record,
          saved_itinerary.departure_time )
 
@@ -128,12 +127,12 @@ class ScheduleWindowPreparer():
          *,
          fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None,
          allow_early_admission: bool = False ) -> tuple[ int, int ] | None:
-      anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
+      anchor_seconds = SchedulingAnchorResolver.covering_fixed_zoo_starts(
          zoo_hours_record,
          None,
          fixed_zoo_start_times,
          allow_early_admission=allow_early_admission )
-      day_end_seconds = scheduling_day_end_seconds( zoo_hours_record, None )
+      day_end_seconds = SchedulingAnchorResolver.day_end_seconds( zoo_hours_record, None )
 
       if anchor_seconds is None or day_end_seconds is None:
          return None

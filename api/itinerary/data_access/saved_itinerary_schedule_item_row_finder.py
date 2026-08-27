@@ -11,7 +11,7 @@ from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
-from ..scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from ..scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.enums import ItineraryEventType
 from ..transportation_item_key import TransportationScheduleItemKey
@@ -218,4 +218,4 @@ class SavedItineraryScheduleItemRowFinder():
       if row is None:
          return False
 
-      return has_itinerary_schedule_times( row.start_time, row.end_time )
+      return GuestItemScheduleStatusChecker.has_schedule_times( row.start_time, row.end_time )

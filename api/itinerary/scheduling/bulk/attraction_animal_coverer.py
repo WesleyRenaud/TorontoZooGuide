@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from ....attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
-from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
@@ -166,7 +166,7 @@ class AttractionAnimalCoverer():
       }
 
       for attraction_row in removed_attraction_rows:
-         attraction_block = time_block_from_schedule_times(
+         attraction_block = TimeBlockBuilder.from_schedule_times(
             attraction_row.start_time,
             attraction_row.end_time )
 

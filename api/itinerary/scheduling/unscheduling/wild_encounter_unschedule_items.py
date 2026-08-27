@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
@@ -15,7 +15,7 @@ from ....types import Cursor
 def wild_encounter_time_blocks(
       wild_encounters: list[ WildEncounterDiff ] ) -> list[ TimeBlock ]:
    return [
-      time_block_from_schedule_times(
+      TimeBlockBuilder.from_schedule_times(
          wild_encounter.start_time,
          wild_encounter.end_time )
       for wild_encounter in wild_encounters
@@ -37,7 +37,7 @@ def newly_added_active_wild_encounters(
       if (
          ItineraryNameKeyBuilder.build( wild_encounter.name ) not in saved_names
          and not wild_encounter.is_deleted
-         and time_block_from_schedule_times(
+         and TimeBlockBuilder.from_schedule_times(
             wild_encounter.start_time,
             wild_encounter.end_time ) is not None
       )

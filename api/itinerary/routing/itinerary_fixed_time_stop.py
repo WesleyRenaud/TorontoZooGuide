@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .itinerary_stop import ItineraryStop
-from ..scheduling.core.time_block import time_block_from_schedule_times
+from ..scheduling.core.time_block_builder import TimeBlockBuilder
 
 
 @dataclass( frozen=True )
@@ -29,7 +29,7 @@ def itinerary_fixed_time_stops_from_itinerary_stops(
 
 def itinerary_fixed_time_stop_from_itinerary_stop(
       itinerary_stop: ItineraryStop ) -> ItineraryFixedTimeStop | None:
-   time_block = time_block_from_schedule_times(
+   time_block = TimeBlockBuilder.from_schedule_times(
       itinerary_stop.start_time,
       itinerary_stop.end_time )
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.itinerary.scheduling.core.find_next_available_slot import find_available_slot_before_or_after_bounds
+from api.itinerary.scheduling.core.available_schedule_slot_finder import AvailableScheduleSlotFinder
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.shared.calendar_dates import DateValues
 
@@ -10,7 +10,7 @@ def test_find_available_slot_before_or_after_bounds_prefers_before() -> None:
       TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
    ]
 
-   slot = find_available_slot_before_or_after_bounds(
+   slot = AvailableScheduleSlotFinder.find_before_or_after_bounds(
       blockers,
       8 * 60,
       day_start_seconds=9 * 3600 + 30 * 60,
@@ -29,7 +29,7 @@ def test_find_available_slot_before_or_after_bounds_uses_after_when_before_does_
          end_seconds=9 * 3600 + 35 * 60 ),
    ]
 
-   slot = find_available_slot_before_or_after_bounds(
+   slot = AvailableScheduleSlotFinder.find_before_or_after_bounds(
       blockers,
       8 * 60,
       day_start_seconds=9 * 3600 + 30 * 60,
@@ -43,7 +43,7 @@ def test_find_available_slot_before_or_after_bounds_uses_after_when_before_does_
 
 
 def test_find_available_slot_before_or_after_bounds_uses_visit_bounds_when_empty() -> None:
-   slot = find_available_slot_before_or_after_bounds(
+   slot = AvailableScheduleSlotFinder.find_before_or_after_bounds(
       [],
       8 * 60,
       day_start_seconds=9 * 3600 + 30 * 60,

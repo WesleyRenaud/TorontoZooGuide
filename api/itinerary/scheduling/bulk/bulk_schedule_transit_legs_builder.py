@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .bulk_schedule_stop_selector import BulkScheduleStopSelector
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
-from ..core.guest_item_schedule_status import has_itinerary_schedule_times
+from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ...data_access.itinerary_provider import ItineraryProvider
 from .transportation_transit_ride_applier import TransportationTransitRideApplier
 from ....types import Connection
@@ -23,7 +23,7 @@ class BulkScheduleTransitLegsBuilder():
          scheduled_animals=[
             animal_row
             for animal_row in saved_after_pack.animal_rows
-            if has_itinerary_schedule_times(
+            if GuestItemScheduleStatusChecker.has_schedule_times(
                animal_row.start_time,
                animal_row.end_time )
          ],

@@ -4,14 +4,14 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
-from ..scheduling.core.time_block import time_block_from_schedule_times
+from ..scheduling.core.time_block_builder import TimeBlockBuilder
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import ScheduledItem
 
 
 def schedule_time_range( scheduled_item: ScheduledItem ) -> tuple[ int, int ] | None:
-   time_block = time_block_from_schedule_times(
+   time_block = TimeBlockBuilder.from_schedule_times(
       scheduled_item.start_time,
       scheduled_item.end_time )
 

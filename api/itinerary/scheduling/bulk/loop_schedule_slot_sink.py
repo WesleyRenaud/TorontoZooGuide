@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 
-from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -43,7 +43,7 @@ class LoopScheduleSlotSink:
          blockers: list[ TimeBlock ],
          slots: list[ LoopScheduleSlot ] ) -> None:
       for _, start_time, end_time in slots:
-         scheduled_block = time_block_from_schedule_times(
+         scheduled_block = TimeBlockBuilder.from_schedule_times(
             start_time,
             end_time )
 

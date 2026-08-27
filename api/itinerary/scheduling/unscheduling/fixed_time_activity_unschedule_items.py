@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from ..core.time_block import time_block_from_schedule_times
-from ..core.time_block import time_blocks_overlap
 from ..core.time_block import TimeBlock
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ...data_access.validated_itinerary import ValidatedItinerary
@@ -14,13 +13,13 @@ def schedule_overlaps_any_time_block(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       activity_blocks: list[ TimeBlock ] ) -> bool:
-   item_block = time_block_from_schedule_times( start_time, end_time )
+   item_block = TimeBlockBuilder.from_schedule_times( start_time, end_time )
 
    if item_block is None:
       return False
 
    return any(
-      time_blocks_overlap( item_block, activity_block )
+      TimeBlockBuilder.overlap( item_block, activity_block )
       for activity_block in activity_blocks
    )
 

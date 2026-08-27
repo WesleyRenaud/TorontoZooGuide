@@ -6,8 +6,8 @@ from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
-from ..core.guest_item_schedule_status import has_itinerary_schedule_times
-from ..core.time_block import collect_time_blocks_from_itinerary
+from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
@@ -46,7 +46,7 @@ class BulkScheduleWindowPreparer():
       scheduled_rows = [
          animal_row
          for animal_row in animal_rows
-         if has_itinerary_schedule_times(
+         if GuestItemScheduleStatusChecker.has_schedule_times(
             animal_row.start_time,
             animal_row.end_time )
       ]
@@ -93,7 +93,7 @@ class BulkScheduleWindowPreparer():
       itinerary = ItineraryBuilder.build_current(
          saved_itinerary,
          **itinerary_context )
-      blockers = collect_time_blocks_from_itinerary( itinerary )
+      blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )
       walk_graph = load_walk_graph()
       start_state = cls.start_state(
          walk_graph,

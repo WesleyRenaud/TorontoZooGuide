@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..core.find_next_available_slot import find_available_slot_before_or_after_bounds
-from ..core.resolve_schedule_slot import resolve_schedule_slot
-from ..core.time_block import collect_time_blocks_from_itinerary
+from ..core.available_schedule_slot_finder import AvailableScheduleSlotFinder
+from ..core.schedule_slot_resolver import ScheduleSlotResolver
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
@@ -34,8 +34,8 @@ class ScheduleSlotTimeResolver():
          anchor_seconds = max( anchor_seconds, earliest_start_seconds )
 
       itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
-      blockers = collect_time_blocks_from_itinerary( itinerary )
-      slot = resolve_schedule_slot(
+      blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )
+      slot = ScheduleSlotResolver.resolve(
          blockers,
          anchor_seconds,
          duration_seconds,
@@ -136,11 +136,11 @@ class ScheduleSlotTimeResolver():
       ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
       """After the visit window is full, try duration before arrival, then after departure."""
       itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
-      blockers = collect_time_blocks_from_itinerary( itinerary )
+      blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )
       day_start_seconds, day_end_seconds = day_hours_window
       arrival_seconds, departure_seconds = visit_window
 
-      return find_available_slot_before_or_after_bounds(
+      return AvailableScheduleSlotFinder.find_before_or_after_bounds(
          blockers,
          duration_seconds,
          day_start_seconds=day_start_seconds,

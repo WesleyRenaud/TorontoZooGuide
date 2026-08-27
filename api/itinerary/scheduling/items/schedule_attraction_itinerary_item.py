@@ -6,8 +6,8 @@ from ...attraction_item_key import AttractionScheduleItemKey
 from .attraction_or_transportation_duration import default_duration_seconds_for_attraction_or_transportation
 from ....attractions.scheduling.attraction_hours_schedule_adjustment import AttractionHoursScheduleAdjustment
 from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
-from ..core.find_next_available_slot import find_previous_available_slot
-from ..core.time_block import collect_time_blocks_from_itinerary
+from ..core.available_schedule_slot_finder import AvailableScheduleSlotFinder
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
@@ -215,9 +215,9 @@ def _resolve_adjusted_attraction_slot(
          itinerary_context=itinerary_context )
 
    itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
-   blockers = collect_time_blocks_from_itinerary( itinerary )
+   blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )
    anchor_seconds, day_end_seconds = schedule_window
-   slot = find_previous_available_slot(
+   slot = AvailableScheduleSlotFinder.find_previous(
       blockers,
       end_before_seconds=day_end_seconds,
       duration_seconds=duration_seconds,

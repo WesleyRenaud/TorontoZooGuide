@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import itinerary_animals_for_exhibits
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
+from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.calendar_dates import DateValues
 from conftest import DbControllers
 
@@ -43,7 +43,7 @@ def _scheduled_animal_order(
             animal.end_time,
          )
          for animal in result.itinerary.animals
-         if has_itinerary_schedule_times( animal.start_time, animal.end_time )
+         if GuestItemScheduleStatusChecker.has_schedule_times( animal.start_time, animal.end_time )
       ],
       key=lambda row: DateValues.time_value_in_seconds( row[ 2 ] ) or 0,
    )

@@ -7,7 +7,7 @@ from .bulk_schedule_finalize_builder import BulkScheduleFinalizeBuilder
 from .bulk_schedule_loop_packer import BulkScheduleLoopPacker
 from .bulk_schedule_transit_legs_builder import BulkScheduleTransitLegsBuilder
 from .bulk_schedule_window_preparer import BulkScheduleWindowPreparer
-from ..core.guest_item_schedule_status import has_itinerary_schedule_times
+from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -24,7 +24,7 @@ from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEnco
 class BulkScheduleItineraryRunner():
    @classmethod
    def is_animal_unscheduled( cls, animal_row: ItineraryAnimalRecord ) -> bool:
-      return not has_itinerary_schedule_times(
+      return not GuestItemScheduleStatusChecker.has_schedule_times(
          animal_row.start_time,
          animal_row.end_time )
 

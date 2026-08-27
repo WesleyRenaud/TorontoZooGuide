@@ -11,9 +11,8 @@ from .attraction_animal_coverer import CoveredAnimalAttraction
 from .bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from .bulk_schedule_stop_selector import BulkScheduleStopSelector
 from .bulk_schedule_window_preparer import BulkScheduleWindowPreparer
-from ..core.guest_item_schedule_status import has_itinerary_schedule_times
-from ..core.time_block import collect_time_blocks_from_itinerary
-from ..core.time_block import time_block_from_schedule_times
+from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
@@ -87,7 +86,7 @@ class BulkRescheduleLongWaitSimulator():
       if packed_itinerary is None:
          return True
 
-      new_item_block = time_block_from_schedule_times(
+      new_item_block = TimeBlockBuilder.from_schedule_times(
          new_item.start_time,
          new_item.end_time )
 
@@ -96,7 +95,7 @@ class BulkRescheduleLongWaitSimulator():
 
       return FixedTimeItemLongWaitWarningBuilder.time_block_is_isolated_on_schedule(
          new_item_block,
-         collect_time_blocks_from_itinerary( packed_itinerary ) )
+         TimeBlockBuilder.collect_from_itinerary( packed_itinerary ) )
 
 
    @classmethod
@@ -121,7 +120,7 @@ class BulkRescheduleLongWaitSimulator():
       animals_with_times = [
          animal
          for animal in validated_itinerary.animals
-         if has_itinerary_schedule_times( animal.start_time, animal.end_time )
+         if GuestItemScheduleStatusChecker.has_schedule_times( animal.start_time, animal.end_time )
       ]
       packed_itinerary: Itinerary | None = None
 
@@ -244,7 +243,7 @@ class BulkRescheduleLongWaitSimulator():
 
       anchor_seconds, day_end_seconds = prepared_window.window
       packing_itinerary = cls._itinerary_with_cleared_animal_times( itinerary )
-      blockers = collect_time_blocks_from_itinerary( packing_itinerary )
+      blockers = TimeBlockBuilder.collect_from_itinerary( packing_itinerary )
       walk_graph = load_walk_graph()
       start_state = BulkScheduleWindowPreparer.start_state(
          walk_graph,

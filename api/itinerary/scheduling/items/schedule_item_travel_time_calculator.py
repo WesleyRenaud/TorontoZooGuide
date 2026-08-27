@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from ..core.time_block import earliest_scheduled_start_seconds
-from ..core.time_block import latest_scheduled_end_seconds
+from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
 from ....models import Itinerary
@@ -110,7 +109,7 @@ class ScheduleItemTravelTimeCalculator():
    def walk_node_id_for_earliest_scheduled_item(
          cls,
          itinerary: Itinerary ) -> str | None:
-      earliest_start_seconds = earliest_scheduled_start_seconds( itinerary )
+      earliest_start_seconds = TimeBlockBuilder.earliest_start_seconds( itinerary )
 
       if earliest_start_seconds is None:
          return None
@@ -126,7 +125,7 @@ class ScheduleItemTravelTimeCalculator():
    def walk_node_id_for_latest_scheduled_item(
          cls,
          itinerary: Itinerary ) -> str | None:
-      latest_end_seconds = latest_scheduled_end_seconds( itinerary )
+      latest_end_seconds = TimeBlockBuilder.latest_end_seconds( itinerary )
 
       if latest_end_seconds is None:
          return None
