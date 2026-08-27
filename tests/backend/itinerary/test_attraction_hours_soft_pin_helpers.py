@@ -4,11 +4,11 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk import schedule_animals_by_master_route_loop as schedule_module
 from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from api.itinerary.scheduling.bulk.master_route_loop_scheduler import MasterRouteLoopScheduler
+from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.operating_hours import OperatingHours
 
 
@@ -133,7 +133,7 @@ def test_wait_filler_pack_end_reserves_inactive_soft_pins_without_hard_pin() -> 
          occupied_seconds=30 * 60 ),
    ]
 
-   wait_pack_end, planned_active_start = schedule_module._wait_filler_pack_end_seconds(
+   wait_pack_end, planned_active_start = MasterRouteLoopScheduler._wait_filler_pack_end_seconds(
       schedule_window,
       remaining_units=remaining_units,
       active_soft_pin_loop_ids={ 'face-painting' },
@@ -172,7 +172,7 @@ def test_wait_filler_pack_end_cascades_against_hard_pin_deadline() -> None:
          occupied_seconds=15 * 60 ),
    ]
 
-   wait_pack_end, planned_active_start = schedule_module._wait_filler_pack_end_seconds(
+   wait_pack_end, planned_active_start = MasterRouteLoopScheduler._wait_filler_pack_end_seconds(
       schedule_window,
       remaining_units=remaining_units,
       active_soft_pin_loop_ids={ 'face-painting' },
@@ -191,7 +191,7 @@ def test_drain_cascaded_inactive_soft_pins_noop_without_active_open() -> None:
       end_seconds=17 * 3600,
       attraction_hours_soft_pins=[] )
 
-   assert schedule_module._drain_cascaded_inactive_soft_pin_loop_units(
+   assert MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
       object(),
       [],
       schedule_window,
@@ -232,7 +232,7 @@ def test_drain_cascaded_inactive_soft_pins_skips_missing_and_unready_units() -> 
       unit=_loop_unit( 'carousel', [] ),
       occupied_seconds=15 * 60 )
 
-   assert schedule_module._drain_cascaded_inactive_soft_pin_loop_units(
+   assert MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
       object(),
       [ unready ],
       schedule_window,

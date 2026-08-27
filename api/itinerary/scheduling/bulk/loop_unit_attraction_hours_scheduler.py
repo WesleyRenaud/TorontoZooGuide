@@ -8,7 +8,7 @@ from .loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from .loop_schedule_slot_sink import LoopScheduleSlotSink
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
-from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours

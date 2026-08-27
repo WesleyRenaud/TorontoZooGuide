@@ -20,9 +20,8 @@ from api.itinerary.routing.walk_travel_time import WALK_PX_PER_MINUTE
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import prepare_loop_schedule_units
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
+from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -367,7 +366,7 @@ def test_pack_window_rejects_unit_when_approach_travel_no_longer_fits() -> None:
       stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
       duration_seconds=300 )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -387,7 +386,7 @@ def test_pack_window_accepts_unit_when_window_covers_approach_and_dwell() -> Non
       stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
       duration_seconds=300 )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -409,7 +408,7 @@ def test_pack_window_from_entry_node_keeps_dwell_only_fit() -> None:
    entry_node_id = indo_unit.unit.entry_walk_node_id
    assert entry_node_id is not None
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -1023,7 +1022,7 @@ def test_prepare_loop_schedule_units_adds_inter_stop_travel_to_duration(
                enclosure_name='Outdoor' ),
          ],
       ] )
-   prepared = prepare_loop_schedule_units(
+   prepared = LoopWindowPacker.prepare_units(
       db.conn,
       units,
       walk_graph=walk_graph )

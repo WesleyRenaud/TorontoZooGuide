@@ -5,9 +5,9 @@ from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
+from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import pack_loops_into_schedule_window
-from api.itinerary.scheduling.bulk.pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
@@ -74,7 +74,7 @@ def test_pack_loops_into_schedule_window_places_south_terminal_before_africa_anc
       duration_seconds=300,
    )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -115,7 +115,7 @@ def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_a
       duration_seconds=300,
    )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -157,7 +157,7 @@ def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anch
       duration_seconds=300,
    )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -236,7 +236,7 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
       ),
    ]
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
@@ -286,7 +286,7 @@ def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approa
       duration_seconds=600,
    )
 
-   packed_units = pack_loops_into_schedule_window(
+   packed_units = LoopWindowPacker.pack(
       walk_graph,
       ItineraryScheduleWindow(
          start_seconds=window_start_seconds,
