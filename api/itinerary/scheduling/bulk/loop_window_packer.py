@@ -5,7 +5,7 @@ from .loop_schedule_unit import LoopScheduleUnit
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ....types import Connection
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal

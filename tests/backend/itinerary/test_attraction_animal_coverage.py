@@ -6,7 +6,7 @@ from datetime import date
 from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from api.itinerary.attraction_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
@@ -82,14 +82,14 @@ def test_bulk_schedule_covers_kangaroo_animal_when_walk_thru_is_packed(
 
    animal_stops = [
       stop
-      for stop in resolve_itinerary_stops( result.itinerary )
+      for stop in ItineraryStopResolver.resolve( result.itinerary )
       if (
          stop.schedule_item_kind == ScheduleItemKind.ANIMAL
          and 'Western Grey Kangaroo' in stop.item_key )
    ]
    attraction_stops = [
       stop
-      for stop in resolve_itinerary_stops( result.itinerary )
+      for stop in ItineraryStopResolver.resolve( result.itinerary )
       if (
          stop.schedule_item_kind == ScheduleItemKind.ATTRACTION
          and stop.item_key == KANGAROO_WALK_THRU )

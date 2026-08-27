@@ -12,9 +12,9 @@ from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_sp
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
-from api.itinerary.routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
-from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
-from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
+from api.itinerary.routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.models import Animal
@@ -91,13 +91,13 @@ def test_partition_keeps_loop_pin_talk_inside_single_schedule_window(
    assert anchor_seconds is not None
    assert day_end_seconds is not None
 
-   fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
+   fixed_time_stops = ItineraryStopResolver.resolve_fixed_time( itinerary )
    boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
       db.conn,
       itinerary,
       fixed_time_stops )
    windows = BulkScheduleLoopPinAttacher.attach_to_windows(
-      partition_itinerary_schedule_windows(
+      ItineraryScheduleWindowPartitioner.partition(
          anchor_seconds,
          day_end_seconds,
          boundary_stops ),
@@ -348,7 +348,7 @@ def test_bulk_schedule_covers_african_lion_animal_when_talk_is_woven(
 
    animal_stops = [
       stop
-      for stop in resolve_itinerary_stops( result.itinerary )
+      for stop in ItineraryStopResolver.resolve( result.itinerary )
       if (
          stop.schedule_item_kind == ScheduleItemKind.ANIMAL
          and AFRICAN_LION_TALK in stop.item_key )

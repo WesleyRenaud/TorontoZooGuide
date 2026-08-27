@@ -3,7 +3,7 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
-from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler

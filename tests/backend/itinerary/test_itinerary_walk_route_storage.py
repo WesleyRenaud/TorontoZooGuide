@@ -13,9 +13,9 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalkRouteMatcher
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.results.itinerary_result_response import itinerary_result_to_dict
-from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
-from api.itinerary.routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
+from api.itinerary.routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -43,7 +43,7 @@ def test_schedule_itinerary_item_persists_walk_route(
 
    assert result.success
 
-   expected_route = build_itinerary_walk_route( result.itinerary )
+   expected_route = ItineraryWalkRouteBuilder.build( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
@@ -68,7 +68,7 @@ def test_bulk_schedule_itinerary_persists_walk_route(
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
 
-   expected_route = build_itinerary_walk_route( result.itinerary )
+   expected_route = ItineraryWalkRouteBuilder.build( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
@@ -97,10 +97,10 @@ def test_rebuild_and_persist_itinerary_walk_route_round_trips_route(
       start_time='10:00',
    ).success
 
-   expected_route = build_itinerary_walk_route(
+   expected_route = ItineraryWalkRouteBuilder.build(
       ItineraryCoordinator.get_itinerary() )
 
-   assert rebuild_and_persist_itinerary_walk_route(
+   assert ItineraryWalkRoutePersister.rebuild_and_persist(
       db.conn,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
@@ -128,7 +128,7 @@ def test_clear_itinerary_clears_walk_route(
       start_time='10:00',
    ).success
 
-   assert rebuild_and_persist_itinerary_walk_route(
+   assert ItineraryWalkRoutePersister.rebuild_and_persist(
       db.conn,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
@@ -206,7 +206,7 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
    assert result.itinerary.animals[ 0 ].start_time
    assert not result.itinerary.animals[ 1 ].start_time
 
-   expected_route = build_itinerary_walk_route( result.itinerary )
+   expected_route = ItineraryWalkRouteBuilder.build( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
    payload = itinerary_result_to_dict( result, conn=db.conn )
 
@@ -214,5 +214,5 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
    assert payload[ 'itinerary_path' ][ 'points' ]
    assert ItineraryWalkRouteMatcher.matches(
-      build_itinerary_walk_route( result.itinerary ),
+      ItineraryWalkRouteBuilder.build( result.itinerary ),
       ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ) )

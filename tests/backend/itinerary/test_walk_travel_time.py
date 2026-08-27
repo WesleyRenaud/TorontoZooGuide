@@ -4,8 +4,8 @@ from itinerary.support import schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
-from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
@@ -72,7 +72,7 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
    assert arrival_seconds is not None
    assert animal_start_seconds == arrival_seconds + expected_minutes * 60
 
-   walk_route = build_itinerary_walk_route( itinerary )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
    first_leg = walk_route.legs[ 0 ]
 
    assert first_leg.from_item_key == ENTRANCE_ITEM_KEY

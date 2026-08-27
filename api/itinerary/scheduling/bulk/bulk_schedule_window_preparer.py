@@ -13,8 +13,8 @@ from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
 from ..items.prepared_schedule_window import PreparedScheduleWindow
-from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
-from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
+from ...routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
+from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
@@ -99,12 +99,12 @@ class BulkScheduleWindowPreparer():
          walk_graph,
          saved_itinerary.animal_rows,
          anchor_seconds )
-      fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
+      fixed_time_stops = ItineraryStopResolver.resolve_fixed_time( itinerary )
       boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
          conn,
          itinerary,
          fixed_time_stops )
-      schedule_windows = partition_itinerary_schedule_windows(
+      schedule_windows = ItineraryScheduleWindowPartitioner.partition(
          start_state.schedule_anchor_seconds,
          day_end_seconds,
          boundary_stops )

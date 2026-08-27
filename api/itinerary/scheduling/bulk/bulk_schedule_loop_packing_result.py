@@ -6,7 +6,7 @@ from .attraction_animal_coverer import CoveredAnimalAttraction
 from .guardians_talk_animal_coverer import CoveredAnimalTalk
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 
 

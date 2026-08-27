@@ -9,8 +9,8 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
+from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
-from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator

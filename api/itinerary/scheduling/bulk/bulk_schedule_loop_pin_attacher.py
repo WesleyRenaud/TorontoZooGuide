@@ -4,9 +4,9 @@ from dataclasses import replace
 
 from ....guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
 from ....models import Itinerary
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.itinerary_stop import ItineraryStop
 from ...routing.loop_schedule_pin import LoopSchedulePin
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.enums import ScheduleItemKind
 from ....types import Connection
 from ....wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider

@@ -8,8 +8,8 @@ from .bulk_schedule_start_state import BulkScheduleStartState
 from ..core.time_block import TimeBlock
 from ...data_access.saved_itinerary import SavedItinerary
 from ....models import Itinerary
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.loop_schedule_pin import LoopSchedulePin
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.operating_hours import OperatingHours
 from ....walk_graph.domain.walk_graph import WalkGraph
 

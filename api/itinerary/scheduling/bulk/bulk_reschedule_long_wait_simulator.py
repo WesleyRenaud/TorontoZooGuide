@@ -32,8 +32,8 @@ from .master_route_loop_scheduler import MasterRouteLoopScheduler
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
-from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
-from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
+from ...routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
+from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
@@ -249,12 +249,12 @@ class BulkRescheduleLongWaitSimulator():
          walk_graph,
          [],
          anchor_seconds )
-      fixed_time_stops = resolve_fixed_time_itinerary_stops( packing_itinerary )
+      fixed_time_stops = ItineraryStopResolver.resolve_fixed_time( packing_itinerary )
       boundary_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
          conn,
          packing_itinerary,
          fixed_time_stops )
-      schedule_windows = partition_itinerary_schedule_windows(
+      schedule_windows = ItineraryScheduleWindowPartitioner.partition(
          start_state.schedule_anchor_seconds,
          day_end_seconds,
          boundary_stops )
