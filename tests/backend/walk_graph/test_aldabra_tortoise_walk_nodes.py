@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.models import Animal
 from api.models import Itinerary
 from api.walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
@@ -58,7 +58,7 @@ def test_build_itinerary_walk_route_routes_to_outdoor_tortoise_viewing_node() ->
       events=[],
       date='2026-07-05' )
 
-   walk_route = build_itinerary_walk_route( itinerary )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
    tortoise_stop = next(
       stop
       for stop in walk_route.stops

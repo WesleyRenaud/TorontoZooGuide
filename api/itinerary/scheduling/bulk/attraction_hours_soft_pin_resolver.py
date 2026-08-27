@@ -10,7 +10,7 @@ from .loop_pin_segment_splitter import LoopPinSegmentSplitter
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection

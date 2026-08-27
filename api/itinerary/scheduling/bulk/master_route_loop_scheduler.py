@@ -18,8 +18,8 @@ from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from .loop_window_packer import LoopWindowPacker
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
+from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.loop_schedule_pin import LoopSchedulePin
-from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection

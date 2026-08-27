@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ItineraryStop
-from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker

@@ -13,9 +13,9 @@ from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
-from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from api.models import Animal
 from api.shared.calendar_dates import DateValues

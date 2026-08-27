@@ -12,7 +12,7 @@ from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalkRouteMatcher
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
-from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
@@ -288,7 +288,7 @@ def test_confirmed_guardians_talk_reschedule_persists_walk_route(
 
    assert result.success
 
-   expected_route = build_itinerary_walk_route( result.itinerary )
+   expected_route = ItineraryWalkRouteBuilder.build( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
 
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )

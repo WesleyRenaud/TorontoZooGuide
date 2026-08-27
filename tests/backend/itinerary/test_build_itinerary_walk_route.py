@@ -13,10 +13,10 @@ from itinerary.support import PENGUIN_ITINERARY_ENTRY
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.itinerary.routing.itinerary_stop_walk_route_sorter import ItineraryStopWalkRouteSorter
-from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
+from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from api.shared.enums import ScheduleItemKind
@@ -49,7 +49,7 @@ def test_order_itinerary_stops_for_walk_route_returns_empty_without_scheduled_st
    ).success
 
    ordered_stops = ItineraryStopWalkRouteSorter.sort(
-      resolve_itinerary_stops( ItineraryCoordinator.get_itinerary() ) )
+      ItineraryStopResolver.resolve( ItineraryCoordinator.get_itinerary() ) )
 
    assert ordered_stops == []
 
@@ -76,7 +76,7 @@ def test_order_itinerary_stops_for_walk_route_sorts_scheduled_stops_by_start_tim
    ).success
 
    ordered_stops = ItineraryStopWalkRouteSorter.sort(
-      resolve_itinerary_stops( ItineraryCoordinator.get_itinerary() ) )
+      ItineraryStopResolver.resolve( ItineraryCoordinator.get_itinerary() ) )
 
    assert [ stop.item_key for stop in ordered_stops ] == [
       ENTRANCE_ITEM_KEY,
@@ -96,7 +96,7 @@ def test_build_itinerary_walk_route_returns_empty_path_without_scheduled_stops(
       confirming_early_admission=True,
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert walk_route.legs == []
    assert walk_route.points == []
@@ -119,7 +119,7 @@ def test_build_itinerary_walk_route_builds_polyline_for_scheduled_animal(
       start_time='10:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert [ stop.item_key for stop in walk_route.stops ] == [
       ENTRANCE_ITEM_KEY,
@@ -162,7 +162,7 @@ def test_build_itinerary_walk_route_ends_at_last_stop_with_unscheduled_attractio
       start_time='10:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert walk_route.stops[ -1 ].item_key == LION_KEY
    assert walk_route.legs[ -1 ].to_item_key == LION_KEY
@@ -197,7 +197,7 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
       result = ItineraryCoordinator.bulk_schedule_itinerary()
 
    assert result.success
-   walk_route = build_itinerary_walk_route( result.itinerary )
+   walk_route = ItineraryWalkRouteBuilder.build( result.itinerary )
 
    if not walk_route.stops:
       # Short day windows may leave nothing schedulable once travel is reserved.
@@ -230,7 +230,7 @@ def test_build_itinerary_walk_route_ends_at_last_stop_when_some_items_remain_uns
       start_time='10:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert walk_route.stops[ -1 ].item_key == LION_KEY
    assert walk_route.legs[ -1 ].to_item_key == LION_KEY
@@ -252,7 +252,7 @@ def test_build_itinerary_walk_route_returns_to_entrance(
       start_time='10:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert walk_route.stops[ 0 ].item_key == ENTRANCE_ITEM_KEY
    assert walk_route.stops[ -1 ].item_key == ENTRANCE_ITEM_KEY
@@ -287,7 +287,7 @@ def test_build_itinerary_walk_route_concatenates_legs_at_shared_node_once(
       start_time='11:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    assert len( walk_route.legs ) == 3
    assert walk_route.legs[ -1 ].to_item_key == ENTRANCE_ITEM_KEY
@@ -344,7 +344,7 @@ def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
       start_time='11:00',
    ).success
 
-   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+   walk_route = ItineraryWalkRouteBuilder.build( ItineraryCoordinator.get_itinerary() )
 
    for leg, ( from_point_sequence, to_point_sequence ) in zip(
          walk_route.legs,
@@ -362,7 +362,7 @@ def test_build_itinerary_walk_route_skips_walk_during_zoomobile_rides(
    from api.itinerary.data_access.itinerary_transportation_input import (
       ItineraryTransportationInput,
    )
-   from api.itinerary.routing.build_walk_route_anchors import build_walk_route_anchors
+   from api.itinerary.routing.walk_route_anchor_builder import WalkRouteAnchorBuilder
    from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
    from itinerary.support import itinerary_animals_for_exhibits
 
@@ -395,10 +395,10 @@ def test_build_itinerary_walk_route_skips_walk_during_zoomobile_rides(
    assert ItineraryCoordinator.bulk_schedule_itinerary().success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   walk_route = build_itinerary_walk_route( itinerary )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
    transit_anchors = [
       anchor
-      for anchor in build_walk_route_anchors( itinerary )
+      for anchor in WalkRouteAnchorBuilder.build( itinerary )
       if anchor.transit_ride_key is not None
    ]
 

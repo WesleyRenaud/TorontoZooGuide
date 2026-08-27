@@ -5,7 +5,7 @@ from datetime import date
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
+from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper

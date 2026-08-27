@@ -51,6 +51,6 @@ class ItinerarySaveResultBuilder():
          cls,
          conn: Connection,
          **itinerary_context: Any ) -> None:
-      from ...routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
+      from ...routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 
-      rebuild_and_persist_itinerary_walk_route( conn, **itinerary_context )
+      ItineraryWalkRoutePersister.rebuild_and_persist( conn, **itinerary_context )

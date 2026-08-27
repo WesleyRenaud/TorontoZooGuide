@@ -8,11 +8,11 @@ from itinerary.support import LION_KEY
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop import ItineraryStop
-from api.itinerary.routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
-from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
-from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
+from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -43,7 +43,7 @@ def test_resolve_itinerary_stops_includes_entrance_and_animal_walk_nodes(
    ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   stops = resolve_itinerary_stops( itinerary )
+   stops = ItineraryStopResolver.resolve( itinerary )
 
    assert stops[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert stops[ 0 ].item_key == ENTRANCE_ITEM_KEY
@@ -76,7 +76,7 @@ def test_resolve_itinerary_stops_maps_rhino_encounter_to_meeting_spot_walk_node(
 
    itinerary = ItineraryCoordinator.get_itinerary()
    encounter_stop = next(
-      stop for stop in resolve_itinerary_stops( itinerary )
+      stop for stop in ItineraryStopResolver.resolve( itinerary )
       if stop.schedule_item_kind == ScheduleItemKind.WILD_ENCOUNTER )
 
    assert encounter_stop.item_key == 'Guardians of White Rhinos'
@@ -112,10 +112,10 @@ def test_partition_itinerary_schedule_windows_splits_around_fixed_encounter(
    assert anchor_seconds is not None
    assert day_end_seconds is not None
 
-   windows = partition_itinerary_schedule_windows(
+   windows = ItineraryScheduleWindowPartitioner.partition(
       anchor_seconds,
       day_end_seconds,
-      resolve_fixed_time_itinerary_stops( itinerary ) )
+      ItineraryStopResolver.resolve_fixed_time( itinerary ) )
 
    assert len( windows ) == 2
    assert windows[ 0 ].start_seconds == anchor_seconds
