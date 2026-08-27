@@ -13,7 +13,7 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.bulk.bulk_schedule_itinerary import bulk_schedule_itinerary
+from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from ..scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
@@ -115,7 +115,7 @@ def _remove_transit_transportation_and_reschedule(
       saved_after )
 
    if stops_to_schedule:
-      return bulk_schedule_itinerary(
+      return BulkScheduleItineraryRunner.run(
          conn,
          stops_to_schedule=stops_to_schedule,
          confirming_fixed_time_item_long_wait=True,

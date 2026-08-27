@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .bulk.bulk_schedule_itinerary import bulk_schedule_itinerary
+from .bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from .bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.saved_itinerary import SavedItinerary
@@ -36,7 +36,7 @@ def reschedule_itinerary_items_after_fixed_time_activity_add(
    if not stops_to_schedule:
       return build_success_result( conn, **itinerary_context )
 
-   return bulk_schedule_itinerary(
+   return BulkScheduleItineraryRunner.run(
       conn,
       stops_to_schedule=stops_to_schedule,
       confirming_fixed_time_item_long_wait=True,

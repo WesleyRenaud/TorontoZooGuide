@@ -7,7 +7,7 @@ from ...models import Itinerary
 from ...models import WildEncounter
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
-from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import fixed_time_item_isolated_after_adding_with_simulated_bulk
+from ..scheduling.bulk.bulk_reschedule_long_wait_simulator import BulkRescheduleLongWaitSimulator
 from ...shared.enums import ItinerarySaveIssueItemType
 from ...types import Connection
 
@@ -30,7 +30,7 @@ class WildEncounterLongWaitWarningBuilder():
          *,
          itinerary_context: dict[ str, Any ],
          ) -> ItineraryResultReason | None:
-      if not fixed_time_item_isolated_after_adding_with_simulated_bulk(
+      if not BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
             conn,
             new_encounter,
             propose_on_itinerary=FixedTimeItemLongWaitWarningBuilder.propose_wild_encounter_on_itinerary,
