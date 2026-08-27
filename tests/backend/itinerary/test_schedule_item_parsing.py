@@ -10,7 +10,7 @@ from api.itinerary.scheduling.core.available_schedule_slot_finder import Availab
 from api.itinerary.scheduling.core.scheduling_anchor_resolver import SchedulingAnchorResolver
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
-from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
+from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from api.itinerary.transportation_item_key import TransportationScheduleItemKey
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
@@ -30,7 +30,7 @@ def test_schedule_item_kind_from_item_type_accepts_module_types() -> None:
 
 
 def test_map_schedule_item_key_from_wire_animal_key() -> None:
-   schedule_item_key = map_schedule_item_key_from_wire( 'animals', ANIMAL_KEY )
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'animals', ANIMAL_KEY )
 
    assert schedule_item_key == AnimalScheduleItemKey(
       species='African Lion',
@@ -38,7 +38,7 @@ def test_map_schedule_item_key_from_wire_animal_key() -> None:
 
 
 def test_map_schedule_item_key_from_wire_animal_key_with_enclosure_name() -> None:
-   schedule_item_key = map_schedule_item_key_from_wire( 'animals', PENGUIN_KEY )
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'animals', PENGUIN_KEY )
 
    assert schedule_item_key == AnimalScheduleItemKey(
       species='African Penguin',
@@ -47,13 +47,13 @@ def test_map_schedule_item_key_from_wire_animal_key_with_enclosure_name() -> Non
 
 
 def test_map_schedule_item_key_from_wire_event_type_as_item_type() -> None:
-   schedule_item_key = map_schedule_item_key_from_wire( 'lunch', '' )
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'lunch', '' )
 
    assert schedule_item_key == ItineraryEventType.LUNCH
 
 
 def test_map_schedule_item_key_from_wire_attraction_key() -> None:
-   schedule_item_key = map_schedule_item_key_from_wire(
+   schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'attractions',
       'Conservation Carousel' )
 
@@ -62,7 +62,7 @@ def test_map_schedule_item_key_from_wire_attraction_key() -> None:
 
 
 def test_map_schedule_item_key_from_wire_transportation_key() -> None:
-   schedule_item_key = map_schedule_item_key_from_wire(
+   schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'transportations',
       'Zoomobile||0' )
 
@@ -70,11 +70,11 @@ def test_map_schedule_item_key_from_wire_transportation_key() -> None:
       name='Zoomobile',
       added_as_attraction=False )
 
-   assert map_schedule_item_key_from_wire(
+   assert ScheduleItemKeyMapper.from_wire(
       'transportations',
       'Zoomobile' ) is None
 
-   assert map_schedule_item_key_from_wire(
+   assert ScheduleItemKeyMapper.from_wire(
       'transportations',
       'Zoomobile||1' ) == TransportationScheduleItemKey(
          name='Zoomobile',

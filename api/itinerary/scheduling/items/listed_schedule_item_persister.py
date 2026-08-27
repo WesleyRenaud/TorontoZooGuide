@@ -1,0 +1,93 @@
+from __future__ import annotations
+
+from typing import Any
+
+from ...data_access.itinerary_provider import ItineraryProvider
+from ...data_access.saved_itinerary import SavedItinerary
+from .itinerary_save_result_builder import ItinerarySaveResultBuilder
+from .listed_schedule_target_resolver import ListedScheduleTargetResolver
+from ...results.itinerary_save_result import ItinerarySaveResult
+from .schedule_item_key import ListedScheduleItemKey
+from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
+from ....shared.enums import ItineraryErrorType
+from ....types import Connection
+from ....types import ScheduleTimeKey
+from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
+
+
+class ListedScheduleItemPersister():
+   @classmethod
+   def prepare(
+         cls,
+         conn: Connection,
+         saved_itinerary: SavedItinerary,
+         schedule_item_key: ListedScheduleItemKey,
+         *,
+         itinerary_context: dict[ str, Any ],
+         confirming_schedule_item_not_on_itinerary: bool,
+         ) -> tuple[ list[ ItineraryErrorType ], ItinerarySaveResult | None ]:
+      suppressed_warnings: list[ ItineraryErrorType ] = []
+
+      if ScheduleItemNotOnItineraryWarningBuilder.is_required(
+            conn,
+            saved_itinerary,
+            schedule_item_key,
+            confirming_schedule_item_not_on_itinerary=(
+               confirming_schedule_item_not_on_itinerary
+            ),
+            suppressed_warnings=suppressed_warnings ):
+         return (
+            suppressed_warnings,
+            ItinerarySaveResultBuilder.save_result(
+               conn,
+               ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+               suppressed_warnings=suppressed_warnings,
+               **itinerary_context ),
+         )
+
+      return ( suppressed_warnings, None )
+
+
+   @classmethod
+   def commit(
+         cls,
+         conn: Connection,
+         *,
+         schedule_item_key: ListedScheduleItemKey,
+         start_time: ScheduleTimeKey,
+         end_time: ScheduleTimeKey,
+         insert_if_missing: bool,
+         itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
+      cur = conn.cursor()
+
+      try:
+         scheduled = ListedScheduleTargetResolver.apply(
+            cur,
+            schedule_item_key,
+            start_time,
+            end_time,
+            insert_if_missing )
+
+         if not scheduled:
+            return ItinerarySaveResultBuilder.save_result(
+               conn,
+               ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+               **itinerary_context )
+
+         conn.commit()
+
+      finally:
+         cur.close()
+
+      saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
+      ScheduledActivityVisitTimesCoverer.cover_for_activity(
+         conn,
+         start_time=start_time,
+         end_time=end_time,
+         current_arrival_time=saved_itinerary.arrival_time,
+         current_departure_time=saved_itinerary.departure_time,
+         itinerary_context=itinerary_context )
+
+      ItinerarySaveResultBuilder.persist_walk_route( conn, **itinerary_context )
+
+      return ItinerarySaveResultBuilder.success_result( conn, **itinerary_context )
