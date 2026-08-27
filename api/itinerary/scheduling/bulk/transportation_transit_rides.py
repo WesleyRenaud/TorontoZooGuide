@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
-from .bulk_schedule_walk_order import representative_walk_node_id
+from .bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_transportation_provider import ItineraryTransportationProvider
@@ -216,7 +216,7 @@ def _animal_anchors(
    anchors: list[ ScheduledAnimalAnchor ] = []
 
    for start_seconds, end_seconds, animal in timed_animals:
-      walk_node_id = representative_walk_node_id(
+      walk_node_id = BulkScheduleWalkOrderBuilder.representative_walk_node_id(
          walk_graph,
          entrance_node_id,
          animal.species,

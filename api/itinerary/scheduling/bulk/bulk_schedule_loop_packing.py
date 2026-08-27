@@ -9,16 +9,14 @@ from .attraction_hours_soft_pin import attach_attraction_hours_soft_pins_to_sche
 from .attraction_hours_soft_pin import resolve_attraction_hours_soft_pins
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_window_prep import BulkScheduleWindowPrep
-from .group_stops_by_master_route_loop import group_stops_by_master_route_loop
 from .guardians_talk_covered_animals import CoveredAnimalTalk
 from .guardians_talk_covered_animals import filter_animals_excluding_covered
 from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
-from .loop_schedule_stop import animals_from_stops
-from .loop_schedule_stop import attractions_from_stops
 from .loop_schedule_stop import LoopScheduleStop
-from .loop_schedule_stop import transportations_from_stops
+from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import build_loop_schedule_units
 from .loop_schedule_unit import LoopScheduleUnit
+from .master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....types import Connection
@@ -39,9 +37,9 @@ def pack_stops_into_bulk_schedule(
       *,
       prep: BulkScheduleWindowPrep,
       stops_to_schedule: list[ LoopScheduleStop ] ) -> BulkScheduleLoopPackingResult:
-   animals_to_schedule = animals_from_stops( stops_to_schedule )
-   attractions_to_pack = attractions_from_stops( stops_to_schedule )
-   transportations_to_pack = transportations_from_stops( stops_to_schedule )
+   animals_to_schedule = LoopScheduleStopExtractor.animals_from( stops_to_schedule )
+   attractions_to_pack = LoopScheduleStopExtractor.attractions_from( stops_to_schedule )
+   transportations_to_pack = LoopScheduleStopExtractor.transportations_from( stops_to_schedule )
    covered_by_talk = viewing_spot_keys_to_cover_for_loop_pins(
       conn,
       prep.loop_pins,
@@ -64,7 +62,7 @@ def pack_stops_into_bulk_schedule(
       *attractions_to_pack,
       *transportations_to_pack,
    ]
-   sorted_loop_groups = group_stops_by_master_route_loop( stops_to_pack )
+   sorted_loop_groups = MasterRouteLoopStopGrouper.group( stops_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
       prep.schedule_windows,

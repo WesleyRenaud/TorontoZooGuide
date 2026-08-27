@@ -22,7 +22,7 @@ from ...request_connection import get_connection
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk import bulk_schedule_itinerary as bulk_schedule_itinerary_logic
-from ..scheduling.bulk.animals_for_bulk_schedule import stops_for_bulk_schedule
+from ..scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
@@ -193,7 +193,7 @@ class ItineraryCoordinator():
          visit_date_temp=visit_date_temp,
          confirming_fixed_time_item_long_wait=(
             confirming_fixed_time_item_long_wait ),
-         stops_to_schedule=stops_for_bulk_schedule(
+         stops_to_schedule=BulkScheduleStopSelector.stops(
             saved_itinerary,
             only_previously_scheduled=False ) )
 

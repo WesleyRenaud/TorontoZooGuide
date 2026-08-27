@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.scheduling.bulk.group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from api.itinerary.scheduling.bulk.loop_schedule_unit import build_loop_schedule_units
 from api.itinerary.scheduling.bulk.loop_schedule_unit import loop_schedule_unit_reversed
+from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 
 
 def _animal_record(
@@ -21,7 +21,7 @@ def _animal_record(
 
 
 def test_build_loop_schedule_units_assigns_loop_id_side_cluster_and_walk_endpoints() -> None:
-   loop_groups = group_animals_by_master_route_loop(
+   loop_groups = MasterRouteLoopAnimalGrouper.group(
       [
          _animal_record(
             species='Kookaburra',
@@ -56,7 +56,7 @@ def test_build_loop_schedule_units_assigns_loop_id_side_cluster_and_walk_endpoin
 
 def test_build_loop_schedule_units_uses_itinerary_animals_for_partial_loop_endpoints() -> None:
    loop_units = build_loop_schedule_units(
-      group_animals_by_master_route_loop(
+      MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
                species='Amur Tiger',
@@ -74,7 +74,7 @@ def test_build_loop_schedule_units_uses_itinerary_animals_for_partial_loop_endpo
 
 def test_build_loop_schedule_units_store_two_way_traversal() -> None:
    loop_units = build_loop_schedule_units(
-      group_animals_by_master_route_loop(
+      MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
                species='Highland Cattle',
@@ -96,7 +96,7 @@ def test_build_loop_schedule_units_store_two_way_traversal() -> None:
 
 def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
    loop_units = build_loop_schedule_units(
-      group_animals_by_master_route_loop(
+      MasterRouteLoopAnimalGrouper.group(
          [
             _animal_record(
                species='Highland Cattle',

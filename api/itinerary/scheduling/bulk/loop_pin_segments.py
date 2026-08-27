@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Union
 
-from .loop_schedule_stop import loop_schedule_stop_key
 from .loop_schedule_stop import LoopScheduleStop
+from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....walk_graph.master_route import default_master_route_loop_by_id
 
@@ -132,7 +132,7 @@ def viewing_spot_index_for_stop_in_loop(
    if master_route_loop is None:
       return None
 
-   stop_key = loop_schedule_stop_key( stop )
+   stop_key = LoopScheduleStopExtractor.stop_key( stop )
    matching_indexes = [
       index
       for index, route_stop in enumerate( master_route_loop.viewing_spots )

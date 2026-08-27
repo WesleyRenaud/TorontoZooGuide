@@ -6,13 +6,13 @@ from datetime import date
 from typing import Any
 
 from ....animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from .animals_for_bulk_schedule import animals_for_bulk_schedule
 from .attraction_covered_animals import CoveredAnimalAttraction
 from .attraction_covered_animals import merge_covered_viewing_spot_keys
 from .attraction_covered_animals import viewing_spot_keys_to_cover_for_attractions
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
+from .bulk_schedule_stop_selector import BulkScheduleStopSelector
 from .bulk_schedule_window_prep import bulk_schedule_start_state
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
@@ -25,7 +25,6 @@ from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounte
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary_builder import ItineraryBuilder
-from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from .guardians_talk_covered_animals import CoveredAnimalTalk
 from .guardians_talk_covered_animals import filter_animals_excluding_covered
 from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
@@ -33,6 +32,7 @@ from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
 from .loop_unit_schedule_slots import LoopScheduleSlot
 from .loop_unit_schedule_slots import LoopScheduleSlotSink
+from .master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from ....models import Itinerary
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -65,7 +65,7 @@ def fixed_time_item_isolated_after_adding_with_simulated_bulk(
    if not FixedTimeItemLongWaitWarningBuilder.is_isolated_after_adding( current_itinerary, new_item ):
       return False
 
-   animals_to_schedule = animals_for_bulk_schedule(
+   animals_to_schedule = BulkScheduleStopSelector.animals(
       saved_itinerary,
       only_previously_scheduled=True )
 
@@ -271,7 +271,7 @@ def pack_animals_into_itinerary_in_memory(
    animals_to_pack = filter_animals_excluding_covered(
       animals_to_schedule,
       covered_keys )
-   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_pack )
+   sorted_loop_groups = MasterRouteLoopAnimalGrouper.group( animals_to_pack )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
       schedule_windows,

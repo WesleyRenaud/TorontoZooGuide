@@ -7,7 +7,7 @@ from typing import Any
 from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
-from .bulk_schedule_walk_order import representative_walk_node_id
+from .bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from ..core.guest_item_schedule_status import has_itinerary_schedule_times
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import TimeBlock
@@ -79,7 +79,7 @@ def bulk_schedule_start_state(
       key=lambda animal_row: DateValues.time_value_in_seconds(
          animal_row.end_time ) or -1 )
 
-   start_node_id = representative_walk_node_id(
+   start_node_id = BulkScheduleWalkOrderBuilder.representative_walk_node_id(
       walk_graph,
       entrance_node_id,
       last_scheduled_row.species,

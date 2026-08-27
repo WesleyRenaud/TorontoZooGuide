@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.scheduling.bulk.bulk_schedule_itinerary import is_itinerary_animal_unscheduled
-from api.itinerary.scheduling.bulk.bulk_schedule_walk_order import sort_animals_for_bulk_schedule
+from api.itinerary.scheduling.bulk.bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status import has_itinerary_schedule_times
 from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 
@@ -23,7 +23,7 @@ def test_walk_node_id_by_enclosure_name_resolves_named_and_unnamed_viewing_spots
 
 
 def test_sort_animals_for_bulk_schedule_orders_animals_by_master_route() -> None:
-   animals = sort_animals_for_bulk_schedule(
+   animals = BulkScheduleWalkOrderBuilder.sort_animals(
       [
          ItineraryAnimalRecord(
             species='Marabou Stork',
@@ -65,7 +65,7 @@ def test_sort_animals_for_bulk_schedule_orders_animals_by_master_route() -> None
 
 
 def test_sort_animals_for_bulk_schedule_orders_by_master_route() -> None:
-   animals = sort_animals_for_bulk_schedule(
+   animals = BulkScheduleWalkOrderBuilder.sort_animals(
       [
          ItineraryAnimalRecord(
             species='African Lion',
