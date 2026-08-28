@@ -15,4 +15,3 @@ class ParsedScheduleTimeOptions:
          'start_time': self.start_time,
          'duration_minutes': self.duration_minutes,
       }
-

@@ -152,4 +152,3 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
       item_name,
       date( 2026, 12, 25 ),
       4 ) == ( 'open', None )
-

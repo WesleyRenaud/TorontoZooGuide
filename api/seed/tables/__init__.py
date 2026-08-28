@@ -1,161 +1,162 @@
-from . import animal
-from . import animal_day_seasonal_viewability_multiplier
-from . import animal_status
-from . import animal_viewing_alert
-from . import animal_visibility_schedule
-from . import app_setting
-from . import attraction
-from . import attraction_animal
-from . import attraction_day_seasonal_availability_multiplier
-from . import attraction_hours_schedule
-from . import attraction_opening_schedule
-from . import attraction_schedule_override
-from . import defibrillator
-from . import drinking_fountain
-from . import drinking_fountain_day_seasonal_availability_multiplier
-from . import drinking_fountain_status
-from . import emergency_intercom
-from . import enclosure
-from . import enclosure_viewing
-from . import event_site
-from . import exhibit
-from . import exhibit_day_seasonal_availability_multiplier
-from . import exhibit_status
-from . import gift_shop
-from . import gift_shop_day_seasonal_availability_multiplier
-from . import gift_shop_opening_schedule
-from . import gift_shop_schedule_override
-from . import guardians_talk_animal
-from . import guardians_talk_cancellation
-from . import guardians_talk_occurrence
-from . import guardians_talk_schedule
-from . import guest_service
-from . import itinerary_animal
-from . import itinerary_attraction
-from . import itinerary_date
-from . import itinerary_event
-from . import itinerary_event_default
-from . import itinerary_exhibit
-from . import itinerary_guardians_talk
-from . import itinerary_status
-from . import itinerary_status_suppression
-from . import itinerary_transportation
-from . import itinerary_transportation_leg
-from . import itinerary_transportation_route_marker
-from . import itinerary_walk_route_leg
-from . import itinerary_walk_route_point
-from . import itinerary_walk_route_stop
-from . import itinerary_wild_encounter
-from . import legacy_table_drops
-from . import meet_the_guardians_talk
-from . import pavilion
-from . import picnic_site
-from . import region
-from . import restaurant
-from . import restaurant_day_seasonal_availability_multiplier
-from . import restaurant_opening_schedule
-from . import restaurant_schedule_override
-from . import restroom
-from . import restroom_alert
-from . import restroom_status
-from . import transportation
-from . import transportation_day_route
-from . import transportation_leg
-from . import transportation_route
-from . import transportation_route_leg
-from . import transportation_route_leg_marker
-from . import transportation_route_schedule
-from . import transportation_route_station
-from . import transportation_station
-from . import transportation_station_status
-from . import wild_encounter
-from . import wild_encounter_cancellation
-from . import wild_encounter_meeting_spot
-from . import wild_encounter_schedule
-from . import zoo_event
-from . import zoo_hours
-from . import zoo_update
+from __future__ import annotations
 
+from .animal_day_seasonal_viewability_multiplier_seed_table import AnimalDaySeasonalViewabilityMultiplierSeedTable
+from .animal_seed_table import AnimalSeedTable
+from .animal_status_seed_table import AnimalStatusSeedTable
+from .animal_viewing_alert_seed_table import AnimalViewingAlertSeedTable
+from .animal_visibility_schedule_seed_table import AnimalVisibilityScheduleSeedTable
+from .app_setting_seed_table import AppSettingSeedTable
+from .attraction_animal_seed_table import AttractionAnimalSeedTable
+from .attraction_day_seasonal_availability_multiplier_seed_table import AttractionDaySeasonalAvailabilityMultiplierSeedTable
+from .attraction_hours_schedule_seed_table import AttractionHoursScheduleSeedTable
+from .attraction_opening_schedule_seed_table import AttractionOpeningScheduleSeedTable
+from .attraction_schedule_override_seed_table import AttractionScheduleOverrideSeedTable
+from .attraction_seed_table import AttractionSeedTable
+from .defibrillator_seed_table import DefibrillatorSeedTable
+from .drinking_fountain_day_seasonal_availability_multiplier_seed_table import DrinkingFountainDaySeasonalAvailabilityMultiplierSeedTable
+from .drinking_fountain_seed_table import DrinkingFountainSeedTable
+from .drinking_fountain_status_seed_table import DrinkingFountainStatusSeedTable
+from .emergency_intercom_seed_table import EmergencyIntercomSeedTable
+from .enclosure_seed_table import EnclosureSeedTable
+from .enclosure_viewing_seed_table import EnclosureViewingSeedTable
+from .event_site_seed_table import EventSiteSeedTable
+from .exhibit_day_seasonal_availability_multiplier_seed_table import ExhibitDaySeasonalAvailabilityMultiplierSeedTable
+from .exhibit_seed_table import ExhibitSeedTable
+from .exhibit_status_seed_table import ExhibitStatusSeedTable
+from .gift_shop_day_seasonal_availability_multiplier_seed_table import GiftShopDaySeasonalAvailabilityMultiplierSeedTable
+from .gift_shop_opening_schedule_seed_table import GiftShopOpeningScheduleSeedTable
+from .gift_shop_schedule_override_seed_table import GiftShopScheduleOverrideSeedTable
+from .gift_shop_seed_table import GiftShopSeedTable
+from .guardians_talk_animal_seed_table import GuardiansTalkAnimalSeedTable
+from .guardians_talk_cancellation_seed_table import GuardiansTalkCancellationSeedTable
+from .guardians_talk_occurrence_seed_table import GuardiansTalkOccurrenceSeedTable
+from .guardians_talk_schedule_seed_table import GuardiansTalkScheduleSeedTable
+from .guest_service_seed_table import GuestServiceSeedTable
+from .itinerary_animal_seed_table import ItineraryAnimalSeedTable
+from .itinerary_attraction_seed_table import ItineraryAttractionSeedTable
+from .itinerary_date_seed_table import ItineraryDateSeedTable
+from .itinerary_event_default_seed_table import ItineraryEventDefaultSeedTable
+from .itinerary_event_seed_table import ItineraryEventSeedTable
+from .itinerary_exhibit_seed_table import ItineraryExhibitSeedTable
+from .itinerary_guardians_talk_seed_table import ItineraryGuardiansTalkSeedTable
+from .itinerary_status_seed_table import ItineraryStatusSeedTable
+from .itinerary_status_suppression_seed_table import ItineraryStatusSuppressionSeedTable
+from .itinerary_transportation_leg_seed_table import ItineraryTransportationLegSeedTable
+from .itinerary_transportation_route_marker_seed_table import ItineraryTransportationRouteMarkerSeedTable
+from .itinerary_transportation_seed_table import ItineraryTransportationSeedTable
+from .itinerary_walk_route_leg_seed_table import ItineraryWalkRouteLegSeedTable
+from .itinerary_walk_route_point_seed_table import ItineraryWalkRoutePointSeedTable
+from .itinerary_walk_route_stop_seed_table import ItineraryWalkRouteStopSeedTable
+from .itinerary_wild_encounter_seed_table import ItineraryWildEncounterSeedTable
+from .legacy_table_drops_seed_table import LegacyTableDropsSeedTable
+from .meet_the_guardians_talk_seed_table import MeetTheGuardiansTalkSeedTable
+from .pavilion_seed_table import PavilionSeedTable
+from .picnic_site_seed_table import PicnicSiteSeedTable
+from .region_seed_table import RegionSeedTable
+from .restaurant_day_seasonal_availability_multiplier_seed_table import RestaurantDaySeasonalAvailabilityMultiplierSeedTable
+from .restaurant_opening_schedule_seed_table import RestaurantOpeningScheduleSeedTable
+from .restaurant_schedule_override_seed_table import RestaurantScheduleOverrideSeedTable
+from .restaurant_seed_table import RestaurantSeedTable
+from .restroom_alert_seed_table import RestroomAlertSeedTable
+from .restroom_seed_table import RestroomSeedTable
+from .restroom_status_seed_table import RestroomStatusSeedTable
+from .transportation_day_route_seed_table import TransportationDayRouteSeedTable
+from .transportation_leg_seed_table import TransportationLegSeedTable
+from .transportation_route_leg_marker_seed_table import TransportationRouteLegMarkerSeedTable
+from .transportation_route_leg_seed_table import TransportationRouteLegSeedTable
+from .transportation_route_schedule_seed_table import TransportationRouteScheduleSeedTable
+from .transportation_route_seed_table import TransportationRouteSeedTable
+from .transportation_route_station_seed_table import TransportationRouteStationSeedTable
+from .transportation_seed_table import TransportationSeedTable
+from .transportation_station_seed_table import TransportationStationSeedTable
+from .transportation_station_status_seed_table import TransportationStationStatusSeedTable
+from .wild_encounter_cancellation_seed_table import WildEncounterCancellationSeedTable
+from .wild_encounter_meeting_spot_seed_table import WildEncounterMeetingSpotSeedTable
+from .wild_encounter_schedule_seed_table import WildEncounterScheduleSeedTable
+from .wild_encounter_seed_table import WildEncounterSeedTable
+from .zoo_event_seed_table import ZooEventSeedTable
+from .zoo_hours_seed_table import ZooHoursSeedTable
+from .zoo_update_seed_table import ZooUpdateSeedTable
 
 static_tables = [
-   region,
-   exhibit,
-   exhibit_day_seasonal_availability_multiplier,
-   animal,
-   enclosure,
-   enclosure_viewing,
-   animal_day_seasonal_viewability_multiplier,
-   pavilion,
-   restaurant,
-   restaurant_day_seasonal_availability_multiplier,
-   restroom,
-   gift_shop,
-   gift_shop_day_seasonal_availability_multiplier,
-   itinerary_event_default,
-   itinerary_status,
-   attraction,
-   attraction_animal,
-   attraction_day_seasonal_availability_multiplier,
-   transportation,
-   transportation_station,
-   transportation_route,
-   transportation_route_station,
-   transportation_day_route,
-   transportation_leg,
-   transportation_route_leg,
-   transportation_route_leg_marker,
-   meet_the_guardians_talk,
-   guardians_talk_animal,
-   wild_encounter_meeting_spot,
-   wild_encounter,
-   drinking_fountain_day_seasonal_availability_multiplier,
-   drinking_fountain,
-   defibrillator,
-   emergency_intercom,
-   guest_service,
-   picnic_site,
-   event_site,
-   zoo_hours,
+   RegionSeedTable,
+   ExhibitSeedTable,
+   ExhibitDaySeasonalAvailabilityMultiplierSeedTable,
+   AnimalSeedTable,
+   EnclosureSeedTable,
+   EnclosureViewingSeedTable,
+   AnimalDaySeasonalViewabilityMultiplierSeedTable,
+   PavilionSeedTable,
+   RestaurantSeedTable,
+   RestaurantDaySeasonalAvailabilityMultiplierSeedTable,
+   RestroomSeedTable,
+   GiftShopSeedTable,
+   GiftShopDaySeasonalAvailabilityMultiplierSeedTable,
+   ItineraryEventDefaultSeedTable,
+   ItineraryStatusSeedTable,
+   AttractionSeedTable,
+   AttractionAnimalSeedTable,
+   AttractionDaySeasonalAvailabilityMultiplierSeedTable,
+   TransportationSeedTable,
+   TransportationStationSeedTable,
+   TransportationRouteSeedTable,
+   TransportationRouteStationSeedTable,
+   TransportationDayRouteSeedTable,
+   TransportationLegSeedTable,
+   TransportationRouteLegSeedTable,
+   TransportationRouteLegMarkerSeedTable,
+   MeetTheGuardiansTalkSeedTable,
+   GuardiansTalkAnimalSeedTable,
+   WildEncounterMeetingSpotSeedTable,
+   WildEncounterSeedTable,
+   DrinkingFountainDaySeasonalAvailabilityMultiplierSeedTable,
+   DrinkingFountainSeedTable,
+   DefibrillatorSeedTable,
+   EmergencyIntercomSeedTable,
+   GuestServiceSeedTable,
+   PicnicSiteSeedTable,
+   EventSiteSeedTable,
+   ZooHoursSeedTable,
 ]
 
 runtime_tables = [
-   legacy_table_drops,
-   animal_status,
-   animal_visibility_schedule,
-   animal_viewing_alert,
-   exhibit_status,
-   restroom_status,
-   restroom_alert,
-   zoo_event,
-   zoo_update,
-   restaurant_opening_schedule,
-   restaurant_schedule_override,
-   gift_shop_opening_schedule,
-   gift_shop_schedule_override,
-   app_setting,
-   attraction_opening_schedule,
-   attraction_hours_schedule,
-   attraction_schedule_override,
-   transportation_route_schedule,
-   transportation_station_status,
-   guardians_talk_schedule,
-   guardians_talk_cancellation,
-   guardians_talk_occurrence,
-   wild_encounter_schedule,
-   wild_encounter_cancellation,
-   drinking_fountain_status,
-   itinerary_status_suppression,
-   itinerary_date,
-   itinerary_exhibit,
-   itinerary_animal,
-   itinerary_attraction,
-   itinerary_transportation,
-   itinerary_transportation_leg,
-   itinerary_transportation_route_marker,
-   itinerary_guardians_talk,
-   itinerary_wild_encounter,
-   itinerary_event,
-   itinerary_walk_route_stop,
-   itinerary_walk_route_point,
-   itinerary_walk_route_leg,
+   LegacyTableDropsSeedTable,
+   AnimalStatusSeedTable,
+   AnimalVisibilityScheduleSeedTable,
+   AnimalViewingAlertSeedTable,
+   ExhibitStatusSeedTable,
+   RestroomStatusSeedTable,
+   RestroomAlertSeedTable,
+   ZooEventSeedTable,
+   ZooUpdateSeedTable,
+   RestaurantOpeningScheduleSeedTable,
+   RestaurantScheduleOverrideSeedTable,
+   GiftShopOpeningScheduleSeedTable,
+   GiftShopScheduleOverrideSeedTable,
+   AppSettingSeedTable,
+   AttractionOpeningScheduleSeedTable,
+   AttractionHoursScheduleSeedTable,
+   AttractionScheduleOverrideSeedTable,
+   TransportationRouteScheduleSeedTable,
+   TransportationStationStatusSeedTable,
+   GuardiansTalkScheduleSeedTable,
+   GuardiansTalkCancellationSeedTable,
+   GuardiansTalkOccurrenceSeedTable,
+   WildEncounterScheduleSeedTable,
+   WildEncounterCancellationSeedTable,
+   DrinkingFountainStatusSeedTable,
+   ItineraryStatusSuppressionSeedTable,
+   ItineraryDateSeedTable,
+   ItineraryExhibitSeedTable,
+   ItineraryAnimalSeedTable,
+   ItineraryAttractionSeedTable,
+   ItineraryTransportationSeedTable,
+   ItineraryTransportationLegSeedTable,
+   ItineraryTransportationRouteMarkerSeedTable,
+   ItineraryGuardiansTalkSeedTable,
+   ItineraryWildEncounterSeedTable,
+   ItineraryEventSeedTable,
+   ItineraryWalkRouteStopSeedTable,
+   ItineraryWalkRoutePointSeedTable,
+   ItineraryWalkRouteLegSeedTable,
 ]

@@ -291,4 +291,3 @@ def test_opening_schedule_can_trim_existing_schedule_around_new_schedule(
       )
    ]
 
-

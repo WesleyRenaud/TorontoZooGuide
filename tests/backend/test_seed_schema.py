@@ -9,11 +9,9 @@ from seed_schema_support import PARTIAL_RUNTIME_TABLES
 from seed_schema_support import table_count
 
 from api.seed import data
-from api.seed.migrations.runner import ensure_migration_table
-from api.seed.migrations.runner import migration_files
-from api.seed.migrations.runner import run_migrations_on_cursor
-from api.seed.schema import create_schema
-from api.seed.user_itinerary_data import clear_user_itinerary_data
+from api.seed.migrations.migration_runner import MigrationRunner
+from api.seed.schema_creator import SchemaCreator
+from api.seed.user_itinerary_data_cleaner import UserItineraryDataCleaner
 
 
 def test_seed_data_exports_all_static_table_rows() -> None:
@@ -59,7 +57,7 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   create_schema( cursor )
+   SchemaCreator.create( cursor )
 
    cursor.execute(
       "INSERT INTO ItineraryDate ( ITINERARY_DATE ) VALUES ( '2026-06-15' );"
@@ -158,7 +156,7 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
       """
    )
 
-   clear_user_itinerary_data( cursor )
+   UserItineraryDataCleaner.clear( cursor )
 
    assert table_count( cursor, 'ItineraryDate' ) == 0
    assert table_count( cursor, 'ItineraryAnimal' ) == 0
@@ -180,17 +178,17 @@ def test_migrations_upgrade_partial_runtime_tables() -> None:
    for table, columns in PARTIAL_RUNTIME_TABLES.items():
       cursor.execute( f'CREATE TABLE { table } ( { columns } );' )
 
-   ensure_migration_table( cursor )
+   MigrationRunner.ensure_migration_table( cursor )
 
-   for migration_file in migration_files():
+   for migration_file in MigrationRunner.migration_files():
       if migration_file.name < '011_runtime_schema_column_additions.sql':
          cursor.execute(
             'INSERT INTO SchemaMigration ( MIGRATION_NAME ) VALUES ( ? );',
             ( migration_file.name, ),
          )
 
-   run_migrations_on_cursor( cursor )
-   create_schema( cursor )
+   MigrationRunner.run_on_cursor( cursor )
+   SchemaCreator.create( cursor )
 
    for table, expected in EXPECTED_RUNTIME_COLUMNS.items():
       assert expected <= column_names( cursor, table )
@@ -210,11 +208,11 @@ def test_migration_016_normalizes_schedule_time_display_format() -> None:
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   create_schema( cursor )
+   SchemaCreator.create( cursor )
 
-   ensure_migration_table( cursor )
+   MigrationRunner.ensure_migration_table( cursor )
 
-   for migration_file in migration_files():
+   for migration_file in MigrationRunner.migration_files():
       if migration_file.name < '016_normalize_schedule_time_display_format.sql':
          cursor.execute(
             'INSERT INTO SchemaMigration ( MIGRATION_NAME ) VALUES ( ? );',
@@ -290,7 +288,7 @@ def test_migration_016_normalizes_schedule_time_display_format() -> None:
       """
    )
 
-   run_migrations_on_cursor( cursor )
+   MigrationRunner.run_on_cursor( cursor )
 
    zoo_hours = cursor.execute(
       """   SELECT OPEN_TIME, LAST_ADMISSION_TIME, CLOSE_TIME

@@ -130,4 +130,3 @@ def test_set_get_and_clear_itinerary(
    assert cleared.attractions == []
    assert cleared.guardians_talks == []
    assert cleared.wild_encounters == []
-

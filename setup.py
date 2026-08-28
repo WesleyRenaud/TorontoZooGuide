@@ -1,5 +1,5 @@
-from api.seed.runner import main
+from api.seed.seed_runner import SeedRunner
 
 
 if __name__ == '__main__':
-   main()
+   SeedRunner.main()
