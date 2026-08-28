@@ -6,6 +6,9 @@ source = [
    "api/animals",
    "api/attractions",
    "api/exhibits",
+   "api/giftshops",
+   "api/restaurants",
+   "api/restrooms",
 ]
 omit = [
    "api/__main__.py",
