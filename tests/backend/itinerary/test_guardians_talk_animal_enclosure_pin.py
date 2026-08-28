@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
-from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
-from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
+from api.guardians.scheduling.guardians_talk_loop_schedule_pin_resolver import GuardiansTalkLoopSchedulePinResolver
+from api.guardians.scheduling.guardians_talk_loop_viewing_spot_index_resolver import GuardiansTalkLoopViewingSpotIndexResolver
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.itinerary_stop import ItineraryStop
@@ -141,7 +141,7 @@ def test_seeded_guardians_talk_animal_enclosure_links( db: DbControllers ) -> No
 
 def test_resolve_pin_prefers_seeded_outdoor_penguin_enclosure(
       db: DbControllers ) -> None:
-   loop_pin = resolve_guardians_talk_loop_pin(
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
       db.conn,
       _guardians_talk(
          name='African Penguin',
@@ -166,7 +166,7 @@ def test_resolve_pin_prefers_seeded_outdoor_penguin_enclosure(
 
 def test_resolve_pin_prefers_seeded_indoor_gorilla_enclosure(
       db: DbControllers ) -> None:
-   loop_pin = resolve_guardians_talk_loop_pin(
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
       db.conn,
       _guardians_talk(
          name='Western Lowland Gorilla',
@@ -184,7 +184,7 @@ def test_resolve_pin_prefers_seeded_indoor_gorilla_enclosure(
 
 def test_resolve_pin_uses_null_enclosure_name_for_african_lion(
       db: DbControllers ) -> None:
-   loop_pin = resolve_guardians_talk_loop_pin(
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
       db.conn,
       _guardians_talk(
          name='African Lion',
@@ -319,7 +319,7 @@ def test_viewing_spot_index_for_talk_uses_linked_enclosure_before_talk_name_matc
       'africa_savanna_canadian_domain'
    ]
 
-   index = viewing_spot_index_for_talk_in_loop(
+   index = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       master_route_loop,
       talk_name='African Penguin',
       talk_location='Africa Savanna',

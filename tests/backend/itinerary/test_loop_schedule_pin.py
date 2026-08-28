@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
+from api.guardians.scheduling.guardians_talk_loop_schedule_pin_resolver import GuardiansTalkLoopSchedulePinResolver
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
@@ -25,7 +25,7 @@ def test_resolve_guardians_talk_loop_pin_returns_none_for_unmapped_talk(
       start_time='10:00 AM',
       end_time='10:30 AM' )
 
-   assert resolve_guardians_talk_loop_pin(
+   assert GuardiansTalkLoopSchedulePinResolver.resolve(
       db.conn,
       guardians_talk,
       itinerary_stop ) is None
@@ -48,7 +48,7 @@ def test_resolve_guardians_talk_loop_pin_returns_pin_for_african_lion(
       start_time='10:00 AM',
       end_time='10:30 AM' )
 
-   loop_pin = resolve_guardians_talk_loop_pin(
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
       db.conn,
       guardians_talk,
       itinerary_stop )

@@ -4,7 +4,7 @@ from .guardians_talk_day_schedule_record import GuardiansTalkDayScheduleRecord
 from .guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
 from .guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
-from ..scheduling.guardians_talk_weekday_time import guardians_talk_includes_weekday
+from ..scheduling.guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...shared.calendar_dates import DateValues
 from ...shared.scheduled_occurrences import unique_sorted_by_key
 from ...types import Connection, DateKey
@@ -27,7 +27,7 @@ class GuardiansTalkDayScheduleProvider():
          for schedule_record in GuardiansTalkScheduleProvider.fetch_day_schedule_records_from_schedule(
             conn,
             target_date )
-         if guardians_talk_includes_weekday( schedule_record, weekday )
+         if GuardiansTalkWeekdayTimeResolver.includes_weekday( schedule_record, weekday )
       ]
       day_records.extend(
          GuardiansTalkOccurrenceProvider.fetch_day_schedule_records_from_occurrences(

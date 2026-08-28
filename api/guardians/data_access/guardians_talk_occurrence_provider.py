@@ -6,7 +6,7 @@ from .guardians_talk_occurrence_mapper import GuardiansTalkOccurrenceMapper
 from .guardians_talk_occurrence_record import GuardiansTalkOccurrenceRecord
 from .guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from ..occurrences.guardians_talk_occurrence_input import GuardiansTalkOccurrenceInput
-from ..scheduling.guardians_talk_weekday_time import guardians_talk_includes_weekday
+from ..scheduling.guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...shared.calendar_dates import DateValues
 from ...types import Connection, DateKey
 
@@ -72,7 +72,7 @@ class GuardiansTalkOccurrenceProvider():
             location=location,
             talk_time=talk_time,
             occurrence_date=occurrence_date ):
-         if guardians_talk_includes_weekday(
+         if GuardiansTalkWeekdayTimeResolver.includes_weekday(
                schedule_record,
                parsed_date.weekday() ):
             return True

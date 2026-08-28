@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
 from ...json_handler import JsonRequestHandler
-from ..scheduling.collapse_guardians_talks_for_map import collapse_guardians_talks_for_map
+from ..scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
 from ...shared.api_error_response import apply_api_error
 from ...shared.api_error_response import apply_api_failure
 from ...shared.enums.api_error_type import ApiErrorType
@@ -13,7 +13,7 @@ class GuardiansController():
    def get_guardians_talks( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      guardians_talks = collapse_guardians_talks_for_map(
+      guardians_talks = GuardiansTalkMapScheduleCollapser.collapse(
          GuardiansCoordinator.get_guardians_talk_schedule(
             month=data.get( 'month' ),
             day=data.get( 'day' ),
