@@ -22,9 +22,9 @@ from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLo
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
-from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
@@ -101,7 +101,7 @@ def _travel_seconds_between_animals(
       to_exhibit: str,
       from_enclosure_name: str | None = None,
       to_enclosure_name: str | None = None ) -> int:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    from_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       from_species,
       from_exhibit,
@@ -138,7 +138,7 @@ def test_travel_time_seconds_from_length_px_uses_floored_minutes() -> None:
 
 
 def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
@@ -151,7 +151,7 @@ def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
 
 
 def test_travel_time_seconds_between_nodes_matches_floor_helper() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
@@ -167,7 +167,7 @@ def test_travel_time_seconds_between_nodes_matches_floor_helper() -> None:
 
 
 def test_travel_time_seconds_between_unreachable_nodes_is_zero() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    assert WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
@@ -274,7 +274,7 @@ def test_assign_contiguous_slots_ending_by_reserves_travel_before_deadline() -> 
 
 
 def test_approach_travel_seconds_to_unit_is_zero_from_entry_node() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    unit = LoopScheduleUnitBuilder.build(
       [
          [
@@ -291,7 +291,7 @@ def test_approach_travel_seconds_to_unit_is_zero_from_entry_node() -> None:
 
 
 def test_approach_travel_seconds_to_unit_from_entrance_matches_helper() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    unit = LoopScheduleUnitBuilder.build(
       [
          [
@@ -307,7 +307,7 @@ def test_approach_travel_seconds_to_unit_from_entrance_matches_helper() -> None:
 
 
 def test_inter_stop_travel_seconds_between_two_animals() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    stops = [
       _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ),
       _animal_record( species='African Lion', exhibit='Africa Savanna' ),
@@ -325,7 +325,7 @@ def test_inter_stop_travel_seconds_between_two_animals() -> None:
 
 
 def test_packed_units_occupied_seconds_includes_approach_and_duration() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
    indo_unit = _prepared_loop_unit(
       stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
@@ -355,7 +355,7 @@ def test_packed_units_occupied_seconds_includes_approach_and_duration() -> None:
 
 
 def test_pack_window_rejects_unit_when_approach_travel_no_longer_fits() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = _seconds( '9:00 AM' )
    # 5 minutes fits dwell-only (300s) but not entrance approach (360s) + dwell.
    window_end_seconds = _seconds( '9:05 AM' )
@@ -376,7 +376,7 @@ def test_pack_window_rejects_unit_when_approach_travel_no_longer_fits() -> None:
 
 
 def test_pack_window_accepts_unit_when_window_covers_approach_and_dwell() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = _seconds( '9:00 AM' )
    window_end_seconds = _seconds( '9:11 AM' )
    indo_unit = _prepared_loop_unit(
@@ -396,7 +396,7 @@ def test_pack_window_accepts_unit_when_window_covers_approach_and_dwell() -> Non
 
 
 def test_pack_window_from_entry_node_keeps_dwell_only_fit() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = _seconds( '9:00 AM' )
    window_end_seconds = _seconds( '9:05 AM' )
    indo_unit = _prepared_loop_unit(
@@ -439,7 +439,7 @@ def test_auto_schedule_delays_first_animal_by_entrance_travel(
       item_type='animals',
       key=GRIZZLY_KEY )
 
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    expected_travel_seconds = WalkTravelTimeCalculator.seconds_between_nodes(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
@@ -612,12 +612,12 @@ def test_auto_schedule_attraction_after_animal_includes_travel(
    carousel = next(
       attraction for attraction in result.itinerary.attractions
       if attraction.name == CAROUSEL )
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
       None )
-   carousel_node = walk_node_for_map_location(
+   carousel_node = MapLocationWalkNodeLookup.for_map_location(
       MapLocationKind.ATTRACTION,
       CAROUSEL )
    assert lion_node_id is not None
@@ -667,7 +667,7 @@ def test_auto_schedule_animal_after_zoomobile_transportation_includes_travel(
 
    lion = result.itinerary.animals[ 0 ]
    zoomobile = result.itinerary.transportations[ 0 ]
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    zoomobile_node_id = TransportationWalkNodeResolver.resolve(
       ZOOMOBILE,
       legs=zoomobile.legs )
@@ -712,7 +712,7 @@ def test_bulk_schedule_animal_then_zoomobile_includes_travel(
    result = ItineraryCoordinator.bulk_schedule_itinerary()
    lion = result.itinerary.animals[ 0 ]
    zoomobile = result.itinerary.transportations[ 0 ]
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
@@ -856,7 +856,7 @@ def test_bulk_schedule_persists_floored_travel_minutes_on_walk_legs(
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_itinerary()
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
@@ -1008,7 +1008,7 @@ def test_early_admission_bulk_delays_from_nine_am_anchor(
 
 def test_prepare_loop_schedule_units_adds_inter_stop_travel_to_duration(
       db: DbControllers ) -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    units = LoopScheduleUnitBuilder.build(
       [
          [

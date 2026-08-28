@@ -8,7 +8,7 @@ from http_client import post_route
 from itinerary.support import ANIMAL_KEY, CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
 
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
@@ -18,7 +18,7 @@ def _travel_seconds_between_animals(
       from_exhibit: str,
       to_species: str,
       to_exhibit: str ) -> int:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    from_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       from_species,
       from_exhibit,

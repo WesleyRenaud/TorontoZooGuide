@@ -9,7 +9,7 @@ from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRout
 from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from conftest import DbControllers
 
@@ -47,7 +47,7 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
       confirming_early_admission=True,
    ).success
 
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    expected_path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],

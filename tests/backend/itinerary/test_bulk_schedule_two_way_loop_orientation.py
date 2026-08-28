@@ -11,7 +11,7 @@ from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from conftest import DbControllers
 
@@ -117,7 +117,7 @@ def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
    window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
 

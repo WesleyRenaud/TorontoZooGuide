@@ -37,7 +37,7 @@ from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 from ...warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
 
@@ -244,7 +244,7 @@ class BulkRescheduleLongWaitSimulator():
       anchor_seconds, day_end_seconds = prepared_window.window
       packing_itinerary = cls._itinerary_with_cleared_animal_times( itinerary )
       blockers = TimeBlockBuilder.collect_from_itinerary( packing_itinerary )
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       start_state = BulkScheduleWindowPreparer.start_state(
          walk_graph,
          [],

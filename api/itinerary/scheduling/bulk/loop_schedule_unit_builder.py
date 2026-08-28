@@ -11,7 +11,7 @@ from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
-from ....walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from ....walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from ....walk_graph.master_route import default_loop_id_by_stop_key
 from ....walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
 from ....walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
@@ -74,7 +74,7 @@ class LoopScheduleUnitBuilder():
          return TransportationWalkNodeResolver.resolve( stop.transportation )
 
       if isinstance( stop, ItineraryAttractionRecord ):
-         walk_node = walk_node_for_map_location(
+         walk_node = MapLocationWalkNodeLookup.for_map_location(
             MapLocationKind.ATTRACTION,
             stop.attraction )
 

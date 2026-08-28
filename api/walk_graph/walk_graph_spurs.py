@@ -4,6 +4,7 @@ from collections import deque
 from dataclasses import dataclass
 from functools import lru_cache
 
+from .data_access.walk_graph_provider import WalkGraphProvider
 from .domain.walk_graph import WalkGraph
 from .shortest_path import WalkGraphAdjacency
 from .walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
@@ -59,9 +60,7 @@ def is_walk_graph_spur_active(
 
 @lru_cache( maxsize=1 )
 def walk_graph_spurs() -> list[ WalkGraphSpur ]:
-   from .data_access.load_walk_graph import load_walk_graph
-
-   return walk_graph_spurs_for_graph( load_walk_graph() )
+   return walk_graph_spurs_for_graph( WalkGraphProvider.fetch() )
 
 
 def walk_graph_spurs_for_graph( graph: WalkGraph ) -> list[ WalkGraphSpur ]:

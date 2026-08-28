@@ -8,7 +8,7 @@ from ...models import Itinerary
 from .return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from ...shared.enums import ScheduleItemKind
 from .transit_station_ride_gap_checker import TransitStationRideGapChecker
-from ...walk_graph.data_access.load_walk_graph import load_walk_graph
+from ...walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.representative_walk_node_resolver import RepresentativeWalkNodeResolver
@@ -38,7 +38,7 @@ class ItineraryWalkRouteBuilder():
       if not ordered_anchors:
          return cls.empty()
 
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
       nodes_by_id = cls._walk_graph_nodes_by_id( walk_graph )
       route_stops: list[ ItineraryWalkRouteStop ] = []

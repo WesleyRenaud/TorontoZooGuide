@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from api.walk_graph.data_access.load_map_location_walk_nodes import load_map_location_walk_nodes
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.map_location_walk_node_provider import MapLocationWalkNodeProvider
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
-from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from api.walk_graph.shortest_path import WalkGraphAdjacency
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from api.walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
@@ -56,11 +56,11 @@ def _unique_one_way_path_through(
 
 
 def test_kangaroo_walk_thru_attraction_pins_mid_one_way_path() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
    adjacency = WalkGraphAdjacencyBuilder.build( graph )
    one_way_successors = _one_way_successors( adjacency )
 
-   attraction_walk_node = walk_node_for_map_location(
+   attraction_walk_node = MapLocationWalkNodeLookup.for_map_location(
       MapLocationKind.ATTRACTION,
       KANGAROO_WALK_THRU )
    assert attraction_walk_node is not None
@@ -68,7 +68,7 @@ def test_kangaroo_walk_thru_attraction_pins_mid_one_way_path() -> None:
    attraction_node_id = attraction_walk_node.walk_node_id
    walk_node_row = next(
       row
-      for row in load_map_location_walk_nodes()
+      for row in MapLocationWalkNodeProvider.fetch_records()
       if row.kind == MapLocationKind.ATTRACTION and row.name == KANGAROO_WALK_THRU
    )
    assert walk_node_row.walk_node_id == attraction_node_id

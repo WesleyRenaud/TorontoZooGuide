@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 
 
 def test_shortest_path_distance_from_node_to_itself_is_zero() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
 
    assert ShortestPathCalculator.distance(
       graph,
@@ -16,7 +16,7 @@ def test_shortest_path_distance_from_node_to_itself_is_zero() -> None:
 
 
 def test_shortest_path_distances_are_symmetric_for_known_nodes() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
    entrance_id = graph[ 'entrance_node_id' ]
    sample_node_id = graph[ 'nodes' ][ 0 ][ 'id' ]
 
@@ -28,7 +28,7 @@ def test_shortest_path_distances_are_symmetric_for_known_nodes() -> None:
 
 
 def test_shortest_path_includes_length_matching_distance() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
    entrance_id = graph[ 'entrance_node_id' ]
    neighbor_id = graph[ 'edges' ][ 0 ][ 'from' ]
 

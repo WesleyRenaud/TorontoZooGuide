@@ -11,7 +11,7 @@ from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....types import Connection
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
 class LoopUnitPinScheduler():
@@ -82,7 +82,7 @@ class LoopUnitPinScheduler():
 
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
-         load_walk_graph(),
+         WalkGraphProvider.fetch(),
          before_pin_animals )
 
       if prepared_stops is None:
@@ -265,7 +265,7 @@ class LoopUnitPinScheduler():
       ) -> int:
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
-         load_walk_graph(),
+         WalkGraphProvider.fetch(),
          animal_group )
 
       if prepared_stops is None:
@@ -331,7 +331,7 @@ class LoopUnitPinScheduler():
       ) -> int:
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
-         load_walk_graph(),
+         WalkGraphProvider.fetch(),
          animal_group )
 
       if prepared_stops is None:

@@ -10,9 +10,9 @@ from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_walk_stop import ScheduledWalkStop
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.map_location_kind import MapLocationKind
-from ....walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from ....walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
@@ -29,7 +29,7 @@ class ScheduleItemTravelTimeCalculator():
       if candidate_walk_node_id is None:
          return visit_anchor_seconds
 
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       previous_end_seconds, previous_node_id = (
          cls._previous_stop_end_and_walk_node(
             saved_itinerary,
@@ -57,7 +57,7 @@ class ScheduleItemTravelTimeCalculator():
       if walk_node_id is None:
          return 0
 
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
 
       return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
@@ -72,7 +72,7 @@ class ScheduleItemTravelTimeCalculator():
       if walk_node_id is None:
          return 0
 
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
 
       return WalkTravelTimeCalculator.seconds_between_nodes(
          walk_graph,
@@ -95,7 +95,7 @@ class ScheduleItemTravelTimeCalculator():
 
    @classmethod
    def walk_node_id_for_attraction( cls, attraction_name: str ) -> str | None:
-      walk_node = walk_node_for_map_location(
+      walk_node = MapLocationWalkNodeLookup.for_map_location(
          MapLocationKind.ATTRACTION,
          attraction_name )
 
@@ -190,7 +190,7 @@ class ScheduleItemTravelTimeCalculator():
          if talk.is_deleted:
             continue
 
-         walk_node = walk_node_for_map_location(
+         walk_node = MapLocationWalkNodeLookup.for_map_location(
             MapLocationKind.GUARDIANS_TALK,
             talk.name )
 
@@ -205,7 +205,7 @@ class ScheduleItemTravelTimeCalculator():
          if encounter.is_deleted:
             continue
 
-         walk_node = walk_node_for_map_location(
+         walk_node = MapLocationWalkNodeLookup.for_map_location(
             MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
             encounter.meeting_spot )
 
@@ -248,7 +248,7 @@ class ScheduleItemTravelTimeCalculator():
          visit_anchor_seconds: int,
          itinerary_context: dict,
          before_start_seconds: int | None ) -> tuple[ int, str ]:
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
       itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
       previous_candidates: list[ tuple[ int, str ] ] = [

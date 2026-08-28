@@ -3,16 +3,16 @@ from __future__ import annotations
 from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, schedule_time_after_seconds, unschedule_itinerary_item
 
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 LION_CHEETAH_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
-   load_walk_graph(),
+   WalkGraphProvider.fetch(),
    ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
    ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
 )
 CHEETAH_PENGUIN_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
-   load_walk_graph(),
+   WalkGraphProvider.fetch(),
    ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
    ViewingSpotWalkNodeIdResolver.resolve( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
 )
