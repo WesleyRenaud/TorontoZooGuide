@@ -18,7 +18,6 @@ from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.itinerary.routing.itinerary_stop_walk_route_sorter import ItineraryStopWalkRouteSorter
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
-from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord

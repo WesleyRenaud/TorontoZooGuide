@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
 from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
-from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 
 

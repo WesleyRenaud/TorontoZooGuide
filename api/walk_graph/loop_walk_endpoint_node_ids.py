@@ -9,7 +9,7 @@ from .domain.master_route_stop import is_attraction_route_stop
 from .domain.master_route_stop import MasterRouteStop
 from .domain.viewing_spot_reference import ViewingSpotReference
 from .map_location_walk_node_lookup import walk_node_for_map_location
-from .walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from .viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
 def loop_walk_endpoint_node_ids(
@@ -48,7 +48,7 @@ def _walk_node_id_for_route_stop( stop: MasterRouteStop ) -> str | None:
 
 def _walk_node_id_for_viewing_spot_reference(
       viewing_spot: ViewingSpotReference ) -> str | None:
-   return walk_node_id_for_viewing_spot(
+   return ViewingSpotWalkNodeIdResolver.resolve(
       viewing_spot.species,
       viewing_spot.exhibit,
       viewing_spot.name )

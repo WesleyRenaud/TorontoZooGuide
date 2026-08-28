@@ -10,10 +10,9 @@ from ....types import Connection
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....walk_graph.shortest_path import build_walk_graph_adjacency
-from ....walk_graph.shortest_path import shortest_path_distance
-from ....walk_graph.shortest_path import shortest_path_distances
 from ....walk_graph.shortest_path import WalkGraphAdjacency
+from ....walk_graph.shortest_path_calculator import ShortestPathCalculator
+from ....walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 
 class LoopWindowPacker():
@@ -25,7 +24,7 @@ class LoopWindowPacker():
          *,
          walk_graph: WalkGraph ) -> list[ PreparedLoopScheduleUnit ] | None:
       prepared_units: list[ PreparedLoopScheduleUnit ] = []
-      adjacency = build_walk_graph_adjacency( walk_graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
 
       for unit in units:
          prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
@@ -231,7 +230,7 @@ class LoopWindowPacker():
       cursor_seconds = window_start_seconds
       walk_node_id = current_node_id
       previous_side_cluster_id = departure_side_cluster_id
-      adjacency = build_walk_graph_adjacency( walk_graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
 
       while remaining_units:
          available_seconds = terminal_start_seconds - cursor_seconds
@@ -304,7 +303,7 @@ class LoopWindowPacker():
       cursor_seconds = window_start_seconds
       walk_node_id = current_node_id
       previous_side_cluster_id = departure_side_cluster_id
-      adjacency = build_walk_graph_adjacency( walk_graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
       preferred_side_cluster_sequence, prefer_soft_pin_loop_ids = (
          cls._choose_side_cluster_packing_order(
             schedule_window,
@@ -798,12 +797,12 @@ class LoopWindowPacker():
          return 0.0
 
       if adjacency is None:
-         distance_px = shortest_path_distance(
+         distance_px = ShortestPathCalculator.distance(
             walk_graph,
             from_node_id,
             to_node_id )
       else:
-         distance_px = shortest_path_distances(
+         distance_px = ShortestPathCalculator.distances(
             walk_graph,
             from_node_id,
             adjacency=adjacency ).get( to_node_id )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from .domain.map_location_kind import MapLocationKind
 from .domain.map_location_walk_node import MapLocationWalkNode
 from .domain.walk_graph import WalkGraph
-from .snap_point import snap_point_to_nearest_walk_node
+from .walk_node_snapper import WalkNodeSnapper
 
 
 def build_map_location_walk_nodes(
@@ -45,7 +45,7 @@ def _build_rows_for_source(
       location = str( source_row.get( 'location', '' ) or '' )
       x_percent = float( source_row[ 'x_coord' ] )
       y_percent = float( source_row[ 'y_coord' ] )
-      walk_node_id, snap_distance_px = snap_point_to_nearest_walk_node(
+      walk_node_id, snap_distance_px = WalkNodeSnapper.snap(
          x_percent,
          y_percent,
          graph )

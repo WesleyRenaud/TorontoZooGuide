@@ -11,9 +11,9 @@ from .transit_station_ride_gap_checker import TransitStationRideGapChecker
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
-from ...walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
-from ...walk_graph.shortest_path import build_walk_graph_adjacency
-from ...walk_graph.shortest_path import shortest_path
+from ...walk_graph.representative_walk_node_resolver import RepresentativeWalkNodeResolver
+from ...walk_graph.shortest_path_calculator import ShortestPathCalculator
+from ...walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 from .walk_route_anchor import WalkRouteAnchor
 from .walk_route_anchor_builder import WalkRouteAnchorBuilder
 from .walk_route_leg import WalkRouteLeg
@@ -39,7 +39,7 @@ class ItineraryWalkRouteBuilder():
          return cls.empty()
 
       walk_graph = load_walk_graph()
-      adjacency = build_walk_graph_adjacency( walk_graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
       nodes_by_id = cls._walk_graph_nodes_by_id( walk_graph )
       route_stops: list[ ItineraryWalkRouteStop ] = []
       legs: list[ WalkRouteLeg ] = []
@@ -72,7 +72,7 @@ class ItineraryWalkRouteBuilder():
             previous_anchor = next_anchor
             continue
 
-         leg_path = shortest_path(
+         leg_path = ShortestPathCalculator.find(
             walk_graph,
             current_node_id,
             next_node_id,
@@ -139,12 +139,12 @@ class ItineraryWalkRouteBuilder():
          parsed_key = AnimalScheduleItemKey.parse_species_exhibit( anchor.item_key )
 
          if parsed_key is not None:
-            return representative_walk_node_id_from_candidates(
+            return RepresentativeWalkNodeResolver.resolve(
                walk_graph,
                from_node_id,
                anchor.walk_node_ids )
 
-      return representative_walk_node_id_from_candidates(
+      return RepresentativeWalkNodeResolver.resolve(
          walk_graph,
          from_node_id,
          anchor.walk_node_ids )

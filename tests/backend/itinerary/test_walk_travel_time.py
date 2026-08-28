@@ -8,11 +8,9 @@ from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
-from api.walk_graph.shortest_path import shortest_path
-from api.walk_graph.shortest_path import shortest_path_distance
+from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from conftest import DbControllers
 
 GRIZZLY_KEY = 'Grizzly Bear||Canadian Domain'
@@ -50,7 +48,7 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
    ).success
 
    walk_graph = load_walk_graph()
-   expected_path = shortest_path(
+   expected_path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
@@ -78,7 +76,7 @@ def test_entrance_to_grizzly_bear_travel_time_is_about_thirty_minutes(
    assert first_leg.from_item_key == ENTRANCE_ITEM_KEY
    assert first_leg.to_item_key == GRIZZLY_KEY
    assert first_leg.node_ids == expected_path.node_ids
-   assert expected_path.length_px == shortest_path_distance(
+   assert expected_path.length_px == ShortestPathCalculator.distance(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )

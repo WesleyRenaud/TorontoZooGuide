@@ -13,7 +13,7 @@ from ....types import ScheduleTimeKey
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
-from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
 class ScheduleItemTravelTimeCalculator():
@@ -87,7 +87,7 @@ class ScheduleItemTravelTimeCalculator():
          species: str,
          exhibit: str,
          enclosure_name: str | None ) -> str | None:
-      return walk_node_id_for_viewing_spot(
+      return ViewingSpotWalkNodeIdResolver.resolve(
          species,
          exhibit,
          enclosure_name )

@@ -3,14 +3,14 @@ from __future__ import annotations
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.models import Animal
 from api.models import Itinerary
-from api.walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
+from api.walk_graph.viewing_walk_node_id_resolver import ViewingWalkNodeIdResolver
 
 
 def test_walk_node_id_for_outdoor_aldabra_tortoise_uses_viewing_location() -> None:
    pavilion = 'African Rainforest Pavilion'
 
-   assert walk_node_id_for_viewing_spot(
+   assert ViewingSpotWalkNodeIdResolver.resolve(
       'Aldabra Tortoise',
       pavilion,
       'Outdoor' ) == 'v-0281'
@@ -19,7 +19,7 @@ def test_walk_node_id_for_outdoor_aldabra_tortoise_uses_viewing_location() -> No
 def test_resolve_viewing_walk_node_id_for_outdoor_aldabra_tortoise() -> None:
    pavilion = 'African Rainforest Pavilion'
 
-   assert resolve_viewing_walk_node_id(
+   assert ViewingWalkNodeIdResolver.resolve(
       'Aldabra Tortoise',
       pavilion,
       47.091,

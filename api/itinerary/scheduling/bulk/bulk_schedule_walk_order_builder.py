@@ -3,10 +3,10 @@ from __future__ import annotations
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .master_route_stop_sorter import MasterRouteStopSorter
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
-from ....walk_graph.shortest_path import build_walk_graph_adjacency
-from ....walk_graph.shortest_path import shortest_path_distances
-from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from ....walk_graph.representative_walk_node_resolver import RepresentativeWalkNodeResolver
+from ....walk_graph.shortest_path_calculator import ShortestPathCalculator
+from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
+from ....walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 
 class BulkScheduleWalkOrderBuilder():
@@ -18,7 +18,7 @@ class BulkScheduleWalkOrderBuilder():
          species: str,
          exhibit: str,
          enclosure_name: str | None = None ) -> str | None:
-      return representative_walk_node_id_from_candidates(
+      return RepresentativeWalkNodeResolver.resolve(
          graph,
          from_node_id,
          cls._viewing_node_ids( species, exhibit, enclosure_name ) )
@@ -36,7 +36,7 @@ class BulkScheduleWalkOrderBuilder():
          species,
          exhibit,
          enclosure_name )
-      distances = shortest_path_distances( graph, from_node_id )
+      distances = ShortestPathCalculator.distances( graph, from_node_id )
 
       return cls._min_distance_to_viewing_nodes( distances, viewing_node_ids )
 
@@ -58,7 +58,7 @@ class BulkScheduleWalkOrderBuilder():
       if not animal_rows:
          return []
 
-      adjacency = build_walk_graph_adjacency( graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( graph )
       viewing_node_ids_by_animal = {
          animal_row.viewing_spot_key(): cls._viewing_node_ids(
             animal_row.species,
@@ -72,7 +72,7 @@ class BulkScheduleWalkOrderBuilder():
       current_node_id = start_node_id
 
       while remaining_animals:
-         distances = shortest_path_distances(
+         distances = ShortestPathCalculator.distances(
             graph,
             current_node_id,
             adjacency=adjacency )
@@ -87,7 +87,7 @@ class BulkScheduleWalkOrderBuilder():
          remaining_animals.remove( next_animal )
          ordered_animals.append( next_animal )
 
-         next_node_id = representative_walk_node_id_from_candidates(
+         next_node_id = RepresentativeWalkNodeResolver.resolve(
             graph,
             current_node_id,
             viewing_node_ids_by_animal[
@@ -105,7 +105,7 @@ class BulkScheduleWalkOrderBuilder():
          species: str,
          exhibit: str,
          enclosure_name: str | None ) -> list[ str ]:
-      walk_node_id = walk_node_id_for_viewing_spot(
+      walk_node_id = ViewingSpotWalkNodeIdResolver.resolve(
          species,
          exhibit,
          enclosure_name )

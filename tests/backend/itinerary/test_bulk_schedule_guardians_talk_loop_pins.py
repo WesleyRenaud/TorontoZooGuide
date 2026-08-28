@@ -14,7 +14,6 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
-from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.models import Animal

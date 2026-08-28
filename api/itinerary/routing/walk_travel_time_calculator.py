@@ -5,9 +5,9 @@ import math
 from ...shared.duration_values import duration_minutes_to_seconds
 from ...shared.enums import ScheduleItemKind
 from ...walk_graph.domain.walk_graph import WalkGraph
-from ...walk_graph.shortest_path import shortest_path
 from ...walk_graph.shortest_path import ShortestPath
 from ...walk_graph.shortest_path import WalkGraphAdjacency
+from ...walk_graph.shortest_path_calculator import ShortestPathCalculator
 from .walk_route_leg import WalkRouteLeg
 
 
@@ -38,7 +38,7 @@ class WalkTravelTimeCalculator():
          to_node_id: str,
          *,
          adjacency: WalkGraphAdjacency | None = None ) -> int:
-      path = shortest_path(
+      path = ShortestPathCalculator.find(
          walk_graph,
          from_node_id,
          to_node_id,
