@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from api.walk_graph.loop_walk_endpoint_node_ids_resolver import LoopWalkEndpointNodeIdsResolver
-from api.walk_graph.loop_walk_endpoint_node_ids_resolver import LoopWalkEndpointNodeIdsResolver
 from api.walk_graph.master_route_provider import MasterRouteProvider
 
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
-from ...shared.constants import itinerary_config_to_dict
+from ...shared.itinerary_config_builder import ItineraryConfigBuilder
 from ...types import Connection
 
 
@@ -17,7 +17,7 @@ class SuppressItineraryWarningResultResponseBuilder():
          'status': result.status.value,
          'reasons': [],
          'suppressed_warnings': [],
-         'itinerary_config': itinerary_config_to_dict( conn ),
+         'itinerary_config': ItineraryConfigBuilder.to_dict( conn ),
       }
 
       return payload

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Self
 
-from ...shared.name_matching_query import normalize_search_key
+from ...shared.text_values import TextValues
 
 
 @dataclass( frozen=True )
@@ -12,8 +12,8 @@ class SpeciesExhibitKey:
    exhibit: str
 
    def __post_init__( self ) -> None:
-      object.__setattr__( self, 'species', normalize_search_key( self.species ) )
-      object.__setattr__( self, 'exhibit', normalize_search_key( self.exhibit ) )
+      object.__setattr__( self, 'species', TextValues.normalize_for_matching( self.species ) )
+      object.__setattr__( self, 'exhibit', TextValues.normalize_for_matching( self.exhibit ) )
 
 
    @classmethod

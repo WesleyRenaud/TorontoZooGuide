@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from ...shared.duration_values import duration_minutes_to_seconds
+from ...shared.duration_values import DurationValues
 from ...shared.enums import ScheduleItemKind
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.shortest_path import ShortestPath
@@ -26,7 +26,7 @@ class WalkTravelTimeCalculator():
 
    @classmethod
    def seconds_from_length_px( cls, length_px: float ) -> int:
-      return duration_minutes_to_seconds(
+      return DurationValues.minutes_to_seconds(
          cls.minutes_from_length_px( length_px ) )
 
 

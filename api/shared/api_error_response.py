@@ -12,17 +12,22 @@ class ApiOperationFailure:
    params: dict[ str, Any ]
 
 
-def apply_api_error(
-      response: dict[ str, Any ],
-      error_type: ApiErrorType,
-      **params: object ) -> None:
-   response[ 'apiErrorType' ] = error_type.value
+class ApiErrorResponseApplier():
+   @classmethod
+   def apply_error(
+         cls,
+         response: dict[ str, Any ],
+         error_type: ApiErrorType,
+         **params: object ) -> None:
+      response[ 'apiErrorType' ] = error_type.value
 
-   if params:
-      response[ 'apiErrorParams' ] = params
+      if params:
+         response[ 'apiErrorParams' ] = params
 
 
-def apply_api_failure(
-      response: dict[ str, Any ],
-      failure: ApiOperationFailure ) -> None:
-   apply_api_error( response, failure.error_type, **failure.params )
+   @classmethod
+   def apply_failure(
+         cls,
+         response: dict[ str, Any ],
+         failure: ApiOperationFailure ) -> None:
+      cls.apply_error( response, failure.error_type, **failure.params )

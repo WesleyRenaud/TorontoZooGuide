@@ -9,9 +9,9 @@ from ..results.itinerary_save_result_response_builder import ItinerarySaveResult
 from ..results.itinerary_time_set_result_response_builder import ItineraryTimeSetResultResponseBuilder
 from ..results.suppress_itinerary_warning_result_response_builder import SuppressItineraryWarningResultResponseBuilder
 from ..scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
-from ...shared.api_error_response import apply_api_error
-from ...shared.constants import itinerary_config_to_dict
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.itinerary_config_builder import ItineraryConfigBuilder
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
@@ -278,7 +278,7 @@ class ItineraryController():
       conn = get_connection()
       handler._write_json( {
          'itinerary': itinerary.to_dict(),
-         'itinerary_config': itinerary_config_to_dict( conn ),
+         'itinerary_config': ItineraryConfigBuilder.to_dict( conn ),
          'itinerary_path': ItineraryPathBuilder.build( conn ),
       } )
 
@@ -292,7 +292,7 @@ class ItineraryController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_CLEAR_ITINERARY )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_CLEAR_ITINERARY )
 
       handler._write_json( response )
 
@@ -317,11 +317,11 @@ class ItineraryController():
       response = {
          'success': success,
          'itinerary': itinerary.to_dict() if itinerary != None else None,
-         'itinerary_config': itinerary_config_to_dict( conn ),
+         'itinerary_config': ItineraryConfigBuilder.to_dict( conn ),
          'itinerary_path': ItineraryPathBuilder.build( conn ),
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES )
 
       handler._write_json( response )

@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from typing import Generic
 from typing import TypeVar
 
-from .build_closed_opening_schedule_fields import build_closed_opening_schedule_fields
-from .build_closure_override_fields import build_closure_override_fields
-from .build_opening_schedule_weekday_fields import build_opening_schedule_weekday_fields
+from .closed_opening_schedule_fields_builder import ClosedOpeningScheduleFieldsBuilder
+from .closure_override_fields_builder import ClosureOverrideFieldsBuilder
 from .enums import AmenityNameField
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
+from .opening_schedule_weekday_fields_builder import OpeningScheduleWeekdayFieldsBuilder
 from ..types import DateInput
 
 
@@ -28,7 +28,7 @@ class AmenityStatusBuilders( Generic[ TOpeningSchedule, TScheduleOverride ] ):
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> TOpeningSchedule:
-      fields = build_closed_opening_schedule_fields(
+      fields = ClosedOpeningScheduleFieldsBuilder.build(
          name=name,
          start_date=start_date,
          end_date=end_date,
@@ -51,7 +51,7 @@ class AmenityStatusBuilders( Generic[ TOpeningSchedule, TScheduleOverride ] ):
          sunday: bool,
          holidays_only: bool,
          message: str ) -> TOpeningSchedule:
-      fields = build_opening_schedule_weekday_fields(
+      fields = OpeningScheduleWeekdayFieldsBuilder.build(
          name=name,
          start_date=start_date,
          end_date=end_date,
@@ -74,7 +74,7 @@ class AmenityStatusBuilders( Generic[ TOpeningSchedule, TScheduleOverride ] ):
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> TScheduleOverride:
-      fields = build_closure_override_fields(
+      fields = ClosureOverrideFieldsBuilder.build(
          name=name,
          start_date=start_date,
          end_date=end_date,

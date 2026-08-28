@@ -6,7 +6,7 @@ from .guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ..scheduling.guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...shared.calendar_dates import DateValues
-from ...shared.scheduled_occurrences import unique_sorted_by_key
+from ...shared.scheduled_occurrence_builder import ScheduledOccurrenceSorter
 from ...types import Connection, DateKey
 
 
@@ -34,7 +34,7 @@ class GuardiansTalkDayScheduleProvider():
             conn,
             target_date ) )
 
-      return unique_sorted_by_key(
+      return ScheduledOccurrenceSorter.unique_sorted_by_key(
          day_records,
          key=lambda day_record: (
             day_record.name,

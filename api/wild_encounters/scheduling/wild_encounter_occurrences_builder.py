@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from ...models import ScheduledOccurrence
-from ...shared.scheduled_occurrences import build_scheduled_occurrences
+from ...shared.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 
 
 class WildEncounterOccurrencesBuilder():
@@ -13,7 +13,7 @@ class WildEncounterOccurrencesBuilder():
          schedule_records: list[ WildEncounterScheduleRecord ],
          cancellation_records: list[ WildEncounterCancellationRecord ],
          days_ahead: int ) -> list[ ScheduledOccurrence ]:
-      return build_scheduled_occurrences(
+      return ScheduledOccurrenceBuilder.build(
          schedule_records,
          days_ahead=days_ahead,
          get_time=lambda schedule_record: schedule_record.encounter_time,

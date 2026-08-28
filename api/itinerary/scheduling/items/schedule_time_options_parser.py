@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .parsed_schedule_time_options import ParsedScheduleTimeOptions
 from ....shared.calendar_dates import DateValues
-from ....shared.duration_values import normalize_duration_minutes
+from ....shared.duration_values import DurationValues
 from ....shared.enums import ItineraryErrorType
 from ....types import DurationInput
 from ....types import TimeInput
@@ -21,7 +21,7 @@ class ScheduleTimeOptionsParser():
       if start_time_was_provided and normalized_start is None:
          return ItineraryErrorType.SAVE_FAILED
 
-      parsed_duration = normalize_duration_minutes( duration_minutes )
+      parsed_duration = DurationValues.normalize_minutes( duration_minutes )
 
       if duration_minutes is not None and parsed_duration is None:
          return ItineraryErrorType.SAVE_FAILED

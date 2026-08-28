@@ -4,10 +4,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic
 
-from .opening_schedule_conflict import save_opening_schedule_replacing_overlaps
-from .opening_schedule_conflict import save_opening_schedule_trimming_overlaps
-from .opening_schedule_conflict import trim_opening_schedule_conflict
 from .opening_schedule_conflict_record import TConflict
+from .opening_schedule_conflict_trimmer import OpeningScheduleConflictSaver
+from .opening_schedule_conflict_trimmer import OpeningScheduleConflictTrimmer
 from .opening_schedule_input import TSchedule
 from ..types import Connection
 
@@ -24,7 +23,7 @@ class OpeningScheduleConflictResolution( Generic[ TSchedule, TConflict ] ):
          self,
          conn: Connection,
          schedule: TSchedule ) -> bool:
-      return save_opening_schedule_replacing_overlaps(
+      return OpeningScheduleConflictSaver.save_replacing_overlaps(
          conn,
          schedule,
          fetch_conflicts=self.fetch_conflicts,
@@ -36,7 +35,7 @@ class OpeningScheduleConflictResolution( Generic[ TSchedule, TConflict ] ):
          self,
          conn: Connection,
          schedule: TSchedule ) -> bool:
-      return save_opening_schedule_trimming_overlaps(
+      return OpeningScheduleConflictSaver.save_trimming_overlaps(
          conn,
          schedule,
          fetch_conflicts=self.fetch_conflicts,
@@ -49,7 +48,7 @@ class OpeningScheduleConflictResolution( Generic[ TSchedule, TConflict ] ):
          conn: Connection,
          conflict: TConflict,
          schedule: TSchedule ) -> None:
-      trim_opening_schedule_conflict(
+      OpeningScheduleConflictTrimmer.trim(
          conn,
          conflict,
          schedule,

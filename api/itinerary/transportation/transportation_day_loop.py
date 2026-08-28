@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...shared.duration_values import duration_minutes_to_seconds
+from ...shared.duration_values import DurationValues
 from .transportation_route_leg_segment import TransportationRouteLegSegment
 
 
@@ -19,4 +19,4 @@ class TransportationDayLoop:
 
 
    def duration_seconds( self ) -> int:
-      return duration_minutes_to_seconds( self.duration_minutes() )
+      return DurationValues.minutes_to_seconds( self.duration_minutes() )

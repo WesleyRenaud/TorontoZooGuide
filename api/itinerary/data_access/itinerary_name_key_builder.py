@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ...shared.name_matching_query import normalize_search_key
+from ...shared.text_values import TextValues
 
 
 class ItineraryNameKeyBuilder():
    @classmethod
    def build( cls, value: str ) -> str:
-      return normalize_search_key( value )
+      return TextValues.normalize_for_matching( value )

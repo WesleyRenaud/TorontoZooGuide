@@ -5,7 +5,7 @@ from datetime import date
 from ...models import Update
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...shared.name_matching_query import normalize_search_key
+from ...shared.text_values import TextValues
 from .update_type import update_type_display_order
 
 
@@ -29,7 +29,7 @@ class UpdatesDisplayBuilder():
       return (
          update_type_display_order( update.update_type ),
          end_date,
-         normalize_search_key( update.title ),
+         TextValues.normalize_for_matching( update.title ),
       )
 
 

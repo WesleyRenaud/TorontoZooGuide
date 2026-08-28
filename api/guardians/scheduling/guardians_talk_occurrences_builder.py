@@ -5,7 +5,7 @@ from ..data_access.guardians_talk_occurrence_record import GuardiansTalkOccurren
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...models import ScheduledOccurrence
-from ...shared.scheduled_occurrences import build_scheduled_occurrences
+from ...shared.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 
 
 class GuardiansTalkOccurrencesBuilder():
@@ -36,7 +36,7 @@ class GuardiansTalkOccurrencesBuilder():
                occurrence_record.talk_time ) )
       ]
 
-      return build_scheduled_occurrences(
+      return ScheduledOccurrenceBuilder.build(
          schedule_records,
          days_ahead=days_ahead,
          get_time=lambda schedule_record: schedule_record.talk_time,

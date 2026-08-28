@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from ...models import Pavilion
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
-from ...shared.name_matching_query import normalize_search_key
-from ...shared.name_matching_query import sort_items_by_key
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
+from ...shared.text_values import TextValues
 
 
 class PavilionsMatchingQueryBuilder():
    @classmethod
    def _name_key( cls, pavilion: Pavilion ) -> str:
-      return normalize_search_key( pavilion.name )
+      return TextValues.normalize_for_matching( pavilion.name )
 
 
    @classmethod
@@ -18,7 +16,7 @@ class PavilionsMatchingQueryBuilder():
          cls,
          pavilions: list[ Pavilion ],
          query: str ) -> list[ Pavilion ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          pavilions,
          query,
          cls._name_key )
@@ -28,7 +26,7 @@ class PavilionsMatchingQueryBuilder():
    def sort_by_name(
          cls,
          pavilions: list[ Pavilion ] ) -> list[ Pavilion ]:
-      return sort_items_by_key( pavilions, cls._name_key )
+      return NameMatchingQueryBuilder.sort_by_key( pavilions, cls._name_key )
 
 
    @classmethod
@@ -36,7 +34,7 @@ class PavilionsMatchingQueryBuilder():
          cls,
          pavilions: list[ Pavilion ],
          query: str ) -> list[ Pavilion ]:
-      return build_matching_query(
+      return NameMatchingQueryBuilder.build(
          pavilions,
          query,
          cls._name_key,

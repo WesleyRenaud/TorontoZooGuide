@@ -13,22 +13,22 @@ from api.models import Itinerary
 from api.models import WildEncounter
 from api.shared.constants import ANIMAL_VISIBILITY_CHANGE_THRESHOLD
 from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
-from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ItineraryTransportationStationRole
+from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.shared.value_conversion import ValueConversion
 from api.shared.weather import Weather
 
 
 def test_itinerary_config_exposes_animal_visibility_change_threshold() -> None:
-   assert itinerary_config_to_dict()[
+   assert ItineraryConfigBuilder.to_dict()[
       'animal_visibility_change_threshold'
    ] == ANIMAL_VISIBILITY_CHANGE_THRESHOLD
 
 
 def test_itinerary_config_exposes_itinerary_animal_min_likelihood() -> None:
-   assert itinerary_config_to_dict()[
+   assert ItineraryConfigBuilder.to_dict()[
       'itinerary_animal_min_likelihood'
    ] == ITINERARY_ANIMAL_MIN_LIKELIHOOD
 
@@ -73,50 +73,50 @@ def test_itinerary_activity_scheduler_sets_activity_times_and_events() -> None:
 
 
 def test_itinerary_config_exposes_event_types() -> None:
-   assert itinerary_config_to_dict()[ 'itinerary_event_types' ] == [
+   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_event_types' ] == [
       event_type.value for event_type in ItineraryEventType
    ]
 
 
 def test_itinerary_config_exposes_visit_boundary_event_types() -> None:
-   assert itinerary_config_to_dict()[ 'itinerary_visit_boundary_event_types' ] == {
+   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_visit_boundary_event_types' ] == {
       'arrival': ItineraryEventType.ARRIVAL.value,
       'departure': ItineraryEventType.DEPARTURE.value,
    }
 
 
 def test_itinerary_config_exposes_error_types() -> None:
-   assert itinerary_config_to_dict()[ 'itinerary_error_types' ] == {
+   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_error_types' ] == {
       error_type.name: error_type.value
       for error_type in ItineraryErrorType
    }
 
 
 def test_itinerary_config_exposes_adjustment_types() -> None:
-   assert itinerary_config_to_dict()[ 'itinerary_adjustment_types' ] == {
+   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_adjustment_types' ] == {
       adjustment_type.name: adjustment_type.value
       for adjustment_type in ItineraryAdjustmentType
    }
 
 
 def test_itinerary_config_exposes_transportation_station_roles() -> None:
-   assert itinerary_config_to_dict()[
+   assert ItineraryConfigBuilder.to_dict()[
       'itinerary_transportation_station_roles'
    ] == ItineraryTransportationStationRole.to_config_dict()
-   assert itinerary_config_to_dict()[
+   assert ItineraryConfigBuilder.to_dict()[
       'itinerary_transportation_station_onboarding_roles'
    ] == ItineraryTransportationStationRole.onboarding_role_values()
-   assert itinerary_config_to_dict()[
+   assert ItineraryConfigBuilder.to_dict()[
       'itinerary_transportation_station_offboarding_roles'
    ] == ItineraryTransportationStationRole.offboarding_role_values()
 
 
 def test_itinerary_config_exposes_suppressed_error_types_without_connection() -> None:
-   assert itinerary_config_to_dict()[ 'suppressed_error_types' ] == []
+   assert ItineraryConfigBuilder.to_dict()[ 'suppressed_error_types' ] == []
 
 
 def test_itinerary_config_exposes_itinerary_statuses_without_connection() -> None:
-   assert itinerary_config_to_dict()[ 'itinerary_statuses' ] == []
+   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_statuses' ] == []
 
 
 @pytest.mark.parametrize(

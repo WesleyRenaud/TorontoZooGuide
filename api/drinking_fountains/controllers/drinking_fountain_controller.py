@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.drinking_fountain_coordinator import DrinkingFountainCoordinator
 from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 
@@ -44,7 +44,7 @@ class DrinkingFountainController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_CLOSED )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_CLOSED )
 
       handler._write_json( response )
 
@@ -67,6 +67,6 @@ class DrinkingFountainController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_OPEN )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_OPEN )
 
       handler._write_json( response )

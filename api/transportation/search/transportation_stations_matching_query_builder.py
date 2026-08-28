@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ...models import TransportationStation
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
 
 
 class TransportationStationsMatchingQueryBuilder():
@@ -11,7 +10,7 @@ class TransportationStationsMatchingQueryBuilder():
          cls,
          transportation_stations: list[ TransportationStation ],
          query: str ) -> list[ TransportationStation ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          transportation_stations,
          query,
          TransportationStation.name_key )
@@ -22,7 +21,7 @@ class TransportationStationsMatchingQueryBuilder():
          cls,
          transportation_stations: list[ TransportationStation ],
          query: str ) -> list[ TransportationStation ]:
-      return build_matching_query(
+      return NameMatchingQueryBuilder.build(
          transportation_stations,
          query,
          TransportationStation.name_key )

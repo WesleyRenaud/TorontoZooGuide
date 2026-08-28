@@ -3,7 +3,7 @@ from __future__ import annotations
 from http_support import make_handler, response_json, StubZooControllers
 
 import api.server as server
-from api.shared.constants import itinerary_config_to_dict
+from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 
 EMPTY_ITINERARY_PATH = {
    'stops': [],
@@ -28,7 +28,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       'status': 'success',
       'reasons': [],
       'suppressed_warnings': [],
-      'itinerary_config': itinerary_config_to_dict(),
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
       'itinerary_path': EMPTY_ITINERARY_PATH,
       'itinerary': {
          'date': '2026-06-15',
@@ -48,7 +48,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       'status': 'success',
       'reasons': [],
       'suppressed_warnings': [],
-      'itinerary_config': itinerary_config_to_dict(),
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
       'itinerary_path': EMPTY_ITINERARY_PATH,
       'itinerary': {
          'date': '2026-06-15',
@@ -95,7 +95,7 @@ def test_suppress_itinerary_warning_endpoint(
       'status': 'success',
       'reasons': [],
       'suppressed_warnings': [],
-      'itinerary_config': itinerary_config_to_dict(),
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
    }
    assert StubZooControllers.instances[ 0 ].calls == [
       (

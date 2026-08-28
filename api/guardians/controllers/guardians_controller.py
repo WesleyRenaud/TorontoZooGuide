@@ -3,8 +3,7 @@ from __future__ import annotations
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
 from ...json_handler import JsonRequestHandler
 from ..scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
-from ...shared.api_error_response import apply_api_error
-from ...shared.api_error_response import apply_api_failure
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 
@@ -95,7 +94,7 @@ class GuardiansController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
 
       return response
 
@@ -235,7 +234,7 @@ class GuardiansController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_END_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_END_GUARDIANS_TALK_SCHEDULE, talk=talk, location=location )
 
       handler._write_json( response )
 
@@ -264,7 +263,7 @@ class GuardiansController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_CANCEL_GUARDIANS_TALK_OCCURRENCE, talk=talk, location=location, date=date )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_CANCEL_GUARDIANS_TALK_OCCURRENCE, talk=talk, location=location, date=date )
 
       handler._write_json( response )
 
@@ -292,6 +291,6 @@ class GuardiansController():
       }
 
       if failure is not None:
-         apply_api_failure( response, failure )
+         ApiErrorResponseApplier.apply_failure( response, failure )
 
       handler._write_json( response )

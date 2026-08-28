@@ -8,14 +8,9 @@ from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from .gift_shop_context import GiftShopContext
 from ...models import GiftShop
 from ...shared.enums import ScheduleStatus
-from ...shared.opening_schedule_seasonal_multiplier import get_day_seasonal_availability_multiplier
-from ...shared.opening_schedule_status import calculate_seasonal_likelihood
-from ...shared.opening_schedule_status import get_active_opening_schedule_status
-from ...shared.opening_schedule_status import get_active_schedule_override_status
-from ...shared.opening_schedule_status import group_records_by_name
-from ...shared.opening_schedule_status import is_open_on_weekday
-from ...shared.opening_schedule_status import resolve_amenity_likelihood_and_message
-from ...shared.opening_schedule_visit_context import resolve_opening_schedule_visit_context
+from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
+from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
+from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 
 
@@ -26,7 +21,7 @@ class GiftShopBuilder():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear ) -> GiftShopContext:
-      return resolve_opening_schedule_visit_context(
+      return OpeningScheduleVisitContextResolver.resolve(
          day=day,
          month=month,
          year=year )
@@ -36,21 +31,21 @@ class GiftShopBuilder():
    def calculate_likelihood(
          cls,
          day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
-      return calculate_seasonal_likelihood( day_seasonal_availability_multiplier )
+      return OpeningScheduleStatusResolver.calculate_seasonal_likelihood( day_seasonal_availability_multiplier )
 
 
    @classmethod
    def group_schedule_records_by_name(
          cls,
          schedule_records: list[ GiftShopScheduleRecord ] ) -> dict[ str, list[ GiftShopScheduleRecord ] ]:
-      return group_records_by_name( schedule_records, lambda record: record.gift_shop )
+      return OpeningScheduleStatusResolver.group_records_by_name( schedule_records, lambda record: record.gift_shop )
 
 
    @classmethod
    def group_schedule_override_records_by_name(
          cls,
          override_records: list[ GiftShopScheduleOverrideRecord ] ) -> dict[ str, list[ GiftShopScheduleOverrideRecord ] ]:
-      return group_records_by_name( override_records, lambda record: record.gift_shop )
+      return OpeningScheduleStatusResolver.group_records_by_name( override_records, lambda record: record.gift_shop )
 
 
    @classmethod
@@ -59,7 +54,7 @@ class GiftShopBuilder():
          schedule_record: GiftShopScheduleRecord,
          weekday: int,
          is_holiday: bool ) -> bool:
-      return is_open_on_weekday(
+      return OpeningScheduleStatusResolver.is_open_on_weekday(
          schedule_record=schedule_record,
          weekday=weekday,
          is_holiday=is_holiday )
@@ -71,7 +66,7 @@ class GiftShopBuilder():
          schedule_records: list[ GiftShopScheduleRecord ],
          target_date: date,
          weekday: int ) -> tuple[ ScheduleStatus, str | None ]:
-      return get_active_opening_schedule_status(
+      return OpeningScheduleStatusResolver.get_active_opening_schedule_status(
          schedule_records=schedule_records,
          target_date=target_date,
          weekday=weekday )
@@ -82,7 +77,7 @@ class GiftShopBuilder():
          cls,
          override_records: list[ GiftShopScheduleOverrideRecord ],
          target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
-      return get_active_schedule_override_status(
+      return OpeningScheduleStatusResolver.get_active_schedule_override_status(
          override_records=override_records,
          target_date=target_date )
 
@@ -92,7 +87,7 @@ class GiftShopBuilder():
          cls,
          gift_shop_record: GiftShopRecord,
          context: GiftShopContext ) -> SeasonalMultiplier:
-      return get_day_seasonal_availability_multiplier(
+      return OpeningScheduleSeasonalMultiplierResolver.resolve(
          weekday_multiplier=gift_shop_record.weekday_multiplier,
          weekend_holiday_multiplier=gift_shop_record.weekend_holiday_multiplier,
          is_weekend_or_holiday=context.is_weekend_or_holiday )
@@ -106,7 +101,7 @@ class GiftShopBuilder():
          schedule_override_records: list[ GiftShopScheduleOverrideRecord ],
          context: GiftShopContext ) -> GiftShop:
 
-      likelihood, closed_message = resolve_amenity_likelihood_and_message(
+      likelihood, closed_message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
          name=gift_shop_record.name,
          schedule_records=schedule_records,
          override_records=schedule_override_records,
