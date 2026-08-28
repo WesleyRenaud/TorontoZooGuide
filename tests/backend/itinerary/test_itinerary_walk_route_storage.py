@@ -12,7 +12,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalkRouteMatcher
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
-from api.itinerary.results.itinerary_result_response import itinerary_result_to_dict
+from api.itinerary.results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
@@ -163,7 +163,7 @@ def test_itinerary_result_to_dict_includes_itinerary_path(
 
    assert result.success
 
-   payload = itinerary_result_to_dict( result, conn=db.conn )
+   payload = ItinerarySaveResultResponseBuilder.to_dict( result, conn=db.conn )
 
    assert payload[ 'itinerary_path' ] == ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn ).to_dict()
    assert payload[ 'itinerary_path' ][ 'points' ]
@@ -208,7 +208,7 @@ def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
 
    expected_route = ItineraryWalkRouteBuilder.build( result.itinerary )
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
-   payload = itinerary_result_to_dict( result, conn=db.conn )
+   payload = ItinerarySaveResultResponseBuilder.to_dict( result, conn=db.conn )
 
    assert expected_route.legs
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )

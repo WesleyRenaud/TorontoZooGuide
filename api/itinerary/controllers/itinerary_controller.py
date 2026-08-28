@@ -4,10 +4,10 @@ from ..coordinators.itinerary_coordinator import ItineraryCoordinator
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ...json_handler import JsonRequestHandler
 from ...request_connection import get_connection
-from ..results.build_itinerary_path import build_itinerary_path
-from ..results.itinerary_result_response import itinerary_result_to_dict
-from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
-from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
+from ..results.itinerary_path_builder import ItineraryPathBuilder
+from ..results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
+from ..results.itinerary_time_set_result_response_builder import ItineraryTimeSetResultResponseBuilder
+from ..results.suppress_itinerary_warning_result_response_builder import SuppressItineraryWarningResultResponseBuilder
 from ..scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from ...shared.api_error_response import apply_api_error
 from ...shared.constants import itinerary_config_to_dict
@@ -74,7 +74,7 @@ class ItineraryController():
          confirming_attraction_without_animal=(
             confirming_attraction_without_animal ) )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection(),
          include_config=True )
@@ -130,7 +130,7 @@ class ItineraryController():
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection(),
          include_config=True )
@@ -152,7 +152,7 @@ class ItineraryController():
             confirming_fixed_time_item_long_wait ),
  )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection(),
          include_config=True )
@@ -169,7 +169,7 @@ class ItineraryController():
       save_result = ItineraryCoordinator.unschedule_all_itinerary_items(
          visit_date_temp=temp )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection(),
          include_config=True )
@@ -188,7 +188,7 @@ class ItineraryController():
       save_result = ItineraryCoordinator.unschedule_itinerary_item(
          schedule_item_key )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection() )
 
@@ -206,7 +206,7 @@ class ItineraryController():
       save_result = ItineraryCoordinator.remove_itinerary_item(
          schedule_item_key )
 
-      response = itinerary_result_to_dict(
+      response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection() )
 
@@ -227,7 +227,7 @@ class ItineraryController():
          confirming_short_visit=confirming_short_visit,
          confirming_early_admission=confirming_early_admission )
 
-      response = itinerary_time_set_result_to_dict(
+      response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection() )
 
@@ -245,7 +245,7 @@ class ItineraryController():
          departure_time=departure_time,
          confirming_short_visit=confirming_short_visit )
 
-      response = itinerary_time_set_result_to_dict(
+      response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,
          conn=get_connection() )
 
@@ -261,7 +261,7 @@ class ItineraryController():
       result = ItineraryCoordinator.suppress_itinerary_warning(
          warning_type=warning_type )
 
-      response = suppress_itinerary_warning_result_to_dict(
+      response = SuppressItineraryWarningResultResponseBuilder.to_dict(
          result,
          conn=get_connection() )
 
@@ -279,7 +279,7 @@ class ItineraryController():
       handler._write_json( {
          'itinerary': itinerary.to_dict(),
          'itinerary_config': itinerary_config_to_dict( conn ),
-         'itinerary_path': build_itinerary_path( conn ),
+         'itinerary_path': ItineraryPathBuilder.build( conn ),
       } )
 
 
@@ -318,7 +318,7 @@ class ItineraryController():
          'success': success,
          'itinerary': itinerary.to_dict() if itinerary != None else None,
          'itinerary_config': itinerary_config_to_dict( conn ),
-         'itinerary_path': build_itinerary_path( conn ),
+         'itinerary_path': ItineraryPathBuilder.build( conn ),
       }
 
       if not success:

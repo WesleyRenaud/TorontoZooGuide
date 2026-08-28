@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..animal_item_key import format_animal_schedule_item_key
+from ..animal_item_key import AnimalScheduleItemKey
 from .itinerary_stop import ENTRANCE_ITEM_KEY
 from .itinerary_stop import ItineraryStop
 from ...models import Itinerary
@@ -52,7 +52,7 @@ class ItineraryStopResolver():
          stops.append(
             ItineraryStop(
                schedule_item_kind=ScheduleItemKind.ANIMAL,
-               item_key=format_animal_schedule_item_key(
+               item_key=AnimalScheduleItemKey.wire(
                   animal.species,
                   animal.exhibit,
                   animal.enclosure_name ),
