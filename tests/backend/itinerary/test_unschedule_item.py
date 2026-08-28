@@ -4,17 +4,17 @@ from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERA
 
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 LION_CHEETAH_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
    load_walk_graph(),
-   walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
-   walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
+   ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
+   ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
 )
 CHEETAH_PENGUIN_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
    load_walk_graph(),
-   walk_node_id_for_viewing_spot( 'Cheetah', 'Africa Savanna', None ),
-   walk_node_id_for_viewing_spot( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
+   ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
+   ViewingSpotWalkNodeIdResolver.resolve( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
 )
 CHEETAH_START = schedule_time_after_seconds( '10:15 AM', LION_CHEETAH_TRAVEL_SECONDS )
 CHEETAH_END = schedule_time_after_seconds( CHEETAH_START, 15 * 60 )

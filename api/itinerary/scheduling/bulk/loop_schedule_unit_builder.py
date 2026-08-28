@@ -16,7 +16,7 @@ from ....walk_graph.master_route import default_loop_id_by_stop_key
 from ....walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
 from ....walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
 from ....walk_graph.master_route import default_master_route_loop_by_id
-from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
 class LoopScheduleUnitBuilder():
@@ -83,7 +83,7 @@ class LoopScheduleUnitBuilder():
 
          return walk_node.walk_node_id
 
-      return walk_node_id_for_viewing_spot(
+      return ViewingSpotWalkNodeIdResolver.resolve(
          stop.species,
          stop.exhibit,
          stop.enclosure_name )

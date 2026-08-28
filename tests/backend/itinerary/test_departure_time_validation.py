@@ -5,13 +5,13 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LI
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 CAROUSEL_AFTER_LION = schedule_time_after_seconds(
    schedule_time_after_seconds( '3:45 PM', 8 * 60 ),
    WalkTravelTimeCalculator.seconds_between_nodes(
       load_walk_graph(),
-      walk_node_id_for_viewing_spot( 'African Lion', 'Africa Savanna', None ),
+      ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
       ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( CAROUSEL ),
    ),
 )

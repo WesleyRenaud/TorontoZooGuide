@@ -14,7 +14,7 @@ from ...walk_graph.domain.map_location_walk_node import MapLocationWalkNode
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
-from ...walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
+from ...walk_graph.viewing_walk_node_id_resolver import ViewingWalkNodeIdResolver
 
 
 class ItineraryStopResolver():
@@ -41,7 +41,7 @@ class ItineraryStopResolver():
          if animal.covered_by_talk:
             continue
 
-         walk_node_id = resolve_viewing_walk_node_id(
+         walk_node_id = ViewingWalkNodeIdResolver.resolve(
             animal.species,
             animal.exhibit,
             animal.x_coord,

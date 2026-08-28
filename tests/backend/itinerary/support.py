@@ -25,7 +25,7 @@ from api.types import DateInput
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
@@ -208,7 +208,7 @@ def entrance_travel_seconds_to_animal(
       exhibit: str,
       enclosure_name: str | None = None ) -> int:
    walk_graph = load_walk_graph()
-   walk_node_id = walk_node_id_for_viewing_spot(
+   walk_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       species,
       exhibit,
       enclosure_name )

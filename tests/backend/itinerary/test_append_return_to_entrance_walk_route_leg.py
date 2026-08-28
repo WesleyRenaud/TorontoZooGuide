@@ -6,7 +6,7 @@ from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import Ret
 from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
-from api.walk_graph.shortest_path import shortest_path_node_ids
+from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 
 
 def test_append_return_to_entrance_walk_route_leg_skips_when_already_at_entrance() -> None:
@@ -60,7 +60,7 @@ def test_append_return_to_entrance_walk_route_leg_appends_shortest_path_back() -
    route_stops = [ from_stop ]
    legs = []
    route_node_ids: list[ str ] = []
-   expected_node_ids = shortest_path_node_ids(
+   expected_node_ids = ShortestPathCalculator.node_ids(
       walk_graph,
       sample_node_id,
       entrance_node_id )

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from api.itinerary.routing.itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
-from api.itinerary.routing.itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.shared.enums import ScheduleItemKind
 

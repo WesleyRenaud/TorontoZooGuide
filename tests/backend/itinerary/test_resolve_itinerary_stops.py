@@ -12,7 +12,6 @@ from api.itinerary.routing.itinerary_schedule_window_partitioner import Itinerar
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
-from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator

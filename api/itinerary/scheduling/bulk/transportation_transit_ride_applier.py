@@ -13,7 +13,6 @@ from .planned_transit_ride import PlannedTransitRide
 from ...routing.transit_ride_endpoint import TransitRideEndpoint
 from ...routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_animal_anchor import ScheduledAnimalAnchor
 from ....shared.calendar_dates import DateValues
 from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
@@ -31,11 +30,11 @@ from ....types import DateKey
 from ....types import ScheduleTimeKey
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....walk_graph.shortest_path import build_walk_graph_adjacency
-from ....walk_graph.shortest_path import shortest_path_distance
 from ....walk_graph.shortest_path import WalkGraphAdjacency
-from ....walk_graph.snap_point import snap_point_to_nearest_walk_node
-from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from ....walk_graph.shortest_path_calculator import ShortestPathCalculator
+from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
+from ....walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
+from ....walk_graph.walk_node_snapper import WalkNodeSnapper
 
 
 class TransportationTransitRideApplier():
@@ -53,7 +52,7 @@ class TransportationTransitRideApplier():
          return
 
       walk_graph = load_walk_graph()
-      adjacency = build_walk_graph_adjacency( walk_graph )
+      adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
       entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
@@ -194,7 +193,7 @@ class TransportationTransitRideApplier():
          if station.name not in route_stations:
             continue
 
-         walk_node_id, _ = snap_point_to_nearest_walk_node(
+         walk_node_id, _ = WalkNodeSnapper.snap(
             station.x_coord,
             station.y_coord,
             walk_graph )
@@ -233,7 +232,7 @@ class TransportationTransitRideApplier():
             animal.enclosure_name )
 
          if walk_node_id is None:
-            walk_node_id = walk_node_id_for_viewing_spot(
+            walk_node_id = ViewingSpotWalkNodeIdResolver.resolve(
                animal.species,
                animal.exhibit,
                animal.enclosure_name )
@@ -298,7 +297,7 @@ class TransportationTransitRideApplier():
          walk_graph: WalkGraph,
          adjacency: WalkGraphAdjacency,
    ) -> PlannedTransitRide | None:
-      direct_walk_px = shortest_path_distance(
+      direct_walk_px = ShortestPathCalculator.distance(
          walk_graph,
          from_node_id,
          to_node_id,
@@ -315,7 +314,7 @@ class TransportationTransitRideApplier():
       best_ride: PlannedTransitRide | None = None
 
       for board_station, board_node_id in station_walk_nodes.items():
-         walk_to_board = shortest_path_distance(
+         walk_to_board = ShortestPathCalculator.distance(
             walk_graph,
             from_node_id,
             board_node_id,
@@ -341,7 +340,7 @@ class TransportationTransitRideApplier():
             if ride_duration_minutes > max_ride_minutes:
                continue
 
-            walk_from_alight = shortest_path_distance(
+            walk_from_alight = ShortestPathCalculator.distance(
                walk_graph,
                alight_node_id,
                to_node_id,

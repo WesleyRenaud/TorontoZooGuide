@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from .domain.enclosure_viewing_walk_node import EnclosureViewingWalkNode
 from .domain.walk_graph import WalkGraph
-from .snap_point import snap_distance_to_walk_node
-from .snap_point import snap_point_to_nearest_walk_node
+from .walk_node_snapper import WalkNodeSnapper
 
 
 def build_enclosure_viewing_walk_nodes(
@@ -21,13 +20,13 @@ def build_enclosure_viewing_walk_nodes(
 
       if walk_node_id_override is not None:
          walk_node_id = str( walk_node_id_override )
-         snap_distance_px = snap_distance_to_walk_node(
+         snap_distance_px = WalkNodeSnapper.distance(
             x_percent,
             y_percent,
             walk_node_id,
             graph )
       else:
-         walk_node_id, snap_distance_px = snap_point_to_nearest_walk_node(
+         walk_node_id, snap_distance_px = WalkNodeSnapper.snap(
             x_percent,
             y_percent,
             graph )

@@ -13,7 +13,7 @@ from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalc
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
 LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
@@ -40,11 +40,11 @@ def _travel_seconds_between_animals(
       to_exhibit: str,
       to_enclosure_name: str | None ) -> int:
    walk_graph = load_walk_graph()
-   from_node_id = walk_node_id_for_viewing_spot(
+   from_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       from_species,
       from_exhibit,
       from_enclosure_name )
-   to_node_id = walk_node_id_for_viewing_spot(
+   to_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       to_species,
       to_exhibit,
       to_enclosure_name )

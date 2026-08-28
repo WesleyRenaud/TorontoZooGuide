@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from .domain.walk_graph import WalkGraph
-from .shortest_path import build_walk_graph_adjacency
 from .shortest_path import WalkGraphAdjacency
+from .walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 
 MIN_SPUR_NODE_COUNT = 15
@@ -69,7 +69,7 @@ def walk_graph_spurs_for_graph( graph: WalkGraph ) -> list[ WalkGraphSpur ]:
 
 
 def _walk_graph_spurs_from_graph( graph: WalkGraph ) -> list[ WalkGraphSpur ]:
-   adjacency = build_walk_graph_adjacency( graph )
+   adjacency = WalkGraphAdjacencyBuilder.build( graph )
    entrance_node_id = str( graph[ 'entrance_node_id' ] )
    max_spur_node_count = int( len( adjacency ) * MAX_SPUR_NODE_FRACTION )
    spur_regions: list[ WalkGraphSpur ] = []

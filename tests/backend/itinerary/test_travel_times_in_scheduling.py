@@ -14,9 +14,6 @@ from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
@@ -28,8 +25,8 @@ from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
-from api.walk_graph.shortest_path import shortest_path
-from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
+from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
 ZOOMOBILE = 'Zoomobile'
@@ -105,11 +102,11 @@ def _travel_seconds_between_animals(
       from_enclosure_name: str | None = None,
       to_enclosure_name: str | None = None ) -> int:
    walk_graph = load_walk_graph()
-   from_node_id = walk_node_id_for_viewing_spot(
+   from_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       from_species,
       from_exhibit,
       from_enclosure_name )
-   to_node_id = walk_node_id_for_viewing_spot(
+   to_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       to_species,
       to_exhibit,
       to_enclosure_name )
@@ -142,7 +139,7 @@ def test_travel_time_seconds_from_length_px_uses_floored_minutes() -> None:
 
 def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
    walk_graph = load_walk_graph()
-   lion_node_id = walk_node_id_for_viewing_spot(
+   lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
       None )
@@ -155,7 +152,7 @@ def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
 
 def test_travel_time_seconds_between_nodes_matches_floor_helper() -> None:
    walk_graph = load_walk_graph()
-   path = shortest_path(
+   path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )
@@ -616,7 +613,7 @@ def test_auto_schedule_attraction_after_animal_includes_travel(
       attraction for attraction in result.itinerary.attractions
       if attraction.name == CAROUSEL )
    walk_graph = load_walk_graph()
-   lion_node_id = walk_node_id_for_viewing_spot(
+   lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
       None )
@@ -674,7 +671,7 @@ def test_auto_schedule_animal_after_zoomobile_transportation_includes_travel(
    zoomobile_node_id = TransportationWalkNodeResolver.resolve(
       ZOOMOBILE,
       legs=zoomobile.legs )
-   lion_node_id = walk_node_id_for_viewing_spot(
+   lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
       None )
@@ -716,7 +713,7 @@ def test_bulk_schedule_animal_then_zoomobile_includes_travel(
    lion = result.itinerary.animals[ 0 ]
    zoomobile = result.itinerary.transportations[ 0 ]
    walk_graph = load_walk_graph()
-   lion_node_id = walk_node_id_for_viewing_spot(
+   lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       'African Lion',
       'Africa Savanna',
       None )
@@ -860,7 +857,7 @@ def test_bulk_schedule_persists_floored_travel_minutes_on_walk_legs(
 
    result = ItineraryCoordinator.bulk_schedule_itinerary()
    walk_graph = load_walk_graph()
-   path = shortest_path(
+   path = ShortestPathCalculator.find(
       walk_graph,
       walk_graph[ 'entrance_node_id' ],
       GRIZZLY_WALK_NODE_ID )

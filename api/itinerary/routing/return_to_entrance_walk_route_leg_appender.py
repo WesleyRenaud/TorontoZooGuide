@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...walk_graph.domain.walk_graph import WalkGraph
-from ...walk_graph.shortest_path import shortest_path
 from ...walk_graph.shortest_path import WalkGraphAdjacency
+from ...walk_graph.shortest_path_calculator import ShortestPathCalculator
 from .walk_route_anchor import WalkRouteAnchor
 from .walk_route_leg import WalkRouteLeg
 from .walk_route_polyline_builder import WalkRoutePolylineBuilder
@@ -26,7 +26,7 @@ class ReturnToEntranceWalkRouteLegAppender():
       if current_node_id == entrance_node_id:
          return
 
-      return_leg_path = shortest_path(
+      return_leg_path = ShortestPathCalculator.find(
          walk_graph,
          current_node_id,
          entrance_node_id,

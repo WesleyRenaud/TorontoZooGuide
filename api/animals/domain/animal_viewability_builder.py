@@ -11,7 +11,8 @@ from ...shared.enums import EnclosureType
 from ...shared.enums import ScheduleStatus
 from ...shared.value_conversion import ValueConversion
 from ...shared.weather import Weather
-from ...walk_graph.resolve_viewing_walk_node_id import apply_viewing_walk_node_id_to_animal
+from ...walk_graph.viewing_walk_node_id_applier import ViewingWalkNodeIdApplier
+from ...walk_graph.viewing_walk_node_id_resolver import ViewingWalkNodeIdResolver
 
 
 class AnimalViewabilityBuilder():
@@ -254,7 +255,7 @@ class AnimalViewabilityBuilder():
          viewing_alert_messages=viewing_alert_messages,
          include_all_viewing_spots=animal.include_all_viewing_spots )
 
-      apply_viewing_walk_node_id_to_animal( viewable_animal )
+      ViewingWalkNodeIdApplier.apply( viewable_animal )
 
       return viewable_animal
 

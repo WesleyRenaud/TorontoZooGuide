@@ -6,10 +6,9 @@ from api.walk_graph.data_access.load_map_location_walk_nodes import load_map_loc
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
-from api.walk_graph.shortest_path import build_walk_graph_adjacency
-from api.walk_graph.shortest_path import shortest_path_distance
-from api.walk_graph.shortest_path import shortest_path_node_ids
 from api.walk_graph.shortest_path import WalkGraphAdjacency
+from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
+from api.walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
@@ -58,7 +57,7 @@ def _unique_one_way_path_through(
 
 def test_kangaroo_walk_thru_attraction_pins_mid_one_way_path() -> None:
    graph = load_walk_graph()
-   adjacency = build_walk_graph_adjacency( graph )
+   adjacency = WalkGraphAdjacencyBuilder.build( graph )
    one_way_successors = _one_way_successors( adjacency )
 
    attraction_walk_node = walk_node_for_map_location(
@@ -85,13 +84,13 @@ def test_kangaroo_walk_thru_attraction_pins_mid_one_way_path() -> None:
       assert to_id in one_way_successors.get( from_id, [] )
       assert from_id not in one_way_successors.get( to_id, [] )
 
-   path_to_attraction = shortest_path_node_ids(
+   path_to_attraction = ShortestPathCalculator.node_ids(
       graph,
       entry_node_id,
       attraction_node_id )
    assert path_to_attraction == chain[ : attraction_index + 1 ]
 
-   path_from_attraction_to_entry = shortest_path_node_ids(
+   path_from_attraction_to_entry = ShortestPathCalculator.node_ids(
       graph,
       attraction_node_id,
       entry_node_id )
@@ -99,10 +98,10 @@ def test_kangaroo_walk_thru_attraction_pins_mid_one_way_path() -> None:
    assert exit_node_id in path_from_attraction_to_entry
    assert path_from_attraction_to_entry[ 1 ] == chain[ attraction_index + 1 ]
 
-   assert shortest_path_distance(
+   assert ShortestPathCalculator.distance(
       graph,
       entry_node_id,
-      attraction_node_id ) < shortest_path_distance(
+      attraction_node_id ) < ShortestPathCalculator.distance(
          graph,
          exit_node_id,
          attraction_node_id )

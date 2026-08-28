@@ -14,7 +14,6 @@ from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalk
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
-from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
