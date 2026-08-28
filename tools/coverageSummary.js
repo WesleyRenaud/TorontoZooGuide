@@ -6,9 +6,13 @@ import { join } from 'node:path';
 const SUMMARY_FILE = join(tmpdir(), 'tzg-coverage-summary.json');
 const MINIMUM_COVERAGE_PERCENT = 80;
 
+// TODO(api-test-migration): When tests/api is the sole Python test tree and all api/
+// modules are migrated, change coverage:py to --cov=api (drop per-module paths) and
+// update pyproject.toml [tool.coverage.run] source to match.
+
 const COVERAGE_COMMANDS = [
    {
-      label: 'Backend',
+      label: 'API',
       script: 'coverage:py',
       parseCoverage: parseBackendCoverage,
    },
