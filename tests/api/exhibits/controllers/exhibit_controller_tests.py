@@ -223,6 +223,24 @@ def Test_SetExhibitClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
    assert result.get( 'apiErrorParams' ) == { 'name': EXHIBIT_NAME }
 
 
+def Test_SetExhibitOpen_TestHttpRequest_ExpectCouldNotSetOpenApiError(
+      stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
+   StubExhibitCoordinator.default_success = False
+   handler = make_handler(
+      '/set-exhibit-open',
+      { 'exhibit': EXHIBIT_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == 'couldNotSetOpen'
+   assert result.get( 'apiErrorParams' ) == { 'name': EXHIBIT_NAME }
+
+
 def Test_SetExhibitOpen_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
       stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
    handler = make_handler(
