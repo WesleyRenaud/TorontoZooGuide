@@ -10,16 +10,16 @@ class MasterRouteLoopStopGrouper():
    @classmethod
    def group(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> list[ list[ LoopScheduleStop ] ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ list[ LoopScheduleStop.Stop ] ]:
       sorted_stops = MasterRouteStopSorter.sort( stops )
 
       if not sorted_stops:
          return []
 
       loop_indexes = MasterRouteProvider.loop_index_by_stop_key()
-      groups: list[ list[ LoopScheduleStop ] ] = []
+      groups: list[ list[ LoopScheduleStop.Stop ] ] = []
       current_loop_index: int | None = None
-      current_group: list[ LoopScheduleStop ] = []
+      current_group: list[ LoopScheduleStop.Stop ] = []
 
       for stop in sorted_stops:
          loop_index = loop_indexes.get( LoopScheduleStopExtractor.stop_key( stop ) )

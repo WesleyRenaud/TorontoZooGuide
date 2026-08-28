@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from ...shared.enums import ScheduleItemKind
+from typing import NamedTuple
 
 
-ViewingSpotKey = tuple[ str, str, float, float ]
+class ViewingSpotKey( NamedTuple ):
+   species: str
+   exhibit: str
+   x: float
+   y: float

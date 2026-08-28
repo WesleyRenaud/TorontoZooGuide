@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from .transportation_route_mapper import TransportationRouteMapper
 from .transportation_route_record import TransportationRouteRecord
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationRouteProvider():
    @classmethod
    def fetch_transportation_routes_by_name(
          cls,
-         conn: Connection ) -> list[ TransportationRouteRecord ]:
+         conn: Types.Connection ) -> list[ TransportationRouteRecord ]:
       cur = conn.cursor()
 
       try:

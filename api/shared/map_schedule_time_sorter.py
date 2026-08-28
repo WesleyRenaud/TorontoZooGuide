@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from .calendar_dates import DateValues
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class MapScheduleTimeSorter():
    @classmethod
    def unique_sorted(
          cls,
-         times: list[ ScheduleTimeKey ] ) -> list[ str ]:
+         times: list[ Types.ScheduleTimeKey ] ) -> list[ str ]:
       unique_times: dict[ int, str ] = {}
 
       for time_value in times:

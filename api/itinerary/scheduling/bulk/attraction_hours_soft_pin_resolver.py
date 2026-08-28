@@ -13,8 +13,7 @@ from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
-from ....types import Connection
-from ....types import DateKey
+from ....types import Types
 
 
 AttractionHoursSoftPinStop = (
@@ -27,11 +26,11 @@ class AttractionHoursSoftPinResolver():
    @classmethod
    def resolve(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          attractions: list[ AttractionHoursSoftPinStop ],
          loop_units: list[ LoopScheduleUnit ],
-         visit_date: date | DateKey,
+         visit_date: date | Types.DateKey,
          zoo_operating_hours: OperatingHours,
       ) -> list[ AttractionHoursSoftPin ]:
       parsed_visit_date = DateValues.parse_date_value( visit_date )
@@ -120,12 +119,12 @@ class AttractionHoursSoftPinResolver():
    @classmethod
    def stops_before(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          loop_id: str,
          soft_pin: AttractionHoursSoftPin,
-      ) -> list[ LoopScheduleStop ]:
-      before_stops: list[ LoopScheduleStop ] = []
+      ) -> list[ LoopScheduleStop.Stop ]:
+      before_stops: list[ LoopScheduleStop.Stop ] = []
 
       for stop in stops:
          stop_index = LoopPinSegmentSplitter.viewing_spot_index_for_stop(

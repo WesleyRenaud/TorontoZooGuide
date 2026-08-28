@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ..types import DateKey, ScheduleTimeKey
+from ..types import Types
 
 
 class ZooHours:
    def __init__(
          self,
-         date: DateKey,
-         early_admission_time: ScheduleTimeKey,
-         open_time: ScheduleTimeKey,
-         last_admission_time: ScheduleTimeKey,
-         close_time: ScheduleTimeKey ) -> None:
+         date: Types.DateKey,
+         early_admission_time: Types.ScheduleTimeKey,
+         open_time: Types.ScheduleTimeKey,
+         last_admission_time: Types.ScheduleTimeKey,
+         close_time: Types.ScheduleTimeKey ) -> None:
 
       self.date = date
       self.early_admission_time = early_admission_time

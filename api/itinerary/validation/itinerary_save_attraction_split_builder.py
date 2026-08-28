@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ..data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
-from ...types import Connection
+from ...types import Types
 
 
 class ItinerarySaveAttractionSplitBuilder():
    @classmethod
    def split_names(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_names: list[ str ],
    ) -> tuple[ list[ str ], list[ str ] ]:
       also_transportation_names = (

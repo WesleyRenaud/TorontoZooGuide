@@ -14,7 +14,7 @@ from ...models import ItineraryEvent
 from ...models import ItineraryTransportation
 from ...models import ItineraryTransportationStation
 from ...models import WildEncounter
-from ...types import DateInput, ScheduleTimeKey
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -38,7 +38,7 @@ class ItineraryBuilder():
    @classmethod
    def build(
          cls,
-         date: DateInput,
+         date: Types.DateInput,
          selected_exhibits: list[ str ],
          animals: list[ Animal ],
          attractions: list[ Attraction ],
@@ -47,8 +47,8 @@ class ItineraryBuilder():
          guardians_talks: list[ GuardiansTalk ],
          wild_encounters: list[ WildEncounter ],
          events: list[ ItineraryEvent ],
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> Itinerary:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> Itinerary:
 
       return Itinerary(
          date=date,

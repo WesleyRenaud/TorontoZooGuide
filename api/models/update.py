@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..types import DateKey
+from ..types import Types
 
 
 class Update:
@@ -9,8 +9,8 @@ class Update:
          title: str,
          description: str,
          update_type: str,
-         start_date: DateKey,
-         end_date: DateKey ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey ) -> None:
       self.title = title
       self.description = description
       self.update_type = update_type

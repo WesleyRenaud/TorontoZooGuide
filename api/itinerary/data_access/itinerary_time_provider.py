@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ...types import Connection, ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryTimeProvider():
    @classmethod
    def set_itinerary_arrival_time(
          cls,
-         conn: Connection,
-         arrival_time: ScheduleTimeKey ) -> bool:
+         conn: Types.Connection,
+         arrival_time: Types.ScheduleTimeKey ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -27,8 +27,8 @@ class ItineraryTimeProvider():
    @classmethod
    def set_itinerary_departure_time(
          cls,
-         conn: Connection,
-         departure_time: ScheduleTimeKey ) -> bool:
+         conn: Types.Connection,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       cur = conn.cursor()
 
       try:

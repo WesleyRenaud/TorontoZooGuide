@@ -6,13 +6,13 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ..data_access.itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
 from ..data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
-from ..data_access.itinerary_animal_save_carryover_record import ItineraryAnimalSaveCarryover
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...models import Animal
 from ...models import AnimalDiff
 from ...shared.value_conversion import ValueConversion
-from ...types import DateKey, ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryAnimalValidator():
@@ -23,17 +23,17 @@ class ItineraryAnimalValidator():
          animals: list[ ItineraryAnimalInput ],
          new_visit_date: date,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey,
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey,
          new_visit_date_temp: float | None = None,
-         old_visit_date: DateKey | None = None,
+         old_visit_date: Types.DateKey | None = None,
          saved_animal_rows: list[ ItineraryAnimalRecord ] | None = None,
          visit_date_is_changing: bool = False ) -> list[ AnimalDiff ]:
       diffs: list[ AnimalDiff ] = []
       removed_habitats: list[ tuple[
          ItineraryAnimalSaveCarryover,
-         ScheduleTimeKey,
-         ScheduleTimeKey,
+         Types.ScheduleTimeKey,
+         Types.ScheduleTimeKey,
       ] ] = []
 
       for animal in animals:
@@ -152,8 +152,8 @@ class ItineraryAnimalValidator():
          *,
          enclosure_name: str | None,
          new_likelihood: int | None,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> AnimalDiff:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> AnimalDiff:
       return AnimalDiff(
          species=carryover.species,
          exhibit=carryover.exhibit,

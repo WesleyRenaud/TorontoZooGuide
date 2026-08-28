@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import DateValues
 from .transit_ride_endpoint import TransitRideEndpoint
 from ..transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
@@ -51,7 +51,7 @@ class TransportationWalkNodeResolver():
 
    @classmethod
    def _default_boarding_station_name( cls, transportation_name: str ) -> str | None:
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
 
       if conn is None:
          return None

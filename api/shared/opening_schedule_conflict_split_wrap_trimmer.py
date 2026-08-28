@@ -6,14 +6,14 @@ from datetime import timedelta
 
 from .opening_schedule_conflict_record import TConflict
 from .opening_schedule_date_resolver import OpeningScheduleDateResolver
-from ..types import Connection
+from ..types import Types
 
 
 class OpeningScheduleConflictSplitWrapTrimmer():
    @classmethod
    def trim(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: TConflict,
          *,
          new_start_date: date,

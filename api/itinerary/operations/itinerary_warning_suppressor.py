@@ -3,14 +3,14 @@ from __future__ import annotations
 from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from ...shared.enums import ItineraryErrorType
 from .suppress_itinerary_warning_result import SuppressItineraryWarningResult
-from ...types import Connection
+from ...types import Types
 
 
 class ItineraryWarningSuppressor():
    @classmethod
    def suppress(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          warning_type: str ) -> SuppressItineraryWarningResult:
       if not warning_type:
          return SuppressItineraryWarningResult(

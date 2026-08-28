@@ -10,7 +10,7 @@ from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
-from ...types import Connection
+from ...types import Types
 
 
 class AttractionWithoutAnimalWarningBuilder():
@@ -18,7 +18,7 @@ class AttractionWithoutAnimalWarningBuilder():
    def attractions_without_matching_animal(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection ) -> list[ AttractionDiff ]:
+         conn: Types.Connection ) -> list[ AttractionDiff ]:
       animal_keys = SpeciesExhibitKeyBuilder.from_animals( validated_itinerary.animals )
       missing_attractions: list[ AttractionDiff ] = []
 
@@ -44,7 +44,7 @@ class AttractionWithoutAnimalWarningBuilder():
    def newly_added_without_matching_animal(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          saved_itinerary: SavedItinerary | None ) -> list[ AttractionDiff ]:
       missing_attractions = cls.attractions_without_matching_animal(
@@ -70,7 +70,7 @@ class AttractionWithoutAnimalWarningBuilder():
    def is_required(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          confirming_attraction_without_animal: bool,
          saved_itinerary: SavedItinerary | None = None ) -> bool:

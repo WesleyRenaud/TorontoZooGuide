@@ -6,8 +6,8 @@ from .itinerary_save_input import ItinerarySaveInput
 from .itinerary_transportation_input import ItineraryTransportationInput
 from ...shared.calendar_dates import DateValues
 from ...shared.value_conversion import ValueConversion
-from ...types import DateInput, TimeInput
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ...types import Types
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 class ItinerarySaveInputMapper():
@@ -66,9 +66,9 @@ class ItinerarySaveInputMapper():
    @classmethod
    def map_itinerary_save_input(
          cls,
-         date: DateInput,
-         arrival_time: TimeInput,
-         departure_time: TimeInput,
+         date: Types.DateInput,
+         arrival_time: Types.TimeInput,
+         departure_time: Types.TimeInput,
          selected_exhibits: list[ str ] | None = None,
          animals: list[ dict[ str, str | None ] ] | None = None,
          attractions: list[ str ] | None = None,

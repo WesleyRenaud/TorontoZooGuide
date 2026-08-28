@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .master_route_stop_key import AttractionMasterRouteStopKey
+from .attraction_master_route_stop_key import AttractionMasterRouteStopKey
 from .master_route_stop_key_builder import MasterRouteStopKeyBuilder
 from ...shared.enums import ScheduleItemKind
 
@@ -19,5 +19,5 @@ class AttractionRouteStop:
       return ScheduleItemKind.ATTRACTION
 
 
-   def master_route_key( self ) -> AttractionMasterRouteStopKey:
+   def master_route_key( self ) -> AttractionMasterRouteStopKey.Key:
       return MasterRouteStopKeyBuilder.attraction( self.name )

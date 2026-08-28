@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from .transportation_station_mapper import TransportationStationMapper
 from .transportation_station_record import TransportationStationRecord
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationStationProvider():
    @classmethod
    def fetch_transportation_station_names(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
    ) -> list[ str ]:
       cur = conn.cursor()
@@ -30,7 +30,7 @@ class TransportationStationProvider():
    @classmethod
    def fetch_transportation_station_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
    ) -> list[ TransportationStationRecord ]:
       cur = conn.cursor()
@@ -54,7 +54,7 @@ class TransportationStationProvider():
    @classmethod
    def fetch_main_transportation_station_record(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
    ) -> TransportationStationRecord | None:
       cur = conn.cursor()
@@ -81,7 +81,7 @@ class TransportationStationProvider():
    @classmethod
    def fetch_transportation_station_record(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          station_name: str,
    ) -> TransportationStationRecord | None:

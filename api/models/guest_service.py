@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ..types import Coordinate
+from ..types import Types
 
 
 class GuestService:
-   def __init__( self, service_type: str, x_coord: Coordinate, y_coord: Coordinate ) -> None:
+   def __init__( self, service_type: str, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.service_type = service_type
       self.x_coord = x_coord
       self.y_coord = y_coord

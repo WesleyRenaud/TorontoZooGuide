@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import Coordinate, ScheduleTimeKey, SeasonalMultiplier
+from ...types import Types
 
 
 @dataclass( frozen=True )
@@ -12,13 +12,13 @@ class AttractionRecord:
    description: str
    info_link: str
    hyperlink_text: str
-   x_coord: Coordinate
-   y_coord: Coordinate
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
    region: str
-   weekday_multiplier: SeasonalMultiplier
-   weekend_holiday_multiplier: SeasonalMultiplier
-   weekday_start_time: ScheduleTimeKey = None
-   weekday_end_time: ScheduleTimeKey = None
-   weekend_holiday_start_time: ScheduleTimeKey = None
-   weekend_holiday_end_time: ScheduleTimeKey = None
+   weekday_multiplier: Types.SeasonalMultiplier
+   weekend_holiday_multiplier: Types.SeasonalMultiplier
+   weekday_start_time: Types.ScheduleTimeKey = None
+   weekday_end_time: Types.ScheduleTimeKey = None
+   weekend_holiday_start_time: Types.ScheduleTimeKey = None
+   weekend_holiday_end_time: Types.ScheduleTimeKey = None
    is_also_transportation: bool = False

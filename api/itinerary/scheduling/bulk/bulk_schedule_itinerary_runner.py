@@ -18,7 +18,7 @@ from ..items.schedule_window_preparer import ScheduleWindowPreparer
 from .loop_schedule_stop import LoopScheduleStop
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 class BulkScheduleItineraryRunner():
@@ -32,7 +32,7 @@ class BulkScheduleItineraryRunner():
    @classmethod
    def run(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],
@@ -41,7 +41,7 @@ class BulkScheduleItineraryRunner():
          visit_date_temp: float | None = None,
          confirming_fixed_time_item_long_wait: bool = False,
          animals_to_schedule: list[ ItineraryAnimalRecord ] | None = None,
-         stops_to_schedule: list[ LoopScheduleStop ] | None = None ) -> ItinerarySaveResult:
+         stops_to_schedule: list[ LoopScheduleStop.Stop ] | None = None ) -> ItinerarySaveResult:
       itinerary_context = ItineraryScheduleContextBuilder.build(
          animal_coordinator=animal_coordinator,
          attraction_coordinator=attraction_coordinator,

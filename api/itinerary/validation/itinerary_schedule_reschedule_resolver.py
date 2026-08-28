@@ -4,7 +4,7 @@ from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...shared.enums import ItineraryEventType
-from ...types import ScheduleTimeKey
+from ...types import Types
 from ..warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
 from ..warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 
@@ -16,7 +16,7 @@ class ItineraryScheduleRescheduleResolver():
          saved_itinerary: SavedItinerary,
          validated_itinerary: ValidatedItinerary,
          *,
-         requested_departure_time: ScheduleTimeKey ) -> bool:
+         requested_departure_time: Types.ScheduleTimeKey ) -> bool:
       if GuardiansTalkUnscheduleWarningBuilder.new_talks_overlapping_saved_schedule(
             saved_itinerary,
             validated_itinerary ):
@@ -44,8 +44,8 @@ class ItineraryScheduleRescheduleResolver():
          cls,
          saved_itinerary: SavedItinerary,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> bool:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       return (
          saved_itinerary.arrival_time != arrival_time
          or saved_itinerary.departure_time != departure_time
@@ -57,8 +57,8 @@ class ItineraryScheduleRescheduleResolver():
          cls,
          saved_itinerary: SavedItinerary,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> bool:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       for animal in saved_itinerary.animal_rows:
          if ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
                animal.start_time,

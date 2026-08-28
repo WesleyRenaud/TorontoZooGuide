@@ -3,14 +3,14 @@ from __future__ import annotations
 from ..data_access.itinerary_provider import ItineraryProvider
 from ...shared.calendar_dates import DateValues
 from .transportation_day_loop_fetcher import TransportationDayLoopFetcher
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationDefaultDurationResolver():
    @classmethod
    def resolve(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str ) -> int | None:
       visit_date = ItineraryProvider.fetch_itinerary_date( conn )
       parsed_visit_date = DateValues.parse_date_value( visit_date )

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
-from ...types import Row
+from ...types import Types
 
 
 class MeetTheGuardiansTalkMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> MeetTheGuardiansTalkRecord:
+   def map_record( cls, row: Types.Row ) -> MeetTheGuardiansTalkRecord:
       return MeetTheGuardiansTalkRecord(
          name=row[ 'NAME' ],
          location=row[ 'LOCATION' ],
@@ -16,7 +16,7 @@ class MeetTheGuardiansTalkMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ MeetTheGuardiansTalkRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ MeetTheGuardiansTalkRecord ]:
       return [
          cls.map_record( row )
          for row in rows

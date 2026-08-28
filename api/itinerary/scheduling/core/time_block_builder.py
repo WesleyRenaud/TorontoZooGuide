@@ -6,7 +6,7 @@ from ...data_access.validated_itinerary import ValidatedItinerary
 from ....models import Itinerary
 from ....shared.calendar_dates import DateValues
 from .time_block import TimeBlock
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class TimeBlockBuilder():
@@ -26,8 +26,8 @@ class TimeBlockBuilder():
    @classmethod
    def from_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> TimeBlock | None:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> TimeBlock | None:
       start_seconds = DateValues.time_value_in_seconds( start_time )
       end_seconds = DateValues.time_value_in_seconds( end_time )
 
@@ -66,8 +66,8 @@ class TimeBlockBuilder():
    def append_from_schedule_times(
          cls,
          blocks: list[ TimeBlock ],
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> None:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> None:
       block = cls.from_schedule_times( start_time, end_time )
 
       if block is not None:

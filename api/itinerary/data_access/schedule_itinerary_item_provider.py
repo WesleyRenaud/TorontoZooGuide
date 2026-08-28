@@ -3,20 +3,20 @@ from __future__ import annotations
 from ...models.itinerary_event import ItineraryEvent
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
-from ...types import Cursor, ScheduleTimeKey
+from ...types import Types
 
 
 class ScheduleItineraryItemProvider():
    @classmethod
    def insert_itinerary_animal_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          species: str,
          exhibit: str,
          enclosure_name: str | None = None,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryAnimal (
                      SPECIES,
@@ -48,11 +48,11 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def insert_itinerary_attraction_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryAttraction (
                      ATTRACTION,
@@ -78,13 +78,13 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def update_itinerary_animal_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          species: str,
          exhibit: str,
          enclosure_name: str | None = None,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   UPDATE ItineraryAnimal
                SET START_TIME = ?,
@@ -108,14 +108,14 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def update_itinerary_animal_cover_and_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          species: str,
          exhibit: str,
          enclosure_name: str | None = None,
          covered_by_talk: bool,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   UPDATE ItineraryAnimal
                SET START_TIME = ?,
@@ -141,11 +141,11 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def update_itinerary_attraction_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   UPDATE ItineraryAttraction
                SET START_TIME = ?,
@@ -165,11 +165,11 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def update_itinerary_event_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          event_type: ItineraryEventType,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       cur.execute(
          """   UPDATE ItineraryEvent
                SET START_TIME = ?,
@@ -189,11 +189,11 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def insert_itinerary_guardians_talk(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          talk_name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          is_deleted: bool = False ) -> bool:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
@@ -218,11 +218,11 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def insert_itinerary_wild_encounter(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          wild_encounter_name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          is_deleted: bool = False ) -> bool:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryWildEncounter (
@@ -247,7 +247,7 @@ class ScheduleItineraryItemProvider():
    @classmethod
    def insert_itinerary_event_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          event: ItineraryEvent ) -> None:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryEvent (

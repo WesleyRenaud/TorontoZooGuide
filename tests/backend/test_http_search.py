@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from http_support import make_handler, response_json, StubZooControllers
 
-import api.server as server
+import api.http_request_handler as server
 
 def test_search_endpoint_adds_type_fields(
       stub_database: type[ StubZooControllers ] ) -> None:
@@ -27,7 +27,7 @@ def test_search_endpoint_adds_type_fields(
       }
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
    result = response_json( handler )
 
    assert result[ 'animals' ][ 0 ][ 'type' ] == 'animal'
@@ -100,7 +100,7 @@ def test_get_guardians_talks_omitted_year_passes_through(
       { 'month': 'June', 'day': 15 },
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == []
    assert (
@@ -121,7 +121,7 @@ def test_search_omitted_year_passes_through_when_guardians_included(
       },
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == []
    assert (
@@ -147,7 +147,7 @@ def test_search_omitted_year_passes_through_when_wild_encounters_included(
       },
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == []
    assert (
@@ -179,7 +179,7 @@ def test_search_endpoint_skips_unselected_types(
       }
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
    result = response_json( handler )
 
    assert result == {

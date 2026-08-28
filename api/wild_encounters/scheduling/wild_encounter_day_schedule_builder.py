@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from ..domain.wild_encounter_sort_builder import WildEncounterSortBuilder
 from ...models import WildEncounter

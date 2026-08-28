@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...types import Connection, DateKey
+from ...types import Types
 from .zoo_hours_mapper import ZooHoursMapper
 from .zoo_hours_record import ZooHoursRecord
 
@@ -9,8 +9,8 @@ class ZooHoursProvider():
    @classmethod
    def fetch_zoo_hours_record(
          cls,
-         conn: Connection,
-         operating_date: DateKey ) -> ZooHoursRecord | None:
+         conn: Types.Connection,
+         operating_date: Types.DateKey ) -> ZooHoursRecord | None:
       cur = conn.cursor()
 
       try:
@@ -38,9 +38,9 @@ class ZooHoursProvider():
    @classmethod
    def fetch_zoo_hours_records_between(
          cls,
-         conn: Connection,
-         start_date: DateKey,
-         end_date: DateKey | None = None ) -> list[ ZooHoursRecord ]:
+         conn: Types.Connection,
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None = None ) -> list[ ZooHoursRecord ]:
       cur = conn.cursor()
 
       try:

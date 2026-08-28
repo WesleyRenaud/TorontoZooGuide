@@ -24,9 +24,9 @@ PENGUIN_START_WITH_20_MIN_GAP = schedule_time_after_seconds( CHEETAH_END, 20 * 6
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
-from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
 

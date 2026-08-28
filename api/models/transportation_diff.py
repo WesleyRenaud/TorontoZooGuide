@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_transportation_leg import ItineraryTransportationLeg
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class TransportationDiff:
@@ -10,8 +10,8 @@ class TransportationDiff:
          name: str,
          old_likelihood: int | None,
          new_likelihood: int | None,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
          legs: list[ ItineraryTransportationLeg ] | None = None,
          *,
          route: str | None = None,

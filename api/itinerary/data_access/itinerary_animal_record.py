@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from ...types import ScheduleTimeKey
+from ...types import Types
 from ...walk_graph.domain.master_route_stop_key import AnimalMasterRouteStopKey
 from ...walk_graph.domain.master_route_stop_key_builder import MasterRouteStopKeyBuilder
 
@@ -19,8 +19,8 @@ class ItineraryAnimalRecord:
    new_likelihood: int | None = None
    is_added: bool = False
    covered_by_talk: bool = False
-   start_time: ScheduleTimeKey = None
-   end_time: ScheduleTimeKey = None
+   start_time: Types.ScheduleTimeKey = None
+   end_time: Types.ScheduleTimeKey = None
 
 
    def species_exhibit_key( self ) -> SpeciesExhibitKey:
@@ -34,7 +34,7 @@ class ItineraryAnimalRecord:
          self.enclosure_name )
 
 
-   def master_route_stop_key( self ) -> AnimalMasterRouteStopKey:
+   def master_route_stop_key( self ) -> AnimalMasterRouteStopKey.Key:
       return MasterRouteStopKeyBuilder.animal(
          self.species,
          self.exhibit,

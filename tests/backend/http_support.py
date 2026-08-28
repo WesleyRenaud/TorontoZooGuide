@@ -24,7 +24,7 @@ from http_support_handler import make_handler
 from http_support_handler import response_json
 import pytest
 
-from api.types import Connection
+from api.types import Types
 
 def _patch_controller_with_stub(
       monkeypatch: pytest.MonkeyPatch,
@@ -47,7 +47,7 @@ def _patch_controller_with_stub(
 
 @pytest.fixture
 def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControllers ]:
-   from api import connection
+   from api import database_connection_provider as connection
    from api.animals.coordinators.animal_coordinator import AnimalCoordinator
    from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
    from api.defibrillators.coordinators.defibrillator_coordinator import DefibrillatorCoordinator
@@ -62,7 +62,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
    from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
    from api.picnic_sites.coordinators.picnic_site_coordinator import PicnicSiteCoordinator
-   import api.request_connection as request_connection
+   import api.request_connection_provider as request_connection
    from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
    from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
    from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
@@ -74,17 +74,17 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    StubZooControllers.default_success = True
    stub = StubZooControllers( None )
 
-   monkeypatch.setattr( connection, 'open_connection', lambda db_path='animals.db': None )
+   monkeypatch.setattr( connection.DatabaseConnectionProvider, 'open', lambda db_path='animals.db': None )
 
-   def stub_set_connection( conn: Connection | None ) -> None:
+   def stub_set_connection( conn: Types.Connection | None ) -> None:
       StubZooControllers._active = stub
 
    def stub_clear_connection() -> None:
       if StubZooControllers.instances:
          StubZooControllers.instances[ -1 ].closed = True
 
-   monkeypatch.setattr( request_connection, 'set_connection', stub_set_connection )
-   monkeypatch.setattr( request_connection, 'clear_connection', stub_clear_connection )
+   monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
+   monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
 
    controller_classes = [
       AnimalCoordinator,

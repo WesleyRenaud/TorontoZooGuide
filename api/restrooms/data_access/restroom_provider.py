@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .restroom_mapper import RestroomMapper
 from .restroom_record import RestroomRecord
-from ...types import Connection
+from ...types import Types
 
 
 class RestroomProvider():
    @classmethod
-   def fetch_restroom_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_restroom_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -24,7 +24,7 @@ class RestroomProvider():
 
 
    @classmethod
-   def fetch_restroom_records( cls, conn: Connection ) -> list[ RestroomRecord ]:
+   def fetch_restroom_records( cls, conn: Types.Connection ) -> list[ RestroomRecord ]:
       cur = conn.cursor()
 
       try:

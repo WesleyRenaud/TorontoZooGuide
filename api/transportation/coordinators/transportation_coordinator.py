@@ -15,23 +15,23 @@ from ..domain.transportation_route_stations_builder import TransportationRouteSt
 from ...models import TransportationStation
 from ...models.active_transportation_route import ActiveTransportationRoute
 from ...models.transportation import Transportation
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.transportation_current_route_schedule_builder import TransportationCurrentRouteScheduleBuilder
 from ..search.transportation_stations_matching_query_builder import TransportationStationsMatchingQueryBuilder
 from ..search.transportations_matching_query_builder import TransportationsMatchingQueryBuilder
 from ...shared.enums.transportation_name import TransportationName
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 from ..status.transportation_station_status_builder import TransportationStationStatusBuilder
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 class TransportationCoordinator():
    @classmethod
    def get_transportations(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> list[ Transportation ]:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> list[ Transportation ]:
       context = OpeningScheduleVisitContextResolver.resolve(
          day=day,
          month=month,
@@ -39,7 +39,7 @@ class TransportationCoordinator():
 
       return TransportationBuilder.build_transportations(
          TransportationProvider.fetch_transportation_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             visit_date=context.target_date ),
          context=context )
 
@@ -48,9 +48,9 @@ class TransportationCoordinator():
    def get_transportations_matching_query(
          cls,
          query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> list[ Transportation ]:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> list[ Transportation ]:
       return TransportationsMatchingQueryBuilder.build(
          cls.get_transportations(
             day=day,
@@ -63,7 +63,7 @@ class TransportationCoordinator():
    def get_transportation_routes( cls ) -> list[ dict[ str, object ] ]:
       return TransportationRouteBuilder.group_transportation_routes(
          TransportationRouteProvider.fetch_transportation_routes_by_name(
-            get_connection() ) )
+            RequestConnectionProvider.get() ) )
 
 
    @classmethod
@@ -71,7 +71,7 @@ class TransportationCoordinator():
          cls,
          transportation: str = TransportationName.ZOOMOBILE ) -> list[ str ]:
       return TransportationStationProvider.fetch_transportation_station_names(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation )
 
 
@@ -80,7 +80,7 @@ class TransportationCoordinator():
          cls,
          transportation: str = TransportationName.ZOOMOBILE ) -> list[ str ]:
       return TransportationActiveRouteProvider.fetch_transportation_route_ids(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation )
 
 
@@ -88,23 +88,23 @@ class TransportationCoordinator():
    def get_transportation_stations(
          cls,
          route: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          transportation_stations_to_include: list[ str ] | None = None,
          transportation: str = TransportationName.ZOOMOBILE ) -> list[ TransportationStation ]:
 
       return TransportationRouteStationsBuilder.build_route_transportation_stations(
          station_records=TransportationStationProvider.fetch_transportation_station_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation ),
          status_records=TransportationStationStatusProvider.fetch_transportation_station_status_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation ),
          context=TransportationRouteStationsBuilder.resolve_transportation_station_context(
             route=route,
             stations_on_route=TransportationActiveRouteProvider.fetch_transportation_route_station_names(
-               get_connection(),
+               RequestConnectionProvider.get(),
                transportation,
                route=route ),
             day=day,
@@ -118,9 +118,9 @@ class TransportationCoordinator():
          cls,
          query: str,
          route: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          transportation: str = TransportationName.ZOOMOBILE ) -> list[ TransportationStation ]:
 
       route_context = ActiveTransportationRouteBuilder.resolve_transportation_route_context(
@@ -131,11 +131,11 @@ class TransportationCoordinator():
       resolved_route, _ = ActiveTransportationRouteBuilder.resolve_requested_transportation_route(
          route,
          TransportationActiveRouteProvider.fetch_active_transportation_route(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation,
             target_date=route_context.target_date ),
          TransportationActiveRouteProvider.fetch_transportation_day_route(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation,
             month=route_context.normalized_month,
             day=route_context.normalized_day ),
@@ -156,9 +156,9 @@ class TransportationCoordinator():
    def get_transportation_route(
          cls,
          route: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          transportation_stations_to_include: list[ str ] | None = None,
          transportation: str = TransportationName.ZOOMOBILE ) -> ActiveTransportationRoute:
 
@@ -170,11 +170,11 @@ class TransportationCoordinator():
       resolved_route, route_source = ActiveTransportationRouteBuilder.resolve_requested_transportation_route(
          route,
          TransportationActiveRouteProvider.fetch_active_transportation_route(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation,
             target_date=route_context.target_date ),
          TransportationActiveRouteProvider.fetch_transportation_day_route(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation,
             month=route_context.normalized_month,
             day=route_context.normalized_day ),
@@ -198,7 +198,7 @@ class TransportationCoordinator():
          target_date: date,
          transportation: str = TransportationName.ZOOMOBILE ) -> str | None:
       route = TransportationActiveRouteProvider.fetch_active_transportation_route(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation,
          target_date=target_date )
 
@@ -213,11 +213,11 @@ class TransportationCoordinator():
    @classmethod
    def get_transportation_day_route(
          cls,
-         month: MonthInput,
-         day: VisitDay,
+         month: Types.MonthInput,
+         day: Types.VisitDay,
          transportation: str = TransportationName.ZOOMOBILE ) -> str | None:
       route = TransportationActiveRouteProvider.fetch_transportation_day_route(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation,
          month=month,
          day=day )
@@ -234,8 +234,8 @@ class TransportationCoordinator():
    def set_transportation_station_as_closed(
          cls,
          transportation_station: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str,
          transportation: str = TransportationName.ZOOMOBILE ) -> bool:
       status = TransportationStationStatusBuilder.build_transportation_station_closed_status(
@@ -245,7 +245,7 @@ class TransportationCoordinator():
          message=message )
 
       return TransportationStationStatusProvider.save_transportation_station_closed_status(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation,
          status=status )
 
@@ -256,7 +256,7 @@ class TransportationCoordinator():
          transportation_station: str,
          transportation: str = TransportationName.ZOOMOBILE ) -> bool:
       return TransportationStationStatusProvider.save_transportation_station_open_status(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation,
          transportation_station=transportation_station )
 
@@ -265,8 +265,8 @@ class TransportationCoordinator():
    def set_current_transportation_route(
          cls,
          route: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          transportation: str = TransportationName.ZOOMOBILE ) -> bool:
       if not ActiveTransportationRouteBuilder.is_valid_transportation_route(
             route,
@@ -279,6 +279,6 @@ class TransportationCoordinator():
          end_date=end_date )
 
       return TransportationRouteScheduleProvider.save_current_transportation_route_schedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation,
          schedule=schedule )

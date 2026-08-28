@@ -3,7 +3,7 @@ from __future__ import annotations
 from ...models.itinerary_transportation import ItineraryTransportation
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...models.itinerary_transportation_station import ItineraryTransportationStation
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ...shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
 from ...shared.enums.sequence_index import SequenceIndex
 from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
@@ -49,7 +49,7 @@ class ItineraryTransportationStationsBuilder():
 
       records_by_name = cls._station_record_by_name(
          TransportationStationProvider.fetch_transportation_station_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             transportation.name,
          ) )
       stations: list[ ItineraryTransportationStation ] = []

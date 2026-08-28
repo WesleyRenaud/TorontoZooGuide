@@ -13,7 +13,7 @@ from ..scheduling.items.itinerary_schedule_context_builder import ItinerarySched
 from ..scheduling.unscheduling.guest_scheduled_itinerary_item_checker import GuestScheduledItineraryItemChecker
 from ..scheduling.unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -21,7 +21,7 @@ class AllItineraryItemsUnscheduler():
    @classmethod
    def unschedule_all(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],

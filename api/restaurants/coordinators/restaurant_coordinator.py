@@ -4,12 +4,12 @@ from ..data_access.restaurant_provider import RestaurantProvider
 from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
 from ..domain.restaurant_builder import RestaurantBuilder
 from ...models import Restaurant
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.restaurant_schedule_conflict_resolver import RestaurantScheduleConflictResolver
 from ..search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
-from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ..status.restaurant_status_builder import RestaurantStatusBuilder
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 _mutations = AmenityCoordinatorMutations(
@@ -26,15 +26,15 @@ _mutations = AmenityCoordinatorMutations(
 class RestaurantCoordinator():
    @classmethod
    def get_restaurant_names( cls ) -> list[ str ]:
-      return RestaurantProvider.fetch_restaurant_names( get_connection() )
+      return RestaurantProvider.fetch_restaurant_names( RequestConnectionProvider.get() )
 
 
    @classmethod
    def get_restaurants(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          include_closed_restaurants: bool,
          restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
 
@@ -45,12 +45,12 @@ class RestaurantCoordinator():
 
       return RestaurantBuilder.build_restaurants(
          restaurant_records=RestaurantProvider.fetch_restaurant_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=RestaurantProvider.fetch_restaurant_schedule_records( get_connection() ),
+         schedule_records=RestaurantProvider.fetch_restaurant_schedule_records( RequestConnectionProvider.get() ),
          schedule_override_records=RestaurantProvider.fetch_restaurant_schedule_override_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          context=context,
          include_closed_restaurants=include_closed_restaurants,
          restaurants_to_include=restaurants_to_include )
@@ -60,9 +60,9 @@ class RestaurantCoordinator():
    def get_restaurants_matching_query(
          cls,
          query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          include_closed_restaurants: bool ) -> list[ Restaurant ]:
 
       restaurants = cls.get_restaurants(
@@ -80,8 +80,8 @@ class RestaurantCoordinator():
    def set_restaurant_as_closed(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_as_closed( restaurant, start_date, end_date, message )
 
@@ -90,8 +90,8 @@ class RestaurantCoordinator():
    def set_restaurant_closure_override(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_closure_override( restaurant, start_date, end_date, message )
 
@@ -100,8 +100,8 @@ class RestaurantCoordinator():
    def set_restaurant_opening_schedule(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -130,8 +130,8 @@ class RestaurantCoordinator():
    def replace_restaurant_opening_schedule_overlaps(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -160,8 +160,8 @@ class RestaurantCoordinator():
    def trim_restaurant_opening_schedule_overlaps(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ..types import DateKey, ScheduleTimeKey
+from ..types import Types
 
 
 class ScheduledOccurrence:
-   def __init__( self, date: DateKey, time: ScheduleTimeKey ) -> None:
+   def __init__( self, date: Types.DateKey, time: Types.ScheduleTimeKey ) -> None:
       self.date = date
       self.time = time
 

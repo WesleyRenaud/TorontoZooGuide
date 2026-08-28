@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..animal_item_key import AnimalScheduleItemKey
+from ..animal_schedule_item_key import AnimalScheduleItemKey
 from .itinerary_walk_route import ItineraryWalkRoute
 from .itinerary_walk_route_completion_checker import ItineraryWalkRouteCompletionChecker
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop

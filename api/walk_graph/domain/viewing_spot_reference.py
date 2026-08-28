@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .master_route_stop_key import AnimalMasterRouteStopKey
+from .animal_master_route_stop_key import AnimalMasterRouteStopKey
 from .master_route_stop_key_builder import MasterRouteStopKeyBuilder
 from ...shared.enums import ScheduleItemKind
 from .viewing_spot_name_key import ViewingSpotNameKey
@@ -23,10 +23,10 @@ class ViewingSpotReference:
 
 
    def key( self ) -> ViewingSpotNameKey:
-      return ( self.species, self.exhibit, self.name )
+      return ViewingSpotNameKey( self.species, self.exhibit, self.name )
 
 
-   def master_route_key( self ) -> AnimalMasterRouteStopKey:
+   def master_route_key( self ) -> AnimalMasterRouteStopKey.Key:
       return MasterRouteStopKeyBuilder.animal(
          self.species,
          self.exhibit,

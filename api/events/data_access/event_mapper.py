@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from ...models import Event
-from ...types import Row
+from ...types import Types
 
 
 class EventMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> Event:
+   def map_record( cls, row: Types.Row ) -> Event:
       return Event(
          name=row[ 'NAME' ],
          location=row[ 'LOCATION' ],
@@ -17,7 +17,7 @@ class EventMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ Event ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ Event ]:
       return [
          cls.map_record( row )
          for row in rows

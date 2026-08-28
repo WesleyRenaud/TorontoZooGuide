@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
-from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 def test_wild_encounter_schedule_item_key_from_wire_without_time() -> None:

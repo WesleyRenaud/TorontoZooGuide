@@ -3,14 +3,14 @@ from __future__ import annotations
 from .itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...transportation.data_access.transportation_route_leg_marker_provider import TransportationRouteLegMarkerProvider
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationRouteMarkerSequencesBuilder():
    @classmethod
    def build(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          route: str,

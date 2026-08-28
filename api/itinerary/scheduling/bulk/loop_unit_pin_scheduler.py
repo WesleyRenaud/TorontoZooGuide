@@ -10,7 +10,7 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
@@ -18,7 +18,7 @@ class LoopUnitPinScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          loop_pins: list[ LoopSchedulePin ],
          *,
@@ -27,7 +27,7 @@ class LoopUnitPinScheduler():
          window_end_seconds: int,
          cursor_seconds: int,
          slot_sink: LoopScheduleSlotSink | None = None,
-      ) -> tuple[ list[ LoopScheduleStop ], int ]:
+      ) -> tuple[ list[ LoopScheduleStop.Stop ], int ]:
       loop_id = prepared_unit.unit.loop_id
 
       if loop_id is None or not loop_pins:
@@ -57,7 +57,7 @@ class LoopUnitPinScheduler():
    @classmethod
    def earliest_start_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          loop_pins: list[ LoopSchedulePin ],
       ) -> int | None:
@@ -112,7 +112,7 @@ class LoopUnitPinScheduler():
    @classmethod
    def _schedule_animals_around_loop_pins(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          loop_pins: list[ LoopSchedulePin ],
          *,
@@ -121,7 +121,7 @@ class LoopUnitPinScheduler():
          window_end_seconds: int,
          cursor_seconds: int,
          slot_sink: LoopScheduleSlotSink | None = None,
-      ) -> tuple[ int, list[ LoopScheduleStop ] ]:
+      ) -> tuple[ int, list[ LoopScheduleStop.Stop ] ]:
       animals = list( prepared_unit.unit.stops )
       loop_id = prepared_unit.unit.loop_id
 
@@ -192,11 +192,11 @@ class LoopUnitPinScheduler():
    @classmethod
    def _schedule_animal_segment_step(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule_step: LoopPinStopSegment,
          *,
          blockers: list[ TimeBlock ],
-         animals: list[ LoopScheduleStop ],
+         animals: list[ LoopScheduleStop.Stop ],
          loop_pins: list[ LoopSchedulePin ],
          schedule_cursor_seconds: int,
          scheduled_animal_ids: set[ int ],
@@ -253,11 +253,11 @@ class LoopUnitPinScheduler():
    @classmethod
    def _schedule_animal_segment(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          blockers: list[ TimeBlock ],
-         animals: list[ LoopScheduleStop ],
-         animal_group: list[ LoopScheduleStop ],
+         animals: list[ LoopScheduleStop.Stop ],
+         animal_group: list[ LoopScheduleStop.Stop ],
          start_seconds: int,
          segment_end_seconds: int,
          backward_anchor: bool,
@@ -319,10 +319,10 @@ class LoopUnitPinScheduler():
    @classmethod
    def _schedule_remaining_animals_forward(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         animals: list[ LoopScheduleStop ],
-         animal_group: list[ LoopScheduleStop ],
+         animals: list[ LoopScheduleStop.Stop ],
+         animal_group: list[ LoopScheduleStop.Stop ],
          blockers: list[ TimeBlock ],
          start_seconds: int,
          window_end_seconds: int,
@@ -361,10 +361,10 @@ class LoopUnitPinScheduler():
    @classmethod
    def _still_unscheduled_animals(
          cls,
-         animals: list[ LoopScheduleStop ],
+         animals: list[ LoopScheduleStop.Stop ],
          *,
          scheduled_animal_ids: set[ int ],
-      ) -> list[ LoopScheduleStop ]:
+      ) -> list[ LoopScheduleStop.Stop ]:
       return [
          animal_row
          for animal_row in animals

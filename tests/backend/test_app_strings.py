@@ -5,16 +5,16 @@ from typing import Any
 
 import pytest
 
-import api.app_strings as app_strings
-from api.app_strings import AppStringProvider
-from api.html_strings import HtmlStringRenderer
+import api.app_string_provider as app_string_provider
+from api.app_string_provider import AppStringProvider
+from api.html_string_renderer import HtmlStringRenderer
 
 
 def test_get_app_string_values_reuses_cache_until_sources_change(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    AppStringProvider.clear_cache()
    call_count = 0
-   original_run = app_strings.subprocess.run
+   original_run = app_string_provider.subprocess.run
 
    def counting_run(
          *args: Any,
@@ -23,7 +23,7 @@ def test_get_app_string_values_reuses_cache_until_sources_change(
       call_count += 1
       return original_run( *args, **kwargs )
 
-   monkeypatch.setattr( app_strings.subprocess, 'run', counting_run )
+   monkeypatch.setattr( app_string_provider.subprocess, 'run', counting_run )
 
    first = AppStringProvider.values()
    second = AppStringProvider.values()
@@ -48,7 +48,7 @@ def test_html_string_cache_clear_also_clears_app_string_cache(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    AppStringProvider.clear_cache()
    call_count = 0
-   original_run = app_strings.subprocess.run
+   original_run = app_string_provider.subprocess.run
 
    def counting_run(
          *args: Any,
@@ -57,7 +57,7 @@ def test_html_string_cache_clear_also_clears_app_string_cache(
       call_count += 1
       return original_run( *args, **kwargs )
 
-   monkeypatch.setattr( app_strings.subprocess, 'run', counting_run )
+   monkeypatch.setattr( app_string_provider.subprocess, 'run', counting_run )
 
    AppStringProvider.values()
    HtmlStringRenderer.clear_cache()

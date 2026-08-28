@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.zoo_hours_coordinator import ZooHoursCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class ZooHoursController():

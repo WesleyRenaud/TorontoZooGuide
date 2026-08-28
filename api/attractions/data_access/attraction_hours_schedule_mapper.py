@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .attraction_hours_schedule_record import AttractionHoursScheduleRecord
-from ...types import Row
+from ...types import Types
 
 
 class AttractionHoursScheduleMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> AttractionHoursScheduleRecord:
+   def map_record( cls, row: Types.Row ) -> AttractionHoursScheduleRecord:
       return AttractionHoursScheduleRecord(
          attraction=row[ 'ATTRACTION' ],
          schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
@@ -18,7 +18,7 @@ class AttractionHoursScheduleMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ AttractionHoursScheduleRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ AttractionHoursScheduleRecord ]:
       return [
          cls.map_record( row )
          for row in rows

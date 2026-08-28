@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ...models import Animal
-from ...types import Connection
+from ...types import Types
 
 
 class AnimalInformationProvider():
    @classmethod
    def fetch_animal_information(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str ) -> Animal | None:
       cur = conn.cursor()

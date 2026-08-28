@@ -1,19 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Hashable
-from typing import Any, Protocol, TypeVar
+from typing import Any, TypeVar
 
 from .calendar_dates import DateValues
 from .map_schedule_time_sorter import MapScheduleTimeSorter
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
-class _MapScheduleOccurrence( Protocol ):
-   def to_dict( self ) -> dict[ str, Any ]:
-      ...
-
-
-T = TypeVar( 'T', bound=_MapScheduleOccurrence )
+T = TypeVar( 'T' )
 
 
 class MapScheduleOccurrenceCollapser():
@@ -23,7 +18,7 @@ class MapScheduleOccurrenceCollapser():
          items: list[ T ],
          *,
          group_key: Callable[ [ T ], Hashable ],
-         get_start_time: Callable[ [ T ], ScheduleTimeKey ] ) -> list[ dict[ str, Any ] ]:
+         get_start_time: Callable[ [ T ], Types.ScheduleTimeKey ] ) -> list[ dict[ str, Any ] ]:
       if not items:
          return []
 

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from ....app_strings import AppStringProvider
+from ....app_string_provider import AppStringProvider
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ....models.wild_encounter_diff import WildEncounterDiff
+from ....scheduled_item import ScheduledItem
 from ....shared.calendar_dates import DateValues
-from ....types import ScheduledItem, ScheduleTimeKey
+from ....types import Types
 
 
 class GuardiansTalkScheduleTrimmer():
    @classmethod
    def time_range_minutes(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> tuple[ int, int ]:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> tuple[ int, int ]:
       start = DateValues.time_value_in_minutes( start_time )
       end = DateValues.time_value_in_minutes( end_time )
 
@@ -49,9 +50,9 @@ class GuardiansTalkScheduleTrimmer():
    @classmethod
    def trim_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
-         blockers: list[ ScheduledItem ] ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ]:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
+         blockers: list[ ScheduledItem.Item ] ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ]:
       start, end = cls.time_range_minutes( start_time, end_time )
 
       for blocker in blockers:
@@ -79,7 +80,7 @@ class GuardiansTalkScheduleTrimmer():
    @classmethod
    def active_blockers(
          cls,
-         scheduled_items: list[ ScheduledItem ] ) -> list[ ScheduledItem ]:
+         scheduled_items: list[ ScheduledItem.Item ] ) -> list[ ScheduledItem.Item ]:
       return [
          scheduled_item
          for scheduled_item in scheduled_items

@@ -4,11 +4,11 @@ from io import BytesIO
 import json
 from typing import Any
 
-import api.server as server
+import api.http_request_handler as server
 
-def make_handler( path: str = '/', body: dict[ str, Any ] | None = None ) -> server.MyHandler:
+def make_handler( path: str = '/', body: dict[ str, Any ] | None = None ) -> server.HttpRequestHandler:
    encoded = json.dumps( body or {} ).encode( 'utf-8' )
-   handler = server.MyHandler.__new__( server.MyHandler )
+   handler = server.HttpRequestHandler.__new__( server.HttpRequestHandler )
    handler.path = path
    handler.headers = { 'Content-Length': str( len( encoded ) ) }
    handler.rfile = BytesIO( encoded )
@@ -23,6 +23,6 @@ def make_handler( path: str = '/', body: dict[ str, Any ] | None = None ) -> ser
    handler.send_error = lambda code, message=None: handler.errors.append( ( code, message ) )
    return handler
 
-def response_json( handler: server.MyHandler ) -> dict[ str, Any ]:
+def response_json( handler: server.HttpRequestHandler ) -> dict[ str, Any ]:
    handler.wfile.seek( 0 )
    return json.loads( handler.wfile.read().decode( 'utf-8' ) )

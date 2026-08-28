@@ -10,18 +10,18 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
-from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
 from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
-from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
-from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
-from api.types import DateInput
+from api.shared.constants import Constants
+from api.types import Types
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
@@ -62,7 +62,7 @@ CHEETAH_INDO_MALAYA_ITINERARY_ENTRY = {
 def itinerary_animals_for_exhibits(
       exhibits: list[ str ],
       *,
-      visit_date: DateInput,
+      visit_date: Types.DateInput,
       visit_date_temp: float | None = None ) -> list[ dict[ str, str | None ] ]:
    parsed_date = DateValues.parse_date_value( visit_date )
    animals = AnimalCoordinator.get_animals_viewable_on_day(
@@ -72,7 +72,7 @@ def itinerary_animals_for_exhibits(
       temp=visit_date_temp,
       include_off_display_animals=False,
       for_itinerary=True,
-      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      threshold=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       exhibits_to_include=exhibits )
 
    animal_inputs: list[ dict[ str, str | None ] ] = []
@@ -185,7 +185,7 @@ def guardians_talk_wire(
 
 def parsed_schedule_item(
       item_type: str,
-      wire_key: str ) -> ScheduleItemKey | None:
+      wire_key: str ) -> ScheduleItemKey.Key | None:
    return ScheduleItemKeyMapper.from_wire( item_type, wire_key )
 
 

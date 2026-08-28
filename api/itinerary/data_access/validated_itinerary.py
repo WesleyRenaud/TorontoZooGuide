@@ -9,13 +9,13 @@ from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.transportation_diff import TransportationDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 @dataclass( frozen=True )
 class ValidatedItinerary:
-   arrival_time: ScheduleTimeKey
-   departure_time: ScheduleTimeKey
+   arrival_time: Types.ScheduleTimeKey
+   departure_time: Types.ScheduleTimeKey
    animals: list[ AnimalDiff ]
    attractions: list[ AttractionDiff ]
    guardians_talks: list[ GuardiansTalkDiff ]

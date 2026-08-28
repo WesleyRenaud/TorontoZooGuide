@@ -14,8 +14,7 @@ from ....models import GuardiansTalkDiff
 from .restored_talk_covered_animals import RestoredTalkCoveredAnimals
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
-from ....types import Connection
-from ....types import Cursor
+from ....types import Types
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 
 
@@ -26,7 +25,7 @@ class GuardiansTalkAnimalCoverer():
    @classmethod
    def keys_to_cover(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          loop_pins: list[ LoopSchedulePin ],
          animal_rows: list[ ItineraryAnimalRecord ],
       ) -> dict[ ViewingSpotNameKey, CoveredAnimalTalk ]:
@@ -54,7 +53,7 @@ class GuardiansTalkAnimalCoverer():
    @classmethod
    def apply(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          covered_by_talk: dict[ ViewingSpotNameKey, CoveredAnimalTalk ],
       ) -> None:
       if not covered_by_talk:
@@ -82,8 +81,8 @@ class GuardiansTalkAnimalCoverer():
    @classmethod
    def uncover_for_talk(
          cls,
-         cur: Cursor,
-         conn: Connection,
+         cur: Types.Cursor,
+         conn: Types.Connection,
          *,
          talk_name: str,
          animal_rows: list[ ItineraryAnimalRecord ],
@@ -113,8 +112,8 @@ class GuardiansTalkAnimalCoverer():
    @classmethod
    def restore_after_removed(
          cls,
-         cur: Cursor,
-         conn: Connection,
+         cur: Types.Cursor,
+         conn: Types.Connection,
          *,
          talk_name: str,
          talk_block: TimeBlock,
@@ -173,7 +172,7 @@ class GuardiansTalkAnimalCoverer():
    @classmethod
    def uncover_for_unavailable_talks(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          animals: list[ AnimalDiff ],
          guardians_talks: list[ GuardiansTalkDiff ],
       ) -> list[ AnimalDiff ]:

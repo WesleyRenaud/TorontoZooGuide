@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from ..coordinators.itinerary_coordinator import ItineraryCoordinator
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
-from ...json_handler import JsonRequestHandler
-from ...request_connection import get_connection
+from ...json_request_handler import JsonRequestHandler
+from ...request_connection_provider import RequestConnectionProvider
 from ..results.itinerary_path_builder import ItineraryPathBuilder
 from ..results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
 from ..results.itinerary_time_set_result_response_builder import ItineraryTimeSetResultResponseBuilder
 from ..results.suppress_itinerary_warning_result_response_builder import SuppressItineraryWarningResultResponseBuilder
 from ..scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
-from ...shared.api_error_response import ApiErrorResponseApplier
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 from ...shared.itinerary_config_builder import ItineraryConfigBuilder
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 class ItineraryController():
@@ -76,7 +76,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection(),
+         conn=RequestConnectionProvider.get(),
          include_config=True )
 
       handler._write_json( response )
@@ -132,7 +132,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection(),
+         conn=RequestConnectionProvider.get(),
          include_config=True )
 
       handler._write_json( response )
@@ -154,7 +154,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection(),
+         conn=RequestConnectionProvider.get(),
          include_config=True )
 
       handler._write_json( response )
@@ -171,7 +171,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection(),
+         conn=RequestConnectionProvider.get(),
          include_config=True )
 
       handler._write_json( response )
@@ -190,7 +190,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection() )
+         conn=RequestConnectionProvider.get() )
 
       handler._write_json( response )
 
@@ -208,7 +208,7 @@ class ItineraryController():
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection() )
+         conn=RequestConnectionProvider.get() )
 
       handler._write_json( response )
 
@@ -229,7 +229,7 @@ class ItineraryController():
 
       response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection() )
+         conn=RequestConnectionProvider.get() )
 
       handler._write_json( response )
 
@@ -247,7 +247,7 @@ class ItineraryController():
 
       response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,
-         conn=get_connection() )
+         conn=RequestConnectionProvider.get() )
 
       handler._write_json( response )
 
@@ -263,7 +263,7 @@ class ItineraryController():
 
       response = SuppressItineraryWarningResultResponseBuilder.to_dict(
          result,
-         conn=get_connection() )
+         conn=RequestConnectionProvider.get() )
 
       handler._write_json( response )
 
@@ -275,7 +275,7 @@ class ItineraryController():
 
       itinerary = ItineraryCoordinator.get_itinerary( visit_date_temp=temp )
 
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       handler._write_json( {
          'itinerary': itinerary.to_dict(),
          'itinerary_config': ItineraryConfigBuilder.to_dict( conn ),
@@ -313,7 +313,7 @@ class ItineraryController():
          else None
       )
 
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       response = {
          'success': success,
          'itinerary': itinerary.to_dict() if itinerary != None else None,

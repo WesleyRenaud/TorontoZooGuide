@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ...types import Connection, Cursor, DateInput
+from ...types import Types
 
 
 class RestroomAlertProvider():
    @classmethod
    def save_alert(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          restroom: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> bool:
       cur = conn.cursor()
 
@@ -32,7 +32,7 @@ class RestroomAlertProvider():
 
 
    @classmethod
-   def delete_alert( cls, conn: Connection, restroom: str ) -> bool:
+   def delete_alert( cls, conn: Types.Connection, restroom: str ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -49,7 +49,7 @@ class RestroomAlertProvider():
    @classmethod
    def _clear_with_cursor(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          restroom: str ) -> None:
       cur.execute(
          """ DELETE FROM RestroomAlert
@@ -61,10 +61,10 @@ class RestroomAlertProvider():
    @classmethod
    def _insert_with_cursor(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          restroom: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> None:
       cur.execute(
          """   INSERT INTO RestroomAlert (

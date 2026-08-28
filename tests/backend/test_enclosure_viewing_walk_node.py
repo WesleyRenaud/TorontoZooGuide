@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from api.walk_graph.data_access.enclosure_viewing_walk_node_provider import EnclosureViewingWalkNodeProvider
-from api.walk_graph.data_access.paths import MAX_ENCLOSURE_VIEWING_SNAP_DISTANCE_PX
+from api.walk_graph.data_access.paths import Paths
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.walk_graph.enclosure_viewing_walk_node_builder import EnclosureViewingWalkNodeBuilder
@@ -12,12 +12,12 @@ from api.walk_graph.enclosure_viewing_walk_node_lookup import EnclosureViewingWa
 
 
 ROOT = Path( __file__ ).resolve().parents[ 2 ]
-ENCLOSURE_VIEWING_PATH = ROOT / 'api' / 'seed' / 'data' / 'enclosure_viewing.json'
+Paths.ENCLOSURE_VIEWING_PATH = ROOT / 'api' / 'seed' / 'data' / 'enclosure_viewing.json'
 
 
 def test_enclosure_viewing_walk_nodes_cover_every_viewing_spot() -> None:
    enclosure_viewing_rows = json.loads(
-      ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) )
+      Paths.ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) )
    expected_keys = {
       ViewingSpotKeyBuilder.from_enclosure_viewing_row( row )
       for row in enclosure_viewing_rows
@@ -38,14 +38,14 @@ def test_enclosure_viewing_walk_nodes_reference_valid_walk_graph_nodes() -> None
    for row in EnclosureViewingWalkNodeProvider.fetch_records():
       assert row[ 'walk_node_id' ] in node_ids
       assert row[ 'snap_distance_px' ] >= 0
-      assert row[ 'snap_distance_px' ] <= MAX_ENCLOSURE_VIEWING_SNAP_DISTANCE_PX
+      assert row[ 'snap_distance_px' ] <= Paths.MAX_ENCLOSURE_VIEWING_SNAP_DISTANCE_PX
       assert row[ 'enclosure_type' ] in { 'Indoor', 'Outdoor' }
 
 
 def test_enclosure_viewing_walk_nodes_match_nearest_node_snap() -> None:
    graph = WalkGraphProvider.fetch()
    enclosure_viewing_rows = json.loads(
-      ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) )
+      Paths.ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) )
    expected_rows = EnclosureViewingWalkNodeBuilder.build(
       graph,
       enclosure_viewing_rows )

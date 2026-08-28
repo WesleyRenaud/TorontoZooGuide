@@ -5,7 +5,7 @@ from ....models import GuardiansTalkDiff
 from ....models import WildEncounter
 from ....models import WildEncounterDiff
 from ....shared.calendar_dates import DateValues
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class ScheduledOccurrenceBuilder():
@@ -15,8 +15,8 @@ class ScheduledOccurrenceBuilder():
          name: str,
          talk: GuardiansTalk | None,
          *,
-         start_time_override: ScheduleTimeKey = None,
-         end_time_override: ScheduleTimeKey = None ) -> GuardiansTalkDiff:
+         start_time_override: Types.ScheduleTimeKey = None,
+         end_time_override: Types.ScheduleTimeKey = None ) -> GuardiansTalkDiff:
       if talk is None:
          return GuardiansTalkDiff(
             name=name,
@@ -42,8 +42,8 @@ class ScheduledOccurrenceBuilder():
          name: str,
          encounter: WildEncounter | None,
          *,
-         start_time_override: ScheduleTimeKey = None,
-         end_time_override: ScheduleTimeKey = None ) -> WildEncounterDiff:
+         start_time_override: Types.ScheduleTimeKey = None,
+         end_time_override: Types.ScheduleTimeKey = None ) -> WildEncounterDiff:
       if encounter is None:
          return WildEncounterDiff(
             name=name,

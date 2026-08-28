@@ -7,7 +7,7 @@ from http_support import response_json
 from http_support import StubZooControllers
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 
 GUARDIANS_TALK_SCHEDULE_BODY = {
@@ -70,7 +70,7 @@ def test_guardians_talk_schedule_overlap_resolution_maps_payload(
       expected_method: str ) -> None:
    handler = make_handler( path, GUARDIANS_TALK_SCHEDULE_BODY )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -102,7 +102,7 @@ def test_guardians_talk_schedule_overlap_failure_returns_error_type(
       '/set-guardians-talk-schedule',
       GUARDIANS_TALK_SCHEDULE_BODY )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 

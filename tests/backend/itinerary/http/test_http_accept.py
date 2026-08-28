@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from http_support import make_handler, response_json, StubZooControllers
 
-import api.server as server
+import api.http_request_handler as server
 
 
 def test_accept_itinerary_endpoint_passes_animals_to_keep(
@@ -20,7 +20,7 @@ def test_accept_itinerary_endpoint_passes_animals_to_keep(
       },
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    response = response_json( handler )
 
@@ -53,7 +53,7 @@ def test_accept_itinerary_endpoint_passes_attractions_to_keep(
       },
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    response = response_json( handler )
 

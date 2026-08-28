@@ -8,7 +8,7 @@ from ....models import ItineraryEvent
 from ....models import WildEncounter
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryEventType
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class ItineraryActivityScheduler:
@@ -20,8 +20,8 @@ class ItineraryActivityScheduler:
          self,
          species: str,
          exhibit: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       animal = next(
          (
             item for item in self.itinerary.animals
@@ -39,8 +39,8 @@ class ItineraryActivityScheduler:
    def schedule_attraction(
          self,
          name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       attraction = next(
          (
             item for item in self.itinerary.attractions
@@ -58,8 +58,8 @@ class ItineraryActivityScheduler:
    def schedule_guardians_talk(
          self,
          name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       guardians_talk = next(
          (
             item for item in self.itinerary.guardians_talks
@@ -77,8 +77,8 @@ class ItineraryActivityScheduler:
    def schedule_wild_encounter(
          self,
          name: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       wild_encounter = next(
          (
             item for item in self.itinerary.wild_encounters
@@ -96,8 +96,8 @@ class ItineraryActivityScheduler:
    def schedule_event(
          self,
          event_type: ItineraryEventType,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> ItineraryEvent:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> ItineraryEvent:
       event = ItineraryEvent(
          event_type=event_type,
          start_time=DateValues.normalize_itinerary_schedule_time( start_time ),
@@ -110,7 +110,7 @@ class ItineraryActivityScheduler:
    def schedule_item(
          self,
          item: Animal | Attraction | GuardiansTalk | WildEncounter,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> None:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> None:
       item.start_time = DateValues.normalize_itinerary_schedule_time( start_time )
       item.end_time = DateValues.normalize_itinerary_schedule_time( end_time )

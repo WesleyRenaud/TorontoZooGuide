@@ -6,14 +6,14 @@ from datetime import timedelta
 
 from .opening_schedule_conflict_record import TConflict
 from .opening_schedule_date_resolver import OpeningScheduleDateResolver
-from ..types import Connection
+from ..types import Types
 
 
 class OpeningScheduleConflictShortenStartTrimmer():
    @classmethod
    def try_trim(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: TConflict,
          *,
          conflict_start_date: date,

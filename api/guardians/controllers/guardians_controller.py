@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 from ..scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
-from ...shared.api_error_response import ApiErrorResponseApplier
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 

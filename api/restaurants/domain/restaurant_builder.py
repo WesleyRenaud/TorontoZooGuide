@@ -6,21 +6,21 @@ from ..data_access.restaurant_record import RestaurantRecord
 from ..data_access.restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from ...models import Restaurant
-from .restaurant_context import RestaurantContext
 from ...shared.enums import ScheduleStatus
 from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
+from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
-from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
+from ...types import Types
 
 
 class RestaurantBuilder():
    @classmethod
    def resolve_context(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> RestaurantContext:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> OpeningScheduleVisitContext:
       return OpeningScheduleVisitContextResolver.resolve(
          day=day,
          month=month,
@@ -30,7 +30,7 @@ class RestaurantBuilder():
    @classmethod
    def calculate_likelihood(
          cls,
-         day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
+         day_seasonal_availability_multiplier: Types.SeasonalMultiplier ) -> int:
       return OpeningScheduleStatusResolver.calculate_seasonal_likelihood( day_seasonal_availability_multiplier )
 
 
@@ -86,7 +86,7 @@ class RestaurantBuilder():
    def get_day_seasonal_availability_multiplier(
          cls,
          restaurant_record: RestaurantRecord,
-         context: RestaurantContext ) -> SeasonalMultiplier:
+         context: OpeningScheduleVisitContext ) -> Types.SeasonalMultiplier:
       return OpeningScheduleSeasonalMultiplierResolver.resolve(
          weekday_multiplier=restaurant_record.weekday_multiplier,
          weekend_holiday_multiplier=restaurant_record.weekend_holiday_multiplier,
@@ -99,7 +99,7 @@ class RestaurantBuilder():
          restaurant_record: RestaurantRecord,
          schedule_records: list[ RestaurantScheduleRecord ],
          schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
-         context: RestaurantContext ) -> Restaurant:
+         context: OpeningScheduleVisitContext ) -> Restaurant:
 
       likelihood, closed_message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
          name=restaurant_record.name,
@@ -130,7 +130,7 @@ class RestaurantBuilder():
          restaurant_records: list[ RestaurantRecord ],
          schedule_records: list[ RestaurantScheduleRecord ],
          schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
-         context: RestaurantContext,
+         context: OpeningScheduleVisitContext,
          include_closed_restaurants: bool,
          restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
 

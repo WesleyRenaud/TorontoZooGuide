@@ -7,7 +7,7 @@ from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from .fixed_time_activity_unschedule_preparer import FixedTimeActivityUnschedulePreparer
 from ....models.guardians_talk_diff import GuardiansTalkDiff
-from ....types import Cursor
+from ....types import Types
 
 
 class GuardiansTalkUnschedulePreparer():
@@ -80,7 +80,7 @@ class GuardiansTalkUnschedulePreparer():
    @classmethod
    def clear_overlapping_saved_schedules(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          saved_itinerary: SavedItinerary,
          new_guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
       FixedTimeActivityUnschedulePreparer.clear_overlapping_saved_schedules(

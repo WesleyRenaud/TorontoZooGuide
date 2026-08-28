@@ -4,7 +4,7 @@ from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.calendar_dates import DateValues
 from ...shared.duration_values import DurationValues
 from .transportation_route_leg_segment import TransportationRouteLegSegment
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class TimedTransportationLegExpander():
@@ -12,17 +12,17 @@ class TimedTransportationLegExpander():
    def expand(
          cls,
          transportation: str,
-         start_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
          legs: list[ TransportationRouteLegSegment ],
          added_as_attraction: bool,
-         ) -> tuple[ list[ ItineraryTransportationLeg ], ScheduleTimeKey ]:
+         ) -> tuple[ list[ ItineraryTransportationLeg ], Types.ScheduleTimeKey ]:
       start_seconds = DateValues.time_value_in_seconds( start_time )
 
       if start_seconds is None:
          raise ValueError( 'start_time is required to expand transportation legs' )
 
       cursor_seconds = start_seconds
-      end_time_key: ScheduleTimeKey = start_time
+      end_time_key: Types.ScheduleTimeKey = start_time
       timed_legs: list[ ItineraryTransportationLeg ] = []
 
       for leg in legs:

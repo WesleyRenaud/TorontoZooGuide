@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..occurrences.guardians_talk_occurrence_input import GuardiansTalkOccurrenceInput
-from ...types import DateKey
+from ...types import Types
 
 
 class GuardiansTalkOccurrenceBuilder():
@@ -10,7 +10,7 @@ class GuardiansTalkOccurrenceBuilder():
          cls,
          talk: str,
          location: str,
-         date: DateKey,
+         date: Types.DateKey,
          time: str ) -> GuardiansTalkOccurrenceInput:
       return GuardiansTalkOccurrenceInput(
          talk_name=talk,

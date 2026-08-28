@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class AnimalDiff:
@@ -14,8 +14,8 @@ class AnimalDiff:
          enclosure_name: str | None = None,
          is_added: bool = False,
          covered_by_talk: bool = False,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None ) -> None:
       self.species = species
       self.exhibit = exhibit
       self.enclosure_name = enclosure_name

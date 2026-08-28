@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .itinerary_status_record import ItineraryStatusRecord
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection, Cursor
+from ...types import Types
 
 
 class ItineraryStatusProvider():
    @classmethod
-   def fetch_itinerary_statuses( cls, conn: Connection ) -> list[ ItineraryStatusRecord ]:
+   def fetch_itinerary_statuses( cls, conn: Types.Connection ) -> list[ ItineraryStatusRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -34,7 +34,7 @@ class ItineraryStatusProvider():
 
 
    @classmethod
-   def fetch_suppressed_status_values( cls, conn: Connection ) -> list[ str ]:
+   def fetch_suppressed_status_values( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -55,7 +55,7 @@ class ItineraryStatusProvider():
    @classmethod
    def is_itinerary_status_suppressable(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          error_type: ItineraryErrorType ) -> bool:
       cur = conn.cursor()
 
@@ -75,7 +75,7 @@ class ItineraryStatusProvider():
    @classmethod
    def is_itinerary_error_suppressed(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          error_type: ItineraryErrorType ) -> bool:
       if not cls.is_itinerary_status_suppressable( conn, error_type ):
          return False
@@ -98,7 +98,7 @@ class ItineraryStatusProvider():
    @classmethod
    def suppress_itinerary_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          error_type: ItineraryErrorType ) -> None:
       if not cls.is_itinerary_status_suppressable( conn, error_type ):
          return
@@ -122,5 +122,5 @@ class ItineraryStatusProvider():
 
 
    @classmethod
-   def clear_itinerary_status_suppressions( cls, cur: Cursor ) -> None:
+   def clear_itinerary_status_suppressions( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryStatusSuppression;' )

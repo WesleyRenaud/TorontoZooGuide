@@ -4,13 +4,13 @@ from collections.abc import Callable
 from datetime import date
 from typing import TypeVar
 
-from ..app_strings import AppStringProvider
+from ..app_string_provider import AppStringProvider
 from .calendar_dates import CalendarDates
 from .calendar_dates import DateValues
 from .enums import ScheduleStatus
 from .opening_schedule_record import OpeningScheduleRecord
 from .schedule_override_record import ScheduleOverrideRecord
-from ..types import SeasonalMultiplier
+from ..types import Types
 
 
 TRecord = TypeVar( 'TRecord' )
@@ -119,7 +119,7 @@ class OpeningScheduleStatusResolver():
    @classmethod
    def calculate_seasonal_likelihood(
          cls,
-         day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
+         day_seasonal_availability_multiplier: Types.SeasonalMultiplier ) -> int:
       seasonal_multiplier = (
          day_seasonal_availability_multiplier
          if day_seasonal_availability_multiplier is not None
@@ -139,7 +139,7 @@ class OpeningScheduleStatusResolver():
          override_records: list[ ScheduleOverrideRecord ],
          target_date: date,
          weekday: int,
-         seasonal_multiplier: SeasonalMultiplier,
+         seasonal_multiplier: Types.SeasonalMultiplier,
          build_closed_schedule_message: Callable[ [ OpeningScheduleRecord ], str | None ] | None = None,
          likely_closed_message: Callable[ [ str ], str ] | None = None,
    ) -> tuple[ int, str | None ]:

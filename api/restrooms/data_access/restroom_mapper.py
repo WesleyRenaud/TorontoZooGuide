@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .restroom_record import RestroomRecord
-from ...types import Row
+from ...types import Types
 
 
 class RestroomMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> RestroomRecord:
+   def map_record( cls, row: Types.Row ) -> RestroomRecord:
       return RestroomRecord(
          title=row[ 'TITLE' ],
          x_coord=row[ 'X_COORD' ],
@@ -21,7 +21,7 @@ class RestroomMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ RestroomRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ RestroomRecord ]:
       return [
          cls.map_record( row )
          for row in rows

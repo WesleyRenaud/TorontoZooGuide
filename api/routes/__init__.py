@@ -1,56 +1,52 @@
-from ..animals.routes import ANIMAL_ROUTES
-from ..attractions.routes import ATTRACTION_ROUTES
-from ..defibrillators.routes import DEFIBRILLATOR_ROUTES
-from ..drinking_fountains.routes import DRINKING_FOUNTAIN_ROUTES
-from ..emergency_intercoms.routes import EMERGENCY_INTERCOM_ROUTES
-from ..event_sites.routes import EVENT_SITE_ROUTES
-from ..events.routes import EVENT_ROUTES
-from ..exhibits.routes import EXHIBIT_ROUTES
-from .get_registry import GET_ROUTES
-from .get_registry import register_get_routes
-from ..giftshops.routes import GIFT_SHOP_ROUTES
-from ..guardians.routes import GUARDIANS_ROUTES
-from ..guest_services.routes import GUEST_SERVICE_ROUTES
-from ..itinerary.routes import ITINERARY_ROUTES
-from ..pavilions.routes import PAVILION_ROUTES
-from ..picnic_sites.routes import PICNIC_SITE_ROUTES
-from .registry import POST_ROUTES
-from .registry import register_post_routes
-from ..restaurants.routes import RESTAURANT_ROUTES
-from ..restrooms.routes import RESTROOM_ROUTES
-from ..search.routes import SEARCH_ROUTES
-from ..static.routes import STATIC_PAGE_ROUTES
-from ..transportation.routes import TRANSPORTATION_ROUTES
-from ..updates.routes import UPDATE_ROUTES
-from ..wild_encounters.routes import WILD_ENCOUNTER_ROUTES
-from ..zoo_hours.routes import ZOO_HOURS_ROUTES
+from ..animals.animal_routes import AnimalRoutes
+from ..attractions.attraction_routes import AttractionRoutes
+from ..defibrillators.defibrillator_routes import DefibrillatorRoutes
+from ..drinking_fountains.drinking_fountain_routes import DrinkingFountainRoutes
+from ..emergency_intercoms.emergency_intercom_routes import EmergencyIntercomRoutes
+from ..event_sites.event_site_routes import EventSiteRoutes
+from ..events.event_routes import EventRoutes
+from ..exhibits.exhibit_routes import ExhibitRoutes
+from .get_route_registry import GetRouteRegistry
+from ..giftshops.gift_shop_routes import GiftShopRoutes
+from ..guardians.guardians_routes import GuardiansRoutes
+from ..guest_services.guest_service_routes import GuestServiceRoutes
+from ..itinerary.itinerary_routes import ItineraryRoutes
+from ..pavilions.pavilion_routes import PavilionRoutes
+from ..picnic_sites.picnic_site_routes import PicnicSiteRoutes
+from .post_route_registry import PostRouteRegistry
+from ..restaurants.restaurant_routes import RestaurantRoutes
+from ..restrooms.restroom_routes import RestroomRoutes
+from ..search.search_routes import SearchRoutes
+from ..static.static_page_routes import StaticPageRoutes
+from ..transportation.transportation_routes import TransportationRoutes
+from ..updates.update_routes import UpdateRoutes
+from ..wild_encounters.wild_encounter_routes import WildEncounterRoutes
+from ..zoo_hours.zoo_hours_routes import ZooHoursRoutes
 
-register_get_routes( STATIC_PAGE_ROUTES )
-register_post_routes( ANIMAL_ROUTES )
-register_post_routes( ATTRACTION_ROUTES )
-register_post_routes( DEFIBRILLATOR_ROUTES )
-register_post_routes( DRINKING_FOUNTAIN_ROUTES )
-register_post_routes( EMERGENCY_INTERCOM_ROUTES )
-register_post_routes( EVENT_SITE_ROUTES )
-register_post_routes( EVENT_ROUTES )
-register_post_routes( EXHIBIT_ROUTES )
-register_post_routes( GIFT_SHOP_ROUTES )
-register_post_routes( ITINERARY_ROUTES )
-register_post_routes( GUARDIANS_ROUTES )
-register_post_routes( GUEST_SERVICE_ROUTES )
-register_post_routes( PAVILION_ROUTES )
-register_post_routes( PICNIC_SITE_ROUTES )
-register_post_routes( RESTAURANT_ROUTES )
-register_post_routes( RESTROOM_ROUTES )
-register_post_routes( SEARCH_ROUTES )
-register_post_routes( TRANSPORTATION_ROUTES )
-register_post_routes( UPDATE_ROUTES )
-register_post_routes( WILD_ENCOUNTER_ROUTES )
-register_post_routes( ZOO_HOURS_ROUTES )
+GetRouteRegistry.register( StaticPageRoutes.PAGE_ROUTES )
+PostRouteRegistry.register( AnimalRoutes.ROUTES )
+PostRouteRegistry.register( AttractionRoutes.ROUTES )
+PostRouteRegistry.register( DefibrillatorRoutes.ROUTES )
+PostRouteRegistry.register( DrinkingFountainRoutes.ROUTES )
+PostRouteRegistry.register( EmergencyIntercomRoutes.ROUTES )
+PostRouteRegistry.register( EventSiteRoutes.ROUTES )
+PostRouteRegistry.register( EventRoutes.ROUTES )
+PostRouteRegistry.register( ExhibitRoutes.ROUTES )
+PostRouteRegistry.register( GiftShopRoutes.ROUTES )
+PostRouteRegistry.register( ItineraryRoutes.ROUTES )
+PostRouteRegistry.register( GuardiansRoutes.ROUTES )
+PostRouteRegistry.register( GuestServiceRoutes.ROUTES )
+PostRouteRegistry.register( PavilionRoutes.ROUTES )
+PostRouteRegistry.register( PicnicSiteRoutes.ROUTES )
+PostRouteRegistry.register( RestaurantRoutes.ROUTES )
+PostRouteRegistry.register( RestroomRoutes.ROUTES )
+PostRouteRegistry.register( SearchRoutes.ROUTES )
+PostRouteRegistry.register( TransportationRoutes.ROUTES )
+PostRouteRegistry.register( UpdateRoutes.ROUTES )
+PostRouteRegistry.register( WildEncounterRoutes.ROUTES )
+PostRouteRegistry.register( ZooHoursRoutes.ROUTES )
 
 __all__ = [
-   'GET_ROUTES',
-   'POST_ROUTES',
-   'register_get_routes',
-   'register_post_routes',
+   'GetRouteRegistry',
+   'PostRouteRegistry',
 ]

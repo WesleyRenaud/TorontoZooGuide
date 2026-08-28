@@ -8,7 +8,7 @@ from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.itinerary_stop import ItineraryStop
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.enums import ScheduleItemKind
-from ....types import Connection
+from ....types import Types
 from ....wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider
 from ....wild_encounters.scheduling.wild_encounter_loop_schedule_pin_resolver import WildEncounterLoopSchedulePinResolver
 
@@ -17,7 +17,7 @@ class BulkScheduleLoopPinAttacher():
    @classmethod
    def separate_boundaries_and_pins(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary: Itinerary,
          fixed_time_stops: list[ ItineraryStop ],
       ) -> tuple[ list[ ItineraryStop ], list[ LoopSchedulePin ] ]:

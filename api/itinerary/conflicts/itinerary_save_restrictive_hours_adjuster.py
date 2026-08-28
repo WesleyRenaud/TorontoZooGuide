@@ -9,7 +9,7 @@ from ..domain.itinerary_adjustment import ItineraryAdjustment
 from ..domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
 from ..domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ...shared.calendar_dates import DateValues
-from ...types import Connection
+from ...types import Types
 from ..validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -19,7 +19,7 @@ class ItinerarySaveRestrictiveHoursAdjuster():
    @classmethod
    def adjust(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          save_input: ItinerarySaveInput,
          *,
          old_visit_date: str | None ) -> tuple[

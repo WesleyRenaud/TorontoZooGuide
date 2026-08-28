@@ -9,14 +9,14 @@ from ....walk_graph.domain.master_route_stop_key import MasterRouteStopKey
 
 class LoopScheduleStopExtractor():
    @classmethod
-   def stop_key( cls, stop: LoopScheduleStop ) -> MasterRouteStopKey:
+   def stop_key( cls, stop: LoopScheduleStop.Stop ) -> MasterRouteStopKey.Key:
       return stop.master_route_stop_key()
 
 
    @classmethod
    def animals_from(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> list[ ItineraryAnimalRecord ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ ItineraryAnimalRecord ]:
       return [
          stop
          for stop in stops
@@ -27,7 +27,7 @@ class LoopScheduleStopExtractor():
    @classmethod
    def attractions_from(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> list[ ItineraryAttractionRecord ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ ItineraryAttractionRecord ]:
       return [
          stop
          for stop in stops
@@ -38,7 +38,7 @@ class LoopScheduleStopExtractor():
    @classmethod
    def transportations_from(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> list[ ItineraryTransportationRecord ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ ItineraryTransportationRecord ]:
       return [
          stop
          for stop in stops

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .event_mapper import EventMapper
 from ...models import Event
-from ...types import Connection, DateKey
+from ...types import Types
 
 
 class EventProvider():
    @classmethod
-   def insert_event( cls, conn: Connection, event: Event ) -> bool:
+   def insert_event( cls, conn: Types.Connection, event: Event ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -42,8 +42,8 @@ class EventProvider():
    @classmethod
    def fetch_events(
          cls,
-         conn: Connection,
-         as_of_date: DateKey ) -> list[ Event ]:
+         conn: Types.Connection,
+         as_of_date: Types.DateKey ) -> list[ Event ]:
       cur = conn.cursor()
 
       try:

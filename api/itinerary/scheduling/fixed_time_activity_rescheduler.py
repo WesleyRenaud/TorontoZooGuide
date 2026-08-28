@@ -10,7 +10,7 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ...types import Connection
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -18,7 +18,7 @@ class FixedTimeActivityRescheduler():
    @classmethod
    def reschedule_after_add(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ...types import Row
+from ...types import Types
 from .zoo_hours_record import ZooHoursRecord
 
 
 class ZooHoursMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> ZooHoursRecord:
+   def map_record( cls, row: Types.Row ) -> ZooHoursRecord:
       return ZooHoursRecord(
          operating_date=row[ 'OPERATING_DATE' ],
          early_admission_time=row[ 'EARLY_ADMISSION_TIME' ],
@@ -16,7 +16,7 @@ class ZooHoursMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ ZooHoursRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ ZooHoursRecord ]:
       return [
          cls.map_record( row )
          for row in rows

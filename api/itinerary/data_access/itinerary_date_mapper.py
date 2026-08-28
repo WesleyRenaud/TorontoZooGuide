@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .itinerary_date_record import ItineraryDateRecord
 from ...shared.calendar_dates import DateValues
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryDateMapper():
    @classmethod
-   def map_record( cls, row: Row | None ) -> ItineraryDateRecord | None:
+   def map_record( cls, row: Types.Row | None ) -> ItineraryDateRecord | None:
       if row == None:
          return None
 

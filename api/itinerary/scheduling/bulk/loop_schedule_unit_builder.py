@@ -45,7 +45,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def build(
          cls,
-         loop_groups: list[ list[ LoopScheduleStop ] ] ) -> list[ LoopScheduleUnit ]:
+         loop_groups: list[ list[ LoopScheduleStop.Stop ] ] ) -> list[ LoopScheduleUnit ]:
       loop_ids_by_stop_key = MasterRouteProvider.loop_id_by_stop_key()
       loop_side_cluster_ids = MasterRouteProvider.loop_side_cluster_id_by_loop_id()
       loop_indexes_in_side_cluster = MasterRouteProvider.loop_index_in_side_cluster_by_loop_id()
@@ -66,7 +66,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def walk_node_id_for_stop(
          cls,
-         stop: LoopScheduleStop ) -> str | None:
+         stop: LoopScheduleStop.Stop ) -> str | None:
       if isinstance( stop, ItineraryTransportationRecord ):
          return TransportationWalkNodeResolver.resolve( stop.transportation )
 
@@ -89,7 +89,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def _from_group(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          loop_ids_by_stop_key: dict,
          loop_side_cluster_ids: dict[ str, LoopSideClusterId ],
@@ -121,7 +121,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def _walk_endpoint_node_ids_for_stops(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> tuple[ str | None, str | None ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> tuple[ str | None, str | None ]:
       if not stops:
          return None, None
 
@@ -135,7 +135,7 @@ class LoopScheduleUnitBuilder():
    def _stops_in_master_route_loop_order(
          cls,
          master_route_loop: MasterRouteLoop,
-         stops: list[ LoopScheduleStop ] ) -> list[ LoopScheduleStop ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ LoopScheduleStop.Stop ]:
       loop_index_by_stop_key = {
          stop.master_route_key(): loop_index
          for loop_index, stop in enumerate( master_route_loop.viewing_spots )
@@ -158,7 +158,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def _loop_id_for_stops(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          loop_ids_by_stop_key: dict ) -> str | None:
       for stop in stops:
          loop_id = loop_ids_by_stop_key.get( LoopScheduleStopExtractor.stop_key( stop ) )
@@ -172,7 +172,7 @@ class LoopScheduleUnitBuilder():
    @classmethod
    def _unmapped(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> LoopScheduleUnit:
+         stops: list[ LoopScheduleStop.Stop ] ) -> LoopScheduleUnit:
       first_stop = stops[ 0 ]
       last_stop = stops[ -1 ]
 

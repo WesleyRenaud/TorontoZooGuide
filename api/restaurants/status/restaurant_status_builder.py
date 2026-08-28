@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from ..scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
 from ..scheduling.restaurant_schedule_override import RestaurantScheduleOverride
-from ...shared.build_amenity_status_builders import AmenityStatusBuilders
+from ...shared.amenity_status_builders import AmenityStatusBuilders
 from ...shared.enums import AmenityNameField
-from ...types import DateInput
+from ...types import Types
 
 
 class RestaurantStatusBuilder():
@@ -19,8 +19,8 @@ class RestaurantStatusBuilder():
    def build_closed_schedule(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> RestaurantOpeningSchedule:
       return cls._builders.build_closed_schedule( restaurant, start_date, end_date, message )
 
@@ -29,8 +29,8 @@ class RestaurantStatusBuilder():
    def build_opening_schedule(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -59,7 +59,7 @@ class RestaurantStatusBuilder():
    def build_closure_override(
          cls,
          restaurant: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> RestaurantScheduleOverride:
       return cls._builders.build_closure_override( restaurant, start_date, end_date, message )

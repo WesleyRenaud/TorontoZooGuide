@@ -3,8 +3,8 @@ from __future__ import annotations
 from .attraction_hours_schedule import AttractionHoursSchedule
 from ..data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from ..data_access.attraction_hours_schedule_record import AttractionHoursScheduleRecord
-from ...shared.build_opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
-from ...types import Connection
+from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...types import Types
 
 
 _resolution = OpeningScheduleConflictResolution(
@@ -20,7 +20,7 @@ class AttractionHoursScheduleConflictResolver():
    @classmethod
    def save_replacing_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> bool:
       return _resolution.save_replacing_overlaps( conn, schedule )
 
@@ -28,7 +28,7 @@ class AttractionHoursScheduleConflictResolver():
    @classmethod
    def save_trimming_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> bool:
       return _resolution.save_trimming_overlaps( conn, schedule )
 
@@ -36,7 +36,7 @@ class AttractionHoursScheduleConflictResolver():
    @classmethod
    def trim_conflict(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: AttractionHoursScheduleRecord,
          schedule: AttractionHoursSchedule ) -> None:
       return _resolution.trim_conflict( conn, conflict, schedule )

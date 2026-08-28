@@ -8,49 +8,49 @@ from seed_schema_support import EXPECTED_RUNTIME_COLUMNS
 from seed_schema_support import PARTIAL_RUNTIME_TABLES
 from seed_schema_support import table_count
 
-from api.seed import data
+from api.seed.data import Data
 from api.seed.migrations.migration_runner import MigrationRunner
 from api.seed.schema_creator import SchemaCreator
 from api.seed.user_itinerary_data_cleaner import UserItineraryDataCleaner
 
 
 def test_seed_data_exports_all_static_table_rows() -> None:
-   assert data.regions
-   assert data.exhibits
-   assert data.exhibit_day_seasonal_availability_multipliers
-   assert data.animals
-   assert data.enclosures
-   assert data.enclosure_viewings
-   assert data.animal_day_seasonal_viewability_multipliers
-   assert data.pavilions
-   assert data.restaurants
-   assert data.restaurant_day_seasonal_availability_multipliers
-   assert data.restrooms
-   assert data.gift_shops
-   assert data.gift_shop_day_seasonal_availability_multipliers
-   assert data.attractions
-   assert data.attraction_day_seasonal_availability_multipliers
-   assert data.transportations
-   assert data.transportation_stations
-   assert data.transportation_routes
-   assert data.transportation_route_stations
-   assert data.transportation_day_routes
-   assert data.transportation_legs
-   assert data.transportation_route_legs
-   assert data.transportation_route_leg_markers
-   assert data.guardians_talks
-   assert data.wild_encounter_meeting_spots
-   assert data.wild_encounters
-   assert data.drinking_fountain_day_seasonal_availability_multipliers
-   assert data.drinking_fountains
-   assert data.defibrillators
-   assert data.emergency_intercoms
-   assert data.guest_services
-   assert data.picnic_sites
-   assert data.event_sites
-   assert data.itinerary_statuses
-   assert data.itinerary_event_defaults
-   assert data.zoo_hours
+   assert Data.regions
+   assert Data.exhibits
+   assert Data.exhibit_day_seasonal_availability_multipliers
+   assert Data.animals
+   assert Data.enclosures
+   assert Data.enclosure_viewings
+   assert Data.animal_day_seasonal_viewability_multipliers
+   assert Data.pavilions
+   assert Data.restaurants
+   assert Data.restaurant_day_seasonal_availability_multipliers
+   assert Data.restrooms
+   assert Data.gift_shops
+   assert Data.gift_shop_day_seasonal_availability_multipliers
+   assert Data.attractions
+   assert Data.attraction_day_seasonal_availability_multipliers
+   assert Data.transportations
+   assert Data.transportation_stations
+   assert Data.transportation_routes
+   assert Data.transportation_route_stations
+   assert Data.transportation_day_routes
+   assert Data.transportation_legs
+   assert Data.transportation_route_legs
+   assert Data.transportation_route_leg_markers
+   assert Data.guardians_talks
+   assert Data.wild_encounter_meeting_spots
+   assert Data.wild_encounters
+   assert Data.drinking_fountain_day_seasonal_availability_multipliers
+   assert Data.drinking_fountains
+   assert Data.defibrillators
+   assert Data.emergency_intercoms
+   assert Data.guest_services
+   assert Data.picnic_sites
+   assert Data.event_sites
+   assert Data.itinerary_statuses
+   assert Data.itinerary_event_defaults
+   assert Data.zoo_hours
 
 
 def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:

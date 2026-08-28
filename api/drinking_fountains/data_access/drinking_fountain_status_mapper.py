@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
-from ...types import Row
+from ...types import Types
 
 
 class DrinkingFountainStatusMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> DrinkingFountainStatusRecord:
+   def map_record( cls, row: Types.Row ) -> DrinkingFountainStatusRecord:
       return DrinkingFountainStatusRecord(
          is_closed=row[ 'IS_CLOSED' ],
          start_date=row[ 'START_DATE' ],

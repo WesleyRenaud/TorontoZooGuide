@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .transportation_record import TransportationRecord
-from ...types import Row
+from ...types import Types
 
 
 class TransportationMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> TransportationRecord:
+   def map_record( cls, row: Types.Row ) -> TransportationRecord:
       return TransportationRecord(
          name=row[ 'NAME' ],
          is_also_attraction=bool( row[ 'IS_ALSO_ATTRACTION' ] ),
@@ -26,7 +26,7 @@ class TransportationMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ] ) -> list[ TransportationRecord ]:
+         rows: list[ Types.Row ] ) -> list[ TransportationRecord ]:
       return [
          cls.map_record( row )
          for row in rows

@@ -18,7 +18,7 @@ from ..operations.itinerary_item_unscheduler import ItineraryItemUnscheduler
 from ..operations.itinerary_setter import ItinerarySetter
 from ..operations.itinerary_warning_suppressor import ItineraryWarningSuppressor
 from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
@@ -27,20 +27,20 @@ from ..scheduling.items.itinerary_item_scheduler import ItineraryItemScheduler
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection, DateInput, DurationInput, TimeInput
+from ...types import Types
 from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
 from ..validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from ..validation.itinerary_departure_time_validator import ItineraryDepartureTimeValidator
 from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
 from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
 class ItineraryCoordinator():
    @classmethod
-   def _current_itinerary( cls, conn: Connection ) -> Itinerary:
+   def _current_itinerary( cls, conn: Types.Connection ) -> Itinerary:
       return ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
          animal_coordinator=AnimalCoordinator,
@@ -52,7 +52,7 @@ class ItineraryCoordinator():
    @classmethod
    def _time_set_result(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> ItineraryTimeSetResult:
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
@@ -68,13 +68,13 @@ class ItineraryCoordinator():
 
    @classmethod
    def get_itinerary_date( cls ) -> str | None:
-      return ItineraryProvider.fetch_itinerary_date( get_connection() )
+      return ItineraryProvider.fetch_itinerary_date( RequestConnectionProvider.get() )
 
 
    @classmethod
    def get_itinerary( cls, visit_date_temp: float | None = None ) -> Itinerary:
       return ItineraryBuilder.build_current(
-         saved_itinerary=ItineraryProvider.fetch_saved_itinerary( get_connection() ),
+         saved_itinerary=ItineraryProvider.fetch_saved_itinerary( RequestConnectionProvider.get() ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
@@ -85,15 +85,15 @@ class ItineraryCoordinator():
    @classmethod
    def set_itinerary(
          cls,
-         date: DateInput,
+         date: Types.DateInput,
          selected_exhibits: list[ str ] | None = None,
          animals: list[ dict[ str, str ] ] | None = None,
          attractions: list[ str ] | None = None,
          guardians_talks: list[ dict[ str, str | None ] ] | None = None,
          wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None,
          transportations: list[ ItineraryTransportationInput ] | None = None,
-         arrival_time: TimeInput = None,
-         departure_time: TimeInput = None,
+         arrival_time: Types.TimeInput = None,
+         departure_time: Types.TimeInput = None,
          visit_date_temp: float | None = None,
          overriding_conflicting_guardians_talks: bool = False,
          confirming_short_visit: bool = False,
@@ -104,7 +104,7 @@ class ItineraryCoordinator():
          confirming_guardians_talk_without_animal: bool = False,
          confirming_attraction_without_animal: bool = False ) -> ItinerarySaveResult:
       return ItinerarySetter.set(
-         get_connection(),
+         RequestConnectionProvider.get(),
          date=date,
          arrival_time=arrival_time,
          departure_time=departure_time,
@@ -136,10 +136,10 @@ class ItineraryCoordinator():
    @classmethod
    def schedule_itinerary_item(
          cls,
-         schedule_item_key: ScheduleItemKey | None,
+         schedule_item_key: ScheduleItemKey.Key | None,
          *,
-         start_time: TimeInput = None,
-         duration_minutes: DurationInput = None,
+         start_time: Types.TimeInput = None,
+         duration_minutes: Types.DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
          confirming_attraction_outside_operating_hours: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
@@ -147,7 +147,7 @@ class ItineraryCoordinator():
          confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False ) -> ItinerarySaveResult:
       return ItineraryItemScheduler.schedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule_item_key,
          start_time=start_time,
          duration_minutes=duration_minutes,
@@ -181,7 +181,7 @@ class ItineraryCoordinator():
          visit_date_temp: float | None = None,
          *,
          confirming_fixed_time_item_long_wait: bool = False ) -> ItinerarySaveResult:
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
 
       return BulkScheduleItineraryRunner.run(
@@ -200,7 +200,7 @@ class ItineraryCoordinator():
 
    @classmethod
    def clear_itinerary( cls ) -> bool:
-      return ClearItineraryProvider.clear_itinerary( get_connection() )
+      return ClearItineraryProvider.clear_itinerary( RequestConnectionProvider.get() )
 
 
    @classmethod
@@ -208,7 +208,7 @@ class ItineraryCoordinator():
          cls,
          visit_date_temp: float | None = None ) -> ItinerarySaveResult:
       return AllItineraryItemsUnscheduler.unschedule_all(
-         get_connection(),
+         RequestConnectionProvider.get(),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
@@ -219,18 +219,18 @@ class ItineraryCoordinator():
    @classmethod
    def unschedule_itinerary_item(
          cls,
-         schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
+         schedule_item_key: ScheduleItemKey.Key | None ) -> ItinerarySaveResult:
       return ItineraryItemUnscheduler.unschedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule_item_key )
 
 
    @classmethod
    def remove_itinerary_item(
          cls,
-         schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
+         schedule_item_key: ScheduleItemKey.Key | None ) -> ItinerarySaveResult:
       return ItineraryItemRemover.remove(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule_item_key )
 
 
@@ -239,18 +239,18 @@ class ItineraryCoordinator():
          cls,
          warning_type: str ) -> SuppressItineraryWarningResult:
       return ItineraryWarningSuppressor.suppress(
-         get_connection(),
+         RequestConnectionProvider.get(),
          warning_type )
 
 
    @classmethod
    def set_arrival_time(
          cls,
-         arrival_time: TimeInput,
+         arrival_time: Types.TimeInput,
          *,
          confirming_short_visit: bool = False,
          confirming_early_admission: bool = False ) -> ItineraryTimeSetResult:
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
 
@@ -306,10 +306,10 @@ class ItineraryCoordinator():
    @classmethod
    def set_departure_time(
          cls,
-         departure_time: TimeInput,
+         departure_time: Types.TimeInput,
          *,
          confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       normalized_departure_time = DateValues.normalize_itinerary_schedule_time(
          departure_time )
 
@@ -355,6 +355,6 @@ class ItineraryCoordinator():
          animals_to_keep: list[ dict[ str, str ] ] | None = None,
          attractions_to_keep: list[ str ] | None = None ) -> bool:
       return AcceptItineraryProvider.accept_itinerary(
-         get_connection(),
+         RequestConnectionProvider.get(),
          animals_to_keep=ItinerarySaveInputMapper.map_animal_inputs( animals_to_keep ),
          attractions_to_keep=ItinerarySaveInputMapper.map_named_strings( attractions_to_keep ) )

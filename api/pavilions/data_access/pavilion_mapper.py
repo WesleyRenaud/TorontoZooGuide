@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from ...models import Pavilion
-from ...types import Row
+from ...types import Types
 
 
 class PavilionMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> Pavilion:
+   def map_record( cls, row: Types.Row ) -> Pavilion:
       return Pavilion(
          name=row[ 'NAME' ],
          region=row[ 'REGION' ],
@@ -16,7 +16,7 @@ class PavilionMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ Pavilion ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ Pavilion ]:
       return [
          cls.map_record( row )
          for row in rows

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ..animal_item_key import AnimalScheduleItemKey
+from ..animal_schedule_item_key import AnimalScheduleItemKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
-from ..scheduling.items.schedule_item_key import ListedScheduleItemKey
+from ..scheduling.items.listed_schedule_item_key import ListedScheduleItemKey
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection
+from ...types import Types
 
 
 class ScheduleItemNotOnItineraryWarningBuilder():
@@ -16,7 +16,7 @@ class ScheduleItemNotOnItineraryWarningBuilder():
    def saved_itinerary_has_schedule_item(
          cls,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ListedScheduleItemKey ) -> bool:
+         schedule_item_key: ListedScheduleItemKey.Key ) -> bool:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          if schedule_item_key.enclosure_name != None:
             spot_key = ViewingSpotKeyBuilder.from_values(
@@ -42,9 +42,9 @@ class ScheduleItemNotOnItineraryWarningBuilder():
    @classmethod
    def is_required(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ListedScheduleItemKey,
+         schedule_item_key: ListedScheduleItemKey.Key,
          *,
          confirming_schedule_item_not_on_itinerary: bool,
          suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> bool:

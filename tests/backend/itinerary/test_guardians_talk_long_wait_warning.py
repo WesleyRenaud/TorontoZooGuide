@@ -15,7 +15,7 @@ from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
 from api.models import Animal
 from api.models import GuardiansTalk
-from api.shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
+from api.shared.constants import Constants
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
@@ -96,7 +96,7 @@ def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
    isolated = GuardiansTalkLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
 
    assert [ talk.name for talk in isolated ] == [ MEERKAT_TALK ]
-   assert MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
+   assert Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
 
 
 def test_isolated_guardians_talks_ignores_talk_near_other_items() -> None:

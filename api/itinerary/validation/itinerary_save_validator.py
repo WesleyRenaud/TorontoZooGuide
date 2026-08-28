@@ -19,7 +19,7 @@ from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from ..scheduling.scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from .selected_exhibit_date_change_animals_builder import SelectedExhibitDateChangeAnimalsBuilder
-from ...types import Connection, DateKey
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 
@@ -28,7 +28,7 @@ class ItinerarySaveValidator():
    @classmethod
    def validate_for_save(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          save_input: ItinerarySaveInput,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],
@@ -36,7 +36,7 @@ class ItinerarySaveValidator():
          wild_encounter_coordinator: type[ WildEncounterCoordinator ],
          *,
          new_visit_date_temp: float | None = None,
-         old_visit_date: DateKey | None = None ) -> ValidatedItinerary:
+         old_visit_date: Types.DateKey | None = None ) -> ValidatedItinerary:
       arrival_time = save_input.arrival_time
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )
       has_saved_itinerary = old_visit_date is not None

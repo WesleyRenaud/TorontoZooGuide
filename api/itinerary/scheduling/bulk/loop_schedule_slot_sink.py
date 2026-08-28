@@ -13,7 +13,7 @@ from ...data_access.schedule_itinerary_transportation_provider import ScheduleIt
 from .loop_schedule_slot import LoopScheduleSlot
 from ....shared.calendar_dates import DateValues
 from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
-from ....types import Connection
+from ....types import Types
 
 
 @dataclass
@@ -24,7 +24,7 @@ class LoopScheduleSlotSink:
 
    def save(
          self,
-         conn: Connection,
+         conn: Types.Connection,
          blockers: list[ TimeBlock ],
          stop_slots: list[ LoopScheduleSlot ] ) -> bool:
       self.slots.extend( stop_slots )
@@ -53,7 +53,7 @@ class LoopScheduleSlotSink:
 
    @staticmethod
    def _persist_loop_group_slots(
-         conn: Connection,
+         conn: Types.Connection,
          scheduled_slots: list[ LoopScheduleSlot ] ) -> bool:
       cur = conn.cursor()
 

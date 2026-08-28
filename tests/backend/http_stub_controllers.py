@@ -12,7 +12,7 @@ from http_stub_transportation_route import TransportationRouteStubMixin
 from http_stub_updates import UpdatesStubMixin
 from http_stub_zoo_hours import ZooHoursStubMixin
 
-from api.types import Connection
+from api.types import Types
 
 
 class StubControllerNamespace:
@@ -50,8 +50,8 @@ class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, Transpor
    ]
 
 
-   def __init__( self, conn: Connection | None = None ) -> None:
-         self.conn: Connection | None = conn
+   def __init__( self, conn: Types.Connection | None = None ) -> None:
+         self.conn: Types.Connection | None = conn
          self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
          self.closed = False
          StubZooControllers.instances.append( self )

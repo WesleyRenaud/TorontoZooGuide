@@ -13,7 +13,7 @@ from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from .timed_loop_schedule_stop import TimedLoopScheduleStop
 from ...transportation.transportation_default_duration_resolver import TransportationDefaultDurationResolver
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
 
@@ -22,9 +22,9 @@ class LoopScheduleSlotAssigner():
    @classmethod
    def prepare_stops(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          walk_graph: WalkGraph,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          adjacency: WalkGraphAdjacency | None = None ) -> list[ TimedLoopScheduleStop ] | None:
       travels = LoopUnitTravelTimeCalculator.inter_stop_seconds(
@@ -58,8 +58,8 @@ class LoopScheduleSlotAssigner():
    @classmethod
    def duration_seconds_for_stop(
          cls,
-         conn: Connection,
-         stop: LoopScheduleStop ) -> int | None:
+         conn: Types.Connection,
+         stop: LoopScheduleStop.Stop ) -> int | None:
       stored_block = TimeBlockBuilder.from_schedule_times(
          stop.start_time,
          stop.end_time )
@@ -73,8 +73,8 @@ class LoopScheduleSlotAssigner():
    @classmethod
    def default_duration_seconds_for_stop(
          cls,
-         conn: Connection,
-         stop: LoopScheduleStop ) -> int | None:
+         conn: Types.Connection,
+         stop: LoopScheduleStop.Stop ) -> int | None:
       if isinstance( stop, ItineraryAttractionRecord ):
          return ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
             conn,
@@ -144,7 +144,7 @@ class LoopScheduleSlotAssigner():
          if start_time is None or end_time is None:
             return [], start_seconds
 
-         slots.append( ( timed_stop.stop, start_time, end_time ) )
+         slots.append( LoopScheduleSlot( timed_stop.stop, start_time, end_time ) )
          slot_cursor_seconds = end_seconds
 
       return slots, slot_cursor_seconds
@@ -174,7 +174,7 @@ class LoopScheduleSlotAssigner():
    @classmethod
    def save(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          blockers: list[ TimeBlock ],
          stop_slots: list[ LoopScheduleSlot ],
          *,

@@ -13,17 +13,17 @@ class LoopPinSegmentSplitter():
    @classmethod
    def schedule_steps(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          loop_id: str,
          loop_pins: list[ LoopSchedulePin ],
          window_end_seconds: int,
-      ) -> list[ LoopPinScheduleStep ]:
+      ) -> list[ LoopPinScheduleStep.Step ]:
       stop_segments = cls.split_stops(
          stops,
          loop_id=loop_id,
          loop_pins=loop_pins )
-      steps: list[ LoopPinScheduleStep ] = []
+      steps: list[ LoopPinScheduleStep.Step ] = []
 
       for pin_index, loop_pin in enumerate( loop_pins ):
          before_pin_stops = stop_segments[ pin_index ]
@@ -54,16 +54,16 @@ class LoopPinSegmentSplitter():
    @classmethod
    def split_stops(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          loop_id: str,
          loop_pins: list[ LoopSchedulePin ],
-      ) -> list[ list[ LoopScheduleStop ] ]:
+      ) -> list[ list[ LoopScheduleStop.Stop ] ]:
       pin_boundaries = [
          loop_pin.viewing_spot_index
          for loop_pin in loop_pins
       ]
-      segments: list[ list[ LoopScheduleStop ] ] = [
+      segments: list[ list[ LoopScheduleStop.Stop ] ] = [
          [] for _ in range( len( loop_pins ) + 1 )
       ]
 
@@ -99,11 +99,11 @@ class LoopPinSegmentSplitter():
    @classmethod
    def animals_before_first_pin(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          loop_id: str,
          loop_pins: list[ LoopSchedulePin ],
-      ) -> list[ LoopScheduleStop ]:
+      ) -> list[ LoopScheduleStop.Stop ]:
       segments = cls.split_stops(
          stops,
          loop_id=loop_id,
@@ -119,7 +119,7 @@ class LoopPinSegmentSplitter():
    def viewing_spot_index_for_stop(
          cls,
          loop_id: str,
-         stop: LoopScheduleStop ) -> int | None:
+         stop: LoopScheduleStop.Stop ) -> int | None:
       master_route_loop = MasterRouteProvider.loops_by_id().get( loop_id )
 
       if master_route_loop is None:

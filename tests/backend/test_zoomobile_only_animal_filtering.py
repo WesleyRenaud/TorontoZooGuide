@@ -4,7 +4,7 @@ from test_animal_viewability_logic import make_animal_viewability_record
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
-from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from api.shared.constants import Constants
 from conftest import DbControllers
 
 
@@ -56,7 +56,7 @@ def test_get_animals_viewable_on_day_excludes_seeded_zoomobile_only_viewings(
       year=2026,
       temp=22,
       for_itinerary=True,
-      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD )
+      threshold=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD )
 
    map_keys = {
       ( animal.species, animal.enclosure_name )
@@ -85,7 +85,7 @@ def test_include_off_display_animals_includes_below_min_likelihood(
       year=2026,
       temp=12,
       for_itinerary=True,
-      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      threshold=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       exhibits_to_include=[ 'Africa Savanna' ] )
    with_off_display = AnimalCoordinator.get_animals_viewable_on_day(
       day=31,
@@ -93,7 +93,7 @@ def test_include_off_display_animals_includes_below_min_likelihood(
       year=2026,
       temp=12,
       for_itinerary=True,
-      threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+      threshold=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       include_off_display_animals=True,
       exhibits_to_include=[ 'Africa Savanna' ] )
 
@@ -102,13 +102,13 @@ def test_include_off_display_animals_includes_below_min_likelihood(
    below_min = {
       animal.species
       for animal in with_off_display
-      if animal.likelihood < ITINERARY_ANIMAL_MIN_LIKELIHOOD
+      if animal.likelihood < Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
    }
 
    assert 'Warthog' not in without_species
    assert 'Warthog' in with_species
    assert below_min
    assert all(
-      animal.likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+      animal.likelihood >= Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
       for animal in without_off_display
    )

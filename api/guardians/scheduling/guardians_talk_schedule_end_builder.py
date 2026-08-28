@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class GuardiansTalkScheduleEndBuilder():
@@ -11,7 +11,7 @@ class GuardiansTalkScheduleEndBuilder():
          cls,
          talk: str,
          location: str,
-         schedule_end_date: DateInput,
+         schedule_end_date: Types.DateInput,
          talk_time: str ) -> GuardiansTalkScheduleEndInput:
       if not schedule_end_date:
          schedule_end_date = DateValues.today_date_key()

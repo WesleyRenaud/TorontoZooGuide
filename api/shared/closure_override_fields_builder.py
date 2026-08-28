@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ..app_strings import AppStringProvider
+from ..app_string_provider import AppStringProvider
 from .calendar_dates import DateValues
 from .closure_override_fields import ClosureOverrideFields
-from ..types import DateInput
+from ..types import Types
 
 
 class ClosureOverrideFieldsBuilder():
@@ -11,8 +11,8 @@ class ClosureOverrideFieldsBuilder():
    def build(
          cls,
          name: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> ClosureOverrideFields:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,

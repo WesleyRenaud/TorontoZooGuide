@@ -7,8 +7,7 @@ from unittest.mock import patch
 
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, expected_departure_time_for_itinerary, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY
 
-from api.connection import close_connection
-from api.connection import open_connection
+from api.database_connection_provider import DatabaseConnectionProvider
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
@@ -172,9 +171,9 @@ def test_bulk_schedule_itinerary_persists_partial_schedule_after_connection_clos
    assert len( result.reasons ) == 1
 
    assert db.conn is not None
-   close_connection( db.conn )
+   DatabaseConnectionProvider.close( db.conn )
 
-   reopened = open_connection( db_path=str( db_path ) )
+   reopened = DatabaseConnectionProvider.open( db_path=str( db_path ) )
    saved = ItineraryProvider.fetch_saved_itinerary( reopened )
    scheduled_species = {
       row.species
@@ -185,7 +184,7 @@ def test_bulk_schedule_itinerary_persists_partial_schedule_after_connection_clos
       row for row in saved.animal_rows
       if row.species == 'African Lion' )
 
-   close_connection( reopened )
+   DatabaseConnectionProvider.close( reopened )
 
    assert scheduled_species == { 'Cheetah' }
    assert lion_row.start_time is None

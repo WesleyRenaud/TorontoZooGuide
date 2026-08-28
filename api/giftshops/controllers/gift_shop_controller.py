@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from ..coordinators.gift_shop_coordinator import GiftShopCoordinator
-from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import ApiErrorResponseApplier
+from ...json_request_handler import JsonRequestHandler
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 

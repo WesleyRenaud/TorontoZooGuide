@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...attraction_item_key import AttractionScheduleItemKey
 from .attraction_or_transportation_duration_resolver import AttractionOrTransportationDurationResolver
+from ...attraction_schedule_item_key import AttractionScheduleItemKey
 from ....attractions.scheduling.attraction_hours_schedule_adjustment import AttractionHoursScheduleAdjustment
 from ....attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from ..core.available_schedule_slot_finder import AvailableScheduleSlotFinder
@@ -22,8 +22,7 @@ from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ....shared.operating_hours import OperatingHours
-from ....types import Connection
-from ....types import ScheduleTimeKey
+from ....types import Types
 from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
 
@@ -32,7 +31,7 @@ class AttractionItineraryItemScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule_item_key: AttractionScheduleItemKey,
          time_options: ParsedScheduleTimeOptions,
          *,
@@ -175,7 +174,7 @@ class AttractionItineraryItemScheduler():
    @classmethod
    def _attraction_hours_adjustment_for_requested_time(
          cls,
-         start_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
          *,
          duration_seconds: int,
          attraction_hours: OperatingHours | None,
@@ -203,14 +202,14 @@ class AttractionItineraryItemScheduler():
    @classmethod
    def _resolve_adjusted_attraction_slot(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          schedule_window: tuple[ int, int ],
          duration_seconds: int,
          *,
          hours_adjustment: AttractionHoursScheduleAdjustment,
          itinerary_context: dict[ str, Any ],
-   ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+   ) -> tuple[ tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
       if hours_adjustment == AttractionHoursScheduleAdjustment.BEFORE_OPEN:
          return ScheduleSlotTimeResolver.resolve(
             conn,

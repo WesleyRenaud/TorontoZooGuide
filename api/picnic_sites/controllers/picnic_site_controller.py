@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.picnic_site_coordinator import PicnicSiteCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class PicnicSiteController():

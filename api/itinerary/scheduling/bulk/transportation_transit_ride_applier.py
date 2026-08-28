@@ -15,8 +15,7 @@ from ...routing.transportation_boarding_station_resolver import TransportationBo
 from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_animal_anchor import ScheduledAnimalAnchor
 from ....shared.calendar_dates import DateValues
-from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
-from ....shared.constants import TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION
+from ....shared.constants import Constants
 from ....shared.duration_values import DurationValues
 from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
@@ -24,10 +23,8 @@ from ...transportation.transportation_day_loop import TransportationDayLoop
 from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from ...transportation.transportation_day_loop_leg_selector import TransportationDayLoopLegSelector
 from ...transportation.transportation_route_leg_segment import TransportationRouteLegSegment
-from ...transportation_item_key import TransportationScheduleItemKey
-from ....types import Connection
-from ....types import DateKey
-from ....types import ScheduleTimeKey
+from ...transportation_schedule_item_key import TransportationScheduleItemKey
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
@@ -41,11 +38,11 @@ class TransportationTransitRideApplier():
    @classmethod
    def apply(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transit_rows: list[ ItineraryTransportationRecord ],
          scheduled_animals: list[ ItineraryAnimalRecord ],
-         visit_date: DateKey | None,
+         visit_date: Types.DateKey | None,
          schedule_anchor_seconds: int,
          zoo_operating_hours: OperatingHours | None = None ) -> None:
       if not transit_rows or not scheduled_animals or visit_date is None:
@@ -175,7 +172,7 @@ class TransportationTransitRideApplier():
    @classmethod
    def _station_walk_node_ids(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          day_loop: TransportationDayLoop,
@@ -307,9 +304,9 @@ class TransportationTransitRideApplier():
          return None
 
       max_remaining_px = (
-         TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION * direct_walk_px )
+         Constants.TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION * direct_walk_px )
       max_ride_minutes = (
-         TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
+         Constants.TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
          * WalkTravelTimeCalculator.minutes_from_length_px( direct_walk_px ) )
       best_ride: PlannedTransitRide | None = None
 
@@ -409,7 +406,7 @@ class TransportationTransitRideApplier():
    @classmethod
    def _apply_timeline(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transit_row: ItineraryTransportationRecord,
          day_loop: TransportationDayLoop,
@@ -422,8 +419,8 @@ class TransportationTransitRideApplier():
          adjacency: WalkGraphAdjacency,
          station_walk_nodes: dict[ str, str ],
          operating_hours: OperatingHours | None ) -> None:
-      segments: list[ tuple[ ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ] = []
-      animal_updates: list[ tuple[ ItineraryAnimalRecord, ScheduleTimeKey, ScheduleTimeKey ] ] = []
+      segments: list[ tuple[ Types.ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ] = []
+      animal_updates: list[ tuple[ ItineraryAnimalRecord, Types.ScheduleTimeKey, Types.ScheduleTimeKey ] ] = []
       shift_seconds = 0
       cursor_seconds = timeline_start_seconds
       current_node_id = start_node_id

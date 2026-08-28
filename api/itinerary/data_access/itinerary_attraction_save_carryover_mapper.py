@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .itinerary_attraction_record import ItineraryAttractionRecord
-from .itinerary_attraction_save_carryover_record import ItineraryAttractionSaveCarryover
-from ...types import DateKey
+from .itinerary_attraction_save_carryover import ItineraryAttractionSaveCarryover
+from ...types import Types
 
 
 class ItineraryAttractionSaveCarryoverMapper():
@@ -52,7 +52,7 @@ class ItineraryAttractionSaveCarryoverMapper():
          cls,
          saved_attraction_rows: list[ ItineraryAttractionRecord ] | None,
          name: str,
-         old_visit_date: DateKey | None ) -> ItineraryAttractionSaveCarryover:
+         old_visit_date: Types.DateKey | None ) -> ItineraryAttractionSaveCarryover:
       if old_visit_date is not None:
          saved_row = cls._saved_attraction_row_for_name(
             saved_attraction_rows,

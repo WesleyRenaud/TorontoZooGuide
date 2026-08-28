@@ -4,12 +4,12 @@ from ..data_access.gift_shop_provider import GiftShopProvider
 from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
 from ..domain.gift_shop_builder import GiftShopBuilder
 from ...models import GiftShop
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.gift_shop_schedule_conflict_resolver import GiftShopScheduleConflictResolver
 from ..search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
-from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ..status.gift_shop_status_builder import GiftShopStatusBuilder
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 _mutations = AmenityCoordinatorMutations(
@@ -26,15 +26,15 @@ _mutations = AmenityCoordinatorMutations(
 class GiftShopCoordinator():
    @classmethod
    def get_gift_shop_names( cls ) -> list[ str ]:
-      return GiftShopProvider.fetch_gift_shop_names( get_connection() )
+      return GiftShopProvider.fetch_gift_shop_names( RequestConnectionProvider.get() )
 
 
    @classmethod
    def get_gift_shops(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          include_closed_gift_shops: bool,
          gift_shops_to_include: list[ str ] | None = None ) -> list[ GiftShop ]:
 
@@ -45,12 +45,12 @@ class GiftShopCoordinator():
 
       return GiftShopBuilder.build_gift_shops(
          gift_shop_records=GiftShopProvider.fetch_gift_shop_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=GiftShopProvider.fetch_gift_shop_schedule_records( get_connection() ),
+         schedule_records=GiftShopProvider.fetch_gift_shop_schedule_records( RequestConnectionProvider.get() ),
          schedule_override_records=GiftShopProvider.fetch_gift_shop_schedule_override_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          context=context,
          include_closed_gift_shops=include_closed_gift_shops,
          gift_shops_to_include=gift_shops_to_include )
@@ -60,9 +60,9 @@ class GiftShopCoordinator():
    def get_gift_shops_matching_query(
          cls,
          query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> list[ GiftShop ]:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> list[ GiftShop ]:
 
       gift_shops = cls.get_gift_shops(
          day=day,
@@ -79,8 +79,8 @@ class GiftShopCoordinator():
    def set_gift_shop_as_closed(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_as_closed( gift_shop, start_date, end_date, message )
 
@@ -89,8 +89,8 @@ class GiftShopCoordinator():
    def set_gift_shop_closure_override(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_closure_override( gift_shop, start_date, end_date, message )
 
@@ -99,8 +99,8 @@ class GiftShopCoordinator():
    def set_gift_shop_opening_schedule(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -129,8 +129,8 @@ class GiftShopCoordinator():
    def replace_gift_shop_opening_schedule_overlaps(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -159,8 +159,8 @@ class GiftShopCoordinator():
    def trim_gift_shop_opening_schedule_overlaps(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,

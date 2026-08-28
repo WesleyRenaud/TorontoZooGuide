@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..json_seed_loader import JsonSeedLoader
 from ..seed_sql_loader import SeedSqlLoader
-from ...types import Cursor
+from ...types import Types
 
 
 RECORD_FIELDS = [
@@ -24,12 +24,12 @@ SQL_FILE = 'event_site.sql'
 
 class EventSiteSeedTable():
    @classmethod
-   def create_table( cls, cursor: Cursor ) -> None:
+   def create_table( cls, cursor: Types.Cursor ) -> None:
       SeedSqlLoader.execute_sql_file( cursor, SeedSqlLoader.seed_sql_path( SQL_FILE ) )
 
 
    @classmethod
-   def insert_rows( cls, cursor: Cursor ) -> None:
+   def insert_rows( cls, cursor: Types.Cursor ) -> None:
       JsonSeedLoader.insert_json_records(
          cursor,
          table='EventSite',

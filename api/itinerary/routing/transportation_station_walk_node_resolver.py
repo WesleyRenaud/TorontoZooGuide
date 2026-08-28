@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ...walk_graph.walk_node_snapper import WalkNodeSnapper
@@ -14,7 +14,7 @@ class TransportationStationWalkNodeResolver():
          station_name: str,
          ) -> str | None:
       station = TransportationStationProvider.fetch_transportation_station_record(
-         get_connection(),
+         RequestConnectionProvider.get(),
          transportation_name,
          station_name )
 

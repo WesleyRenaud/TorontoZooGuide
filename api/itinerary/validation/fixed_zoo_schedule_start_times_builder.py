@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class FixedZooScheduleStartTimesBuilder():
    @classmethod
    def from_saved_itinerary(
          cls,
-         saved_itinerary: SavedItinerary | None ) -> list[ ScheduleTimeKey ]:
+         saved_itinerary: SavedItinerary | None ) -> list[ Types.ScheduleTimeKey ]:
       if saved_itinerary is None:
          return []
 
-      start_times: list[ ScheduleTimeKey ] = []
+      start_times: list[ Types.ScheduleTimeKey ] = []
 
       for talk in saved_itinerary.guardians_talk_rows:
          if talk.is_deleted or talk.start_time is None:
@@ -33,8 +33,8 @@ class FixedZooScheduleStartTimesBuilder():
    @classmethod
    def from_save_input(
          cls,
-         save_input: ItinerarySaveInput ) -> list[ ScheduleTimeKey ]:
-      start_times: list[ ScheduleTimeKey ] = []
+         save_input: ItinerarySaveInput ) -> list[ Types.ScheduleTimeKey ]:
+      start_times: list[ Types.ScheduleTimeKey ] = []
 
       for talk in save_input.guardians_talks:
          if talk.start_time is None:
@@ -54,8 +54,8 @@ class FixedZooScheduleStartTimesBuilder():
    @classmethod
    def merge(
          cls,
-         *groups: list[ ScheduleTimeKey ] ) -> list[ ScheduleTimeKey ]:
-      merged: list[ ScheduleTimeKey ] = []
+         *groups: list[ Types.ScheduleTimeKey ] ) -> list[ Types.ScheduleTimeKey ]:
+      merged: list[ Types.ScheduleTimeKey ] = []
 
       for group in groups:
          merged.extend( group )

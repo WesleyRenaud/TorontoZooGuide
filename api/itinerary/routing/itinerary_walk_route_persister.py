@@ -8,7 +8,7 @@ from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from ..scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
-from ...types import Connection
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -16,7 +16,7 @@ class ItineraryWalkRoutePersister():
    @classmethod
    def rebuild_and_persist(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..shared.text_values import TextValues
-from ..types import Coordinate
+from ..types import Types
 
 
 class TransportationStation:
@@ -9,8 +9,8 @@ class TransportationStation:
          self,
          name: str,
          description: str,
-         x_coord: Coordinate,
-         y_coord: Coordinate ) -> None:
+         x_coord: Types.Coordinate,
+         y_coord: Types.Coordinate ) -> None:
       self.name = name
       self.description = description
       self.x_coord = x_coord

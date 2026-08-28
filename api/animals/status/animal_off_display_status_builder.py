@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from .animal_off_display_status import AnimalOffDisplayStatus
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import AnimalViewingScope
-from ...types import DateInput
+from ...types import Types
 
 
 class AnimalOffDisplayStatusBuilder():
@@ -14,8 +14,8 @@ class AnimalOffDisplayStatusBuilder():
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> AnimalOffDisplayStatus:
       if not message:
          message = AppStringProvider.format( 'guestStatus.animals.temporarilyOffDisplay', species=species )

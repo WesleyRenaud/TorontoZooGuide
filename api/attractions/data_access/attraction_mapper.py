@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .attraction_record import AttractionRecord
-from ...types import Row
+from ...types import Types
 
 
 class AttractionMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> AttractionRecord:
+   def map_record( cls, row: Types.Row ) -> AttractionRecord:
       return AttractionRecord(
          name=row[ 'NAME' ],
          free_with_admission=row[ 'FREE_WITH_ADMISSION' ],
@@ -26,7 +26,7 @@ class AttractionMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ AttractionRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ AttractionRecord ]:
       return [
          cls.map_record( row )
          for row in rows

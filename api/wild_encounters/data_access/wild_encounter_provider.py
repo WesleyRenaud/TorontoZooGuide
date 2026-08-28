@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ...types import Connection
+from ...types import Types
 from .wild_encounter_mapper import WildEncounterMapper
 from .wild_encounter_record import WildEncounterRecord
 
 
 class WildEncounterProvider():
    @classmethod
-   def fetch_wild_encounter_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_wild_encounter_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -27,7 +27,7 @@ class WildEncounterProvider():
 
 
    @classmethod
-   def fetch_wild_encounter_records( cls, conn: Connection ) -> list[ WildEncounterRecord ]:
+   def fetch_wild_encounter_records( cls, conn: Types.Connection ) -> list[ WildEncounterRecord ]:
       cur = conn.cursor()
 
       try:

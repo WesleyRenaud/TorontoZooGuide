@@ -7,7 +7,7 @@ from http_support import response_json
 from http_support import StubZooControllers
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 
 @pytest.mark.parametrize(
@@ -165,7 +165,7 @@ def test_console_options_endpoints_map_payloads_and_return_expected_keys(
       response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 

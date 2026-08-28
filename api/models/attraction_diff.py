@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class AttractionDiff:
@@ -9,8 +9,8 @@ class AttractionDiff:
          name: str,
          old_likelihood: int | None,
          new_likelihood: int | None,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None ) -> None:
       self.name = name
       self.old_likelihood = old_likelihood
       self.new_likelihood = new_likelihood

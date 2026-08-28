@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from ...models import PicnicSite
 from .picnic_site_mapper import PicnicSiteMapper
-from ...types import Connection
+from ...types import Types
 
 
 class PicnicSiteProvider():
    @classmethod
-   def fetch_picnic_sites( cls, conn: Connection ) -> list[ PicnicSite ]:
+   def fetch_picnic_sites( cls, conn: Types.Connection ) -> list[ PicnicSite ]:
       cur = conn.cursor()
 
       try:

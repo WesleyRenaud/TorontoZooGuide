@@ -36,7 +36,7 @@ from ...routing.itinerary_schedule_window_partitioner import ItineraryScheduleWi
 from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItinerarySaveIssueItemType
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 from ...warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
@@ -45,7 +45,7 @@ class BulkRescheduleLongWaitSimulator():
    @classmethod
    def is_isolated_after_adding(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          new_item: Any,
          *,
          propose_on_itinerary: Callable[
@@ -101,7 +101,7 @@ class BulkRescheduleLongWaitSimulator():
    @classmethod
    def newly_added_reason(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          validated_itinerary: ValidatedItinerary,
          *,
          visit_date: date,
@@ -225,7 +225,7 @@ class BulkRescheduleLongWaitSimulator():
    @classmethod
    def pack_animals_in_memory(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary: Itinerary,
          *,
          animals_to_schedule: list[ ItineraryAnimalRecord ],

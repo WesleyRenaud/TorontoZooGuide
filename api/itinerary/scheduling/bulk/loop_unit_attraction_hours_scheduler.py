@@ -12,7 +12,7 @@ from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
@@ -20,7 +20,7 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          soft_pins: list[ AttractionHoursSoftPin ],
          *,
@@ -30,7 +30,7 @@ class LoopUnitAttractionHoursScheduler():
          cursor_seconds: int,
          late_place: bool = False,
          slot_sink: LoopScheduleSlotSink | None = None,
-      ) -> tuple[ list[ LoopScheduleStop ], int ]:
+      ) -> tuple[ list[ LoopScheduleStop.Stop ], int ]:
       loop_id = prepared_unit.unit.loop_id
 
       if loop_id is None or not soft_pins:
@@ -61,7 +61,7 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def earliest_start_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          soft_pins: list[ AttractionHoursSoftPin ],
       ) -> int | None:
@@ -115,7 +115,7 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def _schedule_stops_around_attraction_hours(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          soft_pins: list[ AttractionHoursSoftPin ],
          *,
@@ -125,7 +125,7 @@ class LoopUnitAttractionHoursScheduler():
          cursor_seconds: int,
          late_place: bool = False,
          slot_sink: LoopScheduleSlotSink | None = None,
-      ) -> tuple[ int, list[ LoopScheduleStop ] ]:
+      ) -> tuple[ int, list[ LoopScheduleStop.Stop ] ]:
       stops = list( prepared_unit.unit.stops )
       loop_id = prepared_unit.unit.loop_id
 
@@ -321,7 +321,7 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def _attraction_stop_for_soft_pin(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          soft_pin: AttractionHoursSoftPin,
       ) -> ItineraryAttractionRecord | ItineraryTransportationRecord | None:
       for stop in stops:
@@ -338,7 +338,7 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def _stop_is_soft_pinned_attraction(
          cls,
-         stop: LoopScheduleStop,
+         stop: LoopScheduleStop.Stop,
          soft_pin_attraction_names: set[ str ],
       ) -> bool:
       return (
@@ -351,10 +351,10 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def _duration_seconds_or_raise(
          cls,
-         conn: Connection,
-         stop: LoopScheduleStop,
+         conn: Types.Connection,
+         stop: LoopScheduleStop.Stop,
          *,
-         all_stops: list[ LoopScheduleStop ],
+         all_stops: list[ LoopScheduleStop.Stop ],
       ) -> int:
       duration_seconds = LoopScheduleSlotAssigner.duration_seconds_for_stop( conn, stop )
 
@@ -367,10 +367,10 @@ class LoopUnitAttractionHoursScheduler():
    @classmethod
    def _still_unscheduled_stops(
          cls,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          scheduled_stop_ids: set[ int ],
-      ) -> list[ LoopScheduleStop ]:
+      ) -> list[ LoopScheduleStop.Stop ]:
       return [
          stop
          for stop in stops

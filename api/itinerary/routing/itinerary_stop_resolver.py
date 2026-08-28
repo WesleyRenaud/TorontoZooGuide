@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ..animal_item_key import AnimalScheduleItemKey
+from ..animal_schedule_item_key import AnimalScheduleItemKey
 from .itinerary_stop import ENTRANCE_ITEM_KEY
 from .itinerary_stop import ItineraryStop
 from ...models import Itinerary
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleItemKind
 from .transportation_walk_node_resolver import TransportationWalkNodeResolver
-from ...types import ScheduleTimeKey
+from ...types import Types
 from ...walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ...walk_graph.domain.map_location_kind import MapLocationKind
 from ...walk_graph.domain.map_location_walk_node import MapLocationWalkNode
@@ -154,8 +154,8 @@ class ItineraryStopResolver():
          meeting_spot: str | None = None,
          x_coord: float | None,
          y_coord: float | None,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> ItineraryStop:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> ItineraryStop:
       walk_node_ids: list[ str ] = []
 
       if map_location is not None:
@@ -178,8 +178,8 @@ class ItineraryStopResolver():
    @classmethod
    def _has_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       return bool(
          DateValues.normalize_schedule_time_key( start_time )
          and DateValues.normalize_schedule_time_key( end_time ) )

@@ -9,7 +9,7 @@ from ...routing.transportation_walk_node_resolver import TransportationWalkNodeR
 from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_walk_stop import ScheduledWalkStop
 from ....shared.calendar_dates import DateValues
-from ....types import ScheduleTimeKey
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
@@ -25,7 +25,7 @@ class ScheduleItemTravelTimeCalculator():
          candidate_walk_node_id: str | None,
          visit_anchor_seconds: int,
          itinerary_context: dict,
-         start_time: ScheduleTimeKey | None = None ) -> int:
+         start_time: Types.ScheduleTimeKey | None = None ) -> int:
       if candidate_walk_node_id is None:
          return visit_anchor_seconds
 
@@ -224,8 +224,8 @@ class ScheduleItemTravelTimeCalculator():
          cls,
          stops: list[ ScheduledWalkStop ],
          *,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          walk_node_id: str | None ) -> None:
       start_seconds = DateValues.time_value_in_seconds( start_time )
       end_seconds = DateValues.time_value_in_seconds( end_time )

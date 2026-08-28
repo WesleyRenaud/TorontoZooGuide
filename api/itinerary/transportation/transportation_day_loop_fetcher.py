@@ -6,14 +6,14 @@ from ..data_access.transportation_day_loop_provider import TransportationDayLoop
 from .transportation_day_loop import TransportationDayLoop
 from .transportation_route_leg_orderer import TransportationRouteLegOrderer
 from .transportation_route_resolver import TransportationRouteResolver
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationDayLoopFetcher():
    @classmethod
    def fetch(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          target_date: date ) -> TransportationDayLoop | None:

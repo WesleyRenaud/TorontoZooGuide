@@ -5,11 +5,11 @@ from datetime import date
 from ..data_access.transportation_station_record import TransportationStationRecord
 from ..data_access.transportation_station_status_record import TransportationStationStatusRecord
 from ...models import TransportationStation
-from .route_station_context import TransportationStationContext
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from .transportation_station_builder import TransportationStationBuilder
-from ...types import MonthInput, VisitDay, VisitYear
+from .transportation_station_context import TransportationStationContext
+from ...types import Types
 
 
 class TransportationRouteStationsBuilder():
@@ -18,9 +18,9 @@ class TransportationRouteStationsBuilder():
          cls,
          route: str,
          stations_on_route: list[ str ],
-         year: VisitYear,
-         month: MonthInput,
-         day: VisitDay,
+         year: Types.VisitYear,
+         month: Types.MonthInput,
+         day: Types.VisitDay,
          transportation_stations_to_include: list[ str ] | None = None ) -> TransportationStationContext:
       target_date = CalendarDates.visit_target_date(
          month=month,

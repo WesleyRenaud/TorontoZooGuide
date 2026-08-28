@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from ...types import Connection, DateInput
+from ...types import Types
 
 
 class AnimalVisibilityScheduleProvider():
    @classmethod
    def save_animal_limited_viewing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          daily_start_time: str,
          daily_end_time: str,
          message: str ) -> bool:
@@ -56,7 +56,7 @@ class AnimalVisibilityScheduleProvider():
    @classmethod
    def delete_animal_visibility_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str ) -> bool:
       cur = conn.cursor()

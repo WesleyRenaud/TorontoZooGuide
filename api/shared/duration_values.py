@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import math
 
-from ..types import DurationInput
+from ..types import Types
 
 
 class DurationValues():
    @classmethod
    def normalize_minutes(
          cls,
-         duration_minutes: DurationInput ) -> int | None:
+         duration_minutes: Types.DurationInput ) -> int | None:
       if duration_minutes is None:
          return None
 
@@ -22,7 +22,7 @@ class DurationValues():
    @classmethod
    def normalize_seconds(
          cls,
-         duration_minutes: DurationInput ) -> int | None:
+         duration_minutes: Types.DurationInput ) -> int | None:
       if duration_minutes is None:
          return None
 

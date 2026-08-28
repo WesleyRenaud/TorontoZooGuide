@@ -12,7 +12,7 @@ class ViewingSpotKeyBuilder():
          exhibit: str,
          x: float,
          y: float ) -> ViewingSpotKey:
-      return ( species, exhibit, x, y )
+      return ViewingSpotKey( species, exhibit, x, y )
 
 
    @classmethod

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from .indoor_outdoor_viewing_visibility_builder import IndoorOutdoorViewingVisibilityBuilder
 from ...models import Animal

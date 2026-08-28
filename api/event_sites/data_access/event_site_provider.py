@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .event_site_mapper import EventSiteMapper
 from ...models import EventSite
-from ...types import Connection
+from ...types import Types
 
 
 class EventSiteProvider():
    @classmethod
-   def fetch_event_sites( cls, conn: Connection ) -> list[ EventSite ]:
+   def fetch_event_sites( cls, conn: Types.Connection ) -> list[ EventSite ]:
       cur = conn.cursor()
 
       try:

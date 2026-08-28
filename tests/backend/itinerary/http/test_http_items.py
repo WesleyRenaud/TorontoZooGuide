@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from http_support import make_handler, response_json, StubZooControllers
 
-from api.itinerary.animal_item_key import AnimalScheduleItemKey
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
-import api.server as server
+import api.http_request_handler as server
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 
 
 def test_unschedule_itinerary_item_endpoint(
@@ -16,7 +16,7 @@ def test_unschedule_itinerary_item_endpoint(
          'key': 'African Lion||Africa Savanna',
       } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    response = response_json( handler )
    assert response[ 'status' ] == 'success'
@@ -42,7 +42,7 @@ def test_unschedule_all_itinerary_items_endpoint(
          'temp': True,
       } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    response = response_json( handler )
    assert response[ 'status' ] == 'success'
@@ -68,7 +68,7 @@ def test_remove_item_from_itinerary_endpoint(
          'key': 'Conservation Carousel',
       } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    response = response_json( handler )
    assert response[ 'status' ] == 'success'

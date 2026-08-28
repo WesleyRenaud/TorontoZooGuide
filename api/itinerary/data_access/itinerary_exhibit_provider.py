@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ...types import Connection, Cursor
+from ...types import Types
 
 
 class ItineraryExhibitProvider():
    @classmethod
-   def fetch_itinerary_exhibits( cls, conn: Connection ) -> list[ str ]:
+   def fetch_itinerary_exhibits( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -21,7 +21,7 @@ class ItineraryExhibitProvider():
    @classmethod
    def save_itinerary_exhibits(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          exhibits: list[ str ] ) -> None:
       for exhibit in exhibits:
          cur.execute(

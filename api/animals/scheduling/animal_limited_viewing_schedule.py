@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...types import DateKey
+from ...types import Types
 
 
 class AnimalLimitedViewingSchedule:
@@ -8,8 +8,8 @@ class AnimalLimitedViewingSchedule:
          self,
          species: str,
          exhibit: str,
-         start_date: DateKey,
-         end_date: DateKey,
+         start_date: Types.DateKey,
+         end_date: Types.DateKey,
          daily_start_time: str,
          daily_end_time: str,
          message: str ) -> None:

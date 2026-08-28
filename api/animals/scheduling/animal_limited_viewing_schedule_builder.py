@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class AnimalLimitedViewingScheduleBuilder():
@@ -12,8 +12,8 @@ class AnimalLimitedViewingScheduleBuilder():
          cls,
          species: str,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          daily_start_time: str,
          daily_end_time: str,
          message: str ) -> AnimalLimitedViewingSchedule:
@@ -44,7 +44,7 @@ class AnimalLimitedViewingScheduleBuilder():
          species: str,
          daily_start_time: str,
          daily_end_time: str,
-         end_date: DateInput ) -> str:
+         end_date: Types.DateInput ) -> str:
       formatted_daily_start_time = DateValues.format_display_time_value(
          daily_start_time )
       formatted_daily_end_time = DateValues.format_display_time_value(

@@ -10,7 +10,7 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -36,7 +36,7 @@ class ItinerarySaveContextBuilder():
    @classmethod
    def current_itinerary(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary_controller_kwargs: dict[ str, Any ] ) -> Itinerary:
       return ItineraryBuilder.build_current(
          ItineraryProvider.fetch_saved_itinerary( conn ),
@@ -46,7 +46,7 @@ class ItinerarySaveContextBuilder():
    @classmethod
    def error_result(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          status: ItineraryErrorType,
          itinerary_controller_kwargs: dict[ str, Any ],
          *,

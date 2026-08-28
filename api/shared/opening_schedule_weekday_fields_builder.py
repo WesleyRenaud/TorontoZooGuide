@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ..app_strings import AppStringProvider
+from ..app_string_provider import AppStringProvider
 from .calendar_dates import DateValues
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
-from ..types import DateInput
+from ..types import Types
 
 
 class OpeningScheduleWeekdayFieldsBuilder():
@@ -11,8 +11,8 @@ class OpeningScheduleWeekdayFieldsBuilder():
    def build(
          cls,
          name: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,

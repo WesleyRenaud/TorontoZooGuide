@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..domain.update_type_value_normalizer import UpdateTypeValueNormalizer
 from ..inputs.update_edit_input import UpdateEditInput
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput, DateKey
+from ...types import Types
 
 
 class UpdateEditInputBuilder():
@@ -11,10 +11,10 @@ class UpdateEditInputBuilder():
    def build(
          cls,
          title: str,
-         start_date: DateKey,
+         start_date: Types.DateKey,
          description: str,
          update_type: str,
-         end_date: DateInput ) -> UpdateEditInput:
+         end_date: Types.DateInput ) -> UpdateEditInput:
       normalized_end_date = None
 
       if end_date != None:

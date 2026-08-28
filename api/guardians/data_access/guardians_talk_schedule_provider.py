@@ -4,13 +4,13 @@ from .guardians_talk_schedule_mapper import GuardiansTalkScheduleMapper
 from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ..scheduling.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class GuardiansTalkScheduleProvider():
    @classmethod
-   def fetch_schedule_records( cls, conn: Connection ) -> list[ GuardiansTalkScheduleRecord ]:
+   def fetch_schedule_records( cls, conn: Types.Connection ) -> list[ GuardiansTalkScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -46,7 +46,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_schedule_records_for_talk(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str ) -> list[ GuardiansTalkScheduleRecord ]:
       cur = conn.cursor()
@@ -91,7 +91,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_schedule_records_for_occurrences(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str ) -> list[ GuardiansTalkScheduleRecord ]:
       return cls.fetch_schedule_records_for_talk(
@@ -103,12 +103,12 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_schedule_records_covering_date(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          talk_name: str,
          location: str,
          talk_time: str,
-         occurrence_date: DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
+         occurrence_date: Types.DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -144,7 +144,7 @@ class GuardiansTalkScheduleProvider():
                location,
                talk_time,
                occurrence_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                occurrence_date,
             ) )
 
@@ -157,8 +157,8 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_day_schedule_records_from_schedule(
          cls,
-         conn: Connection,
-         target_date: DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
+         conn: Types.Connection,
+         target_date: Types.DateKey ) -> list[ GuardiansTalkScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -196,7 +196,7 @@ class GuardiansTalkScheduleProvider():
             """,
             (
                target_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                target_date,
                target_date,
             ) )
@@ -210,10 +210,10 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_schedule_times(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str,
-         target_date: DateKey ) -> list[ str ]:
+         target_date: Types.DateKey ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -229,7 +229,7 @@ class GuardiansTalkScheduleProvider():
                talk_name,
                location,
                target_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                target_date,
             ) ).fetchall()
 
@@ -242,7 +242,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def schedule_overlaps_existing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> bool:
       cur = conn.cursor()
 
@@ -264,8 +264,8 @@ class GuardiansTalkScheduleProvider():
                schedule.talk_time,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) ).fetchone()
 
@@ -278,7 +278,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def fetch_schedule_conflicts(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> list[ GuardiansTalkScheduleRecord ]:
       cur = conn.cursor()
 
@@ -317,8 +317,8 @@ class GuardiansTalkScheduleProvider():
                schedule.talk_time,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) )
 
@@ -331,7 +331,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def delete_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleRecord ) -> None:
       cur = conn.cursor()
 
@@ -357,10 +357,10 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def update_schedule_dates(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -390,10 +390,10 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def insert_copied_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -449,7 +449,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def insert_or_update_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> None:
       cur = conn.cursor()
 
@@ -505,7 +505,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def save_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> bool:
       if cls.schedule_overlaps_existing_schedule( conn, schedule ):
          return False
@@ -518,7 +518,7 @@ class GuardiansTalkScheduleProvider():
    @classmethod
    def save_schedule_end(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule_end: GuardiansTalkScheduleEndInput ) -> bool:
       cur = conn.cursor()
 
@@ -538,7 +538,7 @@ class GuardiansTalkScheduleProvider():
                schedule_end.location,
                schedule_end.talk_time,
                schedule_end.schedule_end_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule_end.schedule_end_date,
             ) )
 

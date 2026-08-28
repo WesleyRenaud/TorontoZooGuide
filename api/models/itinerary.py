@@ -7,7 +7,7 @@ from .itinerary_event import ItineraryEvent
 from .itinerary_transportation import ItineraryTransportation
 from .itinerary_transportation_station import ItineraryTransportationStation
 from ..shared.typed_dict_mapper import TypedDictMapper
-from ..types import ScheduleTimeKey
+from ..types import Types
 from .wild_encounter import WildEncounter
 
 
@@ -23,8 +23,8 @@ class Itinerary:
          guardians_talks: list[ GuardiansTalk ] | None = None,
          wild_encounters: list[ WildEncounter ] | None = None,
          events: list[ ItineraryEvent ] | None = None,
-         arrival_time: ScheduleTimeKey = None,
-         departure_time: ScheduleTimeKey = None ) -> None:
+         arrival_time: Types.ScheduleTimeKey = None,
+         departure_time: Types.ScheduleTimeKey = None ) -> None:
       self.date = date
       self.selected_exhibits = selected_exhibits or []
       self.animals = animals or []

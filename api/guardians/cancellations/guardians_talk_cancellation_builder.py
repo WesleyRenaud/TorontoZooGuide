@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .guardians_talk_cancellation_input import GuardiansTalkCancellationInput
-from ...types import DateKey
+from ...types import Types
 
 
 class GuardiansTalkCancellationBuilder():
@@ -10,7 +10,7 @@ class GuardiansTalkCancellationBuilder():
          cls,
          talk: str,
          location: str,
-         date: DateKey,
+         date: Types.DateKey,
          time: str ) -> GuardiansTalkCancellationInput:
       return GuardiansTalkCancellationInput(
          talk_name=talk,

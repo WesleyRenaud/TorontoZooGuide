@@ -19,12 +19,12 @@ from .itinerary_wild_encounter_mapper import ItineraryWildEncounterMapper
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from .saved_itinerary import SavedItinerary
-from ...types import Connection, DateKey
+from ...types import Types
 
 
 class ItineraryProvider():
    @classmethod
-   def fetch_itinerary_date_record( cls, conn: Connection ) -> ItineraryDateRecord | None:
+   def fetch_itinerary_date_record( cls, conn: Types.Connection ) -> ItineraryDateRecord | None:
       cur = conn.cursor()
 
       date_row = cur.execute(
@@ -43,7 +43,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_date( cls, conn: Connection ) -> DateKey | None:
+   def fetch_itinerary_date( cls, conn: Types.Connection ) -> Types.DateKey | None:
       date_record = cls.fetch_itinerary_date_record( conn )
 
       if date_record == None or date_record.itinerary_date == None:
@@ -53,7 +53,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_animal_rows( cls, conn: Connection ) -> list[ ItineraryAnimalRecord ]:
+   def fetch_itinerary_animal_rows( cls, conn: Types.Connection ) -> list[ ItineraryAnimalRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -76,7 +76,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_attraction_rows( cls, conn: Connection ) -> list[ ItineraryAttractionRecord ]:
+   def fetch_itinerary_attraction_rows( cls, conn: Types.Connection ) -> list[ ItineraryAttractionRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -97,7 +97,7 @@ class ItineraryProvider():
    @classmethod
    def fetch_itinerary_transportation_leg_rows(
          cls,
-         conn: Connection ) -> list[ ItineraryTransportationLeg ]:
+         conn: Types.Connection ) -> list[ ItineraryTransportationLeg ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -120,7 +120,7 @@ class ItineraryProvider():
    @classmethod
    def fetch_itinerary_transportation_rows(
          cls,
-         conn: Connection ) -> list[ ItineraryTransportationRecord ]:
+         conn: Types.Connection ) -> list[ ItineraryTransportationRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -146,7 +146,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_guardians_talk_rows( cls, conn: Connection ) -> list[ ItineraryGuardiansTalkRecord ]:
+   def fetch_itinerary_guardians_talk_rows( cls, conn: Types.Connection ) -> list[ ItineraryGuardiansTalkRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -164,7 +164,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_wild_encounter_rows( cls, conn: Connection ) -> list[ ItineraryWildEncounterRecord ]:
+   def fetch_itinerary_wild_encounter_rows( cls, conn: Types.Connection ) -> list[ ItineraryWildEncounterRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -182,7 +182,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_itinerary_event_rows( cls, conn: Connection ) -> list[ ItineraryEventRecord ]:
+   def fetch_itinerary_event_rows( cls, conn: Types.Connection ) -> list[ ItineraryEventRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -199,7 +199,7 @@ class ItineraryProvider():
 
 
    @classmethod
-   def fetch_saved_itinerary( cls, conn: Connection ) -> SavedItinerary:
+   def fetch_saved_itinerary( cls, conn: Types.Connection ) -> SavedItinerary:
       date_record = cls.fetch_itinerary_date_record( conn )
 
       if date_record == None or date_record.itinerary_date == None:

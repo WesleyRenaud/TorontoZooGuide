@@ -6,7 +6,7 @@ from http_support import make_handler
 from http_support import response_json
 from http_support import StubZooControllers
 
-import api.server as server
+import api.http_request_handler as server
 
 
 def assert_console_mutation_success(
@@ -16,7 +16,7 @@ def assert_console_mutation_success(
       response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -36,7 +36,7 @@ def assert_weekly_schedule_success(
       response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -80,7 +80,7 @@ def assert_schedule_overlap_resolution(
    }
    handler = make_handler( path, body )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -132,7 +132,7 @@ def assert_opening_schedule_overlap_failure(
          'message': 'Schedule.'
       } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -148,7 +148,7 @@ def assert_console_mutation_failure(
    StubZooControllers.default_success = False
    handler = make_handler( path, body )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 

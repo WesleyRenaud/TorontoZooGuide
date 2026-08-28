@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.value_conversion import ValueConversion
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryTransportationLegMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> ItineraryTransportationLeg:
+   def map_record( cls, row: Types.Row ) -> ItineraryTransportationLeg:
       return ItineraryTransportationLeg(
          from_station=row[ 'FROM_STATION' ],
          to_station=row[ 'TO_STATION' ],
@@ -20,7 +20,7 @@ class ItineraryTransportationLegMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ ItineraryTransportationLeg ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ ItineraryTransportationLeg ]:
       return [
          cls.map_record( row )
          for row in rows

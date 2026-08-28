@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .calendar_dates import DateValues
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 @dataclass( frozen=True )
@@ -14,8 +14,8 @@ class OperatingHours:
    @classmethod
    def from_schedule_times(
          cls,
-         open_time: ScheduleTimeKey,
-         close_time: ScheduleTimeKey,
+         open_time: Types.ScheduleTimeKey,
+         close_time: Types.ScheduleTimeKey,
    ) -> OperatingHours | None:
       open_seconds = DateValues.time_value_in_seconds( open_time )
       close_seconds = DateValues.time_value_in_seconds( close_time )

@@ -11,14 +11,14 @@ from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput, ScheduleTimeKey
+from ...types import Types
 
 
 @dataclass( frozen=True )
 class SavedItinerary:
-   date_value: DateInput | None
-   arrival_time: ScheduleTimeKey
-   departure_time: ScheduleTimeKey
+   date_value: Types.DateInput | None
+   arrival_time: Types.ScheduleTimeKey
+   departure_time: Types.ScheduleTimeKey
    selected_exhibits: list[ str ] = field( default_factory=list )
    animal_rows: list[ ItineraryAnimalRecord ] = field( default_factory=list )
    attraction_rows: list[ ItineraryAttractionRecord ] = field( default_factory=list )

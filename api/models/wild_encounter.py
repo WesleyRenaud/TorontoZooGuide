@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..shared.text_values import TextValues
 from ..shared.value_conversion import ValueConversion
-from ..types import Coordinate, ScheduleTimeKey
+from ..types import Types
 
 
 class WildEncounter:
@@ -11,9 +11,9 @@ class WildEncounter:
          name: str,
          meeting_spot: str,
          link: str,
-         start_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
          maximum_duration: int | None = None,
-         end_time: ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
          x_coord: float | None = None,
          y_coord: float | None = None,
          region: str | None = None,

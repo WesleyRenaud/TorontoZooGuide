@@ -4,7 +4,7 @@ from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from .itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection, ScheduleTimeKey
+from ...types import Types
 from ..validation.itinerary_visit_duration_validator import ItineraryVisitDurationValidator
 
 
@@ -12,9 +12,9 @@ class ShortVisitWarningBuilder():
    @classmethod
    def is_required(
          cls,
-         conn: Connection,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey,
+         conn: Types.Connection,
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey,
          *,
          confirming_short_visit: bool,
          suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> bool:

@@ -3,12 +3,12 @@ from __future__ import annotations
 import sqlite3
 
 from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
-from ..types import Cursor
+from ..types import Types
 
 
 class UserItineraryConfigCleaner():
    @classmethod
-   def clear( cls, cursor: Cursor ) -> None:
+   def clear( cls, cursor: Types.Cursor ) -> None:
       ItineraryStatusProvider.clear_itinerary_status_suppressions( cursor )
 
 

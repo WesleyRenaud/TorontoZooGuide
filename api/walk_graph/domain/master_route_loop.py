@@ -16,4 +16,4 @@ class MasterRouteLoop:
    loop_id: str
    name: str
    traversal: MasterRouteTraversal
-   viewing_spots: list[ MasterRouteStop ]
+   viewing_spots: list[ MasterRouteStop.Stop ]

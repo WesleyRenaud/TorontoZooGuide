@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ...shared.calendar_dates import CalendarDates
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class GuardiansTalkWeekdayTimeResolver():
@@ -35,7 +35,7 @@ class GuardiansTalkWeekdayTimeResolver():
    def time_for_weekday(
          cls,
          schedule_record: GuardiansTalkScheduleRecord,
-         weekday: int ) -> ScheduleTimeKey:
+         weekday: int ) -> Types.ScheduleTimeKey:
       if not cls.includes_weekday( schedule_record, weekday ):
          return None
 

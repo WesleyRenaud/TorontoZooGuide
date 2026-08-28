@@ -4,7 +4,7 @@ from .itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from .itinerary_schedule_time_order_validator import ItineraryScheduleTimeOrderValidator
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import ScheduleTimeKey
+from ...types import Types
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -12,10 +12,10 @@ class ItineraryDepartureTimeValidator():
    @classmethod
    def validate_for_zoo_hours(
          cls,
-         departure_time: ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey,
          zoo_hours_record: ZooHoursRecord,
          *,
-         arrival_time: ScheduleTimeKey ) -> ItineraryErrorType:
+         arrival_time: Types.ScheduleTimeKey ) -> ItineraryErrorType:
       departure_minutes = DateValues.time_value_in_minutes( departure_time )
       earliest_minutes = DateValues.time_value_in_minutes(
          ItineraryArrivalTimeValidator.earliest_arrival_time(

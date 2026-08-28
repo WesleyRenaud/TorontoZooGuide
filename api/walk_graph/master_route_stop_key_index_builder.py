@@ -8,8 +8,8 @@ class MasterRouteStopKeyIndexBuilder():
    @classmethod
    def route_index(
          cls,
-         master_route: MasterRoute ) -> dict[ MasterRouteStopKey, int ]:
-      indexes: dict[ MasterRouteStopKey, int ] = {}
+         master_route: MasterRoute ) -> dict[ MasterRouteStopKey.Key, int ]:
+      indexes: dict[ MasterRouteStopKey.Key, int ] = {}
       route_index = 0
 
       for loop in master_route.loops:
@@ -28,8 +28,8 @@ class MasterRouteStopKeyIndexBuilder():
    @classmethod
    def loop_index(
          cls,
-         master_route: MasterRoute ) -> dict[ MasterRouteStopKey, int ]:
-      indexes: dict[ MasterRouteStopKey, int ] = {}
+         master_route: MasterRoute ) -> dict[ MasterRouteStopKey.Key, int ]:
+      indexes: dict[ MasterRouteStopKey.Key, int ] = {}
 
       for loop_index, loop in enumerate( master_route.loops ):
          for stop in loop.viewing_spots:
@@ -41,8 +41,8 @@ class MasterRouteStopKeyIndexBuilder():
    @classmethod
    def loop_id(
          cls,
-         master_route: MasterRoute ) -> dict[ MasterRouteStopKey, str ]:
-      indexes: dict[ MasterRouteStopKey, str ] = {}
+         master_route: MasterRoute ) -> dict[ MasterRouteStopKey.Key, str ]:
+      indexes: dict[ MasterRouteStopKey.Key, str ] = {}
 
       for loop in master_route.loops:
          for stop in loop.viewing_spots:

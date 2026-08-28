@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
 from ...shared.itinerary_config_builder import ItineraryConfigBuilder
-from ...types import Connection
+from ...types import Types
 
 
 class SuppressItineraryWarningResultResponseBuilder():
@@ -11,7 +11,7 @@ class SuppressItineraryWarningResultResponseBuilder():
          cls,
          result: SuppressItineraryWarningResult,
          *,
-         conn: Connection | None = None,
+         conn: Types.Connection | None = None,
    ) -> dict[ str, object ]:
       payload: dict[ str, object ] = {
          'status': result.status.value,

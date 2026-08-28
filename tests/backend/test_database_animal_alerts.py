@@ -4,13 +4,13 @@ from collections.abc import Callable
 from datetime import date
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 
 def test_setting_animal_viewing_alert_twice_updates_existing_alert(
       db: DbControllers,
-      cursor: Cursor,
+      cursor: Types.Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
    assert AnimalCoordinator.set_animal_viewing_alert(

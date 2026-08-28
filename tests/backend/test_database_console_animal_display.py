@@ -9,7 +9,7 @@ from database_console_support import get_animals_for_exhibit
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.shared.enums import AnimalViewingScope
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 
@@ -75,7 +75,7 @@ def test_set_animal_as_off_display_can_scope_to_indoor_viewing(
 
 def test_set_animal_as_off_display_replaces_matching_scopes(
       db: DbControllers,
-      cursor: Cursor,
+      cursor: Types.Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
@@ -101,7 +101,7 @@ def test_set_animal_as_off_display_replaces_matching_scopes(
 
 def test_set_animal_as_on_display_can_scope_to_indoor_viewing(
       db: DbControllers,
-      cursor: Cursor,
+      cursor: Types.Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
@@ -125,7 +125,7 @@ def test_set_animal_as_on_display_can_scope_to_indoor_viewing(
 
 def test_set_animal_as_on_display_removes_matching_scoped_status(
       db: DbControllers,
-      cursor: Cursor,
+      cursor: Types.Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 

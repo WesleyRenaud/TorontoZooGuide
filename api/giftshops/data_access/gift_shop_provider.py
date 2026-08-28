@@ -6,12 +6,12 @@ from .gift_shop_schedule_mapper import GiftShopScheduleMapper
 from .gift_shop_schedule_override_mapper import GiftShopScheduleOverrideMapper
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
-from ...types import Connection, VisitDay, VisitMonth
+from ...types import Types
 
 
 class GiftShopProvider():
    @classmethod
-   def fetch_gift_shop_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_gift_shop_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -30,9 +30,9 @@ class GiftShopProvider():
    @classmethod
    def fetch_gift_shop_records(
          cls,
-         conn: Connection,
-         month: VisitMonth,
-         day: VisitDay ) -> list[ GiftShopRecord ]:
+         conn: Types.Connection,
+         month: Types.VisitMonth,
+         day: Types.VisitDay ) -> list[ GiftShopRecord ]:
       cur = conn.cursor()
 
       try:
@@ -61,7 +61,7 @@ class GiftShopProvider():
    @classmethod
    def fetch_gift_shop_schedule_records(
          cls,
-         conn: Connection ) -> list[ GiftShopScheduleRecord ]:
+         conn: Types.Connection ) -> list[ GiftShopScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -91,7 +91,7 @@ class GiftShopProvider():
    @classmethod
    def fetch_gift_shop_schedule_override_records(
          cls,
-         conn: Connection ) -> list[ GiftShopScheduleOverrideRecord ]:
+         conn: Types.Connection ) -> list[ GiftShopScheduleOverrideRecord ]:
       cur = conn.cursor()
 
       try:

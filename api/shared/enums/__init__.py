@@ -9,8 +9,8 @@ from .map_item_type import MapItemType
 from .schedule_item_kind import ScheduleItemKind
 from .schedule_status import ScheduleStatus
 from .transportation_name import TransportationName
-from .transportation_route import TransportationRouteId
-from .transportation_route import TransportationRouteSource
+from .transportation_route_id import TransportationRouteId
+from .transportation_route_source import TransportationRouteSource
 
 __all__ = [
    'AmenityNameField',

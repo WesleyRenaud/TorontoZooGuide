@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ...shared.enums import AnimalViewingScope
-from ...types import Cursor
+from ...types import Types
 
 
 class AnimalOffDisplayStatusResolver():
    @classmethod
    def delete_conflicting_animal_statuses(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope ) -> None:

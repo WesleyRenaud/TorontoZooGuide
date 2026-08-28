@@ -5,7 +5,7 @@ from datetime import date
 from ...itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .itinerary_transportation_marker_coords_builder import ItineraryTransportationMarkerCoordsBuilder
 from ...models.itinerary_transportation import ItineraryTransportation
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ...transportation.data_access.transportation_provider import TransportationProvider
 from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ..transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
@@ -19,7 +19,7 @@ class ItineraryTransportationsBuilder():
          target_date: date,
    ) -> list[ ItineraryTransportation ]:
       transportations: list[ ItineraryTransportation ] = []
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
       attraction_coords_by_name = {
          record.name: ( record.x_coord, record.y_coord )
          for record in TransportationProvider.fetch_transportation_records(

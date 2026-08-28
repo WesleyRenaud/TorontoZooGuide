@@ -11,8 +11,7 @@ from api.models import Attraction
 from api.models import GuardiansTalk
 from api.models import Itinerary
 from api.models import WildEncounter
-from api.shared.constants import ANIMAL_VISIBILITY_CHANGE_THRESHOLD
-from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from api.shared.constants import Constants
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ItineraryTransportationStationRole
@@ -24,13 +23,13 @@ from api.shared.weather import Weather
 def test_itinerary_config_exposes_animal_visibility_change_threshold() -> None:
    assert ItineraryConfigBuilder.to_dict()[
       'animal_visibility_change_threshold'
-   ] == ANIMAL_VISIBILITY_CHANGE_THRESHOLD
+   ] == Constants.ANIMAL_VISIBILITY_CHANGE_THRESHOLD
 
 
 def test_itinerary_config_exposes_itinerary_animal_min_likelihood() -> None:
    assert ItineraryConfigBuilder.to_dict()[
       'itinerary_animal_min_likelihood'
-   ] == ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   ] == Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
 
 
 def test_itinerary_activity_scheduler_sets_activity_times_and_events() -> None:

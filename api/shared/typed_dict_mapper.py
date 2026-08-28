@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .typed_dict import DictSerializable
+from .dict_serializable import DictSerializable
 
 
 class TypedDictMapper():

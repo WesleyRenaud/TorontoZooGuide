@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..scheduling.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
 from ..scheduling.wild_encounter_schedule_input import WildEncounterScheduleInput
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from ...shared.constants import Constants
+from ...types import Types
 from .wild_encounter_schedule_conflict_mapper import WildEncounterScheduleConflictMapper
 from .wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
 from .wild_encounter_schedule_mapper import WildEncounterScheduleMapper
@@ -14,8 +14,8 @@ class WildEncounterScheduleProvider():
    @classmethod
    def fetch_schedule_records(
          cls,
-         conn: Connection,
-         target_date: DateKey ) -> list[ WildEncounterScheduleRecord ]:
+         conn: Types.Connection,
+         target_date: Types.DateKey ) -> list[ WildEncounterScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -66,7 +66,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def fetch_schedule_records_for_occurrences(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          wild_encounter: str ) -> list[ WildEncounterScheduleRecord ]:
       cur = conn.cursor()
 
@@ -110,9 +110,9 @@ class WildEncounterScheduleProvider():
    @classmethod
    def fetch_schedule_times(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          wild_encounter: str,
-         target_date: DateKey ) -> list[ str ]:
+         target_date: Types.DateKey ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -126,7 +126,7 @@ class WildEncounterScheduleProvider():
             (
                wild_encounter,
                target_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                target_date,
             ) ).fetchall()
 
@@ -139,7 +139,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def schedule_overlaps_existing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> bool:
       cur = conn.cursor()
 
@@ -159,8 +159,8 @@ class WildEncounterScheduleProvider():
                schedule.encounter_time,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) ).fetchone()
 
@@ -173,7 +173,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def fetch_schedule_conflicts(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> list[ WildEncounterScheduleConflictRecord ]:
       cur = conn.cursor()
 
@@ -204,8 +204,8 @@ class WildEncounterScheduleProvider():
                schedule.encounter_time,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) )
 
@@ -218,7 +218,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def delete_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleConflictRecord ) -> None:
       cur = conn.cursor()
 
@@ -242,10 +242,10 @@ class WildEncounterScheduleProvider():
    @classmethod
    def update_schedule_dates(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleConflictRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -273,10 +273,10 @@ class WildEncounterScheduleProvider():
    @classmethod
    def insert_copied_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleConflictRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -328,7 +328,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def insert_or_update_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> None:
       cur = conn.cursor()
 
@@ -382,7 +382,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def save_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> bool:
       if cls.schedule_overlaps_existing_schedule( conn, schedule ):
          return False
@@ -395,7 +395,7 @@ class WildEncounterScheduleProvider():
    @classmethod
    def save_schedule_end(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule_end: WildEncounterScheduleEndInput ) -> bool:
       cur = conn.cursor()
 
@@ -413,7 +413,7 @@ class WildEncounterScheduleProvider():
                schedule_end.wild_encounter,
                schedule_end.encounter_time,
                schedule_end.schedule_end_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule_end.schedule_end_date,
             ) )
 

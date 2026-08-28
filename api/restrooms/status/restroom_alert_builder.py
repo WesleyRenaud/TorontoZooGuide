@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .restroom_alert import RestroomAlert
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class RestroomAlertBuilder():
@@ -10,8 +10,8 @@ class RestroomAlertBuilder():
    def build_alert(
          cls,
          restroom: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> RestroomAlert:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=alert_start_date,

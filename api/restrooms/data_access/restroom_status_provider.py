@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ...types import Connection, DateInput
+from ...types import Types
 
 
 class RestroomStatusProvider():
    @classmethod
    def save_closed_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          restroom: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       cur = conn.cursor()
 
@@ -47,10 +47,10 @@ class RestroomStatusProvider():
    @classmethod
    def save_open_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          restroom: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
       cur = conn.cursor()
 
       try:

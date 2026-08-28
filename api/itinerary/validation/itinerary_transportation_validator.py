@@ -13,7 +13,7 @@ from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ..transportation.timed_transportation_leg_expander import TimedTransportationLegExpander
 from ..transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from ..transportation.transportation_route_resolver import TransportationRouteResolver
-from ...types import Connection, DateKey, ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryTransportationValidator():
@@ -21,13 +21,13 @@ class ItineraryTransportationValidator():
    def validate(
          cls,
          attraction_coordinator: type[ AttractionCoordinator ],
-         conn: Connection,
+         conn: Types.Connection,
          transportations: list[ ItineraryTransportationInput ],
          new_visit_date: date,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey,
-         old_visit_date: DateKey | None = None,
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey,
+         old_visit_date: Types.DateKey | None = None,
          saved_transportation_rows: list[ ItineraryTransportationRecord ] | None = None,
          visit_date_is_changing: bool = False ) -> list[ TransportationDiff ]:
       diffs: list[ TransportationDiff ] = []
@@ -109,15 +109,15 @@ class ItineraryTransportationValidator():
    @classmethod
    def _timed_legs_for_transportation_save(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation_name: str,
          visit_date: date,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          carryover_legs: list[ ItineraryTransportationLeg ],
          visit_date_is_changing: bool,
          added_as_attraction: bool,
-   ) -> tuple[ ScheduleTimeKey, list[ ItineraryTransportationLeg ] ]:
+   ) -> tuple[ Types.ScheduleTimeKey, list[ ItineraryTransportationLeg ] ]:
       if start_time is None:
          return None, []
 

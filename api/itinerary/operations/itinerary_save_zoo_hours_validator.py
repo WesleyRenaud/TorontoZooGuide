@@ -7,7 +7,7 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from .itinerary_save_context_builder import ItinerarySaveContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection
+from ...types import Types
 from ..validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
 from ..validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from ..validation.itinerary_departure_time_validator import ItineraryDepartureTimeValidator
@@ -18,7 +18,7 @@ class ItinerarySaveZooHoursValidator():
    @classmethod
    def validate(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          save_input: ItinerarySaveInput,
          itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult | None:
       if (

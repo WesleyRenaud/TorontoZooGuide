@@ -7,8 +7,7 @@ from ..data_access.attraction_record import AttractionRecord
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.operating_hours import OperatingHours
-from ...types import Connection
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class AttractionOperatingHoursResolver():
@@ -48,7 +47,7 @@ class AttractionOperatingHoursResolver():
    @classmethod
    def fetch_configured_operating_hours_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_name: str,
          *,
          visit_date: date,
@@ -74,7 +73,7 @@ class AttractionOperatingHoursResolver():
          cls,
          attraction_record: AttractionRecord,
          *,
-         visit_date: date ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ]:
+         visit_date: date ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ]:
       if CalendarDates.is_weekend_or_holiday( d=visit_date ):
          return (
             attraction_record.weekend_holiday_start_time,

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from .restroom_closed_status import RestroomClosedStatus
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class RestroomStatusBuilder():
@@ -11,8 +11,8 @@ class RestroomStatusBuilder():
    def build_closed_status(
          cls,
          restroom: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> RestroomClosedStatus:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,

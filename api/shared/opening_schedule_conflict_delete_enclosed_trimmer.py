@@ -4,14 +4,14 @@ from collections.abc import Callable
 from datetime import date
 
 from .opening_schedule_conflict_record import TConflict
-from ..types import Connection
+from ..types import Types
 
 
 class OpeningScheduleConflictDeleteEnclosedTrimmer():
    @classmethod
    def try_trim(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: TConflict,
          *,
          conflict_start_date: date,

@@ -9,14 +9,14 @@ from .itinerary_walk_route_stop_record import ItineraryWalkRouteStopRecord
 from ..routing.itinerary_walk_route import ItineraryWalkRoute
 from ..routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from ..routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
-from ...types import Connection, Cursor
+from ...types import Types
 
 
 class ItineraryWalkRouteProvider():
    @classmethod
    def fetch_itinerary_walk_route_leg_rows(
          cls,
-         conn: Connection ) -> list[ ItineraryWalkRouteLegRecord ]:
+         conn: Types.Connection ) -> list[ ItineraryWalkRouteLegRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -42,7 +42,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def fetch_itinerary_walk_route_stop_rows(
          cls,
-         conn: Connection ) -> list[ ItineraryWalkRouteStopRecord ]:
+         conn: Types.Connection ) -> list[ ItineraryWalkRouteStopRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -66,7 +66,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def fetch_itinerary_walk_route_point_rows(
          cls,
-         conn: Connection ) -> list[ ItineraryWalkRoutePointRecord ]:
+         conn: Types.Connection ) -> list[ ItineraryWalkRoutePointRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(
@@ -88,7 +88,7 @@ class ItineraryWalkRouteProvider():
 
 
    @classmethod
-   def fetch_itinerary_walk_route( cls, conn: Connection ) -> ItineraryWalkRoute:
+   def fetch_itinerary_walk_route( cls, conn: Types.Connection ) -> ItineraryWalkRoute:
       leg_rows = cls.fetch_itinerary_walk_route_leg_rows( conn )
 
       if not leg_rows:
@@ -105,22 +105,22 @@ class ItineraryWalkRouteProvider():
 
 
    @classmethod
-   def clear_itinerary_walk_route_stops( cls, cur: Cursor ) -> None:
+   def clear_itinerary_walk_route_stops( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryWalkRouteStop;' )
 
 
    @classmethod
-   def clear_itinerary_walk_route_points( cls, cur: Cursor ) -> None:
+   def clear_itinerary_walk_route_points( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryWalkRoutePoint;' )
 
 
    @classmethod
-   def clear_itinerary_walk_route_legs( cls, cur: Cursor ) -> None:
+   def clear_itinerary_walk_route_legs( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryWalkRouteLeg;' )
 
 
    @classmethod
-   def clear_itinerary_walk_route( cls, cur: Cursor ) -> None:
+   def clear_itinerary_walk_route( cls, cur: Types.Cursor ) -> None:
       cls.clear_itinerary_walk_route_legs( cur )
       cls.clear_itinerary_walk_route_points( cur )
       cls.clear_itinerary_walk_route_stops( cur )
@@ -129,7 +129,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def save_itinerary_walk_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          walk_route: ItineraryWalkRoute ) -> bool:
       cur = conn.cursor()
 
@@ -152,7 +152,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def insert_itinerary_walk_route_stops(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          walk_route: ItineraryWalkRoute ) -> None:
       for stop_sequence, stop in enumerate( walk_route.stops ):
          cur.execute(
@@ -179,7 +179,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def insert_itinerary_walk_route_points(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          walk_route: ItineraryWalkRoute ) -> None:
       for point_sequence, point in enumerate( walk_route.points ):
          cur.execute(
@@ -206,7 +206,7 @@ class ItineraryWalkRouteProvider():
    @classmethod
    def insert_itinerary_walk_route_legs(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          walk_route: ItineraryWalkRoute ) -> None:
       leg_point_slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
          walk_route.legs )

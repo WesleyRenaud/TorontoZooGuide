@@ -5,13 +5,12 @@ from typing import Any
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary import SavedItinerary
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
+from .listed_schedule_item_key import ListedScheduleItemKey
 from .listed_schedule_target_resolver import ListedScheduleTargetResolver
 from ...results.itinerary_save_result import ItinerarySaveResult
-from .schedule_item_key import ListedScheduleItemKey
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
-from ....types import ScheduleTimeKey
+from ....types import Types
 from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
 
 
@@ -19,9 +18,9 @@ class ListedScheduleItemPersister():
    @classmethod
    def prepare(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ListedScheduleItemKey,
+         schedule_item_key: ListedScheduleItemKey.Key,
          *,
          itinerary_context: dict[ str, Any ],
          confirming_schedule_item_not_on_itinerary: bool,
@@ -51,11 +50,11 @@ class ListedScheduleItemPersister():
    @classmethod
    def commit(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         schedule_item_key: ListedScheduleItemKey,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         schedule_item_key: ListedScheduleItemKey.Key,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          insert_if_missing: bool,
          itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
       cur = conn.cursor()

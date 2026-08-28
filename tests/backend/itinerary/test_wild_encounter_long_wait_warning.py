@@ -12,7 +12,7 @@ from api.itinerary.scheduling.core.guest_item_schedule_status_checker import Gue
 from api.itinerary.warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
 from api.models import Animal
 from api.models import WildEncounter
-from api.shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
+from api.shared.constants import Constants
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -69,7 +69,7 @@ def test_isolated_wild_encounters_detects_encounter_far_from_other_items() -> No
    isolated = WildEncounterLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
 
    assert [ encounter.name for encounter in isolated ] == [ RHINO_ENCOUNTER ]
-   assert MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
+   assert Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
 
 
 def test_isolated_wild_encounters_ignores_encounter_near_other_items() -> None:

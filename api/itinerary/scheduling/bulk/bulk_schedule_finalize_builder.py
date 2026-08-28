@@ -11,7 +11,7 @@ from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 from ...warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 
 
@@ -19,11 +19,11 @@ class BulkScheduleFinalizeBuilder():
    @classmethod
    def finalize(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          previous_itinerary: Itinerary,
          itinerary_context: dict[ str, Any ],
-         remaining_stops: list[ LoopScheduleStop ] | None = None ) -> ItinerarySaveResult:
+         remaining_stops: list[ LoopScheduleStop.Stop ] | None = None ) -> ItinerarySaveResult:
       reasons: list[ ItineraryResultReason ] = []
 
       if remaining_stops:

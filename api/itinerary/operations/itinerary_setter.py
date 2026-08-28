@@ -13,8 +13,8 @@ from .itinerary_save_context_preparer import ItinerarySaveContextPreparer
 from .itinerary_save_warning_checker import ItinerarySaveWarningChecker
 from .itinerary_save_zoo_hours_validator import ItinerarySaveZooHoursValidator
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ...types import Connection, DateInput, TimeInput
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ...types import Types
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -22,10 +22,10 @@ class ItinerarySetter():
    @classmethod
    def set(
          cls,
-         conn: Connection,
-         date: DateInput,
-         arrival_time: TimeInput,
-         departure_time: TimeInput,
+         conn: Types.Connection,
+         date: Types.DateInput,
+         arrival_time: Types.TimeInput,
+         departure_time: Types.TimeInput,
          selected_exhibits: list[ str ] | None = None,
          animals: list[ dict[ str, str ] ] | None = None,
          attractions: list[ str ] | None = None,

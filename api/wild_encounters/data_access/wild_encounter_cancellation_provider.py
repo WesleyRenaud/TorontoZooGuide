@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..cancellations.wild_encounter_cancellation_input import WildEncounterCancellationInput
-from ...types import Connection
+from ...types import Types
 from .wild_encounter_cancellation_mapper import WildEncounterCancellationMapper
 from .wild_encounter_cancellation_record import WildEncounterCancellationRecord
 
@@ -10,7 +10,7 @@ class WildEncounterCancellationProvider():
    @classmethod
    def fetch_cancellation_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          wild_encounter: str ) -> list[ WildEncounterCancellationRecord ]:
       cur = conn.cursor()
 
@@ -33,7 +33,7 @@ class WildEncounterCancellationProvider():
    @classmethod
    def save_cancellation(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          cancellation: WildEncounterCancellationInput ) -> bool:
       cur = conn.cursor()
 

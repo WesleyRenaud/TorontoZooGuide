@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from .animal_off_display_status_resolver import AnimalOffDisplayStatusResolver
 from ...shared.enums import AnimalViewingScope
-from ...types import Connection, Cursor, DateInput, Row
+from ...types import Types
 
 
 class AnimalStatusProvider():
    @classmethod
    def _animal_viewing_scope_exists(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope ) -> bool:
@@ -44,12 +44,12 @@ class AnimalStatusProvider():
    @classmethod
    def _insert_animal_off_display_status(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> None:
       cur.execute(
          """   INSERT INTO AnimalStatus (
@@ -76,10 +76,10 @@ class AnimalStatusProvider():
    @classmethod
    def _fetch_animal_status(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str,
-         viewing_scope: AnimalViewingScope ) -> Row | None:
+         viewing_scope: AnimalViewingScope ) -> Types.Row | None:
       return cur.execute(
          """   SELECT
                   OFF_DISPLAY_START,
@@ -100,12 +100,12 @@ class AnimalStatusProvider():
    @classmethod
    def save_animal_off_display_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       cur = conn.cursor()
 
@@ -141,7 +141,7 @@ class AnimalStatusProvider():
    @classmethod
    def save_animal_on_display_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope ) -> bool:

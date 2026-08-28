@@ -8,17 +8,17 @@ from .guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from ..occurrences.guardians_talk_occurrence_input import GuardiansTalkOccurrenceInput
 from ..scheduling.guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...shared.calendar_dates import DateValues
-from ...types import Connection, DateKey
+from ...types import Types
 
 
 class GuardiansTalkOccurrenceProvider():
    @classmethod
    def occurrence_record_exists(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str,
-         occurrence_date: DateKey,
+         occurrence_date: Types.DateKey,
          talk_time: str ) -> bool:
       cur = conn.cursor()
 
@@ -48,10 +48,10 @@ class GuardiansTalkOccurrenceProvider():
    @classmethod
    def occurrence_exists(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str,
-         occurrence_date: DateKey,
+         occurrence_date: Types.DateKey,
          talk_time: str ) -> bool:
       if cls.occurrence_record_exists(
             conn,
@@ -83,7 +83,7 @@ class GuardiansTalkOccurrenceProvider():
    @classmethod
    def save_occurrence(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          occurrence: GuardiansTalkOccurrenceInput ) -> bool:
       cur = conn.cursor()
 
@@ -116,12 +116,12 @@ class GuardiansTalkOccurrenceProvider():
    @classmethod
    def fetch_occurrence_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str,
          *,
-         start_date: DateKey,
-         end_date: DateKey ) -> list[ GuardiansTalkOccurrenceRecord ]:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey ) -> list[ GuardiansTalkOccurrenceRecord ]:
       cur = conn.cursor()
 
       try:
@@ -152,8 +152,8 @@ class GuardiansTalkOccurrenceProvider():
    @classmethod
    def fetch_day_schedule_records_from_occurrences(
          cls,
-         conn: Connection,
-         target_date: DateKey ) -> list[ GuardiansTalkDayScheduleRecord ]:
+         conn: Types.Connection,
+         target_date: Types.DateKey ) -> list[ GuardiansTalkDayScheduleRecord ]:
       cur = conn.cursor()
 
       try:

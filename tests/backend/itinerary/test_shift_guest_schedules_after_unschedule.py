@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from api.itinerary.animal_item_key import AnimalScheduleItemKey
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord

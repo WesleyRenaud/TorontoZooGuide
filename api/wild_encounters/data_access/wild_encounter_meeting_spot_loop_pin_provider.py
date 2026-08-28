@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...types import Connection
+from ...types import Types
 from .wild_encounter_meeting_spot_loop_pin_mapper import WildEncounterMeetingSpotLoopPinMapper
 from .wild_encounter_meeting_spot_loop_pin_record import WildEncounterMeetingSpotLoopPinRecord
 
@@ -9,7 +9,7 @@ class WildEncounterMeetingSpotLoopPinProvider():
    @classmethod
    def fetch_meeting_spot_loop_pins_by_name(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
       ) -> dict[ str, WildEncounterMeetingSpotLoopPinRecord ]:
       cur = conn.cursor()
 

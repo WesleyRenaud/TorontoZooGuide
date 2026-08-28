@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .defibrillator_mapper import DefibrillatorMapper
 from ...models import Defibrillator
-from ...types import Connection
+from ...types import Types
 
 
 class DefibrillatorProvider():
    @classmethod
-   def fetch_defibrillators( cls, conn: Connection ) -> list[ Defibrillator ]:
+   def fetch_defibrillators( cls, conn: Types.Connection ) -> list[ Defibrillator ]:
       cur = conn.cursor()
 
       try:

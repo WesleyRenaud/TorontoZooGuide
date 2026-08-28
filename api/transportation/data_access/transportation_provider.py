@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...shared.constants import OPEN_ENDED_SQL_DATE
+from ...shared.constants import Constants
 from .transportation_mapper import TransportationMapper
 from .transportation_record import TransportationRecord
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationProvider():
    @classmethod
    def fetch_transportation_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          visit_date: date ) -> list[ TransportationRecord ]:
       cur = conn.cursor()
 
@@ -43,7 +43,7 @@ class TransportationProvider():
             """,
             (
                visit_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                visit_date,
             )
          ).fetchall()

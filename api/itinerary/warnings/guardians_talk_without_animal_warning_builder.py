@@ -12,7 +12,7 @@ from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
 from ...shared.value_conversion import ValueConversion
-from ...types import Connection
+from ...types import Types
 
 
 class GuardiansTalkWithoutAnimalWarningBuilder():
@@ -20,7 +20,7 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
    def talks_without_matching_animal(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection ) -> list[ GuardiansTalkDiff ]:
+         conn: Types.Connection ) -> list[ GuardiansTalkDiff ]:
       animal_keys = SpeciesExhibitKeyBuilder.from_animals( validated_itinerary.animals )
       missing_talks: list[ GuardiansTalkDiff ] = []
 
@@ -44,7 +44,7 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
    def newly_added_without_matching_animal(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          saved_itinerary: SavedItinerary | None ) -> list[ GuardiansTalkDiff ]:
       missing_talks = cls.talks_without_matching_animal(
@@ -71,7 +71,7 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
    def is_required(
          cls,
          validated_itinerary: ValidatedItinerary,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          confirming_guardians_talk_without_animal: bool,
          saved_itinerary: SavedItinerary | None = None ) -> bool:
@@ -90,7 +90,7 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
          cls,
          talk: GuardiansTalkDiff,
          species_exhibit_pairs: list[ SpeciesExhibitKey ],
-         conn: Connection,
+         conn: Types.Connection,
          *,
          confirming_guardians_talk_without_animal: bool ) -> bool:
       if confirming_guardians_talk_without_animal:

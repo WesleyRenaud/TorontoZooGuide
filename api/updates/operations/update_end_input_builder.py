@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..inputs.update_end_input import UpdateEndInput
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput, DateKey
+from ...types import Types
 
 
 class UpdateEndInputBuilder():
@@ -10,8 +10,8 @@ class UpdateEndInputBuilder():
    def build(
          cls,
          title: str,
-         start_date: DateKey,
-         end_date: DateInput ) -> UpdateEndInput:
+         start_date: Types.DateKey,
+         end_date: Types.DateInput ) -> UpdateEndInput:
       if not end_date:
          end_date = DateValues.today_date_key()
 

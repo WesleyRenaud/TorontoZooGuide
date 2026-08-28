@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from .active_transportation_route_context import TransportationRouteContext
 from ...models import TransportationStation
 from ...models.active_transportation_route import ActiveTransportationRoute
 from ...shared.calendar_dates import CalendarDates
-from ...shared.enums.transportation_route import TransportationRouteId
-from ...shared.enums.transportation_route import TransportationRouteSource
-from ...types import MonthInput, VisitDay, VisitYear
+from ...shared.enums.transportation_route_id import TransportationRouteId
+from ...shared.enums.transportation_route_source import TransportationRouteSource
+from .transportation_route_context import TransportationRouteContext
+from ...types import Types
 
 
 class ActiveTransportationRouteBuilder():
@@ -21,9 +21,9 @@ class ActiveTransportationRouteBuilder():
    @classmethod
    def resolve_transportation_route_context(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> TransportationRouteContext:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> TransportationRouteContext:
       target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,

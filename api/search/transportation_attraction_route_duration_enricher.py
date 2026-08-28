@@ -4,9 +4,9 @@ from datetime import date
 
 from ..itinerary.transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
 from ..models import Attraction
-from ..request_connection import get_connection
+from ..request_connection_provider import RequestConnectionProvider
 from ..shared.calendar_dates import CalendarDates
-from ..types import MonthInput, VisitDay, VisitYear
+from ..types import Types
 
 
 class TransportationAttractionRouteDurationEnricher():
@@ -17,7 +17,7 @@ class TransportationAttractionRouteDurationEnricher():
          *,
          target_date: date,
    ) -> None:
-      conn = get_connection()
+      conn = RequestConnectionProvider.get()
 
       for attraction in attractions:
          if not attraction.is_also_transportation:
@@ -35,9 +35,9 @@ class TransportationAttractionRouteDurationEnricher():
          cls,
          attractions: list[ Attraction ],
          *,
-         month: MonthInput,
-         day: VisitDay,
-         year: VisitYear,
+         month: Types.MonthInput,
+         day: Types.VisitDay,
+         year: Types.VisitYear,
    ) -> None:
       cls.enrich(
          attractions,

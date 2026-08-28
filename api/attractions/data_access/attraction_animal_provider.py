@@ -3,14 +3,14 @@ from __future__ import annotations
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from .attraction_animal_mapper import AttractionAnimalMapper
 from .attraction_animal_record import AttractionAnimalRecord
-from ...types import Connection
+from ...types import Types
 
 
 class AttractionAnimalProvider():
    @classmethod
    def fetch_attraction_linked_animals(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_name: str ) -> list[ SpeciesExhibitKey ]:
       cur = conn.cursor()
       try:
@@ -33,7 +33,7 @@ class AttractionAnimalProvider():
    @classmethod
    def fetch_attraction_animal_links(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_name: str ) -> list[ AttractionAnimalRecord ]:
       cur = conn.cursor()
       try:

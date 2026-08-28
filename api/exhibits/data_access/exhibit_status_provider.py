@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from .exhibit_closure_mapper import ExhibitClosureMapper
 from .exhibit_closure_record import ExhibitClosureRecord
-from ...types import Connection, DateInput
+from ...types import Types
 
 
 class ExhibitStatusProvider():
    @classmethod
    def save_closed_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       cur = conn.cursor()
 
@@ -49,10 +49,10 @@ class ExhibitStatusProvider():
    @classmethod
    def save_open_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -85,7 +85,7 @@ class ExhibitStatusProvider():
 
 
    @classmethod
-   def fetch_closure_records( cls, conn: Connection ) -> list[ ExhibitClosureRecord ]:
+   def fetch_closure_records( cls, conn: Types.Connection ) -> list[ ExhibitClosureRecord ]:
       cur = conn.cursor()
 
       try:

@@ -6,15 +6,15 @@ from datetime import date
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_transportation_input import ItineraryTransportationInput
-from ...types import ScheduleTimeKey
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ...types import Types
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 @dataclass( frozen=True )
 class ItinerarySaveInput:
    date: date
-   arrival_time: ScheduleTimeKey
-   departure_time: ScheduleTimeKey
+   arrival_time: Types.ScheduleTimeKey
+   departure_time: Types.ScheduleTimeKey
    selected_exhibits: list[ str ] = field( default_factory=list )
    animals: list[ ItineraryAnimalInput ] = field( default_factory=list )
    attractions: list[ str ] = field( default_factory=list )

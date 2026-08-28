@@ -7,7 +7,7 @@ from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_attraction_save_carryover_mapper import ItineraryAttractionSaveCarryoverMapper
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...models import AttractionDiff
-from ...types import DateKey, ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryAttractionValidator():
@@ -18,9 +18,9 @@ class ItineraryAttractionValidator():
          attractions: list[ str ],
          new_visit_date: date,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey,
-         old_visit_date: DateKey | None = None,
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey,
+         old_visit_date: Types.DateKey | None = None,
          saved_attraction_rows: list[ ItineraryAttractionRecord ] | None = None,
          visit_date_is_changing: bool = False ) -> list[ AttractionDiff ]:
       diffs: list[ AttractionDiff ] = []

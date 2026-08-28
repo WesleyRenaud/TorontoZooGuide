@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from ..coordinators.animal_coordinator import AnimalCoordinator
-from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import ApiErrorResponseApplier
-from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from ...json_request_handler import JsonRequestHandler
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
+from ...shared.constants import Constants
 from ...shared.enums import AnimalViewingScope
 from ...shared.enums.api_error_type import ApiErrorType
 from ...shared.typed_dict_mapper import TypedDictMapper
@@ -22,7 +22,7 @@ class AnimalController():
          include_off_display_animals=data.get( 'includeOffDisplayAnimals' ) or False,
          for_itinerary=bool( data.get( 'forItinerary' ) ),
          threshold=(
-            ITINERARY_ANIMAL_MIN_LIKELIHOOD
+            Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
             if bool( data.get( 'forItinerary' ) )
             else None ) )
 
@@ -71,7 +71,7 @@ class AnimalController():
          include_off_display_animals=False,
          for_itinerary=bool( data.get( 'forItinerary' ) ),
          threshold=(
-            ITINERARY_ANIMAL_MIN_LIKELIHOOD
+            Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
             if bool( data.get( 'forItinerary' ) )
             else None ),
          exhibits_to_include=data.get( 'exhibitsToInclude' ) or [] )

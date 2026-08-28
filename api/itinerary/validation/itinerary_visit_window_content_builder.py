@@ -6,7 +6,7 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ...shared.enums import ItineraryEventType
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryVisitWindowContentBuilder():
@@ -15,8 +15,8 @@ class ItineraryVisitWindowContentBuilder():
          cls,
          guardians_talks: list[ GuardiansTalkDiff ],
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> list[ GuardiansTalkDiff ]:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> list[ GuardiansTalkDiff ]:
       return [
          talk
          for talk in guardians_talks
@@ -33,8 +33,8 @@ class ItineraryVisitWindowContentBuilder():
          cls,
          wild_encounters: list[ WildEncounterDiff ],
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> list[ WildEncounterDiff ]:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> list[ WildEncounterDiff ]:
       return [
          encounter
          for encounter in wild_encounters
@@ -51,8 +51,8 @@ class ItineraryVisitWindowContentBuilder():
          cls,
          event_rows: list[ ItineraryEventRecord ],
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> list[ ItineraryEvent ]:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> list[ ItineraryEvent ]:
       events: list[ ItineraryEvent ] = []
 
       for event in event_rows:
