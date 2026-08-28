@@ -10,7 +10,7 @@ from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.enums import ScheduleItemKind
 from ....types import Connection
 from ....wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider
-from ....wild_encounters.scheduling.wild_encounter_loop_schedule_pin import resolve_wild_encounter_loop_pin
+from ....wild_encounters.scheduling.wild_encounter_loop_schedule_pin_resolver import WildEncounterLoopSchedulePinResolver
 
 
 class BulkScheduleLoopPinAttacher():
@@ -63,7 +63,7 @@ class BulkScheduleLoopPinAttacher():
          if fixed_time_stop is None:
             continue
 
-         loop_pin = resolve_wild_encounter_loop_pin(
+         loop_pin = WildEncounterLoopSchedulePinResolver.resolve(
             wild_encounter,
             fixed_time_stop,
             meeting_spot_loop_pins_by_name=meeting_spot_loop_pins_by_name )

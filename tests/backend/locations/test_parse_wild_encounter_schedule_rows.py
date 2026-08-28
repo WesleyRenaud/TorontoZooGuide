@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from api.wild_encounters.scheduling.wild_encounter_schedule_row_input import parse_wild_encounter_schedule_rows
 from api.wild_encounters.scheduling.wild_encounter_schedule_row_input import WildEncounterScheduleRowInput
 
 
@@ -29,7 +28,7 @@ def test_wild_encounter_schedule_row_from_wire_normalizes_time_and_day_flags() -
 
 
 def test_parse_wild_encounter_schedule_rows_skips_invalid_rows_and_duplicate_times() -> None:
-   rows = parse_wild_encounter_schedule_rows( [
+   rows = WildEncounterScheduleRowInput.parse_rows( [
       {
          'time': '2:00 PM',
          'monday': True,

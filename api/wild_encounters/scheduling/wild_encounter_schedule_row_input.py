@@ -46,9 +46,12 @@ class WildEncounterScheduleRowInput:
          sunday=row.sunday )
 
 
-def parse_wild_encounter_schedule_rows(
-      schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ WildEncounterScheduleRowInput ]:
-   return [
-      WildEncounterScheduleRowInput.from_schedule_row( row )
-      for row in parse_schedule_rows( schedule_rows )
-   ]
+   @classmethod
+   def parse_rows(
+         cls,
+         schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ Self ]:
+      return [
+         cls.from_schedule_row( row )
+         for row in parse_schedule_rows( schedule_rows )
+      ]
+
