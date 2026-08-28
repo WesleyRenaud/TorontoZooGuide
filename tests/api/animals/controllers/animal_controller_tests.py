@@ -12,6 +12,7 @@ from api.animals.controllers.animal_controller import AnimalController
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 import api.http_request_handler as server
 import api.request_connection_provider as request_connection
+from api.shared.constants import Constants
 from api.shared.enums import AnimalViewingScope
 from api.types import Types
 
@@ -91,6 +92,36 @@ def Test_GetAnimalsByExhibit_TestHttpRequest_ExpectMapsCoordinatorPayloadAndAnim
          'for_itinerary': False,
          'threshold': None,
          'exhibits_to_include': [ ANIMAL_EXHIBIT ]
+      }
+   )
+
+
+def Test_GetVisibleAnimals_TestHttpRequest_ExpectItineraryThresholdInCoordinatorCall(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-visible-animals',
+      {
+         'month': VISIT_MONTH,
+         'year': VISIT_YEAR,
+         'day': VISIT_DAY,
+         'temp': VISIT_TEMP,
+         'forItinerary': True
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_animal_coordinator.calls[ 0 ] == (
+      'get_animals_viewable_on_day',
+      {
+         'day': VISIT_DAY,
+         'month': VISIT_MONTH,
+         'year': VISIT_YEAR,
+         'temp': VISIT_TEMP,
+         'include_off_display_animals': False,
+         'for_itinerary': True,
+         'threshold': Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD,
       }
    )
 
