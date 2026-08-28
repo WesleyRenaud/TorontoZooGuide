@@ -36,24 +36,6 @@ class UpdateType( str, Enum ):
       return None
 
 
-def normalize_update_type( update_type: str ) -> str | None:
-   normalized = UpdateType.normalize( update_type )
-
-   if normalized is None:
-      return None
-
-   return normalized.value
-
-
-def update_type_display_order( update_type: str | None ) -> int:
-   normalized = UpdateType.normalize( update_type )
-
-   if normalized is None:
-      return len( UpdateType )
-
-   return normalized.order
-
-
 _ORDER_BY_TYPE.update( {
    UpdateType.CLOSURE: 0,
    UpdateType.ANIMAL_BIRTH: 1,

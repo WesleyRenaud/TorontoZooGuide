@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from ..domain.wild_encounter_sort_builder import WildEncounterSortBuilder
 from ...models import WildEncounter
@@ -46,17 +46,17 @@ class WildEncounterDayScheduleBuilder():
 
          if not is_available:
             if not date_range_ok:
-               unavailable_message = format_app_string(
+               unavailable_message = AppStringProvider.format(
                   'guestStatus.visitDaySchedule.notScheduledOnVisitDay',
                   name=name,
                   month=target_date.strftime( '%B' ),
                   day=target_date.day )
             elif not weekday_ok:
-               unavailable_message = format_app_string(
+               unavailable_message = AppStringProvider.format(
                   'guestStatus.visitDaySchedule.notOfferedThisWeekday',
                   name=name )
             elif record.is_cancelled:
-               unavailable_message = format_app_string(
+               unavailable_message = AppStringProvider.format(
                   'guestStatus.visitDaySchedule.cancelledForThisDate',
                   name=name )
 

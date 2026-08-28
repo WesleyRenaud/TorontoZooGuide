@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ..data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from .drinking_fountain_closed_status import DrinkingFountainClosedStatus
 from .drinking_fountain_open_status import DrinkingFountainOpenStatus
@@ -28,7 +28,7 @@ class DrinkingFountainStatusBuilder():
          end_date: DateInput,
          message: str ) -> DrinkingFountainClosedStatus:
       if not message:
-         message = format_app_string( 'guestStatus.drinkingFountains.closedForSeason' )
+         message = AppStringProvider.format( 'guestStatus.drinkingFountains.closedForSeason' )
 
       return DrinkingFountainClosedStatus(
          start_date=start_date,

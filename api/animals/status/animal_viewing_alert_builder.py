@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .animal_viewing_alert import AnimalViewingAlert
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
 
@@ -20,7 +20,7 @@ class AnimalViewingAlertBuilder():
          end_date=alert_end_date )
 
       if not message:
-         message = format_app_string( 'guestStatus.animals.viewingAlert', species=species )
+         message = AppStringProvider.format( 'guestStatus.animals.viewingAlert', species=species )
 
       return AnimalViewingAlert(
          species=species,

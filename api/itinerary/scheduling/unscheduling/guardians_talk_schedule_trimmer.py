@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ....app_strings import format_app_string
+from ....app_strings import AppStringProvider
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ....models.wild_encounter_diff import WildEncounterDiff
 from ....shared.calendar_dates import DateValues
@@ -31,7 +31,7 @@ class GuardiansTalkScheduleTrimmer():
 
       if blocker_start <= start and blocker_end >= end:
          raise ValueError(
-            format_app_string( 'guestStatus.itinerary.guardiansTalkFullyCoveredByBlocker' ) )
+            AppStringProvider.format( 'guestStatus.itinerary.guardiansTalkFullyCoveredByBlocker' ) )
 
       if blocker_start <= start and blocker_end < end:
          return ( blocker_end, end )
@@ -43,7 +43,7 @@ class GuardiansTalkScheduleTrimmer():
          return ( blocker_end, end )
 
       raise ValueError(
-         format_app_string( 'guestStatus.itinerary.guardiansTalkUnexpectedBlockerOverlap' ) )
+         AppStringProvider.format( 'guestStatus.itinerary.guardiansTalkUnexpectedBlockerOverlap' ) )
 
 
    @classmethod
@@ -68,7 +68,7 @@ class GuardiansTalkScheduleTrimmer():
 
       if start >= end:
          raise ValueError(
-            format_app_string( 'guestStatus.itinerary.guardiansTalkNoRemainingTimeAfterTrimming' ) )
+            AppStringProvider.format( 'guestStatus.itinerary.guardiansTalkNoRemainingTimeAfterTrimming' ) )
 
       return (
          DateValues.schedule_time_key_from_minutes( start ),

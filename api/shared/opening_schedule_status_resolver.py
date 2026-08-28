@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 from typing import TypeVar
 
-from ..app_strings import format_app_string
+from ..app_strings import AppStringProvider
 from .calendar_dates import CalendarDates
 from .calendar_dates import DateValues
 from .enums import ScheduleStatus
@@ -169,6 +169,6 @@ class OpeningScheduleStatusResolver():
             if likely_closed_message is not None:
                closed_message = likely_closed_message( name )
             else:
-               closed_message = format_app_string( 'guestStatus.locations.likelyNotOpenOnDay', name=name )
+               closed_message = AppStringProvider.format( 'guestStatus.locations.likelyNotOpenOnDay', name=name )
 
       return likelihood, closed_message
