@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.walk_graph.domain.attraction_route_stop import AttractionRouteStop
-from api.walk_graph.domain.master_route_stop import is_attraction_route_stop
+from api.walk_graph.domain.master_route_stop_checker import MasterRouteStopChecker
 from api.walk_graph.loop_walk_endpoint_node_ids_resolver import LoopWalkEndpointNodeIdsResolver
 from api.walk_graph.master_route_provider import MasterRouteProvider
 
@@ -38,7 +38,7 @@ def test_default_master_route_includes_attraction_loops() -> None:
    assert [
       stop.name
       for stop in loops_by_id[ 'eurasia_attractions' ].viewing_spots
-      if is_attraction_route_stop( stop )
+      if MasterRouteStopChecker.is_attraction( stop )
    ] == [
       'Greenhouse',
       'Wildlife Health & Science Centre',
@@ -46,7 +46,7 @@ def test_default_master_route_includes_attraction_loops() -> None:
    assert [
       stop.name
       for stop in loops_by_id[ 'tundra_attractions' ].viewing_spots
-      if is_attraction_route_stop( stop )
+      if MasterRouteStopChecker.is_attraction( stop )
    ] == [
       'TundraAir Ride',
       'Face Painting, Caricatures and Henna! - Tundra Trek',
@@ -73,14 +73,14 @@ def test_kangaroo_walk_thru_is_woven_into_australasia_loop() -> None:
       index
       for index, stop in enumerate( stops )
       if (
-         not is_attraction_route_stop( stop )
+         not MasterRouteStopChecker.is_attraction( stop )
          and stop.species == 'Western Grey Kangaroo' ) )
    walk_thru = stops[ kangaroo_index + 1 ]
    tiger = stops[ kangaroo_index + 2 ]
 
    assert isinstance( walk_thru, AttractionRouteStop )
    assert walk_thru.name == 'Kangaroo Walk-Thru'
-   assert not is_attraction_route_stop( tiger )
+   assert not MasterRouteStopChecker.is_attraction( tiger )
    assert tiger.species == 'Amur Tiger'
 
 

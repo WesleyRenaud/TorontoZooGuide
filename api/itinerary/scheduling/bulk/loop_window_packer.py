@@ -8,7 +8,7 @@ from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ....types import Connection
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
-from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
+from ....walk_graph.domain.master_route_loop_traversal_checker import MasterRouteLoopTraversalChecker
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
 from ....walk_graph.shortest_path_calculator import ShortestPathCalculator
@@ -684,7 +684,7 @@ class LoopWindowPacker():
          entry_walk_node_id,
          adjacency=adjacency )
 
-      if not is_two_way_loop_traversal( unit.traversal ):
+      if not MasterRouteLoopTraversalChecker.is_two_way( unit.traversal ):
          return forward_distance
 
       exit_walk_node_id = unit.exit_walk_node_id
@@ -750,7 +750,7 @@ class LoopWindowPacker():
          adjacency: WalkGraphAdjacency ) -> PreparedLoopScheduleUnit:
       unit = prepared_unit.unit
 
-      if not is_two_way_loop_traversal( unit.traversal ):
+      if not MasterRouteLoopTraversalChecker.is_two_way( unit.traversal ):
          return prepared_unit
 
       forward_distance = cls._walk_distance_px(
