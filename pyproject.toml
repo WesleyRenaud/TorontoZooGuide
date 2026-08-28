@@ -51,3 +51,9 @@ exclude = [
 include = [
    "api/**/*.py",
 ]
+
+[tool.pytest.ini_options]
+python_files = [ "*_tests.py", "test_*.py" ]
+python_functions = [ "Test_*", "test_*" ]
+pythonpath = [ "tests/api" ]
+testpaths = [ "tests/api", "tests/backend" ]
