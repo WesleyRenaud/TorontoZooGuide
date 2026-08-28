@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..data_access.guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
 from ..data_access.guardians_talk_occurrence_record import GuardiansTalkOccurrenceRecord
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
-from .guardians_talk_weekday_time import guardians_talk_weekday_flags
+from .guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...models import ScheduledOccurrence
 from ...shared.scheduled_occurrences import build_scheduled_occurrences
 
@@ -40,7 +40,7 @@ class GuardiansTalkOccurrencesBuilder():
          schedule_records,
          days_ahead=days_ahead,
          get_time=lambda schedule_record: schedule_record.talk_time,
-         get_weekday_flags=guardians_talk_weekday_flags,
+         get_weekday_flags=GuardiansTalkWeekdayTimeResolver.weekday_flags,
          is_cancelled=occurrence_is_cancelled,
          extra_occurrences=extra_occurrences )
 

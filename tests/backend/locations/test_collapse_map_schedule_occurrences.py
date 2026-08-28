@@ -1,4 +1,4 @@
-from api.guardians.scheduling.collapse_guardians_talks_for_map import collapse_guardians_talks_for_map
+from api.guardians.scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.scheduling.collapse_wild_encounters_for_map_builder import CollapseWildEncountersForMapBuilder
@@ -26,7 +26,7 @@ def test_collapse_guardians_talks_for_map_merges_times_for_same_talk() -> None:
          start_time='10:00 AM' ),
    ]
 
-   collapsed = collapse_guardians_talks_for_map( talks )
+   collapsed = GuardiansTalkMapScheduleCollapser.collapse( talks )
 
    assert len( collapsed ) == 2
    polar_bear = next( talk for talk in collapsed if talk[ 'name' ] == 'Polar Bear' )

@@ -46,9 +46,12 @@ class GuardiansTalkScheduleRowInput:
          sunday=row.sunday )
 
 
-def parse_guardians_talk_schedule_rows(
-      schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ GuardiansTalkScheduleRowInput ]:
-   return [
-      GuardiansTalkScheduleRowInput.from_schedule_row( row )
-      for row in parse_schedule_rows( schedule_rows )
-   ]
+   @classmethod
+   def parse_rows(
+         cls,
+         schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ Self ]:
+      return [
+         cls.from_schedule_row( row )
+         for row in parse_schedule_rows( schedule_rows )
+      ]
+

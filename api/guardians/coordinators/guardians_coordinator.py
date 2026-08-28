@@ -25,7 +25,7 @@ from ..scheduling.guardians_talk_schedule_builder import GuardiansTalkScheduleBu
 from ..scheduling.guardians_talk_schedule_conflict_resolver import GuardiansTalkScheduleConflictResolver
 from ..scheduling.guardians_talk_schedule_end_builder import GuardiansTalkScheduleEndBuilder
 from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
-from ..scheduling.guardians_talk_schedule_row_input import parse_guardians_talk_schedule_rows
+from ..scheduling.guardians_talk_schedule_row_input import GuardiansTalkScheduleRowInput
 from ..search.guardians_talks_matching_query_builder import GuardiansTalksMatchingQueryBuilder
 from ...shared.api_error_response import ApiOperationFailure
 from ...shared.calendar_dates import CalendarDates
@@ -46,7 +46,7 @@ class GuardiansCoordinator():
          message: str,
          *,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> list[ GuardiansTalkScheduleInput ]:
-      resolved_schedule_rows = parse_guardians_talk_schedule_rows( schedule_rows )
+      resolved_schedule_rows = GuardiansTalkScheduleRowInput.parse_rows( schedule_rows )
 
       return [
          GuardiansTalkScheduleBuilder.build(

@@ -8,7 +8,7 @@ from itinerary.support import itinerary_animals_for_exhibits
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
+from api.guardians.scheduling.guardians_talk_loop_viewing_spot_index_resolver import GuardiansTalkLoopViewingSpotIndexResolver
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -56,7 +56,7 @@ def _set_saturday_african_lion_talk_schedule(
 
 def test_resolve_guardians_talk_loop_pin_maps_african_lion_to_savanna_loop() -> None:
    master_route_loop = MasterRouteProvider.loops_by_id()[ 'africa_savanna_canadian_domain' ]
-   viewing_spot_index = viewing_spot_index_for_talk_in_loop(
+   viewing_spot_index = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       master_route_loop,
       talk_name=AFRICAN_LION_TALK,
       talk_location=AFRICA_SAVANNA )
@@ -150,7 +150,7 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
    talk_start_seconds = DateValues.time_value_in_seconds( '11:00 AM' )
    talk_end_seconds = DateValues.time_value_in_seconds( '11:30 AM' )
    loop_id = 'africa_savanna_canadian_domain'
-   lion_pin_index = viewing_spot_index_for_talk_in_loop(
+   lion_pin_index = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       MasterRouteProvider.loops_by_id()[ loop_id ],
       talk_name=AFRICAN_LION_TALK,
       talk_location=AFRICA_SAVANNA )

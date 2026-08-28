@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ....guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
+from ....guardians.scheduling.guardians_talk_loop_schedule_pin_resolver import GuardiansTalkLoopSchedulePinResolver
 from ....models import Itinerary
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.itinerary_stop import ItineraryStop
@@ -44,7 +44,7 @@ class BulkScheduleLoopPinAttacher():
          if fixed_time_stop is None:
             continue
 
-         loop_pin = resolve_guardians_talk_loop_pin(
+         loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
             conn,
             guardians_talk,
             fixed_time_stop )
