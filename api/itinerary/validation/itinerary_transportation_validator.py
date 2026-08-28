@@ -10,9 +10,9 @@ from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ..domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from ...models import TransportationDiff
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
-from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
-from ..transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
-from ..transportation.resolve_transportation_day_loop import resolve_transportation_route_for_date
+from ..transportation.timed_transportation_leg_expander import TimedTransportationLegExpander
+from ..transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
+from ..transportation.transportation_route_resolver import TransportationRouteResolver
 from ...types import Connection, DateKey, ScheduleTimeKey
 
 
@@ -78,7 +78,7 @@ class ItineraryTransportationValidator():
             )
             continue
 
-         route = resolve_transportation_route_for_date(
+         route = TransportationRouteResolver.resolve_for_date(
             conn,
             transportation=transportation.name,
             target_date=new_visit_date,
@@ -124,7 +124,7 @@ class ItineraryTransportationValidator():
       if not visit_date_is_changing:
          return end_time, list( carryover_legs )
 
-      day_loop = fetch_transportation_day_loop(
+      day_loop = TransportationDayLoopFetcher.fetch(
          conn,
          transportation=transportation_name,
          target_date=visit_date )
@@ -132,7 +132,7 @@ class ItineraryTransportationValidator():
       if day_loop is None:
          return end_time, []
 
-      timed_legs, expanded_end_time = expand_timed_transportation_legs(
+      timed_legs, expanded_end_time = TimedTransportationLegExpander.expand(
          transportation=transportation_name,
          start_time=start_time,
          legs=day_loop.legs,

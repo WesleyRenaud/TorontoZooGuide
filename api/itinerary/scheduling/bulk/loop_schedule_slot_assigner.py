@@ -12,7 +12,7 @@ from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from .timed_loop_schedule_stop import TimedLoopScheduleStop
-from ...transportation.default_duration_seconds import default_duration_seconds_for_transportation
+from ...transportation.transportation_default_duration_resolver import TransportationDefaultDurationResolver
 from ....types import Connection
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
@@ -81,7 +81,7 @@ class LoopScheduleSlotAssigner():
             stop.attraction )
 
       if isinstance( stop, ItineraryTransportationRecord ):
-         return default_duration_seconds_for_transportation(
+         return TransportationDefaultDurationResolver.resolve(
             conn,
             stop.transportation )
 

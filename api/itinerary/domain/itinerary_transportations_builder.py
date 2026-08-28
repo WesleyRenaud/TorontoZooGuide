@@ -8,7 +8,7 @@ from ...models.itinerary_transportation import ItineraryTransportation
 from ...request_connection import get_connection
 from ...transportation.data_access.transportation_provider import TransportationProvider
 from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
-from ..transportation.route_duration_minutes import transportation_route_duration_minutes
+from ..transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
 
 
 class ItineraryTransportationsBuilder():
@@ -50,7 +50,7 @@ class ItineraryTransportationsBuilder():
                route=saved.route,
                route_marker_sequences=saved.route_marker_sequences,
                added_as_attraction=saved.added_as_attraction,
-               route_duration_minutes=transportation_route_duration_minutes(
+               route_duration_minutes=TransportationRouteDurationResolver.minutes(
                   conn,
                   transportation=saved.transportation,
                   target_date=target_date,

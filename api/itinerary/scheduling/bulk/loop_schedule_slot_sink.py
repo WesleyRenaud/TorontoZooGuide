@@ -12,7 +12,7 @@ from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryIte
 from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from .loop_schedule_slot import LoopScheduleSlot
 from ....shared.calendar_dates import DateValues
-from ...transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
+from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from ....types import Connection
 
 
@@ -69,7 +69,7 @@ class LoopScheduleSlotSink:
                visit_date = ItineraryProvider.fetch_itinerary_date( conn )
                parsed_visit_date = DateValues.parse_date_value( visit_date )
                day_loop = (
-                  fetch_transportation_day_loop(
+                  TransportationDayLoopFetcher.fetch(
                      conn,
                      transportation=stop.transportation,
                      target_date=parsed_visit_date )

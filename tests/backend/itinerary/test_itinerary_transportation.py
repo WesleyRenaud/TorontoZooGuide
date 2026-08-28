@@ -7,8 +7,8 @@ from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, remove_itinerary_i
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
-from api.itinerary.transportation.resolve_transportation_day_loop import fetch_transportation_day_loop
-from api.itinerary.transportation.resolve_transportation_day_loop import order_route_legs_from_station
+from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
+from api.itinerary.transportation.transportation_route_leg_orderer import TransportationRouteLegOrderer
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from conftest import DbControllers
 
@@ -53,7 +53,7 @@ def test_order_route_legs_from_station_forms_closed_loop() -> None:
          duration_minutes=15 ),
    ]
 
-   ordered = order_route_legs_from_station(
+   ordered = TransportationRouteLegOrderer.order_from_station(
       unordered,
       start_station='Main Zoomobile Station' )
 
@@ -66,11 +66,11 @@ def test_order_route_legs_from_station_forms_closed_loop() -> None:
 
 def test_fetch_transportation_day_loop_summer_and_winter(
       db: DbControllers ) -> None:
-   summer_loop = fetch_transportation_day_loop(
+   summer_loop = TransportationDayLoopFetcher.fetch(
       db.conn,
       transportation=ZOOMOBILE,
       target_date=date( 2026, 6, 15 ) )
-   winter_loop = fetch_transportation_day_loop(
+   winter_loop = TransportationDayLoopFetcher.fetch(
       db.conn,
       transportation=ZOOMOBILE,
       target_date=date( 2026, 1, 15 ) )

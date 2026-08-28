@@ -4,7 +4,7 @@ from ..domain.transportation_route_marker_sequences_builder import Transportatio
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...shared.calendar_dates import DateValues
-from ..transportation.expand_timed_transportation_legs import expand_timed_transportation_legs
+from ..transportation.timed_transportation_leg_expander import TimedTransportationLegExpander
 from ..transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from ...types import Cursor
 from ...types import ScheduleTimeKey
@@ -77,7 +77,7 @@ class ScheduleItineraryTransportationProvider():
          if not legs:
             continue
 
-         segment_legs, end_time = expand_timed_transportation_legs(
+         segment_legs, end_time = TimedTransportationLegExpander.expand(
             transportation=name,
             start_time=start_time,
             legs=legs,
