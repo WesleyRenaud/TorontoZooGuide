@@ -13,7 +13,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.master_route_stop import is_animal_route_stop
-from api.walk_graph.master_route import default_master_route_loop_by_id
+from api.walk_graph.master_route_provider import MasterRouteProvider
 from conftest import DbControllers
 
 
@@ -103,7 +103,7 @@ def _viewing_spot_index(
       species: str,
       exhibit: str,
       enclosure_name: str | None ) -> int:
-   master_route_loop = default_master_route_loop_by_id()[ loop_id ]
+   master_route_loop = MasterRouteProvider.loops_by_id()[ loop_id ]
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
       # Guardians-talk enclosure pins resolve against animal stops only.
@@ -315,7 +315,7 @@ def test_viewing_spot_index_for_talk_uses_linked_enclosure_before_talk_name_matc
       db: DbControllers ) -> None:
    assert db.conn is not None
    links = GuardiansTalkAnimalProvider.fetch_animal_links( db.conn, 'African Penguin' )
-   master_route_loop = default_master_route_loop_by_id()[
+   master_route_loop = MasterRouteProvider.loops_by_id()[
       'africa_savanna_canadian_domain'
    ]
 

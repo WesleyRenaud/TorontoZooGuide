@@ -3,7 +3,7 @@ from __future__ import annotations
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .master_route_stop_sorter import MasterRouteStopSorter
-from ....walk_graph.master_route import default_loop_index_by_stop_key
+from ....walk_graph.master_route_provider import MasterRouteProvider
 
 
 class MasterRouteLoopStopGrouper():
@@ -16,7 +16,7 @@ class MasterRouteLoopStopGrouper():
       if not sorted_stops:
          return []
 
-      loop_indexes = default_loop_index_by_stop_key()
+      loop_indexes = MasterRouteProvider.loop_index_by_stop_key()
       groups: list[ list[ LoopScheduleStop ] ] = []
       current_loop_index: int | None = None
       current_group: list[ LoopScheduleStop ] = []

@@ -3,12 +3,11 @@ from __future__ import annotations
 from api.walk_graph.domain.attraction_route_stop import AttractionRouteStop
 from api.walk_graph.domain.master_route_stop import is_attraction_route_stop
 from api.walk_graph.loop_walk_endpoint_node_ids_resolver import LoopWalkEndpointNodeIdsResolver
-from api.walk_graph.master_route import default_master_route
-from api.walk_graph.master_route import default_master_route_loop_by_id
+from api.walk_graph.master_route_provider import MasterRouteProvider
 
 
 def test_default_master_route_loops_fit_attractions_in_route_order() -> None:
-   master_route = default_master_route()
+   master_route = MasterRouteProvider.fetch_default()
    loop_ids = [ loop.loop_id for loop in master_route.loops ]
 
    assert loop_ids == [
@@ -34,7 +33,7 @@ def test_default_master_route_loops_fit_attractions_in_route_order() -> None:
 
 
 def test_default_master_route_includes_attraction_loops() -> None:
-   loops_by_id = default_master_route_loop_by_id()
+   loops_by_id = MasterRouteProvider.loops_by_id()
 
    assert [
       stop.name
@@ -67,7 +66,7 @@ def test_default_master_route_includes_attraction_loops() -> None:
 
 
 def test_kangaroo_walk_thru_is_woven_into_australasia_loop() -> None:
-   australasia = default_master_route_loop_by_id()[ 'australasia' ]
+   australasia = MasterRouteProvider.loops_by_id()[ 'australasia' ]
    stops = australasia.viewing_spots
 
    kangaroo_index = next(
@@ -86,7 +85,7 @@ def test_kangaroo_walk_thru_is_woven_into_australasia_loop() -> None:
 
 
 def test_attraction_loop_walk_endpoints_use_attraction_walk_nodes() -> None:
-   eurasia_attractions = default_master_route_loop_by_id()[ 'eurasia_attractions' ]
+   eurasia_attractions = MasterRouteProvider.loops_by_id()[ 'eurasia_attractions' ]
 
    assert LoopWalkEndpointNodeIdsResolver.resolve( eurasia_attractions ) == (
       'v-0889',

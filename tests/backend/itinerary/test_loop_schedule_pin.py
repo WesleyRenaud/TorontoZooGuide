@@ -4,7 +4,7 @@ from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_gu
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.master_route import default_master_route_loop_by_id
+from api.walk_graph.master_route_provider import MasterRouteProvider
 from conftest import DbControllers
 
 
@@ -59,7 +59,7 @@ def test_resolve_guardians_talk_loop_pin_returns_pin_for_african_lion(
 
 
 def viewing_spot_index_for_african_lion() -> int:
-   master_route_loop = default_master_route_loop_by_id()[ 'africa_savanna_canadian_domain' ]
+   master_route_loop = MasterRouteProvider.loops_by_id()[ 'africa_savanna_canadian_domain' ]
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
       if (

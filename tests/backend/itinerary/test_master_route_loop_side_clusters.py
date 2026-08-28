@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from api.walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
-from api.walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
-from api.walk_graph.master_route import default_master_route
+from api.walk_graph.master_route_provider import MasterRouteProvider
 
 
 def test_default_master_route_loads_north_and_south_loop_side_clusters() -> None:
-   master_route = default_master_route()
+   master_route = MasterRouteProvider.fetch_default()
 
    assert len( master_route.loop_side_clusters ) == 2
 
@@ -18,7 +17,7 @@ def test_default_master_route_loads_north_and_south_loop_side_clusters() -> None
 
 
 def test_north_loop_side_cluster_contains_expected_loops() -> None:
-   master_route = default_master_route()
+   master_route = MasterRouteProvider.fetch_default()
    north_cluster = next(
       cluster
       for cluster in master_route.loop_side_clusters
@@ -37,7 +36,7 @@ def test_north_loop_side_cluster_contains_expected_loops() -> None:
 
 
 def test_south_loop_side_cluster_contains_expected_loops() -> None:
-   master_route = default_master_route()
+   master_route = MasterRouteProvider.fetch_default()
    south_cluster = next(
       cluster
       for cluster in master_route.loop_side_clusters
@@ -55,9 +54,7 @@ def test_south_loop_side_cluster_contains_expected_loops() -> None:
 
 
 def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:
-   from api.walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
-
-   loop_indexes = default_loop_index_in_side_cluster_by_loop_id()
+   loop_indexes = MasterRouteProvider.loop_index_in_side_cluster_by_loop_id()
 
    assert loop_indexes[ 'discovery_zone' ] == 0
    assert loop_indexes[ 'splash_island' ] == 1
@@ -75,7 +72,7 @@ def test_default_loop_index_in_side_cluster_by_loop_id_maps_each_loop() -> None:
 
 
 def test_default_loop_side_cluster_id_by_loop_id_maps_each_loop() -> None:
-   loop_side_cluster_ids = default_loop_side_cluster_id_by_loop_id()
+   loop_side_cluster_ids = MasterRouteProvider.loop_side_cluster_id_by_loop_id()
 
    assert loop_side_cluster_ids[ 'australasia' ] == LoopSideClusterId.NORTH
    assert loop_side_cluster_ids[ 'eurasia' ] == LoopSideClusterId.NORTH

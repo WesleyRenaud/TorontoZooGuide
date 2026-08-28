@@ -6,7 +6,7 @@ from .loop_pin_stop_segment import LoopPinStopSegment
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from ...routing.loop_schedule_pin import LoopSchedulePin
-from ....walk_graph.master_route import default_master_route_loop_by_id
+from ....walk_graph.master_route_provider import MasterRouteProvider
 
 
 class LoopPinSegmentSplitter():
@@ -120,7 +120,7 @@ class LoopPinSegmentSplitter():
          cls,
          loop_id: str,
          stop: LoopScheduleStop ) -> int | None:
-      master_route_loop = default_master_route_loop_by_id().get( loop_id )
+      master_route_loop = MasterRouteProvider.loops_by_id().get( loop_id )
 
       if master_route_loop is None:
          return None
