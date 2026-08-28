@@ -1,11 +1,23 @@
 [tool.coverage.run]
+# TODO(api-test-migration): When tests/backend is removed and tests/api covers all API
+# modules, drop the per-module source list below and measure --cov=api instead.
+# Also remove the per-module --cov flags from package.json coverage:py.
+source = [
+   "api/animals",
+   "api/attractions",
+   "api/exhibits",
+]
 omit = [
    "api/__main__.py",
-   "api/seed/user_itinerary_config_cleaner.py",
-   "api/seed/user_itinerary_data_cleaner.py",
-   "api/seed/schema_applier.py",
-   "api/seed/seed_data_applier.py",
-   "api/seed/migrations/migration_runner.py",
+   "api/seed/**",
+   "api/**/coordinators/**",
+   "api/**/data_access/**",
+   "api/**/*_routes.py",
+   "api/**/__init__.py",
+   "api/models/**",
+   "api/**/itinerary/**",
+   "api/**/scheduling/*_conflict_resolver.py",
+   "api/**/scheduling/*_time_bounds_builder.py",
 ]
 
 [tool.ruff]
