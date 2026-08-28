@@ -6,15 +6,13 @@ from typing import Any
 import pytest
 
 import api.app_strings as app_strings
-from api.app_strings import clear_app_string_cache
-from api.app_strings import format_app_string
-from api.app_strings import get_app_string_values
-from api.html_strings import clear_html_string_cache
+from api.app_strings import AppStringProvider
+from api.html_strings import HtmlStringRenderer
 
 
 def test_get_app_string_values_reuses_cache_until_sources_change(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   clear_app_string_cache()
+   AppStringProvider.clear_cache()
    call_count = 0
    original_run = app_strings.subprocess.run
 
@@ -27,28 +25,28 @@ def test_get_app_string_values_reuses_cache_until_sources_change(
 
    monkeypatch.setattr( app_strings.subprocess, 'run', counting_run )
 
-   first = get_app_string_values()
-   second = get_app_string_values()
+   first = AppStringProvider.values()
+   second = AppStringProvider.values()
 
    assert first is second
    assert call_count == 1
 
 
 def test_format_app_string_resolves_guest_status_templates() -> None:
-   assert format_app_string(
+   assert AppStringProvider.format(
       'guestStatus.animals.temporarilyOffDisplay',
       species='Giraffe' ) == 'The Giraffe is temporarily off-display.'
 
 
 def test_format_app_string_resolves_guest_status_likely_off_display_message() -> None:
-   assert format_app_string(
+   assert AppStringProvider.format(
       'guestStatus.animals.speciesLikelyOffDisplayOnDay',
       species='Giraffe' ) == 'The Giraffe is most likely off display on this day.'
 
 
 def test_html_string_cache_clear_also_clears_app_string_cache(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   clear_app_string_cache()
+   AppStringProvider.clear_cache()
    call_count = 0
    original_run = app_strings.subprocess.run
 
@@ -61,8 +59,8 @@ def test_html_string_cache_clear_also_clears_app_string_cache(
 
    monkeypatch.setattr( app_strings.subprocess, 'run', counting_run )
 
-   get_app_string_values()
-   clear_html_string_cache()
-   get_app_string_values()
+   AppStringProvider.values()
+   HtmlStringRenderer.clear_cache()
+   AppStringProvider.values()
 
    assert call_count == 2

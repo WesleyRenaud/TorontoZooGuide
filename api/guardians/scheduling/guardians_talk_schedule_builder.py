@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
@@ -28,7 +28,7 @@ class GuardiansTalkScheduleBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string(
+         message = AppStringProvider.format(
             'guestStatus.guardiansTalks.notScheduledToday',
             talkName=talk,
             location=location )

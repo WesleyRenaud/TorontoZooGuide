@@ -6,7 +6,7 @@ from ...models import Update
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import OPEN_ENDED_SQL_DATE
 from ...shared.text_values import TextValues
-from .update_type import update_type_display_order
+from .update_type_display_order_resolver import UpdateTypeDisplayOrderResolver
 
 
 class UpdatesDisplayBuilder():
@@ -27,7 +27,7 @@ class UpdatesDisplayBuilder():
       end_date = update.end_date or OPEN_ENDED_SQL_DATE
 
       return (
-         update_type_display_order( update.update_type ),
+         UpdateTypeDisplayOrderResolver.resolve( update.update_type ),
          end_date,
          TextValues.normalize_for_matching( update.title ),
       )

@@ -4,7 +4,7 @@ import mimetypes
 import os
 from typing import Any, Protocol
 
-from ..html_strings import render_html_strings
+from ..html_strings import HtmlStringRenderer
 
 
 class StaticFileHandler( Protocol ):
@@ -43,7 +43,7 @@ def send_file(
 
    if content_type == "text/html":
       with open( filepath, encoding='utf-8' ) as fp:
-         handler.wfile.write( render_html_strings( fp.read() ).encode( 'utf-8' ) )
+         handler.wfile.write( HtmlStringRenderer.render( fp.read() ).encode( 'utf-8' ) )
       return
 
    with open( filepath, "rb" ) as fp:

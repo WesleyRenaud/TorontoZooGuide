@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from .restroom_closed_status import RestroomClosedStatus
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
@@ -19,7 +19,7 @@ class RestroomStatusBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string( 'guestStatus.locations.temporarilyClosed', name=restroom )
+         message = AppStringProvider.format( 'guestStatus.locations.temporarilyClosed', name=restroom )
 
       return RestroomClosedStatus(
          restroom=restroom,

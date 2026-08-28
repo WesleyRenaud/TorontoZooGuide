@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..enrich_transportation_attraction_route_durations import enrich_transportation_attraction_route_durations_for_visit
 from ...giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Animal
@@ -20,6 +19,7 @@ from ...restaurants.coordinators.restaurant_coordinator import RestaurantCoordin
 from ...restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...transportation.coordinators.transportation_coordinator import TransportationCoordinator
+from ..transportation_attraction_route_duration_enricher import TransportationAttractionRouteDurationEnricher
 from ...types import MonthInput, VisitDay, VisitYear
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -121,7 +121,7 @@ class SearchCoordinator():
                year=year,
                include_closed_attractions=include_closed_attractions ) or []
          )
-         enrich_transportation_attraction_route_durations_for_visit(
+         TransportationAttractionRouteDurationEnricher.enrich_for_visit(
             attractions,
             month=month,
             day=day,

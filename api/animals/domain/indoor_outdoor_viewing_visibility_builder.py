@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ...models import Animal
 from ..search.species_exhibit_key import SpeciesExhibitKey
 from ..search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
@@ -23,7 +23,7 @@ class IndoorOutdoorViewingVisibilityBuilder():
       if enclosure_type is None:
          return None
 
-      return format_app_string(
+      return AppStringProvider.format(
          'guestStatus.animals.singleHabitatAlternateEnclosureViewingAlert',
          species=animal.species,
          chosenLocation=enclosure_type.viewing_location_label,

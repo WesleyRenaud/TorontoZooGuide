@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
 from .wild_encounter_schedule_input import WildEncounterScheduleInput
@@ -27,7 +27,7 @@ class WildEncounterScheduleBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string(
+         message = AppStringProvider.format(
             'guestStatus.wildEncounters.notScheduledToday',
             wildEncounter=wild_encounter )
 

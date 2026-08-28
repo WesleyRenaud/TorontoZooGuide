@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from .attraction_context import AttractionContext
 from ..data_access.attraction_record import AttractionRecord
 from ..data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
@@ -67,10 +67,10 @@ class AttractionBuilder():
       if schedule_record.schedule_message:
          return schedule_record.schedule_message
       if schedule_record.saturday and schedule_record.sunday and schedule_record.holidays_only:
-         return format_app_string(
+         return AppStringProvider.format(
             'guestStatus.attractions.weekendsAndHolidaysOnly',
             attractionName=attraction_name )
-      return format_app_string(
+      return AppStringProvider.format(
          'guestStatus.attractions.notScheduledToday',
          attractionName=attraction_name )
 
@@ -137,7 +137,7 @@ class AttractionBuilder():
          build_closed_schedule_message=lambda schedule_record: cls.build_closed_schedule_message(
             attraction_name=attraction_record.name,
             schedule_record=schedule_record ),
-         likely_closed_message=lambda name: format_app_string(
+         likely_closed_message=lambda name: AppStringProvider.format(
             'guestStatus.attractions.likelyNotOperating',
             attractionName=name ) )
 

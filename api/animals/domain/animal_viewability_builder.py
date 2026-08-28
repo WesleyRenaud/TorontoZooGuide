@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from .indoor_outdoor_viewing_visibility_builder import IndoorOutdoorViewingVisibilityBuilder
 from ...models import Animal
@@ -307,9 +307,9 @@ class AnimalViewabilityBuilder():
       if (
             exhibit_status == ScheduleStatus.UNKNOWN
             and exhibit_day_seasonal_availability_multiplier == 0 ):
-         return format_app_string( 'guestStatus.animals.exhibitLikelyClosedOnDay', exhibit=animal.exhibit )
+         return AppStringProvider.format( 'guestStatus.animals.exhibitLikelyClosedOnDay', exhibit=animal.exhibit )
 
       if animal.seasonally_off_display_message:
          return animal.seasonally_off_display_message
 
-      return format_app_string( 'guestStatus.animals.speciesLikelyOffDisplayOnDay', species=animal.species )
+      return AppStringProvider.format( 'guestStatus.animals.speciesLikelyOffDisplayOnDay', species=animal.species )

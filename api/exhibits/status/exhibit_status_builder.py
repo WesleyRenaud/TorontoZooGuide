@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 from .exhibit_closed_status import ExhibitClosedStatus
 from ...shared.calendar_dates import DateValues
@@ -22,7 +22,7 @@ class ExhibitStatusBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string( 'guestStatus.locations.temporarilyClosed', name=exhibit )
+         message = AppStringProvider.format( 'guestStatus.locations.temporarilyClosed', name=exhibit )
 
       return ExhibitClosedStatus(
          exhibit=exhibit,

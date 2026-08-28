@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..app_strings import format_app_string
+from ..app_strings import AppStringProvider
 from .calendar_dates import DateValues
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
 from ..types import DateInput
@@ -27,7 +27,7 @@ class OpeningScheduleWeekdayFieldsBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string( 'guestStatus.locations.notScheduledToBeOpenToday', name=name )
+         message = AppStringProvider.format( 'guestStatus.locations.notScheduledToBeOpenToday', name=name )
 
       return OpeningScheduleWeekdayFields(
          start_date=date_range.start_date,

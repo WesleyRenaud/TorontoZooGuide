@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
-from ...app_strings import format_app_string
+from ...app_strings import AppStringProvider
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
 
@@ -51,14 +51,14 @@ class AnimalLimitedViewingScheduleBuilder():
          daily_end_time )
 
       if end_date != None:
-         return format_app_string(
+         return AppStringProvider.format(
             'guestStatus.animals.limitedViewingScheduleUntil',
             species=species,
             dailyStartTime=formatted_daily_start_time,
             dailyEndTime=formatted_daily_end_time,
             endDate=DateValues.format_display_date_value( end_date ) )
 
-      return format_app_string(
+      return AppStringProvider.format(
          'guestStatus.animals.limitedViewingSchedule',
          species=species,
          dailyStartTime=formatted_daily_start_time,

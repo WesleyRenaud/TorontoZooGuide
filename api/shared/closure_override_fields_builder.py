@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..app_strings import format_app_string
+from ..app_strings import AppStringProvider
 from .calendar_dates import DateValues
 from .closure_override_fields import ClosureOverrideFields
 from ..types import DateInput
@@ -19,7 +19,7 @@ class ClosureOverrideFieldsBuilder():
          end_date=end_date )
 
       if not message:
-         message = format_app_string( 'guestStatus.locations.temporarilyClosed', name=name )
+         message = AppStringProvider.format( 'guestStatus.locations.temporarilyClosed', name=name )
 
       return ClosureOverrideFields(
          start_date=date_range.start_date,
