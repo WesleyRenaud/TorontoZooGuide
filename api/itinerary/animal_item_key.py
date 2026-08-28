@@ -57,20 +57,24 @@ class AnimalScheduleItemKey:
       return base
 
 
-def format_animal_schedule_item_key(
-      species: str,
-      exhibit: str,
-      enclosure_name: str | None = None ) -> str:
-   return AnimalScheduleItemKey(
-      species=species,
-      exhibit=exhibit,
-      enclosure_name=enclosure_name ).to_wire()
+   @classmethod
+   def wire(
+         cls,
+         species: str,
+         exhibit: str,
+         enclosure_name: str | None = None ) -> str:
+      return cls(
+         species=species,
+         exhibit=exhibit,
+         enclosure_name=enclosure_name ).to_wire()
 
 
-def parse_animal_schedule_item_key( key: str ) -> tuple[ str, str ] | None:
-   parsed = AnimalScheduleItemKey.from_wire( key )
+   @classmethod
+   def parse_species_exhibit( cls, key: str ) -> tuple[ str, str ] | None:
+      parsed = cls.from_wire( key )
 
-   if parsed is None:
-      return None
+      if parsed is None:
+         return None
 
-   return parsed.species, parsed.exhibit
+      return parsed.species, parsed.exhibit
+

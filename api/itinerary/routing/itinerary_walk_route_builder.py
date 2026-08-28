@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..animal_item_key import parse_animal_schedule_item_key
+from ..animal_item_key import AnimalScheduleItemKey
 from .itinerary_walk_route import ItineraryWalkRoute
 from .itinerary_walk_route_completion_checker import ItineraryWalkRouteCompletionChecker
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop
@@ -136,7 +136,7 @@ class ItineraryWalkRouteBuilder():
          return anchor.walk_node_ids[ 0 ]
 
       if anchor.schedule_item_kind == ScheduleItemKind.ANIMAL:
-         parsed_key = parse_animal_schedule_item_key( anchor.item_key )
+         parsed_key = AnimalScheduleItemKey.parse_species_exhibit( anchor.item_key )
 
          if parsed_key is not None:
             return representative_walk_node_id_from_candidates(
