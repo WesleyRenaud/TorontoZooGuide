@@ -10,7 +10,7 @@ from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import Maste
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
 def _animal_record(
@@ -52,7 +52,7 @@ def _africa_meeting_spot_anchor_stop() -> ItineraryStop:
 
 
 def test_pack_loops_into_schedule_window_places_south_terminal_before_africa_anchor() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
    window_end_seconds = DateValues.time_value_in_seconds( '11:00 AM' )
 
@@ -93,7 +93,7 @@ def test_pack_loops_into_schedule_window_places_south_terminal_before_africa_anc
 
 
 def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_anchor() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
    window_end_seconds = DateValues.time_value_in_seconds( '12:00 PM' )
 
@@ -133,7 +133,7 @@ def test_pack_loops_into_schedule_window_uses_open_window_greedy_order_without_a
 
 
 def test_pack_loops_into_schedule_window_fits_partial_sequence_before_short_anchored_window() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    # Window must cover approach travel from the entrance plus Indo-Malaya dwell
    # (6m + 5m) while still excluding Australasia as a prefix or terminal.
    window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
@@ -199,7 +199,7 @@ def test_pack_loops_into_schedule_window_uses_itinerary_animal_nodes_for_partial
 
 
 def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_after_americas() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = DateValues.time_value_in_seconds( '2:00 PM' )
    window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
 
@@ -256,7 +256,7 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
 
 
 def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approach() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    window_start_seconds = DateValues.time_value_in_seconds( '2:00 PM' )
    window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
 

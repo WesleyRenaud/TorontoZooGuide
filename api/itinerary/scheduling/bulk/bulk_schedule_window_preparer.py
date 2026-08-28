@@ -18,7 +18,7 @@ from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
@@ -94,7 +94,7 @@ class BulkScheduleWindowPreparer():
          saved_itinerary,
          **itinerary_context )
       blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       start_state = cls.start_state(
          walk_graph,
          saved_itinerary.animal_rows,

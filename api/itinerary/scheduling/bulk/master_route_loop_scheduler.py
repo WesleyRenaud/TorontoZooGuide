@@ -23,7 +23,7 @@ from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
 
 
@@ -1411,7 +1411,7 @@ class MasterRouteLoopScheduler():
          stops: list[ LoopScheduleStop ] ) -> PreparedLoopScheduleUnit | None:
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
-         load_walk_graph(),
+         WalkGraphProvider.fetch(),
          stops )
 
       if prepared_stops is None:

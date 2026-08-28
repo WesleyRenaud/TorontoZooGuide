@@ -4,7 +4,7 @@ from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, en
 
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
@@ -14,7 +14,7 @@ LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
 LION_START_AFTER_915 = schedule_time_after_seconds( '9:15 AM', LION_TRAVEL_SECONDS )
 LION_START_AFTER_930 = schedule_time_after_seconds( '9:30 AM', LION_TRAVEL_SECONDS )
 LION_CHEETAH_TRAVEL_SECONDS = WalkTravelTimeCalculator.seconds_between_nodes(
-   load_walk_graph(),
+   WalkGraphProvider.fetch(),
    ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
    ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
 )
@@ -29,7 +29,7 @@ LION_END_AFTER_915 = schedule_time_after_seconds( LION_START_AFTER_915, 8 * 60 )
 CAROUSEL_AFTER_LION_AFTERNOON = schedule_time_after_seconds(
    schedule_time_after_seconds( '3:45 PM', 8 * 60 ),
    WalkTravelTimeCalculator.seconds_between_nodes(
-      load_walk_graph(),
+      WalkGraphProvider.fetch(),
       ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
       ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( CAROUSEL ),
    ),

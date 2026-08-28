@@ -3,13 +3,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from api.walk_graph.build_map_location_walk_nodes import build_map_location_walk_nodes
-from api.walk_graph.data_access.load_map_location_walk_nodes import load_map_location_walk_nodes
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.map_location_walk_node_provider import MapLocationWalkNodeProvider
 from api.walk_graph.data_access.paths import MAX_MAP_LOCATION_SNAP_DISTANCE_PX
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_key import MapLocationKey
 from api.walk_graph.domain.map_location_kind import MapLocationKind
-from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from api.walk_graph.map_location_walk_node_builder import MapLocationWalkNodeBuilder
+from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 
 
 ROOT = Path( __file__ ).resolve().parents[ 2 ]
@@ -50,26 +50,26 @@ def test_map_location_walk_nodes_cover_every_seed_location() -> None:
    expected_keys = _expected_map_location_keys()
    actual_keys = {
       row.location_key()
-      for row in load_map_location_walk_nodes()
+      for row in MapLocationWalkNodeProvider.fetch_records()
    }
 
-   assert len( load_map_location_walk_nodes() ) == len( expected_keys )
+   assert len( MapLocationWalkNodeProvider.fetch_records() ) == len( expected_keys )
    assert expected_keys == actual_keys
 
 
 def test_map_location_walk_nodes_reference_valid_walk_graph_nodes() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
    node_ids = { node[ 'id' ] for node in graph[ 'nodes' ] }
 
-   for row in load_map_location_walk_nodes():
+   for row in MapLocationWalkNodeProvider.fetch_records():
       assert row.walk_node_id in node_ids
       assert row.snap_distance_px >= 0
       assert row.snap_distance_px <= MAX_MAP_LOCATION_SNAP_DISTANCE_PX
 
 
 def test_map_location_walk_nodes_match_nearest_node_snap() -> None:
-   graph = load_walk_graph()
-   expected_rows = build_map_location_walk_nodes(
+   graph = WalkGraphProvider.fetch()
+   expected_rows = MapLocationWalkNodeBuilder.build(
       graph,
       json.loads(
          ( SEED_DATA_DIR / 'wild_encounter_meeting_spot.json' ).read_text( encoding='utf-8' ) ),
@@ -78,11 +78,11 @@ def test_map_location_walk_nodes_match_nearest_node_snap() -> None:
       json.loads(
          ( SEED_DATA_DIR / 'attraction.json' ).read_text( encoding='utf-8' ) ) )
 
-   assert load_map_location_walk_nodes() == expected_rows
+   assert MapLocationWalkNodeProvider.fetch_records() == expected_rows
 
 
 def test_walk_node_for_map_location_finds_rhino_encounter_meeting_spot() -> None:
-   row = walk_node_for_map_location(
+   row = MapLocationWalkNodeLookup.for_map_location(
       MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
       'Wild Encounter - Penguin Meeting Spot' )
 

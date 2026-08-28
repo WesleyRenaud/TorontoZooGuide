@@ -5,12 +5,12 @@ from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteSt
 from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 
 
 def test_append_return_to_entrance_walk_route_leg_skips_when_already_at_entrance() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
    entrance_anchor = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ENTRANCE,
@@ -43,7 +43,7 @@ def test_append_return_to_entrance_walk_route_leg_skips_when_already_at_entrance
 
 
 def test_append_return_to_entrance_walk_route_leg_appends_shortest_path_back() -> None:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
    sample_node_id = next(
       node[ 'id' ]

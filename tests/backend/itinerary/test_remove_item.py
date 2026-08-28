@@ -7,7 +7,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
@@ -18,7 +18,7 @@ AFRICAN_RAINFOREST = 'African Rainforest'
 CHEETAH_START = schedule_time_after_seconds(
    '10:15 AM',
    WalkTravelTimeCalculator.seconds_between_nodes(
-      load_walk_graph(),
+      WalkGraphProvider.fetch(),
       ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
       ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
    ),

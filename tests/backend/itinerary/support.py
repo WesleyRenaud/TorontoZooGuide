@@ -22,9 +22,9 @@ from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
 from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from api.types import DateInput
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
-from api.walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -207,7 +207,7 @@ def entrance_travel_seconds_to_animal(
       species: str,
       exhibit: str,
       enclosure_name: str | None = None ) -> int:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    walk_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       species,
       exhibit,
@@ -225,8 +225,8 @@ def entrance_travel_seconds_to_animal(
 def entrance_travel_seconds_to_map_location(
       kind: MapLocationKind,
       name: str ) -> int:
-   walk_graph = load_walk_graph()
-   walk_node = walk_node_for_map_location( kind, name )
+   walk_graph = WalkGraphProvider.fetch()
+   walk_node = MapLocationWalkNodeLookup.for_map_location( kind, name )
 
    if walk_node is None:
       return 0

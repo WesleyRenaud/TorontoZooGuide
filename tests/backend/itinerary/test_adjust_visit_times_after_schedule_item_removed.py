@@ -9,7 +9,7 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
@@ -21,7 +21,7 @@ LION_TRAVEL_SECONDS = entrance_travel_seconds_to_animal(
 CHEETAH_START = schedule_time_after_seconds(
    '10:15 AM',
    WalkTravelTimeCalculator.seconds_between_nodes(
-      load_walk_graph(),
+      WalkGraphProvider.fetch(),
       ViewingSpotWalkNodeIdResolver.resolve( 'African Lion', 'Africa Savanna', None ),
       ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
    ),
@@ -29,7 +29,7 @@ CHEETAH_START = schedule_time_after_seconds(
 PENGUIN_START = schedule_time_after_seconds(
    schedule_time_after_seconds( CHEETAH_START, 15 * 60 ),
    WalkTravelTimeCalculator.seconds_between_nodes(
-      load_walk_graph(),
+      WalkGraphProvider.fetch(),
       ViewingSpotWalkNodeIdResolver.resolve( 'Cheetah', 'Africa Savanna', None ),
       ViewingSpotWalkNodeIdResolver.resolve( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
    ),

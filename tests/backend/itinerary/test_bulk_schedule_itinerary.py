@@ -10,7 +10,7 @@ from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalc
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
@@ -32,7 +32,7 @@ def _travel_seconds_between_animals(
       to_exhibit: str,
       from_enclosure_name: str | None = None,
       to_enclosure_name: str | None = None ) -> int:
-   walk_graph = load_walk_graph()
+   walk_graph = WalkGraphProvider.fetch()
    from_node_id = ViewingSpotWalkNodeIdResolver.resolve(
       from_species,
       from_exhibit,

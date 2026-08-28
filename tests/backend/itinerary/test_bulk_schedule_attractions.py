@@ -18,7 +18,7 @@ from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import 
 from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from conftest import DbControllers
 
 
@@ -58,8 +58,8 @@ def test_bulk_schedule_packs_attraction_only_loop(
    assert splash.start_time == schedule_time_after_seconds(
       '9:30 AM',
       WalkTravelTimeCalculator.seconds_between_nodes(
-         load_walk_graph(),
-         load_walk_graph()[ 'entrance_node_id' ],
+         WalkGraphProvider.fetch(),
+         WalkGraphProvider.fetch()[ 'entrance_node_id' ],
          ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( SPLASH_ISLAND ),
       ),
    )

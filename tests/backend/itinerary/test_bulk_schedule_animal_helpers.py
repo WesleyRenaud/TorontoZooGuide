@@ -4,14 +4,14 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from api.itinerary.scheduling.bulk.bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
-from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
+from api.walk_graph.enclosure_viewing_walk_node_lookup import EnclosureViewingWalkNodeLookup
 
 
 PAVILION = 'African Rainforest Pavilion'
 
 
 def test_walk_node_id_by_enclosure_name_resolves_named_and_unnamed_viewing_spots() -> None:
-   walk_node_ids = walk_node_id_by_enclosure_name()
+   walk_node_ids = EnclosureViewingWalkNodeLookup.walk_node_id_by_enclosure_name()
 
    assert walk_node_ids[
       ( 'Marabou Stork', PAVILION, 'Savanna Overlook' )

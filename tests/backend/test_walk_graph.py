@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
 def test_walk_graph_has_nodes_edges_and_entrance() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
 
    assert graph[ 'map_width_px' ] == 4096
    assert graph[ 'map_height_px' ] == 2665
@@ -16,7 +16,7 @@ def test_walk_graph_has_nodes_edges_and_entrance() -> None:
 
 
 def test_walk_graph_node_and_edge_references_are_valid() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
    node_ids = { node[ 'id' ] for node in graph[ 'nodes' ] }
 
    assert graph[ 'entrance_node_id' ] in node_ids
@@ -28,7 +28,7 @@ def test_walk_graph_node_and_edge_references_are_valid() -> None:
 
 
 def test_walk_graph_entrance_is_the_parking_lot_spur_dead_end() -> None:
-   graph = load_walk_graph()
+   graph = WalkGraphProvider.fetch()
 
    spur_nodes = [
       node

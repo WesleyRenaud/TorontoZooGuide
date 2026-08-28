@@ -28,7 +28,7 @@ from ...transportation_item_key import TransportationScheduleItemKey
 from ....types import Connection
 from ....types import DateKey
 from ....types import ScheduleTimeKey
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
 from ....walk_graph.shortest_path_calculator import ShortestPathCalculator
@@ -51,7 +51,7 @@ class TransportationTransitRideApplier():
       if not transit_rows or not scheduled_animals or visit_date is None:
          return
 
-      walk_graph = load_walk_graph()
+      walk_graph = WalkGraphProvider.fetch()
       adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
       entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
       saved_itinerary = ItineraryProvider.fetch_saved_itinerary( conn )

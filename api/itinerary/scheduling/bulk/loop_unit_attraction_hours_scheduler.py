@@ -13,7 +13,7 @@ from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
 from ....types import Connection
-from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
 
 class LoopUnitAttractionHoursScheduler():
@@ -86,7 +86,7 @@ class LoopUnitAttractionHoursScheduler():
 
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
-         load_walk_graph(),
+         WalkGraphProvider.fetch(),
          before_stops )
 
       if prepared_stops is None:
@@ -168,7 +168,7 @@ class LoopUnitAttractionHoursScheduler():
          if before_stops:
             prepared_before_stops = LoopScheduleSlotAssigner.prepare_stops(
                conn,
-               load_walk_graph(),
+               WalkGraphProvider.fetch(),
                before_stops )
 
             if prepared_before_stops is None:
@@ -266,7 +266,7 @@ class LoopUnitAttractionHoursScheduler():
       if after_stops:
          prepared_after_stops = LoopScheduleSlotAssigner.prepare_stops(
             conn,
-            load_walk_graph(),
+            WalkGraphProvider.fetch(),
             after_stops )
 
          if prepared_after_stops is None:

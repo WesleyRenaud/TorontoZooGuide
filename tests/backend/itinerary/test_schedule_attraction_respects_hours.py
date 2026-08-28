@@ -11,7 +11,7 @@ from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalc
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
 
@@ -20,8 +20,8 @@ SPLASH_ISLAND = 'Splash Island'
 SPLASH_OPEN_WITH_ENTRANCE_TRAVEL = schedule_time_after_seconds(
    '12:00 PM',
    WalkTravelTimeCalculator.seconds_between_nodes(
-      load_walk_graph(),
-      load_walk_graph()[ 'entrance_node_id' ],
+      WalkGraphProvider.fetch(),
+      WalkGraphProvider.fetch()[ 'entrance_node_id' ],
       ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction( SPLASH_ISLAND ),
    ),
 )
