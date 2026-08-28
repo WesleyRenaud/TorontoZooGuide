@@ -5,7 +5,7 @@ from ...itinerary.routing.itinerary_stop import ItineraryStop
 from ...itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from ...models import WildEncounter
 from ...shared.calendar_dates import DateValues
-from ...walk_graph.master_route import default_master_route_loop_by_id
+from ...walk_graph.master_route_provider import MasterRouteProvider
 
 
 def resolve_wild_encounter_loop_pin(
@@ -28,7 +28,7 @@ def resolve_wild_encounter_loop_pin(
    if start_seconds is None or end_seconds is None:
       return None
 
-   if default_master_route_loop_by_id().get( meeting_spot_loop_pin.loop_id ) is None:
+   if MasterRouteProvider.loops_by_id().get( meeting_spot_loop_pin.loop_id ) is None:
       return None
 
    return LoopSchedulePin(

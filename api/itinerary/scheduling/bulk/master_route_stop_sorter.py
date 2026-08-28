@@ -4,7 +4,7 @@ from ...data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
-from ....walk_graph.master_route import default_master_route_index_by_stop_key
+from ....walk_graph.master_route_provider import MasterRouteProvider
 
 
 class MasterRouteStopSorter():
@@ -15,7 +15,7 @@ class MasterRouteStopSorter():
       if not stops:
          return []
 
-      master_route_indexes = default_master_route_index_by_stop_key()
+      master_route_indexes = MasterRouteProvider.route_index_by_stop_key()
       mapped_stops: list[ LoopScheduleStop ] = []
       unmapped_stops: list[ LoopScheduleStop ] = []
 

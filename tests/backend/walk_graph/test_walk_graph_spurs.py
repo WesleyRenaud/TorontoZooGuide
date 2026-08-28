@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.enclosure_viewing_walk_node_lookup import EnclosureViewingWalkNodeLookup
-from api.walk_graph.walk_graph_spurs import walk_graph_spur_index_for_viewing_node_ids
-from api.walk_graph.walk_graph_spurs import walk_graph_spurs_for_graph
+from api.walk_graph.walk_graph_spur_builder import WalkGraphSpurBuilder
 
 
 def test_walk_graph_spurs_detects_canadian_domain_peninsula() -> None:
    graph = WalkGraphProvider.fetch()
-   spurs = walk_graph_spurs_for_graph( graph )
+   spurs = WalkGraphSpurBuilder.build_for_graph( graph )
    canada_node_ids = tuple( {
       walk_node_id
       for ( _species, exhibit, _enclosure_name ), walk_node_id
@@ -16,7 +15,7 @@ def test_walk_graph_spurs_detects_canadian_domain_peninsula() -> None:
       if exhibit == 'Canadian Domain'
    } )
 
-   canada_spur_index = walk_graph_spur_index_for_viewing_node_ids(
+   canada_spur_index = WalkGraphSpurBuilder.index_for_viewing_node_ids(
       spurs,
       canada_node_ids )
 

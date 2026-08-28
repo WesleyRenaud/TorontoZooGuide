@@ -20,7 +20,7 @@ from api.models import Animal
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.master_route import default_master_route_loop_by_id
+from api.walk_graph.master_route_provider import MasterRouteProvider
 from conftest import DbControllers
 
 AFRICAN_LION_TALK = 'African Lion'
@@ -55,7 +55,7 @@ def _set_saturday_african_lion_talk_schedule(
 
 
 def test_resolve_guardians_talk_loop_pin_maps_african_lion_to_savanna_loop() -> None:
-   master_route_loop = default_master_route_loop_by_id()[ 'africa_savanna_canadian_domain' ]
+   master_route_loop = MasterRouteProvider.loops_by_id()[ 'africa_savanna_canadian_domain' ]
    viewing_spot_index = viewing_spot_index_for_talk_in_loop(
       master_route_loop,
       talk_name=AFRICAN_LION_TALK,
@@ -151,7 +151,7 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
    talk_end_seconds = DateValues.time_value_in_seconds( '11:30 AM' )
    loop_id = 'africa_savanna_canadian_domain'
    lion_pin_index = viewing_spot_index_for_talk_in_loop(
-      default_master_route_loop_by_id()[ loop_id ],
+      MasterRouteProvider.loops_by_id()[ loop_id ],
       talk_name=AFRICAN_LION_TALK,
       talk_location=AFRICA_SAVANNA )
 

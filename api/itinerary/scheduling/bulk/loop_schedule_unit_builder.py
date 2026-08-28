@@ -12,10 +12,7 @@ from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
 from ....walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLookup
-from ....walk_graph.master_route import default_loop_id_by_stop_key
-from ....walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
-from ....walk_graph.master_route import default_loop_side_cluster_id_by_loop_id
-from ....walk_graph.master_route import default_master_route_loop_by_id
+from ....walk_graph.master_route_provider import MasterRouteProvider
 from ....walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
@@ -49,10 +46,10 @@ class LoopScheduleUnitBuilder():
    def build(
          cls,
          loop_groups: list[ list[ LoopScheduleStop ] ] ) -> list[ LoopScheduleUnit ]:
-      loop_ids_by_stop_key = default_loop_id_by_stop_key()
-      loop_side_cluster_ids = default_loop_side_cluster_id_by_loop_id()
-      loop_indexes_in_side_cluster = default_loop_index_in_side_cluster_by_loop_id()
-      loops_by_id = default_master_route_loop_by_id()
+      loop_ids_by_stop_key = MasterRouteProvider.loop_id_by_stop_key()
+      loop_side_cluster_ids = MasterRouteProvider.loop_side_cluster_id_by_loop_id()
+      loop_indexes_in_side_cluster = MasterRouteProvider.loop_index_in_side_cluster_by_loop_id()
+      loops_by_id = MasterRouteProvider.loops_by_id()
 
       return [
          cls._from_group(

@@ -16,7 +16,7 @@ from api.models import WildEncounter
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.master_route import default_master_route_loop_by_id
+from api.walk_graph.master_route_provider import MasterRouteProvider
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider
 from api.wild_encounters.scheduling.wild_encounter_loop_schedule_pin import resolve_wild_encounter_loop_pin
@@ -90,7 +90,7 @@ def test_resolve_wild_encounter_loop_pin_maps_canadian_domain_between_zebra_and_
       db.conn )
    meeting_spot_loop_pin = meeting_spot_loop_pins_by_name[
       CANADIAN_DOMAIN_MEETING_SPOT ]
-   master_route_loop = default_master_route_loop_by_id()[
+   master_route_loop = MasterRouteProvider.loops_by_id()[
       meeting_spot_loop_pin.loop_id ]
 
    assert meeting_spot_loop_pin.loop_viewing_spot_index == 6
@@ -224,8 +224,8 @@ def test_bulk_schedule_weaves_grizzly_encounter_into_africa_savanna_loop(
 
    assert encounter_pin_index == 6
 
-   zebra_viewing_spot = default_master_route_loop_by_id()[ loop_id ].viewing_spots[ 6 ]
-   raccoon_viewing_spot = default_master_route_loop_by_id()[ loop_id ].viewing_spots[ 7 ]
+   zebra_viewing_spot = MasterRouteProvider.loops_by_id()[ loop_id ].viewing_spots[ 6 ]
+   raccoon_viewing_spot = MasterRouteProvider.loops_by_id()[ loop_id ].viewing_spots[ 7 ]
 
    assert zebra_viewing_spot.species == "Grevy's Zebra"
    assert raccoon_viewing_spot.species == 'Raccoon'
