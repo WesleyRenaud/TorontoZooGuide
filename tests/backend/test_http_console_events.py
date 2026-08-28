@@ -403,4 +403,3 @@ def test_wild_encounter_schedule_overlap_failure_returns_error_type(
 
    assert result[ 'success' ] is False
    assert result[ 'errorType' ] == 'overlappingSchedule'
-

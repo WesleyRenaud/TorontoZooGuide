@@ -226,4 +226,3 @@ def test_accept_itinerary_keeps_zero_likelihood_attractions_when_overridden(
    assert len( rows ) == 1
    assert rows[ 0 ][ 'ATTRACTION' ] == 'Conservation Carousel'
    assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
-

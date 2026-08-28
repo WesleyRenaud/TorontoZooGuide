@@ -53,4 +53,3 @@ class WildEncounterScheduleRowInput:
          cls.from_schedule_row( row )
          for row in ScheduleRowInput.parse_rows( schedule_rows )
       ]
-

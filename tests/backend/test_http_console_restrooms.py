@@ -110,4 +110,3 @@ def test_console_mutation_maps_payload_and_success_response(
       body,
       expected_call,
       response_subset )
-

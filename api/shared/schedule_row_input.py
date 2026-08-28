@@ -73,4 +73,3 @@ class ScheduleRowInput:
          parsed_rows.append( parsed_row )
 
       return parsed_rows
-

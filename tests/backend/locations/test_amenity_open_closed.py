@@ -196,4 +196,3 @@ def test_attraction_schedule_controls_open_and_closed_results(
    assert attraction.is_closed is True
    assert attraction.closed_message == 'Closed for testing.'
 
-

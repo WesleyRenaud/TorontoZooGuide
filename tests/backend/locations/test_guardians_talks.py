@@ -388,4 +388,3 @@ def test_guardians_talk_occurrences_include_added_occurrences(
       for occurrence in occurrences
    )
 
-

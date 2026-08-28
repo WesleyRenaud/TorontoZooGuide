@@ -193,4 +193,3 @@ def test_create_and_get_updates_via_http(
       'start_date': '2026-06-15',
       'end_date': None,
    }
-

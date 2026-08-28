@@ -147,4 +147,3 @@ def test_event_sites_have_names_and_coordinates( db: DbControllers ) -> None:
    assert all( 0 <= event_site.x_coord <= 100 for event_site in event_sites )
    assert all( 0 <= event_site.y_coord <= 100 for event_site in event_sites )
 
-

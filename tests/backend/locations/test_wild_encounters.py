@@ -578,4 +578,3 @@ def test_end_wild_encounter_schedule_uses_today_when_end_date_is_null(
    assert rows[ 1 ][ 'SCHEDULE_END_DATE' ] == '2026-06-15'
    assert rows[ 1 ][ 'ENCOUNTER_TIME' ] == '3:30 PM'
 
-

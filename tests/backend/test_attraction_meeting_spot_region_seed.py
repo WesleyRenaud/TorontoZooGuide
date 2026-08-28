@@ -4,9 +4,9 @@ import sqlite3
 
 from seed_schema_support import column_names
 
-from api.seed.loaders import seed_static_data
-from api.seed.migrations.runner import run_migrations_on_cursor
-from api.seed.schema import create_schema
+from api.seed.migrations.migration_runner import MigrationRunner
+from api.seed.schema_creator import SchemaCreator
+from api.seed.static_data_seeder import StaticDataSeeder
 
 
 def test_attraction_and_meeting_spot_region_columns_are_seeded() -> None:
@@ -14,9 +14,9 @@ def test_attraction_and_meeting_spot_region_columns_are_seeded() -> None:
    conn.row_factory = sqlite3.Row
    cursor = conn.cursor()
 
-   create_schema( cursor )
-   run_migrations_on_cursor( cursor, skip_before='011_runtime_schema_column_additions.sql' )
-   seed_static_data( cursor )
+   SchemaCreator.create( cursor )
+   MigrationRunner.run_on_cursor( cursor, skip_before='011_runtime_schema_column_additions.sql' )
+   StaticDataSeeder.seed( cursor )
    conn.commit()
 
    assert 'REGION' in column_names( cursor, 'Attraction' )

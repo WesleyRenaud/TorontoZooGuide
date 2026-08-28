@@ -1,11 +1,11 @@
 [tool.coverage.run]
 omit = [
    "api/__main__.py",
-   "api/seed/clear_user_itinerary_config.py",
-   "api/seed/clear_user_itinerary_data.py",
-   "api/seed/create_schema.py",
-   "api/seed/seed_data.py",
-   "api/seed/migrations/runner.py",
+   "api/seed/user_itinerary_config_cleaner.py",
+   "api/seed/user_itinerary_data_cleaner.py",
+   "api/seed/schema_applier.py",
+   "api/seed/seed_data_applier.py",
+   "api/seed/migrations/migration_runner.py",
 ]
 
 [tool.ruff]

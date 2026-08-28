@@ -3,7 +3,8 @@ from __future__ import annotations
 import sqlite3
 
 from api.itinerary.data_access.itinerary_event_default_provider import ItineraryEventDefaultProvider
-from api.seed.tables import itinerary_event_default
+from api.seed.tables.itinerary_event_default_seed_table import itinerary_event_defaults
+from api.seed.tables.itinerary_event_default_seed_table import ItineraryEventDefaultSeedTable
 from api.shared.enums import ItineraryEventType
 
 
@@ -17,12 +18,12 @@ def test_itinerary_event_defaults_are_seeded() -> None:
    conn = connect_test_database()
    cursor = conn.cursor()
 
-   itinerary_event_default.create_table( cursor )
-   itinerary_event_default.insert_rows( cursor )
+   ItineraryEventDefaultSeedTable.create_table( cursor )
+   ItineraryEventDefaultSeedTable.insert_rows( cursor )
 
    records = ItineraryEventDefaultProvider.fetch_records( conn )
 
-   assert len( records ) == len( itinerary_event_default.itinerary_event_defaults )
+   assert len( records ) == len( itinerary_event_defaults )
    assert {
       record.event_type for record in records
    } == {

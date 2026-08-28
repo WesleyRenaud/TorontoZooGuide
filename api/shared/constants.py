@@ -13,4 +13,3 @@ TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION = 0.5
 # Reject a Zoomobile transfer when ride time is more than this multiple of
 # the direct walk minutes (allows modestly longer rides; blocks full-loop hops).
 TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER = 2
-

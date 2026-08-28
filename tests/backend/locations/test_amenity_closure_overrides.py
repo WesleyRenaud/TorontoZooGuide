@@ -205,4 +205,3 @@ def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db: 
    assert closed_gift_shop.closed_message == 'Closed this weekend.'
    assert open_gift_shop.is_closed is False
 
-

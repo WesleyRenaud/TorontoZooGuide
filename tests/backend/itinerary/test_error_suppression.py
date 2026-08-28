@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
-from api.seed.user_itinerary_config import clear_user_itinerary_config
+from api.seed.user_itinerary_config_cleaner import UserItineraryConfigCleaner
 from api.shared.enums import ItineraryErrorType
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Cursor
@@ -110,7 +110,7 @@ def test_clear_user_itinerary_config_clears_error_suppressions(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   clear_user_itinerary_config( cursor )
+   UserItineraryConfigCleaner.clear( cursor )
    db.conn.commit()
 
    assert not ItineraryStatusProvider.is_itinerary_error_suppressed(

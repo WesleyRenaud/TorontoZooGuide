@@ -114,4 +114,3 @@ def test_drinking_fountain_status_controls_global_open_and_closed_results(
    assert all( fountain.closed_message == default_message for fountain in default_closed )
    assert all( fountain.likelihood == 0.0 for fountain in default_closed )
 
-

@@ -77,4 +77,3 @@ class AnimalScheduleItemKey:
          return None
 
       return parsed.species, parsed.exhibit
-
