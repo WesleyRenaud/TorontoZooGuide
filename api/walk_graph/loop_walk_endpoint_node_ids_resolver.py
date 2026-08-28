@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from .domain.attraction_route_stop import AttractionRouteStop
 from .domain.map_location_kind import MapLocationKind
-from .domain.master_route_loop import is_two_way_loop_traversal
 from .domain.master_route_loop import MasterRouteLoop
-from .domain.master_route_stop import is_animal_route_stop
-from .domain.master_route_stop import is_attraction_route_stop
+from .domain.master_route_loop_traversal_checker import MasterRouteLoopTraversalChecker
 from .domain.master_route_stop import MasterRouteStop
+from .domain.master_route_stop_checker import MasterRouteStopChecker
 from .domain.viewing_spot_reference import ViewingSpotReference
 from .map_location_walk_node_lookup import MapLocationWalkNodeLookup
 from .viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
@@ -30,7 +29,7 @@ class LoopWalkEndpointNodeIdsResolver():
          loop: MasterRouteLoop ) -> list[ tuple[ str | None, str | None ] ]:
       forward_endpoints = cls.resolve( loop )
 
-      if not is_two_way_loop_traversal( loop.traversal ):
+      if not MasterRouteLoopTraversalChecker.is_two_way( loop.traversal ):
          return [ forward_endpoints ]
 
       return [
@@ -41,10 +40,10 @@ class LoopWalkEndpointNodeIdsResolver():
 
    @classmethod
    def _walk_node_id_for_route_stop( cls, stop: MasterRouteStop ) -> str | None:
-      if is_animal_route_stop( stop ):
+      if MasterRouteStopChecker.is_animal( stop ):
          return cls._walk_node_id_for_viewing_spot_reference( stop )
 
-      if is_attraction_route_stop( stop ):
+      if MasterRouteStopChecker.is_attraction( stop ):
          return cls._walk_node_id_for_attraction_route_stop( stop )
 
       return None

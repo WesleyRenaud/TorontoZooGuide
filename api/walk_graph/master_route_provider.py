@@ -6,9 +6,9 @@ from pathlib import Path
 
 from .data_access.paths import DEFAULT_MASTER_ROUTE_PATH
 from .domain.loop_side_cluster_id import LoopSideClusterId
-from .domain.master_route import master_route_from_json
 from .domain.master_route import MasterRoute
 from .domain.master_route_loop import MasterRouteLoop
+from .domain.master_route_mapper import MasterRouteMapper
 from .domain.master_route_stop_key import MasterRouteStopKey
 from .master_route_loop_cluster_index_builder import MasterRouteLoopClusterIndexBuilder
 from .master_route_stop_key_index_builder import MasterRouteStopKeyIndexBuilder
@@ -25,7 +25,7 @@ class MasterRouteProvider():
    def fetch_from_file( cls, path: str ) -> MasterRoute:
       payload = json.loads( Path( path ).read_text( encoding='utf-8' ) )
 
-      return master_route_from_json( payload )
+      return MasterRouteMapper.map_record( payload )
 
 
    @classmethod

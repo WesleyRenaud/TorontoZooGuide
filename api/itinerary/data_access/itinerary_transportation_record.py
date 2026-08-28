@@ -7,8 +7,8 @@ from .itinerary_name_key_builder import ItineraryNameKeyBuilder
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.enums import ScheduleItemKind
 from ...types import ScheduleTimeKey
-from ...walk_graph.domain.master_route_stop_key import attraction_master_route_stop_key
 from ...walk_graph.domain.master_route_stop_key import AttractionMasterRouteStopKey
+from ...walk_graph.domain.master_route_stop_key_builder import MasterRouteStopKeyBuilder
 
 
 @dataclass( frozen=True )
@@ -32,7 +32,7 @@ class ItineraryTransportationRecord:
    def master_route_stop_key( self ) -> AttractionMasterRouteStopKey:
       # Reuse attraction master-route key shape so bulk packing can locate the
       # stop the same way Zoomobile did when it lived on ItineraryAttraction.
-      return attraction_master_route_stop_key( self.transportation )
+      return MasterRouteStopKeyBuilder.attraction( self.transportation )
 
 
    @property

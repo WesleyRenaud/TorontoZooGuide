@@ -12,7 +12,7 @@ from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import Guardian
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
-from api.walk_graph.domain.master_route_stop import is_animal_route_stop
+from api.walk_graph.domain.master_route_stop_checker import MasterRouteStopChecker
 from api.walk_graph.master_route_provider import MasterRouteProvider
 from conftest import DbControllers
 
@@ -107,7 +107,7 @@ def _viewing_spot_index(
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
       # Guardians-talk enclosure pins resolve against animal stops only.
-      if not is_animal_route_stop( viewing_spot ):
+      if not MasterRouteStopChecker.is_animal( viewing_spot ):
          continue
 
       if (

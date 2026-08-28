@@ -6,8 +6,8 @@ from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from ...animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from ...types import ScheduleTimeKey
-from ...walk_graph.domain.master_route_stop_key import animal_master_route_stop_key
 from ...walk_graph.domain.master_route_stop_key import AnimalMasterRouteStopKey
+from ...walk_graph.domain.master_route_stop_key_builder import MasterRouteStopKeyBuilder
 
 
 @dataclass( frozen=True )
@@ -35,7 +35,7 @@ class ItineraryAnimalRecord:
 
 
    def master_route_stop_key( self ) -> AnimalMasterRouteStopKey:
-      return animal_master_route_stop_key(
+      return MasterRouteStopKeyBuilder.animal(
          self.species,
          self.exhibit,
          self.enclosure_name )

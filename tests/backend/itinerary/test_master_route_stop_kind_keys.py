@@ -2,17 +2,16 @@ from __future__ import annotations
 
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.attraction_route_stop import AttractionRouteStop
-from api.walk_graph.domain.master_route_stop import master_route_stop_from_json
-from api.walk_graph.domain.master_route_stop import master_route_stop_key
+from api.walk_graph.domain.master_route_stop_mapper import MasterRouteStopMapper
 from api.walk_graph.domain.viewing_spot_reference import ViewingSpotReference
 
 
 def test_master_route_stops_use_kind_prefixed_keys() -> None:
-   animal = master_route_stop_from_json( {
+   animal = MasterRouteStopMapper.map_record( {
       'kind': 'animal',
       'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor', None ],
    } )
-   attraction = master_route_stop_from_json( {
+   attraction = MasterRouteStopMapper.map_record( {
       'kind': 'attraction',
       'key': [ 'Kangaroo Walk-Thru' ],
    } )
@@ -22,7 +21,7 @@ def test_master_route_stops_use_kind_prefixed_keys() -> None:
    assert animal.species == 'Western Grey Kangaroo'
    assert animal.exhibit == 'Australasia Outdoor'
    assert animal.name is None
-   assert master_route_stop_key( animal ) == (
+   assert animal.master_route_key() == (
       ScheduleItemKind.ANIMAL,
       'Western Grey Kangaroo',
       'Australasia Outdoor',
@@ -32,7 +31,7 @@ def test_master_route_stops_use_kind_prefixed_keys() -> None:
    assert isinstance( attraction, AttractionRouteStop )
    assert attraction.kind == ScheduleItemKind.ATTRACTION
    assert attraction.name == 'Kangaroo Walk-Thru'
-   assert master_route_stop_key( attraction ) == (
+   assert attraction.master_route_key() == (
       ScheduleItemKind.ATTRACTION,
       'Kangaroo Walk-Thru',
    )
@@ -40,7 +39,7 @@ def test_master_route_stops_use_kind_prefixed_keys() -> None:
 
 def test_master_route_stop_from_json_requires_kind() -> None:
    try:
-      master_route_stop_from_json( {
+      MasterRouteStopMapper.map_record( {
          'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor', None ],
       } )
    except ValueError as error:
@@ -51,7 +50,7 @@ def test_master_route_stop_from_json_requires_kind() -> None:
 
 def test_master_route_stop_from_json_requires_key() -> None:
    try:
-      master_route_stop_from_json( {
+      MasterRouteStopMapper.map_record( {
          'kind': 'animal',
          'species': 'Western Grey Kangaroo',
          'exhibit': 'Australasia Outdoor',
@@ -65,7 +64,7 @@ def test_master_route_stop_from_json_requires_key() -> None:
 
 def test_master_route_stop_from_json_rejects_wrong_key_length() -> None:
    try:
-      master_route_stop_from_json( {
+      MasterRouteStopMapper.map_record( {
          'kind': 'animal',
          'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor' ],
       } )
@@ -75,7 +74,7 @@ def test_master_route_stop_from_json_rejects_wrong_key_length() -> None:
       raise AssertionError( 'Expected wrong key length to raise ValueError' )
 
    try:
-      master_route_stop_from_json( {
+      MasterRouteStopMapper.map_record( {
          'kind': 'attraction',
          'key': [ 'Splash Island', 'extra' ],
       } )

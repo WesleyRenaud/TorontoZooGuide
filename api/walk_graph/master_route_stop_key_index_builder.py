@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from .domain.master_route import MasterRoute
-from .domain.master_route_stop import master_route_stop_key
 from .domain.master_route_stop_key import MasterRouteStopKey
 
 
@@ -15,7 +14,7 @@ class MasterRouteStopKeyIndexBuilder():
 
       for loop in master_route.loops:
          for stop in loop.viewing_spots:
-            stop_key = master_route_stop_key( stop )
+            stop_key = stop.master_route_key()
 
             if stop_key in indexes:
                continue
@@ -34,7 +33,7 @@ class MasterRouteStopKeyIndexBuilder():
 
       for loop_index, loop in enumerate( master_route.loops ):
          for stop in loop.viewing_spots:
-            indexes.setdefault( master_route_stop_key( stop ), loop_index )
+            indexes.setdefault( stop.master_route_key(), loop_index )
 
       return indexes
 
@@ -47,6 +46,6 @@ class MasterRouteStopKeyIndexBuilder():
 
       for loop in master_route.loops:
          for stop in loop.viewing_spots:
-            indexes.setdefault( master_route_stop_key( stop ), loop.loop_id )
+            indexes.setdefault( stop.master_route_key(), loop.loop_id )
 
       return indexes

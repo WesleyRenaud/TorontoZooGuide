@@ -8,7 +8,7 @@ from ...models import GuardiansTalk
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
 from ...walk_graph.domain.master_route_loop import MasterRouteLoop
-from ...walk_graph.domain.master_route_stop import is_animal_route_stop
+from ...walk_graph.domain.master_route_stop_checker import MasterRouteStopChecker
 from ...walk_graph.master_route_provider import MasterRouteProvider
 
 
@@ -63,7 +63,7 @@ def viewing_spot_index_for_talk_in_loop(
 
    for index, viewing_spot in enumerate( master_route_loop.viewing_spots ):
       # Guardians-talk pins resolve against animal stops only.
-      if not is_animal_route_stop( viewing_spot ):
+      if not MasterRouteStopChecker.is_animal( viewing_spot ):
          continue
 
       if (
@@ -86,7 +86,7 @@ def _viewing_spot_index_for_enclosure(
          for index, viewing_spot in enumerate( master_route_loop.viewing_spots )
          if (
             # Guardians-talk enclosure pins resolve against animal stops only.
-            is_animal_route_stop( viewing_spot )
+            MasterRouteStopChecker.is_animal( viewing_spot )
             and viewing_spot.species == species
             and viewing_spot.exhibit == exhibit
             and viewing_spot.name == enclosure_name )
