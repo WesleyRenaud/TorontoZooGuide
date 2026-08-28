@@ -19,7 +19,7 @@ from ..scheduling.wild_encounter_schedule_builder import WildEncounterScheduleBu
 from ..scheduling.wild_encounter_schedule_conflict_resolver import WildEncounterScheduleConflictResolver
 from ..scheduling.wild_encounter_schedule_end_builder import WildEncounterScheduleEndBuilder
 from ..scheduling.wild_encounter_schedule_input import WildEncounterScheduleInput
-from ..scheduling.wild_encounter_schedule_row_input import parse_wild_encounter_schedule_rows
+from ..scheduling.wild_encounter_schedule_row_input import WildEncounterScheduleRowInput
 from ..search.wild_encounters_matching_query_builder import WildEncountersMatchingQueryBuilder
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
@@ -37,7 +37,7 @@ class WildEncounterCoordinator():
          message: str,
          *,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> list[ WildEncounterScheduleInput ]:
-      resolved_schedule_rows = parse_wild_encounter_schedule_rows( schedule_rows )
+      resolved_schedule_rows = WildEncounterScheduleRowInput.parse_rows( schedule_rows )
 
       return [
          WildEncounterScheduleBuilder.build(

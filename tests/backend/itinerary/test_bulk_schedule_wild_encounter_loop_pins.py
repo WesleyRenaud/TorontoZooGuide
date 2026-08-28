@@ -19,7 +19,7 @@ from api.shared.enums import ScheduleItemKind
 from api.walk_graph.master_route_provider import MasterRouteProvider
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.data_access.wild_encounter_meeting_spot_loop_pin_provider import WildEncounterMeetingSpotLoopPinProvider
-from api.wild_encounters.scheduling.wild_encounter_loop_schedule_pin import resolve_wild_encounter_loop_pin
+from api.wild_encounters.scheduling.wild_encounter_loop_schedule_pin_resolver import WildEncounterLoopSchedulePinResolver
 from conftest import DbControllers
 
 AFRICA_SAVANNA = 'Africa Savanna'
@@ -78,7 +78,7 @@ def test_resolve_wild_encounter_loop_pin_returns_none_for_unpinned_meeting_spot(
       start_time='10:00 AM',
       end_time='10:45 AM' )
 
-   assert resolve_wild_encounter_loop_pin(
+   assert WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       itinerary_stop,
       meeting_spot_loop_pins_by_name=meeting_spot_loop_pins_by_name ) is None
@@ -114,7 +114,7 @@ def test_resolve_wild_encounter_loop_pin_maps_canadian_domain_between_zebra_and_
       start_time='1:00 PM',
       end_time='1:45 PM' )
 
-   loop_pin = resolve_wild_encounter_loop_pin(
+   loop_pin = WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       itinerary_stop,
       meeting_spot_loop_pins_by_name=meeting_spot_loop_pins_by_name )
@@ -150,7 +150,7 @@ def test_resolve_wild_encounter_loop_pin_maps_mayan_temple_encounters_to_tundra_
          start_time='11:00 AM',
          end_time='11:30 AM' )
 
-      loop_pin = resolve_wild_encounter_loop_pin(
+      loop_pin = WildEncounterLoopSchedulePinResolver.resolve(
          wild_encounter,
          itinerary_stop,
          meeting_spot_loop_pins_by_name=meeting_spot_loop_pins_by_name )
