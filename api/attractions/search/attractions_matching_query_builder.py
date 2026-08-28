@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ...models import Attraction
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
 
 
 class AttractionsMatchingQueryBuilder():
@@ -11,7 +10,7 @@ class AttractionsMatchingQueryBuilder():
          cls,
          attractions: list[ Attraction ],
          query: str ) -> list[ Attraction ]:
-      return filter_items_matching_query( attractions, query, Attraction.name_key )
+      return NameMatchingQueryBuilder.filter_matching( attractions, query, Attraction.name_key )
 
 
    @classmethod
@@ -19,4 +18,4 @@ class AttractionsMatchingQueryBuilder():
          cls,
          attractions: list[ Attraction ],
          query: str ) -> list[ Attraction ]:
-      return build_matching_query( attractions, query, Attraction.name_key )
+      return NameMatchingQueryBuilder.build( attractions, query, Attraction.name_key )

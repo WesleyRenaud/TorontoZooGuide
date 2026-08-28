@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from ...models import Restroom
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
-from ...shared.name_matching_query import normalize_search_key
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
+from ...shared.text_values import TextValues
 
 
 class RestroomsMatchingQueryBuilder():
    @classmethod
    def _title_key( cls, restroom: Restroom ) -> str:
-      return normalize_search_key( restroom.title )
+      return TextValues.normalize_for_matching( restroom.title )
 
 
    @classmethod
@@ -17,7 +16,7 @@ class RestroomsMatchingQueryBuilder():
          cls,
          restrooms: list[ Restroom ],
          query: str ) -> list[ Restroom ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          restrooms,
          query,
          cls._title_key )
@@ -28,7 +27,7 @@ class RestroomsMatchingQueryBuilder():
          cls,
          restrooms: list[ Restroom ],
          query: str ) -> list[ Restroom ]:
-      return build_matching_query(
+      return NameMatchingQueryBuilder.build(
          restrooms,
          query,
          cls._title_key )

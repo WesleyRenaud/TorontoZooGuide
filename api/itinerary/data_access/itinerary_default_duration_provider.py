@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.duration_values import normalize_duration_seconds
+from ...shared.duration_values import DurationValues
 from ...shared.enums import ItineraryEventType
 from ...types import Connection
 
@@ -41,7 +41,7 @@ class ItineraryDefaultDurationProvider():
       if row is None or row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] is None:
          return None
 
-      return normalize_duration_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )
+      return DurationValues.normalize_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )
 
 
    @classmethod
@@ -64,7 +64,7 @@ class ItineraryDefaultDurationProvider():
       if row is None:
          return None
 
-      return normalize_duration_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )
+      return DurationValues.normalize_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )
 
 
    @classmethod
@@ -87,4 +87,4 @@ class ItineraryDefaultDurationProvider():
       if row is None:
          return None
 
-      return normalize_duration_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )
+      return DurationValues.normalize_seconds( row[ 'DEFAULT_ITINERARY_DURATION_MINUTES' ] )

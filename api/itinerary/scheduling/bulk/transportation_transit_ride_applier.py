@@ -17,7 +17,7 @@ from .scheduled_animal_anchor import ScheduledAnimalAnchor
 from ....shared.calendar_dates import DateValues
 from ....shared.constants import TRANSPORTATION_RIDE_MAX_WALK_DURATION_MULTIPLIER
 from ....shared.constants import TRANSPORTATION_WALK_SAVINGS_MAX_REMAINING_FRACTION
-from ....shared.duration_values import duration_minutes_to_seconds
+from ....shared.duration_values import DurationValues
 from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.transportation_day_loop import TransportationDayLoop
@@ -439,7 +439,7 @@ class TransportationTransitRideApplier():
          animal_end = original_end + shift_seconds
 
          if ride is not None:
-            ride_duration = duration_minutes_to_seconds(
+            ride_duration = DurationValues.minutes_to_seconds(
                sum( leg.duration_minutes for leg in ride.legs ) )
             proposed_ride_start = (
                cursor_seconds
@@ -483,7 +483,7 @@ class TransportationTransitRideApplier():
          current_node_id = anchor.walk_node_id
 
       if return_ride is not None:
-         return_ride_duration = duration_minutes_to_seconds(
+         return_ride_duration = DurationValues.minutes_to_seconds(
             sum( leg.duration_minutes for leg in return_ride.legs ) )
          proposed_return_start = (
             cursor_seconds

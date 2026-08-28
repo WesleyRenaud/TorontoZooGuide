@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from api.shared.duration_values import normalize_duration_minutes
-from api.shared.duration_values import normalize_duration_seconds
+from api.shared.duration_values import DurationValues
 
 
 @pytest.mark.parametrize(
@@ -17,7 +16,7 @@ from api.shared.duration_values import normalize_duration_seconds
    ]
 )
 def test_normalize_duration_minutes( value: float | None, expected: int | None ) -> None:
-   assert normalize_duration_minutes( value ) == expected
+   assert DurationValues.normalize_minutes( value ) == expected
 
 
 @pytest.mark.parametrize(
@@ -32,4 +31,4 @@ def test_normalize_duration_minutes( value: float | None, expected: int | None )
    ]
 )
 def test_normalize_duration_seconds( value: float | None, expected: int | None ) -> None:
-   assert normalize_duration_seconds( value ) == expected
+   assert DurationValues.normalize_seconds( value ) == expected

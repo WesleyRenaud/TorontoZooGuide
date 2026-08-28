@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.transportation_coordinator import TransportationCoordinator
 from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 from ...shared.enums.transportation_name import TransportationName
 
@@ -86,7 +86,7 @@ class TransportationController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=transportation_station )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=transportation_station )
 
       handler._write_json( response )
 
@@ -108,7 +108,7 @@ class TransportationController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=transportation_station )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=transportation_station )
 
       handler._write_json( response )
 
@@ -136,6 +136,6 @@ class TransportationController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_TRANSPORTATION_ROUTE, route=route )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_TRANSPORTATION_ROUTE, route=route )
 
       handler._write_json( response )

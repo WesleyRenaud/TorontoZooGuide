@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..shared.name_matching_query import normalize_search_key
+from ..shared.text_values import TextValues
 from ..types import Coordinate
 
 
@@ -18,7 +18,7 @@ class TransportationStation:
 
 
    def name_key( self ) -> str:
-      return normalize_search_key( self.name )
+      return TextValues.normalize_for_matching( self.name )
 
 
    def to_dict( self ) -> dict[ str, object ]:

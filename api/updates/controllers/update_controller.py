@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.update_coordinator import UpdateCoordinator
 from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 
@@ -57,7 +57,7 @@ class UpdateController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_CREATE_UPDATE )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_CREATE_UPDATE )
 
       handler._write_json( response )
 
@@ -83,7 +83,7 @@ class UpdateController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_END_UPDATE )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_END_UPDATE )
 
       handler._write_json( response )
 
@@ -115,6 +115,6 @@ class UpdateController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_EDIT_UPDATE )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_EDIT_UPDATE )
 
       handler._write_json( response )

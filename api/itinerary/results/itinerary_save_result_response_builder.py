@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .itinerary_path_builder import ItineraryPathBuilder
 from .itinerary_save_result import ItinerarySaveResult
-from ...shared.constants import itinerary_config_to_dict
+from ...shared.itinerary_config_builder import ItineraryConfigBuilder
 from ...types import Connection
 
 
@@ -35,7 +35,7 @@ class ItinerarySaveResultResponseBuilder():
          payload[ 'itinerary_path' ] = ItineraryPathBuilder.build( conn )
 
       if include_config:
-         payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
+         payload[ 'itinerary_config' ] = ItineraryConfigBuilder.to_dict( conn )
 
       if extra:
          payload.update( extra )

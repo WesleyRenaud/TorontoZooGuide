@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ...models import WildEncounter
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
 
 
 class WildEncountersMatchingQueryBuilder():
@@ -11,7 +10,7 @@ class WildEncountersMatchingQueryBuilder():
          cls,
          wild_encounters: list[ WildEncounter ],
          query: str ) -> list[ WildEncounter ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          wild_encounters,
          query,
          WildEncounter.name_key )
@@ -22,7 +21,7 @@ class WildEncountersMatchingQueryBuilder():
          cls,
          wild_encounters: list[ WildEncounter ],
          query: str ) -> list[ WildEncounter ]:
-      return build_matching_query(
+      return NameMatchingQueryBuilder.build(
          wild_encounters,
          query,
          WildEncounter.name_key )

@@ -3,8 +3,8 @@ from __future__ import annotations
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.seed.user_itinerary_config import clear_user_itinerary_config
-from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import ItineraryErrorType
+from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Cursor
 from conftest import DbControllers
 
@@ -43,7 +43,7 @@ def test_suppress_short_visit_warning_persists_in_itinerary_config(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   assert itinerary_config_to_dict( db.conn )[ 'suppressed_error_types' ] == [
+   assert ItineraryConfigBuilder.to_dict( db.conn )[ 'suppressed_error_types' ] == [
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value,
    ]
 
@@ -148,5 +148,5 @@ def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
       ItineraryStatusProvider.suppress_itinerary_status( db.conn, error_type )
 
       assert not ItineraryStatusProvider.is_itinerary_error_suppressed( db.conn, error_type )
-      assert error_type.value not in itinerary_config_to_dict(
+      assert error_type.value not in ItineraryConfigBuilder.to_dict(
          db.conn )[ 'suppressed_error_types' ]

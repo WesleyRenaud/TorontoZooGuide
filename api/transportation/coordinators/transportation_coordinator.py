@@ -20,7 +20,7 @@ from ..scheduling.transportation_current_route_schedule_builder import Transport
 from ..search.transportation_stations_matching_query_builder import TransportationStationsMatchingQueryBuilder
 from ..search.transportations_matching_query_builder import TransportationsMatchingQueryBuilder
 from ...shared.enums.transportation_name import TransportationName
-from ...shared.opening_schedule_visit_context import resolve_opening_schedule_visit_context
+from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 from ..status.transportation_station_status_builder import TransportationStationStatusBuilder
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
@@ -32,7 +32,7 @@ class TransportationCoordinator():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear ) -> list[ Transportation ]:
-      context = resolve_opening_schedule_visit_context(
+      context = OpeningScheduleVisitContextResolver.resolve(
          day=day,
          month=month,
          year=year )

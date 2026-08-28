@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .itinerary_path_builder import ItineraryPathBuilder
 from .itinerary_time_set_result import ItineraryTimeSetResult
-from ...shared.constants import itinerary_config_to_dict
+from ...shared.itinerary_config_builder import ItineraryConfigBuilder
 from ...types import Connection
 
 
@@ -23,7 +23,7 @@ class ItineraryTimeSetResultResponseBuilder():
          ],
       }
 
-      payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
+      payload[ 'itinerary_config' ] = ItineraryConfigBuilder.to_dict( conn )
       payload[ 'itinerary_path' ] = ItineraryPathBuilder.build( conn )
 
       if result.itinerary is not None:

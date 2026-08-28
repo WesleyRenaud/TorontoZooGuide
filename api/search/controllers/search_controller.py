@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..coordinators.search_coordinator import SearchCoordinator
 from ...json_handler import JsonRequestHandler
 from ...shared.enums.map_item_type import MapItemType
-from ...shared.typed_dict import to_dict_with_type
+from ...shared.typed_dict_mapper import TypedDictMapper
 
 
 class SearchController():
@@ -60,45 +60,45 @@ class SearchController():
 
       handler._write_json( {
          'animals': [
-            to_dict_with_type( animal, 'animal' )
+            TypedDictMapper.to_dict_with_type( animal, 'animal' )
             for animal in results[ 'animals' ]
          ],
          'pavilions': [
-            to_dict_with_type( pavilion, 'pavilion' )
+            TypedDictMapper.to_dict_with_type( pavilion, 'pavilion' )
             for pavilion in results[ 'pavilions' ]
          ],
          'restaurants': [
-            to_dict_with_type( restaurant, 'restaurant' )
+            TypedDictMapper.to_dict_with_type( restaurant, 'restaurant' )
             for restaurant in results[ 'restaurants' ]
          ],
          'restrooms': [
-            to_dict_with_type( restroom, 'restroom' )
+            TypedDictMapper.to_dict_with_type( restroom, 'restroom' )
             for restroom in results[ 'restrooms' ]
          ],
          'gift_shops': [
-            to_dict_with_type( gift_shop, 'giftShop' )
+            TypedDictMapper.to_dict_with_type( gift_shop, 'giftShop' )
             for gift_shop in results[ 'gift_shops' ]
          ],
          'attractions': [
-            to_dict_with_type( attraction, 'attraction' )
+            TypedDictMapper.to_dict_with_type( attraction, 'attraction' )
             for attraction in results[ 'attractions' ]
          ],
          'transportations': [
-            to_dict_with_type( transportation, 'transportation' )
+            TypedDictMapper.to_dict_with_type( transportation, 'transportation' )
             for transportation in results[ 'transportations' ]
          ],
          'transportation_stations': [
-            to_dict_with_type(
+            TypedDictMapper.to_dict_with_type(
                transportation_station,
                MapItemType.TRANSPORTATION_STATION.value )
             for transportation_station in results[ 'transportation_stations' ]
          ],
          'wild_encounters': [
-            to_dict_with_type( wild_encounter, 'wildEncounter' )
+            TypedDictMapper.to_dict_with_type( wild_encounter, 'wildEncounter' )
             for wild_encounter in results[ 'wild_encounters' ]
          ],
          'guardians_talks': [
-            to_dict_with_type( guardians_talk, 'guardiansTalk' )
+            TypedDictMapper.to_dict_with_type( guardians_talk, 'guardiansTalk' )
             for guardians_talk in results[ 'guardians_talks' ]
          ],
       } )

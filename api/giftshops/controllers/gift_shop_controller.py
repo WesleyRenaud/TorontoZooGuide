@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.gift_shop_coordinator import GiftShopCoordinator
 from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 
@@ -56,7 +56,7 @@ class GiftShopController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=gift_shop )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=gift_shop )
 
       handler._write_json( response )
 
@@ -85,7 +85,7 @@ class GiftShopController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE, name=gift_shop )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE, name=gift_shop )
 
       handler._write_json( response )
 
@@ -138,7 +138,7 @@ class GiftShopController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=gift_shop )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=gift_shop )
          response[ 'errorType' ] = 'overlappingSchedule'
 
       handler._write_json( response )
@@ -192,7 +192,7 @@ class GiftShopController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS, name=gift_shop )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS, name=gift_shop )
 
       handler._write_json( response )
 
@@ -245,6 +245,6 @@ class GiftShopController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS, name=gift_shop )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS, name=gift_shop )
 
       handler._write_json( response )

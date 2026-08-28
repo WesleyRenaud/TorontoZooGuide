@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.duration_values import duration_minutes_to_seconds
+from ...shared.duration_values import DurationValues
 from .transportation_day_loop import TransportationDayLoop
 from .transportation_day_loop_leg_selector import TransportationDayLoopLegSelector
 
@@ -12,7 +12,7 @@ class TransportationRideDurationCalculator():
          day_loop: TransportationDayLoop,
          from_station: str,
          to_station: str ) -> int:
-      return duration_minutes_to_seconds(
+      return DurationValues.minutes_to_seconds(
          sum(
             leg.duration_minutes
             for leg in TransportationDayLoopLegSelector.select(

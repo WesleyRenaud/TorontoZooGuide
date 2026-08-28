@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from ..coordinators.animal_coordinator import AnimalCoordinator
 from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import apply_api_error
+from ...shared.api_error_response import ApiErrorResponseApplier
 from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
 from ...shared.enums import AnimalViewingScope
 from ...shared.enums.api_error_type import ApiErrorType
-from ...shared.typed_dict import to_dict_with_type
+from ...shared.typed_dict_mapper import TypedDictMapper
 
 
 class AnimalController():
@@ -78,7 +78,7 @@ class AnimalController():
 
       handler._write_json( {
          'animals': [
-            to_dict_with_type( animal, 'animal' ) for animal in animals
+            TypedDictMapper.to_dict_with_type( animal, 'animal' ) for animal in animals
          ],
       } )
 
@@ -122,7 +122,7 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES, species=species )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES, species=species )
 
       handler._write_json( response )
 
@@ -148,7 +148,7 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.NO_OFF_DISPLAY_ENTRY_FOUND, species=species, exhibit=exhibit )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.NO_OFF_DISPLAY_ENTRY_FOUND, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -186,7 +186,7 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_LIMITED_VIEWING_SCHEDULE, species=species, exhibit=exhibit )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_LIMITED_VIEWING_SCHEDULE, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -209,7 +209,7 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_REMOVE_VISIBILITY_SCHEDULE, species=species, exhibit=exhibit )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_REMOVE_VISIBILITY_SCHEDULE, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -241,7 +241,7 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_SET_VIEWING_ALERT, species=species, exhibit=exhibit )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_VIEWING_ALERT, species=species, exhibit=exhibit )
 
       handler._write_json( response )
 
@@ -264,6 +264,6 @@ class AnimalController():
       }
 
       if not success:
-         apply_api_error( response, ApiErrorType.COULD_NOT_REMOVE_VIEWING_ALERT, species=species, exhibit=exhibit )
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_REMOVE_VIEWING_ALERT, species=species, exhibit=exhibit )
 
       handler._write_json( response )

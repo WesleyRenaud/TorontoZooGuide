@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ...models import GuardiansTalk
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
 
 
 class GuardiansTalksMatchingQueryBuilder():
@@ -11,7 +10,7 @@ class GuardiansTalksMatchingQueryBuilder():
          cls,
          guardians_talks: list[ GuardiansTalk ],
          query: str ) -> list[ GuardiansTalk ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          guardians_talks,
          query,
          GuardiansTalk.name_key )
@@ -22,7 +21,7 @@ class GuardiansTalksMatchingQueryBuilder():
          cls,
          guardians_talks: list[ GuardiansTalk ],
          query: str ) -> list[ GuardiansTalk ]:
-      return build_matching_query(
+      return NameMatchingQueryBuilder.build(
          guardians_talks,
          query,
          GuardiansTalk.name_key )

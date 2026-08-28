@@ -10,7 +10,7 @@ from ...domain.itinerary_builder import ItineraryBuilder
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_window_preparer import ScheduleWindowPreparer
-from ....shared.duration_values import duration_minutes_to_seconds
+from ....shared.duration_values import DurationValues
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import ScheduleTimeKey
@@ -158,6 +158,6 @@ class ScheduleSlotTimeResolver():
          return None
 
       if duration_minutes is not None:
-         return duration_minutes_to_seconds( duration_minutes )
+         return DurationValues.minutes_to_seconds( duration_minutes )
 
       return default_duration_seconds

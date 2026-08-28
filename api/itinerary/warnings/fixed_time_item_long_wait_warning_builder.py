@@ -19,7 +19,7 @@ from ..scheduling.unscheduling.guardians_talk_unschedule_preparer import Guardia
 from ..scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...shared.calendar_dates import DateValues
 from ...shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
-from ...shared.duration_values import duration_minutes_to_seconds
+from ...shared.duration_values import DurationValues
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
 
@@ -53,7 +53,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          TimeBlockBuilder.gap_seconds( activity_block, other_block )
          for other_block in other_blocks )
 
-      return nearest_gap_seconds > duration_minutes_to_seconds( max_wait_minutes )
+      return nearest_gap_seconds > DurationValues.minutes_to_seconds( max_wait_minutes )
 
 
    @classmethod

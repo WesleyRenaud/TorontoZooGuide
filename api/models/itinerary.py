@@ -6,7 +6,7 @@ from .guardians_talk import GuardiansTalk
 from .itinerary_event import ItineraryEvent
 from .itinerary_transportation import ItineraryTransportation
 from .itinerary_transportation_station import ItineraryTransportationStation
-from ..shared.typed_dict import to_dict_with_type
+from ..shared.typed_dict_mapper import TypedDictMapper
 from ..types import ScheduleTimeKey
 from .wild_encounter import WildEncounter
 
@@ -45,13 +45,13 @@ class Itinerary:
          'departure_time': self.departure_time,
          'selected_exhibits': list( self.selected_exhibits ),
          'animals': [
-            to_dict_with_type( a, 'animal' ) for a in self.animals
+            TypedDictMapper.to_dict_with_type( a, 'animal' ) for a in self.animals
          ],
          'attractions': [
-            to_dict_with_type( a, 'attraction' ) for a in self.attractions
+            TypedDictMapper.to_dict_with_type( a, 'attraction' ) for a in self.attractions
          ],
          'transportations': [
-            to_dict_with_type( t, 'transportation' )
+            TypedDictMapper.to_dict_with_type( t, 'transportation' )
             for t in self.transportations
          ],
          'transportation_stations': [
@@ -59,12 +59,12 @@ class Itinerary:
             for station in self.transportation_stations
          ],
          'guardians_talks': [
-            to_dict_with_type( g, 'guardiansTalk' ) for g in self.guardians_talks
+            TypedDictMapper.to_dict_with_type( g, 'guardiansTalk' ) for g in self.guardians_talks
          ],
          'wild_encounters': [
-            to_dict_with_type( w, 'wildEncounter' ) for w in self.wild_encounters
+            TypedDictMapper.to_dict_with_type( w, 'wildEncounter' ) for w in self.wild_encounters
          ],
          'events': [
-            to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
+            TypedDictMapper.to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
          ],
       }

@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Self
 
-from ...shared.schedule_row_input import parse_schedule_rows
 from ...shared.schedule_row_input import SCHEDULE_ROW_WEEKDAY_KEYS
 from ...shared.schedule_row_input import ScheduleRowInput
 
@@ -52,6 +51,6 @@ class GuardiansTalkScheduleRowInput:
          schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ Self ]:
       return [
          cls.from_schedule_row( row )
-         for row in parse_schedule_rows( schedule_rows )
+         for row in ScheduleRowInput.parse_rows( schedule_rows )
       ]
 

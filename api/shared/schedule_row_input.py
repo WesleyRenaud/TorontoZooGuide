@@ -45,29 +45,32 @@ class ScheduleRowInput:
          } )
 
 
-def parse_schedule_rows(
-      schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ ScheduleRowInput ]:
-   if not schedule_rows:
-      return []
+   @classmethod
+   def parse_rows(
+         cls,
+         schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ Self ]:
+      if not schedule_rows:
+         return []
 
-   parsed_rows: list[ ScheduleRowInput ] = []
-   seen_seconds: set[ int ] = set()
+      parsed_rows: list[ ScheduleRowInput ] = []
+      seen_seconds: set[ int ] = set()
 
-   for row in schedule_rows:
-      if not isinstance( row, dict ):
-         continue
+      for row in schedule_rows:
+         if not isinstance( row, dict ):
+            continue
 
-      parsed_row = ScheduleRowInput.from_wire( row )
+         parsed_row = cls.from_wire( row )
 
-      if parsed_row is None:
-         continue
+         if parsed_row is None:
+            continue
 
-      time_seconds = DateValues.time_value_in_seconds( parsed_row.time )
+         time_seconds = DateValues.time_value_in_seconds( parsed_row.time )
 
-      if time_seconds is None or time_seconds in seen_seconds:
-         continue
+         if time_seconds is None or time_seconds in seen_seconds:
+            continue
 
-      seen_seconds.add( time_seconds )
-      parsed_rows.append( parsed_row )
+         seen_seconds.add( time_seconds )
+         parsed_rows.append( parsed_row )
 
-   return parsed_rows
+      return parsed_rows
+

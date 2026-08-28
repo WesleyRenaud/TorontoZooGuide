@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from ...models import Animal
-from ...shared.name_matching_query import build_matching_query
-from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query_builder import NameMatchingQueryBuilder
 from .viewing_spot_key_builder import ViewingSpotKeyBuilder
 
 
@@ -12,7 +11,7 @@ class AnimalsMatchingQueryBuilder():
          cls,
          animals: list[ Animal ],
          query: str ) -> list[ Animal ]:
-      return filter_items_matching_query(
+      return NameMatchingQueryBuilder.filter_matching(
          animals,
          query,
          Animal.name_key )
@@ -36,7 +35,7 @@ class AnimalsMatchingQueryBuilder():
          cls,
          animals: list[ Animal ],
          query: str ) -> list[ Animal ]:
-      filtered = build_matching_query(
+      filtered = NameMatchingQueryBuilder.build(
          animals,
          query,
          Animal.name_key )
