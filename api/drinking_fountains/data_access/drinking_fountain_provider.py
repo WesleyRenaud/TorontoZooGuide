@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from .drinking_fountain_mapper import DrinkingFountainMapper
 from .drinking_fountain_record import DrinkingFountainRecord
-from ...types import Connection
+from ...types import Types
 
 
 class DrinkingFountainProvider():
    @classmethod
    def fetch_drinking_fountain_records(
          cls,
-         conn: Connection ) -> list[ DrinkingFountainRecord ]:
+         conn: Types.Connection ) -> list[ DrinkingFountainRecord ]:
       cur = conn.cursor()
 
       try:

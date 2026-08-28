@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .itinerary_event_default_mapper import ItineraryEventDefaultMapper
 from .itinerary_event_default_record import ItineraryEventDefaultRecord
-from ...types import Connection
+from ...types import Types
 
 
 class ItineraryEventDefaultProvider():
    @classmethod
-   def fetch_records( cls, conn: Connection ) -> list[ ItineraryEventDefaultRecord ]:
+   def fetch_records( cls, conn: Types.Connection ) -> list[ ItineraryEventDefaultRecord ]:
       cur = conn.cursor()
 
       rows = cur.execute(

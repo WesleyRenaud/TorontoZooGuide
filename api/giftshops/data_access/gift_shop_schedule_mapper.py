@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .gift_shop_schedule_record import GiftShopScheduleRecord
-from ...types import Row
+from ...types import Types
 
 
 class GiftShopScheduleMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> GiftShopScheduleRecord:
+   def map_record( cls, row: Types.Row ) -> GiftShopScheduleRecord:
       return GiftShopScheduleRecord(
          gift_shop=row[ 'GIFT_SHOP' ],
          schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
@@ -23,7 +23,7 @@ class GiftShopScheduleMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ GiftShopScheduleRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ GiftShopScheduleRecord ]:
       return [
          cls.map_record( row )
          for row in rows

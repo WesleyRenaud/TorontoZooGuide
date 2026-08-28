@@ -7,7 +7,7 @@ from .loop_schedule_stop import LoopScheduleStop
 
 @dataclass( frozen=True )
 class TimedLoopScheduleStop:
-   stop: LoopScheduleStop
+   stop: LoopScheduleStop.Stop
    duration_seconds: int
    travel_before_seconds: int
 

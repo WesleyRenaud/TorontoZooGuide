@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.search_coordinator import SearchCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 from ...shared.enums.map_item_type import MapItemType
 from ...shared.typed_dict_mapper import TypedDictMapper
 

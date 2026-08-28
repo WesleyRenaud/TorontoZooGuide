@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...types import Row
+from ...types import Types
 from .wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
 
 
@@ -8,7 +8,7 @@ class WildEncounterScheduleConflictMapper():
    @classmethod
    def map_record(
          cls,
-         row: Row ) -> WildEncounterScheduleConflictRecord:
+         row: Types.Row ) -> WildEncounterScheduleConflictRecord:
       return WildEncounterScheduleConflictRecord(
          wild_encounter=row[ 'WILD_ENCOUNTER' ],
          encounter_time=row[ 'ENCOUNTER_TIME' ],
@@ -27,7 +27,7 @@ class WildEncounterScheduleConflictMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ] ) -> list[ WildEncounterScheduleConflictRecord ]:
+         rows: list[ Types.Row ] ) -> list[ WildEncounterScheduleConflictRecord ]:
       return [
          cls.map_record( row )
          for row in rows

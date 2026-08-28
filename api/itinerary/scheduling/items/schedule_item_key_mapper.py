@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ...animal_item_key import AnimalScheduleItemKey
-from ...attraction_item_key import AttractionScheduleItemKey
-from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ...animal_schedule_item_key import AnimalScheduleItemKey
+from ...attraction_schedule_item_key import AttractionScheduleItemKey
+from ...guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from .schedule_item_key import ScheduleItemKey
 from ....shared.enums import ItineraryEventType
 from ....shared.enums import ScheduleItemKind
-from ...transportation_item_key import TransportationScheduleItemKey
-from ...wild_encounter_item_key import WildEncounterScheduleItemKey
+from ...transportation_schedule_item_key import TransportationScheduleItemKey
+from ...wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 class ScheduleItemKeyMapper():
@@ -15,7 +15,7 @@ class ScheduleItemKeyMapper():
    def from_wire(
          cls,
          item_type: str,
-         wire_key: str ) -> ScheduleItemKey | None:
+         wire_key: str ) -> ScheduleItemKey.Key | None:
       normalized_type = item_type.strip().lower()
       normalized_key = wire_key.strip()
 

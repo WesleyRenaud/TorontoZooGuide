@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from api.walk_graph.data_access.map_location_walk_node_provider import MapLocationWalkNodeProvider
-from api.walk_graph.data_access.paths import MAX_MAP_LOCATION_SNAP_DISTANCE_PX
+from api.walk_graph.data_access.paths import Paths
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_key import MapLocationKey
 from api.walk_graph.domain.map_location_kind import MapLocationKind
@@ -13,16 +13,16 @@ from api.walk_graph.map_location_walk_node_lookup import MapLocationWalkNodeLook
 
 
 ROOT = Path( __file__ ).resolve().parents[ 2 ]
-SEED_DATA_DIR = ROOT / 'api' / 'seed' / 'data'
+Paths.SEED_DATA_DIR = ROOT / 'api' / 'seed' / 'data'
 
 
 def _expected_map_location_keys() -> set[ MapLocationKey ]:
    wild_encounter_meeting_spots = json.loads(
-      ( SEED_DATA_DIR / 'wild_encounter_meeting_spot.json' ).read_text( encoding='utf-8' ) )
+      ( Paths.SEED_DATA_DIR / 'wild_encounter_meeting_spot.json' ).read_text( encoding='utf-8' ) )
    guardians_talks = json.loads(
-      ( SEED_DATA_DIR / 'meet_the_guardians_talk.json' ).read_text( encoding='utf-8' ) )
+      ( Paths.SEED_DATA_DIR / 'meet_the_guardians_talk.json' ).read_text( encoding='utf-8' ) )
    attractions = json.loads(
-      ( SEED_DATA_DIR / 'attraction.json' ).read_text( encoding='utf-8' ) )
+      ( Paths.SEED_DATA_DIR / 'attraction.json' ).read_text( encoding='utf-8' ) )
 
    expected_keys = {
       MapLocationKey.for_kind(
@@ -64,7 +64,7 @@ def test_map_location_walk_nodes_reference_valid_walk_graph_nodes() -> None:
    for row in MapLocationWalkNodeProvider.fetch_records():
       assert row.walk_node_id in node_ids
       assert row.snap_distance_px >= 0
-      assert row.snap_distance_px <= MAX_MAP_LOCATION_SNAP_DISTANCE_PX
+      assert row.snap_distance_px <= Paths.MAX_MAP_LOCATION_SNAP_DISTANCE_PX
 
 
 def test_map_location_walk_nodes_match_nearest_node_snap() -> None:
@@ -72,11 +72,11 @@ def test_map_location_walk_nodes_match_nearest_node_snap() -> None:
    expected_rows = MapLocationWalkNodeBuilder.build(
       graph,
       json.loads(
-         ( SEED_DATA_DIR / 'wild_encounter_meeting_spot.json' ).read_text( encoding='utf-8' ) ),
+         ( Paths.SEED_DATA_DIR / 'wild_encounter_meeting_spot.json' ).read_text( encoding='utf-8' ) ),
       json.loads(
-         ( SEED_DATA_DIR / 'meet_the_guardians_talk.json' ).read_text( encoding='utf-8' ) ),
+         ( Paths.SEED_DATA_DIR / 'meet_the_guardians_talk.json' ).read_text( encoding='utf-8' ) ),
       json.loads(
-         ( SEED_DATA_DIR / 'attraction.json' ).read_text( encoding='utf-8' ) ) )
+         ( Paths.SEED_DATA_DIR / 'attraction.json' ).read_text( encoding='utf-8' ) ) )
 
    assert MapLocationWalkNodeProvider.fetch_records() == expected_rows
 

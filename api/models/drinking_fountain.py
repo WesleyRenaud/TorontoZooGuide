@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ..shared.value_conversion import ValueConversion
-from ..types import Coordinate
+from ..types import Types
 
 
 class DrinkingFountain:
    def __init__(
          self,
-         x_coord: Coordinate,
-         y_coord: Coordinate,
+         x_coord: Types.Coordinate,
+         y_coord: Types.Coordinate,
          is_closed: bool = False,
          closed_message: str | None = None,
          likelihood: int | None = None ) -> None:

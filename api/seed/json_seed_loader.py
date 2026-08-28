@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..types import Cursor
+from ..types import Types
 
 
 SEED_DATA_DIR = Path( __file__ ).parent / 'data'
@@ -137,7 +137,7 @@ class JsonSeedLoader():
 
    @classmethod
    def insert_rows( cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          table: str,
          columns: list[ str ],
@@ -162,7 +162,7 @@ class JsonSeedLoader():
 
    @classmethod
    def insert_json_rows( cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          table: str,
          columns: list[ str ],
@@ -176,7 +176,7 @@ class JsonSeedLoader():
 
    @classmethod
    def insert_json_records( cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          table: str,
          columns: list[ str ],
@@ -191,7 +191,7 @@ class JsonSeedLoader():
 
    @classmethod
    def insert_day_curve_file( cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          table: str,
          columns: list[ str ],
@@ -210,7 +210,7 @@ class JsonSeedLoader():
 
    @classmethod
    def insert_day_curve_directory( cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          table: str,
          columns: list[ str ],

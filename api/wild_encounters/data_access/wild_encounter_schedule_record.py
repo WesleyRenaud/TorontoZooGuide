@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import Coordinate, DateKey, ScheduleTimeKey
+from ...types import Types
 
 
 @dataclass( frozen=True )
@@ -11,11 +11,11 @@ class WildEncounterScheduleRecord:
    meeting_spot: str
    link: str | None
    maximum_duration: int | None
-   x_coord: Coordinate
-   y_coord: Coordinate
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
    region: str
-   schedule_start_date: DateKey
-   schedule_end_date: DateKey | None
+   schedule_start_date: Types.DateKey
+   schedule_end_date: Types.DateKey | None
    monday: bool
    tuesday: bool
    wednesday: bool
@@ -23,5 +23,5 @@ class WildEncounterScheduleRecord:
    friday: bool
    saturday: bool
    sunday: bool
-   encounter_time: ScheduleTimeKey
+   encounter_time: Types.ScheduleTimeKey
    is_cancelled: bool

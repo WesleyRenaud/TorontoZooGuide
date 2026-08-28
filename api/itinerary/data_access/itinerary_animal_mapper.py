@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .itinerary_animal_record import ItineraryAnimalRecord
 from ...shared.value_conversion import ValueConversion
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryAnimalMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> ItineraryAnimalRecord:
+   def map_record( cls, row: Types.Row ) -> ItineraryAnimalRecord:
       return ItineraryAnimalRecord(
          species=row[ 'SPECIES' ],
          exhibit=row[ 'EXHIBIT' ],
@@ -21,7 +21,7 @@ class ItineraryAnimalMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ ItineraryAnimalRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ ItineraryAnimalRecord ]:
       return [
          cls.map_record( row )
          for row in rows

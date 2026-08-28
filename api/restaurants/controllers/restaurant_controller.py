@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from ..coordinators.restaurant_coordinator import RestaurantCoordinator
-from ...json_handler import JsonRequestHandler
-from ...shared.api_error_response import ApiErrorResponseApplier
+from ...json_request_handler import JsonRequestHandler
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 

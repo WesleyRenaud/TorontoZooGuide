@@ -3,13 +3,13 @@ from __future__ import annotations
 from http_support import make_handler
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 from conftest import FakeHandler
 
 def test_send_file_serves_existing_static_page() -> None:
    handler = FakeHandler( path='/map.html' )
 
-   server.MyHandler._send_file( handler, './pages/map.html', 'text/html' )
+   server.HttpRequestHandler._send_file( handler, './pages/map.html', 'text/html' )
 
    assert handler.statuses == [ 200 ]
    assert ( 'Content-type', 'text/html' ) in handler.sent_headers
@@ -19,7 +19,7 @@ def test_send_file_serves_existing_static_page() -> None:
 def test_send_file_renders_shared_html_strings() -> None:
    handler = FakeHandler( path='/animals.html' )
 
-   server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
+   server.HttpRequestHandler._send_file( handler, './pages/animals.html', 'text/html' )
 
    content = handler.wfile.getvalue().decode( 'utf-8' )
 
@@ -30,7 +30,7 @@ def test_send_file_renders_shared_html_strings() -> None:
 def test_send_file_renders_animals_page_nav_in_standard_order() -> None:
    handler = FakeHandler( path='/animals.html' )
 
-   server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
+   server.HttpRequestHandler._send_file( handler, './pages/animals.html', 'text/html' )
 
    content = handler.wfile.getvalue().decode( 'utf-8' )
 
@@ -50,7 +50,7 @@ def test_send_file_renders_animals_page_nav_in_standard_order() -> None:
 def test_send_file_renders_itinerary_static_strings() -> None:
    handler = FakeHandler( path='/itinerary.html' )
 
-   server.MyHandler._send_file( handler, './pages/itinerary.html', 'text/html' )
+   server.HttpRequestHandler._send_file( handler, './pages/itinerary.html', 'text/html' )
 
    content = handler.wfile.getvalue().decode( 'utf-8' )
 
@@ -61,7 +61,7 @@ def test_send_file_renders_itinerary_static_strings() -> None:
 def test_send_file_renders_console_operation_strings() -> None:
    handler = FakeHandler( path='/console-operations.html' )
 
-   server.MyHandler._send_file( handler, './pages/console-operations.html', 'text/html' )
+   server.HttpRequestHandler._send_file( handler, './pages/console-operations.html', 'text/html' )
 
    content = handler.wfile.getvalue().decode( 'utf-8' )
 
@@ -73,7 +73,7 @@ def test_send_file_renders_console_operation_strings() -> None:
 def test_send_file_returns_404_for_missing_file() -> None:
    handler = FakeHandler( path='/missing.html' )
 
-   server.MyHandler._send_file( handler, './pages/missing.html' )
+   server.HttpRequestHandler._send_file( handler, './pages/missing.html' )
 
    assert handler.errors == [ ( 404, 'Not Found' ) ]
 
@@ -91,29 +91,29 @@ def test_send_file_returns_404_for_missing_file() -> None:
    ]
 )
 def test_get_static_routes( path: str ) -> None:
-   handler = server.MyHandler.__new__( server.MyHandler )
+   handler = server.HttpRequestHandler.__new__( server.HttpRequestHandler )
    handler.path = path
    handler.statuses = []
    handler.files = []
    handler._send_file = lambda filepath, content_type=None: handler.files.append( ( filepath, content_type ) )
 
-   server.MyHandler.do_GET( handler )
+   server.HttpRequestHandler.do_GET( handler )
 
    assert len( handler.files ) == 1
 
 
 def test_get_unknown_route_returns_404() -> None:
-   missing = server.MyHandler.__new__( server.MyHandler )
+   missing = server.HttpRequestHandler.__new__( server.HttpRequestHandler )
    missing.path = '/unknown'
    missing.errors = []
    missing.send_error = lambda code, message=None: missing.errors.append( ( code, message ) )
-   server.MyHandler.do_GET( missing )
+   server.HttpRequestHandler.do_GET( missing )
    assert missing.errors == [ ( 404, 'Not Found' ) ]
 
 
 def test_post_unknown_route_returns_404() -> None:
    handler = make_handler( '/unknown-post-route' )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == [ ( 404, 'Not Found' ) ]

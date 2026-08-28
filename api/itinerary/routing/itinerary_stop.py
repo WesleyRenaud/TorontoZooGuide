@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...shared.enums import ScheduleItemKind
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 ENTRANCE_ITEM_KEY = 'entrance'
 
@@ -17,8 +17,8 @@ class ItineraryStop:
    x_coord: float | None = None
    y_coord: float | None = None
    is_fixed_time: bool = False
-   start_time: ScheduleTimeKey = None
-   end_time: ScheduleTimeKey = None
+   start_time: Types.ScheduleTimeKey = None
+   end_time: Types.ScheduleTimeKey = None
 
 
    def primary_walk_node_id( self ) -> str | None:

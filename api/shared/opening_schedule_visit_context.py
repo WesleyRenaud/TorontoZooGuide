@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from ..types import MonthInput, VisitDay, VisitYear
+from ..types import Types
 
 
 @dataclass( frozen=True )

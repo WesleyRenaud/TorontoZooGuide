@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.shared.calendar_dates import DateValues

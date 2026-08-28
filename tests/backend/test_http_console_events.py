@@ -8,7 +8,7 @@ from http_support import response_json
 from http_support import StubZooControllers
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 @pytest.mark.parametrize(
    'path, body, expected_call, response_subset',
@@ -367,7 +367,7 @@ def test_wild_encounter_schedule_overlap_resolution_maps_payload(
       expected_method: str ) -> None:
    handler = make_handler( path, WILD_ENCOUNTER_SCHEDULE_BODY )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -397,7 +397,7 @@ def test_wild_encounter_schedule_overlap_failure_returns_error_type(
       '/set-wild-encounter-schedule',
       WILD_ENCOUNTER_SCHEDULE_BODY )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 

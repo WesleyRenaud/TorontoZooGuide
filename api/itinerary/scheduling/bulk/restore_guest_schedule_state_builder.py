@@ -7,8 +7,7 @@ from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryIte
 from ....models import ItineraryEvent
 from ...routing.itinerary_walk_route import ItineraryWalkRoute
 from ....shared.calendar_dates import DateValues
-from ....types import Connection
-from ....types import ScheduleTimeKey
+from ....types import Types
 from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 
 
@@ -16,7 +15,7 @@ class RestoreGuestScheduleStateBuilder():
    @classmethod
    def snapshot(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary ) -> tuple[
             SavedItinerary,
             ItineraryWalkRoute,
@@ -29,7 +28,7 @@ class RestoreGuestScheduleStateBuilder():
    @classmethod
    def restore(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          walk_route: ItineraryWalkRoute ) -> None:
       ItineraryScheduleClearer.clear_all( conn )
@@ -98,8 +97,8 @@ class RestoreGuestScheduleStateBuilder():
    @classmethod
    def _has_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       return bool(
          DateValues.normalize_schedule_time_key( start_time )
          and DateValues.normalize_schedule_time_key( end_time ) )

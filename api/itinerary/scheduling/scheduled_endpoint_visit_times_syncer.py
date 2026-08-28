@@ -6,7 +6,7 @@ from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from .items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from ...models import Itinerary
 from ...shared.calendar_dates import DateValues
-from ...types import Connection
+from ...types import Types
 
 
 class ScheduledEndpointVisitTimesSyncer():
@@ -27,7 +27,7 @@ class ScheduledEndpointVisitTimesSyncer():
    @classmethod
    def seed_if_complete(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary: Itinerary ) -> None:
       """Set arrival/departure from scheduled endpoints when fully scheduled."""
       cls._apply_from_endpoints( conn, itinerary )
@@ -36,7 +36,7 @@ class ScheduledEndpointVisitTimesSyncer():
    @classmethod
    def sync_if_complete(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary: Itinerary ) -> None:
       """Set arrival/departure from scheduled endpoints when fully scheduled.
 
@@ -51,7 +51,7 @@ class ScheduledEndpointVisitTimesSyncer():
    @classmethod
    def clear_if_became_incomplete(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          previous_itinerary: Itinerary | None,
          current_itinerary: Itinerary ) -> None:
@@ -75,7 +75,7 @@ class ScheduledEndpointVisitTimesSyncer():
    @classmethod
    def _apply_from_endpoints(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          itinerary: Itinerary ) -> None:
       if not cls.is_fully_scheduled( itinerary ):
          return

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ...types import Connection
+from ...types import Types
 
 
 class AnimalSpeciesNameProvider():
    @classmethod
-   def fetch_animal_species_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_animal_species_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:

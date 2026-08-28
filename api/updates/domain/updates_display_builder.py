@@ -4,7 +4,7 @@ from datetime import date
 
 from ...models import Update
 from ...shared.calendar_dates import DateValues
-from ...shared.constants import OPEN_ENDED_SQL_DATE
+from ...shared.constants import Constants
 from ...shared.text_values import TextValues
 from .update_type_display_order_resolver import UpdateTypeDisplayOrderResolver
 
@@ -24,7 +24,7 @@ class UpdatesDisplayBuilder():
 
    @classmethod
    def display_sort_key( cls, update: Update ) -> tuple[ int, str, str ]:
-      end_date = update.end_date or OPEN_ENDED_SQL_DATE
+      end_date = update.end_date or Constants.OPEN_ENDED_SQL_DATE
 
       return (
          UpdateTypeDisplayOrderResolver.resolve( update.update_type ),

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..shared.text_values import TextValues
 from ..shared.value_conversion import ValueConversion
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class Attraction:
@@ -21,10 +21,10 @@ class Attraction:
          likelihood: int | None = None,
          is_deleted: bool = False,
          old_likelihood: int | None = None,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None,
-         open_time: ScheduleTimeKey = None,
-         close_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
+         open_time: Types.ScheduleTimeKey = None,
+         close_time: Types.ScheduleTimeKey = None,
          is_also_transportation: bool = False,
          route_duration_minutes: int | None = None ) -> None:
       self.name = name

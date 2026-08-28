@@ -5,7 +5,7 @@ from ...itinerary.scheduling.core.scheduled_occurrence_builder import ScheduledO
 from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
 from ..scheduling.guardians_talk_day_schedule_finder import GuardiansTalkDayScheduleFinder
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class GuardiansTalkItineraryValidator():
@@ -15,8 +15,8 @@ class GuardiansTalkItineraryValidator():
          name: str,
          talk: GuardiansTalk | None,
          *,
-         start_time_override: ScheduleTimeKey = None,
-         end_time_override: ScheduleTimeKey = None ) -> GuardiansTalkDiff:
+         start_time_override: Types.ScheduleTimeKey = None,
+         end_time_override: Types.ScheduleTimeKey = None ) -> GuardiansTalkDiff:
       return ScheduledOccurrenceBuilder.guardians_talk(
          name,
          talk,

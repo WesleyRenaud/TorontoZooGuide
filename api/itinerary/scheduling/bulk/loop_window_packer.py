@@ -6,7 +6,7 @@ from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.master_route_loop_traversal_checker import MasterRouteLoopTraversalChecker
 from ....walk_graph.domain.walk_graph import WalkGraph
@@ -19,7 +19,7 @@ class LoopWindowPacker():
    @classmethod
    def prepare_units(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          units: list[ LoopScheduleUnit ],
          *,
          walk_graph: WalkGraph ) -> list[ PreparedLoopScheduleUnit ] | None:

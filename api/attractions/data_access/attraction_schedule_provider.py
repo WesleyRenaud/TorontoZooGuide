@@ -4,15 +4,15 @@ from .attraction_schedule_mapper import AttractionScheduleMapper
 from .attraction_schedule_record import AttractionScheduleRecord
 from ..scheduling.attraction_opening_schedule import AttractionOpeningSchedule
 from ..scheduling.attraction_schedule_override import AttractionScheduleOverride
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class AttractionScheduleProvider():
    @classmethod
    def overlaps_existing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionOpeningSchedule ) -> bool:
       cur = conn.cursor()
       try:
@@ -29,8 +29,8 @@ class AttractionScheduleProvider():
                schedule.attraction,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) ).fetchone()
          return row != None
@@ -41,7 +41,7 @@ class AttractionScheduleProvider():
    @classmethod
    def save_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionOpeningSchedule ) -> bool:
       if cls.overlaps_existing_schedule( conn, schedule ):
          return False
@@ -53,7 +53,7 @@ class AttractionScheduleProvider():
    @classmethod
    def fetch_opening_schedule_conflicts(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionOpeningSchedule ) -> list[ AttractionScheduleRecord ]:
       cur = conn.cursor()
       try:
@@ -81,8 +81,8 @@ class AttractionScheduleProvider():
                schedule.attraction,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) )
          return AttractionScheduleMapper.map_records( data.fetchall() )
@@ -93,7 +93,7 @@ class AttractionScheduleProvider():
    @classmethod
    def delete_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionScheduleRecord ) -> None:
       cur = conn.cursor()
       try:
@@ -110,10 +110,10 @@ class AttractionScheduleProvider():
    @classmethod
    def update_opening_schedule_dates(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
       try:
          cur.execute(
@@ -137,10 +137,10 @@ class AttractionScheduleProvider():
    @classmethod
    def insert_copied_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
       try:
          cur.execute(
@@ -181,7 +181,7 @@ class AttractionScheduleProvider():
    @classmethod
    def insert_or_update_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionOpeningSchedule ) -> None:
       cur = conn.cursor()
       try:
@@ -234,7 +234,7 @@ class AttractionScheduleProvider():
    @classmethod
    def save_schedule_override(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          override: AttractionScheduleOverride ) -> bool:
       cur = conn.cursor()
       try:

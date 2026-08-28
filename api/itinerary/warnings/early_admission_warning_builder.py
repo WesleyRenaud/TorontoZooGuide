@@ -4,7 +4,7 @@ from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from .itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection, ScheduleTimeKey
+from ...types import Types
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -12,7 +12,7 @@ class EarlyAdmissionWarningBuilder():
    @classmethod
    def arrival_is_during_early_admission(
          cls,
-         arrival_time: ScheduleTimeKey,
+         arrival_time: Types.ScheduleTimeKey,
          zoo_hours_record: ZooHoursRecord | None ) -> bool:
       if zoo_hours_record is None or zoo_hours_record.early_admission_time is None:
          return False
@@ -34,8 +34,8 @@ class EarlyAdmissionWarningBuilder():
    @classmethod
    def is_required(
          cls,
-         conn: Connection,
-         arrival_time: ScheduleTimeKey,
+         conn: Types.Connection,
+         arrival_time: Types.ScheduleTimeKey,
          zoo_hours_record: ZooHoursRecord | None,
          *,
          confirming_early_admission: bool,

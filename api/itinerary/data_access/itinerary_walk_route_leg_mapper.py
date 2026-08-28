@@ -5,12 +5,12 @@ from ..routing.walk_route_leg import WalkRouteLeg
 from ..routing.walk_route_point import WalkRoutePoint
 from ..routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
 from ...shared.enums import ScheduleItemKind
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryWalkRouteLegMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> ItineraryWalkRouteLegRecord:
+   def map_record( cls, row: Types.Row ) -> ItineraryWalkRouteLegRecord:
       return ItineraryWalkRouteLegRecord(
          leg_sequence=int( row[ 'LEG_SEQUENCE' ] ),
          from_item_key=row[ 'FROM_ITEM_KEY' ],
@@ -26,7 +26,7 @@ class ItineraryWalkRouteLegMapper():
 
    @classmethod
    def map_records(
-         cls, rows: list[ Row ] ) -> list[ ItineraryWalkRouteLegRecord ]:
+         cls, rows: list[ Types.Row ] ) -> list[ ItineraryWalkRouteLegRecord ]:
       return [
          cls.map_record( row )
          for row in rows

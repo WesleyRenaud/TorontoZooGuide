@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .animal_viewability_mapper import AnimalViewabilityMapper
 from .animal_viewability_record import AnimalViewabilityRecord
-from ...types import Connection, VisitDay, VisitMonth
+from ...types import Types
 
 
 _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
@@ -94,9 +94,9 @@ class AnimalViewableOnDayProvider():
    @classmethod
    def fetch_animals_viewable_on_day_records(
          cls,
-         conn: Connection,
-         normalized_month: VisitMonth,
-         normalized_day: VisitDay,
+         conn: Types.Connection,
+         normalized_month: Types.VisitMonth,
+         normalized_day: Types.VisitDay,
          exhibits_to_include: list[ str ] | None = None ) -> list[ AnimalViewabilityRecord ]:
       """Load joined animal / exhibit / viewing records for viewability on a calendar day."""
       cur = conn.cursor()

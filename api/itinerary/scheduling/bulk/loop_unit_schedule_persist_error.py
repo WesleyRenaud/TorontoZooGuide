@@ -4,6 +4,6 @@ from .loop_schedule_stop import LoopScheduleStop
 
 
 class LoopUnitSchedulePersistError( Exception ):
-   def __init__( self, stops: list[ LoopScheduleStop ] ) -> None:
+   def __init__( self, stops: list[ LoopScheduleStop.Stop ] ) -> None:
       self.stops = stops
       super().__init__()

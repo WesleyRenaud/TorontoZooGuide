@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .guest_service_mapper import GuestServiceMapper
 from ...models import GuestService
-from ...types import Connection
+from ...types import Types
 
 
 class GuestServiceProvider():
    @classmethod
-   def fetch_guest_services( cls, conn: Connection ) -> list[ GuestService ]:
+   def fetch_guest_services( cls, conn: Types.Connection ) -> list[ GuestService ]:
       cur = conn.cursor()
 
       try:

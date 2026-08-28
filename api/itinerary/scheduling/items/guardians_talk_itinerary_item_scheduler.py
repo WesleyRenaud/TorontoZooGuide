@@ -9,14 +9,14 @@ from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItinera
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ..fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ...guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 from ..unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
 from ...warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
 from ...warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
@@ -55,7 +55,7 @@ class GuardiansTalkItineraryItemScheduler():
    @classmethod
    def _insert_scheduled_guardians_talk(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          guardians_talk_key: GuardiansTalkScheduleItemKey,
          guardians_talk_diff: GuardiansTalkDiff,
@@ -88,7 +88,7 @@ class GuardiansTalkItineraryItemScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          guardians_talk_key: GuardiansTalkScheduleItemKey,
          *,
          itinerary_context: dict[ str, Any ],

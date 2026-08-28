@@ -99,7 +99,7 @@ class BulkScheduleStopSelector():
          cls,
          saved_itinerary: SavedItinerary | None,
          *,
-         only_previously_scheduled: bool ) -> list[ LoopScheduleStop ]:
+         only_previously_scheduled: bool ) -> list[ LoopScheduleStop.Stop ]:
       return [
          *cls.animals(
             saved_itinerary,
@@ -117,7 +117,7 @@ class BulkScheduleStopSelector():
    def stops_matching_previous(
          cls,
          saved_itinerary_before_clear: SavedItinerary | None,
-         saved_itinerary_after_save: SavedItinerary ) -> list[ LoopScheduleStop ]:
+         saved_itinerary_after_save: SavedItinerary ) -> list[ LoopScheduleStop.Stop ]:
       # previously scheduled species may have a new enclosure after validate
       # (outdoor Aldabra → indoor). Pack the post-save row, not the removed spot —
       # persisting the old enclosure fails and aborts the rest of the loop group.

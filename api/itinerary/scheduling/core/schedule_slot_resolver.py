@@ -4,7 +4,7 @@ from .available_schedule_slot_finder import AvailableScheduleSlotFinder
 from ....shared.calendar_dates import DateValues
 from .time_block import TimeBlock
 from .time_block_builder import TimeBlockBuilder
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class ScheduleSlotResolver():
@@ -16,7 +16,7 @@ class ScheduleSlotResolver():
          duration_seconds: int,
          day_end_seconds: int,
          *,
-         start_time: ScheduleTimeKey | None = None ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+         start_time: Types.ScheduleTimeKey | None = None ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       if start_time is None:
          return AvailableScheduleSlotFinder.find_next(
             blockers,

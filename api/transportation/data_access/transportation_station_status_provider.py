@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ..status.station_closed_status import TransportationStationClosedStatus
+from ..status.transportation_station_closed_status import TransportationStationClosedStatus
 from .transportation_station_status_mapper import TransportationStationStatusMapper
 from .transportation_station_status_record import TransportationStationStatusRecord
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationStationStatusProvider():
    @classmethod
    def fetch_transportation_station_status_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
    ) -> list[ TransportationStationStatusRecord ]:
       cur = conn.cursor()
@@ -35,7 +35,7 @@ class TransportationStationStatusProvider():
    @classmethod
    def save_transportation_station_closed_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          status: TransportationStationClosedStatus ) -> bool:
       cur = conn.cursor()
@@ -72,7 +72,7 @@ class TransportationStationStatusProvider():
    @classmethod
    def save_transportation_station_open_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          transportation_station: str ) -> bool:
       cur = conn.cursor()

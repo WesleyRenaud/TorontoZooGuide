@@ -3,14 +3,14 @@ from __future__ import annotations
 from datetime import date
 
 from .calendar_dates import DateValues
-from ..types import DateInput, DateKey
+from ..types import Types
 
 
 class OpeningScheduleDateResolver():
    @classmethod
    def parse_end_date(
          cls,
-         value: DateInput ) -> date:
+         value: Types.DateInput ) -> date:
       if value == None:
          return date.max
 
@@ -20,7 +20,7 @@ class OpeningScheduleDateResolver():
    @classmethod
    def format_date(
          cls,
-         value: date ) -> DateKey | None:
+         value: date ) -> Types.DateKey | None:
       if value == date.max:
          return None
 

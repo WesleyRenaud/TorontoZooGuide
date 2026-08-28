@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from .animal_viewing_alert import AnimalViewingAlert
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class AnimalViewingAlertBuilder():
@@ -12,8 +12,8 @@ class AnimalViewingAlertBuilder():
          cls,
          species: str,
          exhibit: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> AnimalViewingAlert:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=alert_start_date,

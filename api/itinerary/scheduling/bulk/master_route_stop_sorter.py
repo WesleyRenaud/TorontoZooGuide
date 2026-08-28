@@ -11,13 +11,13 @@ class MasterRouteStopSorter():
    @classmethod
    def sort(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> list[ LoopScheduleStop ]:
+         stops: list[ LoopScheduleStop.Stop ] ) -> list[ LoopScheduleStop.Stop ]:
       if not stops:
          return []
 
       master_route_indexes = MasterRouteProvider.route_index_by_stop_key()
-      mapped_stops: list[ LoopScheduleStop ] = []
-      unmapped_stops: list[ LoopScheduleStop ] = []
+      mapped_stops: list[ LoopScheduleStop.Stop ] = []
+      unmapped_stops: list[ LoopScheduleStop.Stop ] = []
 
       for stop in stops:
          if LoopScheduleStopExtractor.stop_key( stop ) in master_route_indexes:
@@ -36,7 +36,7 @@ class MasterRouteStopSorter():
    @classmethod
    def _unmapped_stop_sort_key(
          cls,
-         stop: LoopScheduleStop ) -> tuple[ str, str, str ]:
+         stop: LoopScheduleStop.Stop ) -> tuple[ str, str, str ]:
       if isinstance( stop, ( ItineraryAttractionRecord, ItineraryTransportationRecord ) ):
          return ( stop.attraction.lower(), '', '' )
 

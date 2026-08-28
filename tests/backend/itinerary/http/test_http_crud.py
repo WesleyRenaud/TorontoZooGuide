@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from http_support import ANIMAL_EXHIBIT, make_handler, response_json, StubZooControllers
 
-from api.itinerary.animal_item_key import AnimalScheduleItemKey
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
-import api.server as server
+import api.http_request_handler as server
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 
 
 def test_itinerary_endpoints_return_success_payloads(
@@ -26,10 +26,10 @@ def test_itinerary_endpoints_return_success_payloads(
    clear_handler = make_handler( '/clear-itinerary' )
    accept_handler = make_handler( '/accept-itinerary' )
 
-   server.MyHandler.do_POST( set_handler )
-   server.MyHandler.do_POST( get_handler )
-   server.MyHandler.do_POST( clear_handler )
-   server.MyHandler.do_POST( accept_handler )
+   server.HttpRequestHandler.do_POST( set_handler )
+   server.HttpRequestHandler.do_POST( get_handler )
+   server.HttpRequestHandler.do_POST( clear_handler )
+   server.HttpRequestHandler.do_POST( accept_handler )
 
    set_response = response_json( set_handler )
    assert set_response[ 'status' ] == 'success'

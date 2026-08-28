@@ -8,9 +8,9 @@ from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ...models import Animal
 from ...models import AnimalDiff
 from ...shared.calendar_dates import DateValues
-from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from ...shared.constants import Constants
 from ...shared.value_conversion import ValueConversion
-from ...types import DateInput
+from ...types import Types
 
 
 class SelectedExhibitDateChangeAnimalsBuilder():
@@ -23,8 +23,8 @@ class SelectedExhibitDateChangeAnimalsBuilder():
          selected_exhibits: list[ str ],
          previously_selected_exhibits: list[ str ],
          saved_animal_rows: list[ ItineraryAnimalRecord ],
-         visit_date: DateInput,
-         old_visit_date: DateInput,
+         visit_date: Types.DateInput,
+         old_visit_date: Types.DateInput,
          visit_date_temp: float | None = None ) -> list[ AnimalDiff ]:
       """Sync exhibit animals for a date change.
 
@@ -88,7 +88,7 @@ class SelectedExhibitDateChangeAnimalsBuilder():
             selected_exhibits=selected,
             visit_date=visit_date,
             visit_date_temp=visit_date_temp,
-            threshold=ITINERARY_ANIMAL_MIN_LIKELIHOOD ):
+            threshold=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD ):
          spot_key = ViewingSpotKeyBuilder.from_animal( animal )
 
          if spot_key in existing_keys:
@@ -115,7 +115,7 @@ class SelectedExhibitDateChangeAnimalsBuilder():
          animal_coordinator: type[ AnimalCoordinator ],
          *,
          selected_exhibits: list[ str ],
-         visit_date: DateInput,
+         visit_date: Types.DateInput,
          visit_date_temp: float | None = None,
          threshold: int | None = None ) -> dict[ tuple[ str, str, str | None ], int | None ]:
       if not selected_exhibits:
@@ -145,7 +145,7 @@ class SelectedExhibitDateChangeAnimalsBuilder():
          animal_coordinator: type[ AnimalCoordinator ],
          *,
          selected_exhibits: list[ str ],
-         visit_date: DateInput,
+         visit_date: Types.DateInput,
          visit_date_temp: float | None = None,
          threshold: int | None = None ) -> list[ Animal ]:
       if not selected_exhibits:

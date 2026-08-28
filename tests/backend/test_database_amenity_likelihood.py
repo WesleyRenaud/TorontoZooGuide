@@ -7,10 +7,10 @@ import pytest
 from api.attractions.domain.attraction_builder import AttractionBuilder
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
-from api.types import SeasonalMultiplier
+from api.types import Types
 
 
-LikelihoodCalculator = Callable[ [ SeasonalMultiplier ], int ]
+LikelihoodCalculator = Callable[ [ Types.SeasonalMultiplier ], int ]
 
 
 @pytest.mark.parametrize(

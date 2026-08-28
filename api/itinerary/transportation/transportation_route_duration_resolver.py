@@ -3,14 +3,14 @@ from __future__ import annotations
 from datetime import date
 
 from .transportation_day_loop_fetcher import TransportationDayLoopFetcher
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationRouteDurationResolver():
    @classmethod
    def minutes(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          target_date: date,

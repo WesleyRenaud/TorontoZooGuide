@@ -3,12 +3,12 @@ from __future__ import annotations
 from .animal_viewability_record import AnimalViewabilityRecord
 from ...shared.enums import AnimalViewingScope
 from ...shared.value_conversion import ValueConversion
-from ...types import Row
+from ...types import Types
 
 
 class AnimalViewabilityMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> AnimalViewabilityRecord:
+   def map_record( cls, row: Types.Row ) -> AnimalViewabilityRecord:
       return AnimalViewabilityRecord(
          species=row[ 'SPECIES' ],
          latin_name=row[ 'LATIN_NAME' ],
@@ -55,7 +55,7 @@ class AnimalViewabilityMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ AnimalViewabilityRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ AnimalViewabilityRecord ]:
       return [
          cls.map_record( row )
          for row in rows

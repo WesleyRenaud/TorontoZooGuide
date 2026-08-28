@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..domain.guardians_talk_name_filter import GuardiansTalkNameFilter
 from ...models import GuardiansTalk
 from ...shared.calendar_dates import DateValues
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class GuardiansTalkDayScheduleFinder():
@@ -13,7 +13,7 @@ class GuardiansTalkDayScheduleFinder():
          day_schedule: list[ GuardiansTalk ],
          talk_name: str,
          *,
-         start_time: ScheduleTimeKey ) -> GuardiansTalk | None:
+         start_time: Types.ScheduleTimeKey ) -> GuardiansTalk | None:
       talk_filter = GuardiansTalkNameFilter( name=talk_name )
 
       if talk_filter.should_return_empty():

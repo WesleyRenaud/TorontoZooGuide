@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .master_route_stop_key import AnimalMasterRouteStopKey
-from .master_route_stop_key import AttractionMasterRouteStopKey
+from .animal_master_route_stop_key import AnimalMasterRouteStopKey
+from .attraction_master_route_stop_key import AttractionMasterRouteStopKey
 from ...shared.enums import ScheduleItemKind
 
 
@@ -11,10 +11,10 @@ class MasterRouteStopKeyBuilder():
          cls,
          species: str,
          exhibit: str,
-         name: str | None ) -> AnimalMasterRouteStopKey:
+         name: str | None ) -> AnimalMasterRouteStopKey.Key:
       return ( ScheduleItemKind.ANIMAL, species, exhibit, name )
 
 
    @classmethod
-   def attraction( cls, name: str ) -> AttractionMasterRouteStopKey:
+   def attraction( cls, name: str ) -> AttractionMasterRouteStopKey.Key:
       return ( ScheduleItemKind.ATTRACTION, name )

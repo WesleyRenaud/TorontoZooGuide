@@ -6,12 +6,12 @@ from .restaurant_schedule_mapper import RestaurantScheduleMapper
 from .restaurant_schedule_override_mapper import RestaurantScheduleOverrideMapper
 from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from .restaurant_schedule_record import RestaurantScheduleRecord
-from ...types import Connection, VisitDay, VisitMonth
+from ...types import Types
 
 
 class RestaurantProvider():
    @classmethod
-   def fetch_restaurant_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_restaurant_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -30,9 +30,9 @@ class RestaurantProvider():
    @classmethod
    def fetch_restaurant_records(
          cls,
-         conn: Connection,
-         month: VisitMonth,
-         day: VisitDay ) -> list[ RestaurantRecord ]:
+         conn: Types.Connection,
+         month: Types.VisitMonth,
+         day: Types.VisitDay ) -> list[ RestaurantRecord ]:
       cur = conn.cursor()
 
       try:
@@ -63,7 +63,7 @@ class RestaurantProvider():
    @classmethod
    def fetch_restaurant_schedule_records(
          cls,
-         conn: Connection ) -> list[ RestaurantScheduleRecord ]:
+         conn: Types.Connection ) -> list[ RestaurantScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -93,7 +93,7 @@ class RestaurantProvider():
    @classmethod
    def fetch_restaurant_schedule_override_records(
          cls,
-         conn: Connection ) -> list[ RestaurantScheduleOverrideRecord ]:
+         conn: Types.Connection ) -> list[ RestaurantScheduleOverrideRecord ]:
       cur = conn.cursor()
 
       try:

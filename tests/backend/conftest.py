@@ -13,19 +13,17 @@ from typing import Any
 
 import pytest
 
-from api import connection
-from api.connection import close_connection
-from api.connection import open_connection
-from api.request_connection import clear_connection
-from api.request_connection import set_connection
+from api import database_connection_provider as connection
+from api.database_connection_provider import DatabaseConnectionProvider
+from api.request_connection_provider import RequestConnectionProvider
 from api.seed.seed_runner import SeedRunner
 
-from api.types import Connection, Cursor, Row
+from api.types import Types
 
 
 class DbControllers:
-   def __init__( self, connection: Connection ) -> None:
-      self.conn: Connection | None = connection
+   def __init__( self, connection: Types.Connection ) -> None:
+      self.conn: Types.Connection | None = connection
       self._closed = False
 
 
@@ -34,8 +32,8 @@ class DbControllers:
          return
 
       if self.conn is not None:
-         close_connection( self.conn )
-      clear_connection()
+         DatabaseConnectionProvider.close( self.conn )
+      RequestConnectionProvider.clear()
       self.conn = None
       self._closed = True
 
@@ -57,8 +55,8 @@ def db_path( tmp_path: Path, seeded_template_db_path: Path ) -> Path:
 
 @pytest.fixture
 def controllers( db_path: Path ) -> Generator[ DbControllers, None, None ]:
-   conn = open_connection( db_path=str( db_path ) )
-   set_connection( conn )
+   conn = DatabaseConnectionProvider.open( db_path=str( db_path ) )
+   RequestConnectionProvider.set( conn )
 
    fixture = DbControllers( conn )
 
@@ -77,17 +75,17 @@ def db( controllers: DbControllers ) -> DbControllers:
 def integration_db( db_path: Path, monkeypatch: pytest.MonkeyPatch ) -> Path:
    test_db_path = str( db_path )
 
-   def open_test_connection( db_path_arg: str = 'animals.db' ) -> Connection:
+   def open_test_connection( db_path_arg: str = 'animals.db' ) -> Types.Connection:
       conn = sqlite3.connect( test_db_path )
       conn.row_factory = sqlite3.Row
       return conn
 
-   monkeypatch.setattr( connection, 'open_connection', open_test_connection )
+   monkeypatch.setattr( connection.DatabaseConnectionProvider, 'open', open_test_connection )
    return db_path
 
 
 @pytest.fixture
-def cursor( controllers: DbControllers ) -> Generator[ Cursor, None, None ]:
+def cursor( controllers: DbControllers ) -> Generator[ Types.Cursor, None, None ]:
    assert controllers.conn is not None
    cur = controllers.conn.cursor()
 
@@ -97,7 +95,7 @@ def cursor( controllers: DbControllers ) -> Generator[ Cursor, None, None ]:
       cur.close()
 
 
-def make_row( values: Mapping[ str, object ] ) -> Row:
+def make_row( values: Mapping[ str, object ] ) -> Types.Row:
    conn = sqlite3.connect( ':memory:' )
    conn.row_factory = sqlite3.Row
    columns = ', '.join( f'? AS { key }' for key in values.keys() )
@@ -116,7 +114,7 @@ class FrozenDateTime( datetime ):
 
 @pytest.fixture
 def freeze_database_today( monkeypatch: pytest.MonkeyPatch ) -> Callable[ [ date ], None ]:
-   frozen_datetime_targets = ( 'api.shared.calendar_dates.datetime', )
+   frozen_datetime_targets = ( 'api.shared.date_values.datetime', )
 
    def freeze( value: date ) -> None:
       FrozenDateTime.frozen_now = datetime.combine( value, datetime.min.time() )

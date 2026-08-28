@@ -3,12 +3,12 @@ from __future__ import annotations
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...shared.enums import ItineraryEventType
-from ...types import Cursor
+from ...types import Types
 
 
 class UnscheduleItineraryItemProvider():
    @classmethod
-   def clear_all_itinerary_animal_schedules( cls, cur: Cursor ) -> None:
+   def clear_all_itinerary_animal_schedules( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryAnimal
                SET START_TIME = NULL,
@@ -18,7 +18,7 @@ class UnscheduleItineraryItemProvider():
 
 
    @classmethod
-   def clear_all_itinerary_attraction_schedules( cls, cur: Cursor ) -> None:
+   def clear_all_itinerary_attraction_schedules( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryAttraction
                SET START_TIME = NULL,
@@ -27,21 +27,21 @@ class UnscheduleItineraryItemProvider():
 
 
    @classmethod
-   def clear_all_itinerary_transportation_schedules( cls, cur: Cursor ) -> None:
+   def clear_all_itinerary_transportation_schedules( cls, cur: Types.Cursor ) -> None:
       ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers( cur )
       ItineraryTransportationProvider.clear_itinerary_transportation_legs( cur )
       ItineraryTransportationProvider.clear_all_itinerary_transportation_schedule_times( cur )
 
 
    @classmethod
-   def clear_all_scheduled_itinerary_events( cls, cur: Cursor ) -> None:
+   def clear_all_scheduled_itinerary_events( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryEvent;' )
 
 
    @classmethod
    def clear_itinerary_animal_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          species: str,
          exhibit: str,
@@ -62,7 +62,7 @@ class UnscheduleItineraryItemProvider():
    @classmethod
    def clear_itinerary_attraction_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          name: str ) -> None:
       cur.execute(
@@ -78,7 +78,7 @@ class UnscheduleItineraryItemProvider():
    @classmethod
    def clear_itinerary_transportation_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          name: str,
          added_as_attraction: bool ) -> None:
       ItineraryTransportationRouteMarkerProvider.delete_itinerary_transportation_route_markers(
@@ -98,7 +98,7 @@ class UnscheduleItineraryItemProvider():
    @classmethod
    def clear_itinerary_guardians_talk_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          talk_name: str ) -> None:
       cur.execute(
@@ -112,7 +112,7 @@ class UnscheduleItineraryItemProvider():
    @classmethod
    def clear_itinerary_wild_encounter_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          wild_encounter: str ) -> None:
       cur.execute(
@@ -126,7 +126,7 @@ class UnscheduleItineraryItemProvider():
    @classmethod
    def delete_itinerary_event_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          *,
          event_type: ItineraryEventType ) -> None:
       cur.execute(

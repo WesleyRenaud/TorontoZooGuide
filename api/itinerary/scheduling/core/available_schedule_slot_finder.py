@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from ....shared.calendar_dates import DateValues
-from ....shared.constants import SCHEDULE_SLOT_STEP_SECONDS
+from ....shared.constants import Constants
 from .time_block import TimeBlock
 from .time_block_builder import TimeBlockBuilder
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class AvailableScheduleSlotFinder():
@@ -14,7 +14,7 @@ class AvailableScheduleSlotFinder():
          blockers: list[ TimeBlock ],
          anchor_seconds: int,
          duration_seconds: int,
-         day_end_seconds: int ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+         day_end_seconds: int ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       if anchor_seconds >= day_end_seconds:
          return None
 
@@ -34,7 +34,7 @@ class AvailableScheduleSlotFinder():
                   slot_start + duration_seconds ),
             )
 
-         slot_start += SCHEDULE_SLOT_STEP_SECONDS
+         slot_start += Constants.SCHEDULE_SLOT_STEP_SECONDS
 
       return None
 
@@ -45,7 +45,7 @@ class AvailableScheduleSlotFinder():
          blockers: list[ TimeBlock ],
          end_before_seconds: int,
          duration_seconds: int,
-         day_start_seconds: int ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+         day_start_seconds: int ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       if end_before_seconds <= day_start_seconds:
          return None
 
@@ -65,7 +65,7 @@ class AvailableScheduleSlotFinder():
                DateValues.schedule_time_key_from_seconds( slot_end ),
             )
 
-         slot_end -= SCHEDULE_SLOT_STEP_SECONDS
+         slot_end -= Constants.SCHEDULE_SLOT_STEP_SECONDS
 
       return None
 
@@ -80,7 +80,7 @@ class AvailableScheduleSlotFinder():
          day_end_seconds: int,
          before_end_seconds: int,
          after_start_seconds: int,
-      ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+      ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       """Try a duration-length slot before the bound, then after it."""
       before_slot = cls.find_previous(
          blockers,

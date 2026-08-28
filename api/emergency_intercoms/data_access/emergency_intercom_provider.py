@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .emergency_intercom_mapper import EmergencyIntercomMapper
 from ...models import EmergencyIntercom
-from ...types import Connection
+from ...types import Types
 
 
 class EmergencyIntercomProvider():
    @classmethod
-   def fetch_emergency_intercoms( cls, conn: Connection ) -> list[ EmergencyIntercom ]:
+   def fetch_emergency_intercoms( cls, conn: Types.Connection ) -> list[ EmergencyIntercom ]:
       cur = conn.cursor()
 
       try:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...types import Row
+from ...types import Types
 from .wild_encounter_meeting_spot_loop_pin_record import WildEncounterMeetingSpotLoopPinRecord
 
 
@@ -8,7 +8,7 @@ class WildEncounterMeetingSpotLoopPinMapper():
    @classmethod
    def map_record(
          cls,
-         row: Row ) -> WildEncounterMeetingSpotLoopPinRecord:
+         row: Types.Row ) -> WildEncounterMeetingSpotLoopPinRecord:
       return WildEncounterMeetingSpotLoopPinRecord(
          name=row[ 'NAME' ],
          loop_id=row[ 'LOOP_ID' ],
@@ -18,7 +18,7 @@ class WildEncounterMeetingSpotLoopPinMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ],
+         rows: list[ Types.Row ],
       ) -> list[ WildEncounterMeetingSpotLoopPinRecord ]:
       return [
          cls.map_record( row )

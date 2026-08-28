@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..shared.text_values import TextValues
 from ..shared.value_conversion import ValueConversion
-from ..types import Coordinate, ScheduleTimeKey
+from ..types import Types
 
 
 class Transportation:
@@ -15,11 +15,11 @@ class Transportation:
          description: str | None = None,
          info_link: str | None = None,
          hyperlink_text: str | None = None,
-         x_coord: Coordinate | None = None,
-         y_coord: Coordinate | None = None,
+         x_coord: Types.Coordinate | None = None,
+         y_coord: Types.Coordinate | None = None,
          region: str | None = None,
-         open_time: ScheduleTimeKey = None,
-         close_time: ScheduleTimeKey = None ) -> None:
+         open_time: Types.ScheduleTimeKey = None,
+         close_time: Types.ScheduleTimeKey = None ) -> None:
       self.name = name
       self.is_also_attraction = is_also_attraction
       self.free_with_admission = free_with_admission

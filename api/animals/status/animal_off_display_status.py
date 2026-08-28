@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...shared.enums import AnimalViewingScope
-from ...types import DateKey
+from ...types import Types
 
 
 class AnimalOffDisplayStatus:
@@ -10,8 +10,8 @@ class AnimalOffDisplayStatus:
          species: str,
          exhibit: str,
          viewing_scope: AnimalViewingScope,
-         start_date: DateKey,
-         end_date: DateKey,
+         start_date: Types.DateKey,
+         end_date: Types.DateKey,
          message: str ) -> None:
       self.species = species
       self.exhibit = exhibit

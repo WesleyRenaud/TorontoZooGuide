@@ -7,7 +7,7 @@ from http_support import make_handler
 from http_support import StubZooControllers
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 
 @pytest.mark.parametrize(
@@ -39,7 +39,7 @@ def test_get_restrooms_endpoint_maps_closed_toggle(
       }
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert StubZooControllers.instances[ 0 ].calls == [
       (

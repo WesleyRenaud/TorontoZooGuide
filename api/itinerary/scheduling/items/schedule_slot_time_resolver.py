@@ -12,22 +12,21 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.duration_values import DurationValues
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class ScheduleSlotTimeResolver():
    @classmethod
    def resolve(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          window: tuple[ int, int ],
          duration_seconds: int,
          *,
-         start_time: ScheduleTimeKey | None,
+         start_time: Types.ScheduleTimeKey | None,
          itinerary_context: dict[ str, Any ],
-         earliest_start_seconds: int | None = None ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+         earliest_start_seconds: int | None = None ) -> tuple[ tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
       anchor_seconds, day_end_seconds = window
 
       if earliest_start_seconds is not None:
@@ -59,16 +58,16 @@ class ScheduleSlotTimeResolver():
    @classmethod
    def resolve_allowing_visit_extension(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          visit_window: tuple[ int, int ],
          duration_seconds: int,
          *,
-         start_time: ScheduleTimeKey | None,
+         start_time: Types.ScheduleTimeKey | None,
          itinerary_context: dict[ str, Any ],
          day_hours_window: tuple[ int, int ] | None = None,
          earliest_start_seconds: int | None = None,
-      ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+      ) -> tuple[ tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
       """Prefer the guest visit window; if full, search day hours near existing schedule."""
       slot, slot_error = cls.resolve(
          conn,
@@ -133,7 +132,7 @@ class ScheduleSlotTimeResolver():
          day_hours_window: tuple[ int, int ],
          duration_seconds: int,
          itinerary_context: dict[ str, Any ],
-      ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+      ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       """After the visit window is full, try duration before arrival, then after departure."""
       itinerary = ItineraryBuilder.build_current( saved_itinerary, **itinerary_context )
       blockers = TimeBlockBuilder.collect_from_itinerary( itinerary )

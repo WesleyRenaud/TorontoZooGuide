@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .restaurant_schedule_record import RestaurantScheduleRecord
-from ...types import Row
+from ...types import Types
 
 
 class RestaurantScheduleMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> RestaurantScheduleRecord:
+   def map_record( cls, row: Types.Row ) -> RestaurantScheduleRecord:
       return RestaurantScheduleRecord(
          restaurant=row[ 'RESTAURANT' ],
          schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
@@ -23,7 +23,7 @@ class RestaurantScheduleMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ RestaurantScheduleRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ RestaurantScheduleRecord ]:
       return [
          cls.map_record( row )
          for row in rows

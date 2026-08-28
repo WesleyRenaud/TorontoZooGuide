@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 from .exhibit_closed_status import ExhibitClosedStatus
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class ExhibitStatusBuilder():
@@ -14,8 +14,8 @@ class ExhibitStatusBuilder():
    def build_closed_status(
          cls,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> ExhibitClosedStatus:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
@@ -35,8 +35,8 @@ class ExhibitStatusBuilder():
    def is_closure_active_on_visit_date(
          cls,
          is_closed: bool,
-         closed_start: DateInput,
-         closed_end: DateInput,
+         closed_start: Types.DateInput,
+         closed_end: Types.DateInput,
          target_date: date | None ) -> bool:
       if not is_closed or target_date is None:
          return False

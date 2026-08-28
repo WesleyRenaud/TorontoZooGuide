@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from .restaurant_record import RestaurantRecord
-from ...types import Row
+from ...types import Types
 
 
 class RestaurantMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> RestaurantRecord:
+   def map_record( cls, row: Types.Row ) -> RestaurantRecord:
       return RestaurantRecord(
          name=row[ 'NAME' ],
          location=row[ 'LOCATION' ],
@@ -20,7 +20,7 @@ class RestaurantMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ RestaurantRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ RestaurantRecord ]:
       return [
          cls.map_record( row )
          for row in rows

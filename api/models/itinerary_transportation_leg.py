@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class ItineraryTransportationLeg:
@@ -8,8 +8,8 @@ class ItineraryTransportationLeg:
          self,
          from_station: str,
          to_station: str,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          transportation: str,
          added_as_attraction: bool ) -> None:
       self.from_station = from_station

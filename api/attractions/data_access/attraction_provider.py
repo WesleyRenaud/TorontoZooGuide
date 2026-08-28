@@ -8,13 +8,13 @@ from .attraction_schedule_mapper import AttractionScheduleMapper
 from .attraction_schedule_override_mapper import AttractionScheduleOverrideMapper
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from .attraction_schedule_record import AttractionScheduleRecord
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class AttractionProvider():
    @classmethod
-   def fetch_attraction_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_attraction_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -33,7 +33,7 @@ class AttractionProvider():
    @classmethod
    def fetch_attraction_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          visit_date: date ) -> list[ AttractionRecord ]:
       cur = conn.cursor()
 
@@ -69,7 +69,7 @@ class AttractionProvider():
                visit_date.month,
                visit_date.day,
                visit_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                visit_date,
             ) )
 
@@ -82,7 +82,7 @@ class AttractionProvider():
    @classmethod
    def fetch_attraction_record_for_calendar_day(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_name: str,
          visit_date: date ) -> AttractionRecord | None:
       cur = conn.cursor()
@@ -120,7 +120,7 @@ class AttractionProvider():
                visit_date.month,
                visit_date.day,
                visit_date,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                visit_date,
                attraction_name,
             )
@@ -135,7 +135,7 @@ class AttractionProvider():
    @classmethod
    def fetch_attraction_schedule_records(
          cls,
-         conn: Connection ) -> list[ AttractionScheduleRecord ]:
+         conn: Types.Connection ) -> list[ AttractionScheduleRecord ]:
       cur = conn.cursor()
 
       try:
@@ -165,7 +165,7 @@ class AttractionProvider():
    @classmethod
    def fetch_attraction_schedule_override_records(
          cls,
-         conn: Connection ) -> list[ AttractionScheduleOverrideRecord ]:
+         conn: Types.Connection ) -> list[ AttractionScheduleOverrideRecord ]:
       cur = conn.cursor()
 
       try:

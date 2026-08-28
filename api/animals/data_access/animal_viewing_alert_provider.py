@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ...types import Connection, Cursor, DateInput
+from ...types import Types
 
 
 class AnimalViewingAlertProvider():
    @classmethod
    def _clear_animal_viewing_alert(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str ) -> None:
       cur.execute(
@@ -24,11 +24,11 @@ class AnimalViewingAlertProvider():
    @classmethod
    def _insert_animal_viewing_alert(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          species: str,
          exhibit: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> None:
       cur.execute(
          """   INSERT INTO AnimalViewingAlert (
@@ -52,11 +52,11 @@ class AnimalViewingAlertProvider():
    @classmethod
    def save_animal_viewing_alert(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> bool:
       cur = conn.cursor()
 
@@ -82,7 +82,7 @@ class AnimalViewingAlertProvider():
    @classmethod
    def delete_animal_viewing_alert(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str ) -> bool:
       cur = conn.cursor()

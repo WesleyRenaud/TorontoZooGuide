@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ..types import Coordinate
+from ..types import Types
 
 
 class EmergencyIntercom:
-   def __init__( self, x_coord: Coordinate, y_coord: Coordinate ) -> None:
+   def __init__( self, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.x_coord = x_coord
       self.y_coord = y_coord
 

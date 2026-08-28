@@ -3,7 +3,7 @@ from __future__ import annotations
 from .itinerary_path_builder import ItineraryPathBuilder
 from .itinerary_time_set_result import ItineraryTimeSetResult
 from ...shared.itinerary_config_builder import ItineraryConfigBuilder
-from ...types import Connection
+from ...types import Types
 
 
 class ItineraryTimeSetResultResponseBuilder():
@@ -12,7 +12,7 @@ class ItineraryTimeSetResultResponseBuilder():
          cls,
          result: ItineraryTimeSetResult,
          *,
-         conn: Connection | None = None,
+         conn: Types.Connection | None = None,
          extra: dict[ str, object ] | None = None,
    ) -> dict[ str, object ]:
       payload: dict[ str, object ] = {

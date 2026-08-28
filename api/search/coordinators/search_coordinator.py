@@ -17,10 +17,10 @@ from ...models import WildEncounter
 from ...pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from ...restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from ...restrooms.coordinators.restroom_coordinator import RestroomCoordinator
-from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from ...shared.constants import Constants
 from ...transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from ..transportation_attraction_route_duration_enricher import TransportationAttractionRouteDurationEnricher
-from ...types import MonthInput, VisitDay, VisitYear
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -40,9 +40,9 @@ class SearchCoordinator():
          include_transportation_stations: bool,
          include_guardians_talks: bool,
          include_wild_encounters: bool,
-         month: MonthInput,
-         day: VisitDay,
-         year: VisitYear,
+         month: Types.MonthInput,
+         day: Types.VisitDay,
+         year: Types.VisitYear,
          temp: float | None,
          include_off_display_animals: bool,
          for_itinerary: bool,
@@ -73,7 +73,7 @@ class SearchCoordinator():
                include_off_display_animals=include_off_display_animals,
                for_itinerary=for_itinerary,
                threshold=(
-                  ITINERARY_ANIMAL_MIN_LIKELIHOOD
+                  Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
                   if for_itinerary
                   else None ) ) or []
          )

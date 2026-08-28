@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from ..coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 from ..scheduling.collapse_wild_encounters_for_map_builder import CollapseWildEncountersForMapBuilder
-from ...shared.api_error_response import ApiErrorResponseApplier
+from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
 
 

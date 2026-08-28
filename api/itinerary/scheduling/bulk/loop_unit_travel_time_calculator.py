@@ -33,7 +33,7 @@ class LoopUnitTravelTimeCalculator():
    def inter_stop_seconds(
          cls,
          walk_graph: WalkGraph,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          adjacency: WalkGraphAdjacency | None = None ) -> list[ int ]:
       if not stops:
@@ -65,7 +65,7 @@ class LoopUnitTravelTimeCalculator():
    def total_inter_stop_seconds(
          cls,
          walk_graph: WalkGraph,
-         stops: list[ LoopScheduleStop ],
+         stops: list[ LoopScheduleStop.Stop ],
          *,
          adjacency: WalkGraphAdjacency | None = None ) -> int:
       return sum(

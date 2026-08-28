@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from ..scheduling.gift_shop_opening_schedule import GiftShopOpeningSchedule
 from ..scheduling.gift_shop_schedule_override import GiftShopScheduleOverride
-from ...shared.build_amenity_status_builders import AmenityStatusBuilders
+from ...shared.amenity_status_builders import AmenityStatusBuilders
 from ...shared.enums import AmenityNameField
-from ...types import DateInput
+from ...types import Types
 
 
 class GiftShopStatusBuilder():
@@ -19,8 +19,8 @@ class GiftShopStatusBuilder():
    def build_closed_schedule(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> GiftShopOpeningSchedule:
       return cls._builders.build_closed_schedule( gift_shop, start_date, end_date, message )
 
@@ -29,8 +29,8 @@ class GiftShopStatusBuilder():
    def build_opening_schedule(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -59,7 +59,7 @@ class GiftShopStatusBuilder():
    def build_closure_override(
          cls,
          gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> GiftShopScheduleOverride:
       return cls._builders.build_closure_override( gift_shop, start_date, end_date, message )

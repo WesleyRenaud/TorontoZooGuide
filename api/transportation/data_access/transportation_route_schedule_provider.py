@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ..scheduling.current_route_schedule import TransportationCurrentRouteSchedule
-from ...types import Connection
+from ..scheduling.transportation_current_route_schedule import TransportationCurrentRouteSchedule
+from ...types import Types
 
 
 class TransportationRouteScheduleProvider():
    @classmethod
    def save_current_transportation_route_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          schedule: TransportationCurrentRouteSchedule ) -> bool:
       cur = conn.cursor()

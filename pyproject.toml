@@ -43,6 +43,11 @@ blank_lines_between_methods = 2
 enforce_typing = true
 exclude = [
    "scripts/capture_readme_screenshots.py",
-   "api/seed/tables/animal.py",
+   "api/seed/tables/animal_seed_table.py",
    "api/zoo.py"
+]
+
+[tool.tzg_python_one_class_per_file]
+include = [
+   "api/**/*.py",
 ]

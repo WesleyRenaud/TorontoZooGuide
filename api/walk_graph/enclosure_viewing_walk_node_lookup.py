@@ -6,7 +6,7 @@ import json
 
 from ..animals.search.species_exhibit_key import SpeciesExhibitKey
 from .data_access.enclosure_viewing_walk_node_provider import EnclosureViewingWalkNodeProvider
-from .data_access.paths import ENCLOSURE_VIEWING_PATH
+from .data_access.paths import Paths
 from .domain.enclosure_viewing_walk_node import EnclosureViewingWalkNode
 from .domain.viewing_spot_key import ViewingSpotKey
 from .domain.viewing_spot_key_builder import ViewingSpotKeyBuilder
@@ -35,7 +35,7 @@ class EnclosureViewingWalkNodeLookup():
       walk_nodes_by_spot = cls.by_viewing_spot()
       walk_node_ids: dict[ EnclosureNameViewingSpotKey, str ] = {}
 
-      for row in json.loads( ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) ):
+      for row in json.loads( Paths.ENCLOSURE_VIEWING_PATH.read_text( encoding='utf-8' ) ):
          walk_node = walk_nodes_by_spot.get(
             ViewingSpotKeyBuilder.from_enclosure_viewing_row( row ) )
 

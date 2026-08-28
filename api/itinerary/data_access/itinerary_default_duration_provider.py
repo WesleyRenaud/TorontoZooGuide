@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from ...shared.duration_values import DurationValues
 from ...shared.enums import ItineraryEventType
-from ...types import Connection
+from ...types import Types
 
 
 class ItineraryDefaultDurationProvider():
    @classmethod
    def fetch_enclosure_viewing_default_duration_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str,
          enclosure_name: str | None ) -> int | None:
@@ -47,7 +47,7 @@ class ItineraryDefaultDurationProvider():
    @classmethod
    def fetch_attraction_default_duration_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction: str ) -> int | None:
       cur = conn.cursor()
 
@@ -70,7 +70,7 @@ class ItineraryDefaultDurationProvider():
    @classmethod
    def fetch_event_default_duration_seconds(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          event_type: ItineraryEventType ) -> int | None:
       cur = conn.cursor()
 

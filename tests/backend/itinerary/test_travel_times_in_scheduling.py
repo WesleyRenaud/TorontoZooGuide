@@ -12,7 +12,7 @@ from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWal
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
-from api.itinerary.routing.walk_travel_time_calculator import WALK_PX_PER_MINUTE
+from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
@@ -131,10 +131,10 @@ def _seconds( schedule_time: str | None ) -> int:
 
 def test_travel_time_seconds_from_length_px_uses_floored_minutes() -> None:
    assert WalkTravelTimeCalculator.seconds_from_length_px( 0 ) == 0
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 0.5 * WALK_PX_PER_MINUTE ) == 0
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.0 * WALK_PX_PER_MINUTE ) == 60
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.5 * WALK_PX_PER_MINUTE ) == 60
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 2.9 * WALK_PX_PER_MINUTE ) == 120
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 0.5 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 0
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.0 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.5 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 60
+   assert WalkTravelTimeCalculator.seconds_from_length_px( 2.9 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 120
 
 
 def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:

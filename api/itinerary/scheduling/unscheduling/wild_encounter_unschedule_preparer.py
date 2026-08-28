@@ -7,7 +7,7 @@ from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from .fixed_time_activity_unschedule_preparer import FixedTimeActivityUnschedulePreparer
 from ....models.wild_encounter_diff import WildEncounterDiff
-from ....types import Cursor
+from ....types import Types
 
 
 class WildEncounterUnschedulePreparer():
@@ -80,7 +80,7 @@ class WildEncounterUnschedulePreparer():
    @classmethod
    def clear_overlapping_saved_schedules(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          saved_itinerary: SavedItinerary,
          new_wild_encounters: list[ WildEncounterDiff ] ) -> None:
       FixedTimeActivityUnschedulePreparer.clear_overlapping_saved_schedules(

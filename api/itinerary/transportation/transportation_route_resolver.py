@@ -3,14 +3,14 @@ from __future__ import annotations
 from datetime import date
 
 from ..data_access.transportation_day_loop_provider import TransportationDayLoopProvider
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationRouteResolver():
    @classmethod
    def resolve_for_date(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          target_date: date ) -> str:

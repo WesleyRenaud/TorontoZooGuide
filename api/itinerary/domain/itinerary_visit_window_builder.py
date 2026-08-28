@@ -4,18 +4,18 @@ from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
-from ...types import Connection, ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryVisitWindowBuilder():
    @classmethod
    def schedule_time_occurs_outside(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> bool:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       if start_time is None or end_time is None:
          return False
 
@@ -28,11 +28,11 @@ class ItineraryVisitWindowBuilder():
    @classmethod
    def cleared_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ]:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ]:
       if cls.schedule_time_occurs_outside(
             start_time,
             end_time,
@@ -46,10 +46,10 @@ class ItineraryVisitWindowBuilder():
    @classmethod
    def clear_schedules_outside(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> bool:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       cur = conn.cursor()
       did_clear_schedule = False
 

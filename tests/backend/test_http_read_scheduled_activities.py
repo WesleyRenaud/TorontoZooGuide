@@ -9,7 +9,7 @@ from http_support import StubZooControllers
 from http_support import WILD_ENCOUNTER_NAME
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 
 @pytest.mark.parametrize(
@@ -34,7 +34,7 @@ def test_get_wild_encounters_endpoint_uses_available_database_results(
       '/get-wild-encounters',
       { 'month': 'June', 'day': 21, 'year': 2026 } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 

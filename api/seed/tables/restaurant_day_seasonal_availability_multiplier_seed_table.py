@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..json_seed_loader import JsonSeedLoader
 from ..seed_sql_loader import SeedSqlLoader
-from ...types import Cursor
+from ...types import Types
 
 
 ENTITY_FIELDS = ( 'restaurant', )
@@ -27,14 +27,14 @@ RESTAURANT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER_SQL = (
 
 class RestaurantDaySeasonalAvailabilityMultiplierSeedTable():
    @classmethod
-   def create_table( cls, cursor: Cursor ) -> None:
+   def create_table( cls, cursor: Types.Cursor ) -> None:
       SeedSqlLoader.execute_sql_file(
          cursor,
          SeedSqlLoader.seed_sql_path( RESTAURANT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER_SQL ) )
 
 
    @classmethod
-   def insert_rows( cls, cursor: Cursor ) -> None:
+   def insert_rows( cls, cursor: Types.Cursor ) -> None:
       JsonSeedLoader.insert_day_curve_directory(
          cursor,
          table='RestaurantDaySeasonalAvailabilityMultiplier',

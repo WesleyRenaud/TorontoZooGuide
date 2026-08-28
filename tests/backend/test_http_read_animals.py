@@ -8,7 +8,7 @@ from http_support import response_json
 from http_support import StubZooControllers
 import pytest
 
-import api.server as server
+import api.http_request_handler as server
 
 
 def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload(
@@ -24,7 +24,7 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload(
       }
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
@@ -58,7 +58,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response(
       }
    )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert handler.statuses == [ 200 ]
    assert response_json( handler )[ 'animals' ][ 0 ][ 'species' ] == 'African Lion'

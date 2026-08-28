@@ -6,7 +6,7 @@ from datetime import date
 from itinerary.support import itinerary_animals_for_exhibits
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from conftest import DbControllers
 

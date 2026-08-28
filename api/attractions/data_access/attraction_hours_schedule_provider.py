@@ -3,15 +3,15 @@ from __future__ import annotations
 from .attraction_hours_schedule_mapper import AttractionHoursScheduleMapper
 from .attraction_hours_schedule_record import AttractionHoursScheduleRecord
 from ..scheduling.attraction_hours_schedule import AttractionHoursSchedule
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class AttractionHoursScheduleProvider():
    @classmethod
    def overlaps_existing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> bool:
       cur = conn.cursor()
       try:
@@ -28,8 +28,8 @@ class AttractionHoursScheduleProvider():
                schedule.attraction,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) ).fetchone()
          return row != None
@@ -40,7 +40,7 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def save_hours_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> bool:
       if cls.overlaps_existing_schedule( conn, schedule ):
          return False
@@ -52,7 +52,7 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def fetch_hours_schedule_conflicts(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> list[ AttractionHoursScheduleRecord ]:
       cur = conn.cursor()
       try:
@@ -75,8 +75,8 @@ class AttractionHoursScheduleProvider():
                schedule.attraction,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) )
          return AttractionHoursScheduleMapper.map_records( data.fetchall() )
@@ -87,7 +87,7 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def fetch_hours_schedule_records(
          cls,
-         conn: Connection ) -> list[ AttractionHoursScheduleRecord ]:
+         conn: Types.Connection ) -> list[ AttractionHoursScheduleRecord ]:
       cur = conn.cursor()
       try:
          data = cur.execute(
@@ -110,7 +110,7 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def delete_hours_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursScheduleRecord ) -> None:
       cur = conn.cursor()
       try:
@@ -127,10 +127,10 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def update_hours_schedule_dates(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
       try:
          cur.execute(
@@ -154,10 +154,10 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def insert_copied_hours_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
       try:
          cur.execute(
@@ -188,7 +188,7 @@ class AttractionHoursScheduleProvider():
    @classmethod
    def insert_or_update_hours_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: AttractionHoursSchedule ) -> None:
       cur = conn.cursor()
       try:

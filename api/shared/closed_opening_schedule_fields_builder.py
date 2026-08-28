@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ..app_strings import AppStringProvider
+from ..app_string_provider import AppStringProvider
 from .calendar_dates import DateValues
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
-from ..types import DateInput
+from ..types import Types
 
 
 class ClosedOpeningScheduleFieldsBuilder():
@@ -11,8 +11,8 @@ class ClosedOpeningScheduleFieldsBuilder():
    def build(
          cls,
          name: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> OpeningScheduleWeekdayFields:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,

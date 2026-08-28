@@ -12,7 +12,7 @@ from ..domain.itinerary_adjustment import ItineraryAdjustment
 from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary_save_context import ItinerarySaveContext
-from ...types import Connection
+from ...types import Types
 from ..validation.itinerary_save_validator import ItinerarySaveValidator
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -21,7 +21,7 @@ class ItinerarySaveContextPreparer():
    @classmethod
    def prepare(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          save_input: ItinerarySaveInput,
          *,
          old_visit_date: str | None,

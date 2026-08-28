@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ...types import DateKey
+from ...types import Types
 
 
 class ExhibitClosedStatus:
    def __init__(
          self,
          exhibit: str,
-         start_date: DateKey,
-         end_date: DateKey,
+         start_date: Types.DateKey,
+         end_date: Types.DateKey,
          message: str ) -> None:
       self.exhibit = exhibit
       self.start_date = start_date

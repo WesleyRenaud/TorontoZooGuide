@@ -4,14 +4,14 @@ from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from .guardians_talk_animal_mapper import GuardiansTalkAnimalMapper
 from .guardians_talk_animal_record import GuardiansTalkAnimalRecord
 from .guardians_talk_animal_record_mapper import GuardiansTalkAnimalRecordMapper
-from ...types import Connection
+from ...types import Types
 
 
 class GuardiansTalkAnimalProvider():
    @classmethod
    def fetch_linked_animals(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str ) -> list[ SpeciesExhibitKey ]:
       cur = conn.cursor()
 
@@ -34,7 +34,7 @@ class GuardiansTalkAnimalProvider():
    @classmethod
    def fetch_animal_links(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str ) -> list[ GuardiansTalkAnimalRecord ]:
       cur = conn.cursor()
 

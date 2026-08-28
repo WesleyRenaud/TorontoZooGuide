@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import Coordinate
+from ...types import Types
 
 
 @dataclass( frozen=True )
 class DrinkingFountainRecord:
-   x_coord: Coordinate
-   y_coord: Coordinate
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate

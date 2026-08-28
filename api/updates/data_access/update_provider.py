@@ -4,13 +4,13 @@ from ..inputs.update_create_input import UpdateCreateInput
 from ..inputs.update_edit_input import UpdateEditInput
 from ..inputs.update_end_input import UpdateEndInput
 from ...models import Update
-from ...types import Connection, DateKey
+from ...types import Types
 from .update_mapper import UpdateMapper
 
 
 class UpdateProvider():
    @classmethod
-   def insert_update( cls, conn: Connection, update: UpdateCreateInput ) -> bool:
+   def insert_update( cls, conn: Types.Connection, update: UpdateCreateInput ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -41,7 +41,7 @@ class UpdateProvider():
 
 
    @classmethod
-   def update_end_date( cls, conn: Connection, update: UpdateEndInput ) -> bool:
+   def update_end_date( cls, conn: Types.Connection, update: UpdateEndInput ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -65,7 +65,7 @@ class UpdateProvider():
 
 
    @classmethod
-   def edit_update_record( cls, conn: Connection, update: UpdateEditInput ) -> bool:
+   def edit_update_record( cls, conn: Types.Connection, update: UpdateEditInput ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -95,8 +95,8 @@ class UpdateProvider():
    @classmethod
    def fetch_updates(
          cls,
-         conn: Connection,
-         as_of_date: DateKey ) -> list[ Update ]:
+         conn: Types.Connection,
+         as_of_date: Types.DateKey ) -> list[ Update ]:
       cur = conn.cursor()
 
       try:

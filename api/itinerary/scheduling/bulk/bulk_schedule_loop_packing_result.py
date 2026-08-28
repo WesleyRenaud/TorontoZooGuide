@@ -12,7 +12,7 @@ from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 
 @dataclass( frozen=True )
 class BulkScheduleLoopPackingResult:
-   remaining_stops: list[ LoopScheduleStop ]
+   remaining_stops: list[ LoopScheduleStop.Stop ]
    covered_by_talk: dict[ ViewingSpotNameKey, CoveredAnimalTalk ]
    covered_by_attraction: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ]
    schedule_windows: list[ ItineraryScheduleWindow ]

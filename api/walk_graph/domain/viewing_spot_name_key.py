@@ -1,4 +1,9 @@
 from __future__ import annotations
 
+from typing import NamedTuple
 
-ViewingSpotNameKey = tuple[ str, str, str | None ]
+
+class ViewingSpotNameKey( NamedTuple ):
+   species: str
+   exhibit: str
+   enclosure_name: str | None

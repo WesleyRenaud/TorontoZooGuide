@@ -3,14 +3,14 @@ from __future__ import annotations
 from ..cancellations.guardians_talk_cancellation_input import GuardiansTalkCancellationInput
 from .guardians_talk_cancellation_mapper import GuardiansTalkCancellationMapper
 from .guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
-from ...types import Connection, DateKey
+from ...types import Types
 
 
 class GuardiansTalkCancellationProvider():
    @classmethod
    def fetch_cancellation_records(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str ) -> list[ GuardiansTalkCancellationRecord ]:
       cur = conn.cursor()
@@ -38,10 +38,10 @@ class GuardiansTalkCancellationProvider():
    @classmethod
    def fetch_occurrence_is_cancelled(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          talk_name: str,
          location: str,
-         cancellation_date: DateKey,
+         cancellation_date: Types.DateKey,
          talk_time: str ) -> bool:
       cur = conn.cursor()
 
@@ -70,7 +70,7 @@ class GuardiansTalkCancellationProvider():
    @classmethod
    def save_cancellation(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          cancellation: GuardiansTalkCancellationInput ) -> bool:
       cur = conn.cursor()
 

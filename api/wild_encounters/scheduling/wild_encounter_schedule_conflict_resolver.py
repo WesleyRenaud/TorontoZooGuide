@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..data_access.wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
 from ..data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
-from ...shared.build_opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
-from ...types import Connection
+from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...types import Types
 from .wild_encounter_schedule_input import WildEncounterScheduleInput
 
 
@@ -20,7 +20,7 @@ class WildEncounterScheduleConflictResolver():
    @classmethod
    def save_replacing_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> bool:
       return _resolution.save_replacing_overlaps( conn, schedule )
 
@@ -28,7 +28,7 @@ class WildEncounterScheduleConflictResolver():
    @classmethod
    def save_trimming_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: WildEncounterScheduleInput ) -> bool:
       return _resolution.save_trimming_overlaps( conn, schedule )
 
@@ -36,7 +36,7 @@ class WildEncounterScheduleConflictResolver():
    @classmethod
    def trim_conflict(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: WildEncounterScheduleConflictRecord,
          schedule: WildEncounterScheduleInput ) -> None:
       return _resolution.trim_conflict( conn, conflict, schedule )

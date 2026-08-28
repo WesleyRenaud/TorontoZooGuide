@@ -4,10 +4,11 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
+from ...scheduled_item import ScheduledItem
 from ..scheduling.core.time_block_builder import TimeBlockBuilder
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import ScheduledItem
+from ...types import Types
 
 
 class ScheduleTimeConflictIssueFinder():
@@ -33,7 +34,7 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _schedule_time_range(
          cls,
-         scheduled_item: ScheduledItem ) -> tuple[ int, int ] | None:
+         scheduled_item: ScheduledItem.Item ) -> tuple[ int, int ] | None:
       time_block = TimeBlockBuilder.from_schedule_times(
          scheduled_item.start_time,
          scheduled_item.end_time )
@@ -47,8 +48,8 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _schedule_times_overlap(
          cls,
-         first: ScheduledItem,
-         second: ScheduledItem ) -> bool:
+         first: ScheduledItem.Item,
+         second: ScheduledItem.Item ) -> bool:
       first_start, first_end = cls._schedule_time_range( first )
       second_start, second_end = cls._schedule_time_range( second )
 
@@ -59,7 +60,7 @@ class ScheduleTimeConflictIssueFinder():
    def _active_scheduled_items(
          cls,
          guardians_talks: list[ GuardiansTalkDiff ],
-         wild_encounters: list[ WildEncounterDiff ] ) -> list[ ScheduledItem ]:
+         wild_encounters: list[ WildEncounterDiff ] ) -> list[ ScheduledItem.Item ]:
       active_talks = [
          guardians_talk
          for guardians_talk in guardians_talks
@@ -83,10 +84,10 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _collect_overlapping_group(
          cls,
-         scheduled_items: list[ ScheduledItem ],
+         scheduled_items: list[ ScheduledItem.Item ],
          start_index: int,
-         visited: set[ int ] ) -> list[ ScheduledItem ]:
-      group: list[ ScheduledItem ] = []
+         visited: set[ int ] ) -> list[ ScheduledItem.Item ]:
+      group: list[ ScheduledItem.Item ] = []
       pending_indices = [ start_index ]
       visited.add( start_index )
 
@@ -111,12 +112,12 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _conflict_groups(
          cls,
-         scheduled_items: list[ ScheduledItem ] ) -> list[ list[ ScheduledItem ] ]:
+         scheduled_items: list[ ScheduledItem.Item ] ) -> list[ list[ ScheduledItem.Item ] ]:
       if len( scheduled_items ) < 2:
          return []
 
       visited: set[ int ] = set()
-      conflict_groups: list[ list[ ScheduledItem ] ] = []
+      conflict_groups: list[ list[ ScheduledItem.Item ] ] = []
 
       for start_index in range( len( scheduled_items ) ):
          if start_index in visited:
@@ -136,7 +137,7 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _scheduled_item_to_issue_item(
          cls,
-         scheduled_item: ScheduledItem ) -> ItinerarySaveIssueItem:
+         scheduled_item: ScheduledItem.Item ) -> ItinerarySaveIssueItem:
       if isinstance( scheduled_item, GuardiansTalkDiff ):
          return ItinerarySaveIssueItem.from_guardians_talk_diff( scheduled_item )
 
@@ -146,7 +147,7 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _sort_scheduled_items_for_issue(
          cls,
-         scheduled_items: list[ ScheduledItem ] ) -> list[ ScheduledItem ]:
+         scheduled_items: list[ ScheduledItem.Item ] ) -> list[ ScheduledItem.Item ]:
       return sorted(
          scheduled_items,
          key=lambda scheduled_item: (
@@ -159,7 +160,7 @@ class ScheduleTimeConflictIssueFinder():
    @classmethod
    def _build_conflict_issue(
          cls,
-         scheduled_items: list[ ScheduledItem ] ) -> ItineraryResultReason:
+         scheduled_items: list[ ScheduledItem.Item ] ) -> ItineraryResultReason:
       sorted_items = cls._sort_scheduled_items_for_issue( scheduled_items )
       issue_items = [
          cls._scheduled_item_to_issue_item( scheduled_item )

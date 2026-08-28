@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import DateKey
+from ...types import Types
 
 
 @dataclass( frozen=True )
 class WildEncounterScheduleInput:
    wild_encounter: str
    start_date: str
-   end_date: DateKey | None
+   end_date: Types.DateKey | None
    encounter_time: str
    monday: bool
    tuesday: bool

@@ -6,14 +6,14 @@ from .drinking_fountain_status_mapper import DrinkingFountainStatusMapper
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
 from ..status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
 from ..status.drinking_fountain_open_status import DrinkingFountainOpenStatus
-from ...types import Connection
+from ...types import Types
 
 
 class DrinkingFountainStatusProvider():
    @classmethod
    def fetch_drinking_fountain_status_record(
          cls,
-         conn: Connection ) -> DrinkingFountainStatusRecord | None:
+         conn: Types.Connection ) -> DrinkingFountainStatusRecord | None:
       cur = conn.cursor()
 
       try:
@@ -41,7 +41,7 @@ class DrinkingFountainStatusProvider():
    @classmethod
    def fetch_drinking_fountain_seasonal_likelihood(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          target_date: date ) -> float:
       cur = conn.cursor()
 
@@ -69,7 +69,7 @@ class DrinkingFountainStatusProvider():
    @classmethod
    def save_drinking_fountain_closed_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          status: DrinkingFountainClosedStatus ) -> bool:
       cur = conn.cursor()
 
@@ -101,7 +101,7 @@ class DrinkingFountainStatusProvider():
    @classmethod
    def save_drinking_fountain_open_status(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          status: DrinkingFountainOpenStatus ) -> bool:
       cur = conn.cursor()
 

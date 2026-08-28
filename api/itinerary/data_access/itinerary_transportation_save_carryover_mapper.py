@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .itinerary_transportation_input import ItineraryTransportationInput
 from .itinerary_transportation_record import ItineraryTransportationRecord
-from .itinerary_transportation_save_carryover_record import ItineraryTransportationSaveCarryover
-from ...types import DateKey
+from .itinerary_transportation_save_carryover import ItineraryTransportationSaveCarryover
+from ...types import Types
 
 
 class ItineraryTransportationSaveCarryoverMapper():
@@ -56,7 +56,7 @@ class ItineraryTransportationSaveCarryoverMapper():
          cls,
          saved_transportation_rows: list[ ItineraryTransportationRecord ] | None,
          transportation: ItineraryTransportationInput,
-         old_visit_date: DateKey | None ) -> ItineraryTransportationSaveCarryover:
+         old_visit_date: Types.DateKey | None ) -> ItineraryTransportationSaveCarryover:
       if old_visit_date is not None:
          saved_row = cls._saved_transportation_row_for_input(
             saved_transportation_rows,

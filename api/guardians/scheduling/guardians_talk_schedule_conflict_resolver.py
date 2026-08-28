@@ -3,8 +3,8 @@ from __future__ import annotations
 from ..data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
-from ...shared.build_opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
-from ...types import Connection
+from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...types import Types
 
 
 _resolution = OpeningScheduleConflictResolution(
@@ -20,7 +20,7 @@ class GuardiansTalkScheduleConflictResolver():
    @classmethod
    def save_replacing_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> bool:
       return _resolution.save_replacing_overlaps( conn, schedule )
 
@@ -28,7 +28,7 @@ class GuardiansTalkScheduleConflictResolver():
    @classmethod
    def save_trimming_overlaps(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GuardiansTalkScheduleInput ) -> bool:
       return _resolution.save_trimming_overlaps( conn, schedule )
 
@@ -36,7 +36,7 @@ class GuardiansTalkScheduleConflictResolver():
    @classmethod
    def trim_conflict(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          conflict: GuardiansTalkScheduleRecord,
          schedule: GuardiansTalkScheduleInput ) -> None:
       return _resolution.trim_conflict( conn, conflict, schedule )

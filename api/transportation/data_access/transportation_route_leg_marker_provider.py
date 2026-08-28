@@ -5,7 +5,7 @@ from collections import defaultdict
 from .transportation_leg_stations import TransportationLegStations
 from .transportation_route_leg_marker_mapper import TransportationRouteLegMarkerMapper
 from .transportation_route_leg_marker_record import TransportationRouteLegMarkerRecord
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationRouteLegMarkerProvider():
@@ -24,7 +24,7 @@ class TransportationRouteLegMarkerProvider():
    @classmethod
    def fetch_transportation_route_leg_markers_by_leg(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          route: str,
@@ -55,7 +55,7 @@ class TransportationRouteLegMarkerProvider():
    @classmethod
    def fetch_transportation_route_leg_marker_ids(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          route: str,

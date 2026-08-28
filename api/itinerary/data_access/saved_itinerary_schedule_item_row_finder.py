@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ..animal_item_key import AnimalScheduleItemKey
+from ..animal_schedule_item_key import AnimalScheduleItemKey
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
-from ..attraction_item_key import AttractionScheduleItemKey
-from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ..attraction_schedule_item_key import AttractionScheduleItemKey
+from ..guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_record import ItineraryAttractionRecord
 from .itinerary_event_record import ItineraryEventRecord
@@ -14,8 +14,8 @@ from .saved_itinerary import SavedItinerary
 from ..scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.enums import ItineraryEventType
-from ..transportation_item_key import TransportationScheduleItemKey
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ..transportation_schedule_item_key import TransportationScheduleItemKey
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
 SavedItineraryScheduleItemRow = (
@@ -129,7 +129,7 @@ class SavedItineraryScheduleItemRowFinder():
    def find_saved_itinerary_schedule_item_row(
          cls,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ScheduleItemKey,
+         schedule_item_key: ScheduleItemKey.Key,
          ) -> SavedItineraryScheduleItemRow | None:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          return next(
@@ -210,7 +210,7 @@ class SavedItineraryScheduleItemRowFinder():
    def saved_schedule_item_is_already_scheduled(
          cls,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ScheduleItemKey ) -> bool:
+         schedule_item_key: ScheduleItemKey.Key ) -> bool:
       row = cls.find_saved_itinerary_schedule_item_row(
          saved_itinerary,
          schedule_item_key )

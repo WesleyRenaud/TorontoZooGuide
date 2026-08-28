@@ -14,11 +14,11 @@ from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 from ..unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
 from ...warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
-from ...wild_encounter_item_key import WildEncounterScheduleItemKey
+from ...wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -55,7 +55,7 @@ class WildEncounterItineraryItemScheduler():
    @classmethod
    def _insert_scheduled_wild_encounter(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          wild_encounter_key: WildEncounterScheduleItemKey,
          wild_encounter_diff: WildEncounterDiff,
@@ -88,7 +88,7 @@ class WildEncounterItineraryItemScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          wild_encounter_key: WildEncounterScheduleItemKey,
          *,
          itinerary_context: dict[ str, Any ],

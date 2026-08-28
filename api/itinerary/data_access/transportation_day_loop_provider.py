@@ -4,14 +4,14 @@ from datetime import date
 
 from ..transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from .transportation_route_leg_segment_mapper import TransportationRouteLegSegmentMapper
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationDayLoopProvider():
    @classmethod
    def fetch_transportation_active_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          target_date: date ) -> str | None:
@@ -47,7 +47,7 @@ class TransportationDayLoopProvider():
    @classmethod
    def fetch_transportation_day_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          month: int,
@@ -77,7 +77,7 @@ class TransportationDayLoopProvider():
    @classmethod
    def fetch_main_transportation_station(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str ) -> str | None:
       cur = conn.cursor()
 
@@ -103,7 +103,7 @@ class TransportationDayLoopProvider():
    @classmethod
    def fetch_transportation_route_legs(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          transportation: str,
          route: str ) -> list[ TransportationRouteLegSegment ]:

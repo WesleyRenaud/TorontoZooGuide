@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.event_site_coordinator import EventSiteCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class EventSiteController():

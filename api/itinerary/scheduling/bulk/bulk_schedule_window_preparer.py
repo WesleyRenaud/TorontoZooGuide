@@ -16,7 +16,7 @@ from ..items.prepared_schedule_window import PreparedScheduleWindow
 from ...routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
 from ...routing.itinerary_stop_resolver import ItineraryStopResolver
 from ....shared.calendar_dates import DateValues
-from ....types import Connection
+from ....types import Types
 from ..unscheduling.itinerary_schedule_clearer import ItineraryScheduleClearer
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
@@ -78,7 +78,7 @@ class BulkScheduleWindowPreparer():
    @classmethod
    def prepare_windows(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          prepared_window: PreparedScheduleWindow,
          itinerary_context: dict[ str, Any ] ) -> BulkScheduleWindowPrep:

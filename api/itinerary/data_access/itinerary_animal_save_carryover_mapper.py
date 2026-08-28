@@ -3,8 +3,8 @@ from __future__ import annotations
 from ...animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_animal_record import ItineraryAnimalRecord
-from .itinerary_animal_save_carryover_record import ItineraryAnimalSaveCarryover
-from ...types import DateKey
+from .itinerary_animal_save_carryover import ItineraryAnimalSaveCarryover
+from ...types import Types
 
 
 class ItineraryAnimalSaveCarryoverMapper():
@@ -69,7 +69,7 @@ class ItineraryAnimalSaveCarryoverMapper():
          cls,
          saved_animal_rows: list[ ItineraryAnimalRecord ] | None,
          animal: ItineraryAnimalInput,
-         old_visit_date: DateKey | None ) -> ItineraryAnimalSaveCarryover:
+         old_visit_date: Types.DateKey | None ) -> ItineraryAnimalSaveCarryover:
       if old_visit_date is None:
          return cls.map_empty_from_input( animal, is_added=False )
 

@@ -13,22 +13,22 @@ from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalReco
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from ...models import Animal
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
 from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
 from ...shared.enums import AnimalViewingScope
 from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 class AnimalCoordinator():
    @classmethod
    def get_animals_viewable_on_day(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          temp: float | None = None,
          include_off_display_animals: bool = False,
          for_itinerary: bool = False,
@@ -43,7 +43,7 @@ class AnimalCoordinator():
          temp=temp )
 
       animal_records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
-         get_connection(),
+         RequestConnectionProvider.get(),
          context.calendar_month,
          context.day_of_month,
          exhibits_to_include=exhibits_to_include )
@@ -66,14 +66,14 @@ class AnimalCoordinator():
          species: str,
          exhibit: str ) -> Animal | None:
       return AnimalInformationProvider.fetch_animal_information(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit )
 
 
    @classmethod
    def get_animal_species_names( cls ) -> list[ str ]:
-      return AnimalSpeciesNameProvider.fetch_animal_species_names( get_connection() )
+      return AnimalSpeciesNameProvider.fetch_animal_species_names( RequestConnectionProvider.get() )
 
 
    @classmethod
@@ -82,7 +82,7 @@ class AnimalCoordinator():
          species: str,
          exhibit: str ) -> list[ AnimalViewingScope ]:
       return AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit )
 
@@ -92,8 +92,8 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str,
          viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
       status = AnimalOffDisplayStatusBuilder.build(
@@ -105,7 +105,7 @@ class AnimalCoordinator():
          message=message )
 
       return AnimalStatusProvider.save_animal_off_display_status(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=status.species,
          exhibit=status.exhibit,
          viewing_scope=status.viewing_scope,
@@ -121,7 +121,7 @@ class AnimalCoordinator():
          exhibit: str,
          viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
       return AnimalStatusProvider.save_animal_on_display_status(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit,
          viewing_scope=viewing_scope )
@@ -132,8 +132,8 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          daily_start_time: str,
          daily_end_time: str,
          message: str ) -> bool:
@@ -147,7 +147,7 @@ class AnimalCoordinator():
          message=message )
 
       return AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=schedule.species,
          exhibit=schedule.exhibit,
          start_date=schedule.start_date,
@@ -160,7 +160,7 @@ class AnimalCoordinator():
    @classmethod
    def remove_animal_visibility_schedule( cls, species: str, exhibit: str ) -> bool:
       return AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit )
 
@@ -170,8 +170,8 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str,
-         alert_start_date: DateInput,
-         alert_end_date: DateInput,
+         alert_start_date: Types.DateInput,
+         alert_end_date: Types.DateInput,
          message: str ) -> bool:
       alert = AnimalViewingAlertBuilder.build(
          species=species,
@@ -181,7 +181,7 @@ class AnimalCoordinator():
          message=message )
 
       return AnimalViewingAlertProvider.save_animal_viewing_alert(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=alert.species,
          exhibit=alert.exhibit,
          alert_start_date=alert.start_date,
@@ -192,7 +192,7 @@ class AnimalCoordinator():
    @classmethod
    def remove_animal_viewing_alert( cls, species: str, exhibit: str ) -> bool:
       return AnimalViewingAlertProvider.delete_animal_viewing_alert(
-         get_connection(),
+         RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit )
 
@@ -200,9 +200,9 @@ class AnimalCoordinator():
    @classmethod
    def get_animals_for_saved_itinerary(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          saved_animals: list[ ItineraryAnimalRecord ],
          temp: float | None = None ) -> list[ Animal ]:
 
@@ -232,9 +232,9 @@ class AnimalCoordinator():
    def get_animals_matching_query(
          cls,
          query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          temp: float | None = None,
          include_off_display_animals: bool = False,
          for_itinerary: bool = False,

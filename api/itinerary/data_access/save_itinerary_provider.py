@@ -13,7 +13,7 @@ from ...models.transportation_diff import TransportationDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from .schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ...shared.calendar_dates import DateValues
-from ...types import Connection, Cursor, ScheduleTimeKey
+from ...types import Types
 from .validated_itinerary import ValidatedItinerary
 
 
@@ -21,10 +21,10 @@ class SaveItineraryProvider():
    @classmethod
    def save_itinerary_date(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          visit_date: date,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> None:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> None:
       cur.execute(
          """   INSERT INTO ItineraryDate (
                   ITINERARY_DATE,
@@ -41,7 +41,7 @@ class SaveItineraryProvider():
 
 
    @classmethod
-   def save_itinerary_animals( cls, cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
+   def save_itinerary_animals( cls, cur: Types.Cursor, animals: list[ AnimalDiff ] ) -> None:
       if not animals:
          return
 
@@ -74,7 +74,7 @@ class SaveItineraryProvider():
 
 
    @classmethod
-   def save_itinerary_attractions( cls, cur: Cursor, attractions: list[ AttractionDiff ] ) -> None:
+   def save_itinerary_attractions( cls, cur: Types.Cursor, attractions: list[ AttractionDiff ] ) -> None:
       if not attractions:
          return
 
@@ -101,7 +101,7 @@ class SaveItineraryProvider():
    @classmethod
    def save_itinerary_transportations(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportations: list[ TransportationDiff ] ) -> None:
       if not transportations:
          return
@@ -136,7 +136,7 @@ class SaveItineraryProvider():
 
 
    @classmethod
-   def save_itinerary_guardians_talks( cls, cur: Cursor, guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
+   def save_itinerary_guardians_talks( cls, cur: Types.Cursor, guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
       if not guardians_talks:
          return
 
@@ -151,7 +151,7 @@ class SaveItineraryProvider():
 
 
    @classmethod
-   def save_itinerary_wild_encounters( cls, cur: Cursor, wild_encounters: list[ WildEncounterDiff ] ) -> None:
+   def save_itinerary_wild_encounters( cls, cur: Types.Cursor, wild_encounters: list[ WildEncounterDiff ] ) -> None:
       if not wild_encounters:
          return
 
@@ -174,7 +174,7 @@ class SaveItineraryProvider():
 
 
    @classmethod
-   def save_itinerary_events( cls, cur: Cursor, events: list[ ItineraryEvent ] ) -> None:
+   def save_itinerary_events( cls, cur: Types.Cursor, events: list[ ItineraryEvent ] ) -> None:
       if not events:
          return
 
@@ -197,7 +197,7 @@ class SaveItineraryProvider():
    @classmethod
    def save_validated_itinerary(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          visit_date: date,
          validated_itinerary: ValidatedItinerary,
          selected_exhibits: list[ str ] | None = None ) -> bool:

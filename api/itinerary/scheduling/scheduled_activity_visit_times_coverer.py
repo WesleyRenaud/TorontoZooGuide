@@ -7,17 +7,16 @@ from ..data_access.itinerary_time_provider import ItineraryTimeProvider
 from ..domain.itinerary_builder import ItineraryBuilder
 from .scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ...shared.calendar_dates import DateValues
-from ...types import Connection
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class ScheduledActivityVisitTimesCoverer():
    @classmethod
    def arrival_covering_starts(
          cls,
-         arrival_time: ScheduleTimeKey,
-         schedule_start_times: list[ ScheduleTimeKey ],
-      ) -> ScheduleTimeKey:
+         arrival_time: Types.ScheduleTimeKey,
+         schedule_start_times: list[ Types.ScheduleTimeKey ],
+      ) -> Types.ScheduleTimeKey:
       if arrival_time is None:
          return None
 
@@ -33,9 +32,9 @@ class ScheduledActivityVisitTimesCoverer():
    @classmethod
    def departure_covering_ends(
          cls,
-         departure_time: ScheduleTimeKey,
-         schedule_end_times: list[ ScheduleTimeKey ],
-      ) -> ScheduleTimeKey:
+         departure_time: Types.ScheduleTimeKey,
+         schedule_end_times: list[ Types.ScheduleTimeKey ],
+      ) -> Types.ScheduleTimeKey:
       if departure_time is None:
          return None
 
@@ -51,10 +50,10 @@ class ScheduledActivityVisitTimesCoverer():
    @classmethod
    def ensure_arrival_covers_start(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         start_time: ScheduleTimeKey,
-         current_arrival_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         current_arrival_time: Types.ScheduleTimeKey ) -> bool:
       if not DateValues.time_value_is_before( start_time, current_arrival_time ):
          return False
 
@@ -64,10 +63,10 @@ class ScheduledActivityVisitTimesCoverer():
    @classmethod
    def ensure_departure_covers_end(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         end_time: ScheduleTimeKey,
-         current_departure_time: ScheduleTimeKey ) -> bool:
+         end_time: Types.ScheduleTimeKey,
+         current_departure_time: Types.ScheduleTimeKey ) -> bool:
       if not DateValues.time_value_is_after( end_time, current_departure_time ):
          return False
 
@@ -77,12 +76,12 @@ class ScheduledActivityVisitTimesCoverer():
    @classmethod
    def cover_for_activity(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
-         current_arrival_time: ScheduleTimeKey,
-         current_departure_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
+         current_arrival_time: Types.ScheduleTimeKey,
+         current_departure_time: Types.ScheduleTimeKey,
          itinerary_context: dict[ str, Any ],
          seed_if_complete: bool = True,
       ) -> None:

@@ -6,10 +6,10 @@ from ...shared.enums import ScheduleItemKind
 
 class MasterRouteStopChecker():
    @classmethod
-   def is_animal( cls, stop: MasterRouteStop ) -> bool:
+   def is_animal( cls, stop: MasterRouteStop.Stop ) -> bool:
       return stop.kind == ScheduleItemKind.ANIMAL
 
 
    @classmethod
-   def is_attraction( cls, stop: MasterRouteStop ) -> bool:
+   def is_attraction( cls, stop: MasterRouteStop.Stop ) -> bool:
       return stop.kind == ScheduleItemKind.ATTRACTION

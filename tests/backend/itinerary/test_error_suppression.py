@@ -5,7 +5,7 @@ from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusP
 from api.seed.user_itinerary_config_cleaner import UserItineraryConfigCleaner
 from api.shared.enums import ItineraryErrorType
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 
@@ -105,7 +105,7 @@ def test_clear_itinerary_leaves_error_suppressions(
 
 def test_clear_user_itinerary_config_clears_error_suppressions(
       db: DbControllers,
-      cursor: Cursor ) -> None:
+      cursor: Types.Cursor ) -> None:
    ItineraryStatusProvider.suppress_itinerary_status(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )

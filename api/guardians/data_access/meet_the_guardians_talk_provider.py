@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .meet_the_guardians_talk_mapper import MeetTheGuardiansTalkMapper
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
-from ...types import Connection
+from ...types import Types
 
 
 class MeetTheGuardiansTalkProvider():
    @classmethod
-   def fetch_guardians_talk_locations( cls, conn: Connection ) -> list[ str ]:
+   def fetch_guardians_talk_locations( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -26,7 +26,7 @@ class MeetTheGuardiansTalkProvider():
 
 
    @classmethod
-   def fetch_guardians_talk_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_guardians_talk_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -45,7 +45,7 @@ class MeetTheGuardiansTalkProvider():
    @classmethod
    def fetch_guardians_talk_names_at_location(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          location: str ) -> list[ str ]:
       cur = conn.cursor()
 
@@ -67,7 +67,7 @@ class MeetTheGuardiansTalkProvider():
    @classmethod
    def fetch_meet_the_guardians_talk_records(
          cls,
-         conn: Connection ) -> list[ MeetTheGuardiansTalkRecord ]:
+         conn: Types.Connection ) -> list[ MeetTheGuardiansTalkRecord ]:
       cur = conn.cursor()
 
       try:

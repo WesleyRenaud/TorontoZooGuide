@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from api.types import Cursor, Row
+from api.types import Types
 
 
-def column_names( cursor: Cursor, table: str ) -> set[ str ]:
+def column_names( cursor: Types.Cursor, table: str ) -> set[ str ]:
    return {
       row[ 1 ]
       for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
    }
 
 
-def column_info( cursor: Cursor, table: str, column: str ) -> Row:
+def column_info( cursor: Types.Cursor, table: str, column: str ) -> Types.Row:
    return next(
       row
       for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
@@ -18,7 +18,7 @@ def column_info( cursor: Cursor, table: str, column: str ) -> Row:
    )
 
 
-def table_count( cursor: Cursor, table: str ) -> int:
+def table_count( cursor: Types.Cursor, table: str ) -> int:
    return cursor.execute( f'SELECT COUNT(*) FROM { table };' ).fetchone()[ 0 ]
 
 

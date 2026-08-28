@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...app_strings import AppStringProvider
-from .attraction_context import AttractionContext
+from ...app_string_provider import AppStringProvider
 from ..data_access.attraction_record import AttractionRecord
 from ..data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from ..data_access.attraction_schedule_record import AttractionScheduleRecord
@@ -12,24 +11,25 @@ from ...shared.calendar_dates import CalendarDates
 from ...shared.enums import ScheduleStatus
 from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
+from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
-from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
+from ...types import Types
 
 
 class AttractionBuilder():
    @classmethod
    def resolve_context(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> AttractionContext:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> OpeningScheduleVisitContext:
       return OpeningScheduleVisitContextResolver.resolve( day=day, month=month, year=year )
 
 
    @classmethod
    def calculate_likelihood(
          cls,
-         day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
+         day_seasonal_availability_multiplier: Types.SeasonalMultiplier ) -> int:
       return OpeningScheduleStatusResolver.calculate_seasonal_likelihood( day_seasonal_availability_multiplier )
 
 
@@ -105,7 +105,7 @@ class AttractionBuilder():
    def get_day_seasonal_availability_multiplier(
          cls,
          attraction_record: AttractionRecord,
-         is_weekend_or_holiday: bool ) -> SeasonalMultiplier:
+         is_weekend_or_holiday: bool ) -> Types.SeasonalMultiplier:
       return OpeningScheduleSeasonalMultiplierResolver.resolve(
          weekday_multiplier=attraction_record.weekday_multiplier,
          weekend_holiday_multiplier=attraction_record.weekend_holiday_multiplier,
@@ -148,7 +148,7 @@ class AttractionBuilder():
          attraction_record: AttractionRecord,
          schedule_records: list[ AttractionScheduleRecord ],
          schedule_override_records: list[ AttractionScheduleOverrideRecord ],
-         context: AttractionContext ) -> Attraction:
+         context: OpeningScheduleVisitContext ) -> Attraction:
       likelihood, closed_message = cls.get_likelihood_and_message_for_date(
          attraction_record=attraction_record,
          schedule_records=schedule_records,
@@ -183,7 +183,7 @@ class AttractionBuilder():
          attraction_records: list[ AttractionRecord ],
          schedule_records: list[ AttractionScheduleRecord ],
          schedule_override_records: list[ AttractionScheduleOverrideRecord ],
-         context: AttractionContext,
+         context: OpeningScheduleVisitContext,
          include_closed_attractions: bool = False ) -> list[ Attraction ]:
       schedule_records_by_name = cls.group_schedule_records_by_name( schedule_records )
       override_records_by_name = cls.group_schedule_override_records_by_name(

@@ -6,19 +6,18 @@ from .itinerary_transportation_route_marker_provider import ItineraryTransportat
 from ...shared.calendar_dates import DateValues
 from ..transportation.timed_transportation_leg_expander import TimedTransportationLegExpander
 from ..transportation.transportation_route_leg_segment import TransportationRouteLegSegment
-from ...types import Cursor
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class ScheduleItineraryTransportationProvider():
    @classmethod
    def update_itinerary_transportation_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          name: str,
          added_as_attraction: bool,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          route: str ) -> bool:
       cur.execute(
          """   UPDATE ItineraryTransportation
@@ -43,10 +42,10 @@ class ScheduleItineraryTransportationProvider():
    @classmethod
    def apply_itinerary_transportation_schedule(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          name: str,
          added_as_attraction: bool,
-         start_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
          route: str,
          legs: list[ TransportationRouteLegSegment ] ) -> bool:
       return cls.apply_itinerary_transportation_ride_segments(
@@ -60,11 +59,11 @@ class ScheduleItineraryTransportationProvider():
    @classmethod
    def apply_itinerary_transportation_ride_segments(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          name: str,
          added_as_attraction: bool,
          route: str,
-         segments: list[ tuple[ ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ],
+         segments: list[ tuple[ Types.ScheduleTimeKey, list[ TransportationRouteLegSegment ] ] ],
    ) -> bool:
       if not segments:
          return False

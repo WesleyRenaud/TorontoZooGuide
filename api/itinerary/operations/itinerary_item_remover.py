@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ..animal_item_key import AnimalScheduleItemKey
+from ..animal_schedule_item_key import AnimalScheduleItemKey
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ..attraction_item_key import AttractionScheduleItemKey
+from ..attraction_schedule_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -10,7 +10,7 @@ from ..data_access.remove_itinerary_item_provider import RemoveItineraryItemProv
 from ..data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ..guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from .itinerary_item_schedule_change_committer import ItineraryItemScheduleChangeCommitter
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
@@ -20,10 +20,9 @@ from ..scheduling.items.itinerary_schedule_context_builder import ItinerarySched
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ...shared.enums import ItineraryEventType
-from ..transportation_item_key import TransportationScheduleItemKey
-from ...types import Connection
-from ...types import Cursor
-from ..wild_encounter_item_key import WildEncounterScheduleItemKey
+from ..transportation_schedule_item_key import TransportationScheduleItemKey
+from ...types import Types
+from ..wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -31,7 +30,7 @@ class ItineraryItemRemover():
    @classmethod
    def is_transit_mode_transportation_key(
          cls,
-         schedule_item_key: ScheduleItemKey | None ) -> bool:
+         schedule_item_key: ScheduleItemKey.Key | None ) -> bool:
       return (
          isinstance( schedule_item_key, TransportationScheduleItemKey )
          and not schedule_item_key.added_as_attraction
@@ -41,8 +40,8 @@ class ItineraryItemRemover():
    @classmethod
    def apply(
          cls,
-         cur: Cursor,
-         schedule_item_key: ScheduleItemKey ) -> None:
+         cur: Types.Cursor,
+         schedule_item_key: ScheduleItemKey.Key ) -> None:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          RemoveItineraryItemProvider.delete_itinerary_animal(
             cur,
@@ -96,7 +95,7 @@ class ItineraryItemRemover():
    @classmethod
    def remove_transit_transportation_and_reschedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule_item_key: TransportationScheduleItemKey,
          ) -> ItinerarySaveResult:
       itinerary_context = ItineraryScheduleContextBuilder.build(
@@ -147,8 +146,8 @@ class ItineraryItemRemover():
    @classmethod
    def remove(
          cls,
-         conn: Connection,
-         schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
+         conn: Types.Connection,
+         schedule_item_key: ScheduleItemKey.Key | None ) -> ItinerarySaveResult:
       if cls.is_transit_mode_transportation_key( schedule_item_key ):
          assert isinstance( schedule_item_key, TransportationScheduleItemKey )
          return cls.remove_transit_transportation_and_reschedule(

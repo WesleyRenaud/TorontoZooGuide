@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from .calendar_dates import CalendarDates
 from .opening_schedule_visit_context import OpeningScheduleVisitContext
-from ..types import MonthInput, VisitDay, VisitYear
+from ..types import Types
 
 
 class OpeningScheduleVisitContextResolver():
    @classmethod
    def resolve(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> OpeningScheduleVisitContext:
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear ) -> OpeningScheduleVisitContext:
       target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,

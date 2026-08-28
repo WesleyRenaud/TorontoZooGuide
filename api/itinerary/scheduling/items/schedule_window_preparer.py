@@ -11,8 +11,7 @@ from .prepared_schedule_window import PreparedScheduleWindow
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
-from ....types import ScheduleTimeKey
+from ....types import Types
 from ...validation.fixed_zoo_schedule_start_times_builder import FixedZooScheduleStartTimesBuilder
 from ....zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -22,7 +21,7 @@ class ScheduleWindowPreparer():
    @classmethod
    def prepare(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
       visit_date = ItineraryProvider.fetch_itinerary_date( conn )
@@ -75,7 +74,7 @@ class ScheduleWindowPreparer():
    @classmethod
    def prepare_zoo_hours(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          saved_itinerary: SavedItinerary,
          **itinerary_context: Any ) -> PreparedScheduleWindow | ItinerarySaveResult:
       visit_date = ItineraryProvider.fetch_itinerary_date( conn )
@@ -125,7 +124,7 @@ class ScheduleWindowPreparer():
          cls,
          zoo_hours_record: ZooHoursRecord | None,
          *,
-         fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None,
+         fixed_zoo_start_times: list[ Types.ScheduleTimeKey ] | None = None,
          allow_early_admission: bool = False ) -> tuple[ int, int ] | None:
       anchor_seconds = SchedulingAnchorResolver.covering_fixed_zoo_starts(
          zoo_hours_record,
@@ -141,7 +140,7 @@ class ScheduleWindowPreparer():
 
 
    @classmethod
-   def _early_admission_allowed( cls, conn: Connection ) -> bool:
+   def _early_admission_allowed( cls, conn: Types.Connection ) -> bool:
       return ItineraryStatusProvider.is_itinerary_error_suppressed(
          conn,
          ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from api.itinerary.animal_item_key import AnimalScheduleItemKey
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
@@ -9,8 +9,8 @@ from api.itinerary.data_access.itinerary_transportation_record import ItineraryT
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
-from api.itinerary.transportation_item_key import TransportationScheduleItemKey
-from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryEventType
 
 

@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import sqlite3
 
-from ...types import Cursor
+from ...types import Types
 
 
 MIGRATIONS_DIR = Path( __file__ ).parent
@@ -21,13 +21,13 @@ class MigrationRunner():
 
 
    @classmethod
-   def ensure_migration_table( cls, cursor: Cursor ) -> None:
+   def ensure_migration_table( cls, cursor: Types.Cursor ) -> None:
       cursor.execute( ''' CREATE TABLE IF NOT EXISTS SchemaMigration
                         (  MIGRATION_NAME   TEXT NOT NULL PRIMARY KEY ); ''' )
 
 
    @classmethod
-   def applied_migrations( cls, cursor: Cursor ) -> set[ str ]:
+   def applied_migrations( cls, cursor: Types.Cursor ) -> set[ str ]:
       cls.ensure_migration_table( cursor )
 
       return {
@@ -39,7 +39,7 @@ class MigrationRunner():
 
 
    @classmethod
-   def _table_columns( cls, cursor: Cursor, table: str ) -> set[ str ]:
+   def _table_columns( cls, cursor: Types.Cursor, table: str ) -> set[ str ]:
       return {
          row[ 1 ]
          for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
@@ -56,7 +56,7 @@ class MigrationRunner():
 
 
    @classmethod
-   def _execute_migration_statement( cls, cursor: Cursor, statement: str ) -> None:
+   def _execute_migration_statement( cls, cursor: Types.Cursor, statement: str ) -> None:
       match = ALTER_ADD_COLUMN_PATTERN.search( statement )
 
       if match is not None:
@@ -79,7 +79,7 @@ class MigrationRunner():
 
 
    @classmethod
-   def _record_migration( cls, cursor: Cursor, migration_name: str ) -> None:
+   def _record_migration( cls, cursor: Types.Cursor, migration_name: str ) -> None:
       cursor.execute(
          'INSERT INTO SchemaMigration ( MIGRATION_NAME ) VALUES ( ? );',
          ( migration_name, ),
@@ -89,7 +89,7 @@ class MigrationRunner():
    @classmethod
    def run_on_cursor(
          cls,
-         cursor: Cursor,
+         cursor: Types.Cursor,
          *,
          skip_before: str | None = None,
       ) -> None:

@@ -5,16 +5,15 @@ from ..core.time_block_builder import TimeBlockBuilder
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ...data_access.validated_itinerary import ValidatedItinerary
-from ....types import Cursor
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class FixedTimeActivityUnschedulePreparer():
    @classmethod
    def overlaps_any_time_block(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          activity_blocks: list[ TimeBlock ] ) -> bool:
       item_block = TimeBlockBuilder.from_schedule_times( start_time, end_time )
 
@@ -106,7 +105,7 @@ class FixedTimeActivityUnschedulePreparer():
    @classmethod
    def clear_overlapping_saved_schedules(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          saved_itinerary: SavedItinerary,
          activity_blocks: list[ TimeBlock ] ) -> None:
       for animal in saved_itinerary.animal_rows:

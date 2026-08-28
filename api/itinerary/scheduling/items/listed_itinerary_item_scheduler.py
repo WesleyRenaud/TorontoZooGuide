@@ -2,23 +2,23 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...animal_item_key import AnimalScheduleItemKey
-from ...attraction_item_key import AttractionScheduleItemKey
+from ...animal_schedule_item_key import AnimalScheduleItemKey
+from ...attraction_schedule_item_key import AttractionScheduleItemKey
 from ...data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
+from .listed_schedule_item_key import ListedScheduleItemKey
 from .listed_schedule_item_persister import ListedScheduleItemPersister
 from .listed_schedule_target_resolver import ListedScheduleTargetResolver
 from .parsed_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
-from .schedule_item_key import ListedScheduleItemKey
 from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
 from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
 
@@ -27,8 +27,8 @@ class ListedItineraryItemScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
-         schedule_item_key: ListedScheduleItemKey,
+         conn: Types.Connection,
+         schedule_item_key: ListedScheduleItemKey.Key,
          time_options: ParsedScheduleTimeOptions,
          *,
          itinerary_context: dict[ str, Any ],
@@ -118,8 +118,8 @@ class ListedItineraryItemScheduler():
    @classmethod
    def _walk_node_id_for_listed_item(
          cls,
-         conn: Connection,
-         schedule_item_key: ListedScheduleItemKey ) -> str | None:
+         conn: Types.Connection,
+         schedule_item_key: ListedScheduleItemKey.Key ) -> str | None:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          return ScheduleItemTravelTimeCalculator.walk_node_id_for_animal(
             species=schedule_item_key.species,

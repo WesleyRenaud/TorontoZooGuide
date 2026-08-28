@@ -18,7 +18,7 @@ from ..scheduling.core.time_block_builder import TimeBlockBuilder
 from ..scheduling.unscheduling.guardians_talk_unschedule_preparer import GuardiansTalkUnschedulePreparer
 from ..scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...shared.calendar_dates import DateValues
-from ...shared.constants import MAX_FIXED_TIME_ITEM_WAIT_MINUTES
+from ...shared.constants import Constants
 from ...shared.duration_values import DurationValues
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
@@ -40,7 +40,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          activity_block: TimeBlock,
          other_blocks: list[ TimeBlock ],
          *,
-         max_wait_minutes: int = MAX_FIXED_TIME_ITEM_WAIT_MINUTES ) -> bool:
+         max_wait_minutes: int = Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES ) -> bool:
       """True when every neighboring scheduled block is more than max_wait away.
 
       `other_blocks` are the other schedule windows to compare against — not the
@@ -62,7 +62,7 @@ class FixedTimeItemLongWaitWarningBuilder():
          activity_block: TimeBlock,
          scheduled_blocks: list[ TimeBlock ],
          *,
-         max_wait_minutes: int = MAX_FIXED_TIME_ITEM_WAIT_MINUTES ) -> bool:
+         max_wait_minutes: int = Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES ) -> bool:
       """Isolation check when `activity_block` is already one of `scheduled_blocks`."""
       return cls.time_block_is_isolated(
          activity_block,

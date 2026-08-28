@@ -3,15 +3,15 @@ from __future__ import annotations
 from .gift_shop_schedule_record import GiftShopScheduleRecord
 from ..scheduling.gift_shop_opening_schedule import GiftShopOpeningSchedule
 from ..scheduling.gift_shop_schedule_override import GiftShopScheduleOverride
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class GiftShopScheduleProvider():
    @classmethod
    def overlaps_existing_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopOpeningSchedule ) -> bool:
       cur = conn.cursor()
 
@@ -29,8 +29,8 @@ class GiftShopScheduleProvider():
                schedule.gift_shop,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) ).fetchone()
 
@@ -43,7 +43,7 @@ class GiftShopScheduleProvider():
    @classmethod
    def save_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopOpeningSchedule ) -> bool:
       if cls.overlaps_existing_schedule( conn, schedule ):
          return False
@@ -56,7 +56,7 @@ class GiftShopScheduleProvider():
    @classmethod
    def fetch_opening_schedule_conflicts(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopOpeningSchedule ) -> list[ GiftShopScheduleRecord ]:
       cur = conn.cursor()
 
@@ -85,8 +85,8 @@ class GiftShopScheduleProvider():
                schedule.gift_shop,
                schedule.start_date,
                schedule.end_date,
-               OPEN_ENDED_SQL_DATE,
-               OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
+               Constants.OPEN_ENDED_SQL_DATE,
                schedule.start_date,
             ) )
 
@@ -114,7 +114,7 @@ class GiftShopScheduleProvider():
    @classmethod
    def delete_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopScheduleRecord ) -> None:
       cur = conn.cursor()
 
@@ -136,10 +136,10 @@ class GiftShopScheduleProvider():
    @classmethod
    def update_opening_schedule_dates(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -165,10 +165,10 @@ class GiftShopScheduleProvider():
    @classmethod
    def insert_copied_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopScheduleRecord,
-         start_date: DateKey,
-         end_date: DateKey | None ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None ) -> None:
       cur = conn.cursor()
 
       try:
@@ -211,7 +211,7 @@ class GiftShopScheduleProvider():
    @classmethod
    def insert_or_update_opening_schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          schedule: GiftShopOpeningSchedule ) -> None:
       cur = conn.cursor()
 
@@ -266,7 +266,7 @@ class GiftShopScheduleProvider():
    @classmethod
    def save_schedule_override(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          override: GiftShopScheduleOverride ) -> bool:
       cur = conn.cursor()
 

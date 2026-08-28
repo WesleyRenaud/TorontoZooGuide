@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..domain.update_type_value_normalizer import UpdateTypeValueNormalizer
 from ..inputs.update_create_input import UpdateCreateInput
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class UpdateCreateInputBuilder():
@@ -13,8 +13,8 @@ class UpdateCreateInputBuilder():
          title: str,
          description: str,
          update_type: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> UpdateCreateInput | None:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> UpdateCreateInput | None:
       normalized_update_type = UpdateTypeValueNormalizer.normalize( update_type )
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,

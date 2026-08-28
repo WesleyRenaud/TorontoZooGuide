@@ -6,16 +6,16 @@ from .guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ..scheduling.guardians_talk_weekday_time_resolver import GuardiansTalkWeekdayTimeResolver
 from ...shared.calendar_dates import DateValues
-from ...shared.scheduled_occurrence_builder import ScheduledOccurrenceSorter
-from ...types import Connection, DateKey
+from ...shared.scheduled_occurrence_sorter import ScheduledOccurrenceSorter
+from ...types import Types
 
 
 class GuardiansTalkDayScheduleProvider():
    @classmethod
    def fetch_day_schedule_records(
          cls,
-         conn: Connection,
-         target_date: DateKey ) -> list[ GuardiansTalkDayScheduleRecord ]:
+         conn: Types.Connection,
+         target_date: Types.DateKey ) -> list[ GuardiansTalkDayScheduleRecord ]:
       parsed_date = DateValues.parse_date_value( target_date )
 
       if parsed_date is None:

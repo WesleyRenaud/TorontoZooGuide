@@ -39,7 +39,7 @@ class LoopWalkEndpointNodeIdsResolver():
 
 
    @classmethod
-   def _walk_node_id_for_route_stop( cls, stop: MasterRouteStop ) -> str | None:
+   def _walk_node_id_for_route_stop( cls, stop: MasterRouteStop.Stop ) -> str | None:
       if MasterRouteStopChecker.is_animal( stop ):
          return cls._walk_node_id_for_viewing_spot_reference( stop )
 

@@ -13,18 +13,16 @@ from ..items.schedule_item_key import ScheduleItemKey
 from ....models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryEventType
-from ....types import Connection
-from ....types import Cursor
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class GuestScheduleShiftApplier():
    @classmethod
    def shifted_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
-         delta_seconds: int ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
+         delta_seconds: int ) -> tuple[ Types.ScheduleTimeKey, Types.ScheduleTimeKey ] | None:
       block = TimeBlockBuilder.from_schedule_times( start_time, end_time )
 
       if block is None:
@@ -47,7 +45,7 @@ class GuestScheduleShiftApplier():
    def resolve_unscheduled_item_time_block(
          cls,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ScheduleItemKey,
+         schedule_item_key: ScheduleItemKey.Key,
          ) -> TimeBlock | None:
       row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
          saved_itinerary,
@@ -74,7 +72,7 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _collect_fixed_activity_blocks(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          freed_block: TimeBlock | None ) -> list[ TimeBlock ]:
       occupied: list[ TimeBlock ] = []
@@ -114,8 +112,8 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _shifted_block_overlaps_occupied(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          delta_seconds: int,
          occupied_blocks: list[ TimeBlock ] ) -> bool:
       shifted_times = cls.shifted_schedule_times( start_time, end_time, delta_seconds )
@@ -139,9 +137,9 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _guest_shift_would_overlap_fixed_activity(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
-         anchor_end_time: ScheduleTimeKey,
+         anchor_end_time: Types.ScheduleTimeKey,
          delta_seconds: int,
          occupied_blocks: list[ TimeBlock ] ) -> bool:
       for animal_row in ItineraryProvider.fetch_itinerary_animal_rows( conn ):
@@ -228,10 +226,10 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _shift_guest_scheduled_animal_rows(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
-         anchor_end_time: ScheduleTimeKey,
+         anchor_end_time: Types.ScheduleTimeKey,
          delta_seconds: int ) -> None:
       for animal_row in ItineraryProvider.fetch_itinerary_animal_rows( conn ):
          if animal_row.covered_by_talk:
@@ -268,10 +266,10 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _shift_guest_scheduled_attraction_rows(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
-         anchor_end_time: ScheduleTimeKey,
+         anchor_end_time: Types.ScheduleTimeKey,
          delta_seconds: int ) -> None:
       for attraction_row in ItineraryProvider.fetch_itinerary_attraction_rows( conn ):
          if not GuestItemScheduleStatusChecker.has_schedule_times(
@@ -303,10 +301,10 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _shift_guest_scheduled_transportation_rows(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
-         anchor_end_time: ScheduleTimeKey,
+         anchor_end_time: Types.ScheduleTimeKey,
          delta_seconds: int ) -> None:
       for transportation_row in ItineraryProvider.fetch_itinerary_transportation_rows( conn ):
          if not GuestItemScheduleStatusChecker.has_schedule_times(
@@ -376,10 +374,10 @@ class GuestScheduleShiftApplier():
    @classmethod
    def _shift_guest_scheduled_event_rows(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
-         anchor_end_time: ScheduleTimeKey,
+         anchor_end_time: Types.ScheduleTimeKey,
          delta_seconds: int ) -> None:
       for event_row in ItineraryProvider.fetch_itinerary_event_rows( conn ):
          if not cls._should_shift_guest_scheduled_event( event_row.event_type ):
@@ -414,8 +412,8 @@ class GuestScheduleShiftApplier():
    @classmethod
    def shift_items_after_unschedule(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
          anchor_end_seconds: int,
          shift_seconds: int,
@@ -460,11 +458,11 @@ class GuestScheduleShiftApplier():
    @classmethod
    def apply_for_unschedule(
          cls,
-         conn: Connection,
-         cur: Cursor,
+         conn: Types.Connection,
+         cur: Types.Cursor,
          *,
          saved_itinerary: SavedItinerary,
-         schedule_item_key: ScheduleItemKey,
+         schedule_item_key: ScheduleItemKey.Key,
          ) -> None:
       removed_block = cls.resolve_unscheduled_item_time_block(
          saved_itinerary,

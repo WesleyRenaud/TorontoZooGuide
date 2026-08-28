@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...shared.enums import ScheduleItemKind
-from ...types import ScheduleTimeKey
+from ...types import Types
 from .walk_route_anchor import WalkRouteAnchor
 
 
@@ -12,8 +12,8 @@ class ItineraryWalkRouteStop:
    schedule_item_kind: ScheduleItemKind
    item_key: str
    walk_node_id: str
-   start_time: ScheduleTimeKey = None
-   end_time: ScheduleTimeKey = None
+   start_time: Types.ScheduleTimeKey = None
+   end_time: Types.ScheduleTimeKey = None
 
    @classmethod
    def from_walk_route_anchor(

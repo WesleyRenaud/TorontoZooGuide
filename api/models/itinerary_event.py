@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from ..shared.enums import ItineraryEventType
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class ItineraryEvent:
    def __init__(
          self,
          event_type: ItineraryEventType,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None ) -> None:
       self.event_type = event_type
       self.start_time = start_time
       self.end_time = end_time

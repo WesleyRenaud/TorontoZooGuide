@@ -3,21 +3,20 @@ from __future__ import annotations
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.calendar_dates import DateValues
-from ...types import Cursor
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryTransportationProvider():
    @classmethod
    def insert_itinerary_transportation(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          old_likelihood: int | None,
          new_likelihood: int | None,
          added_as_attraction: bool,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
          route: str | None = None,
          bulk_transit_evaluated: bool = False,
    ) -> bool:
@@ -52,7 +51,7 @@ class ItineraryTransportationProvider():
    @classmethod
    def insert_itinerary_transportation_legs(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool,
          legs: list[ ItineraryTransportationLeg ] ) -> None:
@@ -82,7 +81,7 @@ class ItineraryTransportationProvider():
    @classmethod
    def delete_itinerary_transportation_legs(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool ) -> None:
       cur.execute(
@@ -95,14 +94,14 @@ class ItineraryTransportationProvider():
 
 
    @classmethod
-   def clear_itinerary_transportation_legs( cls, cur: Cursor ) -> None:
+   def clear_itinerary_transportation_legs( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryTransportationLeg;' )
 
 
    @classmethod
    def delete_itinerary_transportation_row(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool ) -> None:
       cur.execute(
@@ -115,14 +114,14 @@ class ItineraryTransportationProvider():
 
 
    @classmethod
-   def clear_itinerary_transportation_rows( cls, cur: Cursor ) -> None:
+   def clear_itinerary_transportation_rows( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryTransportation;' )
 
 
    @classmethod
    def set_itinerary_transportation_bulk_transit_evaluated(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool,
          *,
@@ -141,7 +140,7 @@ class ItineraryTransportationProvider():
    @classmethod
    def clear_itinerary_transportation_schedule_times(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool ) -> None:
       cur.execute(
@@ -158,7 +157,7 @@ class ItineraryTransportationProvider():
 
 
    @classmethod
-   def clear_all_itinerary_transportation_schedule_times( cls, cur: Cursor ) -> None:
+   def clear_all_itinerary_transportation_schedule_times( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryTransportation
                SET START_TIME = NULL,
@@ -171,7 +170,7 @@ class ItineraryTransportationProvider():
    @classmethod
    def delete_itinerary_transportation(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportation: str,
          added_as_attraction: bool ) -> None:
       ItineraryTransportationRouteMarkerProvider.delete_itinerary_transportation_route_markers(
@@ -189,7 +188,7 @@ class ItineraryTransportationProvider():
 
 
    @classmethod
-   def clear_itinerary_transportations( cls, cur: Cursor ) -> None:
+   def clear_itinerary_transportations( cls, cur: Types.Cursor ) -> None:
       ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers( cur )
       cls.clear_itinerary_transportation_legs( cur )
       cls.clear_itinerary_transportation_rows( cur )

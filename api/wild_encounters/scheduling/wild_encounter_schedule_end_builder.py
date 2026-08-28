@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 from .wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
 
 
@@ -10,7 +10,7 @@ class WildEncounterScheduleEndBuilder():
    def build(
          cls,
          wild_encounter: str,
-         schedule_end_date: DateInput,
+         schedule_end_date: Types.DateInput,
          encounter_time: str,
       ) -> WildEncounterScheduleEndInput:
       if not schedule_end_date:

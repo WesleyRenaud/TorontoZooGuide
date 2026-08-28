@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 
 
 class GuardiansTalkScheduleBuilder():
@@ -12,8 +12,8 @@ class GuardiansTalkScheduleBuilder():
          cls,
          talk: str,
          location: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          talk_time: str,
          monday: bool,
          tuesday: bool,

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput
+from ...types import Types
 from .wild_encounter_schedule_input import WildEncounterScheduleInput
 
 
@@ -11,8 +11,8 @@ class WildEncounterScheduleBuilder():
    def build(
          cls,
          wild_encounter: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          encounter_time: str,
          monday: bool,
          tuesday: bool,

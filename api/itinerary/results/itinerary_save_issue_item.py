@@ -5,14 +5,14 @@ from dataclasses import dataclass
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ...shared.enums import ItinerarySaveIssueItemType
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 @dataclass( frozen=True )
 class ItinerarySaveIssueItem:
    name: str
-   start_time: ScheduleTimeKey
-   end_time: ScheduleTimeKey
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
    item_type: str
    meeting_spot: str = ''
    location: str = ''

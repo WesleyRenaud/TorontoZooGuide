@@ -3,7 +3,7 @@ from __future__ import annotations
 from .itinerary_schedule_time_order_validator import ItineraryScheduleTimeOrderValidator
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import ScheduleTimeKey
+from ...types import Types
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -19,7 +19,7 @@ class ItineraryArrivalTimeValidator():
    @classmethod
    def earliest_arrival_time(
          cls,
-         zoo_hours_record: ZooHoursRecord ) -> ScheduleTimeKey:
+         zoo_hours_record: ZooHoursRecord ) -> Types.ScheduleTimeKey:
       return (
          zoo_hours_record.early_admission_time
          if zoo_hours_record.early_admission_time != None
@@ -30,7 +30,7 @@ class ItineraryArrivalTimeValidator():
    def earliest_allowed_arrival_minutes(
          cls,
          zoo_hours_record: ZooHoursRecord,
-         fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None ) -> int | None:
+         fixed_zoo_start_times: list[ Types.ScheduleTimeKey ] | None = None ) -> int | None:
       earliest_minutes = cls.earliest_arrival_minutes( zoo_hours_record )
 
       for start_time in fixed_zoo_start_times or []:
@@ -48,11 +48,11 @@ class ItineraryArrivalTimeValidator():
    @classmethod
    def validate_for_zoo_hours(
          cls,
-         arrival_time: ScheduleTimeKey,
+         arrival_time: Types.ScheduleTimeKey,
          zoo_hours_record: ZooHoursRecord,
          *,
-         departure_time: ScheduleTimeKey,
-         fixed_zoo_start_times: list[ ScheduleTimeKey ] | None = None ) -> ItineraryErrorType:
+         departure_time: Types.ScheduleTimeKey,
+         fixed_zoo_start_times: list[ Types.ScheduleTimeKey ] | None = None ) -> ItineraryErrorType:
       arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
       earliest_minutes = cls.earliest_allowed_arrival_minutes(
          zoo_hours_record,

@@ -14,7 +14,7 @@ class BulkScheduleItineraryWarningBuilder():
    @classmethod
    def build_not_enough_time_issue(
          cls,
-         stops: list[ LoopScheduleStop ] ) -> ItineraryResultReason:
+         stops: list[ LoopScheduleStop.Stop ] ) -> ItineraryResultReason:
       issue_items: list[ ItinerarySaveIssueItem ] = []
 
       for stop in stops:

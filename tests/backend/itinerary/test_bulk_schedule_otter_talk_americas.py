@@ -11,7 +11,7 @@ from wild_encounter_schedule_support import wire_schedule_rows
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType

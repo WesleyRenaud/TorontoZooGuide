@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..types import DateInput
+from ..types import Types
 
 
 class Event:
@@ -10,8 +10,8 @@ class Event:
          location: str,
          description: str,
          link: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> None:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> None:
       self.name = name
       self.location = location
       self.description = description

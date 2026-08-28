@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...types import Connection
+from ...types import Types
 
 
 class TransportationActiveRouteProvider():
    @classmethod
    def fetch_transportation_route_ids(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str ) -> list[ str ]:
       cur = conn.cursor()
       try:
@@ -28,7 +28,7 @@ class TransportationActiveRouteProvider():
    @classmethod
    def fetch_transportation_route_station_names(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          route: str ) -> list[ str ]:
       cur = conn.cursor()
@@ -49,7 +49,7 @@ class TransportationActiveRouteProvider():
    @classmethod
    def fetch_active_transportation_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          target_date: date ) -> str | None:
       cur = conn.cursor()
@@ -83,7 +83,7 @@ class TransportationActiveRouteProvider():
    @classmethod
    def fetch_transportation_day_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          transportation: str,
          month: int,
          day: int ) -> str | None:

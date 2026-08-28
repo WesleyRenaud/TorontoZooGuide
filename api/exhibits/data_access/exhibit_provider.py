@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .exhibit_mapper import ExhibitMapper
 from .region_exhibit_record import RegionExhibitRecord
-from ...types import Connection
+from ...types import Types
 
 
 class ExhibitProvider():
    @classmethod
-   def fetch_exhibit_names( cls, conn: Connection ) -> list[ str ]:
+   def fetch_exhibit_names( cls, conn: Types.Connection ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -24,7 +24,7 @@ class ExhibitProvider():
 
 
    @classmethod
-   def fetch_exhibit_names_in_region( cls, conn: Connection, region: str ) -> list[ str ]:
+   def fetch_exhibit_names_in_region( cls, conn: Types.Connection, region: str ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -42,7 +42,7 @@ class ExhibitProvider():
 
 
    @classmethod
-   def fetch_region_exhibit_rows( cls, conn: Connection ) -> list[ RegionExhibitRecord ]:
+   def fetch_region_exhibit_rows( cls, conn: Types.Connection ) -> list[ RegionExhibitRecord ]:
       cur = conn.cursor()
 
       try:
@@ -63,7 +63,7 @@ class ExhibitProvider():
 
 
    @classmethod
-   def fetch_animal_names_in_exhibit( cls, conn: Connection, exhibit: str ) -> list[ str ]:
+   def fetch_animal_names_in_exhibit( cls, conn: Types.Connection, exhibit: str ) -> list[ str ]:
       cur = conn.cursor()
 
       try:

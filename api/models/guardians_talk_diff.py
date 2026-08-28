@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..shared.value_conversion import ValueConversion
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class GuardiansTalkDiff:
@@ -9,8 +9,8 @@ class GuardiansTalkDiff:
          self,
          name: str,
          is_deleted: bool,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
          location: str | None = None ) -> None:
       self.name = name
       self.is_deleted = is_deleted

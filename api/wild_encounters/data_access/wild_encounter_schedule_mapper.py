@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ...types import Row
+from ...types import Types
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
 
 
 class WildEncounterScheduleMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> WildEncounterScheduleRecord:
+   def map_record( cls, row: Types.Row ) -> WildEncounterScheduleRecord:
       return WildEncounterScheduleRecord(
          name=row[ 'NAME' ],
          meeting_spot=row[ 'MEETING_SPOT' ],
@@ -29,7 +29,7 @@ class WildEncounterScheduleMapper():
 
 
    @classmethod
-   def map_records( cls, rows: list[ Row ] ) -> list[ WildEncounterScheduleRecord ]:
+   def map_records( cls, rows: list[ Types.Row ] ) -> list[ WildEncounterScheduleRecord ]:
       return [
          cls.map_record( row )
          for row in rows

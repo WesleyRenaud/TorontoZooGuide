@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ..types import Cursor
+from ..types import Types
 
 
 SEED_SQL_DIR = Path( __file__ ).parent / 'sql'
@@ -15,5 +15,5 @@ class SeedSqlLoader():
 
 
    @classmethod
-   def execute_sql_file( cls, cursor: Cursor, path: Path ) -> None:
+   def execute_sql_file( cls, cursor: Types.Cursor, path: Path ) -> None:
       cursor.executescript( path.read_text( encoding='utf-8' ) )

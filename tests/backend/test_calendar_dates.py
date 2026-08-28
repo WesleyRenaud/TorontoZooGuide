@@ -10,10 +10,8 @@ import pytest
 import api.shared.calendar_dates as calendar_dates
 from api.shared.calendar_dates import CalendarDates
 from api.shared.calendar_dates import DateValues
-from api.types import DateInput
-from api.types import DateKey
-from api.types import MonthInput
-from api.types import VisitMonth
+import api.shared.date_values as date_values
+from api.types import Types
 
 
 @pytest.mark.parametrize(
@@ -65,7 +63,7 @@ from api.types import VisitMonth
       ( 'NotAMonth', None ),
    ]
 )
-def test_normalize_month( value: MonthInput, expected: VisitMonth | None ) -> None:
+def test_normalize_month( value: Types.MonthInput, expected: Types.VisitMonth | None ) -> None:
    assert CalendarDates.normalize_month( value ) == expected
 
 
@@ -81,7 +79,7 @@ def test_normalize_month( value: MonthInput, expected: VisitMonth | None ) -> No
       ( 'DECEMBER', 'Dec' ),
    ]
 )
-def test_get_month_abbreviation( value: MonthInput, expected: str ) -> None:
+def test_get_month_abbreviation( value: Types.MonthInput, expected: str ) -> None:
    assert CalendarDates.get_month_abbreviation( value ) == expected
 
 
@@ -113,8 +111,8 @@ def test_get_month_abbreviation_rejects_invalid_values( value: Any ) -> None:
    ]
 )
 def test_resolve_visit_calendar_month(
-      value: MonthInput,
-      expected: VisitMonth ) -> None:
+      value: Types.MonthInput,
+      expected: Types.VisitMonth ) -> None:
    got = CalendarDates.resolve_visit_calendar_month( value )
    assert got == expected
    assert isinstance( got, int )
@@ -140,7 +138,7 @@ def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pyt
       def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
          return datetime( 2032, 3, 1, 0, 0, 0 )
 
-   monkeypatch.setattr( calendar_dates, 'datetime', Fixed )
+   monkeypatch.setattr( date_values, 'datetime', Fixed )
    assert CalendarDates.resolve_visit_calendar_year( None ) == 2032
 
 
@@ -237,7 +235,7 @@ def test_get_number_of_days_in_month( month: str, expected: int | None ) -> None
       ( 'November', False ),
    ]
 )
-def test_is_peak_season_month( month: MonthInput, expected: bool ) -> None:
+def test_is_peak_season_month( month: Types.MonthInput, expected: bool ) -> None:
    assert CalendarDates.is_peak_season_month( month ) is expected
 
 
@@ -301,7 +299,7 @@ def test_next_weekend_or_holiday_date_advances_from_weekday() -> None:
       ( '2026-06-15 09:30', date( 2026, 6, 15 ) )
    ]
 )
-def test_parse_date_value( value: DateInput, expected: date | None ) -> None:
+def test_parse_date_value( value: Types.DateInput, expected: date | None ) -> None:
    assert DateValues.parse_date_value( value ) == expected
 
 
@@ -316,7 +314,7 @@ def test_parse_date_value( value: DateInput, expected: date | None ) -> None:
       ( datetime( 2026, 6, 15, 9, 30 ), '2026-06-15' ),
    ]
 )
-def test_normalize_date_key( value: DateInput, expected: DateKey | None ) -> None:
+def test_normalize_date_key( value: Types.DateInput, expected: Types.DateKey | None ) -> None:
    assert DateValues.normalize_date_key( value ) == expected
 
 
@@ -479,7 +477,7 @@ def test_schedule_time_key_from_seconds(
       ( date( 2026, 6, 16 ), '2026-06-14', True ),
    ]
 )
-def test_is_date_on_or_after( left: date, right: DateInput, expected: bool ) -> None:
+def test_is_date_on_or_after( left: date, right: Types.DateInput, expected: bool ) -> None:
    assert DateValues.is_date_on_or_after( left, right ) is expected
 
 
@@ -492,7 +490,7 @@ def test_is_date_on_or_after( left: date, right: DateInput, expected: bool ) -> 
       ( date( 2026, 6, 14 ), '2026-06-14', True ),
    ]
 )
-def test_is_date_on_or_before( left: date, right: DateInput, expected: bool ) -> None:
+def test_is_date_on_or_before( left: date, right: Types.DateInput, expected: bool ) -> None:
    assert DateValues.is_date_on_or_before( left, right ) is expected
 
 
@@ -507,7 +505,7 @@ def test_is_date_on_or_before( left: date, right: DateInput, expected: bool ) ->
 )
 def test_is_date_in_range(
       target: date,
-      start: DateInput,
-      end: DateInput,
+      start: Types.DateInput,
+      end: Types.DateInput,
       expected: bool ) -> None:
    assert DateValues.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected

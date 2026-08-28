@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from ...types import DateKey, ScheduleTimeKey
+from ...types import Types
 
 
 class AttractionHoursSchedule:
    def __init__(
          self,
          attraction: str,
-         start_date: DateKey,
-         end_date: DateKey | None,
-         weekday_start_time: ScheduleTimeKey,
-         weekday_end_time: ScheduleTimeKey,
-         weekend_holiday_start_time: ScheduleTimeKey,
-         weekend_holiday_end_time: ScheduleTimeKey ) -> None:
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None,
+         weekday_start_time: Types.ScheduleTimeKey,
+         weekday_end_time: Types.ScheduleTimeKey,
+         weekend_holiday_start_time: Types.ScheduleTimeKey,
+         weekend_holiday_end_time: Types.ScheduleTimeKey ) -> None:
       self.attraction = attraction
       self.start_date = start_date
       self.end_date = end_date

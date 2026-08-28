@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ...types import DateKey
+from ...types import Types
 
 
 class RestaurantOpeningSchedule:
    def __init__(
          self,
          restaurant: str,
-         start_date: DateKey,
-         end_date: DateKey | None,
+         start_date: Types.DateKey,
+         end_date: Types.DateKey | None,
          monday: bool,
          tuesday: bool,
          wednesday: bool,

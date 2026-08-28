@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from ...shared.enums import AnimalViewingScope
-from ...types import Connection
+from ...types import Types
 
 
 class AnimalViewingScopeProvider():
    @classmethod
    def fetch_animal_viewing_scopes(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          species: str,
          exhibit: str ) -> list[ AnimalViewingScope ]:
       rows = conn.execute(

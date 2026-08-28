@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_transportation_provider import ItineraryTransportationProvider
-from ...shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
-from ...types import Connection, Cursor
+from ...shared.constants import Constants
+from ...types import Types
 
 
 class AcceptItineraryProvider():
@@ -32,7 +32,7 @@ class AcceptItineraryProvider():
    @classmethod
    def remove_declined_itinerary_animals(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          animals_to_keep: list[ ItineraryAnimalInput ] ) -> None:
       exclusion_clause, exclusion_params = cls.build_excluded_animal_where_clause( animals_to_keep )
       cur.execute(
@@ -42,11 +42,11 @@ class AcceptItineraryProvider():
                    AND NEW_LIKELIHOOD < ?
                    { exclusion_clause };
          """,
-         ( ITINERARY_ANIMAL_MIN_LIKELIHOOD, *exclusion_params ) )
+         ( Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD, *exclusion_params ) )
 
 
    @classmethod
-   def clear_added_itinerary_animals( cls, cur: Cursor ) -> None:
+   def clear_added_itinerary_animals( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryAnimal
                SET IS_ADDED = 0
@@ -55,7 +55,7 @@ class AcceptItineraryProvider():
 
 
    @classmethod
-   def clear_itinerary_animal_old_likelihoods( cls, cur: Cursor ) -> None:
+   def clear_itinerary_animal_old_likelihoods( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryAnimal
                SET OLD_LIKELIHOOD = NULL
@@ -79,7 +79,7 @@ class AcceptItineraryProvider():
    @classmethod
    def remove_declined_itinerary_attractions(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          attractions_to_keep: list[ str ] ) -> None:
       exclusion_clause, exclusion_params = cls.build_excluded_name_where_clause(
          'ATTRACTION',
@@ -97,7 +97,7 @@ class AcceptItineraryProvider():
    @classmethod
    def remove_declined_itinerary_transportations(
          cls,
-         cur: Cursor,
+         cur: Types.Cursor,
          transportations_to_keep: list[ str ] ) -> None:
       exclusion_clause, exclusion_params = cls.build_excluded_name_where_clause(
          'TRANSPORTATION',
@@ -120,7 +120,7 @@ class AcceptItineraryProvider():
 
 
    @classmethod
-   def clear_itinerary_attraction_old_likelihoods( cls, cur: Cursor ) -> None:
+   def clear_itinerary_attraction_old_likelihoods( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryAttraction
                SET OLD_LIKELIHOOD = NULL
@@ -129,7 +129,7 @@ class AcceptItineraryProvider():
 
 
    @classmethod
-   def clear_itinerary_transportation_old_likelihoods( cls, cur: Cursor ) -> None:
+   def clear_itinerary_transportation_old_likelihoods( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   UPDATE ItineraryTransportation
                SET OLD_LIKELIHOOD = NULL
@@ -138,7 +138,7 @@ class AcceptItineraryProvider():
 
 
    @classmethod
-   def remove_deleted_itinerary_guardians_talks( cls, cur: Cursor ) -> None:
+   def remove_deleted_itinerary_guardians_talks( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   DELETE FROM ItineraryGuardiansTalk
                WHERE IS_DELETED = 1;
@@ -146,7 +146,7 @@ class AcceptItineraryProvider():
 
 
    @classmethod
-   def remove_deleted_itinerary_wild_encounters( cls, cur: Cursor ) -> None:
+   def remove_deleted_itinerary_wild_encounters( cls, cur: Types.Cursor ) -> None:
       cur.execute(
          """   DELETE FROM ItineraryWildEncounter
                WHERE IS_DELETED = 1;
@@ -156,7 +156,7 @@ class AcceptItineraryProvider():
    @classmethod
    def accept_itinerary(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          animals_to_keep: list[ ItineraryAnimalInput ] | None = None,
          attractions_to_keep: list[ str ] | None = None ) -> bool:
       animals_to_keep = animals_to_keep or []

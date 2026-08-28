@@ -9,17 +9,17 @@ from ..domain.attraction_builder import AttractionBuilder
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..itinerary.itinerary_attractions_builder import ItineraryAttractionsBuilder
 from ...models import Attraction
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.attraction_hours_schedule import AttractionHoursSchedule
 from ..scheduling.attraction_hours_schedule_conflict_resolver import AttractionHoursScheduleConflictResolver
 from ..scheduling.attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBounds
 from ..scheduling.attraction_hours_schedule_time_bounds_builder import AttractionHoursScheduleTimeBoundsBuilder
 from ..scheduling.attraction_schedule_conflict_resolver import AttractionScheduleConflictResolver
 from ..search.attractions_matching_query_builder import AttractionsMatchingQueryBuilder
-from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ..status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
 from ..status.attraction_status_builder import AttractionStatusBuilder
-from ...types import DateInput, MonthInput, TimeInput, VisitDay, VisitYear
+from ...types import Types
 
 
 _mutations = AmenityCoordinatorMutations(
@@ -36,15 +36,15 @@ _mutations = AmenityCoordinatorMutations(
 class AttractionCoordinator():
    @classmethod
    def get_attraction_names( cls ) -> list[ str ]:
-      return AttractionProvider.fetch_attraction_names( get_connection() )
+      return AttractionProvider.fetch_attraction_names( RequestConnectionProvider.get() )
 
 
    @classmethod
    def get_attractions(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          include_closed_attractions: bool = False ) -> list[ Attraction ]:
 
       context = AttractionBuilder.resolve_context(
@@ -54,12 +54,12 @@ class AttractionCoordinator():
 
       return AttractionBuilder.build_attractions(
          attraction_records=AttractionProvider.fetch_attraction_records(
-            get_connection(),
+            RequestConnectionProvider.get(),
             visit_date=context.target_date ),
          schedule_records=AttractionProvider.fetch_attraction_schedule_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          schedule_override_records=AttractionProvider.fetch_attraction_schedule_override_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          context=context,
          include_closed_attractions=include_closed_attractions )
 
@@ -67,9 +67,9 @@ class AttractionCoordinator():
    @classmethod
    def get_attractions_for_saved_itinerary(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ Attraction ]:
 
       if not saved_attractions:
@@ -90,9 +90,9 @@ class AttractionCoordinator():
    def get_attractions_matching_query(
          cls,
          query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          include_closed_attractions: bool ) -> list[ Attraction ]:
 
       attractions = cls.get_attractions(
@@ -113,7 +113,7 @@ class AttractionCoordinator():
          attraction_name: str ) -> int | None:
 
       attraction_record = AttractionProvider.fetch_attraction_record_for_calendar_day(
-         get_connection(),
+         RequestConnectionProvider.get(),
          attraction_name=attraction_name,
          visit_date=visit_date )
 
@@ -123,9 +123,9 @@ class AttractionCoordinator():
       likelihood, _ = AttractionBuilder.get_likelihood_and_message_for_date(
          attraction_record=attraction_record,
          schedule_records=AttractionProvider.fetch_attraction_schedule_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          schedule_override_records=AttractionProvider.fetch_attraction_schedule_override_records(
-            get_connection() ),
+            RequestConnectionProvider.get() ),
          target_date=visit_date )
 
       return likelihood
@@ -135,8 +135,8 @@ class AttractionCoordinator():
    def set_attraction_as_closed(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_as_closed( attraction, start_date, end_date, message )
 
@@ -145,8 +145,8 @@ class AttractionCoordinator():
    def set_attraction_closure_override(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_closure_override( attraction, start_date, end_date, message )
 
@@ -155,8 +155,8 @@ class AttractionCoordinator():
    def set_attraction_opening_schedule(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -185,8 +185,8 @@ class AttractionCoordinator():
    def replace_attraction_opening_schedule_overlaps(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -215,8 +215,8 @@ class AttractionCoordinator():
    def trim_attraction_opening_schedule_overlaps(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -244,10 +244,10 @@ class AttractionCoordinator():
    @classmethod
    def get_attraction_hours_schedule_time_bounds(
          cls,
-         start_date: DateInput = None,
-         end_date: DateInput = None ) -> AttractionHoursScheduleTimeBounds:
+         start_date: Types.DateInput = None,
+         end_date: Types.DateInput = None ) -> AttractionHoursScheduleTimeBounds:
       return AttractionHoursScheduleTimeBoundsBuilder.fetch(
-         get_connection(),
+         RequestConnectionProvider.get(),
          start_date=start_date,
          end_date=end_date )
 
@@ -256,12 +256,12 @@ class AttractionCoordinator():
    def _build_attraction_hours_schedule(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         weekday_start_time: TimeInput,
-         weekday_end_time: TimeInput,
-         weekend_holiday_start_time: TimeInput,
-         weekend_holiday_end_time: TimeInput ) -> AttractionHoursSchedule:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         weekday_start_time: Types.TimeInput,
+         weekday_end_time: Types.TimeInput,
+         weekend_holiday_start_time: Types.TimeInput,
+         weekend_holiday_end_time: Types.TimeInput ) -> AttractionHoursSchedule:
       schedule = AttractionHoursScheduleStatusBuilder.build_hours_schedule(
          attraction,
          start_date,
@@ -271,7 +271,7 @@ class AttractionCoordinator():
          weekend_holiday_start_time,
          weekend_holiday_end_time )
       bounds = AttractionHoursScheduleTimeBoundsBuilder.fetch(
-         get_connection(),
+         RequestConnectionProvider.get(),
          start_date=schedule.start_date,
          end_date=schedule.end_date )
 
@@ -292,12 +292,12 @@ class AttractionCoordinator():
    def set_attraction_hours_schedule(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         weekday_start_time: TimeInput,
-         weekday_end_time: TimeInput,
-         weekend_holiday_start_time: TimeInput,
-         weekend_holiday_end_time: TimeInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         weekday_start_time: Types.TimeInput,
+         weekday_end_time: Types.TimeInput,
+         weekend_holiday_start_time: Types.TimeInput,
+         weekend_holiday_end_time: Types.TimeInput ) -> bool:
       schedule = cls._build_attraction_hours_schedule(
          attraction,
          start_date,
@@ -308,7 +308,7 @@ class AttractionCoordinator():
          weekend_holiday_end_time )
 
       return AttractionHoursScheduleProvider.save_hours_schedule(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule )
 
 
@@ -316,12 +316,12 @@ class AttractionCoordinator():
    def replace_attraction_hours_schedule_overlaps(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         weekday_start_time: TimeInput,
-         weekday_end_time: TimeInput,
-         weekend_holiday_start_time: TimeInput,
-         weekend_holiday_end_time: TimeInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         weekday_start_time: Types.TimeInput,
+         weekday_end_time: Types.TimeInput,
+         weekend_holiday_start_time: Types.TimeInput,
+         weekend_holiday_end_time: Types.TimeInput ) -> bool:
       schedule = cls._build_attraction_hours_schedule(
          attraction,
          start_date,
@@ -332,7 +332,7 @@ class AttractionCoordinator():
          weekend_holiday_end_time )
 
       return AttractionHoursScheduleConflictResolver.save_replacing_overlaps(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule )
 
 
@@ -340,12 +340,12 @@ class AttractionCoordinator():
    def trim_attraction_hours_schedule_overlaps(
          cls,
          attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         weekday_start_time: TimeInput,
-         weekday_end_time: TimeInput,
-         weekend_holiday_start_time: TimeInput,
-         weekend_holiday_end_time: TimeInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         weekday_start_time: Types.TimeInput,
+         weekday_end_time: Types.TimeInput,
+         weekend_holiday_start_time: Types.TimeInput,
+         weekend_holiday_end_time: Types.TimeInput ) -> bool:
       schedule = cls._build_attraction_hours_schedule(
          attraction,
          start_date,
@@ -356,5 +356,5 @@ class AttractionCoordinator():
          weekend_holiday_end_time )
 
       return AttractionHoursScheduleConflictResolver.save_trimming_overlaps(
-         get_connection(),
+         RequestConnectionProvider.get(),
          schedule )

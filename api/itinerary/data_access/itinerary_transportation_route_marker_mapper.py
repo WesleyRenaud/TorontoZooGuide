@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from .itinerary_transportation_route_marker_record import ItineraryTransportationRouteMarkerRecord
 from ...shared.value_conversion import ValueConversion
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryTransportationRouteMarkerMapper():
    @classmethod
    def map_record(
          cls,
-         row: Row,
+         row: Types.Row,
    ) -> ItineraryTransportationRouteMarkerRecord:
       return ItineraryTransportationRouteMarkerRecord(
          transportation=row[ 'TRANSPORTATION' ],
@@ -24,7 +24,7 @@ class ItineraryTransportationRouteMarkerMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ],
+         rows: list[ Types.Row ],
    ) -> list[ ItineraryTransportationRouteMarkerRecord ]:
       return [
          cls.map_record( row )

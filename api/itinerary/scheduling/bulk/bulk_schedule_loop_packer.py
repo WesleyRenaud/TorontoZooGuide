@@ -11,17 +11,17 @@ from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .master_route_loop_scheduler import MasterRouteLoopScheduler
 from .master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
-from ....types import Connection
+from ....types import Types
 
 
 class BulkScheduleLoopPacker():
    @classmethod
    def pack_stops(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          prep: BulkScheduleWindowPrep,
-         stops_to_schedule: list[ LoopScheduleStop ] ) -> BulkScheduleLoopPackingResult:
+         stops_to_schedule: list[ LoopScheduleStop.Stop ] ) -> BulkScheduleLoopPackingResult:
       animals_to_schedule = LoopScheduleStopExtractor.animals_from( stops_to_schedule )
       attractions_to_pack = LoopScheduleStopExtractor.attractions_from( stops_to_schedule )
       transportations_to_pack = LoopScheduleStopExtractor.transportations_from( stops_to_schedule )
@@ -70,7 +70,7 @@ class BulkScheduleLoopPacker():
             schedule_windows,
             soft_pins )
 
-      remaining_stops: list[ LoopScheduleStop ] = []
+      remaining_stops: list[ LoopScheduleStop.Stop ] = []
 
       if loop_units:
          remaining_stops, _ = MasterRouteLoopScheduler.schedule(

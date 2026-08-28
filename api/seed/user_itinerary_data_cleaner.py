@@ -4,12 +4,12 @@ import sqlite3
 
 from ..itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
-from ..types import Cursor
+from ..types import Types
 
 
 class UserItineraryDataCleaner():
    @classmethod
-   def clear( cls, cursor: Cursor ) -> None:
+   def clear( cls, cursor: Types.Cursor ) -> None:
       ClearItineraryProvider.clear_itinerary_exhibits( cursor )
       ClearItineraryProvider.clear_itinerary_animals( cursor )
       ClearItineraryProvider.clear_itinerary_attractions( cursor )

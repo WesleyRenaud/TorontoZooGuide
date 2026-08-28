@@ -3,7 +3,7 @@ from __future__ import annotations
 from .itinerary_transportation_leg import ItineraryTransportationLeg
 from .itinerary_transportation_station import ItineraryTransportationStation
 from ..shared.value_conversion import ValueConversion
-from ..types import ScheduleTimeKey
+from ..types import Types
 
 
 class ItineraryTransportation:
@@ -13,8 +13,8 @@ class ItineraryTransportation:
          added_as_attraction: bool,
          old_likelihood: int | None = None,
          likelihood: int | None = None,
-         start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None,
+         start_time: Types.ScheduleTimeKey = None,
+         end_time: Types.ScheduleTimeKey = None,
          x_coord: float | None = None,
          y_coord: float | None = None,
          main_station: str | None = None,

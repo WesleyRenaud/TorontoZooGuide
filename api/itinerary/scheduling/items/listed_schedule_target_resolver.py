@@ -1,29 +1,27 @@
 from __future__ import annotations
 
-from ...animal_item_key import AnimalScheduleItemKey
-from ...attraction_item_key import AttractionScheduleItemKey
+from ...animal_schedule_item_key import AnimalScheduleItemKey
 from .attraction_or_transportation_duration_resolver import AttractionOrTransportationDurationResolver
+from ...attraction_schedule_item_key import AttractionScheduleItemKey
 from ...data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
 from ...data_access.itinerary_provider import ItineraryProvider
 from ...data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from ...data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ...data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
+from .listed_schedule_item_key import ListedScheduleItemKey
 from .listed_schedule_target import ListedScheduleTarget
-from .schedule_item_key import ListedScheduleItemKey
 from ....shared.calendar_dates import DateValues
 from ...transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
-from ....types import Connection
-from ....types import Cursor
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class ListedScheduleTargetResolver():
    @classmethod
    def resolve(
          cls,
-         conn: Connection,
-         schedule_item_key: ListedScheduleItemKey ) -> ListedScheduleTarget:
+         conn: Types.Connection,
+         schedule_item_key: ListedScheduleItemKey.Key ) -> ListedScheduleTarget:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          return ListedScheduleTarget(
             default_duration_seconds=ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
@@ -42,10 +40,10 @@ class ListedScheduleTargetResolver():
    @classmethod
    def apply(
          cls,
-         cur: Cursor,
-         schedule_item_key: ListedScheduleItemKey,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey,
+         cur: Types.Cursor,
+         schedule_item_key: ListedScheduleItemKey.Key,
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey,
          insert_if_missing: bool ) -> bool:
       if isinstance( schedule_item_key, AnimalScheduleItemKey ):
          if insert_if_missing:

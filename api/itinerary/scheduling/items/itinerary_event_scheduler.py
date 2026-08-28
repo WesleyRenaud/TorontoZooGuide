@@ -15,14 +15,14 @@ from .schedule_window_preparer import ScheduleWindowPreparer
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItineraryEventType
-from ....types import Connection
+from ....types import Types
 
 
 class ItineraryEventScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          event_type: ItineraryEventType,
          time_options: ParsedScheduleTimeOptions,

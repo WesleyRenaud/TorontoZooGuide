@@ -29,7 +29,7 @@ def _animal_record(
 
 def _prepared_loop_unit(
       *,
-      stops: list[ LoopScheduleStop ],
+      stops: list[ LoopScheduleStop.Stop ],
       duration_seconds: int ) -> PreparedLoopScheduleUnit:
    loop_unit = LoopScheduleUnitBuilder.build( [ stops ] )[ 0 ]
 

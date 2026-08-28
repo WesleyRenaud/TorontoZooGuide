@@ -4,14 +4,14 @@ from datetime import date
 
 from itinerary.support import ANIMAL_KEY, PENGUIN_KEY
 
-from api.itinerary.animal_item_key import AnimalScheduleItemKey
-from api.itinerary.attraction_item_key import AttractionScheduleItemKey
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.scheduling.core.available_schedule_slot_finder import AvailableScheduleSlotFinder
 from api.itinerary.scheduling.core.scheduling_anchor_resolver import SchedulingAnchorResolver
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
-from api.itinerary.transportation_item_key import TransportationScheduleItemKey
+from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
 from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider

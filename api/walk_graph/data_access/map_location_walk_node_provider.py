@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from ..domain.map_location_walk_node import MapLocationWalkNode
-from .paths import MAP_LOCATION_WALK_NODE_PATHS
+from .paths import Paths
 
 
 class MapLocationWalkNodeProvider():
@@ -14,7 +14,7 @@ class MapLocationWalkNodeProvider():
          paths: list[ Path ] | None = None,
       ) -> list[ MapLocationWalkNode ]:
       rows: list[ MapLocationWalkNode ] = []
-      paths = list( MAP_LOCATION_WALK_NODE_PATHS ) if paths is None else paths
+      paths = list( Paths.MAP_LOCATION_WALK_NODE_PATHS ) if paths is None else paths
 
       for path in paths:
          for row in json.loads( path.read_text( encoding='utf-8' ) ):

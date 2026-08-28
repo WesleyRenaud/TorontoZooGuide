@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from http_support import make_handler, response_json, StubZooControllers
 
-import api.server as server
+import api.http_request_handler as server
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 
 EMPTY_ITINERARY_PATH = {
@@ -21,8 +21,8 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       '/set-itinerary-departure-time',
       { 'departureTime': None } )
 
-   server.MyHandler.do_POST( arrival_handler )
-   server.MyHandler.do_POST( departure_handler )
+   server.HttpRequestHandler.do_POST( arrival_handler )
+   server.HttpRequestHandler.do_POST( departure_handler )
 
    assert response_json( arrival_handler ) == {
       'status': 'success',
@@ -89,7 +89,7 @@ def test_suppress_itinerary_warning_endpoint(
       '/suppress-itinerary-warning',
       { 'warningType': 'arrivalDepartureTooClose' } )
 
-   server.MyHandler.do_POST( handler )
+   server.HttpRequestHandler.do_POST( handler )
 
    assert response_json( handler ) == {
       'status': 'success',

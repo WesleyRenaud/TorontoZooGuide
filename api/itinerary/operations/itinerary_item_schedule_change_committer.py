@@ -3,12 +3,12 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ..attraction_item_key import AttractionScheduleItemKey
+from ..attraction_schedule_item_key import AttractionScheduleItemKey
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..domain.itinerary_builder import ItineraryBuilder
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ..guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from ..scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
@@ -17,8 +17,7 @@ from ..scheduling.items.itinerary_schedule_context_builder import ItinerarySched
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from ..scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
-from ...types import Connection
-from ...types import Cursor
+from ...types import Types
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -26,9 +25,9 @@ class ItineraryItemScheduleChangeCommitter():
    @classmethod
    def commit(
          cls,
-         conn: Connection,
-         schedule_item_key: ScheduleItemKey | None,
-         apply_change: Callable[ [ Cursor, ScheduleItemKey ], None ],
+         conn: Types.Connection,
+         schedule_item_key: ScheduleItemKey.Key | None,
+         apply_change: Callable[ [ Types.Cursor, ScheduleItemKey.Key ], None ],
          ) -> ItinerarySaveResult:
       itinerary_context = ItineraryScheduleContextBuilder.build(
          animal_coordinator=AnimalCoordinator,

@@ -8,7 +8,7 @@ from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInpu
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimalSaveCarryoverMapper
 from api.itinerary.validation.itinerary_animal_validator import ItineraryAnimalValidator
-from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from api.shared.constants import Constants
 from conftest import DbControllers
 
 
@@ -84,9 +84,9 @@ def test_validate_animals_on_date_change_keeps_below_min_likelihood_until_accept
 
    by_species = { diff.species: diff for diff in result }
    assert 'Spotted Hyena' in by_species
-   assert by_species[ 'Spotted Hyena' ].new_likelihood < ITINERARY_ANIMAL_MIN_LIKELIHOOD
-   assert by_species[ 'Masai Giraffe' ].new_likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
-   assert by_species[ 'African Lion' ].new_likelihood >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   assert by_species[ 'Spotted Hyena' ].new_likelihood < Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   assert by_species[ 'Masai Giraffe' ].new_likelihood >= Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   assert by_species[ 'African Lion' ].new_likelihood >= Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
 
 
 def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(

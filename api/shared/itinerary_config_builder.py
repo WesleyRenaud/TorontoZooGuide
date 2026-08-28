@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from .constants import ANIMAL_VISIBILITY_CHANGE_THRESHOLD
-from .constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from .constants import Constants
 from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
 from .enums import ItineraryTransportationStationRole
 from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
-from ..types import Connection
+from ..types import Types
 
 
 class ItineraryConfigBuilder():
    @classmethod
    def to_dict(
          cls,
-         conn: Connection | None = None ) -> dict[
+         conn: Types.Connection | None = None ) -> dict[
             str,
             int | list[ str ] | dict[ str, str ] | list[ dict[ str, bool | str ] ],
          ]:
@@ -24,8 +23,8 @@ class ItineraryConfigBuilder():
             str,
             int | list[ str ] | dict[ str, str ] | list[ dict[ str, bool | str ] ],
          ] = {
-         'animal_visibility_change_threshold': ANIMAL_VISIBILITY_CHANGE_THRESHOLD,
-         'itinerary_animal_min_likelihood': ITINERARY_ANIMAL_MIN_LIKELIHOOD,
+         'animal_visibility_change_threshold': Constants.ANIMAL_VISIBILITY_CHANGE_THRESHOLD,
+         'itinerary_animal_min_likelihood': Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD,
          'itinerary_event_types': [
             event_type.value for event_type in ItineraryEventType
          ],

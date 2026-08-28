@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from .transportation_route_leg_marker_record import TransportationRouteLegMarkerRecord
-from ...types import Row
+from ...types import Types
 
 
 class TransportationRouteLegMarkerMapper():
    @classmethod
    def map_record(
          cls,
-         row: Row,
+         row: Types.Row,
    ) -> TransportationRouteLegMarkerRecord:
       return TransportationRouteLegMarkerRecord(
          from_station=row[ 'FROM_STATION' ],
@@ -20,7 +20,7 @@ class TransportationRouteLegMarkerMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ],
+         rows: list[ Types.Row ],
    ) -> list[ TransportationRouteLegMarkerRecord ]:
       return [
          cls.map_record( row )

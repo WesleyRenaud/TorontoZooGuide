@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from ...data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
-from ....types import Connection
-from ....types import Cursor
+from ....types import Types
 
 
 class ItineraryScheduleClearer():
    @classmethod
-   def _clear_guest_items( cls, cur: Cursor ) -> None:
+   def _clear_guest_items( cls, cur: Types.Cursor ) -> None:
       UnscheduleItineraryItemProvider.clear_all_itinerary_animal_schedules( cur )
       UnscheduleItineraryItemProvider.clear_all_itinerary_attraction_schedules( cur )
       UnscheduleItineraryItemProvider.clear_all_itinerary_transportation_schedules( cur )
@@ -16,7 +15,7 @@ class ItineraryScheduleClearer():
 
 
    @classmethod
-   def clear_guest_items( cls, conn: Connection ) -> None:
+   def clear_guest_items( cls, conn: Types.Connection ) -> None:
       cur = conn.cursor()
 
       try:
@@ -28,7 +27,7 @@ class ItineraryScheduleClearer():
 
 
    @classmethod
-   def clear_all( cls, conn: Connection ) -> None:
+   def clear_all( cls, conn: Types.Connection ) -> None:
       cur = conn.cursor()
 
       try:

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.shared.constants import ITINERARY_ANIMAL_MIN_LIKELIHOOD
+from api.shared.constants import Constants
 from conftest import DbControllers
 
 
@@ -106,7 +106,7 @@ def test_set_itinerary_date_change_adds_animals_from_persisted_selected_exhibits
    ]
    assert added_animals
    assert all(
-      ( animal.likelihood or 0 ) >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+      ( animal.likelihood or 0 ) >= Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
       for animal in added_animals )
    hyena = next(
       animal
@@ -171,7 +171,7 @@ def test_set_itinerary_date_change_adds_animals_from_newly_selected_exhibits(
    assert americas_animals
    assert all( animal.is_added is False for animal in americas_animals )
    assert all(
-      ( animal.likelihood or 0 ) >= ITINERARY_ANIMAL_MIN_LIKELIHOOD
+      ( animal.likelihood or 0 ) >= Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
       for animal in americas_animals )
 
 

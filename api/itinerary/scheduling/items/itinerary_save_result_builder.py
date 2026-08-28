@@ -8,14 +8,14 @@ from ...domain.itinerary_builder import ItineraryBuilder
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.enums import ItineraryErrorType
-from ....types import Connection
+from ....types import Types
 
 
 class ItinerarySaveResultBuilder():
    @classmethod
    def save_result(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          status: ItineraryErrorType,
          *,
          reasons: list[ ItineraryResultReason ] | None = None,
@@ -33,7 +33,7 @@ class ItinerarySaveResultBuilder():
    @classmethod
    def success_result(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          adjustments: list[ ItineraryAdjustment ] | None = None,
          suppressed_warnings: list[ ItineraryErrorType ] | None = None,
@@ -49,7 +49,7 @@ class ItinerarySaveResultBuilder():
    @classmethod
    def persist_walk_route(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          **itinerary_context: Any ) -> None:
       from ...routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 

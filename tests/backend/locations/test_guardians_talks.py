@@ -6,7 +6,7 @@ from datetime import date
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.shared.api_error_response import ApiOperationFailure
+from api.shared.api_operation_failure import ApiOperationFailure
 from api.shared.enums.api_error_type import ApiErrorType
 from conftest import DbControllers
 

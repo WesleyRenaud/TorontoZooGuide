@@ -4,15 +4,15 @@ from ....models import Itinerary
 from ....models.itinerary_transportation import ItineraryTransportation
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryEventType
-from ....types import ScheduleTimeKey
+from ....types import Types
 
 
 class GuestItemScheduleStatusChecker():
    @classmethod
    def has_schedule_times(
          cls,
-         start_time: ScheduleTimeKey,
-         end_time: ScheduleTimeKey ) -> bool:
+         start_time: Types.ScheduleTimeKey,
+         end_time: Types.ScheduleTimeKey ) -> bool:
       return bool(
          DateValues.normalize_schedule_time_key( start_time )
          and DateValues.normalize_schedule_time_key( end_time ) )

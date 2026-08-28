@@ -6,7 +6,7 @@ from .itinerary_transportation_route_marker_record import ItineraryTransportatio
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.calendar_dates import DateValues
 from ...shared.value_conversion import ValueConversion
-from ...types import Row
+from ...types import Types
 
 
 TransportationRowKey = tuple[ str, bool ]
@@ -24,7 +24,7 @@ class ItineraryTransportationMapper():
    @classmethod
    def map_record(
          cls,
-         row: Row,
+         row: Types.Row,
          legs: list[ ItineraryTransportationLeg ],
          route_markers: list[ ItineraryTransportationRouteMarkerRecord ],
    ) -> ItineraryTransportationRecord:
@@ -49,7 +49,7 @@ class ItineraryTransportationMapper():
    @classmethod
    def map_records(
          cls,
-         rows: list[ Row ],
+         rows: list[ Types.Row ],
          legs: list[ ItineraryTransportationLeg ],
          route_markers: list[ ItineraryTransportationRouteMarkerRecord ],
    ) -> list[ ItineraryTransportationRecord ]:

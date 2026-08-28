@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...attraction_item_key import AttractionScheduleItemKey
 from .attraction_itinerary_item_scheduler import AttractionItineraryItemScheduler
+from ...attraction_schedule_item_key import AttractionScheduleItemKey
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from .guardians_talk_itinerary_item_scheduler import GuardiansTalkItineraryItemScheduler
+from ...guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from .itinerary_event_scheduler import ItineraryEventScheduler
 from .itinerary_save_result_builder import ItinerarySaveResultBuilder
 from .itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
@@ -16,11 +16,9 @@ from .schedule_item_key import ScheduleItemKey
 from .schedule_time_options_parser import ScheduleTimeOptionsParser
 from ....shared.enums import ItineraryErrorType
 from ....shared.enums import ItineraryEventType
-from ....types import Connection
-from ....types import DurationInput
-from ....types import TimeInput
-from ...wild_encounter_item_key import WildEncounterScheduleItemKey
+from ....types import Types
 from .wild_encounter_itinerary_item_scheduler import WildEncounterItineraryItemScheduler
+from ...wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -28,11 +26,11 @@ class ItineraryItemScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
-         schedule_item_key: ScheduleItemKey | None,
+         conn: Types.Connection,
+         schedule_item_key: ScheduleItemKey.Key | None,
          *,
-         start_time: TimeInput = None,
-         duration_minutes: DurationInput = None,
+         start_time: Types.TimeInput = None,
+         duration_minutes: Types.DurationInput = None,
          animal_coordinator: type[ AnimalCoordinator ],
          attraction_coordinator: type[ AttractionCoordinator ],
          guardians_coordinator: type[ GuardiansCoordinator ],

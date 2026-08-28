@@ -8,7 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
-from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator

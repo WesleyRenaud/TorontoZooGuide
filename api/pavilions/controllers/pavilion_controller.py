@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.pavilion_coordinator import PavilionCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class PavilionController():

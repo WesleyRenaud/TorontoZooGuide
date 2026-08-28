@@ -9,7 +9,7 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..scheduling.bulk.bulk_reschedule_long_wait_simulator import BulkRescheduleLongWaitSimulator
 from ...shared.enums import ItinerarySaveIssueItemType
-from ...types import Connection
+from ...types import Types
 
 
 class GuardiansTalkLongWaitWarningBuilder():
@@ -25,7 +25,7 @@ class GuardiansTalkLongWaitWarningBuilder():
    @classmethod
    def reason_after_adding_with_simulated_bulk(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          new_talk: GuardiansTalkDiff,
          *,
          itinerary_context: dict[ str, Any ],

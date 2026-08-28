@@ -5,8 +5,9 @@ from datetime import timedelta
 from typing import Any
 
 from .calendar_dates import CalendarDates
-from .calendar_dates import DateValues
+from .date_values import DateValues
 from ..models import ScheduledOccurrence
+from .scheduled_occurrence_sorter import ScheduledOccurrenceSorter
 
 
 class ScheduledOccurrenceBuilder():
@@ -74,19 +75,3 @@ class ScheduledOccurrenceBuilder():
             occurrence.date,
             occurrence.time or '',
          ) )
-
-
-class ScheduledOccurrenceSorter():
-   @classmethod
-   def unique_sorted_by_key(
-         cls,
-         items: list[ Any ],
-         *,
-         key: Callable[ [ Any ], Any ],
-         sort_key: Callable[ [ Any ], Any ] ) -> list[ Any ]:
-      return sorted(
-         {
-            key( item ): item
-            for item in items
-         }.values(),
-         key=sort_key )

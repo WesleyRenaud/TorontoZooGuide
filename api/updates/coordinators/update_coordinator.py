@@ -6,25 +6,25 @@ from ...models import Update
 from ..operations.update_create_input_builder import UpdateCreateInputBuilder
 from ..operations.update_edit_input_builder import UpdateEditInputBuilder
 from ..operations.update_end_input_builder import UpdateEndInputBuilder
-from ...request_connection import get_connection
+from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 class UpdateCoordinator():
    @classmethod
    def get_updates_for_visit_date(
          cls,
-         month: MonthInput,
-         day: VisitDay,
-         year: VisitYear ) -> list[ Update ]:
+         month: Types.MonthInput,
+         day: Types.VisitDay,
+         year: Types.VisitYear ) -> list[ Update ]:
       target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year )
 
-      updates = UpdateProvider.fetch_updates( get_connection(), target_date )
+      updates = UpdateProvider.fetch_updates( RequestConnectionProvider.get(), target_date )
 
       return UpdatesDisplayBuilder.sort_for_display(
          UpdatesDisplayBuilder.filter_started_on_or_before(
@@ -37,7 +37,7 @@ class UpdateCoordinator():
       as_of_date = DateValues.today_date_key()
 
       return UpdatesDisplayBuilder.sort_for_display(
-         UpdateProvider.fetch_updates( get_connection(), as_of_date ) )
+         UpdateProvider.fetch_updates( RequestConnectionProvider.get(), as_of_date ) )
 
 
    @classmethod
@@ -46,8 +46,8 @@ class UpdateCoordinator():
          title: str,
          description: str,
          update_type: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
       update = UpdateCreateInputBuilder.build(
          title=title,
          description=description,
@@ -56,7 +56,7 @@ class UpdateCoordinator():
          end_date=end_date )
 
       return UpdateProvider.insert_update(
-         get_connection(),
+         RequestConnectionProvider.get(),
          update=update )
 
 
@@ -64,15 +64,15 @@ class UpdateCoordinator():
    def end_update(
          cls,
          title: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
       update = UpdateEndInputBuilder.build(
          title=title,
          start_date=start_date,
          end_date=end_date )
 
       return UpdateProvider.update_end_date(
-         get_connection(),
+         RequestConnectionProvider.get(),
          update=update )
 
 
@@ -80,10 +80,10 @@ class UpdateCoordinator():
    def edit_update(
          cls,
          title: str,
-         start_date: DateInput,
+         start_date: Types.DateInput,
          description: str,
          update_type: str,
-         end_date: DateInput ) -> bool:
+         end_date: Types.DateInput ) -> bool:
       update = UpdateEditInputBuilder.build(
          title=title,
          start_date=start_date,
@@ -92,5 +92,5 @@ class UpdateCoordinator():
          end_date=end_date )
 
       return UpdateProvider.edit_update_record(
-         get_connection(),
+         RequestConnectionProvider.get(),
          update=update )

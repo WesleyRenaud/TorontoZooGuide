@@ -6,7 +6,7 @@ from ..data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ...shared.enums import ItineraryErrorType
-from ...types import Connection
+from ...types import Types
 
 
 class ItinerarySuppressedWarningsBuilder():
@@ -22,7 +22,7 @@ class ItinerarySuppressedWarningsBuilder():
    @classmethod
    def record_if_error_suppressed(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          suppressed_warnings: list[ ItineraryErrorType ],
          error_type: ItineraryErrorType ) -> bool:
       if not ItineraryStatusProvider.is_itinerary_error_suppressed( conn, error_type ):

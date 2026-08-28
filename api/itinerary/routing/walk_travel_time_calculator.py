@@ -76,5 +76,3 @@ class WalkTravelTimeCalculator():
          node_ids=node_ids,
          travel_time_minutes=cls.minutes_from_length_px( length_px ) )
 
-
-WALK_PX_PER_MINUTE = WalkTravelTimeCalculator.WALK_PX_PER_MINUTE

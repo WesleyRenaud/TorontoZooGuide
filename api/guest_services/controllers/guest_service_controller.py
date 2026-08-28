@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.guest_service_coordinator import GuestServiceCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class GuestServiceController():

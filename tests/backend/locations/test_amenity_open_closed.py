@@ -7,7 +7,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 def test_restaurant_schedule_controls_open_and_closed_results(
@@ -128,7 +128,7 @@ def test_restroom_alert_controls_guest_message(
 
 def test_setting_restroom_alert_twice_updates_existing_alert(
       db: DbControllers,
-      cursor: Cursor,
+      cursor: Types.Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
    assert RestroomCoordinator.set_restroom_alert(

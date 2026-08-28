@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ...app_strings import AppStringProvider
+from ...app_string_provider import AppStringProvider
 from ...models import Animal
 from ..search.species_exhibit_key import SpeciesExhibitKey
 from ..search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder

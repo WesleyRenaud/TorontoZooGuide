@@ -4,7 +4,7 @@ from functools import lru_cache
 import json
 from pathlib import Path
 
-from .data_access.paths import DEFAULT_MASTER_ROUTE_PATH
+from .data_access.paths import Paths
 from .domain.loop_side_cluster_id import LoopSideClusterId
 from .domain.master_route import MasterRoute
 from .domain.master_route_loop import MasterRouteLoop
@@ -18,7 +18,7 @@ class MasterRouteProvider():
    @classmethod
    @lru_cache( maxsize=1 )
    def fetch_default( cls ) -> MasterRoute:
-      return cls.fetch_from_file( DEFAULT_MASTER_ROUTE_PATH )
+      return cls.fetch_from_file( Paths.DEFAULT_MASTER_ROUTE_PATH )
 
 
    @classmethod
@@ -41,19 +41,19 @@ class MasterRouteProvider():
 
    @classmethod
    @lru_cache( maxsize=1 )
-   def route_index_by_stop_key( cls ) -> dict[ MasterRouteStopKey, int ]:
+   def route_index_by_stop_key( cls ) -> dict[ MasterRouteStopKey.Key, int ]:
       return MasterRouteStopKeyIndexBuilder.route_index( cls.fetch_default() )
 
 
    @classmethod
    @lru_cache( maxsize=1 )
-   def loop_index_by_stop_key( cls ) -> dict[ MasterRouteStopKey, int ]:
+   def loop_index_by_stop_key( cls ) -> dict[ MasterRouteStopKey.Key, int ]:
       return MasterRouteStopKeyIndexBuilder.loop_index( cls.fetch_default() )
 
 
    @classmethod
    @lru_cache( maxsize=1 )
-   def loop_id_by_stop_key( cls ) -> dict[ MasterRouteStopKey, str ]:
+   def loop_id_by_stop_key( cls ) -> dict[ MasterRouteStopKey.Key, str ]:
       return MasterRouteStopKeyIndexBuilder.loop_id( cls.fetch_default() )
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..domain.wild_encounter_name_filter import WildEncounterNameFilter
 from ...models import WildEncounter
 from ...shared.calendar_dates import DateValues
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class WildEncounterDayScheduleFinder():
@@ -13,7 +13,7 @@ class WildEncounterDayScheduleFinder():
          day_schedule: list[ WildEncounter ],
          encounter_name: str,
          *,
-         start_time: ScheduleTimeKey ) -> WildEncounter | None:
+         start_time: Types.ScheduleTimeKey ) -> WildEncounter | None:
       encounter_filter = WildEncounterNameFilter( name=encounter_name )
 
       if encounter_filter.should_return_empty():

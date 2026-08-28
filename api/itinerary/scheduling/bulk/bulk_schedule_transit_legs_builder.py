@@ -5,14 +5,14 @@ from .bulk_schedule_window_prep import BulkScheduleWindowPrep
 from ..core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from ...data_access.itinerary_provider import ItineraryProvider
 from .transportation_transit_ride_applier import TransportationTransitRideApplier
-from ....types import Connection
+from ....types import Types
 
 
 class BulkScheduleTransitLegsBuilder():
    @classmethod
    def apply(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          prep: BulkScheduleWindowPrep ) -> None:
       saved_after_pack = ItineraryProvider.fetch_saved_itinerary( conn )

@@ -3,12 +3,12 @@ from __future__ import annotations
 from .itinerary_walk_route_stop_record import ItineraryWalkRouteStopRecord
 from ..routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...shared.enums import ScheduleItemKind
-from ...types import Row
+from ...types import Types
 
 
 class ItineraryWalkRouteStopMapper():
    @classmethod
-   def map_record( cls, row: Row ) -> ItineraryWalkRouteStopRecord:
+   def map_record( cls, row: Types.Row ) -> ItineraryWalkRouteStopRecord:
       return ItineraryWalkRouteStopRecord(
          stop_sequence=int( row[ 'STOP_SEQUENCE' ] ),
          schedule_item_kind=ScheduleItemKind.normalize( row[ 'SCHEDULE_ITEM_KIND' ] ),
@@ -20,7 +20,7 @@ class ItineraryWalkRouteStopMapper():
 
    @classmethod
    def map_records(
-         cls, rows: list[ Row ] ) -> list[ ItineraryWalkRouteStopRecord ]:
+         cls, rows: list[ Types.Row ] ) -> list[ ItineraryWalkRouteStopRecord ]:
       return [
          cls.map_record( row )
          for row in rows

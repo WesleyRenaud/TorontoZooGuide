@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...shared.enums import AnimalViewingScope
-from ...types import Coordinate, DateKey, ScheduleTimeKey, SeasonalMultiplier
+from ...types import Types
 
 
 @dataclass( frozen=True )
@@ -26,26 +26,26 @@ class AnimalViewabilityRecord:
    enclosure_type: str | None
    enclosure_name: str | None
    seasonally_off_display_message: str | None
-   x_coord: Coordinate
-   y_coord: Coordinate
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
    is_off_display: bool | None
    viewing_scope: AnimalViewingScope | None
    off_display_message: str | None
-   off_display_start: DateKey | None
-   off_display_end: DateKey | None
-   schedule_start_date: DateKey | None
-   schedule_end_date: DateKey | None
-   daily_start_time: ScheduleTimeKey
-   daily_end_time: ScheduleTimeKey
+   off_display_start: Types.DateKey | None
+   off_display_end: Types.DateKey | None
+   schedule_start_date: Types.DateKey | None
+   schedule_end_date: Types.DateKey | None
+   daily_start_time: Types.ScheduleTimeKey
+   daily_end_time: Types.ScheduleTimeKey
    viewing_message: str | None
    alert_message: str | None
-   alert_start_date: DateKey | None
-   alert_end_date: DateKey | None
+   alert_start_date: Types.DateKey | None
+   alert_end_date: Types.DateKey | None
    is_closed: bool | None
    closed_message: str | None
-   closed_start: DateKey | None
-   closed_end: DateKey | None
-   animal_day_seasonal_multiplier: SeasonalMultiplier
-   exhibit_day_seasonal_availability_multiplier: SeasonalMultiplier
+   closed_start: Types.DateKey | None
+   closed_end: Types.DateKey | None
+   animal_day_seasonal_multiplier: Types.SeasonalMultiplier
+   exhibit_day_seasonal_availability_multiplier: Types.SeasonalMultiplier
    include_all_viewing_spots: bool | None = None
    is_zoomobile_only: bool = False

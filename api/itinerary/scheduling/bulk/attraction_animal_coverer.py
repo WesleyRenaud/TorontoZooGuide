@@ -14,8 +14,7 @@ from ...data_access.unschedule_itinerary_item_provider import UnscheduleItinerar
 from ....models import AnimalDiff
 from .restored_attraction_covered_animals import RestoredAttractionCoveredAnimals
 from ....shared.calendar_dates import DateValues
-from ....types import Connection
-from ....types import Cursor
+from ....types import Types
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 
 
@@ -26,7 +25,7 @@ class AttractionAnimalCoverer():
    @classmethod
    def keys_to_cover(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_names: list[ str ],
          animal_rows: list[ ItineraryAnimalRecord ],
       ) -> dict[ ViewingSpotNameKey, CoveredAnimalAttraction ]:
@@ -54,7 +53,7 @@ class AttractionAnimalCoverer():
    @classmethod
    def apply(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          covered_by_attraction: dict[ ViewingSpotNameKey, CoveredAnimalAttraction ],
       ) -> None:
       if not covered_by_attraction:
@@ -94,8 +93,8 @@ class AttractionAnimalCoverer():
    @classmethod
    def restore_after_removed(
          cls,
-         cur: Cursor,
-         conn: Connection,
+         cur: Types.Cursor,
+         conn: Types.Connection,
          *,
          attraction_name: str,
          attraction_block: TimeBlock,
@@ -156,7 +155,7 @@ class AttractionAnimalCoverer():
    @classmethod
    def uncover_for_removed(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          animals: list[ AnimalDiff ],
          removed_attraction_rows: list[ ItineraryAttractionRecord ],
       ) -> list[ AnimalDiff ]:

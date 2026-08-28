@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from ...shared.enums import ScheduleItemKind
+from typing import TypeAlias
+
+from .animal_master_route_stop_key import AnimalMasterRouteStopKey
+from .attraction_master_route_stop_key import AttractionMasterRouteStopKey
 
 
-AnimalMasterRouteStopKey = tuple[ ScheduleItemKind, str, str, str | None ]
-AttractionMasterRouteStopKey = tuple[ ScheduleItemKind, str ]
-MasterRouteStopKey = AnimalMasterRouteStopKey | AttractionMasterRouteStopKey
+class MasterRouteStopKey():
+   Key: TypeAlias = AnimalMasterRouteStopKey.Key | AttractionMasterRouteStopKey.Key

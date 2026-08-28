@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ...types import Connection
+from ...types import Types
 
 
 class AttractionAlsoTransportationProvider():
    @classmethod
    def attraction_is_also_transportation(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          attraction_name: str ) -> bool:
       cur = conn.cursor()
 
@@ -32,7 +32,7 @@ class AttractionAlsoTransportationProvider():
    @classmethod
    def fetch_also_transportation_attraction_names(
          cls,
-         conn: Connection ) -> set[ str ]:
+         conn: Types.Connection ) -> set[ str ]:
       cur = conn.cursor()
 
       try:

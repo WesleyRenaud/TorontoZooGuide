@@ -3,7 +3,7 @@ from __future__ import annotations
 from .animal_viewability_context import AnimalViewabilityContext
 from ...shared.calendar_dates import CalendarDates
 from ...shared.weather import Weather
-from ...types import MonthInput, VisitDay, VisitYear
+from ...types import Types
 
 
 class AnimalViewabilityContextBuilder():
@@ -26,9 +26,9 @@ class AnimalViewabilityContextBuilder():
    @classmethod
    def resolve(
          cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
+         day: Types.VisitDay,
+         month: Types.MonthInput,
+         year: Types.VisitYear,
          temp: float | None = None ) -> AnimalViewabilityContext:
       target_date = CalendarDates.visit_target_date( month, day, year )
       calendar_month = target_date.month

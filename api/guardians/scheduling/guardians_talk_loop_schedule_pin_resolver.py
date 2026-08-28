@@ -6,7 +6,7 @@ from ...itinerary.routing.itinerary_stop import ItineraryStop
 from ...itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from ...models import GuardiansTalk
 from ...shared.calendar_dates import DateValues
-from ...types import Connection
+from ...types import Types
 from ...walk_graph.master_route_provider import MasterRouteProvider
 
 
@@ -14,7 +14,7 @@ class GuardiansTalkLoopSchedulePinResolver():
    @classmethod
    def resolve(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          guardians_talk: GuardiansTalk,
          itinerary_stop: ItineraryStop ) -> LoopSchedulePin | None:
       start_seconds = DateValues.time_value_in_seconds( itinerary_stop.start_time )

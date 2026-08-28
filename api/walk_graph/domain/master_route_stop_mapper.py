@@ -8,7 +8,7 @@ from .viewing_spot_reference_mapper import ViewingSpotReferenceMapper
 
 class MasterRouteStopMapper():
    @classmethod
-   def map_record( cls, payload: dict[ str, object ] ) -> MasterRouteStop:
+   def map_record( cls, payload: dict[ str, object ] ) -> MasterRouteStop.Stop:
       kind_value = payload.get( 'kind' )
 
       if kind_value is None:

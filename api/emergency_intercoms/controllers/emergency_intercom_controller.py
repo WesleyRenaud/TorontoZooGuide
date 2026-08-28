@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.emergency_intercom_coordinator import EmergencyIntercomCoordinator
-from ...json_handler import JsonRequestHandler
+from ...json_request_handler import JsonRequestHandler
 
 
 class EmergencyIntercomController():

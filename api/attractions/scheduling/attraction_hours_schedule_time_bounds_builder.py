@@ -4,7 +4,7 @@ from .attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBo
 from .attraction_hours_time_bounds import AttractionHoursTimeBounds
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
-from ...types import Connection, DateInput, DateKey, ScheduleTimeKey, TimeInput
+from ...types import Types
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
@@ -45,8 +45,8 @@ class AttractionHoursScheduleTimeBoundsBuilder():
    @classmethod
    def resolve_date_range(
          cls,
-         start_date: DateInput,
-         end_date: DateInput ) -> tuple[ DateKey, DateKey | None ]:
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> tuple[ Types.DateKey, Types.DateKey | None ]:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
@@ -56,9 +56,9 @@ class AttractionHoursScheduleTimeBoundsBuilder():
    @classmethod
    def fetch(
          cls,
-         conn: Connection,
-         start_date: DateInput = None,
-         end_date: DateInput = None ) -> AttractionHoursScheduleTimeBounds:
+         conn: Types.Connection,
+         start_date: Types.DateInput = None,
+         end_date: Types.DateInput = None ) -> AttractionHoursScheduleTimeBounds:
       range_start, range_end = cls.resolve_date_range( start_date, end_date )
       records = ZooHoursProvider.fetch_zoo_hours_records_between( conn, range_start, range_end )
       weekday_bounds = cls._build_time_bounds(
@@ -75,7 +75,7 @@ class AttractionHoursScheduleTimeBoundsBuilder():
    @classmethod
    def _time_is_within_bounds(
          cls,
-         value: ScheduleTimeKey | TimeInput,
+         value: Types.ScheduleTimeKey | Types.TimeInput,
          bounds: AttractionHoursTimeBounds ) -> bool:
       return (
          DateValues.time_value_is_at_or_after( value, bounds.open_time )
@@ -88,10 +88,10 @@ class AttractionHoursScheduleTimeBoundsBuilder():
          cls,
          bounds: AttractionHoursScheduleTimeBounds,
          *,
-         weekday_start_time: TimeInput,
-         weekday_end_time: TimeInput,
-         weekend_holiday_start_time: TimeInput,
-         weekend_holiday_end_time: TimeInput ) -> bool:
+         weekday_start_time: Types.TimeInput,
+         weekday_end_time: Types.TimeInput,
+         weekend_holiday_start_time: Types.TimeInput,
+         weekend_holiday_end_time: Types.TimeInput ) -> bool:
       return (
          cls._time_is_within_bounds( weekday_start_time, bounds.weekday )
          and cls._time_is_within_bounds( weekday_end_time, bounds.weekday )

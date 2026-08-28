@@ -8,7 +8,7 @@ from api.models.attraction import Attraction
 from api.models.gift_shop import GiftShop
 from api.models.restaurant import Restaurant
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 def get_animal( db: DbControllers, species: str, exhibit: str ) -> Animal:
@@ -43,7 +43,7 @@ def get_animals_for_exhibit(
    ]
 
 def get_animal_status_scopes(
-      cursor: Cursor,
+      cursor: Types.Cursor,
       species: str,
       exhibit: str ) -> list[ str ]:
    return [

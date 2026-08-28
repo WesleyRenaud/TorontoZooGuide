@@ -9,7 +9,7 @@ from api.guest_services.coordinators.guest_service_coordinator import GuestServi
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.picnic_sites.coordinators.picnic_site_coordinator import PicnicSiteCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
-from api.types import Cursor
+from api.types import Types
 from conftest import DbControllers
 
 def test_region_and_static_location_queries( db: DbControllers ) -> None:
@@ -98,7 +98,7 @@ def test_emergency_intercoms_have_coordinates( db: DbControllers ) -> None:
    assert all( 0 <= emergency_intercom.y_coord <= 100 for emergency_intercom in emergency_intercoms )
 
 
-def test_guest_services_have_types_and_coordinates( db: DbControllers, cursor: Cursor ) -> None:
+def test_guest_services_have_types_and_coordinates( db: DbControllers, cursor: Types.Cursor ) -> None:
    guest_services = GuestServiceCoordinator.get_guest_services()
    service_types = { service.service_type for service in guest_services }
    primary_key_columns = cursor.execute(

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from ...shared.calendar_dates import DateValues
-from ...types import ScheduleTimeKey
+from ...types import Types
 
 
 class ItineraryScheduleTimeOrderValidator():
    @classmethod
    def departure_follows_arrival(
          cls,
-         arrival_time: ScheduleTimeKey,
-         departure_time: ScheduleTimeKey ) -> bool:
+         arrival_time: Types.ScheduleTimeKey,
+         departure_time: Types.ScheduleTimeKey ) -> bool:
       arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
       departure_minutes = DateValues.time_value_in_minutes( departure_time )
 

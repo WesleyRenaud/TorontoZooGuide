@@ -22,7 +22,7 @@ from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
 from ....shared.operating_hours import OperatingHours
-from ....types import Connection
+from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.walk_graph import WalkGraph
 
@@ -31,7 +31,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def schedule(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          loop_units: list[ LoopScheduleUnit ],
          *,
          blockers: list[ TimeBlock ],
@@ -39,7 +39,7 @@ class MasterRouteLoopScheduler():
          schedule_cursor_seconds: int,
          walk_graph: WalkGraph,
          start_node_id: str,
-         slot_sink: LoopScheduleSlotSink | None = None ) -> tuple[ list[ LoopScheduleStop ], int ]:
+         slot_sink: LoopScheduleSlotSink | None = None ) -> tuple[ list[ LoopScheduleStop.Stop ], int ]:
       prepared_units = LoopWindowPacker.prepare_units(
          conn,
          loop_units,
@@ -54,7 +54,7 @@ class MasterRouteLoopScheduler():
          current_node_id=start_node_id,
          departure_side_cluster_id=None )
       window_index = 0
-      remaining_animals: list[ LoopScheduleStop ] = []
+      remaining_animals: list[ LoopScheduleStop.Stop ] = []
       pinned_earliest_start_cache = cls._build_constrained_earliest_start_cache(
          conn,
          prepared_units,
@@ -161,7 +161,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _process_schedule_window(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          schedule_window: ItineraryScheduleWindow,
@@ -174,7 +174,7 @@ class MasterRouteLoopScheduler():
          blockers: list[ TimeBlock ],
          walk_graph: WalkGraph,
          window_state: LoopScheduleWindowState,
-         remaining_animals: list[ LoopScheduleStop ],
+         remaining_animals: list[ LoopScheduleStop.Stop ],
          slot_sink: LoopScheduleSlotSink | None = None,
       ) -> bool:
       hard_pinned_loop_ids = set( pinned_loop_ids )
@@ -686,7 +686,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _drain_cascaded_inactive_soft_pin_loop_units(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          schedule_window: ItineraryScheduleWindow,
          *,
@@ -984,7 +984,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _pack_non_pinned_loops_before_pinned_deadline(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          *,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          schedule_window: ItineraryScheduleWindow,
@@ -995,7 +995,7 @@ class MasterRouteLoopScheduler():
          blockers: list[ TimeBlock ],
          walk_graph: WalkGraph,
          window_state: LoopScheduleWindowState,
-         remaining_animals: list[ LoopScheduleStop ],
+         remaining_animals: list[ LoopScheduleStop.Stop ],
          slot_sink: LoopScheduleSlotSink | None = None,
       ) -> tuple[ int, bool ]:
       held_loop_ids = set( exclude_loop_ids or pinned_loop_ids )
@@ -1092,7 +1092,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _build_constrained_earliest_start_cache(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_units: list[ PreparedLoopScheduleUnit ],
          schedule_windows: list[ ItineraryScheduleWindow ],
       ) -> dict[ int, int | None ]:
@@ -1149,7 +1149,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _drain_ready_pinned_loop_units(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          schedule_window: ItineraryScheduleWindow,
          *,
@@ -1207,7 +1207,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _drain_ready_soft_pin_loop_units(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          schedule_window: ItineraryScheduleWindow,
          *,
@@ -1326,11 +1326,11 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _keep_partial_pinned_loop_progress(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          prepared_unit: PreparedLoopScheduleUnit,
          *,
-         unscheduled_animals: list[ LoopScheduleStop ],
+         unscheduled_animals: list[ LoopScheduleStop.Stop ],
          pinned_earliest_start_cache: dict[ int, int | None ],
          loop_pins: list[ LoopSchedulePin ],
       ) -> bool:
@@ -1366,11 +1366,11 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _keep_partial_soft_pin_loop_progress(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          remaining_units: list[ PreparedLoopScheduleUnit ],
          prepared_unit: PreparedLoopScheduleUnit,
          *,
-         unscheduled_stops: list[ LoopScheduleStop ],
+         unscheduled_stops: list[ LoopScheduleStop.Stop ],
          pinned_earliest_start_cache: dict[ int, int | None ],
          soft_pins: list[ AttractionHoursSoftPin ],
       ) -> bool:
@@ -1406,9 +1406,9 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _prepared_loop_unit_from_stops(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          loop_unit: LoopScheduleUnit,
-         stops: list[ LoopScheduleStop ] ) -> PreparedLoopScheduleUnit | None:
+         stops: list[ LoopScheduleStop.Stop ] ) -> PreparedLoopScheduleUnit | None:
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
          WalkGraphProvider.fetch(),
@@ -1679,7 +1679,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _schedule_prepared_loop_unit(
          cls,
-         conn: Connection,
+         conn: Types.Connection,
          prepared_unit: PreparedLoopScheduleUnit,
          *,
          blockers: list[ TimeBlock ],
@@ -1687,7 +1687,7 @@ class MasterRouteLoopScheduler():
          walk_graph: WalkGraph,
          end_seconds: int | None = None,
          hours_by_attraction_name: dict[ str, OperatingHours ] | None = None,
-         slot_sink: LoopScheduleSlotSink | None = None ) -> list[ LoopScheduleStop ]:
+         slot_sink: LoopScheduleSlotSink | None = None ) -> list[ LoopScheduleStop.Stop ]:
       animals = list( prepared_unit.unit.stops )
       prepared_stops = LoopScheduleSlotAssigner.prepare_stops(
          conn,
@@ -1767,7 +1767,7 @@ class MasterRouteLoopScheduler():
    @classmethod
    def _animals_from_loop_units(
          cls,
-         loop_units: list[ LoopScheduleUnit ] ) -> list[ LoopScheduleStop ]:
+         loop_units: list[ LoopScheduleUnit ] ) -> list[ LoopScheduleStop.Stop ]:
       return [
          animal_row
          for loop_unit in loop_units

@@ -4,12 +4,12 @@ import calendar
 import math
 
 from .calendar_dates import CalendarDates
-from ..types import MonthInput, VisitDay
+from ..types import Types
 
 
 class Weather:
    @staticmethod
-   def get_average_temperature( month: MonthInput, day: VisitDay ) -> float:
+   def get_average_temperature( month: Types.MonthInput, day: Types.VisitDay ) -> float:
       month = CalendarDates.normalize_month( month )
       day_of_year = sum( calendar.monthrange( 2024, m )[ 1 ] for m in range( 1, month ) ) + day
 
