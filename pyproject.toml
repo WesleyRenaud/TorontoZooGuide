@@ -9,10 +9,12 @@ source = [
    "api/events",
    "api/exhibits",
    "api/giftshops",
+   "api/guardians",
    "api/restaurants",
    "api/restrooms",
    "api/transportation",
    "api/updates",
+   "api/wild_encounters",
 ]
 omit = [
    "api/__main__.py",
