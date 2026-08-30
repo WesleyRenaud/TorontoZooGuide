@@ -19,6 +19,7 @@ source = [
    "api/restaurants",
    "api/restrooms",
    "api/search",
+   "api/shared",
    "api/static",
    "api/transportation",
    "api/updates",
