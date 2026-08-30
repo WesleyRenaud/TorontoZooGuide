@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from api_test_support.fake_handler import FakeHandler
+
 from api.static.static_file_sender import StaticFileSender
-from conftest import FakeHandler
 
 
-def test_send_file_guesses_content_type_for_binary_files() -> None:
+def Test_Send_TestCssFile_ExpectGuessesContentType() -> None:
    handler = FakeHandler()
 
    StaticFileSender.send( handler, './styles/styles.css' )
@@ -14,7 +15,7 @@ def test_send_file_guesses_content_type_for_binary_files() -> None:
    assert handler.wfile.getvalue()
 
 
-def test_send_file_serves_binary_files_in_chunks() -> None:
+def Test_Send_TestPngFile_ExpectServesBinaryInChunks() -> None:
    handler = FakeHandler()
 
    StaticFileSender.send(
