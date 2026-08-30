@@ -53,6 +53,24 @@ def Test_BuildStatus_TestClosedRecord_ExpectZeroLikelihood() -> None:
    assert likelihood == 0.0
 
 
+def Test_BuildOpenStatus_TestDateRange_ExpectMappedStatus() -> None:
+   status = DrinkingFountainStatusBuilder.build_open_status(
+      start_date='2026-06-01',
+      end_date='2026-06-30' )
+
+   assert status.start_date == '2026-06-01'
+   assert status.end_date == '2026-06-30'
+
+
+def Test_BuildSeasonalStatus_TestLikelihood_ExpectClosedWhenZero() -> None:
+   is_closed, closed_message, likelihood = DrinkingFountainStatusBuilder.build_seasonal_status(
+      0.0 )
+
+   assert is_closed is True
+   assert closed_message is None
+   assert likelihood == 0.0
+
+
 def Test_RecordToModel_TestClosedFountain_ExpectClosedMessageOnlyWhenClosed() -> None:
    fountain = DrinkingFountainBuilder.record_to_model(
       DrinkingFountainRecord( x_coord=1.0, y_coord=2.0 ),

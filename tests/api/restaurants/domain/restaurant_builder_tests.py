@@ -5,6 +5,7 @@ from datetime import date
 from api.restaurants.data_access.restaurant_record import RestaurantRecord
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
+from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
 
@@ -65,6 +66,26 @@ def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() ->
    assert RestaurantBuilder.calculate_likelihood( -0.5 ) == 0
    assert RestaurantBuilder.calculate_likelihood( 0.444 ) == 44
    assert RestaurantBuilder.calculate_likelihood( 1.5 ) == 100
+
+
+def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
+   status, message = RestaurantBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record( monday=True ) ],
+      target_date=VISIT_DATE,
+      weekday=VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None
+
+
+def Test_GetActiveScheduleStatus_TestClosedMonday_ExpectClosedMessage() -> None:
+   status, message = RestaurantBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record() ],
+      target_date=VISIT_DATE,
+      weekday=VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.CLOSED
+   assert message == CUSTOM_CLOSED_MESSAGE
 
 
 def Test_BuildRestaurants_TestClosedRestaurant_ExpectExcludedUnlessIncludedOrListed() -> None:
