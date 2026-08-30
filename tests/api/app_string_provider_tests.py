@@ -10,7 +10,7 @@ from api.app_string_provider import AppStringProvider
 from api.html_string_renderer import HtmlStringRenderer
 
 
-def test_get_app_string_values_reuses_cache_until_sources_change(
+def Test_Values_TestRepeatedCalls_ExpectReusesCacheUntilSourcesChange(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    AppStringProvider.clear_cache()
    call_count = 0
@@ -32,19 +32,19 @@ def test_get_app_string_values_reuses_cache_until_sources_change(
    assert call_count == 1
 
 
-def test_format_app_string_resolves_guest_status_templates() -> None:
+def Test_Format_TestGuestStatusTemplate_ExpectResolvedMessage() -> None:
    assert AppStringProvider.format(
       'guestStatus.animals.temporarilyOffDisplay',
       species='Giraffe' ) == 'The Giraffe is temporarily off-display.'
 
 
-def test_format_app_string_resolves_guest_status_likely_off_display_message() -> None:
+def Test_Format_TestLikelyOffDisplayTemplate_ExpectResolvedMessage() -> None:
    assert AppStringProvider.format(
       'guestStatus.animals.speciesLikelyOffDisplayOnDay',
       species='Giraffe' ) == 'The Giraffe is most likely off display on this day.'
 
 
-def test_html_string_cache_clear_also_clears_app_string_cache(
+def Test_ClearCache_TestHtmlStringCacheClear_ExpectAlsoClearsAppStringCache(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    AppStringProvider.clear_cache()
    call_count = 0

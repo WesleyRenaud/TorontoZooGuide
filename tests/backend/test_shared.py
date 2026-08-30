@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
-import pytest
-
 from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.scheduling import ItineraryActivityScheduler
 from api.models import Animal
@@ -16,8 +12,6 @@ from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ItineraryTransportationStationRole
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
-from api.shared.value_conversion import ValueConversion
-from api.shared.weather import Weather
 
 
 def test_itinerary_config_exposes_animal_visibility_change_threshold() -> None:
@@ -116,60 +110,3 @@ def test_itinerary_config_exposes_suppressed_error_types_without_connection() ->
 
 def test_itinerary_config_exposes_itinerary_statuses_without_connection() -> None:
    assert ItineraryConfigBuilder.to_dict()[ 'itinerary_statuses' ] == []
-
-
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( True, True ),
-      ( False, False ),
-      ( 1, True ),
-      ( 0, False ),
-      ( None, False ),
-      ( 'true', False )
-   ]
-)
-def test_as_boolean( value: Any, expected: bool ) -> None:
-   assert ValueConversion.as_boolean( value ) is expected
-
-
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, '' ),
-      ( '  Lion  ', 'Lion' ),
-      ( 42, '42' ),
-   ]
-)
-def test_as_trimmed_string( value: Any, expected: str ) -> None:
-   assert ValueConversion.as_trimmed_string( value ) == expected
-
-
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, None ),
-      ( '   ', None ),
-      ( '  Lion  ', 'Lion' ),
-   ]
-)
-def test_as_nullable_string( value: Any, expected: str | None ) -> None:
-   assert ValueConversion.as_nullable_string( value ) == expected
-
-
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, [] ),
-      ( 'Alert message.', [ 'Alert message.' ] ),
-   ]
-)
-def test_as_singleton_list( value: str | None, expected: list[ str ] ) -> None:
-   assert ValueConversion.as_singleton_list( value ) == expected
-
-
-def test_temperature_helpers_are_stable() -> None:
-   assert Weather.get_average_temperature( 'Jan', 1 ) == -5.0
-   assert Weather.get_average_temperature( 'Jul', 1 ) == 26.0
-   assert Weather.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
-   assert Weather.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99

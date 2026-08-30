@@ -15,7 +15,7 @@ from api.shared.duration_values import DurationValues
       ( 20, 20 ),
    ]
 )
-def test_normalize_duration_minutes( value: float | None, expected: int | None ) -> None:
+def Test_NormalizeMinutes( value: float | None, expected: int | None ) -> None:
    assert DurationValues.normalize_minutes( value ) == expected
 
 
@@ -30,5 +30,5 @@ def test_normalize_duration_minutes( value: float | None, expected: int | None )
       ( 20, 1200 ),
    ]
 )
-def test_normalize_duration_seconds( value: float | None, expected: int | None ) -> None:
+def Test_NormalizeSeconds( value: float | None, expected: int | None ) -> None:
    assert DurationValues.normalize_seconds( value ) == expected
