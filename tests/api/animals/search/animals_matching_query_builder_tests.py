@@ -42,6 +42,17 @@ def Test_Build_TestSpeciesQuery_ExpectMatchingAnimalOnly() -> None:
    assert [ animal.species for animal in matches ] == [ 'Zebra' ]
 
 
+def Test_FilterMatchingQuery_TestSpeciesQuery_ExpectMatchingAnimalOnly() -> None:
+   animals = [
+      _animal( species='Zebra', exhibit='Africa Savanna' ),
+      _animal( species='African Lion', exhibit='Africa Savanna' ),
+   ]
+
+   matches = AnimalsMatchingQueryBuilder.filter_matching_query( animals, 'zebra' )
+
+   assert [ animal.species for animal in matches ] == [ 'Zebra' ]
+
+
 def Test_SortBySpeciesAndExhibit_TestMixedExhibits_ExpectSpeciesThenExhibitOrder() -> None:
    animals = [
       _animal( species='Zebra', exhibit='Tundra Trek', enclosure_name='Outdoor' ),
