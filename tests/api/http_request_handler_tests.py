@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from http_support import make_handler
+from api_test_support.fake_handler import FakeHandler
+from api_test_support.post_handler import make_handler
 import pytest
 
 import api.http_request_handler as server
-from conftest import FakeHandler
 
-def test_send_file_serves_existing_static_page() -> None:
+
+def Test_SendFile_TestExistingStaticPage_ExpectServesHtml() -> None:
    handler = FakeHandler( path='/map.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/map.html', 'text/html' )
@@ -16,7 +17,7 @@ def test_send_file_serves_existing_static_page() -> None:
    assert handler.wfile.getvalue().startswith( b'<!DOCTYPE html>' )
 
 
-def test_send_file_renders_shared_html_strings() -> None:
+def Test_SendFile_TestAnimalsPage_ExpectRendersSharedHtmlStrings() -> None:
    handler = FakeHandler( path='/animals.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/animals.html', 'text/html' )
@@ -27,7 +28,7 @@ def test_send_file_renders_shared_html_strings() -> None:
    assert '{{ site.titles.guide }}' not in content
 
 
-def test_send_file_renders_animals_page_nav_in_standard_order() -> None:
+def Test_SendFile_TestAnimalsPage_ExpectRendersNavInStandardOrder() -> None:
    handler = FakeHandler( path='/animals.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/animals.html', 'text/html' )
@@ -47,7 +48,7 @@ def test_send_file_renders_animals_page_nav_in_standard_order() -> None:
    assert nav_positions == sorted( nav_positions )
 
 
-def test_send_file_renders_itinerary_static_strings() -> None:
+def Test_SendFile_TestItineraryPage_ExpectRendersStaticStrings() -> None:
    handler = FakeHandler( path='/itinerary.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/itinerary.html', 'text/html' )
@@ -58,7 +59,7 @@ def test_send_file_renders_itinerary_static_strings() -> None:
    assert '{{ itinerary.aria.panel }}' not in content
 
 
-def test_send_file_renders_console_operation_strings() -> None:
+def Test_SendFile_TestConsoleOperationsPage_ExpectRendersOperationStrings() -> None:
    handler = FakeHandler( path='/console-operations.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/console-operations.html', 'text/html' )
@@ -70,7 +71,7 @@ def test_send_file_renders_console_operation_strings() -> None:
    assert '{{ panelTitles.offDisplay }}' not in content
 
 
-def test_send_file_returns_404_for_missing_file() -> None:
+def Test_SendFile_TestMissingFile_ExpectReturns404() -> None:
    handler = FakeHandler( path='/missing.html' )
 
    server.HttpRequestHandler._send_file( handler, './pages/missing.html' )
@@ -90,7 +91,7 @@ def test_send_file_returns_404_for_missing_file() -> None:
       '/images/icon%20name.png'
    ]
 )
-def test_get_static_routes( path: str ) -> None:
+def Test_DoGet_TestStaticRoutes_ExpectSendsFile( path: str ) -> None:
    handler = server.HttpRequestHandler.__new__( server.HttpRequestHandler )
    handler.path = path
    handler.statuses = []
@@ -102,7 +103,7 @@ def test_get_static_routes( path: str ) -> None:
    assert len( handler.files ) == 1
 
 
-def test_get_unknown_route_returns_404() -> None:
+def Test_DoGet_TestUnknownRoute_ExpectReturns404() -> None:
    missing = server.HttpRequestHandler.__new__( server.HttpRequestHandler )
    missing.path = '/unknown'
    missing.errors = []
@@ -111,7 +112,7 @@ def test_get_unknown_route_returns_404() -> None:
    assert missing.errors == [ ( 404, 'Not Found' ) ]
 
 
-def test_post_unknown_route_returns_404() -> None:
+def Test_DoPost_TestUnknownRoute_ExpectReturns404() -> None:
    handler = make_handler( '/unknown-post-route' )
 
    server.HttpRequestHandler.do_POST( handler )
