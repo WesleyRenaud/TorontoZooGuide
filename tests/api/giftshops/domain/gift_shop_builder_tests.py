@@ -3,23 +3,32 @@ from __future__ import annotations
 from datetime import date
 
 from api.giftshops.data_access.gift_shop_record import GiftShopRecord
+from api.giftshops.data_access.gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
+from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
 
 GIFT_SHOP_NAME = 'Zootique'
 CUSTOM_CLOSED_MESSAGE = 'Closed for testing.'
+CLOSURE_OVERRIDE_MESSAGE = 'Closed this weekend.'
 VISIT_DATE = date( 2026, 6, 15 )
+OVERRIDE_VISIT_DATE = date( 2026, 6, 20 )
+OPEN_AFTER_OVERRIDE_DATE = date( 2026, 6, 22 )
+
+
+def _visit_context_for( target_date: date, *, is_weekend_or_holiday: bool = False ) -> OpeningScheduleVisitContext:
+   return OpeningScheduleVisitContext(
+      normalized_month=target_date.month,
+      normalized_day=target_date.day,
+      target_date=target_date,
+      weekday=target_date.weekday(),
+      is_weekend_or_holiday=is_weekend_or_holiday )
 
 
 def _visit_context() -> OpeningScheduleVisitContext:
-   return OpeningScheduleVisitContext(
-      normalized_month=VISIT_DATE.month,
-      normalized_day=VISIT_DATE.day,
-      target_date=VISIT_DATE,
-      weekday=VISIT_DATE.weekday(),
-      is_weekend_or_holiday=False )
+   return _visit_context_for( VISIT_DATE )
 
 
 def _gift_shop_record( **overrides: object ) -> GiftShopRecord:
@@ -55,6 +64,19 @@ def _schedule_record( **overrides: object ) -> GiftShopScheduleRecord:
    values.update( overrides )
 
    return GiftShopScheduleRecord( **values )
+
+
+def _override_record( **overrides: object ) -> GiftShopScheduleOverrideRecord:
+   values: dict[ str, object ] = {
+      'gift_shop': GIFT_SHOP_NAME,
+      'override_start_date': '2026-06-20',
+      'override_end_date': '2026-06-21',
+      'is_closed': True,
+      'override_message': CLOSURE_OVERRIDE_MESSAGE,
+   }
+   values.update( overrides )
+
+   return GiftShopScheduleOverrideRecord( **values )
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
@@ -104,3 +126,51 @@ def Test_BuildGiftShop_TestClosedSchedule_ExpectCustomClosedMessage() -> None:
 
    assert gift_shop.is_closed is True
    assert gift_shop.closed_message == CUSTOM_CLOSED_MESSAGE
+
+
+def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
+   status, message = GiftShopBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record( monday=True ) ],
+      target_date=VISIT_DATE,
+      weekday=VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None
+
+
+def Test_BuildGiftShop_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:
+   gift_shop = GiftShopBuilder.build_gift_shop(
+      gift_shop_record=_gift_shop_record(),
+      schedule_records=[ _schedule_record(
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ) ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context_for(
+         OVERRIDE_VISIT_DATE,
+         is_weekend_or_holiday=True ) )
+
+   assert gift_shop.is_closed is True
+   assert gift_shop.closed_message == CLOSURE_OVERRIDE_MESSAGE
+
+
+def Test_BuildGiftShop_TestClosureOverrideOutsideRange_ExpectOpenFromSchedule() -> None:
+   gift_shop = GiftShopBuilder.build_gift_shop(
+      gift_shop_record=_gift_shop_record(),
+      schedule_records=[ _schedule_record(
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ) ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context_for( OPEN_AFTER_OVERRIDE_DATE ) )
+
+   assert gift_shop.is_closed is False
+   assert gift_shop.closed_message is None

@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import date
 
 from api.attractions.data_access.attraction_record import AttractionRecord
+from api.attractions.data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.domain.attraction_builder import AttractionBuilder
+from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
 
@@ -23,6 +25,9 @@ NOT_SCHEDULED_MESSAGE = (
 )
 WEEKDAY_VISIT_DATE = date( 2026, 6, 15 )
 WEEKEND_VISIT_DATE = date( 2026, 6, 20 )
+OVERRIDE_START_DATE = date( 2026, 6, 20 )
+OPEN_AFTER_OVERRIDE_DATE = date( 2026, 6, 22 )
+CLOSURE_OVERRIDE_MESSAGE = 'Closed this weekend.'
 
 
 def _visit_context( *, target_date: date, is_weekend_or_holiday: bool ) -> OpeningScheduleVisitContext:
@@ -75,6 +80,19 @@ def _schedule_record( **overrides: object ) -> AttractionScheduleRecord:
    values.update( overrides )
 
    return AttractionScheduleRecord( **values )
+
+
+def _override_record( **overrides: object ) -> AttractionScheduleOverrideRecord:
+   values: dict[ str, object ] = {
+      'attraction': ATTRACTION_NAME,
+      'override_start_date': '2026-06-20',
+      'override_end_date': '2026-06-21',
+      'is_closed': True,
+      'override_message': CLOSURE_OVERRIDE_MESSAGE,
+   }
+   values.update( overrides )
+
+   return AttractionScheduleOverrideRecord( **values )
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
@@ -178,3 +196,40 @@ def Test_BuildAttractions_TestClosedAttraction_ExpectExcludedUnlessRequested() -
    assert open_only == []
    assert len( with_closed ) == 1
    assert with_closed[ 0 ].is_closed is True
+
+
+def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
+   status, message = AttractionBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record( monday=True ) ],
+      attraction_name=ATTRACTION_NAME,
+      target_date=WEEKDAY_VISIT_DATE,
+      weekday=WEEKDAY_VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None
+
+
+def Test_BuildAttraction_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:
+   attraction = AttractionBuilder.build_attraction(
+      attraction_record=_attraction_record(),
+      schedule_records=[ _schedule_record() ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context(
+         target_date=OVERRIDE_START_DATE,
+         is_weekend_or_holiday=True ) )
+
+   assert attraction.is_closed is True
+   assert attraction.closed_message == CLOSURE_OVERRIDE_MESSAGE
+
+
+def Test_BuildAttraction_TestClosureOverrideOutsideRange_ExpectOpenFromSchedule() -> None:
+   attraction = AttractionBuilder.build_attraction(
+      attraction_record=_attraction_record(),
+      schedule_records=[ _schedule_record() ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context(
+         target_date=OPEN_AFTER_OVERRIDE_DATE,
+         is_weekend_or_holiday=False ) )
+
+   assert attraction.is_closed is False
+   assert attraction.closed_message is None
