@@ -89,6 +89,39 @@ def Test_GroupRecordsByName_TestDuplicateNames_ExpectGroupedLists() -> None:
    assert len( grouped[ 'Africa Restaurant' ] ) == 2
 
 
+def Test_GetActiveOpeningScheduleStatus_TestNoSchedules_ExpectUnknown() -> None:
+   status, message = OpeningScheduleStatusResolver.get_active_opening_schedule_status(
+      schedule_records=[],
+      target_date=MONDAY_VISIT_DATE,
+      weekday=MONDAY_VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.UNKNOWN
+   assert message is None
+
+
+def Test_GetActiveOpeningScheduleStatus_TestOutOfRangeDate_ExpectUnknown() -> None:
+   out_of_range_schedule = SampleOpeningScheduleRecord(
+      schedule_start_date='2026-07-01',
+      schedule_end_date='2026-07-31',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      holidays_only=False,
+      schedule_message=None )
+
+   status, message = OpeningScheduleStatusResolver.get_active_opening_schedule_status(
+      schedule_records=[ out_of_range_schedule ],
+      target_date=MONDAY_VISIT_DATE,
+      weekday=MONDAY_VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.UNKNOWN
+   assert message is None
+
+
 def Test_GetActiveOpeningScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
    status, message = OpeningScheduleStatusResolver.get_active_opening_schedule_status(
       schedule_records=[ _weekday_schedule( monday=True ) ],
@@ -156,3 +189,17 @@ def Test_ResolveAmenityLikelihoodAndMessage_TestClosedOverride_ExpectZeroLikelih
 
    assert likelihood == 0
    assert message == 'Closed today.'
+
+
+def Test_ResolveAmenityLikelihoodAndMessage_TestUnknownScheduleWithZeroSeasonal_ExpectLikelyClosedMessage() -> None:
+   likelihood, message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
+      name='Africa Restaurant',
+      schedule_records=[],
+      override_records=[],
+      target_date=MONDAY_VISIT_DATE,
+      weekday=MONDAY_VISIT_DATE.weekday(),
+      seasonal_multiplier=0.0 )
+
+   assert likelihood == 0
+   assert message is not None
+   assert 'Africa Restaurant' in message

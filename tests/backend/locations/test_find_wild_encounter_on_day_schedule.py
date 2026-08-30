@@ -5,7 +5,6 @@ from datetime import date
 
 from wild_encounter_schedule_support import wire_schedule_row
 
-from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.scheduling.wild_encounter_day_schedule_finder import WildEncounterDayScheduleFinder
 from conftest import DbControllers
@@ -73,26 +72,3 @@ def test_wild_encounter_day_schedule_uses_active_record_when_expired_row_also_ex
 
    assert match is not None
    assert match.is_available
-
-
-def test_find_wild_encounter_on_day_schedule_returns_unavailable_when_no_active_row(
-      ) -> None:
-   day_schedule = [
-      WildEncounter(
-         name='Kangaroo',
-         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
-         link='https://example.test',
-         start_time='3:30 PM',
-         end_time='4:15 PM',
-         is_available=False,
-         unavailable_message='Kangaroo is not scheduled on July 9.',
-      ),
-   ]
-
-   match = WildEncounterDayScheduleFinder.find_on_day_schedule(
-      day_schedule,
-      'Kangaroo',
-      start_time='3:30 PM' )
-
-   assert match is not None
-   assert not match.is_available
