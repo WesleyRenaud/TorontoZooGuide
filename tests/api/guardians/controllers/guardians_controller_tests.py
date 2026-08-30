@@ -146,6 +146,29 @@ def Test_GetGuardiansTalks_TestHttpRequest_ExpectMapsVisitDateAndCollapsesSchedu
    assert result[ 'guardians_talks' ][ 0 ][ 'times' ] == [ '10:00 AM', '11:00 AM' ]
 
 
+def Test_GetGuardiansTalks_TestHttpRequest_ExpectOmittedYearPassesThrough(
+      stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
+   handler = make_handler(
+      '/get-guardians-talks',
+      {
+         'month': VISIT_MONTH,
+         'day': VISIT_DAY,
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.errors == []
+   assert (
+      'get_guardians_talk_schedule',
+      {
+         'month': VISIT_MONTH,
+         'day': VISIT_DAY,
+         'year': None,
+      },
+   ) in stub_guardians_coordinator.calls
+
+
 def Test_GetGuardiansTalkLocations_TestHttpRequest_ExpectReturnsLocations(
       stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
    handler = make_handler( '/get-guardians-talk-locations', {} )

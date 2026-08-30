@@ -5,16 +5,23 @@
 source = [
    "api/animals",
    "api/attractions",
+   "api/defibrillators",
    "api/drinking_fountains",
+   "api/emergency_intercoms",
+   "api/event_sites",
    "api/events",
    "api/exhibits",
    "api/giftshops",
    "api/guardians",
+   "api/guest_services",
+   "api/picnic_sites",
    "api/restaurants",
    "api/restrooms",
+   "api/search",
    "api/transportation",
    "api/updates",
    "api/wild_encounters",
+   "api/zoo_hours",
 ]
 omit = [
    "api/__main__.py",
