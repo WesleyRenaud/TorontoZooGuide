@@ -94,3 +94,18 @@ def Test_BuildRouteTransportationStations_TestClosedOnRouteStation_ExpectExclude
       context )
 
    assert [ station.name for station in stations ] == [ 'Americas Station' ]
+
+
+def Test_BuildRouteTransportationStations_TestWinterRouteStationList_ExpectOffRouteStationExcluded() -> None:
+   station_records = [
+      _station_record( 'Africa Zoomobile Station' ),
+      _station_record( 'Main Zoomobile Station' ),
+   ]
+   context = _context( stations_on_route=[ 'Main Zoomobile Station' ] )
+
+   stations = TransportationRouteStationsBuilder.build_route_transportation_stations(
+      station_records,
+      [],
+      context )
+
+   assert [ station.name for station in stations ] == [ 'Main Zoomobile Station' ]

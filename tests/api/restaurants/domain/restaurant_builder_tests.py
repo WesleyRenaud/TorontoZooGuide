@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from api.restaurants.data_access.restaurant_record import RestaurantRecord
+from api.restaurants.data_access.restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.shared.enums.schedule_status import ScheduleStatus
@@ -12,16 +13,23 @@ from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContex
 RESTAURANT_NAME = 'Africa Restaurant'
 OTHER_RESTAURANT_NAME = 'Beavertails'
 CUSTOM_CLOSED_MESSAGE = 'Closed for testing.'
+CLOSURE_OVERRIDE_MESSAGE = 'Closed this weekend.'
 VISIT_DATE = date( 2026, 6, 15 )
+OVERRIDE_VISIT_DATE = date( 2026, 6, 20 )
+OPEN_AFTER_OVERRIDE_DATE = date( 2026, 6, 22 )
+
+
+def _visit_context_for( target_date: date, *, is_weekend_or_holiday: bool = False ) -> OpeningScheduleVisitContext:
+   return OpeningScheduleVisitContext(
+      normalized_month=target_date.month,
+      normalized_day=target_date.day,
+      target_date=target_date,
+      weekday=target_date.weekday(),
+      is_weekend_or_holiday=is_weekend_or_holiday )
 
 
 def _visit_context() -> OpeningScheduleVisitContext:
-   return OpeningScheduleVisitContext(
-      normalized_month=VISIT_DATE.month,
-      normalized_day=VISIT_DATE.day,
-      target_date=VISIT_DATE,
-      weekday=VISIT_DATE.weekday(),
-      is_weekend_or_holiday=False )
+   return _visit_context_for( VISIT_DATE )
 
 
 def _restaurant_record( **overrides: object ) -> RestaurantRecord:
@@ -59,6 +67,19 @@ def _schedule_record( **overrides: object ) -> RestaurantScheduleRecord:
    values.update( overrides )
 
    return RestaurantScheduleRecord( **values )
+
+
+def _override_record( **overrides: object ) -> RestaurantScheduleOverrideRecord:
+   values: dict[ str, object ] = {
+      'restaurant': RESTAURANT_NAME,
+      'override_start_date': '2026-06-20',
+      'override_end_date': '2026-06-21',
+      'is_closed': True,
+      'override_message': CLOSURE_OVERRIDE_MESSAGE,
+   }
+   values.update( overrides )
+
+   return RestaurantScheduleOverrideRecord( **values )
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
@@ -129,3 +150,41 @@ def Test_BuildRestaurant_TestClosedSchedule_ExpectCustomClosedMessage() -> None:
 
    assert restaurant.is_closed is True
    assert restaurant.closed_message == CUSTOM_CLOSED_MESSAGE
+
+
+def Test_BuildRestaurant_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:
+   restaurant = RestaurantBuilder.build_restaurant(
+      restaurant_record=_restaurant_record(),
+      schedule_records=[ _schedule_record(
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ) ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context_for(
+         OVERRIDE_VISIT_DATE,
+         is_weekend_or_holiday=True ) )
+
+   assert restaurant.is_closed is True
+   assert restaurant.closed_message == CLOSURE_OVERRIDE_MESSAGE
+
+
+def Test_BuildRestaurant_TestClosureOverrideOutsideRange_ExpectOpenFromSchedule() -> None:
+   restaurant = RestaurantBuilder.build_restaurant(
+      restaurant_record=_restaurant_record(),
+      schedule_records=[ _schedule_record(
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ) ],
+      schedule_override_records=[ _override_record() ],
+      context=_visit_context_for( OPEN_AFTER_OVERRIDE_DATE ) )
+
+   assert restaurant.is_closed is False
+   assert restaurant.closed_message is None
