@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.validation.itinerary_schedule_reschedule_resolver import ItineraryScheduleRescheduleResolver
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.shared.enums import ItineraryEventType
 
 
 def _saved(
@@ -76,3 +79,52 @@ def Test_NeedsReschedule_TestChangedWindowWithoutCutoff_ExpectFalse() -> None:
       _saved( animal_start='12:00 PM', animal_end='12:08 PM' ),
       _validated( arrival_time='11:00 AM' ),
       requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestDepartureCutsOffAnimal_ExpectTrue() -> None:
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved( animal_start='4:30 PM', animal_end='4:38 PM' ),
+      _validated(),
+      requested_departure_time='4:15 PM' )
+
+
+def Test_NeedsReschedule_TestDepartureCutsOffEvent_ExpectTrue() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      event_rows=[
+         ItineraryEventRecord(
+            event_type=ItineraryEventType.LUNCH,
+            start_time='4:30 PM',
+            end_time='5:00 PM',
+         ),
+      ],
+   )
+
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated(),
+      requested_departure_time='4:15 PM' )
+
+
+def Test_NeedsReschedule_TestDepartureCutsOffAttraction_ExpectTrue() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      attraction_rows=[
+         ItineraryAttractionRecord(
+            attraction='Conservation Carousel',
+            old_likelihood=None,
+            new_likelihood=None,
+            start_time='4:30 PM',
+            end_time='4:38 PM',
+         ),
+      ],
+   )
+
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated(),
+      requested_departure_time='4:15 PM' )

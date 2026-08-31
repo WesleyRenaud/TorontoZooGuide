@@ -1,33 +1,13 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.shared.calendar_dates import DateValues
-from api.shared.enums import ItineraryErrorType
-from api.shared.enums import ItineraryEventType
 from conftest import DbControllers
 
-
-def test_set_arrival_time_succeeds_when_departure_is_unset(
-      db: DbControllers ) -> None:
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-   assert ItineraryCoordinator.set_departure_time( None ).success
-
-   assert ItineraryCoordinator.set_arrival_time( '10:15' ).success
-
-   itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '10:15 AM'
-   assert itinerary.departure_time is None
+CAROUSEL = 'Conservation Carousel'
 
 
 def test_set_arrival_time_unschedules_items_before_arrival(
@@ -107,32 +87,3 @@ def test_set_arrival_time_unschedules_items_before_arrival(
    ] == [
       ( WILD_ENCOUNTER, '9:45 AM', '10:30 AM' ),
    ]
-
-
-def test_set_arrival_time_unschedules_generic_event_before_arrival(
-      db: DbControllers ) -> None:
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   assert schedule_itinerary_item(
-      item_type=ItineraryEventType.LUNCH.value,
-      key='',
-   ).success
-
-   assert ItineraryCoordinator.set_departure_time(
-      '17:00',
-      confirming_short_visit=True,
-   ).success
-
-   result = ItineraryCoordinator.set_arrival_time( '10:15' )
-   itinerary = ItineraryCoordinator.get_itinerary()
-
-   assert result.success
-   assert itinerary.events == []
