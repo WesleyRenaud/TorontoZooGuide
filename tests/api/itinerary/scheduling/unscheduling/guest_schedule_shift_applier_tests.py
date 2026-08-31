@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sqlite3
+
+import pytest
+
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -9,6 +13,161 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.shared.enums import ItineraryEventType
+
+
+CHEETAH_KEY = AnimalScheduleItemKey(
+   species='Cheetah',
+   exhibit='Africa Savanna',
+)
+
+SHIFT_APPLIER_SCHEMA = """
+CREATE TABLE ItineraryAnimal (
+   SPECIES              TEXT        NOT NULL,
+   EXHIBIT              TEXT        NOT NULL,
+   ENCLOSURE_NAME       TEXT,
+   OLD_LIKELIHOOD       INTEGER,
+   NEW_LIKELIHOOD       INTEGER,
+   IS_ADDED             INTEGER     NOT NULL DEFAULT 0,
+   COVERED_BY_TALK      INTEGER     NOT NULL DEFAULT 0,
+   START_TIME           TEXT,
+   END_TIME             TEXT
+);
+
+CREATE TABLE ItineraryAttraction (
+   ATTRACTION           TEXT        NOT NULL PRIMARY KEY,
+   OLD_LIKELIHOOD       INTEGER,
+   NEW_LIKELIHOOD       INTEGER,
+   START_TIME           TEXT,
+   END_TIME             TEXT
+);
+
+CREATE TABLE ItineraryTransportation (
+   TRANSPORTATION           TEXT        NOT NULL,
+   OLD_LIKELIHOOD           INTEGER,
+   NEW_LIKELIHOOD           INTEGER,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   START_TIME               TEXT,
+   END_TIME                 TEXT,
+   ROUTE                    TEXT,
+   BULK_TRANSIT_EVALUATED   INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ItineraryTransportationLeg (
+   TRANSPORTATION           TEXT        NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   FROM_STATION             TEXT        NOT NULL,
+   TO_STATION               TEXT        NOT NULL,
+   START_TIME               TEXT        NOT NULL,
+   END_TIME                 TEXT        NOT NULL
+);
+
+CREATE TABLE ItineraryTransportationRouteMarker (
+   TRANSPORTATION           TEXT        NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   SEQUENCE                 INTEGER     NOT NULL,
+   MARKER_ORDER             INTEGER     NOT NULL,
+   MARKER_ID                TEXT        NOT NULL
+);
+
+CREATE TABLE ItineraryEvent (
+   EVENT_TYPE           TEXT        NOT NULL PRIMARY KEY,
+   START_TIME           TEXT,
+   END_TIME             TEXT
+);
+
+CREATE TABLE ItineraryGuardiansTalk (
+   TALK_NAME            TEXT        NOT NULL PRIMARY KEY,
+   START_TIME           TEXT,
+   END_TIME             TEXT,
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ItineraryWildEncounter (
+   WILD_ENCOUNTER       TEXT        NOT NULL PRIMARY KEY,
+   START_TIME           TEXT,
+   END_TIME             TEXT,
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+);
+"""
+
+
+@pytest.fixture
+def shift_applier_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( SHIFT_APPLIER_SCHEMA )
+
+   yield conn
+
+   conn.close()
+
+
+def _insert_three_animal_schedule(
+      conn: sqlite3.Connection,
+      *,
+      penguin_start: str,
+      penguin_end: str ) -> SavedItinerary:
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'African Lion', 'Africa Savanna', '10:00 AM', '10:15 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'Cheetah', 'Africa Savanna', '10:17 AM', '10:32 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      ( 'African Penguin', 'Africa Savanna', 'Outdoor', penguin_start, penguin_end ) )
+   conn.commit()
+
+   return SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:15 AM',
+         ),
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Africa Savanna',
+            start_time='10:17 AM',
+            end_time='10:32 AM',
+         ),
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            start_time=penguin_start,
+            end_time=penguin_end,
+         ),
+      ],
+   )
 
 
 def Test_ShiftedScheduleTimes_TestNegativeShift_ExpectEarlierBlock() -> None:
@@ -110,3 +269,65 @@ def Test_ResolveUnscheduledItemTimeBlock_TestEvent_ExpectEventBlock() -> None:
       start_seconds=12 * 3600,
       end_seconds=12 * 3600 + 30 * 60,
    )
+
+
+def Test_ApplyForUnschedule_TestMiddleAnimal_ExpectLaterItemsShiftedEarlier(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   saved_itinerary = _insert_three_animal_schedule(
+      shift_applier_conn,
+      penguin_start='10:47 AM',
+      penguin_end='11:02 AM' )
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.apply_for_unschedule(
+      shift_applier_conn,
+      cur,
+      saved_itinerary=saved_itinerary,
+      schedule_item_key=CHEETAH_KEY )
+   shift_applier_conn.commit()
+   cur.close()
+
+   penguin = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
+   ).fetchone()
+
+   assert penguin is not None
+   assert penguin[ 'START_TIME' ] == '10:32 AM'
+   assert penguin[ 'END_TIME' ] == '10:47 AM'
+
+
+def Test_ApplyForUnschedule_TestMiddleAnimalWithDeliberateGap_ExpectGapPreserved(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   saved_itinerary = _insert_three_animal_schedule(
+      shift_applier_conn,
+      penguin_start='10:52 AM',
+      penguin_end='11:07 AM' )
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.apply_for_unschedule(
+      shift_applier_conn,
+      cur,
+      saved_itinerary=saved_itinerary,
+      schedule_item_key=CHEETAH_KEY )
+   shift_applier_conn.commit()
+   cur.close()
+
+   penguin = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
+   ).fetchone()
+
+   assert penguin is not None
+   assert penguin[ 'START_TIME' ] == '10:37 AM'
+   assert penguin[ 'END_TIME' ] == '10:52 AM'

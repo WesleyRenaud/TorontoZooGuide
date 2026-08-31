@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.unscheduling.guest_scheduled_itinerary_item_checker import GuestScheduledItineraryItemChecker
 from api.shared.enums import ItineraryEventType
@@ -53,6 +54,23 @@ def Test_HasItems_TestUnscheduledOnly_ExpectFalse() -> None:
             exhibit='Africa Savanna',
             old_likelihood=None,
             new_likelihood=100 ),
+      ],
+   )
+
+   assert not GuestScheduledItineraryItemChecker.has_items( saved )
+
+
+def Test_HasItems_TestGuardiansTalkOnly_ExpectFalse() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      guardians_talk_rows=[
+         ItineraryGuardiansTalkRecord(
+            talk_name='African Lion',
+            start_time='2:00 PM',
+            end_time='2:30 PM',
+            is_deleted=False ),
       ],
    )
 
