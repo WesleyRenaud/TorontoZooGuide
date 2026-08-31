@@ -63,6 +63,19 @@ def _all_weekdays_schedule_record() -> GuardiansTalkScheduleRecord:
       talk_time=TALK_TIME )
 
 
+def Test_Build_TestNoScheduleRecords_ExpectEmpty(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+
+   occurrences = GuardiansTalkOccurrencesBuilder.build(
+      schedule_records=[],
+      cancellation_records=[],
+      days_ahead=7 )
+
+   assert occurrences == []
+
+
 def Test_Build_TestMondaySchedule_ExpectUpcomingOccurrences(
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
