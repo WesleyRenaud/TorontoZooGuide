@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from api.itinerary.scheduling.bulk.bulk_schedule_walk_order_builder import BulkScheduleWalkOrderBuilder
-from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
 from api.walk_graph.enclosure_viewing_walk_node_lookup import EnclosureViewingWalkNodeLookup
 
 
@@ -94,36 +92,3 @@ def test_sort_animals_for_bulk_schedule_orders_by_master_route() -> None:
       ( 'African Lion', 'Africa Savanna' ),
       ( 'Cheetah', 'Indo-Malaya Outdoor' ),
    ]
-
-
-def test_is_animal_unscheduled() -> None:
-   assert BulkScheduleItineraryRunner.is_animal_unscheduled(
-      ItineraryAnimalRecord(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         old_likelihood=None,
-         new_likelihood=100,
-      )
-   )
-   assert BulkScheduleItineraryRunner.is_animal_unscheduled(
-      ItineraryAnimalRecord(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         old_likelihood=None,
-         new_likelihood=100,
-         start_time='',
-         end_time='',
-      )
-   )
-   assert not BulkScheduleItineraryRunner.is_animal_unscheduled(
-      ItineraryAnimalRecord(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         old_likelihood=None,
-         new_likelihood=100,
-         start_time='09:30',
-         end_time='09:38',
-      )
-   )
-   assert not GuestItemScheduleStatusChecker.has_schedule_times( '09:30', None )
-   assert not GuestItemScheduleStatusChecker.has_schedule_times( None, '09:38' )

@@ -14,7 +14,7 @@ from api.itinerary.wild_encounter_schedule_item_key import WildEncounterSchedule
 from api.shared.enums import ItineraryEventType
 
 
-def test_find_saved_itinerary_schedule_item_row_finds_animal_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestAnimalKey_ExpectAnimalRow() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -44,7 +44,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_animal_row() -> None:
    assert row.species == 'Masai Giraffe'
 
 
-def test_find_saved_itinerary_schedule_item_row_finds_attraction_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestAttractionKey_ExpectAttractionRow() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -70,7 +70,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_attraction_row() -> None:
    assert row.attraction == 'Conservation Carousel'
 
 
-def test_find_saved_itinerary_schedule_item_row_finds_added_as_attraction_transportation_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestAttractionTransport_ExpectAttractionModeRow() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -98,7 +98,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_added_as_attraction_transp
    assert row.added_as_attraction is True
 
 
-def test_find_saved_itinerary_schedule_item_row_ignores_pure_transportation_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestPureTransportAsAttraction_ExpectNone() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -120,7 +120,7 @@ def test_find_saved_itinerary_schedule_item_row_ignores_pure_transportation_row(
    assert row is None
 
 
-def test_find_saved_itinerary_schedule_item_row_finds_pure_transportation_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestTransportationKey_ExpectTransitRow() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -150,7 +150,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_pure_transportation_row() 
    assert row.added_as_attraction is False
 
 
-def test_find_saved_itinerary_schedule_item_row_finds_event_row() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestEventType_ExpectEventRow() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -177,7 +177,7 @@ def test_find_saved_itinerary_schedule_item_row_finds_event_row() -> None:
    assert row.event_type == ItineraryEventType.LUNCH
 
 
-def test_find_saved_itinerary_schedule_item_row_matches_wild_encounter_by_name_and_start() -> None:
+def Test_FindSavedItineraryScheduleItemRow_TestWildEncounterKey_ExpectMatchingStart() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,

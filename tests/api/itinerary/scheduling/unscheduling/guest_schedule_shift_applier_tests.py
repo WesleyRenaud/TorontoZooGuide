@@ -11,17 +11,17 @@ from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import G
 from api.shared.enums import ItineraryEventType
 
 
-def test_shifted_schedule_times_moves_block_earlier() -> None:
+def Test_ShiftedScheduleTimes_TestNegativeShift_ExpectEarlierBlock() -> None:
    shifted = GuestScheduleShiftApplier.shifted_schedule_times( '10:45 AM', '11:00 AM', -15 * 60 )
 
    assert shifted == ( '10:30 AM', '10:45 AM' )
 
 
-def test_shifted_schedule_times_returns_none_for_invalid_shift() -> None:
+def Test_ShiftedScheduleTimes_TestInvalidShift_ExpectNone() -> None:
    assert GuestScheduleShiftApplier.shifted_schedule_times( '10:00 AM', '10:15 AM', -11 * 3600 ) is None
 
 
-def test_resolve_unscheduled_item_time_block_for_animal() -> None:
+def Test_ResolveUnscheduledItemTimeBlock_TestAnimal_ExpectAnimalBlock() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -53,7 +53,7 @@ def test_resolve_unscheduled_item_time_block_for_animal() -> None:
    )
 
 
-def test_resolve_unscheduled_item_time_block_for_attraction() -> None:
+def Test_ResolveUnscheduledItemTimeBlock_TestAttraction_ExpectAttractionBlock() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
@@ -83,7 +83,7 @@ def test_resolve_unscheduled_item_time_block_for_attraction() -> None:
    )
 
 
-def test_resolve_unscheduled_item_time_block_for_event() -> None:
+def Test_ResolveUnscheduledItemTimeBlock_TestEvent_ExpectEventBlock() -> None:
    saved_itinerary = SavedItinerary(
       date_value='2026-06-15',
       arrival_time=None,
