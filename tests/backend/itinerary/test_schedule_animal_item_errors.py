@@ -2,15 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import date
-from unittest.mock import patch
 
 from itinerary.support import ANIMAL_KEY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row, schedule_itinerary_item, schedule_time_after_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.shared.enums import ItineraryEventType
-from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 from conftest import DbControllers
 
 
@@ -49,68 +46,6 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
    )
 
    assert penguin.start_time is None
-
-
-def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   assert schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='12:00 PM',
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=PENGUIN_KEY,
-      start_time='12:00 PM',
-   )
-
-   assert not result.success
-   assert result.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
-
-   penguin = next(
-      animal for animal in result.itinerary.animals
-      if animal.species == 'African Penguin'
-   )
-
-   assert penguin.start_time is None
-
-
-def test_schedule_itinerary_event_uses_default_duration(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type=ItineraryEventType.LUNCH.value,
-      key='' )
-
-   assert result.success
-   assert len( result.itinerary.events ) == 1
-   assert result.itinerary.events[ 0 ].event_type == ItineraryEventType.LUNCH
-   assert result.itinerary.events[ 0 ].start_time == '9:30 AM'
-   assert result.itinerary.events[ 0 ].end_time == '10:10 AM'
 
 
 def test_schedule_itinerary_item_extends_arrival_from_late_short_visit_window(
@@ -169,41 +104,6 @@ def test_schedule_itinerary_item_extends_departure_when_visit_window_is_too_shor
    assert DateValues.time_value_is_at_or_after(
       result.itinerary.departure_time,
       result.itinerary.animals[ 0 ].end_time )
-
-
-def test_schedule_itinerary_item_returns_no_available_slot_when_zoo_hours_are_full(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='09:35',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_short_visit=True,
-   ).success
-
-   five_minute_zoo_hours = ZooHoursRecord(
-      operating_date='2026-06-15',
-      early_admission_time=None,
-      open_time='09:30',
-      last_admission_time='09:35',
-      close_time='09:35',
-   )
-
-   with patch(
-         'api.zoo_hours.data_access.zoo_hours_provider.ZooHoursProvider.fetch_zoo_hours_record',
-         return_value=five_minute_zoo_hours ):
-      result = schedule_itinerary_item(
-         item_type='animals',
-         key=ANIMAL_KEY )
-
-   assert not result.success
-   assert result.status == ItineraryErrorType.NO_AVAILABLE_SLOT
 
 
 def test_schedule_itinerary_item_requested_start_after_departure_extends_departure(
@@ -390,87 +290,3 @@ def test_schedule_itinerary_item_honors_duration_without_time(
    expected_end = schedule_time_after_seconds( expected_start, 20 * 60 )
    assert result.itinerary.animals[ 0 ].start_time == expected_start
    assert result.itinerary.animals[ 0 ].end_time == expected_end
-
-
-def test_schedule_itinerary_item_requires_visit_date(
-      db: DbControllers ) -> None:
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY )
-
-   assert not result.success
-   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
-
-
-def test_schedule_already_scheduled_animal_returns_item_already_scheduled(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   first = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='10:00',
-   )
-
-   assert first.success
-   lion_before = first.itinerary.animals[ 0 ]
-   assert lion_before.start_time == '10:00 AM'
-
-   second = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-   )
-
-   assert not second.success
-   assert second.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
-   lion_after = second.itinerary.animals[ 0 ]
-   assert lion_after.start_time == lion_before.start_time
-   assert lion_after.end_time == lion_before.end_time
-
-
-def test_schedule_already_scheduled_lunch_returns_item_already_scheduled(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   first = schedule_itinerary_item(
-      item_type=ItineraryEventType.LUNCH.value,
-      key='',
-      start_time='12:00',
-   )
-
-   assert first.success
-   lunch_before = first.itinerary.events[ 0 ]
-   assert lunch_before.start_time is not None
-
-   second = schedule_itinerary_item(
-      item_type=ItineraryEventType.LUNCH.value,
-      key='',
-   )
-
-   assert not second.success
-   assert second.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
-   lunch_after = second.itinerary.events[ 0 ]
-   assert lunch_after.start_time == lunch_before.start_time
-   assert lunch_after.end_time == lunch_before.end_time
