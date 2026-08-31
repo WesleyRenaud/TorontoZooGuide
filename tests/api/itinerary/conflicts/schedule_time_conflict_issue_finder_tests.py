@@ -57,3 +57,83 @@ def Test_Find_TestDeletedOrUntimed_ExpectIgnored() -> None:
       end_time='12:45 PM' )
 
    assert ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] ) == []
+
+
+def Test_Find_TestGroupedMutualOverlap_ExpectSingleConflictGroup() -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='1:00 PM',
+      end_time='1:30 PM',
+      location='Africa Savanna' )
+   rainforest = WildEncounterDiff(
+      name='African Rainforest',
+      is_deleted=False,
+      start_time='1:00 PM',
+      end_time='1:45 PM',
+      meeting_spot='Wild Encounter - Africa Meeting Spot' )
+   kangaroo = WildEncounterDiff(
+      name='Kangaroo',
+      is_deleted=False,
+      start_time='1:00 PM',
+      end_time='1:45 PM',
+      meeting_spot='Wild Encounter - Eurasia Meeting Spot' )
+
+   issues = ScheduleTimeConflictIssueFinder.find(
+      [ talk ],
+      [ rainforest, kangaroo ] )
+
+   assert len( issues ) == 1
+   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ 0 ].items } == {
+      'African Lion',
+      'African Rainforest',
+      'Kangaroo',
+   }
+
+
+def Test_Find_TestOverlappingEncountersOnly_ExpectConflictIssue() -> None:
+   rainforest = WildEncounterDiff(
+      name='African Rainforest',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM',
+      meeting_spot='Wild Encounter - Africa Meeting Spot' )
+   kangaroo = WildEncounterDiff(
+      name='Kangaroo',
+      is_deleted=False,
+      start_time='2:30 PM',
+      end_time='3:15 PM',
+      meeting_spot='Wild Encounter - Eurasia Meeting Spot' )
+
+   issues = ScheduleTimeConflictIssueFinder.find( [], [ rainforest, kangaroo ] )
+
+   assert len( issues ) == 1
+   assert { item.name for item in issues[ 0 ].items } == {
+      'African Rainforest',
+      'Kangaroo',
+   }
+
+
+def Test_Find_TestPartialTalkEncounterOverlap_ExpectConflictIssue() -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='1:30 PM',
+      end_time='2:00 PM',
+      location='Africa Savanna' )
+   encounter = WildEncounterDiff(
+      name='Grizzly Bear',
+      is_deleted=False,
+      start_time='1:00 PM',
+      end_time='1:45 PM',
+      meeting_spot='Wild Encounter - Americas Meeting Spot' )
+
+   issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
+
+   assert len( issues ) == 1
+   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ 0 ].items } == {
+      'African Lion',
+      'Grizzly Bear',
+   }

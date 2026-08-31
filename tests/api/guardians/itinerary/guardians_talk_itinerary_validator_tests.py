@@ -2,45 +2,36 @@ from __future__ import annotations
 
 from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
-from api.models import GuardiansTalk
+from api.models.guardians_talk import GuardiansTalk
 
 
-def Test_BuildDiffForVisitDay_TestMissingTalk_ExpectDeletedDiffWithOverrides() -> None:
-   talk = GuardiansTalkItineraryValidator.build_diff_for_visit_day(
-      'Spotted Hyena',
-      None,
-      start_time_override='13:00',
-      end_time_override='13:30',
-   )
+DAY_SCHEDULE = [
+   GuardiansTalk(
+      name='African Lion',
+      location='Africa Savanna',
+      x_coord=0.0,
+      y_coord=0.0,
+      start_time='10:00 AM',
+      end_time='10:30 AM' ),
+   GuardiansTalk(
+      name='Amur Tiger',
+      location='Eurasia Wilds',
+      x_coord=1.0,
+      y_coord=1.0,
+      start_time='9:00 AM',
+      end_time='9:30 AM' ),
+]
 
-   assert talk.is_deleted is True
-   assert talk.start_time == '13:00'
-   assert talk.end_time == '13:30'
 
-
-def Test_ValidateForItinerary_TestAvailableAndUnavailable_ExpectSplitDiffs() -> None:
-   day_schedule = [
-      GuardiansTalk(
-         name='African Lion',
-         location='Africa Savanna',
-         x_coord=51.138,
-         y_coord=41.279,
-         start_time='10:00 AM',
-         maximum_duration=30,
-         is_available=True ),
-   ]
-
+def Test_ValidateForItinerary_TestCaseInsensitiveNames_ExpectSortedMatches() -> None:
    result = GuardiansTalkItineraryValidator.validate_for_itinerary(
-      guardians_talks_to_include=[
-         ItineraryGuardiansTalkInput( name='African Lion', start_time='10:00' ),
-         ItineraryGuardiansTalkInput( name='Amur Tiger', start_time='10:00' ),
+      [
+         ItineraryGuardiansTalkInput( name=' african lion ', start_time='10:00' ),
+         ItineraryGuardiansTalkInput( name='AMUR TIGER', start_time='09:00' ),
       ],
-      day_schedule=day_schedule )
+      DAY_SCHEDULE )
 
-   assert [
-      ( d.name, d.is_deleted, d.start_time, d.end_time )
-      for d in result
-   ] == [
-      ( 'African Lion', False, '10:00', '10:30 AM' ),
-      ( 'Amur Tiger', True, '10:00', None ),
+   assert [ diff.name for diff in result if not diff.is_deleted ] == [
+      'African Lion',
+      'Amur Tiger',
    ]

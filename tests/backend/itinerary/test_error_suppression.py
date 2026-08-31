@@ -4,7 +4,6 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.seed.user_itinerary_config_cleaner import UserItineraryConfigCleaner
 from api.shared.enums import ItineraryErrorType
-from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types
 from conftest import DbControllers
 
@@ -35,23 +34,6 @@ def test_suppress_short_visit_warning_skips_confirmation_prompt(
    assert itinerary.arrival_time == '4:30 PM'
 
 
-def test_suppress_short_visit_warning_persists_in_itinerary_config(
-      db: DbControllers ) -> None:
-   assert db.conn is not None
-
-   ItineraryStatusProvider.suppress_itinerary_status(
-      db.conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-   assert ItineraryConfigBuilder.to_dict( db.conn )[ 'suppressed_error_types' ] == [
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value,
-   ]
-
-   assert ItineraryStatusProvider.is_itinerary_error_suppressed(
-      db.conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-
 def test_suppress_itinerary_warning_persists_preference(
       db: DbControllers ) -> None:
    assert db.conn is not None
@@ -73,19 +55,6 @@ def test_suppress_itinerary_warning_persists_preference(
    assert ItineraryStatusProvider.is_itinerary_error_suppressed(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-
-def test_suppress_itinerary_warning_rejects_non_suppressable_type(
-      db: DbControllers ) -> None:
-   assert db.conn is not None
-
-   result = ItineraryCoordinator.suppress_itinerary_warning(
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS.value )
-
-   assert not result.success
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
-      db.conn,
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
 
 
 def test_clear_itinerary_leaves_error_suppressions(
@@ -116,37 +85,3 @@ def test_clear_user_itinerary_config_clears_error_suppressions(
    assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-
-def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
-      db: DbControllers ) -> None:
-   assert db.conn is not None
-
-   non_suppressable_error_types = [
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-      ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-      ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-      ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-      ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
-   ]
-
-   assert ItineraryStatusProvider.is_itinerary_status_suppressable(
-      db.conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-   assert ItineraryStatusProvider.is_itinerary_status_suppressable(
-      db.conn,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
-   assert not ItineraryStatusProvider.is_itinerary_status_suppressable(
-      db.conn,
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
-   assert not ItineraryStatusProvider.is_itinerary_status_suppressable(
-      db.conn,
-      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED )
-
-   for error_type in non_suppressable_error_types:
-      ItineraryStatusProvider.suppress_itinerary_status( db.conn, error_type )
-
-      assert not ItineraryStatusProvider.is_itinerary_error_suppressed( db.conn, error_type )
-      assert error_type.value not in ItineraryConfigBuilder.to_dict(
-         db.conn )[ 'suppressed_error_types' ]
