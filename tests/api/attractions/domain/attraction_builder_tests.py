@@ -129,6 +129,17 @@ def Test_BuildClosedScheduleMessage_TestNoCustomMessage_ExpectNotScheduledTodayM
       schedule_record ) == NOT_SCHEDULED_MESSAGE
 
 
+def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
+   status, message = AttractionBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record( monday=True ) ],
+      attraction_name=ATTRACTION_NAME,
+      target_date=WEEKDAY_VISIT_DATE,
+      weekday=WEEKDAY_VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None
+
+
 def Test_BuildAttraction_TestWeekdayVisit_ExpectWeekdayHours() -> None:
    attraction = AttractionBuilder.build_attraction(
       attraction_record=_attraction_record(),
@@ -196,17 +207,6 @@ def Test_BuildAttractions_TestClosedAttraction_ExpectExcludedUnlessRequested() -
    assert open_only == []
    assert len( with_closed ) == 1
    assert with_closed[ 0 ].is_closed is True
-
-
-def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
-   status, message = AttractionBuilder.get_active_schedule_status(
-      schedule_records=[ _schedule_record( monday=True ) ],
-      attraction_name=ATTRACTION_NAME,
-      target_date=WEEKDAY_VISIT_DATE,
-      weekday=WEEKDAY_VISIT_DATE.weekday() )
-
-   assert status == ScheduleStatus.OPEN
-   assert message is None
 
 
 def Test_BuildAttraction_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:

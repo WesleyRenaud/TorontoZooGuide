@@ -44,6 +44,25 @@ def _schedule_record() -> GuardiansTalkScheduleRecord:
       talk_time=TALK_TIME )
 
 
+def _all_weekdays_schedule_record() -> GuardiansTalkScheduleRecord:
+   return GuardiansTalkScheduleRecord(
+      name='African Lion',
+      location='Africa Savanna',
+      x_coord=STATION_COORD,
+      y_coord=STATION_COORD,
+      maximum_duration=30,
+      schedule_start_date='2026-06-15',
+      schedule_end_date='2026-06-21',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      talk_time=TALK_TIME )
+
+
 def Test_Build_TestMondaySchedule_ExpectUpcomingOccurrences(
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
@@ -71,6 +90,31 @@ def Test_IsCancelled_TestMatchingCancellation_ExpectTrue() -> None:
       cancellations,
       '2026-06-15',
       TALK_TIME )
+
+
+def Test_Build_TestAllWeekdaysWithCancellation_ExpectCancelledDateExcluded(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+   cancellations = [
+      GuardiansTalkCancellationRecord(
+         cancellation_date='2026-06-18',
+         talk_time=TALK_TIME ),
+   ]
+
+   occurrences = GuardiansTalkOccurrencesBuilder.build(
+      schedule_records=[ _all_weekdays_schedule_record() ],
+      cancellation_records=cancellations,
+      days_ahead=6 )
+
+   assert { occurrence.date for occurrence in occurrences } == {
+      '2026-06-15',
+      '2026-06-16',
+      '2026-06-17',
+      '2026-06-19',
+      '2026-06-20',
+      '2026-06-21',
+   }
 
 
 def Test_Build_TestCancelledOccurrenceAndExtraOccurrence_ExpectFilteredMerged(

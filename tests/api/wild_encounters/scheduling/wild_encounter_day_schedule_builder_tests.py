@@ -10,7 +10,9 @@ from api.wild_encounters.scheduling.wild_encounter_day_schedule_builder import W
 STATION_COORD = 0.0
 MONDAY_VISIT_DATE = date( 2026, 6, 15 )
 TUESDAY_VISIT_DATE = date( 2026, 6, 16 )
+OUTSIDE_SCHEDULE_VISIT_DATE = date( 2026, 7, 9 )
 ENCOUNTER_TIME = '2:00 PM'
+KANGAROO_ENCOUNTER_TIME = '3:30 PM'
 MAXIMUM_DURATION = 45
 
 
@@ -38,6 +40,39 @@ def _schedule_record(
       sunday=False,
       encounter_time=ENCOUNTER_TIME,
       is_cancelled=is_cancelled )
+
+
+def _kangaroo_schedule_record() -> WildEncounterScheduleRecord:
+   return WildEncounterScheduleRecord(
+      name='Kangaroo',
+      meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+      link='https://example.test',
+      maximum_duration=MAXIMUM_DURATION,
+      x_coord=STATION_COORD,
+      y_coord=STATION_COORD,
+      region='Eurasia Wilds',
+      schedule_start_date='2026-06-28',
+      schedule_end_date='2026-07-05',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      encounter_time=KANGAROO_ENCOUNTER_TIME,
+      is_cancelled=False )
+
+
+def _wild_encounter(
+      *,
+      name: str,
+      is_available: bool ) -> WildEncounter:
+   return WildEncounter(
+      name=name,
+      meeting_spot='Africa',
+      link='',
+      is_available=is_available )
 
 
 def Test_BuildForTargetDate_TestMatchingWeekday_ExpectAvailableEncounter() -> None:
@@ -70,18 +105,20 @@ def Test_BuildForTargetDate_TestCancelledEncounter_ExpectUnavailableEncounter() 
    assert 'Giraffe Feeding' in encounters[ 0 ].unavailable_message
 
 
+def Test_BuildForTargetDate_TestVisitDateOutsideScheduleRange_ExpectUnavailableEncounter() -> None:
+   encounters = WildEncounterDayScheduleBuilder.build_for_target_date(
+      [ _kangaroo_schedule_record() ],
+      OUTSIDE_SCHEDULE_VISIT_DATE )
+
+   assert len( encounters ) == 1
+   assert encounters[ 0 ].is_available is False
+   assert encounters[ 0 ].unavailable_message is not None
+
+
 def Test_FilterAvailable_TestMixedAvailability_ExpectAvailableOnly() -> None:
    wild_encounters = [
-      WildEncounter(
-         name='Available Encounter',
-         meeting_spot='Africa',
-         link='',
-         is_available=True ),
-      WildEncounter(
-         name='Unavailable Encounter',
-         meeting_spot='Africa',
-         link='',
-         is_available=False ),
+      _wild_encounter( name='Available Encounter', is_available=True ),
+      _wild_encounter( name='Unavailable Encounter', is_available=False ),
    ]
 
    available_encounters = WildEncounterDayScheduleBuilder.filter_available( wild_encounters )

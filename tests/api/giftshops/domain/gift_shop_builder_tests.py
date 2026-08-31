@@ -86,6 +86,16 @@ def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() ->
    assert GiftShopBuilder.calculate_likelihood( 1.5 ) == 100
 
 
+def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
+   status, message = GiftShopBuilder.get_active_schedule_status(
+      schedule_records=[ _schedule_record( monday=True ) ],
+      target_date=VISIT_DATE,
+      weekday=VISIT_DATE.weekday() )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None
+
+
 def Test_BuildGiftShops_TestClosedGiftShop_ExpectExcludedUnlessIncludedOrListed() -> None:
    context = _visit_context()
    closed_record = _gift_shop_record( weekday_multiplier=0, weekend_holiday_multiplier=0 )
@@ -126,16 +136,6 @@ def Test_BuildGiftShop_TestClosedSchedule_ExpectCustomClosedMessage() -> None:
 
    assert gift_shop.is_closed is True
    assert gift_shop.closed_message == CUSTOM_CLOSED_MESSAGE
-
-
-def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
-   status, message = GiftShopBuilder.get_active_schedule_status(
-      schedule_records=[ _schedule_record( monday=True ) ],
-      target_date=VISIT_DATE,
-      weekday=VISIT_DATE.weekday() )
-
-   assert status == ScheduleStatus.OPEN
-   assert message is None
 
 
 def Test_BuildGiftShop_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:

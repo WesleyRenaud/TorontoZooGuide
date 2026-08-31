@@ -46,6 +46,28 @@ def _schedule_record() -> WildEncounterScheduleRecord:
       is_cancelled=False )
 
 
+def _all_weekdays_schedule_record() -> WildEncounterScheduleRecord:
+   return WildEncounterScheduleRecord(
+      name='Giraffe Feeding',
+      meeting_spot='Africa Savanna',
+      link=None,
+      maximum_duration=45,
+      x_coord=STATION_COORD,
+      y_coord=STATION_COORD,
+      region='Africa',
+      schedule_start_date='2026-06-15',
+      schedule_end_date='2026-06-21',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      encounter_time=ENCOUNTER_TIME,
+      is_cancelled=False )
+
+
 def Test_Build_TestMondaySchedule_ExpectUpcomingOccurrences(
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
@@ -73,6 +95,31 @@ def Test_IsCancelled_TestMatchingCancellation_ExpectTrue() -> None:
       cancellations,
       '2026-06-15',
       ENCOUNTER_TIME )
+
+
+def Test_Build_TestAllWeekdaysWithCancellation_ExpectCancelledDateExcluded(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+   cancellations = [
+      WildEncounterCancellationRecord(
+         cancellation_date='2026-06-18',
+         encounter_time=ENCOUNTER_TIME ),
+   ]
+
+   occurrences = WildEncounterOccurrencesBuilder.build(
+      schedule_records=[ _all_weekdays_schedule_record() ],
+      cancellation_records=cancellations,
+      days_ahead=6 )
+
+   assert { occurrence.date for occurrence in occurrences } == {
+      '2026-06-15',
+      '2026-06-16',
+      '2026-06-17',
+      '2026-06-19',
+      '2026-06-20',
+      '2026-06-21',
+   }
 
 
 def Test_Build_TestCancelledOccurrence_ExpectExcluded(
