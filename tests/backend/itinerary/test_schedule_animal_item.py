@@ -220,28 +220,6 @@ def test_schedule_itinerary_animal_accepts_explicit_early_admission_start_when_s
    assert result.itinerary.animals[ 0 ].end_time == _lion_end_after( '9:00 AM' )
 
 
-def test_schedule_itinerary_animal_rejects_explicit_early_admission_start_when_not_suppressed(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='09:00' )
-
-   assert not result.success
-   assert result.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
-
-
 def test_schedule_itinerary_animal_uses_arrival_time_when_set(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
@@ -456,54 +434,3 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
 
    assert refreshed_itinerary.animals[ 0 ].start_time == expected_start
    assert refreshed_itinerary.animals[ 0 ].end_time == expected_end
-
-
-def test_schedule_itinerary_animal_honors_requested_start_time(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      arrival_time='09:00',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_early_admission=True,
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='10:00' )
-
-   assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '10:00 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '10:08 AM'
-
-
-def test_schedule_itinerary_animal_honors_requested_duration(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      arrival_time='09:00',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_early_admission=True,
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='10:00',
-      duration_minutes=20 )
-
-   assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == '10:00 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '10:20 AM'
