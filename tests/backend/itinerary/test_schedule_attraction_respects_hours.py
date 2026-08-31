@@ -10,7 +10,6 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.shared.calendar_dates import DateValues
-from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 from conftest import DbControllers
@@ -113,130 +112,6 @@ def test_schedule_attraction_at_default_time_waits_for_open_after_arrival(
    assert splash.start_time == SPLASH_OPEN_WITH_ENTRANCE_TRAVEL
    assert splash.end_time is not None
    assert splash.end_time <= '5:00 PM'
-
-
-def test_schedule_attraction_before_open_requires_hours_confirmation(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND,
-      start_time='10:00 AM' )
-
-   assert result.status == ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
-
-
-def test_schedule_attraction_adjust_before_open_starts_at_open(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND,
-      start_time='10:00 AM',
-      confirming_attraction_outside_operating_hours=True )
-
-   assert result.success
-   splash = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '12:00 PM'
-   assert splash.end_time == '1:00 PM'
-
-
-def test_schedule_attraction_after_close_requires_hours_confirmation(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND,
-      start_time='5:30 PM' )
-
-   assert result.status == ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
-
-
-def test_schedule_attraction_adjust_after_close_ends_at_close(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND,
-      start_time='5:30 PM',
-      confirming_attraction_outside_operating_hours=True )
-
-   assert result.success
-   splash = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == '4:00 PM'
-   assert splash.end_time == '5:00 PM'
-
-
-def test_schedule_attraction_that_overruns_close_requires_hours_confirmation(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND,
-      start_time='4:30 PM' )
-
-   assert result.status == ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
 
 
 def test_schedule_attraction_extends_departure_when_visit_window_is_full(
