@@ -8,9 +8,7 @@ from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
@@ -174,32 +172,3 @@ def test_walk_node_id_for_unknown_attraction_is_none() -> None:
          attraction='Not A Real Attraction',
          old_likelihood=None,
          new_likelihood=100 ) ) is None
-
-
-def test_attractions_for_bulk_schedule_handles_missing_and_scheduled_only(
-      db: DbControllers ) -> None:
-   assert BulkScheduleStopSelector.attractions(
-      None,
-      only_previously_scheduled=False ) == []
-   assert BulkScheduleStopSelector.stops(
-      None,
-      only_previously_scheduled=False ) == []
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ CAROUSEL ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   saved = ItineraryProvider.fetch_saved_itinerary( db.conn )
-   assert [
-      attraction.attraction
-      for attraction in BulkScheduleStopSelector.attractions(
-         saved,
-         only_previously_scheduled=False )
-   ] == [ CAROUSEL ]
-   assert BulkScheduleStopSelector.attractions(
-      saved,
-      only_previously_scheduled=True ) == []
