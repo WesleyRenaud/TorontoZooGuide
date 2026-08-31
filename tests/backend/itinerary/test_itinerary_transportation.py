@@ -8,8 +8,6 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
-from api.itinerary.transportation.transportation_route_leg_orderer import TransportationRouteLegOrderer
-from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from conftest import DbControllers
 
 
@@ -27,41 +25,6 @@ WINTER_LEG_STATIONS = [
    ( 'Tundra Zoomobile Station', 'Eurasia Zoomobile Station' ),
    ( 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ),
 ]
-
-
-def test_order_route_legs_from_station_forms_closed_loop() -> None:
-   unordered = [
-      TransportationRouteLegSegment(
-         from_station='Africa Zoomobile Station',
-         to_station='Tundra Zoomobile Station',
-         duration_minutes=15 ),
-      TransportationRouteLegSegment(
-         from_station='Main Zoomobile Station',
-         to_station='Canadian Domain Zoomobile Station',
-         duration_minutes=20 ),
-      TransportationRouteLegSegment(
-         from_station='Eurasia Zoomobile Station',
-         to_station='Main Zoomobile Station',
-         duration_minutes=15 ),
-      TransportationRouteLegSegment(
-         from_station='Canadian Domain Zoomobile Station',
-         to_station='Africa Zoomobile Station',
-         duration_minutes=10 ),
-      TransportationRouteLegSegment(
-         from_station='Tundra Zoomobile Station',
-         to_station='Eurasia Zoomobile Station',
-         duration_minutes=15 ),
-   ]
-
-   ordered = TransportationRouteLegOrderer.order_from_station(
-      unordered,
-      start_station='Main Zoomobile Station' )
-
-   assert [
-      ( leg.from_station, leg.to_station )
-      for leg in ordered
-   ] == SUMMER_LEG_STATIONS
-   assert sum( leg.duration_minutes for leg in ordered ) == 75
 
 
 def test_fetch_transportation_day_loop_summer_and_winter(

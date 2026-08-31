@@ -53,3 +53,28 @@ def Test_FindBeforeOrAfterBounds_TestNoBlockers_ExpectVisitBoundSlot() -> None:
 
    assert slot is not None
    assert slot[ 1 ] == DateValues.schedule_time_key_from_seconds( 16 * 3600 )
+
+
+def Test_FindNext_TestOverlappingBlockers_ExpectSlotAfterBlocker() -> None:
+   blockers = [
+      TimeBlock(
+         start_seconds=9 * 3600 + 30 * 60,
+         end_seconds=9 * 3600 + 38 * 60 ),
+   ]
+
+   slot = AvailableScheduleSlotFinder.find_next(
+      blockers,
+      anchor_seconds=9 * 3600 + 30 * 60,
+      duration_seconds=8 * 60,
+      day_end_seconds=17 * 3600 )
+
+   assert slot == ( '9:38 AM', '9:46 AM' )
+
+
+def Test_FindNext_TestWindowTooShort_ExpectNone() -> None:
+   assert AvailableScheduleSlotFinder.find_next(
+      [],
+      anchor_seconds=9 * 3600 + 30 * 60,
+      duration_seconds=8 * 60,
+      day_end_seconds=9 * 3600 + 35 * 60,
+   ) is None
