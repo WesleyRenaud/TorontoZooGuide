@@ -49,3 +49,23 @@ def Test_Apply_TestEarlierTalkPrecedence_ExpectLaterTalkShifted() -> None:
    assert trimmed_talks[ 0 ].end_time == '2:00 PM'
    assert trimmed_talks[ 1 ].start_time == '2:00 PM'
    assert trimmed_talks[ 1 ].end_time == '2:15 PM'
+
+
+def Test_TrimRangeAgainstBlocker_TestBlockerCoversStart_ExpectShiftedStart() -> None:
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=810,
+      end=900,
+      blocker_start=780,
+      blocker_end=855 )
+
+   assert ( start, end ) == ( 855, 900 )
+
+
+def Test_TrimRangeAgainstBlocker_TestBlockerCoversEnd_ExpectShiftedEnd() -> None:
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=810,
+      end=900,
+      blocker_start=855,
+      blocker_end=930 )
+
+   assert ( start, end ) == ( 810, 855 )

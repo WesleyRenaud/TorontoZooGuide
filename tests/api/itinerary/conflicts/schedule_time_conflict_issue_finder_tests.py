@@ -137,3 +137,47 @@ def Test_Find_TestPartialTalkEncounterOverlap_ExpectConflictIssue() -> None:
       'African Lion',
       'Grizzly Bear',
    }
+
+
+def Test_Find_TestLionTalkRainforestEncounter_ExpectIssueDict() -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:30 PM',
+      location='Africa Savanna' )
+   encounter = WildEncounterDiff(
+      name='African Rainforest',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM',
+      meeting_spot='Wild Encounter - Africa Meeting Spot',
+      link='https://www.torontozoo.com/tickets/weafricarainforest' )
+
+   issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
+
+   assert [ issue.to_dict() for issue in issues ] == [
+      {
+         'code': 'wildEncounterTimeConflict',
+         'items': [
+            {
+               'name': 'African Lion',
+               'start_time': '2:00 PM',
+               'end_time': '2:30 PM',
+               'item_type': 'guardiansTalk',
+               'meeting_spot': '',
+               'location': 'Africa Savanna',
+               'link': '',
+            },
+            {
+               'name': 'African Rainforest',
+               'start_time': '2:00 PM',
+               'end_time': '2:45 PM',
+               'item_type': 'wildEncounter',
+               'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
+               'location': '',
+               'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
+            },
+         ],
+      },
+   ]
