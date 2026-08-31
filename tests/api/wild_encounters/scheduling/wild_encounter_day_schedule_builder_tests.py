@@ -20,7 +20,8 @@ def _schedule_record(
       *,
       monday: bool = True,
       tuesday: bool = False,
-      is_cancelled: bool = False ) -> WildEncounterScheduleRecord:
+      is_cancelled: bool = False,
+      encounter_time: str = ENCOUNTER_TIME ) -> WildEncounterScheduleRecord:
    return WildEncounterScheduleRecord(
       name='Giraffe Feeding',
       meeting_spot='Africa Savanna',
@@ -38,7 +39,7 @@ def _schedule_record(
       friday=False,
       saturday=False,
       sunday=False,
-      encounter_time=ENCOUNTER_TIME,
+      encounter_time=encounter_time,
       is_cancelled=is_cancelled )
 
 
@@ -73,6 +74,22 @@ def _wild_encounter(
       meeting_spot='Africa',
       link='',
       is_available=is_available )
+
+
+def Test_BuildForTargetDate_TestMultipleTimesOnSameDay_ExpectAvailableEncounters() -> None:
+   encounters = WildEncounterDayScheduleBuilder.build_for_target_date(
+      [
+         _schedule_record(),
+         _schedule_record( encounter_time='3:30 PM' ),
+      ],
+      MONDAY_VISIT_DATE )
+
+   available_times = sorted(
+      encounter.start_time
+      for encounter in encounters
+      if encounter.is_available )
+
+   assert available_times == [ '2:00 PM', '3:30 PM' ]
 
 
 def Test_BuildForTargetDate_TestMatchingWeekday_ExpectAvailableEncounter() -> None:

@@ -61,3 +61,40 @@ def Test_ParseRows_TestInvalidAndDuplicateRows_ExpectKeepsFirstValidTimeOnly() -
 
    assert [ row.time for row in rows ] == [ '2:00 PM' ]
    assert rows[ 0 ].tuesday is False
+
+
+def Test_ParseRows_TestEquivalentTimeFormats_ExpectDistinctCanonicalTimesOnly() -> None:
+   rows = ScheduleRowInput.parse_rows( [
+      {
+         'time': '3:30 PM',
+         'monday': True,
+         'tuesday': False,
+         'wednesday': False,
+         'thursday': False,
+         'friday': False,
+         'saturday': False,
+         'sunday': False,
+      },
+      {
+         'time': '15:30',
+         'monday': True,
+         'tuesday': False,
+         'wednesday': False,
+         'thursday': False,
+         'friday': False,
+         'saturday': False,
+         'sunday': False,
+      },
+      {
+         'time': '14:00',
+         'monday': True,
+         'tuesday': False,
+         'wednesday': False,
+         'thursday': False,
+         'friday': False,
+         'saturday': False,
+         'sunday': False,
+      },
+   ] )
+
+   assert [ row.time for row in rows ] == [ '3:30 PM', '2:00 PM' ]
