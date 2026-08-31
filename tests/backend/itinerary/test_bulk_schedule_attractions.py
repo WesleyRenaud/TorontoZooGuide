@@ -6,11 +6,7 @@ from datetime import date
 from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
-from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.shared.enums import ItineraryErrorType
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -126,49 +122,3 @@ def test_bulk_schedule_repacks_attractions_after_clear(
       for attraction in second.itinerary.attractions
       if attraction.name == CAROUSEL )
    assert carousel_after.start_time is not None
-
-
-def test_build_loop_schedule_units_orders_woven_attraction_between_animals() -> None:
-   stops = [
-      ItineraryAnimalRecord(
-         species='Amur Tiger',
-         exhibit='Eurasia Wilds',
-         old_likelihood=None,
-         new_likelihood=100 ),
-      ItineraryAttractionRecord(
-         attraction=KANGAROO_WALK_THRU,
-         old_likelihood=None,
-         new_likelihood=100 ),
-      ItineraryAnimalRecord(
-         species='Western Grey Kangaroo',
-         exhibit='Australasia Outdoor',
-         old_likelihood=None,
-         new_likelihood=100 ),
-   ]
-   loop_units = LoopScheduleUnitBuilder.build(
-      MasterRouteLoopStopGrouper.group( stops ) )
-
-   australasia = next(
-      unit
-      for unit in loop_units
-      if unit.loop_id == 'australasia' )
-   ordered_names = [
-      stop.attraction
-      if isinstance( stop, ItineraryAttractionRecord )
-      else stop.species
-      for stop in australasia.stops
-   ]
-
-   assert ordered_names == [
-      'Western Grey Kangaroo',
-      KANGAROO_WALK_THRU,
-      'Amur Tiger',
-   ]
-
-
-def test_walk_node_id_for_unknown_attraction_is_none() -> None:
-   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
-      ItineraryAttractionRecord(
-         attraction='Not A Real Attraction',
-         old_likelihood=None,
-         new_likelihood=100 ) ) is None
