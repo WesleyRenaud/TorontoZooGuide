@@ -216,3 +216,66 @@ def Test_FindSavedItineraryScheduleItemRow_TestWildEncounterKey_ExpectMatchingSt
    )
 
    assert missing is None
+
+
+def Test_SavedScheduleItemIsAlreadyScheduled_TestScheduledAnimal_ExpectTrue() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+   )
+
+   assert SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+      saved_itinerary,
+      AnimalScheduleItemKey(
+         species='African Lion',
+         exhibit='Africa Savanna',
+      ) )
+
+
+def Test_SavedScheduleItemIsAlreadyScheduled_TestUnscheduledAnimal_ExpectFalse() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+         ),
+      ],
+   )
+
+   assert not SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+      saved_itinerary,
+      AnimalScheduleItemKey(
+         species='African Lion',
+         exhibit='Africa Savanna',
+      ) )
+
+
+def Test_SavedScheduleItemIsAlreadyScheduled_TestScheduledLunch_ExpectTrue() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      event_rows=[
+         ItineraryEventRecord(
+            event_type=ItineraryEventType.LUNCH,
+            start_time='12:00 PM',
+            end_time='12:40 PM',
+         ),
+      ],
+   )
+
+   assert SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+      saved_itinerary,
+      ItineraryEventType.LUNCH )
