@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 
 
@@ -115,3 +116,37 @@ def Test_EnsureDepartureCoversEnd_TestEarlierEnd_ExpectUnchanged(
       conn,
       end_time='11:00 AM',
       current_departure_time='12:00 PM' )
+
+
+def Test_CoverForActivity_TestScheduledActivity_ExpectEnsureAndSeed(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   conn = sqlite3.connect( ':memory:' )
+   calls: list[ str ] = []
+
+   monkeypatch.setattr(
+      ScheduledActivityVisitTimesCoverer,
+      'ensure_arrival_covers_start',
+      lambda *args, **kwargs: calls.append( 'arrival' ) or False )
+   monkeypatch.setattr(
+      ScheduledActivityVisitTimesCoverer,
+      'ensure_departure_covers_end',
+      lambda *args, **kwargs: calls.append( 'departure' ) or False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_activity_visit_times_coverer.ScheduledEndpointVisitTimesSyncer.seed_if_complete',
+      lambda conn, itinerary: calls.append( 'seed' ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_activity_visit_times_coverer.ItineraryBuilder.build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_activity_visit_times_coverer.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: type( 'SavedItinerary', (), {} )() )
+
+   ScheduledActivityVisitTimesCoverer.cover_for_activity(
+      conn,
+      start_time='3:30 PM',
+      end_time='4:15 PM',
+      current_arrival_time='9:30 AM',
+      current_departure_time='12:00 PM',
+      itinerary_context={} )
+
+   assert calls == [ 'arrival', 'departure', 'seed' ]
