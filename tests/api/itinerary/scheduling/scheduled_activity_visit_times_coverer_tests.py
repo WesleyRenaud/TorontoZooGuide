@@ -3,51 +3,51 @@ from __future__ import annotations
 from api.itinerary.scheduling.scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 
 
-def test_arrival_time_covering_leaves_unset_arrival_unset() -> None:
+def Test_ArrivalCoveringStarts_TestUnsetArrival_ExpectNone() -> None:
    assert ScheduledActivityVisitTimesCoverer.arrival_covering_starts(
       None,
       [ '11:00', '10:00' ],
    ) is None
 
 
-def test_arrival_time_covering_keeps_earlier_existing_arrival() -> None:
+def Test_ArrivalCoveringStarts_TestEarlierExistingArrival_ExpectUnchanged() -> None:
    assert ScheduledActivityVisitTimesCoverer.arrival_covering_starts(
       '09:00',
       [ '10:00', '11:00' ],
    ) == '09:00'
 
 
-def test_arrival_time_covering_pulls_existing_arrival_earlier() -> None:
+def Test_ArrivalCoveringStarts_TestLaterExistingArrival_ExpectPulledEarlier() -> None:
    assert ScheduledActivityVisitTimesCoverer.arrival_covering_starts(
       '11:00',
       [ '10:00' ],
    ) == '10:00'
 
 
-def test_arrival_time_covering_returns_existing_when_no_starts() -> None:
+def Test_ArrivalCoveringStarts_TestNoStarts_ExpectExistingArrival() -> None:
    assert ScheduledActivityVisitTimesCoverer.arrival_covering_starts( '09:00', [] ) == '09:00'
 
 
-def test_departure_time_covering_leaves_unset_departure_unset() -> None:
+def Test_DepartureCoveringEnds_TestUnsetDeparture_ExpectNone() -> None:
    assert ScheduledActivityVisitTimesCoverer.departure_covering_ends(
       None,
       [ '10:00', '11:30' ],
    ) is None
 
 
-def test_departure_time_covering_keeps_later_existing_departure() -> None:
+def Test_DepartureCoveringEnds_TestLaterExistingDeparture_ExpectUnchanged() -> None:
    assert ScheduledActivityVisitTimesCoverer.departure_covering_ends(
       '17:00',
       [ '10:00', '11:00' ],
    ) == '17:00'
 
 
-def test_departure_time_covering_pushes_existing_departure_later() -> None:
+def Test_DepartureCoveringEnds_TestEarlierExistingDeparture_ExpectPushedLater() -> None:
    assert ScheduledActivityVisitTimesCoverer.departure_covering_ends(
       '11:00',
       [ '11:30' ],
    ) == '11:30'
 
 
-def test_departure_time_covering_returns_existing_when_no_ends() -> None:
+def Test_DepartureCoveringEnds_TestNoEnds_ExpectExistingDeparture() -> None:
    assert ScheduledActivityVisitTimesCoverer.departure_covering_ends( '17:00', [] ) == '17:00'

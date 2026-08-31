@@ -4,14 +4,14 @@ from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryW
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 
 
-def test_wild_encounter_schedule_item_key_from_wire_without_time() -> None:
+def Test_FromWire_TestMissingOrInvalidTime_ExpectNone() -> None:
    assert WildEncounterScheduleItemKey.from_wire( 'African Rainforest' ) is None
    assert WildEncounterScheduleItemKey.from_wire( 'African Rainforest||' ) is None
    assert WildEncounterScheduleItemKey.from_wire( 'Kangaroo||1:00 PM||' ) is None
    assert WildEncounterScheduleItemKey.from_wire( 'Kangaroo||1:00 PM||bad' ) is None
 
 
-def test_wild_encounter_schedule_item_key_from_wire_with_start_time() -> None:
+def Test_FromWire_TestStartTime_ExpectNormalizedKey() -> None:
    key = WildEncounterScheduleItemKey.from_wire( 'Masai Giraffe||14:00' )
 
    assert key == WildEncounterScheduleItemKey(
@@ -20,7 +20,7 @@ def test_wild_encounter_schedule_item_key_from_wire_with_start_time() -> None:
    assert key.to_wire() == 'Masai Giraffe||2:00 PM'
 
 
-def test_wild_encounter_schedule_item_key_from_wire_with_start_and_end_time() -> None:
+def Test_FromWire_TestStartAndEndTime_ExpectNormalizedKey() -> None:
    key = WildEncounterScheduleItemKey.from_wire( 'Kangaroo||13:00||13:45' )
 
    assert key == WildEncounterScheduleItemKey(
@@ -30,7 +30,7 @@ def test_wild_encounter_schedule_item_key_from_wire_with_start_and_end_time() ->
    assert key.to_wire() == 'Kangaroo||1:00 PM||1:45 PM'
 
 
-def test_wild_encounter_schedule_item_key_from_wires() -> None:
+def Test_FromWires_TestMixedEntries_ExpectValidKeysOnly() -> None:
    keys = WildEncounterScheduleItemKey.from_wires( [
       'Kangaroo||13:00||13:45',
       '',
@@ -49,7 +49,7 @@ def test_wild_encounter_schedule_item_key_from_wires() -> None:
    ]
 
 
-def test_wild_encounter_schedule_item_key_from_row() -> None:
+def Test_FromRow_TestWildEncounterRecord_ExpectScheduleItemKey() -> None:
    record = ItineraryWildEncounterRecord(
       wild_encounter='Kangaroo',
       start_time='13:00',
@@ -64,7 +64,7 @@ def test_wild_encounter_schedule_item_key_from_row() -> None:
    assert record.schedule_item_key().to_wire() == 'Kangaroo||1:00 PM||1:45 PM'
 
 
-def test_wild_encounter_schedule_item_key_equality_ignores_end_time() -> None:
+def Test_Equality_TestEndTimeDifference_ExpectIgnored() -> None:
    start_only = WildEncounterScheduleItemKey(
       name='African Rainforest',
       start_time='15:30' )
