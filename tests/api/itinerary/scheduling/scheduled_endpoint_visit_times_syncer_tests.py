@@ -9,6 +9,7 @@ from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import Sched
 from api.models import Animal
 from api.models import GuardiansTalk
 from api.models import Itinerary
+from api.models import WildEncounter
 
 
 VISIT_DATE = '2026-06-15'
@@ -53,6 +54,56 @@ def _talk_only_itinerary() -> Itinerary:
             start_time='10:00 AM',
             end_time='10:15 AM' ),
       ],
+      wild_encounters=[],
+      events=[],
+      arrival_time=None,
+      departure_time=None )
+
+
+def _wild_encounter_only_itinerary() -> Itinerary:
+   return ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name='African Rainforest',
+            meeting_spot='Rainforest Gate',
+            link='african-rainforest',
+            x_coord=0,
+            y_coord=0,
+            start_time='3:30 PM',
+            end_time='4:15 PM' ),
+      ],
+      events=[],
+      arrival_time=None,
+      departure_time=None )
+
+
+def _two_animal_itinerary() -> Itinerary:
+   return ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+         Animal(
+            species='Cheetah',
+            exhibit='Africa Savanna',
+            start_time='11:00 AM',
+            end_time='11:08 AM' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
       wild_encounters=[],
       events=[],
       arrival_time=None,
@@ -248,3 +299,59 @@ def Test_ClearIfBecameIncomplete_TestLosesSchedule_ExpectTimesCleared(
       current_itinerary=current_itinerary )
 
    assert cleared == [ 'arrival', 'departure' ]
+
+
+def Test_SeedIfComplete_TestWildEncounterOnly_ExpectArrivalAndDeparture(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   updated: dict[ str, str | None ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: updated.__setitem__( 'arrival_time', arrival_time ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
+      syncer_conn,
+      _wild_encounter_only_itinerary() )
+
+   assert updated == {
+      'arrival_time': '3:20 PM',
+      'departure_time': '4:25 PM',
+   }
+
+
+def Test_SeedIfComplete_TestTwoAnimals_ExpectDepartureFromLatestEnd(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   updated: dict[ str, str | None ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: updated.__setitem__( 'arrival_time', arrival_time ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
+      syncer_conn,
+      _two_animal_itinerary() )
+
+   assert updated == {
+      'arrival_time': '9:50 AM',
+      'departure_time': '11:18 AM',
+   }
