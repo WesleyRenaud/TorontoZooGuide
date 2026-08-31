@@ -62,3 +62,10 @@ def Test_ValidateForZooHours_TestBeforeEarlyAdmission_ExpectOutOfBounds() -> Non
       '08:59',
       EARLY_ADMISSION_ZOO_HOURS,
       arrival_time='09:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+
+
+def Test_ValidateForZooHours_TestAfterClose_ExpectOutOfBounds() -> None:
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
+      '19:15',
+      ZOO_HOURS,
+      arrival_time='09:30' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
