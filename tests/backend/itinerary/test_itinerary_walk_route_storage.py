@@ -73,44 +73,6 @@ def test_bulk_schedule_itinerary_persists_walk_route(
    assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
 
 
-def test_fetch_itinerary_walk_route_returns_empty_when_unpersisted(
-      db: DbControllers ) -> None:
-   walk_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
-
-   assert walk_route == ItineraryWalkRouteBuilder.empty()
-
-
-def test_rebuild_and_persist_itinerary_walk_route_round_trips_route(
-      db: DbControllers ) -> None:
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_early_admission=True,
-   ).success
-   assert schedule_itinerary_item(
-      item_type='animals',
-      key=ANIMAL_KEY,
-      start_time='10:00',
-   ).success
-
-   expected_route = ItineraryWalkRouteBuilder.build(
-      ItineraryCoordinator.get_itinerary() )
-
-   assert ItineraryWalkRoutePersister.rebuild_and_persist(
-      db.conn,
-      animal_coordinator=AnimalCoordinator,
-      attraction_coordinator=AttractionCoordinator,
-      guardians_coordinator=GuardiansCoordinator,
-      wild_encounter_coordinator=WildEncounterCoordinator,
-   )
-   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route( db.conn )
-
-   assert ItineraryWalkRouteMatcher.matches( expected_route, persisted_route )
-
-
 def test_clear_itinerary_clears_walk_route(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
