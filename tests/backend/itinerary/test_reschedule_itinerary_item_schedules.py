@@ -5,62 +5,9 @@ from datetime import date
 
 from itinerary.support import CAROUSEL, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, schedule_itinerary_item, schedule_time_after_seconds
 
-from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
-from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
-from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
-
-
-def test_reschedule_after_fixed_time_activity_only_reschedules_previously_scheduled_animals(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      arrival_time='09:00',
-      animals=[
-         LION_ITINERARY_ENTRY,
-         PENGUIN_ITINERARY_ENTRY,
-      ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_early_admission=True,
-   ).success
-
-   assert schedule_itinerary_item(
-      item_type='animals',
-      key=LION_KEY,
-      start_time='10:00',
-   ).success
-
-   result = FixedTimeActivityRescheduler.reschedule_after_add(
-      db.conn,
-      animal_coordinator=AnimalCoordinator,
-      attraction_coordinator=AttractionCoordinator,
-      guardians_coordinator=GuardiansCoordinator,
-      wild_encounter_coordinator=WildEncounterCoordinator,
-      saved_itinerary_before_clear=ItineraryProvider.fetch_saved_itinerary( db.conn ),
-   )
-
-   assert result.success
-
-   lion = next(
-      animal for animal in result.itinerary.animals
-      if animal.species == 'African Lion' )
-   penguin = next(
-      animal for animal in result.itinerary.animals
-      if animal.species == 'African Penguin' )
-
-   assert GuestItemScheduleStatusChecker.has_schedule_times( lion.start_time, lion.end_time )
-   assert lion.start_time != '10:00'
-   assert not GuestItemScheduleStatusChecker.has_schedule_times( penguin.start_time, penguin.end_time )
 
 
 def test_bulk_schedule_schedules_unscheduled_animals_when_requested(

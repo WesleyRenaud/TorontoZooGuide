@@ -137,3 +137,48 @@ def Test_StopsMatchingPrevious_TestPreviouslyScheduledSpecies_ExpectPostSaveRows
       ( animal.species, animal.enclosure_name )
       for animal in stops
    ] == [ ( 'Aldabra Tortoise', 'Indoor' ) ]
+
+
+def Test_StopsMatchingPrevious_TestLionScheduledPenguinNot_ExpectLionOnly() -> None:
+   before = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+   )
+   after = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100 ),
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+   )
+
+   stops = BulkScheduleStopSelector.stops_matching_previous( before, after )
+
+   assert [ animal.species for animal in stops ] == [ 'African Lion' ]
