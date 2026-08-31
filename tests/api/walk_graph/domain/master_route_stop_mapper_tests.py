@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import pytest
+
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.attraction_route_stop import AttractionRouteStop
 from api.walk_graph.domain.master_route_stop_mapper import MasterRouteStopMapper
 from api.walk_graph.domain.viewing_spot_reference import ViewingSpotReference
 
 
-def test_master_route_stops_use_kind_prefixed_keys() -> None:
+def Test_MapRecord_TestAnimalAndAttraction_ExpectKindPrefixedKeys() -> None:
    animal = MasterRouteStopMapper.map_record( {
       'kind': 'animal',
       'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor', None ],
@@ -37,48 +39,32 @@ def test_master_route_stops_use_kind_prefixed_keys() -> None:
    )
 
 
-def test_master_route_stop_from_json_requires_kind() -> None:
-   try:
+def Test_MapRecord_TestMissingKind_ExpectValueError() -> None:
+   with pytest.raises( ValueError, match='kind' ):
       MasterRouteStopMapper.map_record( {
          'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor', None ],
       } )
-   except ValueError as error:
-      assert 'kind' in str( error )
-   else:
-      raise AssertionError( 'Expected missing kind to raise ValueError' )
 
 
-def test_master_route_stop_from_json_requires_key() -> None:
-   try:
+def Test_MapRecord_TestMissingKey_ExpectValueError() -> None:
+   with pytest.raises( ValueError, match='key' ):
       MasterRouteStopMapper.map_record( {
          'kind': 'animal',
          'species': 'Western Grey Kangaroo',
          'exhibit': 'Australasia Outdoor',
          'name': None,
       } )
-   except ValueError as error:
-      assert 'key' in str( error )
-   else:
-      raise AssertionError( 'Expected missing key to raise ValueError' )
 
 
-def test_master_route_stop_from_json_rejects_wrong_key_length() -> None:
-   try:
+def Test_MapRecord_TestWrongKeyLength_ExpectValueError() -> None:
+   with pytest.raises( ValueError, match='length' ):
       MasterRouteStopMapper.map_record( {
          'kind': 'animal',
          'key': [ 'Western Grey Kangaroo', 'Australasia Outdoor' ],
       } )
-   except ValueError as error:
-      assert 'length' in str( error )
-   else:
-      raise AssertionError( 'Expected wrong key length to raise ValueError' )
 
-   try:
+   with pytest.raises( ValueError, match='length' ):
       MasterRouteStopMapper.map_record( {
          'kind': 'attraction',
          'key': [ 'Splash Island', 'extra' ],
       } )
-   except ValueError as error:
-      assert 'length' in str( error )
-   else:
-      raise AssertionError( 'Expected wrong key length to raise ValueError' )
