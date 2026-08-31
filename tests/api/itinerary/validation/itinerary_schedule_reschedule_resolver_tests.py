@@ -1,0 +1,78 @@
+from __future__ import annotations
+
+from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
+from api.itinerary.validation.itinerary_schedule_reschedule_resolver import ItineraryScheduleRescheduleResolver
+from api.models.guardians_talk_diff import GuardiansTalkDiff
+
+
+def _saved(
+      *,
+      arrival_time: str = '9:30 AM',
+      departure_time: str = '5:00 PM',
+      animal_start: str | None = '11:00 AM',
+      animal_end: str | None = '11:08 AM' ) -> SavedItinerary:
+   return SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=arrival_time,
+      departure_time=departure_time,
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time=animal_start,
+            end_time=animal_end ),
+      ],
+   )
+
+
+def _validated(
+      *,
+      arrival_time: str = '9:30 AM',
+      talk: GuardiansTalkDiff | None = None ) -> ValidatedItinerary:
+   return ValidatedItinerary(
+      arrival_time=arrival_time,
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ talk ] if talk is not None else [],
+      wild_encounters=[],
+      events=[],
+   )
+
+
+def Test_NeedsReschedule_TestNewTalkOverlapsSaved_ExpectTrue() -> None:
+   talk = GuardiansTalkDiff(
+      name="Grevy's Zebra",
+      is_deleted=False,
+      start_time='11:00 AM',
+      end_time='11:30 AM' )
+
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved(),
+      _validated( talk=talk ),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestVisitWindowCutsOffAnimal_ExpectTrue() -> None:
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved(),
+      _validated( arrival_time='12:00 PM' ),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestUnchangedWindow_ExpectFalse() -> None:
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved(),
+      _validated(),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestChangedWindowWithoutCutoff_ExpectFalse() -> None:
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved( animal_start='12:00 PM', animal_end='12:08 PM' ),
+      _validated( arrival_time='11:00 AM' ),
+      requested_departure_time='5:00 PM' )
