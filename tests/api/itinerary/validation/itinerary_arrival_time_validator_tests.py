@@ -90,3 +90,15 @@ def Test_ValidateForZooHours_TestArrivalAfterDeparture_ExpectOrderInvalid() -> N
       '17:15',
       ZOO_HOURS,
       departure_time='17:00' ) == ItineraryErrorType.TIME_ORDER_INVALID
+
+
+def Test_ValidateForZooHours_TestFixedZooStartBeforeOpen_ExpectSuccess() -> None:
+   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
+      '08:45',
+      ZOO_HOURS,
+      departure_time='17:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
+      '08:45',
+      ZOO_HOURS,
+      departure_time='17:00',
+      fixed_zoo_start_times=( '08:45', ) ) == ItineraryErrorType.SUCCESS
