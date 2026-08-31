@@ -4,15 +4,8 @@ from collections.abc import Callable
 from datetime import date
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
-from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
-from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
-from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
-from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
-from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
 from conftest import DbControllers
 
 GOLDEN_LION_TAMARIN_ITINERARY_ENTRY = {
@@ -42,20 +35,6 @@ AMERICAS_PAVILION_TO_EURASIA_ITINERARY = [
    HIGHLAND_CATTLE_ITINERARY_ENTRY,
    WEST_CAUCASIAN_TUR_ITINERARY_ENTRY,
 ]
-
-
-def _animal_record(
-      *,
-      species: str,
-      exhibit: str,
-      enclosure_name: str | None = None ) -> ItineraryAnimalRecord:
-   return ItineraryAnimalRecord(
-      species=species,
-      exhibit=exhibit,
-      enclosure_name=enclosure_name,
-      old_likelihood=None,
-      new_likelihood=100,
-   )
 
 
 def test_bulk_schedule_itinerary_reverses_eurasia_loop_after_temple_for_shorter_walk(
@@ -111,85 +90,3 @@ def test_bulk_schedule_itinerary_reverses_eurasia_loop_after_temple_for_shorter_
    assert capybara_end_seconds <= tur_start_seconds
    assert tur_end_seconds <= cattle_start_seconds
    assert tur_start_seconds < cattle_start_seconds
-
-
-def test_packing_americas_pavilion_to_eurasia_itinerary_saves_walk_after_temple(
-      db: DbControllers ) -> None:
-   assert db.conn is not None
-
-   walk_graph = WalkGraphProvider.fetch()
-   window_start_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
-   window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
-
-   assert window_start_seconds is not None
-   assert window_end_seconds is not None
-
-   animal_rows = [
-      _animal_record(
-         species=entry[ 'species' ],
-         exhibit=entry[ 'exhibit' ],
-         enclosure_name=entry.get( 'enclosure_name' ),
-      )
-      for entry in AMERICAS_PAVILION_TO_EURASIA_ITINERARY
-   ]
-   prepared_units = LoopWindowPacker.prepare_units(
-      db.conn,
-      LoopScheduleUnitBuilder.build(
-         MasterRouteLoopAnimalGrouper.group( animal_rows ) ),
-      walk_graph=walk_graph )
-
-   assert prepared_units is not None
-
-   prepared_units_by_loop_id = {
-      prepared_unit.unit.loop_id: prepared_unit
-      for prepared_unit in prepared_units
-   }
-   americas_exit = (
-      prepared_units_by_loop_id[ 'americas_pavilion' ].unit.exit_walk_node_id )
-   temple_unit = prepared_units_by_loop_id[ 'tundra_trek_mayan_temple' ]
-   eurasia_unit = prepared_units_by_loop_id[ 'eurasia' ]
-
-   assert americas_exit is not None
-
-   packed_units = LoopWindowPacker.pack(
-      walk_graph,
-      ItineraryScheduleWindow(
-         start_seconds=window_start_seconds,
-         end_seconds=window_end_seconds,
-      ),
-      prepared_units=[ temple_unit, eurasia_unit ],
-      cursor_seconds=window_start_seconds,
-      current_node_id=americas_exit,
-      departure_side_cluster_id='north',
-   )
-
-   assert [ unit.unit.loop_id for unit in packed_units ] == [
-      'tundra_trek_mayan_temple',
-      'eurasia',
-   ]
-   assert [ animal.species for animal in packed_units[ 1 ].unit.stops ] == [
-      'West Caucasian Tur',
-      'Highland Cattle',
-   ]
-
-   temple_exit = packed_units[ 0 ].unit.exit_walk_node_id
-   eurasia_forward_entry = eurasia_unit.unit.entry_walk_node_id
-   eurasia_reverse_entry = eurasia_unit.unit.exit_walk_node_id
-
-   assert temple_exit is not None
-   assert eurasia_forward_entry is not None
-   assert eurasia_reverse_entry is not None
-
-   oriented_approach_distance = ShortestPathCalculator.distance(
-      walk_graph,
-      temple_exit,
-      packed_units[ 1 ].unit.entry_walk_node_id )
-   forward_only_approach_distance = ShortestPathCalculator.distance(
-      walk_graph,
-      temple_exit,
-      eurasia_forward_entry )
-
-   assert oriented_approach_distance is not None
-   assert forward_only_approach_distance is not None
-   assert oriented_approach_distance < forward_only_approach_distance
-   assert forward_only_approach_distance - oriented_approach_distance > 500

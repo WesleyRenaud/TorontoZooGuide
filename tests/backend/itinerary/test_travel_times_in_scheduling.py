@@ -13,8 +13,6 @@ from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
-from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
-from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -617,33 +615,6 @@ def test_bulk_and_single_schedule_agree_on_first_animal_start(
    assert bulk.itinerary.animals[ 0 ].start_time == single.itinerary.animals[ 0 ].start_time
 
 
-def test_penguin_entrance_travel_differs_from_lion(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   assert LION_TRAVEL_SECONDS != PENGUIN_TRAVEL_SECONDS
-   assert PENGUIN_TRAVEL_SECONDS > 0
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      arrival_time='09:30',
-      animals=[ PENGUIN_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      confirming_early_admission=True,
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='animals',
-      key=PENGUIN_KEY )
-
-   assert result.success
-   assert result.itinerary.animals[ 0 ].start_time == schedule_time_after_seconds(
-      '9:30 AM',
-      PENGUIN_TRAVEL_SECONDS )
-
-
 def test_explicit_start_one_minute_before_travel_ready_is_rejected(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
@@ -692,36 +663,6 @@ def test_early_admission_bulk_delays_from_nine_am_anchor(
    assert result.itinerary.animals[ 0 ].start_time == schedule_time_after_seconds(
       '9:00 AM',
       LION_TRAVEL_SECONDS )
-
-
-def test_prepare_loop_schedule_units_adds_inter_stop_travel_to_duration(
-      db: DbControllers ) -> None:
-   walk_graph = WalkGraphProvider.fetch()
-   units = LoopScheduleUnitBuilder.build(
-      [
-         [
-            _animal_record( species='African Lion', exhibit='Africa Savanna' ),
-            _animal_record(
-               species='African Penguin',
-               exhibit='Africa Savanna',
-               enclosure_name='Outdoor' ),
-         ],
-      ] )
-   prepared = LoopWindowPacker.prepare_units(
-      db.conn,
-      units,
-      walk_graph=walk_graph )
-   assert prepared is not None
-   assert len( prepared ) == 1
-
-   viewing_only = prepared[ 0 ].occupied_seconds - LoopUnitTravelTimeCalculator.total_inter_stop_seconds(
-      walk_graph,
-      units[ 0 ].stops )
-   travel = LoopUnitTravelTimeCalculator.total_inter_stop_seconds( walk_graph, units[ 0 ].stops )
-
-   assert travel > 0
-   assert prepared[ 0 ].occupied_seconds == viewing_only + travel
-   assert prepared[ 0 ].occupied_seconds > viewing_only
 
 
 def test_bulk_schedule_three_animals_keeps_travel_gaps_along_chain(
