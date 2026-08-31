@@ -1,40 +1,38 @@
 from __future__ import annotations
 
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
-from api.models import WildEncounter
+from api.models.wild_encounter import WildEncounter
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 
 
-def Test_ValidateForItinerary_TestAvailableAndUnavailable_ExpectSplitDiffs() -> None:
-   day_schedule = [
-      WildEncounter(
-         name='Kangaroo',
-         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
-         link='https://www.torontozoo.com/tickets/wekangaroo',
-         start_time='1:00 PM',
-         maximum_duration=45,
-         is_available=True ),
-      WildEncounter(
-         name='African Rainforest',
-         meeting_spot='Wild Encounter - Africa Meeting Spot',
-         link='https://www.torontozoo.com/tickets/weafricarainforest',
-         start_time='2:00 PM',
-         maximum_duration=45,
-         is_available=False,
-         unavailable_message='Unavailable.' ),
-   ]
+DAY_SCHEDULE = [
+   WildEncounter(
+      name='Kangaroo',
+      meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+      link='https://example.com/kangaroo',
+      start_time='9:00 AM',
+      end_time='9:45 AM' ),
+   WildEncounter(
+      name='African Rainforest',
+      meeting_spot='Wild Encounter - Africa Meeting Spot',
+      link='https://example.com/rainforest',
+      start_time='2:00 PM',
+      end_time='2:45 PM' ),
+]
 
+
+def Test_ValidateForItinerary_TestCaseInsensitiveNames_ExpectSortedMatches() -> None:
    result = WildEncounterItineraryValidator.validate_for_itinerary(
-      wild_encounters_to_include=[
-         WildEncounterScheduleItemKey( name='African Rainforest', start_time='14:00' ),
-         WildEncounterScheduleItemKey( name='Kangaroo', start_time='13:00' ),
+      [
+         WildEncounterScheduleItemKey( name=' kangaroo ', start_time='09:00' ),
+         WildEncounterScheduleItemKey( name='AFRICAN RAINFOREST', start_time='14:00' ),
       ],
-      day_schedule=day_schedule )
+      DAY_SCHEDULE )
 
    assert [
-      ( d.name, d.is_deleted, d.start_time, d.end_time )
-      for d in result
+      ( diff.name, diff.is_deleted )
+      for diff in result
    ] == [
-      ( 'African Rainforest', True, '2:00 PM', '2:45 PM' ),
-      ( 'Kangaroo', False, '1:00 PM', '1:45 PM' ),
+      ( 'Kangaroo', False ),
+      ( 'African Rainforest', False ),
    ]

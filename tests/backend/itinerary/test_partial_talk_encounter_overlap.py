@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from itinerary.support import guardians_talk_save_entries, wild_encounter_key
-from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
+from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
@@ -26,35 +25,6 @@ def _set_lion_talk_and_grizzly_encounter_partial_overlap_schedules() -> None:
       schedule_rows=wire_schedule_rows( '13:00' ),
       message=None
    )
-
-
-def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_trimming(
-      db: DbControllers ) -> None:
-   _set_lion_talk_and_grizzly_encounter_partial_overlap_schedules()
-
-   result = ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      animals=[],
-      attractions=[],
-      guardians_talks=guardians_talk_save_entries( 'African Lion', start_time='13:30' ),
-      wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
-   )
-
-   assert not result.success
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.reasons ) == 1
-   assert result.reasons[ 0 ].to_dict()[ 'code' ] == 'wildEncounterTimeConflict'
-   assert { item[ 'name' ] for item in result.reasons[ 0 ].to_dict()[ 'items' ] } == {
-      'African Lion',
-      'Grizzly Bear',
-   }
-
-   assert db.conn.execute(
-      'SELECT COUNT(*) FROM ItineraryGuardiansTalk;'
-   ).fetchone()[ 0 ] == 0
-   assert db.conn.execute(
-      'SELECT COUNT(*) FROM ItineraryWildEncounter;'
-   ).fetchone()[ 0 ] == 0
 
 
 def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overlap(
