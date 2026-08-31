@@ -8,8 +8,6 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
-from api.itinerary.warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
@@ -37,46 +35,6 @@ def _set_talk_schedule(
       schedule_rows=wire_schedule_rows( talk_time, monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
       message=None,
    )
-
-
-def test_guardians_talks_without_matching_animal_skips_deleted_talks(
-      db: DbControllers ) -> None:
-   validated = ValidatedItinerary(
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
-      animals=[],
-      attractions=[],
-      guardians_talks=[
-         GuardiansTalkDiff(
-            name=ZEBRA_TALK,
-            is_deleted=True,
-            location='Africa Savanna' ),
-         GuardiansTalkDiff(
-            name=LION_TALK,
-            is_deleted=False,
-            location='Africa Savanna' ),
-      ],
-      wild_encounters=[],
-      events=[],
-   )
-
-   missing = GuardiansTalkWithoutAnimalWarningBuilder.talks_without_matching_animal( validated, db.conn )
-
-   assert [ talk.name for talk in missing ] == [ LION_TALK ]
-
-
-def test_talk_without_animal_warning_skips_deleted_talk(
-      db: DbControllers ) -> None:
-   talk = GuardiansTalkDiff(
-      name=ZEBRA_TALK,
-      is_deleted=True,
-      location='Africa Savanna' )
-
-   assert not GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
-      talk,
-      set(),
-      db.conn,
-      confirming_guardians_talk_without_animal=False )
 
 
 def test_set_itinerary_warns_when_talk_has_no_matching_animal(

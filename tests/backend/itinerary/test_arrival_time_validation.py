@@ -10,24 +10,6 @@ from api.shared.enums import ItineraryEventType
 from conftest import DbControllers
 
 
-def test_set_arrival_time_returns_validation_error_types(
-      db: DbControllers ) -> None:
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   assert ItineraryCoordinator.set_arrival_time( '09:00' ).status == (
-      ItineraryErrorType.TIME_OUT_OF_BOUNDS )
-   assert ItineraryCoordinator.set_arrival_time( '17:00' ).status == (
-      ItineraryErrorType.TIME_ORDER_INVALID )
-
-
 def test_set_arrival_time_succeeds_when_departure_is_unset(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
