@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.itinerary_stop import ItineraryStop
@@ -7,7 +9,26 @@ from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.loop_pin_gap_step import LoopPinGapStep
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.itinerary.scheduling.bulk.loop_pin_stop_segment import LoopPinStopSegment
+from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.shared.enums import ScheduleItemKind
+
+
+AFRICA_LOOP_ID = 'africa_savanna_canadian_domain'
+AUSTRALASIA_LOOP_ID = 'australasia'
+
+HYENA_PIN_BOUNDARY = 5
+KANGAROO_PIN_BOUNDARY = 43
+
+VIEWING_SPOT_INDEX_BY_ANIMAL = {
+   ( 'African Penguin', 'Africa Savanna', 'Outdoor' ): 3,
+   ( 'Cheetah', 'Africa Savanna', None ): 20,
+   ( 'Western Grey Kangaroo', 'Australasia Outdoor', None ): 43,
+   ( 'Amur Tiger', 'Eurasia Wilds', None ): 45,
+}
+
+VIEWING_SPOT_INDEX_BY_ATTRACTION = {
+   'Kangaroo Walk-Thru': 44,
+}
 
 
 def _animal_record(
@@ -24,10 +45,17 @@ def _animal_record(
    )
 
 
+def _attraction_record( name: str ) -> ItineraryAttractionRecord:
+   return ItineraryAttractionRecord(
+      attraction=name,
+      old_likelihood=None,
+      new_likelihood=100 )
+
+
 def _hyena_loop_pin() -> LoopSchedulePin:
    return LoopSchedulePin(
-      loop_id='africa_savanna_canadian_domain',
-      viewing_spot_index=5,
+      loop_id=AFRICA_LOOP_ID,
+      viewing_spot_index=HYENA_PIN_BOUNDARY,
       stop=ItineraryStop(
          schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
          item_key='Spotted Hyena',
@@ -40,23 +68,45 @@ def _hyena_loop_pin() -> LoopSchedulePin:
    )
 
 
-def test_loop_pin_segment_index_places_animals_before_and_after_pin() -> None:
+def _viewing_spot_index_for_stop(
+      loop_id: str,
+      stop: LoopScheduleStop.Stop,
+      ) -> int | None:
+   if isinstance( stop, ItineraryAnimalRecord ):
+      return VIEWING_SPOT_INDEX_BY_ANIMAL.get(
+         ( stop.species, stop.exhibit, stop.enclosure_name ) )
+
+   if isinstance( stop, ItineraryAttractionRecord ):
+      return VIEWING_SPOT_INDEX_BY_ATTRACTION.get( stop.attraction )
+
+   return None
+
+
+@pytest.fixture
+def stub_viewing_spot_indexes( monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      LoopPinSegmentSplitter,
+      'viewing_spot_index_for_stop',
+      _viewing_spot_index_for_stop )
+
+
+def Test_SegmentIndexForViewingSpot_TestBoundaries_ExpectBeforeAndAfterSegments() -> None:
    assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       3,
-      pin_boundaries=[ 5 ] ) == 0
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 0
    assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
-      5,
-      pin_boundaries=[ 5 ] ) == 0
+      HYENA_PIN_BOUNDARY,
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 0
    assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       20,
-      pin_boundaries=[ 5 ] ) == 1
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 1
    assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       None,
-      pin_boundaries=[ 5 ] ) == 1
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 1
 
 
-def test_split_stops_into_loop_pin_segments_groups_savanna_animals() -> None:
-   loop_id = 'africa_savanna_canadian_domain'
+def Test_SplitStops_TestSavannaAnimals_ExpectPenguinBeforePin(
+      stub_viewing_spot_indexes: None ) -> None:
    loop_pin = _hyena_loop_pin()
    penguin = _animal_record(
       species='African Penguin',
@@ -70,7 +120,7 @@ def test_split_stops_into_loop_pin_segments_groups_savanna_animals() -> None:
 
    segments = LoopPinSegmentSplitter.split_stops(
       [ cheetah, penguin ],
-      loop_id=loop_id,
+      loop_id=AFRICA_LOOP_ID,
       loop_pins=[ loop_pin ],
    )
 
@@ -78,8 +128,8 @@ def test_split_stops_into_loop_pin_segments_groups_savanna_animals() -> None:
    assert [ animal.species for animal in segments[ 1 ] ] == [ 'Cheetah' ]
 
 
-def test_loop_pin_schedule_steps_alternates_segments_and_gaps() -> None:
-   loop_id = 'africa_savanna_canadian_domain'
+def Test_ScheduleSteps_TestSavannaAnimals_ExpectSegmentsAndGap(
+      stub_viewing_spot_indexes: None ) -> None:
    loop_pin = _hyena_loop_pin()
    penguin = _animal_record(
       species='African Penguin',
@@ -94,7 +144,7 @@ def test_loop_pin_schedule_steps_alternates_segments_and_gaps() -> None:
 
    steps = LoopPinSegmentSplitter.schedule_steps(
       [ penguin, cheetah ],
-      loop_id=loop_id,
+      loop_id=AFRICA_LOOP_ID,
       loop_pins=[ loop_pin ],
       window_end_seconds=window_end_seconds,
    )
@@ -112,16 +162,8 @@ def test_loop_pin_schedule_steps_alternates_segments_and_gaps() -> None:
    assert steps[ 2 ].anchor_at_end is False
 
 
-def _attraction_record( name: str ) -> ItineraryAttractionRecord:
-   return ItineraryAttractionRecord(
-      attraction=name,
-      old_likelihood=None,
-      new_likelihood=100,
-   )
-
-
-def test_split_stops_into_loop_pin_segments_keeps_woven_attraction_with_post_pin_animals() -> None:
-   loop_id = 'australasia'
+def Test_SplitStops_TestWovenAttraction_ExpectPostPinAttractionAndAnimal(
+      stub_viewing_spot_indexes: None ) -> None:
    kangaroo = _animal_record(
       species='Western Grey Kangaroo',
       exhibit='Australasia Outdoor',
@@ -131,10 +173,9 @@ def test_split_stops_into_loop_pin_segments_keeps_woven_attraction_with_post_pin
       species='Amur Tiger',
       exhibit='Eurasia Wilds',
    )
-   # Pin boundary at kangaroo (index 43): walk-thru (44) and tiger (45) fall after.
    loop_pin = LoopSchedulePin(
-      loop_id=loop_id,
-      viewing_spot_index=43,
+      loop_id=AUSTRALASIA_LOOP_ID,
+      viewing_spot_index=KANGAROO_PIN_BOUNDARY,
       stop=ItineraryStop(
          schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
          item_key='Western Grey Kangaroo',
@@ -148,7 +189,7 @@ def test_split_stops_into_loop_pin_segments_keeps_woven_attraction_with_post_pin
 
    segments = LoopPinSegmentSplitter.split_stops(
       [ kangaroo, walk_thru, tiger ],
-      loop_id=loop_id,
+      loop_id=AUSTRALASIA_LOOP_ID,
       loop_pins=[ loop_pin ],
    )
 
