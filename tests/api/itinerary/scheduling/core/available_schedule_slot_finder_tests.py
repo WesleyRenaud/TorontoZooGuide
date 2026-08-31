@@ -5,7 +5,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.shared.calendar_dates import DateValues
 
 
-def test_find_available_slot_before_or_after_bounds_prefers_before() -> None:
+def Test_FindBeforeOrAfterBounds_TestOpenBeforeWindow_ExpectBeforeSlot() -> None:
    blockers = [
       TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
    ]
@@ -22,7 +22,7 @@ def test_find_available_slot_before_or_after_bounds_prefers_before() -> None:
    assert slot[ 1 ] == DateValues.schedule_time_key_from_seconds( 10 * 3600 )
 
 
-def test_find_available_slot_before_or_after_bounds_uses_after_when_before_does_not_fit() -> None:
+def Test_FindBeforeOrAfterBounds_TestBeforeBlocked_ExpectAfterSlot() -> None:
    blockers = [
       TimeBlock(
          start_seconds=9 * 3600 + 30 * 60,
@@ -42,7 +42,7 @@ def test_find_available_slot_before_or_after_bounds_uses_after_when_before_does_
       9 * 3600 + 35 * 60 )
 
 
-def test_find_available_slot_before_or_after_bounds_uses_visit_bounds_when_empty() -> None:
+def Test_FindBeforeOrAfterBounds_TestNoBlockers_ExpectVisitBoundSlot() -> None:
    slot = AvailableScheduleSlotFinder.find_before_or_after_bounds(
       [],
       8 * 60,
