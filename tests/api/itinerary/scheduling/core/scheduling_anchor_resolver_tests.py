@@ -26,3 +26,22 @@ def Test_AnchorSeconds_TestEarlyAdmissionAllowed_ExpectEarlyAdmissionTime() -> N
       ZOO_HOURS,
       None,
       allow_early_admission=True ) == 9 * 3600
+
+
+def Test_CoveringFixedZooStarts_TestEarlierFixedStart_ExpectPulledEarlier() -> None:
+   assert SchedulingAnchorResolver.covering_fixed_zoo_starts(
+      ZOO_HOURS,
+      '9:30 AM',
+      [ '9:00 AM' ] ) == 9 * 3600
+
+
+def Test_DayEndSeconds_TestDepartureBeforeClose_ExpectDepartureSeconds() -> None:
+   assert SchedulingAnchorResolver.day_end_seconds( ZOO_HOURS, '5:00 PM' ) == 17 * 3600
+
+
+def Test_DayEndSeconds_TestDepartureAfterClose_ExpectCloseSeconds() -> None:
+   assert SchedulingAnchorResolver.day_end_seconds( ZOO_HOURS, '8:00 PM' ) == 19 * 3600
+
+
+def Test_DayEndSeconds_TestUnsetDeparture_ExpectCloseSeconds() -> None:
+   assert SchedulingAnchorResolver.day_end_seconds( ZOO_HOURS, None ) == 19 * 3600

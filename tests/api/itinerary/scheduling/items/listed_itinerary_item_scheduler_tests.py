@@ -1,0 +1,218 @@
+from __future__ import annotations
+
+from datetime import date
+import sqlite3
+
+import pytest
+
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
+from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from api.itinerary.scheduling.items.listed_itinerary_item_scheduler import ListedItineraryItemScheduler
+from api.itinerary.scheduling.items.listed_schedule_target import ListedScheduleTarget
+from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
+from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.shared.enums import ItineraryErrorType
+from api.shared.operating_hours import OperatingHours
+
+
+VISIT_DATE = date( 2026, 6, 20 )
+VISIT_WINDOW = ( 9 * 3600 + 30 * 60, 17 * 3600 )
+ZOO_HOURS = OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' )
+assert ZOO_HOURS is not None
+
+SAVED_ITINERARY = SavedItinerary(
+   date_value='2026-06-20',
+   arrival_time='9:30 AM',
+   departure_time='5:00 PM',
+   animal_rows=[
+      ItineraryAnimalRecord(
+         species='African Lion',
+         exhibit='Africa Savanna',
+         new_likelihood=100,
+      ),
+   ],
+)
+
+SCHEDULE_ITEM_KEY = AnimalScheduleItemKey(
+   species='African Lion',
+   exhibit='Africa Savanna',
+)
+
+ITINERARY_CONTEXT: dict[ str, object ] = {}
+
+
+@pytest.fixture
+def scheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def stub_save_result( monkeypatch: pytest.MonkeyPatch ) -> None:
+   def save_result(
+         conn: sqlite3.Connection,
+         status: ItineraryErrorType,
+         *,
+         reasons: list[ ItineraryResultReason ] | None = None,
+         **context: object ) -> ItinerarySaveResult:
+      return ItinerarySaveResult(
+         status=status,
+         reasons=reasons or [],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr( ItinerarySaveResultBuilder, 'save_result', save_result )
+
+
+def _stub_listed_schedule_flow(
+      monkeypatch: pytest.MonkeyPatch,
+      *,
+      saved_itinerary: SavedItinerary = SAVED_ITINERARY,
+      default_duration_seconds: int = 8 * 60,
+      committed_times: list[ tuple[ str, str ] ] | None = None,
+      ) -> None:
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=VISIT_WINDOW,
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=ZOO_HOURS )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleTargetResolver.resolve',
+      lambda conn, schedule_item_key: ListedScheduleTarget(
+         default_duration_seconds=default_duration_seconds ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+
+   if committed_times is None:
+      committed_times = []
+
+   def commit(
+         conn: sqlite3.Connection,
+         *,
+         schedule_item_key: AnimalScheduleItemKey,
+         start_time: str,
+         end_time: str,
+         insert_if_missing: bool,
+         itinerary_context: dict[ str, object ] ) -> ItinerarySaveResult:
+      committed_times.append( ( start_time, end_time ) )
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleItemPersister.commit',
+      commit )
+
+
+def Test_Schedule_TestHonorsRequestedStartTime_ExpectExplicitStart(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   committed_times: list[ tuple[ str, str ] ] = []
+   _stub_listed_schedule_flow( monkeypatch, committed_times=committed_times )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time='10:00', duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert committed_times == [ ( '10:00 AM', '10:08 AM' ) ]
+
+
+def Test_Schedule_TestHonorsRequestedDuration_ExpectExplicitEnd(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   committed_times: list[ tuple[ str, str ] ] = []
+   _stub_listed_schedule_flow( monkeypatch, committed_times=committed_times )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time='10:00', duration_minutes=20 ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert committed_times == [ ( '10:00 AM', '10:20 AM' ) ]
+
+
+def Test_Schedule_TestRejectedEarlyAdmissionStart_ExpectRequestedTimeNotAvailable(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _stub_listed_schedule_flow(
+      monkeypatch,
+      saved_itinerary=SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time=None,
+         departure_time='5:00 PM',
+         animal_rows=SAVED_ITINERARY.animal_rows,
+      ) )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time='09:00', duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+
+
+def Test_Schedule_TestAlreadyScheduledAnimal_ExpectItemAlreadyScheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _stub_listed_schedule_flow(
+      monkeypatch,
+      saved_itinerary=SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:30 AM',
+         departure_time='5:00 PM',
+         animal_rows=[
+            ItineraryAnimalRecord(
+               species='African Lion',
+               exhibit='Africa Savanna',
+               new_likelihood=100,
+               start_time='10:00 AM',
+               end_time='10:08 AM',
+            ),
+         ],
+      ) )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
