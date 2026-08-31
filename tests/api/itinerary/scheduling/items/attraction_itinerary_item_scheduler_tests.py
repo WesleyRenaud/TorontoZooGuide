@@ -7,6 +7,7 @@ import pytest
 
 from api.attractions.scheduling.attraction_hours_schedule_adjustment import AttractionHoursScheduleAdjustment
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
+from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
@@ -16,6 +17,7 @@ from api.itinerary.scheduling.items.attraction_itinerary_item_scheduler import A
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.models import Animal
 from api.shared.enums import ItineraryErrorType
 from api.shared.operating_hours import OperatingHours
 
@@ -257,3 +259,207 @@ def Test_Schedule_TestDefaultTimeAtAttractionOpen_ExpectOpenStart(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert committed_times == [ ( '12:00 PM', '1:00 PM' ) ]
+
+
+def Test_Schedule_TestDefaultTimeAfterPriorAnimal_ExpectAttractionOpenStart(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   zoo_hours = OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' )
+   assert zoo_hours is not None
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+      attraction_rows=SAVED_ITINERARY.attraction_rows,
+   )
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=( zoo_hours.open_seconds, zoo_hours.close_seconds ),
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=zoo_hours )
+   committed_times: list[ tuple[ str, str ] ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction_name, *, visit_date, zoo_operating_hours: WEEKEND_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOrTransportationDurationResolver.default_seconds',
+      lambda conn, attraction_name: 60 * 60 )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
+      lambda *args, **kwargs: 10 * 3600 + 8 * 60 )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.build(
+         date='2026-06-20',
+         selected_exhibits=[],
+         animals=[
+            Animal(
+               species='African Lion',
+               exhibit='Africa Savanna',
+               start_time='10:00 AM',
+               end_time='10:08 AM' ),
+         ],
+         attractions=[],
+         transportations=[],
+         transportation_stations=[],
+         guardians_talks=[],
+         wild_encounters=[],
+         events=[],
+         arrival_time='9:30 AM',
+         departure_time='5:00 PM' ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: prepared_window )
+
+   def commit(
+         conn: sqlite3.Connection,
+         *,
+         schedule_item_key: AttractionScheduleItemKey,
+         start_time: str,
+         end_time: str,
+         insert_if_missing: bool,
+         itinerary_context: dict[ str, object ] ) -> ItinerarySaveResult:
+      committed_times.append( ( start_time, end_time ) )
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.commit',
+      commit )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert committed_times == [ ( '12:00 PM', '1:00 PM' ) ]
+
+
+def Test_Schedule_TestShortVisitWindow_ExpectSlotAfterPriorAnimal(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   short_visit_window = ( 12 * 3600, 12 * 3600 + 30 * 60 )
+   day_hours_window = ( 9 * 3600 + 30 * 60, 17 * 3600 )
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='12:00 PM',
+      departure_time='12:30 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='12:00 PM',
+            end_time='12:08 PM',
+         ),
+      ],
+      attraction_rows=SAVED_ITINERARY.attraction_rows,
+   )
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=short_visit_window,
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
+   committed_times: list[ tuple[ str, str ] ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction_name, *, visit_date, zoo_operating_hours: WEEKEND_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOrTransportationDurationResolver.default_seconds',
+      lambda conn, attraction_name: 60 * 60 )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
+      lambda *args, **kwargs: 12 * 3600 )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.build(
+         date='2026-06-20',
+         selected_exhibits=[],
+         animals=[
+            Animal(
+               species='African Lion',
+               exhibit='Africa Savanna',
+               start_time='12:00 PM',
+               end_time='12:08 PM' ),
+         ],
+         attractions=[],
+         transportations=[],
+         transportation_stations=[],
+         guardians_talks=[],
+         wild_encounters=[],
+         events=[],
+         arrival_time='12:00 PM',
+         departure_time='12:30 PM' ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: type(
+         'Prepared',
+         (),
+         { 'window': day_hours_window },
+      )() )
+
+   def commit(
+         conn: sqlite3.Connection,
+         *,
+         schedule_item_key: AttractionScheduleItemKey,
+         start_time: str,
+         end_time: str,
+         insert_if_missing: bool,
+         itinerary_context: dict[ str, object ] ) -> ItinerarySaveResult:
+      committed_times.append( ( start_time, end_time ) )
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.commit',
+      commit )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert committed_times == [ ( '12:30 PM', '1:30 PM' ) ]
