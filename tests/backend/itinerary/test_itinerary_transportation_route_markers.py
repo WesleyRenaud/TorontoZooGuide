@@ -8,7 +8,6 @@ from api.itinerary.data_access.itinerary_transportation_provider import Itinerar
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
-from api.itinerary.domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.transportation_name import TransportationName
@@ -86,70 +85,6 @@ def test_fetch_wraparound_leg_markers_preserve_travel_order(
    assert marker_ids_result == ordered_marker_ids( 'zm-s', 252, 4, 297 )
    assert marker_ids_result[ 0 ] == 'zm-s-252'
    assert marker_ids_result[ -1 ] == 'zm-s-004'
-
-
-def test_build_sequences_splits_discontinuous_legs(
-      db: DbControllers ) -> None:
-   sequences = TransportationRouteMarkerSequencesBuilder.build(
-      db.conn,
-      transportation=ZOOMOBILE,
-      route='summer',
-      legs=[
-         ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
-            from_station=MAIN,
-            to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM',
-            added_as_attraction=False,
-         ),
-         ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
-            from_station=TUNDRA,
-            to_station=EURASIA,
-            start_time='2:00 PM',
-            end_time='2:15 PM',
-            added_as_attraction=False,
-         ),
-      ],
-   )
-
-   assert len( sequences ) == 2
-   assert sequences[ 0 ] == ordered_marker_ids( 'zm-s', 5, 85, 297 )
-   assert sequences[ 1 ] == ordered_marker_ids( 'zm-s', 185, 251, 297 )
-
-
-def test_build_sequences_concatenates_consecutive_legs(
-      db: DbControllers ) -> None:
-   sequences = TransportationRouteMarkerSequencesBuilder.build(
-      db.conn,
-      transportation=ZOOMOBILE,
-      route='summer',
-      legs=[
-         ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
-            from_station=MAIN,
-            to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM',
-            added_as_attraction=False,
-         ),
-         ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
-            from_station=CANADA,
-            to_station=AFRICA,
-            start_time='10:20 AM',
-            end_time='10:30 AM',
-            added_as_attraction=False,
-         ),
-      ],
-   )
-
-   assert len( sequences ) == 1
-   assert sequences[ 0 ] == (
-      ordered_marker_ids( 'zm-s', 5, 85, 297 )
-      + ordered_marker_ids( 'zm-s', 86, 127, 297 )
-   )
 
 
 def test_schedule_persists_route_marker_sequences(

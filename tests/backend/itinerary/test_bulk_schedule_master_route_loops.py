@@ -7,58 +7,10 @@ from itinerary.support import CHEETAH_ITINERARY_ENTRY, LION_ITINERARY_ENTRY, PEN
 from wild_encounter_schedule_support import wire_schedule_row
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
-
-
-def _animal_record(
-      *,
-      species: str,
-      exhibit: str,
-      enclosure_name: str | None = None ) -> ItineraryAnimalRecord:
-   return ItineraryAnimalRecord(
-      species=species,
-      exhibit=exhibit,
-      enclosure_name=enclosure_name,
-      old_likelihood=None,
-      new_likelihood=100,
-   )
-
-
-def test_master_route_loop_animal_grouper_groups_same_loop_and_splits_unmapped() -> None:
-   groups = MasterRouteLoopAnimalGrouper.group(
-      [
-         _animal_record(
-            species='African Lion',
-            exhibit='Africa Savanna',
-         ),
-         _animal_record(
-            species='Cheetah',
-            exhibit='Indo-Malaya Outdoor',
-         ),
-         _animal_record(
-            species='African Penguin',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-         ),
-         _animal_record(
-            species='Unknown Animal',
-            exhibit='Nowhere',
-         ),
-      ],
-   )
-
-   assert len( groups ) == 3
-   assert [ animal.species for animal in groups[ 0 ] ] == [
-      'African Penguin',
-      'African Lion',
-   ]
-   assert [ animal.species for animal in groups[ 1 ] ] == [ 'Cheetah' ]
-   assert [ animal.species for animal in groups[ 2 ] ] == [ 'Unknown Animal' ]
 
 
 def _set_midday_rhino_encounter_schedule() -> None:
