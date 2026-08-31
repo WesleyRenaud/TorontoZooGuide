@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
+from api.shared.enums import ItineraryEventType
 
 
 VISIT_WINDOW_SCHEMA = """
@@ -173,3 +174,141 @@ def Test_ClearSchedulesOutside_TestOutsideAnimal_ExpectClearedAnimalOnly(
    assert encounter is not None
    assert encounter[ 'START_TIME' ] == '08:45 AM'
    assert encounter[ 'END_TIME' ] == '09:30 AM'
+
+
+@pytest.fixture
+def departure_window_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( VISIT_WINDOW_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'African Lion', 'Africa Savanna', '3:45 PM', '3:53 PM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'Cheetah', 'Africa Savanna', '4:30 PM', '4:38 PM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( 'Conservation Carousel', '4:00 PM', '4:08 PM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryEvent (
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( ItineraryEventType.LUNCH.value, '4:30 PM', '5:00 PM' ) )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+@pytest.fixture
+def arrival_window_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( VISIT_WINDOW_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryEvent (
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( ItineraryEventType.LUNCH.value, '9:00 AM', '9:30 AM' ) )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+def Test_ClearSchedulesOutside_TestAfterDepartureAnimal_ExpectClearedCheetahOnly(
+      departure_window_conn: sqlite3.Connection ) -> None:
+   ItineraryVisitWindowBuilder.clear_schedules_outside(
+      departure_window_conn,
+      arrival_time='09:30 AM',
+      departure_time='04:15 PM' )
+
+   lion = departure_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( 'African Lion', ),
+   ).fetchone()
+   cheetah = departure_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( 'Cheetah', ),
+   ).fetchone()
+   carousel = departure_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAttraction
+            WHERE ATTRACTION = ?;
+      """,
+      ( 'Conservation Carousel', ),
+   ).fetchone()
+   lunch_count = departure_window_conn.execute(
+      """   SELECT COUNT(*) AS COUNT
+            FROM ItineraryEvent
+            WHERE EVENT_TYPE = ?;
+      """,
+      ( ItineraryEventType.LUNCH.value, ),
+   ).fetchone()
+
+   assert lion is not None
+   assert lion[ 'START_TIME' ] == '3:45 PM'
+   assert cheetah is not None
+   assert cheetah[ 'START_TIME' ] is None
+   assert carousel is not None
+   assert carousel[ 'START_TIME' ] == '4:00 PM'
+   assert lunch_count is not None
+   assert lunch_count[ 'COUNT' ] == 0
+
+
+def Test_ClearSchedulesOutside_TestBeforeArrivalEvent_ExpectLunchDeleted(
+      arrival_window_conn: sqlite3.Connection ) -> None:
+   ItineraryVisitWindowBuilder.clear_schedules_outside(
+      arrival_window_conn,
+      arrival_time='10:15 AM',
+      departure_time='05:00 PM' )
+
+   lunch_count = arrival_window_conn.execute(
+      """   SELECT COUNT(*) AS COUNT
+            FROM ItineraryEvent
+            WHERE EVENT_TYPE = ?;
+      """,
+      ( ItineraryEventType.LUNCH.value, ),
+   ).fetchone()
+
+   assert lunch_count is not None
+   assert lunch_count[ 'COUNT' ] == 0
