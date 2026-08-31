@@ -7,12 +7,7 @@ from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_it
 from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
-from api.itinerary.warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
-from api.models import Animal
-from api.models import WildEncounter
-from api.shared.constants import Constants
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -40,57 +35,6 @@ def _set_encounter_schedule( encounter_name: str, *, encounter_time: str ) -> No
 def _set_rainforest_and_rhino_schedules() -> None:
    _set_encounter_schedule( WILD_ENCOUNTER, encounter_time='10:00' )
    _set_encounter_schedule( RHINO_ENCOUNTER, encounter_time='13:00' )
-
-
-def test_isolated_wild_encounters_detects_encounter_far_from_other_items() -> None:
-   itinerary = ItineraryBuilder.empty()
-   itinerary.animals = [
-      Animal(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         start_time='10:00 AM',
-         end_time='10:08 AM' ),
-   ]
-   itinerary.wild_encounters = [
-      WildEncounter(
-         name=WILD_ENCOUNTER,
-         meeting_spot='Wild Encounter - Africa Meeting Spot',
-         link='',
-         start_time='10:15 AM',
-         end_time='11:00 AM' ),
-      WildEncounter(
-         name=RHINO_ENCOUNTER,
-         meeting_spot='Wild Encounter - Penguin Meeting Spot',
-         link='',
-         start_time='1:00 PM',
-         end_time='1:45 PM' ),
-   ]
-
-   isolated = WildEncounterLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
-
-   assert [ encounter.name for encounter in isolated ] == [ RHINO_ENCOUNTER ]
-   assert Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
-
-
-def test_isolated_wild_encounters_ignores_encounter_near_other_items() -> None:
-   itinerary = ItineraryBuilder.empty()
-   itinerary.animals = [
-      Animal(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         start_time='10:00 AM',
-         end_time='10:08 AM' ),
-   ]
-   itinerary.wild_encounters = [
-      WildEncounter(
-         name=WILD_ENCOUNTER,
-         meeting_spot='Wild Encounter - Africa Meeting Spot',
-         link='',
-         start_time='10:15 AM',
-         end_time='11:00 AM' ),
-   ]
-
-   assert WildEncounterLongWaitWarningBuilder.isolated_from_itinerary( itinerary ) == []
 
 
 def test_set_itinerary_warns_when_encounter_is_far_from_other_scheduled_encounter(

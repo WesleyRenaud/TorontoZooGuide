@@ -3,80 +3,15 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
+from wild_encounter_schedule_support import wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
-from api.models import GuardiansTalk
-from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 from conftest import DbControllers
-
-
-def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> None:
-   day_schedule = [
-      GuardiansTalk(
-         name='African Lion',
-         location='Africa Savanna',
-         x_coord=51.138,
-         y_coord=41.279,
-         start_time='10:00 AM',
-         maximum_duration=30,
-         is_available=True ),
-   ]
-
-   result = GuardiansTalkItineraryValidator.validate_for_itinerary(
-      guardians_talks_to_include=[
-         ItineraryGuardiansTalkInput( name='African Lion', start_time='10:00' ),
-         ItineraryGuardiansTalkInput( name='Amur Tiger', start_time='10:00' ),
-      ],
-      day_schedule=day_schedule )
-
-   assert [
-      ( d.name, d.is_deleted, d.start_time, d.end_time )
-      for d in result
-   ] == [
-      ( 'African Lion', False, '10:00', '10:30 AM' ),
-      ( 'Amur Tiger', True, '10:00', None ),
-   ]
-
-
-def test_validate_wild_encounters_splits_available_and_unavailable_entries() -> None:
-   day_schedule = [
-      WildEncounter(
-         name='Kangaroo',
-         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
-         link='https://www.torontozoo.com/tickets/wekangaroo',
-         start_time='1:00 PM',
-         maximum_duration=45,
-         is_available=True ),
-      WildEncounter(
-         name='African Rainforest',
-         meeting_spot='Wild Encounter - Africa Meeting Spot',
-         link='https://www.torontozoo.com/tickets/weafricarainforest',
-         start_time='2:00 PM',
-         maximum_duration=45,
-         is_available=False,
-         unavailable_message='Unavailable.' ),
-   ]
-
-   result = WildEncounterItineraryValidator.validate_for_itinerary(
-      wild_encounters_to_include=[
-         WildEncounterScheduleItemKey( name='African Rainforest', start_time='14:00' ),
-         WildEncounterScheduleItemKey( name='Kangaroo', start_time='13:00' ),
-      ],
-      day_schedule=day_schedule )
-
-   assert [
-      ( d.name, d.is_deleted, d.start_time, d.end_time )
-      for d in result
-   ] == [
-      ( 'African Rainforest', True, '2:00 PM', '2:45 PM' ),
-      ( 'Kangaroo', False, '1:00 PM', '1:45 PM' ),
-   ]
 
 
 def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(

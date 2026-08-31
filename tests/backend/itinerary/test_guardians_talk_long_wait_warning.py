@@ -8,14 +8,7 @@ from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_row
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
-from api.itinerary.scheduling.core.time_block import TimeBlock
-from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
-from api.itinerary.warnings.guardians_talk_long_wait_warning_builder import GuardiansTalkLongWaitWarningBuilder
-from api.models import Animal
-from api.models import GuardiansTalk
-from api.shared.constants import Constants
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
@@ -55,70 +48,6 @@ def _set_zebra_and_meerkat_schedules() -> None:
       MEERKAT_TALK,
       location='African Rainforest Pavilion',
       talk_time='13:00' )
-
-
-def test_time_block_gap_seconds_between_non_overlapping_blocks() -> None:
-   morning = TimeBlock( start_seconds=9 * 3600, end_seconds=9 * 3600 + 30 * 60 )
-   afternoon = TimeBlock(
-      start_seconds=11 * 3600,
-      end_seconds=11 * 3600 + 30 * 60 )
-
-   assert TimeBlockBuilder.gap_seconds( morning, afternoon ) == 90 * 60
-   assert TimeBlockBuilder.gap_seconds( afternoon, morning ) == 90 * 60
-
-
-def test_isolated_guardians_talks_detects_talk_far_from_other_items() -> None:
-   itinerary = ItineraryBuilder.empty()
-   itinerary.animals = [
-      Animal(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         start_time='10:00 AM',
-         end_time='10:08 AM' ),
-   ]
-   itinerary.guardians_talks = [
-      GuardiansTalk(
-         name=ZEBRA_TALK,
-         location='Africa Savanna',
-         x_coord=0.0,
-         y_coord=0.0,
-         start_time='10:15 AM',
-         end_time='10:45 AM' ),
-      GuardiansTalk(
-         name=MEERKAT_TALK,
-         location='African Rainforest Pavilion',
-         x_coord=0.0,
-         y_coord=0.0,
-         start_time='1:00 PM',
-         end_time='1:30 PM' ),
-   ]
-
-   isolated = GuardiansTalkLongWaitWarningBuilder.isolated_from_itinerary( itinerary )
-
-   assert [ talk.name for talk in isolated ] == [ MEERKAT_TALK ]
-   assert Constants.MAX_FIXED_TIME_ITEM_WAIT_MINUTES == 30
-
-
-def test_isolated_guardians_talks_ignores_talk_near_other_items() -> None:
-   itinerary = ItineraryBuilder.empty()
-   itinerary.animals = [
-      Animal(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         start_time='10:00 AM',
-         end_time='10:08 AM' ),
-   ]
-   itinerary.guardians_talks = [
-      GuardiansTalk(
-         name=ZEBRA_TALK,
-         location='Africa Savanna',
-         x_coord=0.0,
-         y_coord=0.0,
-         start_time='10:15 AM',
-         end_time='10:45 AM' ),
-   ]
-
-   assert GuardiansTalkLongWaitWarningBuilder.isolated_from_itinerary( itinerary ) == []
 
 
 def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(

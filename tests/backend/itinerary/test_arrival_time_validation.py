@@ -3,54 +3,11 @@ from __future__ import annotations
 from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.scheduling.core.guest_item_schedule_status_checker import GuestItemScheduleStatusChecker
-from api.itinerary.validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
-from api.itinerary.validation.itinerary_schedule_time_order_validator import ItineraryScheduleTimeOrderValidator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
-from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from conftest import DbControllers
-
-
-def test_arrival_time_is_valid_for_zoo_hours(
-      db: DbControllers ) -> None:
-   conn = db.conn
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record( conn, ItineraryProvider.fetch_itinerary_date( conn ) )
-
-   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
-      '09:00',
-      zoo_hours_record,
-      departure_time='17:00' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
-      '17:00',
-      zoo_hours_record,
-      departure_time='17:00' ) == ItineraryErrorType.TIME_ORDER_INVALID
-   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
-      '10:00',
-      zoo_hours_record,
-      departure_time='17:00' ) == ItineraryErrorType.SUCCESS
-   assert ItineraryArrivalTimeValidator.validate_for_zoo_hours(
-      '10:00',
-      zoo_hours_record,
-      departure_time=None ) == ItineraryErrorType.SUCCESS
-
-
-def test_departure_follows_arrival_when_other_time_is_unset() -> None:
-   assert ItineraryScheduleTimeOrderValidator.departure_follows_arrival( '10:00', None )
-   assert ItineraryScheduleTimeOrderValidator.departure_follows_arrival( None, '17:00' )
 
 
 def test_set_arrival_time_returns_validation_error_types(
