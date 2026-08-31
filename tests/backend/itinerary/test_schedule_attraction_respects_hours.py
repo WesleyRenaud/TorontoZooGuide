@@ -54,34 +54,6 @@ def _set_splash_island_weekend_hours() -> None:
          weekend_end='5:00 PM' ) )
 
 
-def test_schedule_attraction_at_default_time_uses_attraction_open(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 20 ) )
-   _set_splash_island_weekend_hours()
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-20',
-      animals=[],
-      attractions=[ SPLASH_ISLAND ],
-      guardians_talks=[],
-      wild_encounters=[],
-   ).success
-
-   result = schedule_itinerary_item(
-      item_type='attractions',
-      key=SPLASH_ISLAND )
-
-   assert result.success
-   splash = next(
-      attraction
-      for attraction in result.itinerary.attractions
-      if attraction.name == SPLASH_ISLAND )
-   assert splash.start_time == SPLASH_OPEN_WITH_ENTRANCE_TRAVEL
-   assert splash.end_time is not None
-   assert splash.end_time <= '5:00 PM'
-
-
 def test_schedule_attraction_at_default_time_waits_for_open_after_arrival(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

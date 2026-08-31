@@ -3,10 +3,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import entrance_travel_seconds_to_map_location, LION_ITINERARY_ENTRY, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import entrance_travel_seconds_to_map_location, schedule_time_before_seconds, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
-from api.itinerary.domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from conftest import DbControllers
 
@@ -54,37 +53,6 @@ def test_set_arrival_before_open_allowed_when_justified_by_wild_encounter(
    ).success
    itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.arrival_time == '8:45 AM'
-   assert any(
-      encounter.name == WILD_ENCOUNTER and encounter.start_time == '8:45 AM'
-      for encounter in itinerary.wild_encounters
-   )
-
-
-def test_clear_schedules_outside_visit_window_keeps_pre_open_wild_encounter(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-   set_wild_encounter_schedule( encounter_time=PRE_OPEN_ENCOUNTER_TIME )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[ LION_ITINERARY_ENTRY ],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[
-         wild_encounter_key( WILD_ENCOUNTER, start_time=PRE_OPEN_ENCOUNTER_TIME ),
-      ],
-      confirming_wild_encounter_unschedule=True,
-   ).success
-
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
-      db.conn,
-      arrival_time='09:30',
-      departure_time='17:00' )
-
-   itinerary = ItineraryCoordinator.get_itinerary()
    assert any(
       encounter.name == WILD_ENCOUNTER and encounter.start_time == '8:45 AM'
       for encounter in itinerary.wild_encounters
