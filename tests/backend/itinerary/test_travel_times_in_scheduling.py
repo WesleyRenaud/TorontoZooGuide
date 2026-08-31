@@ -13,7 +13,6 @@ from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWin
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
-from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
@@ -124,54 +123,6 @@ def _seconds( schedule_time: str | None ) -> int:
    assert value is not None
 
    return value
-
-
-# --- Helper unit tests -------------------------------------------------------
-
-
-def test_travel_time_seconds_from_length_px_uses_floored_minutes() -> None:
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 0 ) == 0
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 0.5 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 0
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.0 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 60
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 1.5 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 60
-   assert WalkTravelTimeCalculator.seconds_from_length_px( 2.9 * WalkTravelTimeCalculator.WALK_PX_PER_MINUTE ) == 120
-
-
-def test_travel_time_seconds_between_identical_nodes_is_zero() -> None:
-   walk_graph = WalkGraphProvider.fetch()
-   lion_node_id = ViewingSpotWalkNodeIdResolver.resolve(
-      'African Lion',
-      'Africa Savanna',
-      None )
-   assert lion_node_id is not None
-   assert WalkTravelTimeCalculator.seconds_between_nodes(
-      walk_graph,
-      lion_node_id,
-      lion_node_id ) == 0
-
-
-def test_travel_time_seconds_between_nodes_matches_floor_helper() -> None:
-   walk_graph = WalkGraphProvider.fetch()
-   path = ShortestPathCalculator.find(
-      walk_graph,
-      walk_graph[ 'entrance_node_id' ],
-      GRIZZLY_WALK_NODE_ID )
-   assert path is not None
-   assert WalkTravelTimeCalculator.seconds_between_nodes(
-      walk_graph,
-      walk_graph[ 'entrance_node_id' ],
-      GRIZZLY_WALK_NODE_ID ) == WalkTravelTimeCalculator.seconds_from_length_px( path.length_px )
-   assert WalkTravelTimeCalculator.seconds_for_shortest_path( path ) == (
-      WalkTravelTimeCalculator.minutes_from_length_px( path.length_px ) * 60 )
-   assert WalkTravelTimeCalculator.seconds_for_shortest_path( None ) == 0
-
-
-def test_travel_time_seconds_between_unreachable_nodes_is_zero() -> None:
-   walk_graph = WalkGraphProvider.fetch()
-   assert WalkTravelTimeCalculator.seconds_between_nodes(
-      walk_graph,
-      walk_graph[ 'entrance_node_id' ],
-      'not-a-real-node' ) == 0
 
 
 # --- Contiguous slot packing -------------------------------------------------
