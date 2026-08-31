@@ -30,6 +30,56 @@ def Test_Build_TestOverlappingWithoutOverride_ExpectConflictResult() -> None:
    assert len( result.reasons ) == 1
 
 
+def Test_Build_TestOverlappingWithoutOverride_ExpectFullIssueDict() -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:30 PM',
+      location='Africa Savanna' )
+   encounter = WildEncounterDiff(
+      name='African Rainforest',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM',
+      meeting_spot='Wild Encounter - Africa Meeting Spot',
+      link='https://www.torontozoo.com/tickets/weafricarainforest' )
+
+   result = ItineraryScheduleTimeConflictWarningBuilder.build(
+      [ talk ],
+      [ encounter ],
+      ItineraryBuilder.empty(),
+      overriding_conflicting_guardians_talks=False )
+
+   assert result is not None
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert [ issue.to_dict() for issue in result.reasons ] == [
+      {
+         'code': 'wildEncounterTimeConflict',
+         'items': [
+            {
+               'name': 'African Lion',
+               'start_time': '2:00 PM',
+               'end_time': '2:30 PM',
+               'item_type': 'guardiansTalk',
+               'meeting_spot': '',
+               'location': 'Africa Savanna',
+               'link': '',
+            },
+            {
+               'name': 'African Rainforest',
+               'start_time': '2:00 PM',
+               'end_time': '2:45 PM',
+               'item_type': 'wildEncounter',
+               'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
+               'location': '',
+               'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
+            },
+         ],
+      },
+   ]
+
+
 def Test_Build_TestOverlappingWithOverride_ExpectNone() -> None:
    talk = GuardiansTalkDiff(
       name="Grevy's Zebra",

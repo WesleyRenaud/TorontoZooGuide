@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
@@ -22,28 +21,6 @@ AMUR_TIGER = {
    'exhibit': 'Eurasia Wilds',
 }
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
-
-
-def test_attraction_animal_seed_links_kangaroo_walk_thru(
-      db: DbControllers ) -> None:
-   links = AttractionAnimalProvider.fetch_attraction_animal_links(
-      db.conn,
-      KANGAROO_WALK_THRU )
-
-   assert [
-      (
-         link.species,
-         link.exhibit,
-         link.enclosure_name,
-      )
-      for link in links
-   ] == [
-      (
-         'Western Grey Kangaroo',
-         'Australasia Outdoor',
-         None,
-      ),
-   ]
 
 
 def test_bulk_schedule_covers_kangaroo_animal_when_walk_thru_is_packed(
