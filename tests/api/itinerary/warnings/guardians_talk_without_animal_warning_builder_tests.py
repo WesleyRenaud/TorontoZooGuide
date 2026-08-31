@@ -3,6 +3,8 @@ from __future__ import annotations
 import pytest
 
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
+from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
@@ -70,6 +72,46 @@ def Test_IsRequiredForTalk_TestDeletedTalk_ExpectFalse(
       [],
       None,
       confirming_guardians_talk_without_animal=False )
+
+
+def Test_NewlyAddedWithoutMatchingAnimal_TestSavedTalk_ExpectEmpty(
+      stub_guardians_talk_animal_links: None ) -> None:
+   missing = GuardiansTalkWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
+      _validated_itinerary(
+         guardians_talks=[
+            GuardiansTalkDiff(
+               name=LION_TALK,
+               is_deleted=False,
+               location='Africa Savanna' ),
+         ] ),
+      None,
+      saved_itinerary=SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time='9:30 AM',
+         departure_time='5:00 PM',
+         guardians_talk_rows=[
+            ItineraryGuardiansTalkRecord(
+               talk_name=LION_TALK,
+               start_time='10:00 AM',
+               end_time='10:30 AM',
+               is_deleted=False ),
+         ] ) )
+
+   assert missing == []
+
+
+def Test_IsRequired_TestConfirmingFlag_ExpectFalse(
+      stub_guardians_talk_animal_links: None ) -> None:
+   assert not GuardiansTalkWithoutAnimalWarningBuilder.is_required(
+      _validated_itinerary(
+         guardians_talks=[
+            GuardiansTalkDiff(
+               name=LION_TALK,
+               is_deleted=False,
+               location='Africa Savanna' ),
+         ] ),
+      None,
+      confirming_guardians_talk_without_animal=True )
 
 
 def Test_BuildIssueFromTalks_TestTalkWithoutAnimal_ExpectWithoutAnimalIssue() -> None:

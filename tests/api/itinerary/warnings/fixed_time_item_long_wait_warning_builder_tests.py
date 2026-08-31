@@ -143,3 +143,37 @@ def Test_BuildWildEncounterIssueFromEncounters_TestEncounters_ExpectLongWaitIssu
 
    assert issue.code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert [ item.name for item in issue.items ] == [ 'African Rainforest' ]
+
+
+def Test_ReasonsFromItinerary_TestIsolatedTalk_ExpectLongWaitReason() -> None:
+   itinerary = ItineraryBuilder.empty()
+   itinerary.animals = [
+      Animal(
+         species='African Lion',
+         exhibit='Africa Savanna',
+         start_time='10:00 AM',
+         end_time='10:08 AM' ),
+   ]
+   itinerary.guardians_talks = [
+      GuardiansTalk(
+         name="Grevy's Zebra",
+         location='Africa Savanna',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='10:15 AM',
+         end_time='10:45 AM' ),
+      GuardiansTalk(
+         name='Slender-Tailed Meerkat',
+         location='African Rainforest Pavilion',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='1:00 PM',
+         end_time='1:30 PM' ),
+   ]
+
+   reasons = FixedTimeItemLongWaitWarningBuilder.reasons_from_itinerary( itinerary )
+
+   assert len( reasons ) == 1
+   assert reasons[ 0 ].code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+   assert { item.name for item in reasons[ 0 ].items } == { 'Slender-Tailed Meerkat' }
+
