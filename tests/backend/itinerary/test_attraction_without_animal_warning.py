@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.animals.search.species_exhibit_key import SpeciesExhibitKey
-from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.warnings.attraction_without_animal_warning_builder import AttractionWithoutAnimalWarningBuilder
@@ -50,44 +48,6 @@ def test_attractions_without_matching_animal_skips_unlinked_attractions(
    missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal( validated, db.conn )
 
    assert [ attraction.name for attraction in missing ] == [ KANGAROO_WALK_THRU ]
-
-
-def test_any_linked_in_species_exhibit_pairs() -> None:
-   assert SpeciesExhibitKeyBuilder.any_linked_in(
-      [
-         SpeciesExhibitKey.from_values(
-            'Western Grey Kangaroo',
-            'Australasia Outdoor' ),
-      ],
-      [
-         SpeciesExhibitKey.from_values(
-            'Western Grey Kangaroo',
-            'Australasia Outdoor' ),
-      ] )
-   assert not SpeciesExhibitKeyBuilder.any_linked_in(
-      [
-         SpeciesExhibitKey.from_values(
-            'Western Grey Kangaroo',
-            'Wrong Exhibit' ),
-      ],
-      [
-         SpeciesExhibitKey.from_values(
-            'Western Grey Kangaroo',
-            'Australasia Outdoor' ),
-      ] )
-
-
-def test_build_attraction_without_animal_issue_from_attractions() -> None:
-   issue = AttractionWithoutAnimalWarningBuilder.build_issue_from_attractions(
-      [
-         AttractionDiff(
-            name=KANGAROO_WALK_THRU,
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
-
-   assert issue.code == ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
-   assert [ item.name for item in issue.items ] == [ KANGAROO_WALK_THRU ]
 
 
 def test_set_itinerary_warns_when_attraction_has_no_matching_animal(

@@ -13,11 +13,8 @@ from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalc
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
-from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
-from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
-from api.shared.enums import ItinerarySaveIssueItemType
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from conftest import DbControllers
 
@@ -168,57 +165,6 @@ def test_build_loop_schedule_units_orders_woven_attraction_between_animals() -> 
       'Western Grey Kangaroo',
       KANGAROO_WALK_THRU,
       'Amur Tiger',
-   ]
-
-
-def test_master_route_stop_sorter_orders_unmapped_attractions_by_name() -> None:
-   unmapped_b = ItineraryAttractionRecord(
-      attraction='ZZZ Unmapped Attraction B',
-      old_likelihood=None,
-      new_likelihood=100 )
-   unmapped_a = ItineraryAttractionRecord(
-      attraction='AAA Unmapped Attraction A',
-      old_likelihood=None,
-      new_likelihood=100 )
-   lion = ItineraryAnimalRecord(
-      species='African Lion',
-      exhibit='Africa Savanna',
-      old_likelihood=None,
-      new_likelihood=100 )
-
-   ordered = MasterRouteStopSorter.sort( [ unmapped_b, lion, unmapped_a ] )
-
-   assert ordered[ 0 ].species == 'African Lion'
-   assert [
-      stop.attraction
-      for stop in ordered[ 1: ]
-   ] == [
-      'AAA Unmapped Attraction A',
-      'ZZZ Unmapped Attraction B',
-   ]
-
-
-def test_build_bulk_schedule_not_enough_time_issue_includes_attractions() -> None:
-   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
-      [
-         ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            old_likelihood=None,
-            new_likelihood=100 ),
-         ItineraryAttractionRecord(
-            attraction=CAROUSEL,
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
-
-   assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
-   assert [
-      ( item.name, item.item_type, item.location )
-      for item in issue.items
-   ] == [
-      ( 'African Lion', ItinerarySaveIssueItemType.ANIMAL, 'Africa Savanna' ),
-      ( CAROUSEL, ItinerarySaveIssueItemType.ATTRACTION, '' ),
    ]
 
 

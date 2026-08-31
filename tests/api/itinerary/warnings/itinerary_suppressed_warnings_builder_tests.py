@@ -1,15 +1,26 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from api.models import Itinerary
 from api.shared.enums import ItineraryErrorType
-from conftest import DbControllers
 
 
-def test_append_suppressed_warning_skips_duplicates() -> None:
+@pytest.fixture
+def stub_suppressed_status_provider( monkeypatch: pytest.MonkeyPatch ) -> None:
+   suppressed = { ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE }
+
+   monkeypatch.setattr(
+      ItineraryStatusProvider,
+      'is_itinerary_error_suppressed',
+      lambda _conn, error_type: error_type in suppressed )
+
+
+def Test_AppendSuppressedWarning_TestDuplicate_ExpectSingleEntry() -> None:
    suppressed_warnings: list[ ItineraryErrorType ] = []
 
    ItinerarySuppressedWarningsBuilder.append_suppressed_warning(
@@ -22,34 +33,29 @@ def test_append_suppressed_warning_skips_duplicates() -> None:
    assert suppressed_warnings == [ ItineraryErrorType.ITEM_NOT_ON_ITINERARY ]
 
 
-def test_record_if_error_suppressed_tracks_only_suppressed_types(
-      db: DbControllers ) -> None:
-   assert db.conn is not None
+def Test_RecordIfErrorSuppressed_TestOnlySuppressedTypes_ExpectTracked(
+      stub_suppressed_status_provider: None ) -> None:
    suppressed_warnings: list[ ItineraryErrorType ] = []
 
    assert not ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
-      db.conn,
+      object(),  # type: ignore[arg-type]
       suppressed_warnings,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-   ItineraryStatusProvider.suppress_itinerary_status(
-      db.conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
 
    assert ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
-      db.conn,
+      object(),  # type: ignore[arg-type]
       suppressed_warnings,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
    assert suppressed_warnings == [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
 
 
-def test_with_suppressed_warnings_returns_original_when_empty() -> None:
+def Test_WithSuppressedWarnings_TestEmpty_ExpectOriginalResult() -> None:
    result = ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
    assert ItinerarySuppressedWarningsBuilder.with_suppressed_warnings( result, () ) is result
 
 
-def test_with_suppressed_warnings_merges_unique_warning_types() -> None:
+def Test_WithSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
    result = ItinerarySaveResult(
       itinerary=Itinerary( date='2026-06-15' ),
       suppressed_warnings=( ItineraryErrorType.ITEM_NOT_ON_ITINERARY, ) )
@@ -67,13 +73,15 @@ def test_with_suppressed_warnings_merges_unique_warning_types() -> None:
    ]
 
 
-def test_with_time_set_suppressed_warnings_returns_original_when_empty() -> None:
+def Test_WithTimeSetSuppressedWarnings_TestEmpty_ExpectOriginalResult() -> None:
    result = ItineraryTimeSetResult()
 
-   assert ItinerarySuppressedWarningsBuilder.with_time_set_suppressed_warnings( result, () ) is result
+   assert ItinerarySuppressedWarningsBuilder.with_time_set_suppressed_warnings(
+      result,
+      () ) is result
 
 
-def test_with_time_set_suppressed_warnings_merges_unique_warning_types() -> None:
+def Test_WithTimeSetSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
    result = ItineraryTimeSetResult(
       suppressed_warnings=( ItineraryErrorType.ITEM_NOT_ON_ITINERARY, ) )
 

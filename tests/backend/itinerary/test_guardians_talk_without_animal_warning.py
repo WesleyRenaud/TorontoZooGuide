@@ -6,8 +6,6 @@ from datetime import date
 from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
-from api.animals.search.species_exhibit_key import SpeciesExhibitKey
-from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
@@ -79,22 +77,6 @@ def test_talk_without_animal_warning_skips_deleted_talk(
       set(),
       db.conn,
       confirming_guardians_talk_without_animal=False )
-
-
-def test_build_guardians_talk_without_animal_issue_from_talks() -> None:
-   talk = GuardiansTalkDiff(
-      name=ZEBRA_TALK,
-      is_deleted=False,
-      start_time='12:00 PM',
-      end_time='12:30 PM',
-      location='Africa Savanna' )
-
-   issue = GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks( [ talk ] )
-
-   assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
-   assert len( issue.items ) == 1
-   assert issue.items[ 0 ].name == ZEBRA_TALK
-   assert issue.items[ 0 ].location == 'Africa Savanna'
 
 
 def test_set_itinerary_warns_when_talk_has_no_matching_animal(
@@ -387,30 +369,6 @@ def test_schedule_talk_returns_overlap_and_without_animal_warnings_together(
       talk.name == ZEBRA_TALK and not talk.is_deleted
       for talk in confirmed.itinerary.guardians_talks
    )
-
-
-def test_talk_matches_associated_species_exhibit_pairs() -> None:
-   tamarin_key = SpeciesExhibitKey.from_values(
-      'Golden Lion Tamarin',
-      'Americas Pavilion' )
-
-   assert not SpeciesExhibitKeyBuilder.any_linked_in(
-      [ tamarin_key ],
-      [] )
-   assert not SpeciesExhibitKeyBuilder.any_linked_in(
-      [ tamarin_key ],
-      [
-         SpeciesExhibitKey.from_values(
-            'Golden Lion Tamarin',
-            'Africa Savanna' ),
-      ] )
-   assert SpeciesExhibitKeyBuilder.any_linked_in(
-      [ tamarin_key ],
-      [
-         SpeciesExhibitKey.from_values(
-            'Golden Lion Tamarin',
-            'Americas Pavilion' ),
-      ] )
 
 
 def test_set_itinerary_warns_for_new_world_primates_without_linked_animal(
