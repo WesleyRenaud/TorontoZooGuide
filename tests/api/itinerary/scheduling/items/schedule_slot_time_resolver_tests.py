@@ -148,3 +148,73 @@ def Test_ResolveAllowingVisitExtension_TestShortVisitWindow_ExpectEarlierSlot(
    assert error is None
    assert slot is not None
    assert slot[ 1 ] == '4:00 PM'
+
+
+def Test_ResolveAllowingVisitExtension_TestRequestedStartAfterDeparture_ExpectSlot(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+
+   visit_window = ( 9 * 3600 + 30 * 60, 12 * 3600 )
+   slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
+      schedule_conn,
+      SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time='9:30 AM',
+         departure_time='12:00 PM' ),
+      visit_window,
+      DURATION_SECONDS,
+      start_time='1:00 PM',
+      itinerary_context={},
+      day_hours_window=DAY_HOURS_WINDOW )
+
+   assert error is None
+   assert slot == ( '1:00 PM', '1:08 PM' )
+
+
+def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterVisitSlot(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   short_visit_window = ( 9 * 3600 + 30 * 60, 9 * 3600 + 38 * 60 )
+   blocked_itinerary = ItineraryBuilder.build(
+      date='2026-06-15',
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='9:30 AM',
+            end_time='9:38 AM' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='9:38 AM' )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: blocked_itinerary )
+
+   slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
+      schedule_conn,
+      SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time='9:30 AM',
+         departure_time='9:38 AM' ),
+      short_visit_window,
+      7 * 60,
+      start_time=None,
+      itinerary_context={},
+      day_hours_window=DAY_HOURS_WINDOW )
+
+   assert error is None
+   assert slot == ( '9:38 AM', '9:45 AM' )
