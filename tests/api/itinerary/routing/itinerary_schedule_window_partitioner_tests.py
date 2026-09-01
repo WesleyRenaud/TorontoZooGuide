@@ -8,6 +8,7 @@ from api.shared.enums import ScheduleItemKind
 
 ANCHOR_SECONDS = 9 * 60 * 60
 DAY_END_SECONDS = 17 * 60 * 60
+ARRIVAL_SECONDS = 11 * 60 * 60
 
 FIXED_ENCOUNTER_STOP = ItineraryStop(
    schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
@@ -252,4 +253,32 @@ def Test_Partition_TestTinyTourAndHyenaTalk_ExpectMiddleWindowForZoomobile() -> 
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
          start_walk_node_id='v-hyena' ),
+   ]
+
+
+def Test_Partition_TestCamelTalkAndEncounter_ExpectAfternoonWindowBetweenTalkAndEncounter() -> None:
+   windows = ItineraryScheduleWindowPartitioner.partition(
+      ARRIVAL_SECONDS,
+      DAY_END_SECONDS,
+      [ CAMEL_TALK_STOP, BACTRIAN_CAMELS_ENCOUNTER_STOP ] )
+
+   assert windows == [
+      ItineraryScheduleWindow(
+         start_seconds=ARRIVAL_SECONDS,
+         end_seconds=12 * 60 * 60 + 30 * 60,
+         anchor_stop=CAMEL_TALK_STOP,
+         opens_after_fixed_time_stop=False,
+         start_walk_node_id=None ),
+      ItineraryScheduleWindow(
+         start_seconds=13 * 60 * 60,
+         end_seconds=15 * 60 * 60 + 30 * 60,
+         anchor_stop=BACTRIAN_CAMELS_ENCOUNTER_STOP,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-0044' ),
+      ItineraryScheduleWindow(
+         start_seconds=16 * 60 * 60,
+         end_seconds=DAY_END_SECONDS,
+         anchor_stop=None,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-0100' ),
    ]
