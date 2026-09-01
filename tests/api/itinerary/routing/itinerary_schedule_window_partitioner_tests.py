@@ -46,6 +46,16 @@ CAMEL_TALK_STOP = ItineraryStop(
    end_time='1:00 PM',
 )
 
+BACTRIAN_CAMELS_ENCOUNTER_STOP = ItineraryStop(
+   schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+   item_key='Bactrian Camels',
+   walk_node_ids=[ 'v-0100' ],
+   meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+   is_fixed_time=True,
+   start_time='3:30 PM',
+   end_time='4:00 PM',
+)
+
 
 def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
    windows = ItineraryScheduleWindowPartitioner.partition(
@@ -110,4 +120,26 @@ def Test_Partition_TestAdjacentGuardiansTalks_ExpectWindowsBeforeZebraAndAfterCa
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
          start_walk_node_id='v-0044' ),
+   ]
+
+
+def Test_Partition_TestUnpinnedAfternoonEncounter_ExpectWindowBeforeEncounter() -> None:
+   windows = ItineraryScheduleWindowPartitioner.partition(
+      ANCHOR_SECONDS,
+      DAY_END_SECONDS,
+      [ BACTRIAN_CAMELS_ENCOUNTER_STOP ] )
+
+   assert windows == [
+      ItineraryScheduleWindow(
+         start_seconds=ANCHOR_SECONDS,
+         end_seconds=15 * 60 * 60 + 30 * 60,
+         anchor_stop=BACTRIAN_CAMELS_ENCOUNTER_STOP,
+         opens_after_fixed_time_stop=False,
+         start_walk_node_id=None ),
+      ItineraryScheduleWindow(
+         start_seconds=16 * 60 * 60,
+         end_seconds=DAY_END_SECONDS,
+         anchor_stop=None,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-0100' ),
    ]

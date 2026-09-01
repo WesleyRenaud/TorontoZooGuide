@@ -16,6 +16,8 @@ from api.wild_encounters.scheduling.wild_encounter_loop_schedule_pin_resolver im
 CANADIAN_DOMAIN_MEETING_SPOT = 'Wild Encounter - Canadian Domain Meeting Spot'
 MAYAN_TEMPLE_MEETING_SPOT = 'Wild Encounter - Mayan Temple Meeting Spot'
 PENGUIN_MEETING_SPOT = 'Wild Encounter - Penguin Meeting Spot'
+EURASIA_MEETING_SPOT = 'Wild Encounter - Eurasia Meeting Spot'
+BACTRIAN_CAMELS_ENCOUNTER = 'Bactrian Camels'
 CANADIAN_DOMAIN_SAVANNA_LOOP_ID = 'africa_savanna_canadian_domain'
 TUNDRA_TREK_MAYAN_TEMPLE_LOOP_ID = 'tundra_trek_mayan_temple'
 GRIZZLY_BEAR_ENCOUNTER = 'Grizzly Bear'
@@ -131,6 +133,27 @@ def Test_Resolve_TestUnpinnedMeetingSpot_ExpectNone(
          meeting_spot=PENGUIN_MEETING_SPOT,
          start_time='10:00 AM',
          end_time='10:45 AM' ),
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+
+
+def Test_Resolve_TestBactrianCamelsEurasiaMeetingSpot_ExpectNone(
+      stub_wild_encounter_loop_schedule_pin_resolver: None ) -> None:
+   wild_encounter = WildEncounter(
+      name=BACTRIAN_CAMELS_ENCOUNTER,
+      meeting_spot=EURASIA_MEETING_SPOT,
+      link='https://example.com',
+      x_coord=0.0,
+      y_coord=0.0,
+      start_time='3:30 PM',
+      end_time='4:00 PM' )
+
+   assert WildEncounterLoopSchedulePinResolver.resolve(
+      wild_encounter,
+      _wild_encounter_stop(
+         item_key=BACTRIAN_CAMELS_ENCOUNTER,
+         meeting_spot=EURASIA_MEETING_SPOT,
+         start_time='3:30 PM',
+         end_time='4:00 PM' ),
       meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
 
 

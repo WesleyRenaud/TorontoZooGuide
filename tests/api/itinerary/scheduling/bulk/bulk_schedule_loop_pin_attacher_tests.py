@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import pytest
+
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
+from api.models import WildEncounter
 from api.shared.enums import ScheduleItemKind
 
 
 ZEBRA_TALK = "Grevy's Zebra"
 CAMEL_TALK = 'Bactrian Camel'
 AFRICAN_LION_TALK = 'African Lion'
+BACTRIAN_CAMELS_ENCOUNTER = 'Bactrian Camels'
+EURASIA_MEETING_SPOT = 'Wild Encounter - Eurasia Meeting Spot'
 
 
 def _talk_loop_pin(
@@ -30,6 +36,17 @@ def _talk_loop_pin(
       start_seconds=start_seconds,
       end_seconds=end_seconds,
    )
+
+
+def _wild_encounter_stop( *, item_key: str ) -> ItineraryStop:
+   return ItineraryStop(
+      schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+      item_key=item_key,
+      walk_node_ids=( 'v-0100', ),
+      meeting_spot=EURASIA_MEETING_SPOT,
+      is_fixed_time=True,
+      start_time='3:30 PM',
+      end_time='4:00 PM' )
 
 
 def Test_KeepCompletable_TestPinWithoutPostTalkWindow_ExpectDropped() -> None:
@@ -150,3 +167,40 @@ def Test_AttachToWindows_TestAfricanLionTalk_ExpectPinOnBothWindows() -> None:
    assert len( attached_windows[ 0 ].loop_pins ) == 1
    assert len( attached_windows[ 1 ].loop_pins ) == 1
    assert attached_windows[ 0 ].loop_pins[ 0 ].stop.item_key == AFRICAN_LION_TALK
+
+
+def Test_SeparateBoundariesAndPins_TestUnpinnedWildEncounter_ExpectNoLoopPin(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   encounter_stop = _wild_encounter_stop( item_key=BACTRIAN_CAMELS_ENCOUNTER )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name=BACTRIAN_CAMELS_ENCOUNTER,
+            meeting_spot=EURASIA_MEETING_SPOT,
+            link='https://example.com',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='3:30 PM',
+            end_time='4:00 PM' ),
+      ],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='12:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ encounter_stop ] )
+
+   assert fixed_time_stops == [ encounter_stop ]
+   assert loop_pins == []
