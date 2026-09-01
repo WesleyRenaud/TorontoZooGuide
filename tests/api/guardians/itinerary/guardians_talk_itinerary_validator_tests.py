@@ -5,6 +5,9 @@ from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGu
 from api.models.guardians_talk import GuardiansTalk
 
 
+CARIBOU_TALK = 'Caribou'
+
+
 DAY_SCHEDULE = [
    GuardiansTalk(
       name='African Lion',
@@ -35,3 +38,21 @@ def Test_ValidateForItinerary_TestCaseInsensitiveNames_ExpectSortedMatches() -> 
       'African Lion',
       'Amur Tiger',
    ]
+
+
+def Test_ValidateForItinerary_TestTalkNotOnDaySchedule_ExpectDeletedDiff() -> None:
+   result = GuardiansTalkItineraryValidator.validate_for_itinerary(
+      [
+         ItineraryGuardiansTalkInput(
+            name=CARIBOU_TALK,
+            start_time='15:00',
+            end_time='15:30',
+         ),
+      ],
+      [] )
+
+   assert len( result ) == 1
+   assert result[ 0 ].name == CARIBOU_TALK
+   assert result[ 0 ].is_deleted is True
+   assert result[ 0 ].start_time == '15:00'
+   assert result[ 0 ].end_time == '15:30'

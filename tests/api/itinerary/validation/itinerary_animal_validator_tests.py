@@ -14,6 +14,8 @@ from api.shared.constants import Constants
 
 VISIT_DATE = date( 2026, 6, 15 )
 COLD_VISIT_DATE = date( 2026, 1, 15 )
+AFRICAN_RAINFOREST_PAVILION = 'African Rainforest Pavilion'
+ALDABRA_INDOOR_ENCLOSURE = 'Ring-Tailed Lemur Enclosure'
 
 
 def _animal(
@@ -300,3 +302,103 @@ def Test_ValidateOnDateChange_TestUnavailableHabitat_ExpectPreferredOutdoorSwap(
    assert len( giraffes ) == 1
    assert giraffes[ 0 ].enclosure_name == 'Outdoor'
    assert giraffes[ 0 ].is_added is False
+
+
+@pytest.fixture
+def stub_aldabra_habitat_swap_coordinator(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   def get_animals_for_saved_itinerary(
+         *,
+         day: int,
+         month: int | str,
+         year: int,
+         temp: float | None,
+         saved_animals: list[ ItineraryAnimalRecord ] ) -> list[ Animal ]:
+      if not saved_animals:
+         return []
+
+      enclosure_name = saved_animals[ 0 ].enclosure_name
+
+      if enclosure_name == 'Outdoor' and temp == 10:
+         return []
+
+      if enclosure_name == 'Outdoor':
+         return [
+            _animal(
+               species='Aldabra Tortoise',
+               exhibit=AFRICAN_RAINFOREST_PAVILION,
+               enclosure_name='Outdoor',
+               likelihood=100 ),
+         ]
+
+      return []
+
+   def get_animals_viewable_on_day(
+         *,
+         day: int,
+         month: int | str,
+         year: int,
+         temp: float | None,
+         include_off_display_animals: bool,
+         threshold: int | None = None,
+         exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
+      if not include_off_display_animals:
+         return []
+
+      return [
+         _animal(
+            species='Aldabra Tortoise',
+            exhibit=AFRICAN_RAINFOREST_PAVILION,
+            enclosure_name=ALDABRA_INDOOR_ENCLOSURE,
+            likelihood=100 ),
+      ]
+
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'get_animals_for_saved_itinerary',
+      get_animals_for_saved_itinerary )
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'get_animals_viewable_on_day',
+      get_animals_viewable_on_day )
+
+
+def Test_ValidateOnDateChange_TestColdWeatherOutdoorAldabra_ExpectIndoorSwap(
+      stub_aldabra_habitat_swap_coordinator: None ) -> None:
+   result = ItineraryAnimalValidator.validate(
+      AnimalCoordinator,
+      animals=[
+         ItineraryAnimalInput(
+            species='Aldabra Tortoise',
+            exhibit=AFRICAN_RAINFOREST_PAVILION,
+            enclosure_name='Outdoor' ),
+      ],
+      new_visit_date=date( 2026, 7, 20 ),
+      arrival_time='09:30',
+      departure_time='17:00',
+      new_visit_date_temp=10,
+      old_visit_date='2026-07-19',
+      saved_animal_rows=[
+         ItineraryAnimalRecord(
+            species='Aldabra Tortoise',
+            exhibit=AFRICAN_RAINFOREST_PAVILION,
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+      visit_date_is_changing=True )
+
+   aldabras = [
+      diff
+      for diff in result
+      if diff.species == 'Aldabra Tortoise'
+   ]
+
+   assert len( aldabras ) == 1
+   assert aldabras[ 0 ].enclosure_name == ALDABRA_INDOOR_ENCLOSURE
+   assert aldabras[ 0 ].is_added is False
+   assert aldabras[ 0 ].start_time == '10:00 AM'
+   assert aldabras[ 0 ].end_time == '10:08 AM'

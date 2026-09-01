@@ -12,11 +12,16 @@ from api.itinerary.conflicts.itinerary_unschedule_requirements import ItineraryU
 from api.itinerary.data_access.itinerary_save_input import ItinerarySaveInput
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
+from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
+from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.operations.itinerary_save_committer import ItinerarySaveCommitter
 from api.itinerary.operations.itinerary_save_context import ItinerarySaveContext
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
+from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
+from api.models import Itinerary
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
@@ -322,3 +327,181 @@ def Test_Commit_TestNeedsReschedule_ExpectReschedulerCalled(
       overriding_conflicting_guardians_talks=False )
 
    assert captured[ 'reschedule_called' ] is True
+
+
+def Test_Commit_TestDateChangeNeedsReschedule_ExpectEndpointSync(
+      committer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+   rescheduled_itinerary = ItineraryBuilder.build(
+      date='2026-06-22',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
+      lambda conn: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.SaveItineraryProvider.save_validated_itinerary',
+      lambda conn, visit_date, validated_itinerary, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveContextBuilder.current_itinerary',
+      lambda conn, kwargs: ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete',
+      lambda *args, **kwargs: None )
+
+   def reschedule_after_add(
+         conn: sqlite3.Connection,
+         *,
+         saved_itinerary_before_clear: SavedItinerary | None,
+         **kwargs: object ) -> ItinerarySaveResult:
+      captured[ 'saved_itinerary_before_clear' ] = saved_itinerary_before_clear
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=rescheduled_itinerary )
+
+   def seed_if_complete( conn: sqlite3.Connection, itinerary: Itinerary ) -> None:
+      captured[ 'seed_if_complete_called' ] = True
+
+   monkeypatch.setattr(
+      FixedTimeActivityRescheduler,
+      'reschedule_after_add',
+      reschedule_after_add )
+   monkeypatch.setattr(
+      ScheduledEndpointVisitTimesSyncer,
+      'seed_if_complete',
+      seed_if_complete )
+
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:15 AM',
+      departure_time='5:00 PM',
+   )
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      needs_schedule_reschedule=True,
+   )
+
+   result = ItinerarySaveCommitter.commit(
+      ItinerarySaveContext(
+         conn=committer_conn,
+         save_input=ItinerarySaveInput(
+            date=date( 2026, 6, 22 ),
+            arrival_time='09:30',
+            departure_time='17:00',
+         ),
+         validated_itinerary=validated,
+         current_itinerary=ItineraryBuilder.empty(),
+         old_visit_date='2026-06-20',
+         saved_itinerary=saved_itinerary,
+         unschedule_requirements=ItineraryUnscheduleRequirements( talks=[], encounters=[] ),
+         itinerary_controller_kwargs=_controller_kwargs(),
+         adjustments=[
+            ItineraryAdjustment(
+               type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
+               field='arrivalTime',
+               previous_value='9:15 AM',
+               value='09:30',
+               reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS,
+            ),
+         ],
+      ),
+      overriding_conflicting_guardians_talks=False )
+
+   assert captured[ 'saved_itinerary_before_clear' ] == saved_itinerary
+   assert captured[ 'seed_if_complete_called' ] is True
+   assert result.adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert result.status == ItineraryErrorType.SUCCESS
+
+
+def Test_Commit_TestDateChangeDeletedTalk_ExpectSavedAsDeleted(
+      committer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
+      lambda conn: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.SaveItineraryProvider.save_validated_itinerary',
+      lambda conn, visit_date, validated_itinerary, **kwargs: captured.__setitem__(
+         'validated_itinerary',
+         validated_itinerary ) )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveContextBuilder.current_itinerary',
+      lambda conn, kwargs: ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.seed_if_complete',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
+      lambda *args, **kwargs: None )
+
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[
+         AnimalDiff(
+            species='Caribou',
+            exhibit='Tundra Trek',
+            old_likelihood=100,
+            new_likelihood=100,
+            covered_by_talk=False,
+            start_time='3:00 PM',
+            end_time='3:03 PM',
+         ),
+      ],
+      attractions=[],
+      guardians_talks=[
+         GuardiansTalkDiff(
+            name='Caribou',
+            is_deleted=True,
+            start_time='3:00 PM',
+            end_time='3:30 PM',
+            location='Tundra Trek',
+         ),
+      ],
+      wild_encounters=[
+         WildEncounterDiff(
+            name=RHINO_ENCOUNTER,
+            is_deleted=True,
+            start_time='6:00 PM',
+            end_time='6:30 PM',
+            meeting_spot='Wild Encounter - Africa Meeting Spot',
+            link='https://example.com/rhino',
+         ),
+      ],
+      events=[],
+   )
+
+   result = ItinerarySaveCommitter.commit(
+      _save_context( committer_conn, validated_itinerary=validated ),
+      overriding_conflicting_guardians_talks=False )
+
+   saved = captured[ 'validated_itinerary' ]
+   assert isinstance( saved, ValidatedItinerary )
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert saved.guardians_talks[ 0 ].is_deleted is True
+   assert saved.wild_encounters[ 0 ].is_deleted is True
