@@ -20,6 +20,7 @@ ENTRANCE_NODE_ID = 'n-1'
 GIRAFFE_NODE_ID = 'n-giraffe'
 AFRICA_SAVANNA_LOOP_ID = 'africa_savanna'
 ZEBRA_TALK_LOOP_ID = 'africa_savanna_zebra_talk'
+SPLASH_ISLAND = 'Splash Island'
 TALK_START_SECONDS = 11 * 3600
 GIRAFFE_DWELL_SECONDS = 8 * 60
 GIRAFFE_APPROACH_SECONDS = 6 * 60
@@ -144,6 +145,45 @@ def Test_WaitFillerPackEndSeconds_TestHardPinDeadline_ExpectCascadedPackEnd() ->
 
    assert planned_active_start == 12 * 3600 - 20 * 60
    assert wait_pack_end == planned_active_start - 15 * 60
+
+
+def Test_WaitFillerPackEndSeconds_TestSplashOpenDeadline_ExpectZoomobilePackedBeforeOpen() -> None:
+   splash = AttractionHoursSoftPin(
+      loop_id='splash',
+      viewing_spot_index=0,
+      attraction_name=SPLASH_ISLAND,
+      open_seconds=12 * 3600,
+      close_seconds=16 * 3600 )
+   zoomobile = AttractionHoursSoftPin(
+      loop_id='zoomobile',
+      viewing_spot_index=0,
+      attraction_name='Zoomobile',
+      open_seconds=10 * 3600,
+      close_seconds=18 * 3600 )
+   schedule_window = ItineraryScheduleWindow(
+      start_seconds=10 * 3600,
+      end_seconds=17 * 3600,
+      attraction_hours_soft_pins=[ splash, zoomobile ] )
+   remaining_units = [
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( 'splash' ),
+         occupied_seconds=60 * 60 ),
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( 'zoomobile' ),
+         occupied_seconds=75 * 60 ),
+   ]
+
+   wait_pack_end, planned_active_start = MasterRouteLoopScheduler._wait_filler_pack_end_seconds(
+      schedule_window,
+      remaining_units=remaining_units,
+      active_soft_pin_loop_ids={ 'splash' },
+      hard_pinned_loop_ids=set(),
+      active_open_seconds=12 * 3600,
+      hard_pin_deadline_seconds=None,
+      cursor_seconds=10 * 3600 )
+
+   assert planned_active_start == 12 * 3600
+   assert wait_pack_end == 12 * 3600 - 75 * 60
 
 
 def Test_DrainCascadedInactiveSoftPinLoopUnits_TestNoActiveOpen_ExpectNoop() -> None:
