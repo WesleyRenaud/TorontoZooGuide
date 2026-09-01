@@ -93,6 +93,14 @@ COVERED_KANGAROO = Animal(
    end_time='11:30 AM',
 )
 
+COVERED_LION = Animal(
+   species='African Lion',
+   exhibit='Africa Savanna',
+   covered_by_talk=True,
+   start_time='11:00 AM',
+   end_time='11:30 AM',
+)
+
 SCHEDULED_WALK_THRU = Attraction(
    name=KANGAROO_WALK_THRU,
    free_with_admission=0,
@@ -244,3 +252,18 @@ def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
    assert attraction_stops[ 0 ].start_time == '11:00 AM'
    assert attraction_stops[ 0 ].end_time == '11:30 AM'
    assert attraction_stops[ 0 ].walk_node_ids == [ WALK_THRU_WALK_NODE_ID ]
+
+
+def Test_Resolve_TestCoveredLionTalk_ExpectNoAnimalStop(
+      stub_itinerary_stop_dependencies: None ) -> None:
+   stops = ItineraryStopResolver.resolve(
+      _itinerary( animals=[ COVERED_LION ] ) )
+   animal_stops = [
+      stop
+      for stop in stops
+      if (
+         stop.schedule_item_kind == ScheduleItemKind.ANIMAL
+         and 'African Lion' in stop.item_key )
+   ]
+
+   assert animal_stops == []

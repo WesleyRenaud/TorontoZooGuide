@@ -9,6 +9,7 @@ from api.shared.enums import ScheduleItemKind
 
 ZEBRA_TALK = "Grevy's Zebra"
 CAMEL_TALK = 'Bactrian Camel'
+AFRICAN_LION_TALK = 'African Lion'
 
 
 def _talk_loop_pin(
@@ -81,3 +82,33 @@ def Test_KeepCompletable_TestPinWithPostTalkWindow_ExpectKept() -> None:
       [ zebra_pin ] )
 
    assert kept_pins == [ zebra_pin ]
+
+
+def Test_AttachToWindows_TestAfricanLionTalk_ExpectPinOnBothWindows() -> None:
+   lion_pin = _talk_loop_pin(
+      loop_id='africa_savanna_canadian_domain',
+      viewing_spot_index=0,
+      item_key=AFRICAN_LION_TALK,
+      start_seconds=11 * 3600,
+      end_seconds=11 * 3600 + 30 * 60 )
+   schedule_windows = [
+      ItineraryScheduleWindow(
+         start_seconds=9 * 3600,
+         end_seconds=11 * 3600 ),
+      ItineraryScheduleWindow(
+         start_seconds=11 * 3600 + 30 * 60,
+         end_seconds=17 * 3600 ),
+   ]
+
+   attached_windows = BulkScheduleLoopPinAttacher.attach_to_windows(
+      schedule_windows,
+      [ lion_pin ] )
+
+   assert len( attached_windows ) == 2
+   assert attached_windows[ 0 ].start_seconds == 9 * 3600
+   assert attached_windows[ 0 ].end_seconds == 11 * 3600
+   assert attached_windows[ 1 ].start_seconds == 11 * 3600 + 30 * 60
+   assert attached_windows[ 1 ].end_seconds == 17 * 3600
+   assert len( attached_windows[ 0 ].loop_pins ) == 1
+   assert len( attached_windows[ 1 ].loop_pins ) == 1
+   assert attached_windows[ 0 ].loop_pins[ 0 ].stop.item_key == AFRICAN_LION_TALK
