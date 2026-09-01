@@ -337,3 +337,115 @@ def Test_AcceptItinerary_TestAttractionsToKeep_ExpectMapsPayload(
          'attractions_to_keep': [ 'Conservation Carousel' ],
       },
    )
+
+
+def Test_ScheduleItineraryItem_TestHttpRequest_ExpectMapsPayload(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler(
+      '/schedule-itinerary-item',
+      {
+         'itemType': 'animals',
+         'key': 'African Lion||Africa Savanna',
+         'startTime': '14:00',
+         'durationMinutes': 20,
+         'confirmingScheduleItemNotOnItinerary': True,
+         'confirmingAttractionOutsideOperatingHours': True,
+         'confirmingGuardiansTalkUnschedule': True,
+         'confirmingWildEncounterUnschedule': True,
+         'confirmingFixedTimeItemLongWait': True,
+         'confirmingGuardiansTalkWithoutAnimal': True,
+      } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'itinerary' ] is not None
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'schedule_itinerary_item',
+         {
+            'schedule_item_key': AnimalScheduleItemKey(
+               species='African Lion',
+               exhibit='Africa Savanna' ),
+            'start_time': '14:00',
+            'duration_minutes': 20,
+            'confirming_schedule_item_not_on_itinerary': True,
+            'confirming_attraction_outside_operating_hours': True,
+            'confirming_guardians_talk_unschedule': True,
+            'confirming_wild_encounter_unschedule': True,
+            'confirming_fixed_time_item_long_wait': True,
+            'confirming_guardians_talk_without_animal': True,
+         },
+      ),
+   ]
+
+
+def Test_BulkScheduleItinerary_TestHttpRequest_ExpectMapsPayload(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler(
+      '/bulk-schedule-itinerary',
+      {
+         'temp': 22.5,
+         'confirmingFixedTimeItemLongWait': True,
+      } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'itinerary' ] is not None
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'bulk_schedule_itinerary',
+         {
+            'visit_date_temp': 22.5,
+            'confirming_fixed_time_item_long_wait': True,
+         },
+      ),
+   ]
+
+
+def Test_GetItineraryDate_TestHttpRequest_ExpectDatePayload(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler( '/get-itinerary-date', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert response_json( handler ) == { 'date': VISIT_DATE }
+   assert stub_itinerary_coordinator.calls == [
+      ( 'get_itinerary_date', {} ),
+   ]
+
+
+def Test_SetItineraryDepartureTime_TestHttpRequest_ExpectMappedDeparture(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler(
+      '/set-itinerary-departure-time',
+      {
+         'departureTime': '16:30',
+         'confirmingShortVisit': True,
+      } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert response_json( handler ) == {
+      'status': 'success',
+      'reasons': [],
+      'suppressed_warnings': [],
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
+      'itinerary_path': EMPTY_ITINERARY_PATH,
+      'itinerary': {
+         **EMPTY_ITINERARY,
+         'departure_time': '16:30',
+      },
+   }
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'set_departure_time',
+         {
+            'departure_time': '16:30',
+            'confirming_short_visit': True,
+         },
+      ),
+   ]
