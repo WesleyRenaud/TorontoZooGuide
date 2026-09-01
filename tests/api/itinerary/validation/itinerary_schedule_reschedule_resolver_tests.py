@@ -206,3 +206,25 @@ def Test_NeedsReschedule_TestLaterArrivalCutsOffAnimal_ExpectTrue() -> None:
       _saved( animal_start='10:00 AM', animal_end='10:08 AM' ),
       _validated( arrival_time='10:30 AM' ),
       requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestDateChangeEarlyAdmissionToStandardOpen_ExpectTrue() -> None:
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved(
+         arrival_time='9:00 AM',
+         animal_start='9:08 AM',
+         animal_end='9:16 AM',
+      ),
+      _validated( arrival_time='9:30 AM' ),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestDateChangeShorterCloseCutsOffEveningAnimal_ExpectTrue() -> None:
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved(
+         departure_time='8:00 PM',
+         animal_start='6:30 PM',
+         animal_end='6:38 PM',
+      ),
+      _validated(),
+      requested_departure_time='18:00' )
