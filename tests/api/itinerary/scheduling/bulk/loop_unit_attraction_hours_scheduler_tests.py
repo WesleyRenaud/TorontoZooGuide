@@ -30,6 +30,7 @@ SPLASH_CLOSE_SECONDS = 17 * 3600
 ZOO_CLOSE_SECONDS = 19 * 3600
 TINY_TOUR_END_SECONDS = 11 * 3600 + 30 * 60
 HYENA_TALK_START_SECONDS = 14 * 3600
+KANGAROO_CLOSE_TIGHT_SECONDS = 12 * 3600 + 30 * 60
 
 DURATION_SECONDS_BY_STOP: dict[ int, int ] = {}
 VIEWING_SPOT_INDEX_BY_ANIMAL: dict[ tuple[ str, str, str | None ], int ] = {}
@@ -511,3 +512,40 @@ def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWi
    assert end_seconds is not None
    assert start_seconds >= TINY_TOUR_END_SECONDS
    assert end_seconds <= HYENA_TALK_START_SECONDS
+
+
+def Test_Schedule_TestTightKangarooWalkThruHours_ExpectEndingBeforeClose(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru ] ),
+      occupied_seconds=60 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=11 * 3600,
+      close_seconds=KANGAROO_CLOSE_TIGHT_SECONDS )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=11 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=11 * 3600,
+      slot_sink=slot_sink )
+
+   assert unscheduled == []
+   assert slot_sink.slots
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   assert end_seconds is not None
+   assert end_seconds <= KANGAROO_CLOSE_TIGHT_SECONDS
