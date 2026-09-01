@@ -19,6 +19,16 @@ FIXED_ENCOUNTER_STOP = ItineraryStop(
    end_time='11:45 AM',
 )
 
+MIDMORNING_RHINO_ENCOUNTER_STOP = ItineraryStop(
+   schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+   item_key='Guardians of White Rhinos',
+   walk_node_ids=[ 'n-3001' ],
+   meeting_spot='Wild Encounter - Penguin Meeting Spot',
+   is_fixed_time=True,
+   start_time='9:52 AM',
+   end_time='10:37 AM',
+)
+
 AFRICAN_LION_TALK_STOP = ItineraryStop(
    schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
    item_key='African Lion',
@@ -81,6 +91,28 @@ def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
          start_seconds=( 11 * 60 + 45 ) * 60,
+         end_seconds=DAY_END_SECONDS,
+         anchor_stop=None,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='n-3001' ),
+   ]
+
+
+def Test_Partition_TestMidMorningRhinoEncounter_ExpectWindowsBeforeAndAfter() -> None:
+   windows = ItineraryScheduleWindowPartitioner.partition(
+      ANCHOR_SECONDS,
+      DAY_END_SECONDS,
+      [ MIDMORNING_RHINO_ENCOUNTER_STOP ] )
+
+   assert windows == [
+      ItineraryScheduleWindow(
+         start_seconds=ANCHOR_SECONDS,
+         end_seconds=9 * 60 * 60 + 52 * 60,
+         anchor_stop=MIDMORNING_RHINO_ENCOUNTER_STOP,
+         opens_after_fixed_time_stop=False,
+         start_walk_node_id=None ),
+      ItineraryScheduleWindow(
+         start_seconds=( 10 * 60 + 37 ) * 60,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,

@@ -35,6 +35,10 @@ AFRICAN_PENGUIN = _animal_record(
    exhibit='Africa Savanna',
    enclosure_name='Outdoor',
 )
+AFRICA_SAVANNA_CHEETAH = _animal_record(
+   species='Cheetah',
+   exhibit='Africa Savanna',
+)
 UNKNOWN_ANIMAL = _animal_record(
    species='Unknown Animal',
    exhibit='Nowhere',
@@ -43,13 +47,15 @@ UNKNOWN_ANIMAL = _animal_record(
 ROUTE_INDEX_BY_STOP_KEY = {
    AFRICAN_PENGUIN.master_route_stop_key(): 0,
    AFRICAN_LION.master_route_stop_key(): 1,
-   INDO_CHEETAH.master_route_stop_key(): 2,
-   UNKNOWN_ANIMAL.master_route_stop_key(): 3,
+   AFRICA_SAVANNA_CHEETAH.master_route_stop_key(): 2,
+   INDO_CHEETAH.master_route_stop_key(): 3,
+   UNKNOWN_ANIMAL.master_route_stop_key(): 4,
 }
 
 LOOP_INDEX_BY_STOP_KEY = {
    AFRICAN_PENGUIN.master_route_stop_key(): 0,
    AFRICAN_LION.master_route_stop_key(): 0,
+   AFRICA_SAVANNA_CHEETAH.master_route_stop_key(): 0,
    INDO_CHEETAH.master_route_stop_key(): 1,
 }
 
@@ -84,6 +90,24 @@ def Test_Group_TestMixedLoopAndUnmappedAnimals_ExpectSortedLoopGroups(
    ]
    assert [ animal.species for animal in groups[ 1 ] ] == [ 'Cheetah' ]
    assert [ animal.species for animal in groups[ 2 ] ] == [ 'Unknown Animal' ]
+
+
+def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(
+      stub_master_route_loop_stop_grouper: None ) -> None:
+   animals = [
+      AFRICAN_LION,
+      AFRICA_SAVANNA_CHEETAH,
+      AFRICAN_PENGUIN,
+   ]
+
+   groups = MasterRouteLoopStopGrouper.group( animals )
+
+   assert len( groups ) == 1
+   assert [ animal.species for animal in groups[ 0 ] ] == [
+      'African Penguin',
+      'African Lion',
+      'Cheetah',
+   ]
 
 
 def Test_Group_TestAnimalGrouperDelegate_ExpectSameGroups(

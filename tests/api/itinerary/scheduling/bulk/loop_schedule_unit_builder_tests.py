@@ -68,6 +68,10 @@ WEST_CAUCASIAN_TUR = _animal_record(
    species='West Caucasian Tur',
    exhibit='Eurasia Wilds',
 )
+AFRICAN_LION = _animal_record(
+   species='African Lion',
+   exhibit='Africa Savanna',
+)
 AFRICA_PENGUIN = _animal_record(
    species='African Penguin',
    exhibit='Africa Savanna',
@@ -137,6 +141,7 @@ WALK_NODE_IDS = {
    ( 'Western Grey Kangaroo', 'Australasia Outdoor', None ): 'n-kangaroo',
    ( 'Highland Cattle', 'Eurasia Wilds', None ): 'n-highland',
    ( 'West Caucasian Tur', 'Eurasia Wilds', None ): 'n-tur',
+   ( 'African Lion', 'Africa Savanna', None ): 'n-lion',
    ( 'African Penguin', 'Africa Savanna', 'Outdoor' ): 'n-penguin',
    ( 'Cheetah', 'Africa Savanna', None ): 'n-africa-cheetah',
    ( 'Ostrich', 'Africa Savanna', None ): 'n-ostrich',
@@ -200,6 +205,10 @@ LOOPS_BY_ID = {
       name='Africa Savanna',
       traversal=ONE_WAY_LOOP_TRAVERSAL,
       viewing_spots=[
+         ViewingSpotReference(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            name=None ),
          ViewingSpotReference(
             species='African Penguin',
             exhibit='Africa Savanna',
@@ -265,6 +274,7 @@ LOOP_ID_BY_STOP_KEY = {
    KANGAROO_WALK_THRU_STOP_KEY: 'australasia',
    _stop_key( HIGHLAND_CATTLE ): 'eurasia_wilds',
    _stop_key( WEST_CAUCASIAN_TUR ): 'eurasia_wilds',
+   _stop_key( AFRICAN_LION ): 'africa_savanna_canadian_domain',
    _stop_key( AFRICA_PENGUIN ): 'africa_savanna_canadian_domain',
    _stop_key( AFRICA_CHEETAH ): 'africa_savanna_canadian_domain',
    _stop_key( OSTRICH ): 'africa_savanna_canadian_domain',
@@ -302,17 +312,18 @@ ROUTE_INDEX_BY_STOP_KEY = {
    KANGAROO_WALK_THRU_STOP_KEY: 2,
    _stop_key( HIGHLAND_CATTLE ): 3,
    _stop_key( WEST_CAUCASIAN_TUR ): 4,
-   _stop_key( AFRICA_PENGUIN ): 5,
-   _stop_key( OSTRICH ): 6,
-   _stop_key( ZEBRA ): 7,
-   _stop_key( AFRICA_CHEETAH ): 8,
-   _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 9,
-   _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 10,
-   _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 11,
-   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 12,
-   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 13,
-   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 14,
-   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 15,
+   _stop_key( AFRICAN_LION ): 5,
+   _stop_key( AFRICA_PENGUIN ): 6,
+   _stop_key( OSTRICH ): 7,
+   _stop_key( ZEBRA ): 8,
+   _stop_key( AFRICA_CHEETAH ): 9,
+   _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 10,
+   _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 11,
+   _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 12,
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 13,
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 14,
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 15,
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 16,
 }
 
 LOOP_INDEX_BY_STOP_KEY = {
@@ -323,6 +334,7 @@ LOOP_INDEX_BY_STOP_KEY = {
    KANGAROO_WALK_THRU_STOP_KEY: 0,
    _stop_key( HIGHLAND_CATTLE ): 2,
    _stop_key( WEST_CAUCASIAN_TUR ): 2,
+   _stop_key( AFRICAN_LION ): 3,
    _stop_key( AFRICA_PENGUIN ): 3,
    _stop_key( OSTRICH ): 3,
    _stop_key( ZEBRA ): 3,
@@ -460,6 +472,26 @@ def Test_Build_TestLoopViewingSpotOrder_ExpectSortedStops(
    assert len( loop_units ) == 1
    assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
    assert [ animal.species for animal in loop_units[ 0 ].stops ] == [
+      'African Penguin',
+      'Cheetah',
+   ]
+
+
+def Test_Build_TestLionPenguinCheetah_ExpectSingleSavannaLoopUnit(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      [
+         [
+            AFRICAN_LION,
+            AFRICA_PENGUIN,
+            AFRICA_CHEETAH,
+         ],
+      ] )
+
+   assert len( loop_units ) == 1
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [
+      'African Lion',
       'African Penguin',
       'Cheetah',
    ]
