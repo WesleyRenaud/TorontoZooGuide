@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from seed_schema_support import column_names
+from api_test_support.sqlite_schema_support import column_names
 
 from api.seed.migrations.migration_runner import MigrationRunner
 from api.seed.schema_creator import SchemaCreator
@@ -98,10 +98,8 @@ EXPECTED_ROUTE_LEG_MARKERS = {
       marker_ids( 'zm-w', 210, 5, 241 ),
 }
 
-MAPPED_ZOOMOBILE_STATIONS = EXPECTED_ZOOMOBILE_STATIONS
 
-
-def test_zoomobile_transportation_seed_graph() -> None:
+def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() -> None:
    conn = sqlite3.connect( ':memory:' )
    conn.row_factory = sqlite3.Row
    cursor = conn.cursor()
@@ -260,7 +258,7 @@ def test_zoomobile_transportation_seed_graph() -> None:
          """
       ).fetchall()
    }
-   assert mapped_stations == MAPPED_ZOOMOBILE_STATIONS
+   assert mapped_stations == EXPECTED_ZOOMOBILE_STATIONS
 
    legs = {
       ( row[ 'FROM_STATION' ], row[ 'TO_STATION' ], row[ 'DURATION_MINUTES' ] )
