@@ -54,6 +54,14 @@ SCHEDULED_ZOOMOBILE = ItineraryTransportation(
    end_time='12:45 PM',
 )
 
+SCHEDULED_PENGUIN = Animal(
+   species='African Penguin',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
+   start_time='10:30 AM',
+   end_time='10:35 AM',
+)
+
 
 def _itinerary(
       *,
@@ -105,3 +113,20 @@ def Test_HasUnscheduledGuestItems_TestFullyScheduledGuestItems_ExpectFalse() -> 
       transportations=[ SCHEDULED_ZOOMOBILE ] )
 
    assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+
+
+def Test_HasUnscheduledGuestItems_TestLionAndPenguinFullyScheduled_ExpectFalse() -> None:
+   itinerary = _itinerary(
+      animals=[
+         SCHEDULED_LION,
+         SCHEDULED_PENGUIN,
+      ] )
+
+   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   assert {
+      animal.species
+      for animal in itinerary.animals
+      if GuestItemScheduleStatusChecker.has_schedule_times(
+         animal.start_time,
+         animal.end_time )
+   } == { 'African Lion', 'African Penguin' }

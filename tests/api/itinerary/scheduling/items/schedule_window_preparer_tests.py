@@ -86,3 +86,55 @@ def Test_PrepareZooHours_TestGuestDepartureBeforeClose_ExpectZooCloseWindow(
       9 * 3600 + 30 * 60,
       19 * 3600,
    )
+
+
+def Test_PrepareZooHours_TestNoArrivalTime_ExpectOpenAnchor(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time=None,
+      departure_time=None,
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-20' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, visit_date: EARLY_ADMISSION_ZOO_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryStatusProvider.is_itinerary_error_suppressed',
+      lambda conn, error_type: False )
+
+   prepared = ScheduleWindowPreparer.prepare_zoo_hours(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert prepared.window[ 0 ] == 9 * 3600 + 30 * 60
+
+
+def Test_PrepareZooHours_TestSuppressedEarlyAdmission_ExpectNineAmAnchor(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time=None,
+      departure_time=None,
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-20' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, visit_date: EARLY_ADMISSION_ZOO_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryStatusProvider.is_itinerary_error_suppressed',
+      lambda conn, error_type: True )
+
+   prepared = ScheduleWindowPreparer.prepare_zoo_hours(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert prepared.window[ 0 ] == 9 * 3600
