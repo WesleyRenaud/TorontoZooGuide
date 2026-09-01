@@ -75,6 +75,25 @@ OTTER_TALK_STOP = ItineraryStop(
    end_time='2:30 PM',
 )
 
+TINY_TOUR_ENCOUNTER_STOP = ItineraryStop(
+   schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+   item_key='The Tiny Tour',
+   walk_node_ids=[ 'n-discovery' ],
+   meeting_spot='Wild Encounter - Discovery Zone Meeting Spot',
+   is_fixed_time=True,
+   start_time='11:00 AM',
+   end_time='11:30 AM',
+)
+
+HYENA_TALK_STOP = ItineraryStop(
+   schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+   item_key='Spotted Hyena',
+   walk_node_ids=[ 'v-hyena' ],
+   is_fixed_time=True,
+   start_time='2:00 PM',
+   end_time='2:30 PM',
+)
+
 
 def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
    windows = ItineraryScheduleWindowPartitioner.partition(
@@ -205,4 +224,32 @@ def Test_Partition_TestOtterTalk_ExpectWindowsBeforeAndAfter() -> None:
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
          start_walk_node_id='v-0100' ),
+   ]
+
+
+def Test_Partition_TestTinyTourAndHyenaTalk_ExpectMiddleWindowForZoomobile() -> None:
+   windows = ItineraryScheduleWindowPartitioner.partition(
+      ANCHOR_SECONDS,
+      DAY_END_SECONDS,
+      [ TINY_TOUR_ENCOUNTER_STOP, HYENA_TALK_STOP ] )
+
+   assert windows == [
+      ItineraryScheduleWindow(
+         start_seconds=ANCHOR_SECONDS,
+         end_seconds=11 * 60 * 60,
+         anchor_stop=TINY_TOUR_ENCOUNTER_STOP,
+         opens_after_fixed_time_stop=False,
+         start_walk_node_id=None ),
+      ItineraryScheduleWindow(
+         start_seconds=11 * 60 * 60 + 30 * 60,
+         end_seconds=14 * 60 * 60,
+         anchor_stop=HYENA_TALK_STOP,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='n-discovery' ),
+      ItineraryScheduleWindow(
+         start_seconds=14 * 60 * 60 + 30 * 60,
+         end_seconds=DAY_END_SECONDS,
+         anchor_stop=None,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-hyena' ),
    ]

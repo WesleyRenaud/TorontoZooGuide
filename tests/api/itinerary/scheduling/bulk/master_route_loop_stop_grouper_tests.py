@@ -39,6 +39,15 @@ AFRICA_SAVANNA_CHEETAH = _animal_record(
    species='Cheetah',
    exhibit='Africa Savanna',
 )
+WARTHOG = _animal_record(
+   species='Warthog',
+   exhibit='Africa Savanna',
+)
+MASAI_GIRAFFE = _animal_record(
+   species='Masai Giraffe',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
+)
 UNKNOWN_ANIMAL = _animal_record(
    species='Unknown Animal',
    exhibit='Nowhere',
@@ -48,15 +57,19 @@ ROUTE_INDEX_BY_STOP_KEY = {
    AFRICAN_PENGUIN.master_route_stop_key(): 0,
    AFRICAN_LION.master_route_stop_key(): 1,
    AFRICA_SAVANNA_CHEETAH.master_route_stop_key(): 2,
-   INDO_CHEETAH.master_route_stop_key(): 3,
-   UNKNOWN_ANIMAL.master_route_stop_key(): 4,
+   WARTHOG.master_route_stop_key(): 3,
+   MASAI_GIRAFFE.master_route_stop_key(): 4,
+   INDO_CHEETAH.master_route_stop_key(): 5,
+   UNKNOWN_ANIMAL.master_route_stop_key(): 6,
 }
 
 LOOP_INDEX_BY_STOP_KEY = {
    AFRICAN_PENGUIN.master_route_stop_key(): 0,
    AFRICAN_LION.master_route_stop_key(): 0,
    AFRICA_SAVANNA_CHEETAH.master_route_stop_key(): 0,
-   INDO_CHEETAH.master_route_stop_key(): 1,
+   WARTHOG.master_route_stop_key(): 0,
+   MASAI_GIRAFFE.master_route_stop_key(): 1,
+   INDO_CHEETAH.master_route_stop_key(): 2,
 }
 
 
@@ -90,6 +103,20 @@ def Test_Group_TestMixedLoopAndUnmappedAnimals_ExpectSortedLoopGroups(
    ]
    assert [ animal.species for animal in groups[ 1 ] ] == [ 'Cheetah' ]
    assert [ animal.species for animal in groups[ 2 ] ] == [ 'Unknown Animal' ]
+
+
+def Test_Group_TestWarthogBeforeGiraffe_ExpectSeparateLoopGroupsInRouteOrder(
+      stub_master_route_loop_stop_grouper: None ) -> None:
+   animals = [
+      MASAI_GIRAFFE,
+      WARTHOG,
+   ]
+
+   groups = MasterRouteLoopStopGrouper.group( animals )
+
+   assert len( groups ) == 2
+   assert [ animal.species for animal in groups[ 0 ] ] == [ 'Warthog' ]
+   assert [ animal.species for animal in groups[ 1 ] ] == [ 'Masai Giraffe' ]
 
 
 def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(

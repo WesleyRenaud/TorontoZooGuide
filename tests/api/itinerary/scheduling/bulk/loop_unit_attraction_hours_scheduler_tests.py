@@ -16,6 +16,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
+from api.shared.calendar_dates import DateValues
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 
@@ -27,6 +28,8 @@ ZOOMOBILE = 'Zoomobile'
 SPLASH_OPEN_SECONDS = 12 * 3600
 SPLASH_CLOSE_SECONDS = 17 * 3600
 ZOO_CLOSE_SECONDS = 19 * 3600
+TINY_TOUR_END_SECONDS = 11 * 3600 + 30 * 60
+HYENA_TALK_START_SECONDS = 14 * 3600
 
 DURATION_SECONDS_BY_STOP: dict[ int, int ] = {}
 VIEWING_SPOT_INDEX_BY_ANIMAL: dict[ tuple[ str, str, str | None ], int ] = {}
@@ -468,3 +471,43 @@ def Test_Schedule_TestWeaveAnimalsAroundWalkThru_ExpectBeforeAfterOrdering(
       ( walk_thru, '12:00 PM', '1:00 PM' ),
       ( tiger, '1:00 PM', '1:08 PM' ),
    ]
+
+
+def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWindow(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   zoomobile = ItineraryTransportationRecord(
+      transportation=ZOOMOBILE,
+      added_as_attraction=True,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( zoomobile ) ] = 60 * 60
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'zoomobile', [ zoomobile ] ),
+      occupied_seconds=60 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='zoomobile',
+      viewing_spot_index=0,
+      attraction_name=ZOOMOBILE,
+      open_seconds=10 * 3600,
+      close_seconds=18 * 3600 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=TINY_TOUR_END_SECONDS,
+      window_end_seconds=HYENA_TALK_START_SECONDS,
+      cursor_seconds=TINY_TOUR_END_SECONDS,
+      slot_sink=slot_sink )
+
+   assert unscheduled == []
+   assert slot_sink.slots
+   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   assert start_seconds is not None
+   assert end_seconds is not None
+   assert start_seconds >= TINY_TOUR_END_SECONDS
+   assert end_seconds <= HYENA_TALK_START_SECONDS
