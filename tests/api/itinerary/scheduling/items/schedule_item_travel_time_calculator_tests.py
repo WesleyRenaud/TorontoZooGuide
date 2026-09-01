@@ -9,6 +9,7 @@ from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalc
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.models import Animal
 from api.models import Itinerary
+from api.shared.calendar_dates import DateValues
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.domain.walk_graph import WalkGraph
@@ -185,3 +186,39 @@ def Test_EarliestScheduleStartSecondsWithTravel_TestMissingWalkNode_ExpectAnchor
       candidate_walk_node_id=None,
       visit_anchor_seconds=ARRIVAL_SECONDS,
       itinerary_context={} ) == ARRIVAL_SECONDS
+
+
+def Test_EarliestScheduleStartSecondsWithTravel_TestOpenAnchorAtNineThirty_ExpectTravelOffset(
+      stub_schedule_item_travel_time_calculator: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   empty_saved_itinerary = SavedItinerary(
+      date_value='2026-06-22',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+   open_seconds = 9 * 3600 + 30 * 60
+
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.build(
+         date=saved_itinerary.date_value or '',
+         selected_exhibits=[],
+         animals=[],
+         attractions=[],
+         transportations=[],
+         transportation_stations=[],
+         guardians_talks=[],
+         wild_encounters=[],
+         events=[],
+         arrival_time=saved_itinerary.arrival_time,
+         departure_time=saved_itinerary.departure_time ) )
+
+   earliest_start = ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
+      empty_saved_itinerary,
+      candidate_walk_node_id=LION_NODE_ID,
+      visit_anchor_seconds=open_seconds,
+      itinerary_context={} )
+
+   assert earliest_start == open_seconds + TRAVEL_SECONDS
+   assert DateValues.schedule_time_key_from_seconds( earliest_start ) == '9:36 AM'
