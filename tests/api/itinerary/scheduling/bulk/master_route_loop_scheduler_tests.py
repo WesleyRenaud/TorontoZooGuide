@@ -24,6 +24,17 @@ SPLASH_ISLAND = 'Splash Island'
 TALK_START_SECONDS = 11 * 3600
 GIRAFFE_DWELL_SECONDS = 8 * 60
 GIRAFFE_APPROACH_SECONDS = 6 * 60
+KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
+AUSTRALASIA_LOOP_ID = 'australasia'
+ZOOMOBILE_LOOP_ID = 'zoomobile'
+KANGAROO_OPEN_SECONDS = 11 * 3600
+KANGAROO_CLOSE_SECONDS = 15 * 3600
+ZOOMOBILE_OPEN_SECONDS = 10 * 3600
+ZOOMOBILE_CLOSE_SECONDS = 18 * 3600
+CAMEL_TALK_START_SECONDS = 12 * 3600 + 30 * 60
+KANGAROO_DWELL_SECONDS = 60 * 60
+ZOOMOBILE_DWELL_SECONDS = 75 * 60
+ARRIVAL_SECONDS = 11 * 3600
 
 
 def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
@@ -67,6 +78,24 @@ def _loop_unit( loop_id: str | None ) -> LoopScheduleUnit:
       side_cluster_id=None,
       loop_index_in_side_cluster=None,
       traversal=None )
+
+
+def _kangaroo_soft_pin() -> AttractionHoursSoftPin:
+   return AttractionHoursSoftPin(
+      loop_id=AUSTRALASIA_LOOP_ID,
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=KANGAROO_OPEN_SECONDS,
+      close_seconds=KANGAROO_CLOSE_SECONDS )
+
+
+def _zoomobile_soft_pin() -> AttractionHoursSoftPin:
+   return AttractionHoursSoftPin(
+      loop_id=ZOOMOBILE_LOOP_ID,
+      viewing_spot_index=0,
+      attraction_name='Zoomobile',
+      open_seconds=ZOOMOBILE_OPEN_SECONDS,
+      close_seconds=ZOOMOBILE_CLOSE_SECONDS )
 
 
 def Test_WaitFillerPackEndSeconds_TestInactiveSoftPins_ExpectReservedPackEnd() -> None:
@@ -400,3 +429,71 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestNoPinnedDeadline_ExpectUncha
    assert not should_abort
    assert next_cursor_seconds == 9 * 3600
    assert remaining_units == [ giraffe ]
+
+
+def Test_ActiveSoftPinLoopIds_TestKangarooAndZoomobile_ExpectKangarooActivated() -> None:
+   active_loop_ids = MasterRouteLoopScheduler._active_soft_pin_loop_ids(
+      [
+         _kangaroo_soft_pin(),
+         _zoomobile_soft_pin(),
+      ] )
+
+   assert active_loop_ids == { AUSTRALASIA_LOOP_ID }
+
+
+def Test_InactiveSoftPinLoopIdsBeforeActive_TestZoomobileBeforeKangarooOpen_ExpectZoomobileInactive() -> None:
+   schedule_window = ItineraryScheduleWindow(
+      start_seconds=ARRIVAL_SECONDS,
+      end_seconds=17 * 3600,
+      attraction_hours_soft_pins=[
+         _kangaroo_soft_pin(),
+         _zoomobile_soft_pin(),
+      ] )
+   remaining_units = [
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( AUSTRALASIA_LOOP_ID ),
+         occupied_seconds=KANGAROO_DWELL_SECONDS ),
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( ZOOMOBILE_LOOP_ID ),
+         occupied_seconds=ZOOMOBILE_DWELL_SECONDS ),
+   ]
+
+   inactive_loop_ids = MasterRouteLoopScheduler._inactive_soft_pin_loop_ids_before_active(
+      schedule_window,
+      remaining_units,
+      active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
+      active_open_seconds=KANGAROO_OPEN_SECONDS )
+
+   assert inactive_loop_ids == { ZOOMOBILE_LOOP_ID }
+
+
+def Test_WaitFillerPackEndSeconds_TestKangarooWalkThruAndCamelTalk_ExpectZoomobileReservedBeforeKangarooPlaces() -> None:
+   schedule_window = ItineraryScheduleWindow(
+      start_seconds=ARRIVAL_SECONDS,
+      end_seconds=17 * 3600,
+      attraction_hours_soft_pins=[
+         _kangaroo_soft_pin(),
+         _zoomobile_soft_pin(),
+      ] )
+   remaining_units = [
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( AUSTRALASIA_LOOP_ID ),
+         occupied_seconds=KANGAROO_DWELL_SECONDS ),
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( ZOOMOBILE_LOOP_ID ),
+         occupied_seconds=ZOOMOBILE_DWELL_SECONDS ),
+   ]
+
+   wait_pack_end, planned_active_start = MasterRouteLoopScheduler._wait_filler_pack_end_seconds(
+      schedule_window,
+      remaining_units=remaining_units,
+      active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
+      hard_pinned_loop_ids=set(),
+      active_open_seconds=KANGAROO_OPEN_SECONDS,
+      hard_pin_deadline_seconds=CAMEL_TALK_START_SECONDS,
+      cursor_seconds=ARRIVAL_SECONDS )
+
+   assert planned_active_start == CAMEL_TALK_START_SECONDS - KANGAROO_DWELL_SECONDS
+   assert wait_pack_end == max(
+      ARRIVAL_SECONDS,
+      planned_active_start - ZOOMOBILE_DWELL_SECONDS )

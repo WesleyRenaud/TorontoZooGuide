@@ -31,6 +31,10 @@ ZOO_CLOSE_SECONDS = 19 * 3600
 TINY_TOUR_END_SECONDS = 11 * 3600 + 30 * 60
 HYENA_TALK_START_SECONDS = 14 * 3600
 KANGAROO_CLOSE_TIGHT_SECONDS = 12 * 3600 + 30 * 60
+CAMEL_TALK_START_SECONDS = 12 * 3600 + 30 * 60
+CAMEL_TALK_END_SECONDS = 13 * 3600
+CAMEL_ENCOUNTER_START_SECONDS = 15 * 3600 + 30 * 60
+GREENHOUSE = 'Greenhouse'
 
 DURATION_SECONDS_BY_STOP: dict[ int, int ] = {}
 VIEWING_SPOT_INDEX_BY_ANIMAL: dict[ tuple[ str, str, str | None ], int ] = {}
@@ -549,3 +553,134 @@ def Test_Schedule_TestTightKangarooWalkThruHours_ExpectEndingBeforeClose(
    end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
    assert end_seconds is not None
    assert end_seconds <= KANGAROO_CLOSE_TIGHT_SECONDS
+
+
+def Test_Schedule_TestKangarooBeforeCamelTalk_ExpectEndingBeforeTalkStart(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru ] ),
+      occupied_seconds=60 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=11 * 3600,
+      close_seconds=15 * 3600 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=11 * 3600,
+      window_end_seconds=CAMEL_TALK_START_SECONDS,
+      cursor_seconds=11 * 3600,
+      slot_sink=slot_sink )
+
+   assert unscheduled == []
+   assert slot_sink.slots
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   assert end_seconds is not None
+   assert end_seconds <= CAMEL_TALK_START_SECONDS
+
+
+def Test_Schedule_TestLatePlaceZoomobileAfterCamelTalk_ExpectSlotBeforeEncounter(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   zoomobile = ItineraryTransportationRecord(
+      transportation=ZOOMOBILE,
+      added_as_attraction=True,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( zoomobile ) ] = 60 * 60
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'zoomobile', [ zoomobile ] ),
+      occupied_seconds=60 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='zoomobile',
+      viewing_spot_index=0,
+      attraction_name=ZOOMOBILE,
+      open_seconds=10 * 3600,
+      close_seconds=18 * 3600 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=CAMEL_TALK_END_SECONDS,
+      window_end_seconds=CAMEL_ENCOUNTER_START_SECONDS,
+      cursor_seconds=CAMEL_TALK_END_SECONDS,
+      late_place=True,
+      slot_sink=slot_sink )
+
+   assert unscheduled == []
+   assert slot_sink.slots
+   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   assert start_seconds is not None
+   assert end_seconds is not None
+   assert start_seconds >= CAMEL_TALK_END_SECONDS
+   assert end_seconds <= CAMEL_ENCOUNTER_START_SECONDS
+
+
+def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   greenhouse = ItineraryAttractionRecord(
+      attraction=GREENHOUSE,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( greenhouse ) ] = 30 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ GREENHOUSE ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, greenhouse ] ),
+      occupied_seconds=90 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=11 * 3600,
+      close_seconds=15 * 3600 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=11 * 3600,
+      window_end_seconds=CAMEL_TALK_START_SECONDS,
+      cursor_seconds=11 * 3600,
+      slot_sink=slot_sink )
+
+   assert unscheduled == []
+   assert len( slot_sink.slots ) == 2
+   walk_thru_start = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
+   walk_thru_end = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   greenhouse_start = DateValues.time_value_in_seconds( slot_sink.slots[ 1 ][ 1 ] )
+   greenhouse_end = DateValues.time_value_in_seconds( slot_sink.slots[ 1 ][ 2 ] )
+   assert walk_thru_start is not None
+   assert walk_thru_end is not None
+   assert greenhouse_start is not None
+   assert greenhouse_end is not None
+   assert walk_thru_start >= 11 * 3600
+   assert greenhouse_end <= CAMEL_TALK_START_SECONDS
+   assert (
+      abs( greenhouse_start - walk_thru_end ) <= 45 * 60
+      or abs( greenhouse_end - walk_thru_start ) <= 45 * 60 )
