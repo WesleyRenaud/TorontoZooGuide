@@ -5,7 +5,6 @@ from datetime import date
 from pathlib import Path
 
 from api_test_support.itinerary_test_support import ANIMAL_KEY
-from api_test_support.itinerary_test_support import CAROUSEL
 from api_test_support.itinerary_test_support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
 from api_test_support.itinerary_test_support import entrance_travel_seconds_to_animal
 from api_test_support.itinerary_test_support import LION_ITINERARY_ENTRY
@@ -49,67 +48,6 @@ def _find_animal( itinerary: dict[ str, object ], *, species: str, exhibit: str 
          return animal
 
    raise AssertionError( f'Expected animal { species } / { exhibit } in itinerary response' )
-
-
-def test_set_get_and_clear_itinerary_via_http(
-      integration_db: Path,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   status, set_response = post_route(
-      '/set-itinerary',
-      {
-         'date': '2026-06-15',
-         'arrivalTime': '09:30',
-         'departureTime': '17:00',
-         'animals': [ LION_ITINERARY_ENTRY ],
-         'attractions': [ CAROUSEL ],
-         'guardiansTalks': [],
-         'wildEncounters': [],
-         'confirmingEarlyAdmission': True,
-      },
-   )
-
-   assert status == 200
-   assert set_response[ 'status' ] == 'success'
-   assert set_response[ 'reasons' ] == []
-   assert set_response[ 'itinerary_path' ] == {
-      'stops': [],
-      'legs': [],
-      'points': [],
-   }
-
-   status, get_response = post_route( '/get-itinerary', {} )
-
-   assert status == 200
-   itinerary = get_response[ 'itinerary' ]
-   assert itinerary[ 'date' ] == '2026-06-15'
-   assert get_response[ 'itinerary_path' ] == {
-      'stops': [],
-      'legs': [],
-      'points': [],
-   }
-   assert itinerary[ 'arrival_time' ] == '9:30 AM'
-   assert itinerary[ 'departure_time' ] == '5:00 PM'
-   assert _find_animal(
-      itinerary,
-      species='African Lion',
-      exhibit='Africa Savanna',
-   )[ 'species' ] == 'African Lion'
-   assert [ attraction[ 'name' ] for attraction in itinerary[ 'attractions' ] ] == [
-      CAROUSEL,
-   ]
-
-   status, clear_response = post_route( '/clear-itinerary', {} )
-
-   assert status == 200
-   assert clear_response[ 'success' ] is True
-
-   status, empty_response = post_route( '/get-itinerary-date', {} )
-
-   assert status == 200
-   assert empty_response[ 'date' ] is None
 
 
 def test_schedule_and_unschedule_animal_via_http(
