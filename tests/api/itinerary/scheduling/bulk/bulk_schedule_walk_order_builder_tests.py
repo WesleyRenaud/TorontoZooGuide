@@ -166,3 +166,27 @@ def Test_SortAnimals_TestCrossLoopAnimals_ExpectMasterRouteOrder(
       ( 'African Lion', 'Africa Savanna' ),
       ( 'Cheetah', 'Indo-Malaya Outdoor' ),
    ]
+
+
+def Test_SortByNearestNeighbor_TestCheetahAndLion_ExpectCheetahFirst(
+      stub_bulk_schedule_walk_order_dependencies: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ViewingSpotWalkNodeIdResolver,
+      'resolve',
+      lambda species, exhibit, enclosure_name=None: (
+         CHEETAH_NODE_ID
+         if species == 'Cheetah' and exhibit == 'Indo-Malaya Outdoor'
+         else FAR_NODE_ID
+         if species == 'African Lion' and exhibit == 'Africa Savanna'
+         else None ) )
+
+   animals = BulkScheduleWalkOrderBuilder.sort_by_nearest_neighbor(
+      TEST_GRAPH,
+      [ LION, CHEETAH ],
+      start_node_id=ENTRANCE_NODE_ID )
+
+   assert [ ( animal.species, animal.exhibit ) for animal in animals ] == [
+      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
+      ( 'African Lion', 'Africa Savanna' ),
+   ]

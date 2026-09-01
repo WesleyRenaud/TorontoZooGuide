@@ -499,6 +499,51 @@ def Test_SeedIfComplete_TestMorningRescheduledLion_ExpectDepartureFromEndPlusTra
    }
 
 
+def Test_SyncIfComplete_TestGuestDepartureSet_ExpectDepartureFromLatestAnimalEnd(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   updated: dict[ str, str | None ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: updated.__setitem__( 'arrival_time', arrival_time ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
+
+   itinerary = ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='9:38 AM',
+            end_time='9:46 AM' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+
+   ScheduledEndpointVisitTimesSyncer.sync_if_complete( syncer_conn, itinerary )
+
+   assert updated == {
+      'arrival_time': '9:28 AM',
+      'departure_time': '9:56 AM',
+   }
+
+
 def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVisitTimesCleared(
       syncer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:

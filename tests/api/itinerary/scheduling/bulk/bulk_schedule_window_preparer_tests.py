@@ -14,6 +14,8 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.bulk_schedule_window_preparer import BulkScheduleWindowPreparer
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.walk_graph.domain.walk_graph import WalkGraph
+from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
 EMPTY_SAVED_ITINERARY = SavedItinerary(
@@ -117,6 +119,52 @@ def Test_HasItemsToRebuild_TestWildEncounterRow_ExpectTrue() -> None:
 
 
 CAROUSEL = 'Conservation Carousel'
+ENTRANCE_NODE_ID = 'n-entrance'
+LION_NODE_ID = 'n-lion'
+OPEN_ANCHOR_SECONDS = 9 * 3600 + 30 * 60
+
+LION = ItineraryAnimalRecord(
+   species='African Lion',
+   exhibit='Africa Savanna',
+   old_likelihood=None,
+   new_likelihood=100,
+)
+PENGUIN = ItineraryAnimalRecord(
+   species='African Penguin',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
+   old_likelihood=None,
+   new_likelihood=100,
+)
+
+TEST_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': ENTRANCE_NODE_ID,
+   'nodes': [
+      {
+         'id': ENTRANCE_NODE_ID,
+         'x': 0.0,
+         'y': 0.0,
+         'x_px': 0.0,
+         'y_px': 0.0,
+      },
+      {
+         'id': LION_NODE_ID,
+         'x': 0.1,
+         'y': 0.0,
+         'x_px': 10.0,
+         'y_px': 0.0,
+      },
+   ],
+   'edges': [
+      {
+         'from': ENTRANCE_NODE_ID,
+         'to': LION_NODE_ID,
+         'length_px': 10.0,
+      },
+   ],
+}
 
 
 def Test_PrepareWindows_TestScheduledGuestItems_ExpectClearAllBeforeRepack(
@@ -198,3 +246,50 @@ def Test_PrepareWindows_TestScheduledGuestItems_ExpectClearAllBeforeRepack(
       itinerary_context={} )
 
    assert cleared == [ 'clear_all' ]
+
+
+def Test_StartState_TestUnscheduledAnimals_ExpectEntranceAnchor(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ViewingSpotWalkNodeIdResolver,
+      'resolve',
+      lambda species, exhibit, enclosure_name=None: (
+         LION_NODE_ID
+         if species == 'African Lion' and exhibit == 'Africa Savanna'
+         else None ) )
+
+   start_state = BulkScheduleWindowPreparer.start_state(
+      TEST_GRAPH,
+      [ LION, PENGUIN ],
+      OPEN_ANCHOR_SECONDS )
+
+   assert start_state.start_node_id == ENTRANCE_NODE_ID
+   assert start_state.schedule_anchor_seconds == OPEN_ANCHOR_SECONDS
+
+
+def Test_StartState_TestPreviouslyScheduledAnimal_ExpectResumeAfterLastEnd(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   scheduled_lion = ItineraryAnimalRecord(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100,
+      start_time='9:00 AM',
+      end_time='9:08 AM',
+   )
+
+   monkeypatch.setattr(
+      ViewingSpotWalkNodeIdResolver,
+      'resolve',
+      lambda species, exhibit, enclosure_name=None: (
+         LION_NODE_ID
+         if species == 'African Lion' and exhibit == 'Africa Savanna'
+         else None ) )
+
+   start_state = BulkScheduleWindowPreparer.start_state(
+      TEST_GRAPH,
+      [ scheduled_lion, PENGUIN ],
+      OPEN_ANCHOR_SECONDS )
+
+   assert start_state.start_node_id == LION_NODE_ID
+   assert start_state.schedule_anchor_seconds == OPEN_ANCHOR_SECONDS

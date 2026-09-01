@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sqlite3
+
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
@@ -210,3 +214,40 @@ def Test_AssignContiguous_TestWarthogBeforeGiraffe_ExpectEndBeforeStart() -> Non
    giraffe_start = _seconds( slots[ 1 ][ 1 ] )
 
    assert warthog_end <= giraffe_start
+
+
+def Test_DurationSecondsForStop_TestStoredCustomTimes_ExpectElapsedSeconds() -> None:
+   lion = ItineraryAnimalRecord(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100,
+      start_time='10:00 AM',
+      end_time='10:20 AM',
+   )
+
+   duration_seconds = LoopScheduleSlotAssigner.duration_seconds_for_stop(
+      sqlite3.connect( ':memory:' ),
+      lion )
+
+   assert duration_seconds == 20 * 60
+
+
+def Test_DurationSecondsForStop_TestUnscheduledAnimal_ExpectDefaultDuration(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   lion = ItineraryAnimalRecord(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100,
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.loop_schedule_slot_assigner.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
+      lambda conn, species, exhibit, enclosure_name: 5 * 60 )
+
+   duration_seconds = LoopScheduleSlotAssigner.duration_seconds_for_stop(
+      sqlite3.connect( ':memory:' ),
+      lion )
+
+   assert duration_seconds == 5 * 60
