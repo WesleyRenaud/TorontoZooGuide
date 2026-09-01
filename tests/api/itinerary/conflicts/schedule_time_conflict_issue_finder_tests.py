@@ -139,6 +139,31 @@ def Test_Find_TestPartialTalkEncounterOverlap_ExpectConflictIssue() -> None:
    }
 
 
+def Test_Find_TestTurtleTalkRhinoEncounterAt1400_ExpectConflictIssue() -> None:
+   talk = GuardiansTalkDiff(
+      name='Nile Soft-Shelled Turtle',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:30 PM',
+      location='African Rainforest Pavilion' )
+   encounter = WildEncounterDiff(
+      name='Guardians of White Rhinos',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM',
+      meeting_spot='Wild Encounter - Africa Meeting Spot',
+      link='https://example.com/rhino' )
+
+   issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
+
+   assert len( issues ) == 1
+   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ 0 ].items } == {
+      'Nile Soft-Shelled Turtle',
+      'Guardians of White Rhinos',
+   }
+
+
 def Test_Find_TestLionTalkRainforestEncounter_ExpectIssueDict() -> None:
    talk = GuardiansTalkDiff(
       name='African Lion',

@@ -36,3 +36,22 @@ def Test_ValidateForItinerary_TestCaseInsensitiveNames_ExpectSortedMatches() -> 
       ( 'Kangaroo', False ),
       ( 'African Rainforest', False ),
    ]
+
+
+def Test_ValidateForItinerary_TestPreOpenEncounterTime_ExpectPreservedStartTime() -> None:
+   result = WildEncounterItineraryValidator.validate_for_itinerary(
+      [
+         WildEncounterScheduleItemKey( name='African Rainforest', start_time='08:45' ),
+      ],
+      [
+         WildEncounter(
+            name='African Rainforest',
+            meeting_spot='Wild Encounter - Africa Meeting Spot',
+            link='https://example.com/rainforest',
+            start_time='8:45 AM',
+            maximum_duration=45 ),
+      ] )
+
+   assert len( result ) == 1
+   assert result[ 0 ].start_time == '8:45 AM'
+   assert result[ 0 ].end_time == '9:30 AM'
