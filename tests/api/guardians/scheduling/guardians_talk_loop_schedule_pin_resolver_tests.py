@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
+from api.guardians.data_access.guardians_talk_animal_record import GuardiansTalkAnimalRecord
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin_resolver import GuardiansTalkLoopSchedulePinResolver
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.models import GuardiansTalk
@@ -22,11 +23,61 @@ AFRICA_LOOP = MasterRouteLoop(
          species='African Lion',
          exhibit='Africa Savanna',
          name=None ),
+      ViewingSpotReference(
+         species='African Penguin',
+         exhibit='Africa Savanna',
+         name='Outdoor' ),
+      ViewingSpotReference(
+         species='African Penguin',
+         exhibit='Africa Savanna',
+         name='Indoor' ),
+   ],
+)
+
+RAINFOREST_LOOP = MasterRouteLoop(
+   loop_id='african_rainforest_giraffe',
+   name='African Rainforest',
+   traversal=ONE_WAY_LOOP_TRAVERSAL,
+   viewing_spots=[
+      ViewingSpotReference(
+         species='Western Lowland Gorilla',
+         exhibit='African Rainforest Pavilion',
+         name='Indoor' ),
    ],
 )
 
 LOOPS_BY_ID = {
    'africa_savanna_canadian_domain': AFRICA_LOOP,
+   'african_rainforest_giraffe': RAINFOREST_LOOP,
+}
+
+ANIMAL_LINKS_BY_TALK = {
+   'African Penguin': [
+      GuardiansTalkAnimalRecord(
+         talk_name='African Penguin',
+         location='Africa Savanna',
+         species='African Penguin',
+         exhibit='Africa Savanna',
+         enclosure_name='Outdoor',
+      ),
+   ],
+   'Western Lowland Gorilla': [
+      GuardiansTalkAnimalRecord(
+         talk_name='Western Lowland Gorilla',
+         location='African Rainforest Pavilion',
+         species='Western Lowland Gorilla',
+         exhibit='African Rainforest Pavilion',
+         enclosure_name='Indoor',
+      ),
+   ],
+   'African Lion': [
+      GuardiansTalkAnimalRecord(
+         talk_name='African Lion',
+         location='Africa Savanna',
+         species='African Lion',
+         exhibit='Africa Savanna',
+      ),
+   ],
 }
 
 
@@ -50,7 +101,7 @@ def stub_guardians_talk_loop_schedule_pin_resolver(
    monkeypatch.setattr(
       GuardiansTalkAnimalProvider,
       'fetch_animal_links',
-      lambda conn, talk_name: [] )
+      lambda conn, talk_name: ANIMAL_LINKS_BY_TALK.get( talk_name, [] ) )
 
 
 def Test_Resolve_TestUnmappedTalk_ExpectNone(
@@ -86,4 +137,60 @@ def Test_Resolve_TestAfricanLionTalk_ExpectSavannaLoopPin(
 
    assert loop_pin is not None
    assert loop_pin.loop_id == 'africa_savanna_canadian_domain'
+   assert loop_pin.viewing_spot_index == 0
+
+
+def Test_Resolve_TestPenguinTalk_ExpectOutdoorEnclosurePin(
+      stub_guardians_talk_loop_schedule_pin_resolver: None ) -> None:
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
+      None,
+      GuardiansTalk(
+         name='African Penguin',
+         location='Africa Savanna',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='11:00 AM',
+         end_time='11:30 AM',
+      ),
+      _itinerary_stop( item_key='African Penguin' ) )
+
+   assert loop_pin is not None
+   assert loop_pin.loop_id == 'africa_savanna_canadian_domain'
+   assert loop_pin.viewing_spot_index == 1
+
+
+def Test_Resolve_TestGorillaTalk_ExpectIndoorEnclosurePin(
+      stub_guardians_talk_loop_schedule_pin_resolver: None ) -> None:
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
+      None,
+      GuardiansTalk(
+         name='Western Lowland Gorilla',
+         location='African Rainforest Pavilion',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='11:00 AM',
+         end_time='11:30 AM',
+      ),
+      _itinerary_stop( item_key='Western Lowland Gorilla' ) )
+
+   assert loop_pin is not None
+   assert loop_pin.loop_id == 'african_rainforest_giraffe'
+   assert loop_pin.viewing_spot_index == 0
+
+
+def Test_Resolve_TestLionTalk_ExpectNullEnclosurePin(
+      stub_guardians_talk_loop_schedule_pin_resolver: None ) -> None:
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
+      None,
+      GuardiansTalk(
+         name='African Lion',
+         location='Africa Savanna',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='11:00 AM',
+         end_time='11:30 AM',
+      ),
+      _itinerary_stop( item_key='African Lion' ) )
+
+   assert loop_pin is not None
    assert loop_pin.viewing_spot_index == 0
