@@ -115,6 +115,65 @@ def stub_giraffe_animal_coordinator(
       } )
 
 
+@pytest.fixture
+def stub_giraffe_habitat_swap_coordinator(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   def get_animals_for_saved_itinerary(
+         *,
+         day: int,
+         month: int | str,
+         year: int,
+         temp: float | None,
+         saved_animals: list[ ItineraryAnimalRecord ] ) -> list[ Animal ]:
+      if not saved_animals:
+         return []
+
+      enclosure_name = saved_animals[ 0 ].enclosure_name
+
+      if enclosure_name == 'Giraffe House' and temp == 18:
+         return []
+
+      if enclosure_name == 'Giraffe House':
+         return [
+            _animal(
+               species='Masai Giraffe',
+               exhibit='Africa Savanna',
+               enclosure_name='Giraffe House',
+               likelihood=100 ),
+         ]
+
+      return []
+
+   def get_animals_viewable_on_day(
+         *,
+         day: int,
+         month: int | str,
+         year: int,
+         temp: float | None,
+         include_off_display_animals: bool,
+         threshold: int | None = None,
+         exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
+      if not include_off_display_animals:
+         return []
+
+      return [
+         _animal(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            likelihood=100 ),
+      ]
+
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'get_animals_for_saved_itinerary',
+      get_animals_for_saved_itinerary )
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'get_animals_viewable_on_day',
+      get_animals_viewable_on_day )
+
+
 def Test_Validate_TestUnavailableAnimal_ExpectZeroLikelihood(
       stub_unavailable_lion_animal_coordinator: None ) -> None:
    result = ItineraryAnimalValidator.validate(
@@ -204,3 +263,40 @@ def Test_Validate_TestSavedViewingSpot_ExpectResolvedLikelihood(
    assert [ ( diff.species, diff.new_likelihood ) for diff in result ] == [
       ( 'Masai Giraffe', 100 ),
    ]
+
+
+def Test_ValidateOnDateChange_TestUnavailableHabitat_ExpectPreferredOutdoorSwap(
+      stub_giraffe_habitat_swap_coordinator: None ) -> None:
+   result = ItineraryAnimalValidator.validate(
+      AnimalCoordinator,
+      animals=[
+         ItineraryAnimalInput(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Giraffe House' ),
+      ],
+      new_visit_date=date( 2026, 10, 17 ),
+      arrival_time='09:30',
+      departure_time='17:00',
+      new_visit_date_temp=18,
+      old_visit_date='2026-10-31',
+      saved_animal_rows=[
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Giraffe House',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+      visit_date_is_changing=True )
+
+   giraffes = [
+      diff
+      for diff in result
+      if diff.species == 'Masai Giraffe'
+   ]
+
+   assert len( giraffes ) == 1
+   assert giraffes[ 0 ].enclosure_name == 'Outdoor'
+   assert giraffes[ 0 ].is_added is False
