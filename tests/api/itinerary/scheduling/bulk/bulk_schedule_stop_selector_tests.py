@@ -9,6 +9,8 @@ from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkSchedu
 
 CAROUSEL = 'Conservation Carousel'
 ZOOMOBILE = 'Zoomobile'
+AFRICAN_RAINFOREST_PAVILION = 'African Rainforest Pavilion'
+ALDABRA_INDOOR_ENCLOSURE = 'Ring-Tailed Lemur Enclosure'
 
 
 def _saved() -> SavedItinerary:
@@ -182,6 +184,46 @@ def Test_StopsMatchingPrevious_TestLionScheduledPenguinNot_ExpectLionOnly() -> N
    stops = BulkScheduleStopSelector.stops_matching_previous( before, after )
 
    assert [ animal.species for animal in stops ] == [ 'African Lion' ]
+
+
+def Test_StopsMatchingPrevious_TestAldabraRainforestOutdoorToIndoor_ExpectIndoorRow() -> None:
+   before = SavedItinerary(
+      date_value='2026-07-19',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='Aldabra Tortoise',
+            exhibit=AFRICAN_RAINFOREST_PAVILION,
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+   )
+   after = SavedItinerary(
+      date_value='2026-07-20',
+      arrival_time='11:00 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='Aldabra Tortoise',
+            exhibit=AFRICAN_RAINFOREST_PAVILION,
+            enclosure_name=ALDABRA_INDOOR_ENCLOSURE,
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+   )
+
+   stops = BulkScheduleStopSelector.stops_matching_previous( before, after )
+
+   assert [
+      ( animal.species, animal.enclosure_name )
+      for animal in stops
+   ] == [ ( 'Aldabra Tortoise', ALDABRA_INDOOR_ENCLOSURE ) ]
 
 
 def Test_Stops_TestAllGuestStops_ExpectAnimalsAttractionsAndTransportation() -> None:
