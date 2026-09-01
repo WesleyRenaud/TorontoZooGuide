@@ -164,6 +164,35 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectArrivalDeparturePreserved(
    assert result.itinerary.departure_time == '5:00 PM'
 
 
+def Test_UnscheduleAll_TestEmptyItinerary_ExpectError(
+      unschedule_all_conn: sqlite3.Connection,
+      stub_unschedule_all_context: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value=None,
+         arrival_time=None,
+         departure_time=None,
+      ) )
+   monkeypatch.setattr(
+      ItinerarySaveResultBuilder,
+      'save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=CLEARED_ITINERARY ) )
+
+   result = AllItineraryItemsUnscheduler.unschedule_all(
+      unschedule_all_conn,
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator )
+
+   assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
+
+
 def Test_UnscheduleAll_TestNothingGuestScheduled_ExpectError(
       unschedule_all_conn: sqlite3.Connection,
       stub_unschedule_all_context: None,
