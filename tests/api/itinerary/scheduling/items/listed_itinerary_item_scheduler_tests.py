@@ -387,3 +387,78 @@ def Test_Schedule_TestRequestedStartAfterDeparture_ExpectExplicitStart(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert committed_times == [ ( '1:00 PM', '1:08 PM' ) ]
+
+
+def Test_Schedule_TestEarlyAdmissionWindow_ExpectNineAmStart(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   committed_times: list[ tuple[ str, str ] ] = []
+   early_admission_window = ( 9 * 3600, 17 * 3600 )
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time=None,
+         departure_time='5:00 PM',
+         animal_rows=SAVED_ITINERARY.animal_rows,
+      ),
+      window=early_admission_window,
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=ZOO_HOURS )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time=None,
+         departure_time='5:00 PM',
+         animal_rows=SAVED_ITINERARY.animal_rows,
+      ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleTargetResolver.resolve',
+      lambda conn, schedule_item_key: ListedScheduleTarget(
+         default_duration_seconds=8 * 60 ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+
+   def commit(
+         conn: sqlite3.Connection,
+         *,
+         schedule_item_key: AnimalScheduleItemKey,
+         start_time: str,
+         end_time: str,
+         insert_if_missing: bool,
+         itinerary_context: dict[ str, object ] ) -> ItinerarySaveResult:
+      committed_times.append( ( start_time, end_time ) )
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ListedScheduleItemPersister.commit',
+      commit )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert committed_times == [ ( '9:00 AM', '9:08 AM' ) ]
