@@ -182,3 +182,19 @@ def Test_StopsMatchingPrevious_TestLionScheduledPenguinNot_ExpectLionOnly() -> N
    stops = BulkScheduleStopSelector.stops_matching_previous( before, after )
 
    assert [ animal.species for animal in stops ] == [ 'African Lion' ]
+
+
+def Test_Stops_TestAllGuestStops_ExpectAnimalsAttractionsAndTransportation() -> None:
+   stops = BulkScheduleStopSelector.stops(
+      _saved(),
+      only_previously_scheduled=False )
+
+   assert [
+      ( getattr( stop, 'species', None ), getattr( stop, 'attraction', None ), getattr( stop, 'transportation', None ) )
+      for stop in stops
+   ] == [
+      ( 'African Lion', None, None ),
+      ( 'Cheetah', None, None ),
+      ( None, CAROUSEL, None ),
+      ( None, ZOOMOBILE, ZOOMOBILE ),
+   ]

@@ -72,3 +72,16 @@ def Test_Merge_TestMultipleGroups_ExpectConcatenated() -> None:
       [ '10:00' ],
       [ '12:00', '14:00' ],
    ) == [ '10:00', '12:00', '14:00' ]
+
+
+def Test_FromSaveInput_TestPreOpenWildEncounter_ExpectStartTime() -> None:
+   save_input = ItinerarySaveInput(
+      date=date( 2026, 6, 15 ),
+      arrival_time='08:45',
+      departure_time='17:00',
+      wild_encounters=[
+         WildEncounterScheduleItemKey( name='African Rainforest', start_time='08:45' ),
+      ],
+   )
+
+   assert FixedZooScheduleStartTimesBuilder.from_save_input( save_input ) == [ '8:45 AM' ]
