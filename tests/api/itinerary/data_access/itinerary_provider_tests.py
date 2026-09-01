@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
+from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 
 
 ITINERARY_PROVIDER_SCHEMA = """
@@ -195,3 +196,53 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
    assert saved.guardians_talk_rows[ 0 ].start_time == '10:00 AM'
    assert saved.wild_encounter_rows[ 0 ].wild_encounter == 'African Rainforest'
    assert saved.wild_encounter_rows[ 0 ].start_time == '2:00 PM'
+
+
+def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
+      itinerary_provider_conn: sqlite3.Connection ) -> None:
+   itinerary_provider_conn.execute(
+      """   INSERT INTO ItineraryTransportationLeg (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, 1, ?, ?, ?, ? );
+      """,
+      (
+         'Zoomobile',
+         'Main Zoomobile Station',
+         'Canadian Domain Zoomobile Station',
+         '10:00 AM',
+         '10:20 AM',
+      ) )
+   itinerary_provider_conn.execute(
+      """   INSERT INTO ItineraryTransportationLeg (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, 1, ?, ?, ?, ? );
+      """,
+      (
+         'Zoomobile',
+         'Canadian Domain Zoomobile Station',
+         'Africa Zoomobile Station',
+         '10:20 AM',
+         '10:30 AM',
+      ) )
+   itinerary_provider_conn.commit()
+
+   legs = ItineraryProvider.fetch_itinerary_transportation_leg_rows(
+      itinerary_provider_conn )
+
+   assert len( legs ) == 2
+   assert all( isinstance( leg, ItineraryTransportationLeg ) for leg in legs )
+   assert legs[ 0 ].transportation == 'Zoomobile'
+   assert legs[ 0 ].from_station == 'Main Zoomobile Station'
+   assert legs[ -1 ].to_station == 'Africa Zoomobile Station'
