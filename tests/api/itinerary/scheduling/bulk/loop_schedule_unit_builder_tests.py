@@ -77,6 +77,54 @@ AFRICA_CHEETAH = _animal_record(
    species='Cheetah',
    exhibit='Africa Savanna',
 )
+OSTRICH = _animal_record(
+   species='Ostrich',
+   exhibit='Africa Savanna',
+)
+OSTRICH_WHITE_RHINO_VIEWING = _animal_record(
+   species='Ostrich',
+   exhibit='Africa Savanna',
+   enclosure_name='White Rhino Viewing',
+)
+OSTRICH_KESHO_PARK_OFFSHOOT = _animal_record(
+   species='Ostrich',
+   exhibit='Africa Savanna',
+   enclosure_name='Kesho Park Offshoot',
+)
+ZEBRA = _animal_record(
+   species="Grevy's Zebra",
+   exhibit='Africa Savanna',
+)
+ZEBRA_SAVANNA_GRASSLANDS = _animal_record(
+   species="Grevy's Zebra",
+   exhibit='Africa Savanna',
+   enclosure_name='Savanna Grasslands',
+)
+MARABOU_WHITE_RHINO_VIEWING = _animal_record(
+   species='Marabou Stork',
+   exhibit='Africa Savanna',
+   enclosure_name='White Rhino Viewing',
+)
+MARABOU_PAVILION_SAVANNA_OVERLOOK = _animal_record(
+   species='Marabou Stork',
+   exhibit='African Rainforest Pavilion',
+   enclosure_name='Savanna Overlook',
+)
+GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK = _animal_record(
+   species='Greater Kudu',
+   exhibit='African Rainforest Pavilion',
+   enclosure_name='Savanna Overlook',
+)
+SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK = _animal_record(
+   species='Southern Ground Hornbill',
+   exhibit='African Rainforest Pavilion',
+   enclosure_name='Savanna Overlook',
+)
+WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK = _animal_record(
+   species='White-Headed Vulture',
+   exhibit='African Rainforest Pavilion',
+   enclosure_name='Savanna Overlook',
+)
 UNKNOWN_ANIMAL = _animal_record(
    species='Unknown Animal',
    exhibit='Nowhere',
@@ -91,6 +139,15 @@ WALK_NODE_IDS = {
    ( 'West Caucasian Tur', 'Eurasia Wilds', None ): 'n-tur',
    ( 'African Penguin', 'Africa Savanna', 'Outdoor' ): 'n-penguin',
    ( 'Cheetah', 'Africa Savanna', None ): 'n-africa-cheetah',
+   ( 'Ostrich', 'Africa Savanna', None ): 'n-ostrich',
+   ( 'Ostrich', 'Africa Savanna', 'White Rhino Viewing' ): 'n-ostrich-white-rhino',
+   ( 'Ostrich', 'Africa Savanna', 'Kesho Park Offshoot' ): 'n-ostrich-kesho',
+   ( "Grevy's Zebra", 'Africa Savanna', None ): 'n-zebra',
+   ( 'Marabou Stork', 'Africa Savanna', 'White Rhino Viewing' ): 'n-marabou-white-rhino',
+   ( 'Marabou Stork', 'African Rainforest Pavilion', 'Savanna Overlook' ): 'n-marabou-overlook',
+   ( 'Greater Kudu', 'African Rainforest Pavilion', 'Savanna Overlook' ): 'n-kudu-overlook',
+   ( 'Southern Ground Hornbill', 'African Rainforest Pavilion', 'Savanna Overlook' ): 'n-hornbill-overlook',
+   ( 'White-Headed Vulture', 'African Rainforest Pavilion', 'Savanna Overlook' ): 'n-vulture-overlook',
    ( 'Unknown Animal', 'Nowhere', None ): 'n-unknown',
 }
 
@@ -148,9 +205,55 @@ LOOPS_BY_ID = {
             exhibit='Africa Savanna',
             name='Outdoor' ),
          ViewingSpotReference(
+            species='Ostrich',
+            exhibit='Africa Savanna',
+            name=None ),
+         ViewingSpotReference(
+            species="Grevy's Zebra",
+            exhibit='Africa Savanna',
+            name=None ),
+         ViewingSpotReference(
             species='Cheetah',
             exhibit='Africa Savanna',
             name=None ),
+         ViewingSpotReference(
+            species='Ostrich',
+            exhibit='Africa Savanna',
+            name='White Rhino Viewing' ),
+         ViewingSpotReference(
+            species='Ostrich',
+            exhibit='Africa Savanna',
+            name='Kesho Park Offshoot' ),
+         ViewingSpotReference(
+            species='Marabou Stork',
+            exhibit='Africa Savanna',
+            name='White Rhino Viewing' ),
+      ] ),
+   'african_rainforest': MasterRouteLoop(
+      loop_id='african_rainforest',
+      name='African Rainforest Pavilion',
+      traversal=ONE_WAY_LOOP_TRAVERSAL,
+      viewing_spots=[
+         ViewingSpotReference(
+            species='Greater Kudu',
+            exhibit='African Rainforest Pavilion',
+            name='Savanna Overlook' ),
+         ViewingSpotReference(
+            species='Marabou Stork',
+            exhibit='African Rainforest Pavilion',
+            name='Savanna Overlook' ),
+         ViewingSpotReference(
+            species='Southern Ground Hornbill',
+            exhibit='African Rainforest Pavilion',
+            name='Savanna Overlook' ),
+         ViewingSpotReference(
+            species='White-Headed Vulture',
+            exhibit='African Rainforest Pavilion',
+            name='Savanna Overlook' ),
+         ViewingSpotReference(
+            species='Ostrich',
+            exhibit='African Rainforest Pavilion',
+            name='Savanna Overlook' ),
       ] ),
 }
 
@@ -164,6 +267,15 @@ LOOP_ID_BY_STOP_KEY = {
    _stop_key( WEST_CAUCASIAN_TUR ): 'eurasia_wilds',
    _stop_key( AFRICA_PENGUIN ): 'africa_savanna_canadian_domain',
    _stop_key( AFRICA_CHEETAH ): 'africa_savanna_canadian_domain',
+   _stop_key( OSTRICH ): 'africa_savanna_canadian_domain',
+   _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 'africa_savanna_canadian_domain',
+   _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 'africa_savanna_canadian_domain',
+   _stop_key( ZEBRA ): 'africa_savanna_canadian_domain',
+   _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 'africa_savanna_canadian_domain',
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
 }
 
 LOOP_SIDE_CLUSTER_ID_BY_LOOP_ID = {
@@ -171,6 +283,7 @@ LOOP_SIDE_CLUSTER_ID_BY_LOOP_ID = {
    'indo_malaya': 'south',
    'eurasia_wilds': 'north',
    'africa_savanna_canadian_domain': 'south',
+   'african_rainforest': 'south',
 }
 
 LOOP_INDEX_IN_SIDE_CLUSTER_BY_LOOP_ID = {
@@ -178,6 +291,7 @@ LOOP_INDEX_IN_SIDE_CLUSTER_BY_LOOP_ID = {
    'indo_malaya': 1,
    'eurasia_wilds': 2,
    'africa_savanna_canadian_domain': 3,
+   'african_rainforest': 4,
 }
 
 ROUTE_INDEX_BY_STOP_KEY = {
@@ -189,7 +303,16 @@ ROUTE_INDEX_BY_STOP_KEY = {
    _stop_key( HIGHLAND_CATTLE ): 3,
    _stop_key( WEST_CAUCASIAN_TUR ): 4,
    _stop_key( AFRICA_PENGUIN ): 5,
-   _stop_key( AFRICA_CHEETAH ): 6,
+   _stop_key( OSTRICH ): 6,
+   _stop_key( ZEBRA ): 7,
+   _stop_key( AFRICA_CHEETAH ): 8,
+   _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 9,
+   _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 10,
+   _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 11,
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 12,
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 13,
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 14,
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 15,
 }
 
 LOOP_INDEX_BY_STOP_KEY = {
@@ -201,7 +324,16 @@ LOOP_INDEX_BY_STOP_KEY = {
    _stop_key( HIGHLAND_CATTLE ): 2,
    _stop_key( WEST_CAUCASIAN_TUR ): 2,
    _stop_key( AFRICA_PENGUIN ): 3,
+   _stop_key( OSTRICH ): 3,
+   _stop_key( ZEBRA ): 3,
    _stop_key( AFRICA_CHEETAH ): 3,
+   _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 3,
+   _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 3,
+   _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 3,
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 4,
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 4,
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 4,
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 4,
 }
 
 
@@ -367,6 +499,61 @@ def Test_Build_TestWovenAttractionBetweenAnimals_ExpectMasterRouteOrder(
       'Western Grey Kangaroo',
       'Kangaroo Walk-Thru',
       'Amur Tiger',
+   ]
+
+
+def Test_Build_TestPavilionSavannaOverlookStops_ExpectExcludedFromSavannaLoop(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      [
+         [
+            MARABOU_WHITE_RHINO_VIEWING,
+            MARABOU_PAVILION_SAVANNA_OVERLOOK,
+            GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK,
+            SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK,
+            WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK,
+         ],
+      ] )
+
+   assert len( loop_units ) == 1
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [
+      ( animal.species, animal.enclosure_name )
+      for animal in loop_units[ 0 ].stops
+   ] == [
+      ( 'Marabou Stork', 'White Rhino Viewing' ),
+   ]
+
+
+def Test_Build_TestZebraSavannaGrasslands_ExpectExcludedFromSavannaLoop(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      [ [ ZEBRA_SAVANNA_GRASSLANDS, ZEBRA ] ] )
+
+   assert len( loop_units ) == 1
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ ( animal.species, animal.enclosure_name ) for animal in loop_units[ 0 ].stops ] == [
+      ( "Grevy's Zebra", None ),
+   ]
+
+
+def Test_Build_TestOstrichEnclosures_ExpectMasterRouteOrder(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      [
+         [
+            OSTRICH_KESHO_PARK_OFFSHOOT,
+            OSTRICH_WHITE_RHINO_VIEWING,
+            OSTRICH,
+         ],
+      ] )
+
+   assert len( loop_units ) == 1
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.enclosure_name for animal in loop_units[ 0 ].stops ] == [
+      None,
+      'White Rhino Viewing',
+      'Kesho Park Offshoot',
    ]
 
 
