@@ -491,3 +491,55 @@ def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarl
    assert legs[ 1 ][ 'TO_STATION' ] == 'Station C'
    assert legs[ 1 ][ 'START_TIME' ] == '11:15 AM'
    assert legs[ 1 ][ 'END_TIME' ] == '11:30 AM'
+
+
+def Test_ShiftItemsAfterUnschedule_TestWovenTalkRemoved_ExpectLaterAnimalShiftedEarlier(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   shift_applier_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'African Lion', 'Africa Savanna', '11:00 AM', '11:08 AM' ) )
+   shift_applier_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'Cheetah', 'Africa Savanna', '11:30 AM', '11:38 AM' ) )
+   shift_applier_conn.commit()
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.shift_items_after_unschedule(
+      shift_applier_conn,
+      cur,
+      anchor_end_seconds=11 * 3600 + 30 * 60,
+      shift_seconds=-22 * 60,
+      freed_block=TimeBlock(
+         start_seconds=11 * 3600,
+         end_seconds=11 * 3600 + 30 * 60,
+      ) )
+   shift_applier_conn.commit()
+   cur.close()
+
+   cheetah = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ? AND EXHIBIT = ?;
+      """,
+      ( 'Cheetah', 'Africa Savanna' ),
+   ).fetchone()
+
+   assert cheetah is not None
+   assert cheetah[ 'START_TIME' ] == '11:08 AM'
+   assert cheetah[ 'END_TIME' ] == '11:16 AM'

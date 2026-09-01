@@ -160,6 +160,8 @@ def Test_ScheduleSteps_TestSavannaAnimals_ExpectSegmentsAndGap(
    assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'Cheetah' ]
    assert steps[ 2 ].end_before_seconds == window_end_seconds
    assert steps[ 2 ].anchor_at_end is False
+   assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
+   assert loop_pin.start_seconds < loop_pin.end_seconds
 
 
 def Test_SplitStops_TestWovenAttraction_ExpectPostPinAttractionAndAnimal(

@@ -43,6 +43,7 @@ DELETED_CARIBOU_TALK = GuardiansTalkDiff(
 )
 
 PENGUIN_TALK = 'African Penguin'
+LION_TALK = 'African Lion'
 
 PENGUIN_INDOOR_ROW = ItineraryAnimalRecord(
    species='African Penguin',
@@ -56,6 +57,20 @@ PENGUIN_OUTDOOR_ROW = ItineraryAnimalRecord(
    exhibit='Africa Savanna',
    enclosure_name='Outdoor',
    new_likelihood=100,
+)
+
+LION_ROW = ItineraryAnimalRecord(
+   species='African Lion',
+   exhibit='Africa Savanna',
+   enclosure_name=None,
+   new_likelihood=100,
+)
+
+LION_LINK = GuardiansTalkAnimalRecord(
+   talk_name=LION_TALK,
+   location='Africa Savanna',
+   species='African Lion',
+   exhibit='Africa Savanna',
 )
 
 COVERER_SCHEMA = """
@@ -97,6 +112,16 @@ def _penguin_loop_pin() -> LoopSchedulePin:
       loop_id='africa_savanna_canadian_domain',
       viewing_spot_index=1,
       stop=_talk_stop( name=PENGUIN_TALK ),
+      start_seconds=11 * 3600,
+      end_seconds=11 * 3600 + 30 * 60,
+   )
+
+
+def _lion_loop_pin() -> LoopSchedulePin:
+   return LoopSchedulePin(
+      loop_id='africa_savanna_canadian_domain',
+      viewing_spot_index=0,
+      stop=_talk_stop( name=LION_TALK ),
       start_seconds=11 * 3600,
       end_seconds=11 * 3600 + 30 * 60,
    )
@@ -148,6 +173,49 @@ def penguin_coverer_conn() -> sqlite3.Connection:
          ( 'African Penguin', 'Africa Savanna', 'Indoor' ),
          ( 'African Penguin', 'Africa Savanna', 'Outdoor' ),
       ],
+   )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+@pytest.fixture
+def lion_coverer_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( COVERER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO GuardiansTalkAnimal (
+               TALK_NAME,
+               LOCATION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES ( ?, ?, ?, ?, NULL );
+      """,
+      (
+         LION_TALK,
+         'Africa Savanna',
+         'African Lion',
+         'Africa Savanna',
+      ),
+   )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               COVERED_BY_TALK,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, 100, 0, NULL, NULL );
+      """,
+      ( 'African Lion', 'Africa Savanna' ),
    )
    conn.commit()
 
@@ -316,3 +384,86 @@ def Test_ApplyAndRestore_TestPenguinOutdoor_ExpectIndoorUntouched(
    assert rows_by_enclosure[ 'Outdoor' ][ 'START_TIME' ] == '11:00 AM'
    assert rows_by_enclosure[ 'Outdoor' ][ 'END_TIME' ] == '11:05 AM'
    assert rows_by_enclosure[ 'Indoor' ][ 'COVERED_BY_TALK' ] == 0
+
+
+def Test_KeysToCover_TestAfricanLionLoopPin_ExpectLionRowOnly(
+      lion_coverer_conn: sqlite3.Connection ) -> None:
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      lion_coverer_conn,
+      [ _lion_loop_pin() ],
+      [ LION_ROW ],
+   )
+
+   assert set( covered ) == {
+      ViewingSpotKeyBuilder.from_values(
+         'African Lion',
+         'Africa Savanna',
+         None ),
+   }
+
+
+def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
+      lambda conn, species, exhibit, enclosure_name: 8 * 60 )
+
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      lion_coverer_conn,
+      [ _lion_loop_pin() ],
+      [ LION_ROW ],
+   )
+   GuardiansTalkAnimalCoverer.apply( lion_coverer_conn, covered )
+
+   row = lion_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'African Lion';
+      """,
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'COVERED_BY_TALK' ] == 1
+   assert row[ 'START_TIME' ] == '11:00 AM'
+   assert row[ 'END_TIME' ] == '11:30 AM'
+
+   cur = lion_coverer_conn.cursor()
+   restored = GuardiansTalkAnimalCoverer.restore_after_removed(
+      cur,
+      lion_coverer_conn,
+      talk_name=LION_TALK,
+      talk_block=TimeBlock(
+         start_seconds=11 * 3600,
+         end_seconds=11 * 3600 + 30 * 60,
+      ),
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            covered_by_talk=True,
+            start_time='11:00 AM',
+            end_time='11:30 AM',
+         ),
+      ],
+   )
+   lion_coverer_conn.commit()
+   cur.close()
+
+   assert len( restored.animals ) == 1
+   assert restored.replacement_end_seconds == 11 * 3600 + 8 * 60
+
+   row = lion_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'African Lion';
+      """,
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'COVERED_BY_TALK' ] == 0
+   assert row[ 'START_TIME' ] == '11:00 AM'
+   assert row[ 'END_TIME' ] == '11:08 AM'
