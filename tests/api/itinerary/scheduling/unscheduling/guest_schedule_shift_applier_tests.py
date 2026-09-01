@@ -9,8 +9,10 @@ from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
@@ -28,6 +30,11 @@ ZOOMOBILE_ATTRACTION_END = '11:30 AM'
 ZOOMOBILE_TRANSIT_START = '11:30 AM'
 ZOOMOBILE_TRANSIT_END = '12:00 PM'
 ZOOMOBILE_TRANSIT_ROUTE = 'zoomobile-route'
+ZEBRA_TALK = "Grevy's Zebra"
+CAMEL_TALK = 'Bactrian Camel'
+ZEBRA_TALK_KEY = GuardiansTalkScheduleItemKey(
+   name=ZEBRA_TALK,
+   start_time='12:00' )
 
 SHIFT_APPLIER_SCHEMA = """
 CREATE TABLE ItineraryAnimal (
@@ -543,3 +550,139 @@ def Test_ShiftItemsAfterUnschedule_TestWovenTalkRemoved_ExpectLaterAnimalShifted
    assert cheetah is not None
    assert cheetah[ 'START_TIME' ] == '11:08 AM'
    assert cheetah[ 'END_TIME' ] == '11:16 AM'
+
+
+def _insert_adjacent_talk_unschedule_fixture(
+      conn: sqlite3.Connection,
+      *,
+      include_camel_talk: bool ) -> SavedItinerary:
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor', '1:00 PM', '1:10 PM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryGuardiansTalk (
+               TALK_NAME,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES ( ?, ?, ?, 0 );
+      """,
+      ( ZEBRA_TALK, '12:00 PM', '12:30 PM' ) )
+
+   if include_camel_talk:
+      conn.execute(
+         """   INSERT INTO ItineraryGuardiansTalk (
+                  TALK_NAME,
+                  START_TIME,
+                  END_TIME,
+                  IS_DELETED
+               )
+               VALUES ( ?, ?, ?, 0 );
+         """,
+         ( CAMEL_TALK, '12:30 PM', '1:00 PM' ) )
+
+   conn.commit()
+
+   return SavedItinerary(
+      date_value='2026-07-01',
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            start_time='1:00 PM',
+            end_time='1:10 PM',
+         ),
+      ],
+      guardians_talk_rows=[
+         ItineraryGuardiansTalkRecord(
+            talk_name=ZEBRA_TALK,
+            start_time='12:00 PM',
+            end_time='12:30 PM',
+            is_deleted=False,
+         ),
+         *(
+            [
+               ItineraryGuardiansTalkRecord(
+                  talk_name=CAMEL_TALK,
+                  start_time='12:30 PM',
+                  end_time='1:00 PM',
+                  is_deleted=False,
+               ),
+            ]
+            if include_camel_talk
+            else []
+         ),
+      ],
+   )
+
+
+def Test_ApplyForUnschedule_TestZebraRemovedWithAdjacentCamel_ExpectGiraffeUnshifted(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   saved_itinerary = _insert_adjacent_talk_unschedule_fixture(
+      shift_applier_conn,
+      include_camel_talk=True )
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.apply_for_unschedule(
+      shift_applier_conn,
+      cur,
+      saved_itinerary=saved_itinerary,
+      schedule_item_key=ZEBRA_TALK_KEY )
+   shift_applier_conn.commit()
+   cur.close()
+
+   giraffe = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor' ),
+   ).fetchone()
+
+   assert giraffe is not None
+   assert giraffe[ 'START_TIME' ] == '1:00 PM'
+   assert giraffe[ 'END_TIME' ] == '1:10 PM'
+
+
+def Test_ApplyForUnschedule_TestZebraRemovedWithoutReplacement_ExpectGiraffeShiftedEarlier(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   saved_itinerary = _insert_adjacent_talk_unschedule_fixture(
+      shift_applier_conn,
+      include_camel_talk=False )
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.apply_for_unschedule(
+      shift_applier_conn,
+      cur,
+      saved_itinerary=saved_itinerary,
+      schedule_item_key=ZEBRA_TALK_KEY )
+   shift_applier_conn.commit()
+   cur.close()
+
+   giraffe = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor' ),
+   ).fetchone()
+
+   assert giraffe is not None
+   assert giraffe[ 'START_TIME' ] == '12:30 PM'
+   assert giraffe[ 'END_TIME' ] == '12:40 PM'

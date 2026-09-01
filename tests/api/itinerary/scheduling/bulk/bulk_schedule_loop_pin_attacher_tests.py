@@ -61,6 +61,44 @@ def Test_KeepCompletable_TestPinWithoutPostTalkWindow_ExpectDropped() -> None:
    assert kept_pins == [ camel_pin ]
 
 
+def Test_KeepCompletable_TestAdjacentCamelTalk_ExpectZebraPinDropped() -> None:
+   zebra_pin = _talk_loop_pin(
+      loop_id='africa_savanna_canadian_domain',
+      viewing_spot_index=18,
+      item_key=ZEBRA_TALK,
+      start_seconds=12 * 3600,
+      end_seconds=12 * 3600 + 30 * 60 )
+   camel_pin = _talk_loop_pin(
+      loop_id='eurasia',
+      viewing_spot_index=1,
+      item_key=CAMEL_TALK,
+      start_seconds=12 * 3600 + 30 * 60,
+      end_seconds=13 * 3600 )
+   schedule_windows = [
+      ItineraryScheduleWindow(
+         start_seconds=9 * 3600,
+         end_seconds=12 * 3600,
+         anchor_stop=ItineraryStop(
+            schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+            item_key=ZEBRA_TALK,
+            walk_node_ids=( 'v-0018', ),
+            is_fixed_time=True,
+            start_time='12:00 PM',
+            end_time='12:30 PM' ) ),
+      ItineraryScheduleWindow(
+         start_seconds=13 * 3600,
+         end_seconds=17 * 3600,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-0044' ),
+   ]
+
+   kept_pins = BulkScheduleLoopPinAttacher.keep_completable(
+      schedule_windows,
+      [ zebra_pin, camel_pin ] )
+
+   assert kept_pins == [ camel_pin ]
+
+
 def Test_KeepCompletable_TestPinWithPostTalkWindow_ExpectKept() -> None:
    zebra_pin = _talk_loop_pin(
       loop_id='africa_savanna_canadian_domain',
