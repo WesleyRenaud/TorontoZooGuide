@@ -5,6 +5,8 @@ from api.models.wild_encounter import WildEncounter
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 
 
+KANGAROO_ENCOUNTER_TIME = '3:30 PM'
+
 DAY_SCHEDULE = [
    WildEncounter(
       name='Kangaroo',
@@ -55,3 +57,29 @@ def Test_ValidateForItinerary_TestPreOpenEncounterTime_ExpectPreservedStartTime(
    assert len( result ) == 1
    assert result[ 0 ].start_time == '8:45 AM'
    assert result[ 0 ].end_time == '9:30 AM'
+
+
+def Test_ValidateForItinerary_TestKangarooAt330PmThursday_ExpectPreservedSchedule() -> None:
+   day_schedule = [
+      WildEncounter(
+         name='Kangaroo',
+         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+         link='https://example.test/kangaroo',
+         start_time=KANGAROO_ENCOUNTER_TIME,
+         maximum_duration=45,
+         is_available=True ),
+   ]
+
+   result = WildEncounterItineraryValidator.validate_for_itinerary(
+      [
+         WildEncounterScheduleItemKey(
+            name='Kangaroo',
+            start_time=KANGAROO_ENCOUNTER_TIME ),
+      ],
+      day_schedule )
+
+   assert len( result ) == 1
+   assert result[ 0 ].name == 'Kangaroo'
+   assert result[ 0 ].is_deleted is False
+   assert result[ 0 ].start_time == KANGAROO_ENCOUNTER_TIME
+   assert result[ 0 ].end_time == '4:15 PM'

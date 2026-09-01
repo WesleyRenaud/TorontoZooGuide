@@ -11,6 +11,8 @@ from api.models.wild_encounter_diff import WildEncounterDiff
 
 
 ZOOMOBILE = 'Zoomobile'
+KANGAROO = 'Kangaroo'
+KANGAROO_ENCOUNTER_TIME = '3:30 PM'
 
 SAVE_PROVIDER_SCHEMA = """
 CREATE TABLE ItineraryGuardiansTalk (
@@ -122,6 +124,38 @@ def Test_SaveItineraryGuardiansTalks_TestScheduledTalk_ExpectDisplayFormat(
    assert dict( talk ) == {
       'START_TIME': '10:00 AM',
       'END_TIME': '10:30 AM',
+      'IS_DELETED': 0,
+   }
+
+
+def Test_SaveItineraryWildEncounters_TestKangarooAt330Pm_ExpectPersistedActiveRow(
+      save_provider_conn: sqlite3.Connection ) -> None:
+   wild_encounters = [
+      WildEncounterDiff(
+         name=KANGAROO,
+         is_deleted=False,
+         start_time=KANGAROO_ENCOUNTER_TIME,
+         end_time='4:15 PM',
+         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+         link='https://example.test/kangaroo' ),
+   ]
+   cur = save_provider_conn.cursor()
+   SaveItineraryProvider.save_itinerary_wild_encounters( cur, wild_encounters )
+   save_provider_conn.commit()
+   cur.close()
+
+   encounter = save_provider_conn.execute(
+      """   SELECT START_TIME, END_TIME, IS_DELETED
+            FROM ItineraryWildEncounter
+            WHERE WILD_ENCOUNTER = ?;
+      """,
+      ( KANGAROO, ),
+   ).fetchone()
+
+   assert encounter is not None
+   assert dict( encounter ) == {
+      'START_TIME': KANGAROO_ENCOUNTER_TIME,
+      'END_TIME': '4:15 PM',
       'IS_DELETED': 0,
    }
 

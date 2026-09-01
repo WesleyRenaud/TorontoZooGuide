@@ -65,6 +65,28 @@ def _kangaroo_schedule_record() -> WildEncounterScheduleRecord:
       is_cancelled=False )
 
 
+def _active_kangaroo_schedule_record() -> WildEncounterScheduleRecord:
+   return WildEncounterScheduleRecord(
+      name='Kangaroo',
+      meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+      link='https://example.test',
+      maximum_duration=MAXIMUM_DURATION,
+      x_coord=STATION_COORD,
+      y_coord=STATION_COORD,
+      region='Eurasia Wilds',
+      schedule_start_date='2026-07-06',
+      schedule_end_date=None,
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      encounter_time=KANGAROO_ENCOUNTER_TIME,
+      is_cancelled=False )
+
+
 def _wild_encounter(
       *,
       name: str,
@@ -130,6 +152,18 @@ def Test_BuildForTargetDate_TestVisitDateOutsideScheduleRange_ExpectUnavailableE
    assert len( encounters ) == 1
    assert encounters[ 0 ].is_available is False
    assert encounters[ 0 ].unavailable_message is not None
+
+
+def Test_BuildForTargetDate_TestActiveKangarooThursday_ExpectAvailableEncounter() -> None:
+   encounters = WildEncounterDayScheduleBuilder.build_for_target_date(
+      [ _active_kangaroo_schedule_record() ],
+      OUTSIDE_SCHEDULE_VISIT_DATE )
+
+   assert len( encounters ) == 1
+   assert encounters[ 0 ].name == 'Kangaroo'
+   assert encounters[ 0 ].is_available is True
+   assert encounters[ 0 ].start_time == KANGAROO_ENCOUNTER_TIME
+   assert encounters[ 0 ].end_time == '4:15 PM'
 
 
 def Test_FilterAvailable_TestMixedAvailability_ExpectAvailableOnly() -> None:
