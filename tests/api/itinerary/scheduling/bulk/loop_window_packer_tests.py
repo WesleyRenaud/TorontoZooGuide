@@ -294,3 +294,35 @@ def Test_Pack_TestTwoWayLoop_ExpectShorterApproachOrientation() -> None:
    assert forward_approach is not None
    assert oriented_approach is not None
    assert oriented_approach < forward_approach
+
+
+ZEBRA_TALK_START_SECONDS = 11 * 3600
+
+
+def Test_PackAllBeforeDeadline_TestUnitsFitBeforePinnedTalk_ExpectAllPacked() -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+   indo_unit = _indo_prepared_unit()
+
+   packed_units = LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=[ indo_unit ],
+      window_start_seconds=window_start_seconds,
+      deadline_seconds=ZEBRA_TALK_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units is not None
+   assert [ unit.unit.loop_id for unit in packed_units ] == [ INDO_LOOP_ID ]
+
+
+def Test_PackAllBeforeDeadline_TestUnitsTooLarge_ExpectNone() -> None:
+   window_start_seconds = _seconds( '10:50 AM' )
+   indo_unit = _indo_prepared_unit()
+
+   packed_units = LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=[ indo_unit ],
+      window_start_seconds=window_start_seconds,
+      deadline_seconds=ZEBRA_TALK_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units is None
