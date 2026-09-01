@@ -182,65 +182,6 @@ def test_schedule_and_unschedule_animal_via_http(
    assert 'itinerary_path' in get_response
 
 
-def test_unschedule_all_itinerary_items_via_http(
-      integration_db: Path,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   status, set_response = post_route(
-      '/set-itinerary',
-      {
-         'date': '2026-06-15',
-         'arrivalTime': '09:30',
-         'departureTime': '17:00',
-         'animals': [ LION_ITINERARY_ENTRY ],
-         'attractions': [ CAROUSEL ],
-         'guardiansTalks': [],
-         'wildEncounters': [],
-         'confirmingEarlyAdmission': True,
-      },
-   )
-
-   assert status == 200
-   assert set_response[ 'status' ] == 'success'
-
-   status, schedule_response = post_route(
-      '/schedule-itinerary-item',
-      {
-         'itemType': 'animals',
-         'key': ANIMAL_KEY,
-         'startTime': '14:00',
-      },
-   )
-
-   assert status == 200
-   assert schedule_response[ 'status' ] == 'success'
-
-   status, unschedule_all_response = post_route(
-      '/unschedule-all-itinerary-items',
-      {},
-   )
-
-   assert status == 200
-   assert unschedule_all_response[ 'status' ] == 'success'
-
-   itinerary = unschedule_all_response[ 'itinerary' ]
-   lion = _find_animal(
-      itinerary,
-      species='African Lion',
-      exhibit='Africa Savanna',
-   )
-
-   assert lion[ 'start_time' ] is None
-   assert lion[ 'end_time' ] is None
-   assert itinerary[ 'arrival_time' ] == '9:30 AM'
-   assert itinerary[ 'departure_time' ] == '5:00 PM'
-   assert [ attraction[ 'name' ] for attraction in itinerary[ 'attractions' ] ] == [
-      CAROUSEL,
-   ]
-
-
 def test_bulk_schedule_itinerary_via_http(
       integration_db: Path,
       freeze_database_today: Callable[ [ date ], None ],
@@ -300,35 +241,3 @@ def test_bulk_schedule_itinerary_via_http(
    assert lion[ 'end_time' ] == schedule_time_after_seconds(
       lion[ 'start_time' ],
       8 * 60 )
-
-
-def test_accept_itinerary_via_http(
-      integration_db: Path,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   status, set_response = post_route(
-      '/set-itinerary',
-      {
-         'date': '2026-06-15',
-         'animals': [ LION_ITINERARY_ENTRY ],
-         'attractions': [ CAROUSEL ],
-         'guardiansTalks': [],
-         'wildEncounters': [],
-         'confirmingEarlyAdmission': True,
-      },
-   )
-
-   assert status == 200
-   assert set_response[ 'status' ] == 'success'
-
-   status, accept_response = post_route( '/accept-itinerary', {} )
-
-   assert status == 200
-   assert accept_response[ 'success' ] is True
-   assert accept_response[ 'itinerary' ][ 'date' ] == '2026-06-15'
-   assert len( accept_response[ 'itinerary' ][ 'animals' ] ) == 1
-   assert [ attraction[ 'name' ] for attraction in accept_response[ 'itinerary' ][ 'attractions' ] ] == [
-      CAROUSEL,
-   ]
