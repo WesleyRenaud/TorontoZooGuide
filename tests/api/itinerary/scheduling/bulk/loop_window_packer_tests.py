@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
+from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
@@ -11,6 +12,7 @@ from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
+from api.walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from api.walk_graph.domain.master_route_loop import TWO_WAY_LOOP_TRAVERSAL
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -28,6 +30,18 @@ EURASIA_LOOP_ID = 'eurasia'
 KOOKABURRA_NODE_ID = 'n-kookaburra'
 ENCOUNTER_NODE_ID = 'n-encounter'
 SOUTH_CLUSTER_ID = 'south'
+NORTH_CLUSTER_ID = 'north'
+TUNDRA_LOOP_ID = 'tundra_trek'
+KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
+KANGAROO_OPEN_SECONDS = 11 * 3600
+KANGAROO_CLOSE_GENEROUS_SECONDS = 18 * 3600
+KANGAROO_CLOSE_TIGHT_SECONDS = 12 * 3600 + 30 * 60
+SIDE_CLUSTER_WINDOW_START_SECONDS = 11 * 3600
+SIDE_CLUSTER_WINDOW_END_SECONDS = 18 * 3600
+INDO_CLUSTER_DWELL_SECONDS = 20 * 60
+AFRICA_CLUSTER_DWELL_SECONDS = 30 * 60
+TUNDRA_CLUSTER_DWELL_SECONDS = 25 * 60
+KANGAROO_CLUSTER_DWELL_SECONDS = 60 * 60
 GIRAFFE_ENCOUNTER_START = '11:00 AM'
 GIRAFFE_ENCOUNTER_END = '11:45 AM'
 RHINO_ENCOUNTER_START = '9:52 AM'
@@ -315,6 +329,63 @@ def _zoomobile_prepared_unit() -> PreparedLoopScheduleUnit:
       entry_walk_node_id=ZOOMOBILE_NODE_ID,
       exit_walk_node_id=ZOOMOBILE_NODE_ID,
       duration_seconds=ZOOMOBILE_DWELL_SECONDS )
+
+
+def _kangaroo_soft_pin_schedule_window(
+      *,
+      close_seconds: int ) -> ItineraryScheduleWindow:
+   return ItineraryScheduleWindow(
+      start_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS,
+      end_seconds=SIDE_CLUSTER_WINDOW_END_SECONDS,
+      attraction_hours_soft_pins=[
+         AttractionHoursSoftPin(
+            loop_id=AUSTRALASIA_LOOP_ID,
+            viewing_spot_index=1,
+            attraction_name=KANGAROO_WALK_THRU,
+            open_seconds=KANGAROO_OPEN_SECONDS,
+            close_seconds=close_seconds ),
+      ] )
+
+
+def _cluster_prepared_unit(
+      *,
+      loop_id: str,
+      side_cluster_id: str,
+      loop_index_in_side_cluster: int,
+      duration_seconds: int ) -> PreparedLoopScheduleUnit:
+   return _prepared_loop_unit(
+      loop_id=loop_id,
+      stops=[],
+      entry_walk_node_id=ENTRANCE_NODE_ID,
+      exit_walk_node_id=ENTRANCE_NODE_ID,
+      duration_seconds=duration_seconds,
+      side_cluster_id=side_cluster_id,
+      loop_index_in_side_cluster=loop_index_in_side_cluster )
+
+
+def _side_cluster_prepared_units() -> list[ PreparedLoopScheduleUnit ]:
+   return [
+      _cluster_prepared_unit(
+         loop_id=INDO_LOOP_ID,
+         side_cluster_id=SOUTH_CLUSTER_ID,
+         loop_index_in_side_cluster=3,
+         duration_seconds=INDO_CLUSTER_DWELL_SECONDS ),
+      _cluster_prepared_unit(
+         loop_id=SAVANNA_LOOP_ID,
+         side_cluster_id=SOUTH_CLUSTER_ID,
+         loop_index_in_side_cluster=0,
+         duration_seconds=AFRICA_CLUSTER_DWELL_SECONDS ),
+      _cluster_prepared_unit(
+         loop_id=TUNDRA_LOOP_ID,
+         side_cluster_id=NORTH_CLUSTER_ID,
+         loop_index_in_side_cluster=1,
+         duration_seconds=TUNDRA_CLUSTER_DWELL_SECONDS ),
+      _cluster_prepared_unit(
+         loop_id=AUSTRALASIA_LOOP_ID,
+         side_cluster_id=NORTH_CLUSTER_ID,
+         loop_index_in_side_cluster=0,
+         duration_seconds=KANGAROO_CLUSTER_DWELL_SECONDS ),
+   ]
 
 
 def _south_australasia_prepared_unit() -> PreparedLoopScheduleUnit:
@@ -686,5 +757,78 @@ def Test_PackLoopsWithTerminalUnit_TestPrefixAndTerminalFit_ExpectContiguousSout
 
    assert [ unit.unit.loop_id for unit in packed_units ] == [
       AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
+
+
+def Test_ChooseSideClusterPackingOrder_TestGenerousKangarooHours_ExpectSoftPinClusterLast() -> None:
+   prepared_units = _side_cluster_prepared_units()
+
+   sequence, prefer_soft_pin_loop_ids = LoopWindowPacker._choose_side_cluster_packing_order(
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_GENEROUS_SECONDS ),
+      prepared_units=prepared_units,
+      walk_graph=TEST_GRAPH,
+      current_node_id=ENTRANCE_NODE_ID,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS )
+
+   assert sequence == [ LoopSideClusterId.SOUTH, LoopSideClusterId.NORTH ]
+   assert prefer_soft_pin_loop_ids is None
+
+
+def Test_ChooseSideClusterPackingOrder_TestTightKangarooHours_ExpectSoftPinClusterFirst() -> None:
+   prepared_units = _side_cluster_prepared_units()
+
+   sequence, prefer_soft_pin_loop_ids = LoopWindowPacker._choose_side_cluster_packing_order(
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_TIGHT_SECONDS ),
+      prepared_units=prepared_units,
+      walk_graph=TEST_GRAPH,
+      current_node_id=ENTRANCE_NODE_ID,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS )
+
+   assert sequence == [ LoopSideClusterId.NORTH, LoopSideClusterId.SOUTH ]
+   assert prefer_soft_pin_loop_ids == [ AUSTRALASIA_LOOP_ID ]
+
+
+def Test_Pack_TestGenerousKangarooHours_ExpectSouthLoopsBeforeAustralasiaSoftPin() -> None:
+   prepared_units = _side_cluster_prepared_units()
+
+   packed_units = LoopWindowPacker.pack(
+      TEST_GRAPH,
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_GENEROUS_SECONDS ),
+      prepared_units=prepared_units,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   packed_loop_ids = [ unit.unit.loop_id for unit in packed_units ]
+   south_indices = [
+      packed_loop_ids.index( SAVANNA_LOOP_ID ),
+      packed_loop_ids.index( INDO_LOOP_ID ),
+   ]
+   north_indices = [
+      packed_loop_ids.index( TUNDRA_LOOP_ID ),
+      packed_loop_ids.index( AUSTRALASIA_LOOP_ID ),
+   ]
+
+   assert max( south_indices ) < min( north_indices )
+
+
+def Test_Pack_TestTightKangarooHours_ExpectKangarooAndTundraBeforeAfrica() -> None:
+   prepared_units = _side_cluster_prepared_units()
+
+   packed_units = LoopWindowPacker.pack(
+      TEST_GRAPH,
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_TIGHT_SECONDS ),
+      prepared_units=prepared_units,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      TUNDRA_LOOP_ID,
+      SAVANNA_LOOP_ID,
       INDO_LOOP_ID,
    ]
