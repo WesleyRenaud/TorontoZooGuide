@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
+from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.shared.calendar_dates import DateValues
+from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.master_route_loop import TWO_WAY_LOOP_TRAVERSAL
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -21,6 +23,11 @@ TEMPLE_NODE_ID = 'n-temple'
 HIGHLAND_NODE_ID = 'n-highland'
 TUR_NODE_ID = 'n-tur'
 EURASIA_LOOP_ID = 'eurasia'
+KOOKABURRA_NODE_ID = 'n-kookaburra'
+ENCOUNTER_NODE_ID = 'n-encounter'
+SOUTH_CLUSTER_ID = 'south'
+GIRAFFE_ENCOUNTER_START = '11:00 AM'
+GIRAFFE_ENCOUNTER_END = '11:45 AM'
 
 CHEETAH_DWELL_SECONDS = 300
 CHEETAH_APPROACH_SECONDS = 360
@@ -124,6 +131,7 @@ def _prepared_loop_unit(
       exit_walk_node_id: str,
       duration_seconds: int,
       side_cluster_id: str | None = None,
+      loop_index_in_side_cluster: int | None = None,
       traversal: str | None = None ) -> PreparedLoopScheduleUnit:
    return PreparedLoopScheduleUnit(
       unit=LoopScheduleUnit(
@@ -132,9 +140,105 @@ def _prepared_loop_unit(
          entry_walk_node_id=entry_walk_node_id,
          exit_walk_node_id=exit_walk_node_id,
          side_cluster_id=side_cluster_id,
-         loop_index_in_side_cluster=None,
+         loop_index_in_side_cluster=loop_index_in_side_cluster,
          traversal=traversal ),
       occupied_seconds=duration_seconds )
+
+
+SMART_PACK_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': ENTRANCE_NODE_ID,
+   'nodes': [
+      _node( ENTRANCE_NODE_ID, 0.0, 0.0 ),
+      _node( KOOKABURRA_NODE_ID, 15.0, 0.0 ),
+      _node( CHEETAH_NODE_ID, 25.0, 0.0 ),
+      _node( ENCOUNTER_NODE_ID, 28.0, 0.0 ),
+   ],
+   'edges': [
+      {
+         'from': ENTRANCE_NODE_ID,
+         'to': KOOKABURRA_NODE_ID,
+         'length_px': _edge_length_px( 8 ),
+      },
+      {
+         'from': KOOKABURRA_NODE_ID,
+         'to': CHEETAH_NODE_ID,
+         'length_px': _edge_length_px( 6 ),
+      },
+      {
+         'from': CHEETAH_NODE_ID,
+         'to': ENCOUNTER_NODE_ID,
+         'length_px': _edge_length_px( 2 ),
+      },
+      {
+         'from': ENTRANCE_NODE_ID,
+         'to': CHEETAH_NODE_ID,
+         'length_px': _edge_length_px( 10 ),
+      },
+   ],
+}
+
+
+def _encounter_anchor_stop(
+      *,
+      start_time: str,
+      end_time: str ) -> ItineraryStop:
+   return ItineraryStop(
+      walk_node_ids=[ ENCOUNTER_NODE_ID ],
+      schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+      item_key='Masai Giraffe',
+      is_fixed_time=True,
+      start_time=start_time,
+      end_time=end_time )
+
+
+def _south_australasia_prepared_unit() -> PreparedLoopScheduleUnit:
+   return _prepared_loop_unit(
+      loop_id=AUSTRALASIA_LOOP_ID,
+      stops=[
+         ItineraryAnimalRecord(
+            species='Demoiselle Crane',
+            exhibit='Australasia Pavilion',
+            enclosure_name='Indoor',
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+      entry_walk_node_id=KOOKABURRA_NODE_ID,
+      exit_walk_node_id=KOOKABURRA_NODE_ID,
+      duration_seconds=AUSTRALASIA_DWELL_SECONDS,
+      side_cluster_id=SOUTH_CLUSTER_ID,
+      loop_index_in_side_cluster=0 )
+
+
+def _south_indo_prepared_unit() -> PreparedLoopScheduleUnit:
+   return _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Indo-Malaya Outdoor',
+            enclosure_name=None,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=CHEETAH_DWELL_SECONDS,
+      side_cluster_id=SOUTH_CLUSTER_ID,
+      loop_index_in_side_cluster=1 )
+
+
+def _anchored_pre_encounter_window(
+      *,
+      start_time: str,
+      end_time: str ) -> ItineraryScheduleWindow:
+   return ItineraryScheduleWindow(
+      start_seconds=_seconds( start_time ),
+      end_seconds=_seconds( end_time ),
+      anchor_stop=_encounter_anchor_stop(
+         start_time=end_time,
+         end_time=GIRAFFE_ENCOUNTER_END ) )
 
 
 def _australasia_prepared_unit() -> PreparedLoopScheduleUnit:
@@ -326,3 +430,80 @@ def Test_PackAllBeforeDeadline_TestUnitsTooLarge_ExpectNone() -> None:
       current_node_id=ENTRANCE_NODE_ID )
 
    assert packed_units is None
+
+
+def Test_Pack_TestAnchoredEncounterWindow_ExpectSouthPrefixThenIndoTerminal() -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+   packed_units = LoopWindowPacker.pack(
+      SMART_PACK_GRAPH,
+      _anchored_pre_encounter_window(
+         start_time='9:00 AM',
+         end_time=GIRAFFE_ENCOUNTER_START ),
+      prepared_units=[
+         _south_australasia_prepared_unit(),
+         _south_indo_prepared_unit(),
+      ],
+      cursor_seconds=window_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
+
+
+def Test_PackLoopsWithTerminalUnit_TestShortWindow_ExpectOnlyTerminalSouthLoop() -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   window_end_seconds = window_start_seconds + 15 * 60
+   indo = _south_indo_prepared_unit()
+
+   packed_units = LoopWindowPacker._pack_loops_with_terminal_unit(
+      SMART_PACK_GRAPH,
+      [ indo ],
+      terminal_unit=indo,
+      window_start_seconds=window_start_seconds,
+      window_end_seconds=window_end_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      anchor_node_id=ENCOUNTER_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [ INDO_LOOP_ID ]
+
+
+def Test_PackLoopsWithTerminalUnit_TestTightWindowWithPrefixCandidate_ExpectEmpty() -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   window_end_seconds = window_start_seconds + 15 * 60
+
+   packed_units = LoopWindowPacker._pack_loops_with_terminal_unit(
+      SMART_PACK_GRAPH,
+      [
+         _south_australasia_prepared_unit(),
+         _south_indo_prepared_unit(),
+      ],
+      terminal_unit=_south_indo_prepared_unit(),
+      window_start_seconds=window_start_seconds,
+      window_end_seconds=window_end_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      anchor_node_id=ENCOUNTER_NODE_ID )
+
+   assert packed_units == []
+
+
+def Test_PackLoopsWithTerminalUnit_TestPrefixAndTerminalFit_ExpectContiguousSouthOrder() -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   window_end_seconds = _seconds( '10:42 AM' )
+   australasia = _south_australasia_prepared_unit()
+   indo = _south_indo_prepared_unit()
+
+   packed_units = LoopWindowPacker._pack_loops_with_terminal_unit(
+      SMART_PACK_GRAPH,
+      [ australasia, indo ],
+      terminal_unit=indo,
+      window_start_seconds=window_start_seconds,
+      window_end_seconds=window_end_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      anchor_node_id=ENCOUNTER_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
