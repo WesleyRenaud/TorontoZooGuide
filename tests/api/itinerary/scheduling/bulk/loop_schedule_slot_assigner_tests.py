@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
+from api.shared.operating_hours import OperatingHours
 
 
 def _animal_record(
@@ -135,3 +137,51 @@ def Test_AssignContiguousEndingBy_TestDeadline_ExpectBackwardPackedSlots() -> No
    assert end_seconds == deadline_seconds
    assert slots[ 0 ][ 1 ] == '10:38 AM'
    assert slots[ 1 ][ 1 ] == '10:52 AM'
+
+
+def Test_AssignContiguousRespectingAttractionHours_TestBeforeOpen_ExpectHeldUntilOpen() -> None:
+   splash = ItineraryAttractionRecord(
+      attraction='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+   stops = [
+      TimedLoopScheduleStop(
+         stop=splash,
+         duration_seconds=60 * 60,
+         travel_before_seconds=0 ),
+   ]
+   hours = OperatingHours(
+      open_seconds=12 * 3600,
+      close_seconds=17 * 3600 )
+
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
+      stops,
+      start_seconds=10 * 3600,
+      hours_by_attraction_name={ 'Splash Island': hours } )
+
+   assert slots == [ ( splash, '12:00 PM', '1:00 PM' ) ]
+   assert end_seconds == 13 * 3600
+
+
+def Test_AssignContiguousRespectingAttractionHours_TestCannotFit_ExpectEmpty() -> None:
+   splash = ItineraryAttractionRecord(
+      attraction='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+   stops = [
+      TimedLoopScheduleStop(
+         stop=splash,
+         duration_seconds=60 * 60,
+         travel_before_seconds=0 ),
+   ]
+   hours = OperatingHours(
+      open_seconds=12 * 3600,
+      close_seconds=12 * 3600 + 5 * 60 )
+
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
+      stops,
+      start_seconds=12 * 3600,
+      hours_by_attraction_name={ 'Splash Island': hours } )
+
+   assert slots == []
+   assert end_seconds == 12 * 3600
