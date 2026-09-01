@@ -63,7 +63,7 @@ def adjuster_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( '2026-06-22', None, '09:30', '18:00', '19:00' ) )
+      ( '2026-06-22', None, '09:30', '17:00', '18:00' ) )
    conn.commit()
 
    yield conn
@@ -122,6 +122,76 @@ def Test_Adjust_TestDateChangeWithLateDeparture_ExpectDepartureMovedToClose(
       old_visit_date='2026-06-20',
    )
 
-   assert updated_input.departure_time == '19:00'
+   assert updated_input.departure_time == '18:00'
    assert len( adjustments ) == 1
    assert adjustments[ 0 ].type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
+
+
+def Test_Adjust_TestEarlyAdmissionArrival_ExpectAdjustmentDict(
+      adjuster_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:15 AM',
+         departure_time='5:00 PM',
+      ) )
+
+   save_input = ItinerarySaveInput(
+      date=date( 2026, 6, 22 ),
+      arrival_time='9:15 AM',
+      departure_time='17:00',
+   )
+
+   updated_input, adjustments = ItinerarySaveRestrictiveHoursAdjuster.adjust(
+      adjuster_conn,
+      save_input,
+      old_visit_date='2026-06-20',
+   )
+
+   assert updated_input.arrival_time == '09:30'
+   assert [ adjustment.to_dict() for adjustment in adjustments ] == [
+      {
+         'type': 'arrivalTimeAdjusted',
+         'field': 'arrivalTime',
+         'previous_value': '9:15 AM',
+         'value': '09:30',
+         'reason': 'arrivalOutsideAdmissionHours',
+      },
+   ]
+
+
+def Test_Adjust_TestLateDepartureOnShorterDay_ExpectAdjustmentDict(
+      adjuster_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:30 AM',
+         departure_time='6:30 PM',
+      ) )
+
+   save_input = ItinerarySaveInput(
+      date=date( 2026, 6, 22 ),
+      arrival_time='9:30 AM',
+      departure_time='6:30 PM',
+   )
+
+   updated_input, adjustments = ItinerarySaveRestrictiveHoursAdjuster.adjust(
+      adjuster_conn,
+      save_input,
+      old_visit_date='2026-06-20',
+   )
+
+   assert updated_input.departure_time == '18:00'
+   assert [ adjustment.to_dict() for adjustment in adjustments ] == [
+      {
+         'type': 'departureTimeAdjusted',
+         'field': 'departureTime',
+         'previous_value': '6:30 PM',
+         'value': '18:00',
+         'reason': 'departureOutsideOperatingHours',
+      },
+   ]
