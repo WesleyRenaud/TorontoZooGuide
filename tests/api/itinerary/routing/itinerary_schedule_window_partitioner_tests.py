@@ -56,6 +56,15 @@ BACTRIAN_CAMELS_ENCOUNTER_STOP = ItineraryStop(
    end_time='4:00 PM',
 )
 
+OTTER_TALK_STOP = ItineraryStop(
+   schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+   item_key='North American River Otter',
+   walk_node_ids=[ 'v-0100' ],
+   is_fixed_time=True,
+   start_time='2:00 PM',
+   end_time='2:30 PM',
+)
+
 
 def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
    windows = ItineraryScheduleWindowPartitioner.partition(
@@ -138,6 +147,28 @@ def Test_Partition_TestUnpinnedAfternoonEncounter_ExpectWindowBeforeEncounter() 
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
          start_seconds=16 * 60 * 60,
+         end_seconds=DAY_END_SECONDS,
+         anchor_stop=None,
+         opens_after_fixed_time_stop=True,
+         start_walk_node_id='v-0100' ),
+   ]
+
+
+def Test_Partition_TestOtterTalk_ExpectWindowsBeforeAndAfter() -> None:
+   windows = ItineraryScheduleWindowPartitioner.partition(
+      ANCHOR_SECONDS,
+      DAY_END_SECONDS,
+      [ OTTER_TALK_STOP ] )
+
+   assert windows == [
+      ItineraryScheduleWindow(
+         start_seconds=ANCHOR_SECONDS,
+         end_seconds=14 * 60 * 60,
+         anchor_stop=OTTER_TALK_STOP,
+         opens_after_fixed_time_stop=False,
+         start_walk_node_id=None ),
+      ItineraryScheduleWindow(
+         start_seconds=14 * 60 * 60 + 30 * 60,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,

@@ -46,9 +46,44 @@ RAINFOREST_LOOP = MasterRouteLoop(
    ],
 )
 
+AMERICAS_LOOP = MasterRouteLoop(
+   loop_id='americas_pavilion',
+   name='Americas Pavilion',
+   traversal=ONE_WAY_LOOP_TRAVERSAL,
+   viewing_spots=[
+      *[
+         ViewingSpotReference(
+            species=f'Placeholder { index }',
+            exhibit='Americas Pavilion',
+            name=None )
+         for index in range( 3 )
+      ],
+      ViewingSpotReference(
+         species='North American River Otter',
+         exhibit='Americas Pavilion',
+         name='Outdoor' ),
+      *[
+         ViewingSpotReference(
+            species=f'Placeholder { index }',
+            exhibit='Americas Pavilion',
+            name=None )
+         for index in range( 3, 10 )
+      ],
+      ViewingSpotReference(
+         species='North American River Otter',
+         exhibit='Americas Pavilion',
+         name='Indoor' ),
+      ViewingSpotReference(
+         species='American Alligator',
+         exhibit='Americas Pavilion',
+         name=None ),
+   ],
+)
+
 LOOPS_BY_ID = {
    'africa_savanna_canadian_domain': AFRICA_LOOP,
    'african_rainforest_giraffe': RAINFOREST_LOOP,
+   'americas_pavilion': AMERICAS_LOOP,
 }
 
 ANIMAL_LINKS_BY_TALK = {
@@ -76,6 +111,15 @@ ANIMAL_LINKS_BY_TALK = {
          location='Africa Savanna',
          species='African Lion',
          exhibit='Africa Savanna',
+      ),
+   ],
+   'North American River Otter': [
+      GuardiansTalkAnimalRecord(
+         talk_name='North American River Otter',
+         location='Americas Pavilion',
+         species='North American River Otter',
+         exhibit='Americas Pavilion',
+         enclosure_name='Indoor',
       ),
    ],
 }
@@ -194,3 +238,28 @@ def Test_Resolve_TestLionTalk_ExpectNullEnclosurePin(
 
    assert loop_pin is not None
    assert loop_pin.viewing_spot_index == 0
+
+
+def Test_Resolve_TestRiverOtterTalk_ExpectAmericasPavilionIndoorPin(
+      stub_guardians_talk_loop_schedule_pin_resolver: None ) -> None:
+   loop_pin = GuardiansTalkLoopSchedulePinResolver.resolve(
+      None,
+      GuardiansTalk(
+         name='North American River Otter',
+         location='Americas Pavilion',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='2:00 PM',
+         end_time='2:30 PM',
+      ),
+      ItineraryStop(
+         schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+         item_key='North American River Otter',
+         walk_node_ids=( 'v-0100', ),
+         is_fixed_time=True,
+         start_time='2:00 PM',
+         end_time='2:30 PM' ) )
+
+   assert loop_pin is not None
+   assert loop_pin.loop_id == 'americas_pavilion'
+   assert loop_pin.viewing_spot_index == 11

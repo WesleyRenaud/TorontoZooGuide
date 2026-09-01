@@ -14,6 +14,7 @@ from api.shared.enums import ScheduleItemKind
 ZEBRA_TALK = "Grevy's Zebra"
 CAMEL_TALK = 'Bactrian Camel'
 AFRICAN_LION_TALK = 'African Lion'
+OTTER_TALK = 'North American River Otter'
 BACTRIAN_CAMELS_ENCOUNTER = 'Bactrian Camels'
 EURASIA_MEETING_SPOT = 'Wild Encounter - Eurasia Meeting Spot'
 
@@ -137,6 +138,29 @@ def Test_KeepCompletable_TestPinWithPostTalkWindow_ExpectKept() -> None:
       [ zebra_pin ] )
 
    assert kept_pins == [ zebra_pin ]
+
+
+def Test_KeepCompletable_TestOtterTalk_ExpectKept() -> None:
+   otter_pin = _talk_loop_pin(
+      loop_id='americas_pavilion',
+      viewing_spot_index=11,
+      item_key=OTTER_TALK,
+      start_seconds=14 * 3600,
+      end_seconds=14 * 3600 + 30 * 60 )
+   schedule_windows = [
+      ItineraryScheduleWindow(
+         start_seconds=9 * 3600,
+         end_seconds=14 * 3600 ),
+      ItineraryScheduleWindow(
+         start_seconds=14 * 3600 + 30 * 60,
+         end_seconds=17 * 3600 ),
+   ]
+
+   kept_pins = BulkScheduleLoopPinAttacher.keep_completable(
+      schedule_windows,
+      [ otter_pin ] )
+
+   assert kept_pins == [ otter_pin ]
 
 
 def Test_AttachToWindows_TestAfricanLionTalk_ExpectPinOnBothWindows() -> None:

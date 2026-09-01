@@ -15,10 +15,12 @@ from api.shared.enums import ScheduleItemKind
 
 AFRICA_LOOP_ID = 'africa_savanna_canadian_domain'
 AUSTRALASIA_LOOP_ID = 'australasia'
+AMERICAS_LOOP_ID = 'americas_pavilion'
 
 HYENA_PIN_BOUNDARY = 5
 GRIZZLY_ENCOUNTER_PIN_BOUNDARY = 6
 KANGAROO_PIN_BOUNDARY = 43
+OTTER_PIN_BOUNDARY = 11
 
 VIEWING_SPOT_INDEX_BY_ANIMAL = {
    ( 'African Penguin', 'Africa Savanna', 'Outdoor' ): 3,
@@ -26,6 +28,9 @@ VIEWING_SPOT_INDEX_BY_ANIMAL = {
    ( 'Cheetah', 'Africa Savanna', None ): 20,
    ( 'Western Grey Kangaroo', 'Australasia Outdoor', None ): 43,
    ( 'Amur Tiger', 'Eurasia Wilds', None ): 45,
+   ( 'North American River Otter', 'Americas Pavilion', 'Outdoor' ): 3,
+   ( 'North American River Otter', 'Americas Pavilion', 'Indoor' ): 11,
+   ( 'American Alligator', 'Americas Pavilion', None ): 12,
 }
 
 VIEWING_SPOT_INDEX_BY_ATTRACTION = {
@@ -83,6 +88,22 @@ def _grizzly_encounter_loop_pin() -> LoopSchedulePin:
          end_time='1:45 PM' ),
       start_seconds=46800,
       end_seconds=49500,
+   )
+
+
+def _otter_loop_pin() -> LoopSchedulePin:
+   return LoopSchedulePin(
+      loop_id=AMERICAS_LOOP_ID,
+      viewing_spot_index=OTTER_PIN_BOUNDARY,
+      stop=ItineraryStop(
+         schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+         item_key='North American River Otter',
+         walk_node_ids=( 'v-0000', ),
+         is_fixed_time=True,
+         start_time='2:00 PM',
+         end_time='2:30 PM' ),
+      start_seconds=14 * 3600,
+      end_seconds=14 * 3600 + 30 * 60,
    )
 
 
@@ -277,5 +298,61 @@ def Test_ScheduleSteps_TestGrizzlyEncounterPin_ExpectSegmentsAndGap(
    assert steps[ 1 ].loop_pin is loop_pin
    assert isinstance( steps[ 2 ], LoopPinStopSegment )
    assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'Cheetah' ]
+   assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
+   assert loop_pin.end_seconds < window_end_seconds
+
+
+def Test_SplitStops_TestOtterTalkPin_ExpectBeforeAndAfterSegments(
+      stub_viewing_spot_indexes: None ) -> None:
+   loop_pin = _otter_loop_pin()
+   outdoor_otter = _animal_record(
+      species='North American River Otter',
+      exhibit='Americas Pavilion',
+      enclosure_name='Outdoor',
+   )
+   alligator = _animal_record(
+      species='American Alligator',
+      exhibit='Americas Pavilion',
+   )
+
+   segments = LoopPinSegmentSplitter.split_stops(
+      [ outdoor_otter, alligator ],
+      loop_id=AMERICAS_LOOP_ID,
+      loop_pins=[ loop_pin ],
+   )
+
+   assert [ animal.species for animal in segments[ 0 ] ] == [ 'North American River Otter' ]
+   assert [ animal.species for animal in segments[ 1 ] ] == [ 'American Alligator' ]
+
+
+def Test_ScheduleSteps_TestOtterTalkPin_ExpectSegmentsAndGap(
+      stub_viewing_spot_indexes: None ) -> None:
+   loop_pin = _otter_loop_pin()
+   outdoor_otter = _animal_record(
+      species='North American River Otter',
+      exhibit='Americas Pavilion',
+      enclosure_name='Outdoor',
+   )
+   alligator = _animal_record(
+      species='American Alligator',
+      exhibit='Americas Pavilion',
+   )
+   window_end_seconds = 17 * 3600
+
+   steps = LoopPinSegmentSplitter.schedule_steps(
+      [ outdoor_otter, alligator ],
+      loop_id=AMERICAS_LOOP_ID,
+      loop_pins=[ loop_pin ],
+      window_end_seconds=window_end_seconds,
+   )
+
+   assert len( steps ) == 3
+   assert isinstance( steps[ 0 ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ 0 ].stops ] == [ 'North American River Otter' ]
+   assert steps[ 0 ].end_before_seconds == loop_pin.start_seconds
+   assert isinstance( steps[ 1 ], LoopPinGapStep )
+   assert steps[ 1 ].loop_pin is loop_pin
+   assert isinstance( steps[ 2 ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'American Alligator' ]
    assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
    assert loop_pin.end_seconds < window_end_seconds
