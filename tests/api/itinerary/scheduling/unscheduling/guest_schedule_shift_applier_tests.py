@@ -9,9 +9,11 @@ from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
+from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums import ItineraryEventType
 
 
@@ -19,6 +21,13 @@ CHEETAH_KEY = AnimalScheduleItemKey(
    species='Cheetah',
    exhibit='Africa Savanna',
 )
+
+ZOOMOBILE = 'Zoomobile'
+ZOOMOBILE_ATTRACTION_START = '11:00 AM'
+ZOOMOBILE_ATTRACTION_END = '11:30 AM'
+ZOOMOBILE_TRANSIT_START = '11:30 AM'
+ZOOMOBILE_TRANSIT_END = '12:00 PM'
+ZOOMOBILE_TRANSIT_ROUTE = 'zoomobile-route'
 
 SHIFT_APPLIER_SCHEMA = """
 CREATE TABLE ItineraryAnimal (
@@ -167,6 +176,111 @@ def _insert_three_animal_schedule(
             end_time=penguin_end,
          ),
       ],
+   )
+
+
+def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> SavedItinerary:
+   conn.execute(
+      """   INSERT INTO ItineraryTransportation (
+               TRANSPORTATION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD,
+               ADDED_AS_ATTRACTION,
+               START_TIME,
+               END_TIME,
+               ROUTE,
+               BULK_TRANSIT_EVALUATED
+            )
+            VALUES ( ?, NULL, 3, 1, ?, ?, NULL, 0 );
+      """,
+      ( ZOOMOBILE, ZOOMOBILE_ATTRACTION_START, ZOOMOBILE_ATTRACTION_END ) )
+   conn.execute(
+      """   INSERT INTO ItineraryTransportation (
+               TRANSPORTATION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD,
+               ADDED_AS_ATTRACTION,
+               START_TIME,
+               END_TIME,
+               ROUTE,
+               BULK_TRANSIT_EVALUATED
+            )
+            VALUES ( ?, NULL, 3, 0, ?, ?, ?, 1 );
+      """,
+      (
+         ZOOMOBILE,
+         ZOOMOBILE_TRANSIT_START,
+         ZOOMOBILE_TRANSIT_END,
+         ZOOMOBILE_TRANSIT_ROUTE,
+      ) )
+   conn.execute(
+      """   INSERT INTO ItineraryTransportationLeg (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, 0, ?, ?, ?, ? );
+      """,
+      ( ZOOMOBILE, 'Station A', 'Station B', '11:30 AM', '11:45 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryTransportationLeg (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, 0, ?, ?, ?, ? );
+      """,
+      ( ZOOMOBILE, 'Station B', 'Station C', '11:45 AM', '12:00 PM' ) )
+   conn.commit()
+
+   return SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      transportation_rows=(
+         ItineraryTransportationRecord(
+            transportation=ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=True,
+            start_time=ZOOMOBILE_ATTRACTION_START,
+            end_time=ZOOMOBILE_ATTRACTION_END,
+         ),
+         ItineraryTransportationRecord(
+            transportation=ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=False,
+            start_time=ZOOMOBILE_TRANSIT_START,
+            end_time=ZOOMOBILE_TRANSIT_END,
+            route=ZOOMOBILE_TRANSIT_ROUTE,
+            bulk_transit_evaluated=True,
+            legs=[
+               ItineraryTransportationLeg(
+                  transportation=ZOOMOBILE,
+                  added_as_attraction=False,
+                  from_station='Station A',
+                  to_station='Station B',
+                  start_time='11:30 AM',
+                  end_time='11:45 AM',
+               ),
+               ItineraryTransportationLeg(
+                  transportation=ZOOMOBILE,
+                  added_as_attraction=False,
+                  from_station='Station B',
+                  to_station='Station C',
+                  start_time='11:45 AM',
+                  end_time='12:00 PM',
+               ),
+            ],
+         ),
+      ),
    )
 
 
@@ -331,3 +445,49 @@ def Test_ApplyForUnschedule_TestMiddleAnimalWithDeliberateGap_ExpectGapPreserved
    assert penguin is not None
    assert penguin[ 'START_TIME' ] == '10:37 AM'
    assert penguin[ 'END_TIME' ] == '10:52 AM'
+
+
+def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarlier(
+      shift_applier_conn: sqlite3.Connection ) -> None:
+   saved_itinerary = _insert_zoomobile_transportation_schedule( shift_applier_conn )
+   cur = shift_applier_conn.cursor()
+
+   GuestScheduleShiftApplier.apply_for_unschedule(
+      shift_applier_conn,
+      cur,
+      saved_itinerary=saved_itinerary,
+      schedule_item_key=AttractionScheduleItemKey( name=ZOOMOBILE ) )
+   shift_applier_conn.commit()
+   cur.close()
+
+   transit_row = shift_applier_conn.execute(
+      """   SELECT START_TIME, END_TIME, BULK_TRANSIT_EVALUATED
+            FROM ItineraryTransportation
+            WHERE TRANSPORTATION = ?
+              AND ADDED_AS_ATTRACTION = 0;
+      """,
+      ( ZOOMOBILE, ),
+   ).fetchone()
+   legs = shift_applier_conn.execute(
+      """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
+            FROM ItineraryTransportationLeg
+            WHERE TRANSPORTATION = ?
+              AND ADDED_AS_ATTRACTION = 0
+            ORDER BY START_TIME;
+      """,
+      ( ZOOMOBILE, ),
+   ).fetchall()
+
+   assert transit_row is not None
+   assert transit_row[ 'START_TIME' ] == '11:00 AM'
+   assert transit_row[ 'END_TIME' ] == '11:30 AM'
+   assert transit_row[ 'BULK_TRANSIT_EVALUATED' ] == 1
+   assert len( legs ) == 2
+   assert legs[ 0 ][ 'FROM_STATION' ] == 'Station A'
+   assert legs[ 0 ][ 'TO_STATION' ] == 'Station B'
+   assert legs[ 0 ][ 'START_TIME' ] == '11:00 AM'
+   assert legs[ 0 ][ 'END_TIME' ] == '11:15 AM'
+   assert legs[ 1 ][ 'FROM_STATION' ] == 'Station B'
+   assert legs[ 1 ][ 'TO_STATION' ] == 'Station C'
+   assert legs[ 1 ][ 'START_TIME' ] == '11:15 AM'
+   assert legs[ 1 ][ 'END_TIME' ] == '11:30 AM'
