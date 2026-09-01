@@ -195,3 +195,59 @@ def Test_Adjust_TestLateDepartureOnShorterDay_ExpectAdjustmentDict(
          'reason': 'departureOutsideOperatingHours',
       },
    ]
+
+
+def Test_Adjust_TestChangedDepartureWithoutSavedMatch_ExpectNoDepartureAdjustment(
+      adjuster_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:30 AM',
+         departure_time='6:30 PM',
+      ) )
+
+   save_input = ItinerarySaveInput(
+      date=date( 2026, 6, 22 ),
+      arrival_time='9:30 AM',
+      departure_time='19:00',
+   )
+
+   updated_input, adjustments = ItinerarySaveRestrictiveHoursAdjuster.adjust(
+      adjuster_conn,
+      save_input,
+      old_visit_date='2026-06-20',
+   )
+
+   assert updated_input.departure_time == '19:00'
+   assert adjustments == []
+
+
+def Test_Adjust_TestShortVisitDateChange_ExpectArrivalOnlyAdjusted(
+      adjuster_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:15 AM',
+         departure_time='9:35 AM',
+      ) )
+
+   save_input = ItinerarySaveInput(
+      date=date( 2026, 6, 22 ),
+      arrival_time='9:15 AM',
+      departure_time='9:35 AM',
+   )
+
+   updated_input, adjustments = ItinerarySaveRestrictiveHoursAdjuster.adjust(
+      adjuster_conn,
+      save_input,
+      old_visit_date='2026-06-20',
+   )
+
+   assert updated_input.arrival_time == '09:30'
+   assert updated_input.departure_time == '9:35 AM'
+   assert len( adjustments ) == 1
+   assert adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED

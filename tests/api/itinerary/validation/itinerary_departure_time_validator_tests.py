@@ -21,6 +21,14 @@ EARLY_ADMISSION_ZOO_HOURS = ZooHoursRecord(
    close_time='19:00',
 )
 
+JUNE_22_ZOO_HOURS = ZooHoursRecord(
+   operating_date='2026-06-22',
+   early_admission_time=None,
+   open_time='09:30',
+   last_admission_time='17:00',
+   close_time='18:00',
+)
+
 
 def Test_ValidateForZooHours_TestBeforeOpen_ExpectOutOfBounds() -> None:
    assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
@@ -68,4 +76,11 @@ def Test_ValidateForZooHours_TestAfterClose_ExpectOutOfBounds() -> None:
    assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
       '19:15',
       ZOO_HOURS,
+      arrival_time='09:30' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+
+
+def Test_ValidateForZooHours_TestAfterShorterDayClose_ExpectOutOfBounds() -> None:
+   assert ItineraryDepartureTimeValidator.validate_for_zoo_hours(
+      '19:00',
+      JUNE_22_ZOO_HOURS,
       arrival_time='09:30' ) == ItineraryErrorType.TIME_OUT_OF_BOUNDS
