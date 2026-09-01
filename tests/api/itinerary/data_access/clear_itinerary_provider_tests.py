@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
+from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.shared.enums import ItineraryErrorType
 
@@ -169,3 +170,18 @@ def Test_ClearItinerary_TestSavedRows_ExpectTablesCleared(
    assert ItineraryStatusProvider.is_itinerary_error_suppressed(
       clear_itinerary_conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+
+def Test_ClearItinerary_TestSavedRows_ExpectProviderReadsEmpty(
+      clear_itinerary_conn: sqlite3.Connection ) -> None:
+   assert ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
+
+   assert ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn ) is None
+
+   cleared = ItineraryProvider.fetch_saved_itinerary( clear_itinerary_conn )
+
+   assert cleared.is_empty()
+   assert cleared.animal_rows == []
+   assert cleared.attraction_rows == []
+   assert cleared.guardians_talk_rows == []
+   assert cleared.wild_encounter_rows == []
