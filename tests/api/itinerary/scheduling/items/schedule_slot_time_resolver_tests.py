@@ -218,3 +218,46 @@ def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterV
 
    assert error is None
    assert slot == ( '9:38 AM', '9:45 AM' )
+
+
+def Test_Resolve_TestPackAfterScheduledLion_ExpectLaterSlot(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   blocked_itinerary = ItineraryBuilder.build(
+      date='2026-06-15',
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: blocked_itinerary )
+
+   slot, error = ScheduleSlotTimeResolver.resolve(
+      schedule_conn,
+      SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time='9:30 AM',
+         departure_time='5:00 PM' ),
+      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      7 * 60,
+      start_time=None,
+      itinerary_context={},
+      earliest_start_seconds=10 * 3600 + 8 * 60 )
+
+   assert error is None
+   assert slot == ( '10:08 AM', '10:15 AM' )

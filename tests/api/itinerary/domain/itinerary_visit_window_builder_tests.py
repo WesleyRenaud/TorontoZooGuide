@@ -312,3 +312,103 @@ def Test_ClearSchedulesOutside_TestBeforeArrivalEvent_ExpectLunchDeleted(
 
    assert lunch_count is not None
    assert lunch_count[ 'COUNT' ] == 0
+
+
+@pytest.fixture
+def later_arrival_window_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( VISIT_WINDOW_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( 'African Lion', 'Africa Savanna', '10:00 AM', '10:08 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      ( 'Cheetah', 'Africa Savanna', None, '10:30 AM', '10:38 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( 'Conservation Carousel', '11:00 AM', '11:15 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryWildEncounter (
+               WILD_ENCOUNTER,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES ( ?, ?, ?, 0 );
+      """,
+      ( 'African Rainforest', '9:45 AM', '10:30 AM' ) )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+def Test_ClearSchedulesOutside_TestLaterArrival_ExpectBeforeArrivalAnimalCleared(
+      later_arrival_window_conn: sqlite3.Connection ) -> None:
+   ItineraryVisitWindowBuilder.clear_schedules_outside(
+      later_arrival_window_conn,
+      arrival_time='10:15 AM',
+      departure_time='05:00 PM' )
+
+   lion = later_arrival_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( 'African Lion', ),
+   ).fetchone()
+   cheetah = later_arrival_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( 'Cheetah', ),
+   ).fetchone()
+   carousel = later_arrival_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryAttraction
+            WHERE ATTRACTION = ?;
+      """,
+      ( 'Conservation Carousel', ),
+   ).fetchone()
+   encounter = later_arrival_window_conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryWildEncounter
+            WHERE WILD_ENCOUNTER = ?;
+      """,
+      ( 'African Rainforest', ),
+   ).fetchone()
+
+   assert lion is not None
+   assert lion[ 'START_TIME' ] is None
+   assert lion[ 'END_TIME' ] is None
+   assert cheetah is not None
+   assert cheetah[ 'START_TIME' ] == '10:30 AM'
+   assert carousel is not None
+   assert carousel[ 'START_TIME' ] == '11:00 AM'
+   assert encounter is not None
+   assert encounter[ 'START_TIME' ] == '9:45 AM'
