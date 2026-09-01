@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from api_test_support.patch_coordinator import patch_coordinator_with_stub
 from api_test_support.post_handler import make_handler
 from api_test_support.post_handler import response_json
@@ -11,7 +13,13 @@ import api.http_request_handler as server
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
+from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.models import Itinerary
 import api.request_connection_provider as request_connection
+from api.shared.enums import ItineraryErrorType
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types
 
@@ -448,4 +456,120 @@ def Test_SetItineraryDepartureTime_TestHttpRequest_ExpectMappedDeparture(
             'confirming_short_visit': True,
          },
       ),
+   ]
+
+
+def Test_GetItinerary_TestHttpRequest_ExpectMapsTemp(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler(
+      '/get-itinerary',
+      {
+         'temp': 22.5,
+      } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'itinerary' ][ 'date' ] == VISIT_DATE
+   assert response[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
+   assert response[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'get_itinerary',
+         {
+            'visit_date_temp': 22.5,
+         },
+      ),
+   ]
+
+
+def Test_ClearItinerary_TestHttpRequest_ExpectCouldNotClearApiError(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   StubItineraryCoordinator.default_success = False
+   handler = make_handler( '/clear-itinerary' )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'success' ] is False
+   assert response[ 'apiErrorType' ] == 'couldNotClearItinerary'
+   assert stub_itinerary_coordinator.calls == [
+      ( 'ClearItineraryProvider.clear_itinerary', {} ),
+   ]
+
+
+def Test_AcceptItinerary_TestHttpRequest_ExpectCouldNotAcceptApiError(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   StubItineraryCoordinator.default_success = False
+   handler = make_handler( '/accept-itinerary' )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'success' ] is False
+   assert response[ 'itinerary' ] is None
+   assert response[ 'apiErrorType' ] == 'couldNotAcceptItineraryChanges'
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'AcceptItineraryProvider.accept_itinerary',
+         {
+            'animals_to_keep': None,
+            'attractions_to_keep': None,
+         },
+      ),
+   ]
+
+
+def Test_SetItinerary_TestSaveResultAdjustments_ExpectResponseAdjustments(
+      stub_itinerary_coordinator: StubItineraryCoordinator,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   adjustment = ItineraryAdjustment(
+      type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
+      field='arrivalTime',
+      previous_value='9:15 AM',
+      value='09:30',
+      reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS,
+   )
+   save_result = ItinerarySaveResult(
+      status=ItineraryErrorType.SUCCESS,
+      itinerary=Itinerary(
+         date='2026-06-22',
+         arrival_time='9:30 AM',
+      ),
+      adjustments=[ adjustment ],
+   )
+
+   def stub_set_itinerary( **kwargs: Any ) -> ItinerarySaveResult:
+      stub_itinerary_coordinator.calls.append( ( 'set_itinerary', kwargs ) )
+      return save_result
+
+   monkeypatch.setattr( ItineraryCoordinator, 'set_itinerary', stub_set_itinerary )
+
+   handler = make_handler(
+      '/set-itinerary',
+      {
+         'date': '2026-06-22',
+         'arrivalTime': '09:15',
+         'departureTime': '17:00',
+         'animals': [],
+         'attractions': [],
+         'transportations': [],
+         'guardiansTalks': [],
+         'wildEncounters': [],
+      } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'itinerary' ][ 'date' ] == '2026-06-22'
+   assert response[ 'itinerary' ][ 'arrival_time' ] == '9:30 AM'
+   assert response[ 'adjustments' ] == [
+      {
+         'type': 'arrivalTimeAdjusted',
+         'field': 'arrivalTime',
+         'previous_value': '9:15 AM',
+         'value': '09:30',
+         'reason': 'arrivalOutsideAdmissionHours',
+      },
    ]
