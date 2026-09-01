@@ -9,6 +9,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler import WildEncounterItineraryItemScheduler
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
@@ -27,6 +28,27 @@ SAVED_ITINERARY = SavedItinerary(
 ENCOUNTER_KEY = WildEncounterScheduleItemKey(
    name='African Rainforest',
    start_time='15:30',
+)
+
+BACTRIAN_CAMELS_KEY = WildEncounterScheduleItemKey(
+   name='Bactrian Camels',
+   start_time='15:30',
+)
+
+BACTRIAN_CAMELS_DIFF = WildEncounterDiff(
+   name='Bactrian Camels',
+   is_deleted=False,
+   start_time='3:30 PM',
+   end_time='4:00 PM',
+   meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+)
+
+ENCOUNTER_DIFF = WildEncounterDiff(
+   name='African Rainforest',
+   is_deleted=False,
+   start_time='3:30 PM',
+   end_time='4:15 PM',
+   meeting_spot='Americas Pavilion',
 )
 
 ITINERARY_CONTEXT = {
@@ -130,15 +152,6 @@ def Test_Schedule_TestAlreadyScheduledEncounter_ExpectItemAlreadyScheduled(
    assert result.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
 
 
-ENCOUNTER_DIFF = WildEncounterDiff(
-   name='African Rainforest',
-   is_deleted=False,
-   start_time='3:30 PM',
-   end_time='4:15 PM',
-   meeting_spot='Americas Pavilion',
-)
-
-
 def Test_Schedule_TestEncounterAfterDeparture_ExpectCoverForActivity(
       scheduler_conn: sqlite3.Connection,
       stub_save_result: None,
@@ -235,3 +248,68 @@ def Test_Schedule_TestOverlapWithoutConfirmation_ExpectUnscheduleWarning(
       confirming_fixed_time_item_long_wait=True )
 
    assert result.status == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+
+
+def Test_Schedule_TestNoOverlap_ExpectNoBulkReschedule(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   reschedule_called = False
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:30 AM',
+         departure_time='12:00 PM',
+      ) )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_wild_encounter_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: BACTRIAN_CAMELS_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.WildEncounterUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, encounters: False )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_insert_scheduled_wild_encounter',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      ItinerarySaveResultBuilder,
+      'persist_walk_route',
+      lambda conn, **context: None )
+   monkeypatch.setattr(
+      ItinerarySaveResultBuilder,
+      'success_result',
+      lambda conn, **context: ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ScheduledActivityVisitTimesCoverer.cover_for_activity',
+      lambda *args, **kwargs: None )
+
+   def reschedule_after_add(
+         *args: object,
+         **kwargs: object ) -> ItinerarySaveResult:
+      nonlocal reschedule_called
+      reschedule_called = True
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      FixedTimeActivityRescheduler,
+      'reschedule_after_add',
+      reschedule_after_add )
+
+   result = WildEncounterItineraryItemScheduler.schedule(
+      scheduler_conn,
+      BACTRIAN_CAMELS_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=True )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert not reschedule_called

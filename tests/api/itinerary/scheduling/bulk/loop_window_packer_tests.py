@@ -401,6 +401,7 @@ def Test_Pack_TestTwoWayLoop_ExpectShorterApproachOrientation() -> None:
 
 
 ZEBRA_TALK_START_SECONDS = 11 * 3600
+BACTRIAN_CAMELS_START_SECONDS = 15 * 3600 + 30 * 60
 
 
 def Test_PackAllBeforeDeadline_TestUnitsFitBeforePinnedTalk_ExpectAllPacked() -> None:
@@ -430,6 +431,21 @@ def Test_PackAllBeforeDeadline_TestUnitsTooLarge_ExpectNone() -> None:
       current_node_id=ENTRANCE_NODE_ID )
 
    assert packed_units is None
+
+
+def Test_PackAllBeforeDeadline_TestUnpinnedAfternoonEncounter_ExpectPackedToEncounterStart() -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   indo_unit = _indo_prepared_unit()
+
+   packed_units = LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=[ indo_unit ],
+      window_start_seconds=window_start_seconds,
+      deadline_seconds=BACTRIAN_CAMELS_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units is not None
+   assert [ unit.unit.loop_id for unit in packed_units ] == [ INDO_LOOP_ID ]
 
 
 def Test_Pack_TestAnchoredEncounterWindow_ExpectSouthPrefixThenIndoTerminal() -> None:
