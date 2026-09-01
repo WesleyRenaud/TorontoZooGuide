@@ -185,3 +185,28 @@ def Test_AssignContiguousRespectingAttractionHours_TestCannotFit_ExpectEmpty() -
 
    assert slots == []
    assert end_seconds == 12 * 3600
+
+
+def Test_AssignContiguous_TestWarthogBeforeGiraffe_ExpectEndBeforeStart() -> None:
+   stops = [
+      _timed_stop(
+         species='Warthog',
+         exhibit='Africa Savanna',
+         duration_seconds=300,
+         travel_before_seconds=0 ),
+      _timed_stop(
+         species='Masai Giraffe',
+         exhibit='Africa Savanna',
+         enclosure_name='Outdoor',
+         duration_seconds=480,
+         travel_before_seconds=120 ),
+   ]
+   start_seconds = _seconds( '11:30 AM' )
+   slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous(
+      stops,
+      start_seconds=start_seconds )
+
+   warthog_end = _seconds( slots[ 0 ][ 2 ] )
+   giraffe_start = _seconds( slots[ 1 ][ 1 ] )
+
+   assert warthog_end <= giraffe_start

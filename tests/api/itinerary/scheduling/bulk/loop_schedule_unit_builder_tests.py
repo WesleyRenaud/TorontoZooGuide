@@ -81,6 +81,15 @@ AFRICA_CHEETAH = _animal_record(
    species='Cheetah',
    exhibit='Africa Savanna',
 )
+WARTHOG = _animal_record(
+   species='Warthog',
+   exhibit='Africa Savanna',
+)
+MASAI_GIRAFFE = _animal_record(
+   species='Masai Giraffe',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
+)
 OSTRICH = _animal_record(
    species='Ostrich',
    exhibit='Africa Savanna',
@@ -144,6 +153,8 @@ WALK_NODE_IDS = {
    ( 'African Lion', 'Africa Savanna', None ): 'n-lion',
    ( 'African Penguin', 'Africa Savanna', 'Outdoor' ): 'n-penguin',
    ( 'Cheetah', 'Africa Savanna', None ): 'n-africa-cheetah',
+   ( 'Warthog', 'Africa Savanna', None ): 'n-warthog',
+   ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor' ): 'n-giraffe',
    ( 'Ostrich', 'Africa Savanna', None ): 'n-ostrich',
    ( 'Ostrich', 'Africa Savanna', 'White Rhino Viewing' ): 'n-ostrich-white-rhino',
    ( 'Ostrich', 'Africa Savanna', 'Kesho Park Offshoot' ): 'n-ostrich-kesho',
@@ -237,6 +248,20 @@ LOOPS_BY_ID = {
             species='Marabou Stork',
             exhibit='Africa Savanna',
             name='White Rhino Viewing' ),
+         ViewingSpotReference(
+            species='Warthog',
+            exhibit='Africa Savanna',
+            name=None ),
+      ] ),
+   'african_rainforest_giraffe': MasterRouteLoop(
+      loop_id='african_rainforest_giraffe',
+      name='African Rainforest Pavilion + Giraffe',
+      traversal=TWO_WAY_LOOP_TRAVERSAL,
+      viewing_spots=[
+         ViewingSpotReference(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            name='Outdoor' ),
       ] ),
    'african_rainforest': MasterRouteLoop(
       loop_id='african_rainforest',
@@ -282,6 +307,8 @@ LOOP_ID_BY_STOP_KEY = {
    _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 'africa_savanna_canadian_domain',
    _stop_key( ZEBRA ): 'africa_savanna_canadian_domain',
    _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 'africa_savanna_canadian_domain',
+   _stop_key( WARTHOG ): 'africa_savanna_canadian_domain',
+   _stop_key( MASAI_GIRAFFE ): 'african_rainforest_giraffe',
    _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
    _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
    _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 'african_rainforest',
@@ -293,6 +320,7 @@ LOOP_SIDE_CLUSTER_ID_BY_LOOP_ID = {
    'indo_malaya': 'south',
    'eurasia_wilds': 'north',
    'africa_savanna_canadian_domain': 'south',
+   'african_rainforest_giraffe': 'south',
    'african_rainforest': 'south',
 }
 
@@ -301,7 +329,8 @@ LOOP_INDEX_IN_SIDE_CLUSTER_BY_LOOP_ID = {
    'indo_malaya': 1,
    'eurasia_wilds': 2,
    'africa_savanna_canadian_domain': 3,
-   'african_rainforest': 4,
+   'african_rainforest_giraffe': 4,
+   'african_rainforest': 5,
 }
 
 ROUTE_INDEX_BY_STOP_KEY = {
@@ -320,10 +349,12 @@ ROUTE_INDEX_BY_STOP_KEY = {
    _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 10,
    _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 11,
    _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 12,
-   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 13,
-   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 14,
-   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 15,
-   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 16,
+   _stop_key( WARTHOG ): 13,
+   _stop_key( MASAI_GIRAFFE ): 14,
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 15,
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 16,
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 17,
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 18,
 }
 
 LOOP_INDEX_BY_STOP_KEY = {
@@ -342,10 +373,12 @@ LOOP_INDEX_BY_STOP_KEY = {
    _stop_key( OSTRICH_WHITE_RHINO_VIEWING ): 3,
    _stop_key( OSTRICH_KESHO_PARK_OFFSHOOT ): 3,
    _stop_key( MARABOU_WHITE_RHINO_VIEWING ): 3,
-   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 4,
-   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 4,
-   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 4,
-   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 4,
+   _stop_key( WARTHOG ): 3,
+   _stop_key( MASAI_GIRAFFE ): 4,
+   _stop_key( MARABOU_PAVILION_SAVANNA_OVERLOOK ): 5,
+   _stop_key( GREATER_KUDU_PAVILION_SAVANNA_OVERLOOK ): 5,
+   _stop_key( SOUTHERN_GROUND_HORNBILL_PAVILION_SAVANNA_OVERLOOK ): 5,
+   _stop_key( WHITE_HEADED_VULTURE_PAVILION_SAVANNA_OVERLOOK ): 5,
 }
 
 
@@ -495,6 +528,18 @@ def Test_Build_TestLionPenguinCheetah_ExpectSingleSavannaLoopUnit(
       'African Penguin',
       'Cheetah',
    ]
+
+
+def Test_Build_TestWarthogBeforeGiraffe_ExpectSeparateSavannaAndGiraffeUnits(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      MasterRouteLoopStopGrouper.group( [ WARTHOG, MASAI_GIRAFFE ] ) )
+
+   assert len( loop_units ) == 2
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [ 'Warthog' ]
+   assert loop_units[ 1 ].loop_id == 'african_rainforest_giraffe'
+   assert [ animal.species for animal in loop_units[ 1 ].stops ] == [ 'Masai Giraffe' ]
 
 
 def Test_Build_TestUnmappedAnimal_ExpectNoLoopMetadata(
