@@ -44,6 +44,7 @@ DELETED_CARIBOU_TALK = GuardiansTalkDiff(
 
 PENGUIN_TALK = 'African Penguin'
 LION_TALK = 'African Lion'
+OTTER_TALK = 'North American River Otter'
 
 PENGUIN_INDOOR_ROW = ItineraryAnimalRecord(
    species='African Penguin',
@@ -71,6 +72,20 @@ LION_LINK = GuardiansTalkAnimalRecord(
    location='Africa Savanna',
    species='African Lion',
    exhibit='Africa Savanna',
+)
+
+OTTER_OUTDOOR_ROW = ItineraryAnimalRecord(
+   species='North American River Otter',
+   exhibit='Americas Pavilion',
+   enclosure_name='Outdoor',
+   new_likelihood=100,
+)
+
+OTTER_INDOOR_ROW = ItineraryAnimalRecord(
+   species='North American River Otter',
+   exhibit='Americas Pavilion',
+   enclosure_name='Indoor',
+   new_likelihood=100,
 )
 
 COVERER_SCHEMA = """
@@ -124,6 +139,23 @@ def _lion_loop_pin() -> LoopSchedulePin:
       stop=_talk_stop( name=LION_TALK ),
       start_seconds=11 * 3600,
       end_seconds=11 * 3600 + 30 * 60,
+   )
+
+
+def _otter_loop_pin() -> LoopSchedulePin:
+   return LoopSchedulePin(
+      loop_id='americas_pavilion',
+      viewing_spot_index=11,
+      stop=ItineraryStop(
+         schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+         item_key=OTTER_TALK,
+         walk_node_ids=( 'v-0001', ),
+         is_fixed_time=True,
+         start_time='2:00 PM',
+         end_time='2:30 PM',
+      ),
+      start_seconds=14 * 3600,
+      end_seconds=14 * 3600 + 30 * 60,
    )
 
 
@@ -216,6 +248,53 @@ def lion_coverer_conn() -> sqlite3.Connection:
             VALUES ( ?, ?, NULL, 100, 0, NULL, NULL );
       """,
       ( 'African Lion', 'Africa Savanna' ),
+   )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+@pytest.fixture
+def otter_coverer_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( COVERER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO GuardiansTalkAnimal (
+               TALK_NAME,
+               LOCATION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      (
+         OTTER_TALK,
+         'Americas Pavilion',
+         'North American River Otter',
+         'Americas Pavilion',
+         'Indoor',
+      ),
+   )
+   conn.executemany(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               COVERED_BY_TALK,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ?, 100, 0, NULL, NULL );
+      """,
+      [
+         ( 'North American River Otter', 'Americas Pavilion', 'Outdoor' ),
+         ( 'North American River Otter', 'Americas Pavilion', 'Indoor' ),
+      ],
    )
    conn.commit()
 
@@ -384,6 +463,54 @@ def Test_ApplyAndRestore_TestPenguinOutdoor_ExpectIndoorUntouched(
    assert rows_by_enclosure[ 'Outdoor' ][ 'START_TIME' ] == '11:00 AM'
    assert rows_by_enclosure[ 'Outdoor' ][ 'END_TIME' ] == '11:05 AM'
    assert rows_by_enclosure[ 'Indoor' ][ 'COVERED_BY_TALK' ] == 0
+
+
+def Test_KeysToCover_TestOtterIndoorLoopPin_ExpectIndoorRowOnly(
+      otter_coverer_conn: sqlite3.Connection ) -> None:
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      otter_coverer_conn,
+      [ _otter_loop_pin() ],
+      [ OTTER_OUTDOOR_ROW, OTTER_INDOOR_ROW ],
+   )
+
+   assert set( covered ) == {
+      ViewingSpotKeyBuilder.from_values(
+         'North American River Otter',
+         'Americas Pavilion',
+         'Indoor' ),
+   }
+
+
+def Test_ApplyAndRestore_TestOtterIndoor_ExpectOutdoorUntouched(
+      otter_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
+      lambda conn, species, exhibit, enclosure_name: 5 * 60 )
+
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      otter_coverer_conn,
+      [ _otter_loop_pin() ],
+      [ OTTER_OUTDOOR_ROW, OTTER_INDOOR_ROW ],
+   )
+
+   GuardiansTalkAnimalCoverer.apply( otter_coverer_conn, covered )
+
+   rows_by_enclosure = {
+      row[ 'ENCLOSURE_NAME' ]: row
+      for row in otter_coverer_conn.execute(
+         """   SELECT ENCLOSURE_NAME, COVERED_BY_TALK, START_TIME, END_TIME
+               FROM ItineraryAnimal
+               WHERE SPECIES = 'North American River Otter';
+         """,
+      ).fetchall()
+   }
+
+   assert rows_by_enclosure[ 'Indoor' ][ 'COVERED_BY_TALK' ] == 1
+   assert rows_by_enclosure[ 'Indoor' ][ 'START_TIME' ] == '2:00 PM'
+   assert rows_by_enclosure[ 'Indoor' ][ 'END_TIME' ] == '2:30 PM'
+   assert rows_by_enclosure[ 'Outdoor' ][ 'COVERED_BY_TALK' ] == 0
+   assert rows_by_enclosure[ 'Outdoor' ][ 'START_TIME' ] is None
 
 
 def Test_KeysToCover_TestAfricanLionLoopPin_ExpectLionRowOnly(

@@ -11,6 +11,7 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler import GuardiansTalkItineraryItemScheduler
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
@@ -33,6 +34,19 @@ TALK_DIFF = GuardiansTalkDiff(
    is_deleted=False,
    start_time='2:00 PM',
    end_time='2:15 PM',
+   location='Americas Pavilion',
+)
+
+OTTER_TALK_KEY = GuardiansTalkScheduleItemKey(
+   name='North American River Otter',
+   start_time='14:00',
+)
+
+OTTER_TALK_DIFF = GuardiansTalkDiff(
+   name='North American River Otter',
+   is_deleted=False,
+   start_time='2:00 PM',
+   end_time='2:30 PM',
    location='Americas Pavilion',
 )
 
@@ -172,6 +186,68 @@ def Test_Schedule_TestOverlapWithoutConfirmation_ExpectUnscheduleWarning(
       confirming_guardians_talk_without_animal=True )
 
    assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+
+
+def Test_Schedule_TestOverlapWithConfirmation_ExpectBulkReschedule(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   reschedule_called = False
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_guardians_talk_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: OTTER_TALK_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, talks: True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_insert_scheduled_guardians_talk',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ScheduledActivityVisitTimesCoverer.cover_for_activity',
+      lambda *args, **kwargs: None )
+
+   def reschedule_after_add(
+         *args: object,
+         **kwargs: object ) -> ItinerarySaveResult:
+      nonlocal reschedule_called
+      reschedule_called = True
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      FixedTimeActivityRescheduler,
+      'reschedule_after_add',
+      reschedule_after_add )
+
+   result = GuardiansTalkItineraryItemScheduler.schedule(
+      scheduler_conn,
+      OTTER_TALK_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_guardians_talk_unschedule=True,
+      confirming_fixed_time_item_long_wait=True,
+      confirming_guardians_talk_without_animal=True )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert reschedule_called
 
 
 def Test_Schedule_TestValidTalk_ExpectCoverForActivity(
