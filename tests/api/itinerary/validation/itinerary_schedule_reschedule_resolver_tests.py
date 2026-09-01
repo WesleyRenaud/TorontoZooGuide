@@ -3,6 +3,8 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.validation.itinerary_schedule_reschedule_resolver import ItineraryScheduleRescheduleResolver
@@ -128,3 +130,79 @@ def Test_NeedsReschedule_TestDepartureCutsOffAttraction_ExpectTrue() -> None:
       saved,
       _validated(),
       requested_departure_time='4:15 PM' )
+
+
+def Test_NeedsReschedule_TestRemovedWildEncounter_ExpectFalse() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+      wild_encounter_rows=[
+         ItineraryWildEncounterRecord(
+            wild_encounter='Grizzly Bear',
+            start_time='3:30 PM',
+            end_time='4:15 PM',
+            is_deleted=False,
+         ),
+      ],
+   )
+
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated(),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestRemovedGuardiansTalk_ExpectFalse() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+      guardians_talk_rows=[
+         ItineraryGuardiansTalkRecord(
+            talk_name="Grevy's Zebra",
+            start_time='11:00 AM',
+            end_time='11:30 AM',
+            is_deleted=False,
+         ),
+      ],
+   )
+
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated(),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestLaterArrivalWithoutCutoff_ExpectFalse() -> None:
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved( animal_start='11:00 AM', animal_end='11:08 AM' ),
+      _validated( arrival_time='10:00 AM' ),
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestLaterArrivalCutsOffAnimal_ExpectTrue() -> None:
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      _saved( animal_start='10:00 AM', animal_end='10:08 AM' ),
+      _validated( arrival_time='10:30 AM' ),
+      requested_departure_time='5:00 PM' )

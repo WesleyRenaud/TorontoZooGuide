@@ -110,6 +110,27 @@ def _two_animal_itinerary() -> Itinerary:
       departure_time=None )
 
 
+def _lion_at_eleven_itinerary() -> Itinerary:
+   return ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='11:00 AM',
+            end_time='11:08 AM' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+
+
 @pytest.fixture
 def syncer_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
@@ -355,3 +376,29 @@ def Test_SeedIfComplete_TestTwoAnimals_ExpectDepartureFromLatestEnd(
       'arrival_time': '9:50 AM',
       'departure_time': '11:18 AM',
    }
+
+
+def Test_SeedIfComplete_TestLionAtEleven_ExpectArrivalFromEarliestStart(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   updated: dict[ str, str | None ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item',
+      lambda itinerary: ENTRANCE_TRAVEL_SECONDS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: updated.__setitem__( 'arrival_time', arrival_time ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
+      syncer_conn,
+      _lion_at_eleven_itinerary() )
+
+   assert updated[ 'arrival_time' ] == '10:50 AM'
+   assert updated[ 'departure_time' ] == '11:18 AM'
