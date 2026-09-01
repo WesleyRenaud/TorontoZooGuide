@@ -6,8 +6,11 @@ import pytest
 
 from api.itinerary.data_access.save_itinerary_provider import SaveItineraryProvider
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.models.transportation_diff import TransportationDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 
+
+ZOOMOBILE = 'Zoomobile'
 
 SAVE_PROVIDER_SCHEMA = """
 CREATE TABLE ItineraryGuardiansTalk (
@@ -22,6 +25,34 @@ CREATE TABLE ItineraryWildEncounter (
    START_TIME           TEXT,
    END_TIME             TEXT,
    IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ItineraryTransportation (
+   TRANSPORTATION           TEXT        NOT NULL,
+   OLD_LIKELIHOOD           INTEGER,
+   NEW_LIKELIHOOD           INTEGER,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   START_TIME               TEXT,
+   END_TIME                 TEXT,
+   ROUTE                    TEXT,
+   BULK_TRANSIT_EVALUATED   INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ItineraryTransportationLeg (
+   TRANSPORTATION           TEXT        NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   FROM_STATION             TEXT        NOT NULL,
+   TO_STATION               TEXT        NOT NULL,
+   START_TIME               TEXT        NOT NULL,
+   END_TIME                 TEXT        NOT NULL
+);
+
+CREATE TABLE ItineraryTransportationRouteMarker (
+   TRANSPORTATION           TEXT        NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER     NOT NULL DEFAULT 0,
+   SEQUENCE                 INTEGER     NOT NULL,
+   MARKER_ORDER             INTEGER     NOT NULL,
+   MARKER_ID                TEXT        NOT NULL
 );
 """
 
@@ -123,3 +154,73 @@ def Test_SaveItineraryWildEncounters_TestScheduledEncounter_ExpectDisplayFormat(
       'END_TIME': '2:45 PM',
       'IS_DELETED': 0,
    }
+
+
+def Test_SaveItineraryTransportations_TestAttractionModeZoomobile_ExpectTransportationRow(
+      save_provider_conn: sqlite3.Connection ) -> None:
+   cur = save_provider_conn.cursor()
+   SaveItineraryProvider.save_itinerary_transportations(
+      cur,
+      [
+         TransportationDiff(
+            name=ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=True ),
+      ] )
+   save_provider_conn.commit()
+   cur.close()
+
+   row = save_provider_conn.execute(
+      """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
+            FROM ItineraryTransportation;
+      """
+   ).fetchone()
+   leg_count = save_provider_conn.execute(
+      'SELECT COUNT(*) AS COUNT FROM ItineraryTransportationLeg;'
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'TRANSPORTATION' ] == ZOOMOBILE
+   assert row[ 'ADDED_AS_ATTRACTION' ] == 1
+   assert leg_count is not None
+   assert leg_count[ 'COUNT' ] == 0
+
+
+def Test_SaveItineraryTransportations_TestBothModes_ExpectTwoRows(
+      save_provider_conn: sqlite3.Connection ) -> None:
+   cur = save_provider_conn.cursor()
+   SaveItineraryProvider.save_itinerary_transportations(
+      cur,
+      [
+         TransportationDiff(
+            name=ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=True ),
+         TransportationDiff(
+            name=ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=False ),
+      ] )
+   save_provider_conn.commit()
+   cur.close()
+
+   rows = save_provider_conn.execute(
+      """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
+            FROM ItineraryTransportation
+            ORDER BY ADDED_AS_ATTRACTION;
+      """
+   ).fetchall()
+
+   assert [
+      {
+         'TRANSPORTATION': row[ 'TRANSPORTATION' ],
+         'ADDED_AS_ATTRACTION': row[ 'ADDED_AS_ATTRACTION' ],
+      }
+      for row in rows
+   ] == [
+      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 0 },
+      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 1 },
+   ]

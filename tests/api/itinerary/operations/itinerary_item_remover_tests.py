@@ -354,3 +354,34 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeDeletedTransitPres
    assert transit_row[ 'ROUTE' ] == ZOOMOBILE_TRANSIT_ROUTE
    assert transit_row[ 'BULK_TRANSIT_EVALUATED' ] == 1
    assert _fetch_transit_legs( zoomobile_remover_conn ) == transit_legs_before
+
+
+def Test_Apply_TestTransportationTransitModeKey_ExpectAttractionRolePreserved(
+      zoomobile_remover_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: _zoomobile_saved_itinerary() )
+
+   cur = zoomobile_remover_conn.cursor()
+   ItineraryItemRemover.apply(
+      cur,
+      TransportationScheduleItemKey(
+         name=ZOOMOBILE,
+         added_as_attraction=False ) )
+   zoomobile_remover_conn.commit()
+   cur.close()
+
+   rows = zoomobile_remover_conn.execute(
+      """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
+            FROM ItineraryTransportation
+            ORDER BY ADDED_AS_ATTRACTION;
+      """,
+   ).fetchall()
+
+   assert [
+      ( row[ 'TRANSPORTATION' ], row[ 'ADDED_AS_ATTRACTION' ] )
+      for row in rows
+   ] == [
+      ( ZOOMOBILE, 1 ),
+   ]

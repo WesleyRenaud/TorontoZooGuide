@@ -9,11 +9,13 @@ from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import Sched
 from api.models import Animal
 from api.models import GuardiansTalk
 from api.models import Itinerary
+from api.models import ItineraryTransportation
 from api.models import WildEncounter
 
 
 VISIT_DATE = '2026-06-15'
 ENTRANCE_TRAVEL_SECONDS = 10 * 60
+ZOOMOBILE = 'Zoomobile'
 
 
 def _fully_scheduled_lion_itinerary() -> Itinerary:
@@ -495,3 +497,71 @@ def Test_SeedIfComplete_TestMorningRescheduledLion_ExpectDepartureFromEndPlusTra
       'arrival_time': '9:30 AM',
       'departure_time': '9:58 AM',
    }
+
+
+def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVisitTimesCleared(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   cleared: list[ str ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: cleared.append( 'arrival' ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: cleared.append( 'departure' ) or True )
+
+   previous_itinerary = ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+      ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportation(
+            name=ZOOMOBILE,
+            added_as_attraction=True,
+            start_time='11:00 AM',
+            end_time='11:30 AM' ),
+      ],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:50 AM',
+      departure_time='11:40 AM' )
+   current_itinerary = ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+      ],
+      attractions=[],
+      transportations=[
+         ItineraryTransportation(
+            name=ZOOMOBILE,
+            added_as_attraction=True ),
+      ],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:50 AM',
+      departure_time='11:40 AM' )
+
+   ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
+      syncer_conn,
+      previous_itinerary=previous_itinerary,
+      current_itinerary=current_itinerary )
+
+   assert cleared == [ 'arrival', 'departure' ]
+   assert current_itinerary.animals[ 0 ].start_time == '10:00 AM'
