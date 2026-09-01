@@ -28,8 +28,17 @@ class StubItineraryCoordinator():
       return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
-   def schedule_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
-      self.calls.append( ( 'schedule_itinerary_item', kwargs ) )
+   def schedule_itinerary_item(
+         self,
+         schedule_item_key: Any = None,
+         **kwargs: Any ) -> ItinerarySaveResult:
+      self.calls.append( (
+         'schedule_itinerary_item',
+         {
+            'schedule_item_key': schedule_item_key,
+            **kwargs,
+         },
+      ) )
       return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 

@@ -4,8 +4,13 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
+from api_test_support.itinerary_test_support import ANIMAL_KEY
+from api_test_support.itinerary_test_support import CAROUSEL
+from api_test_support.itinerary_test_support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
+from api_test_support.itinerary_test_support import entrance_travel_seconds_to_animal
+from api_test_support.itinerary_test_support import LION_ITINERARY_ENTRY
+from api_test_support.itinerary_test_support import schedule_time_after_seconds
 from http_client import post_route
-from itinerary.support import ANIMAL_KEY, CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, entrance_travel_seconds_to_animal, LION_ITINERARY_ENTRY, schedule_time_after_seconds
 
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
