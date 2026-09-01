@@ -28,6 +28,12 @@ ENCOUNTER_NODE_ID = 'n-encounter'
 SOUTH_CLUSTER_ID = 'south'
 GIRAFFE_ENCOUNTER_START = '11:00 AM'
 GIRAFFE_ENCOUNTER_END = '11:45 AM'
+RHINO_ENCOUNTER_START = '9:52 AM'
+RHINO_ENCOUNTER_END = '10:37 AM'
+SAVANNA_LOOP_ID = 'africa_savanna_canadian_domain'
+LION_NODE_ID = 'n-lion'
+PENGUIN_NODE_ID = 'n-penguin'
+SAVANNA_DWELL_SECONDS = 300
 
 CHEETAH_DWELL_SECONDS = 300
 CHEETAH_APPROACH_SECONDS = 360
@@ -180,6 +186,42 @@ SMART_PACK_GRAPH: WalkGraph = {
 }
 
 
+SAVANNA_PACK_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': ENTRANCE_NODE_ID,
+   'nodes': [
+      _node( ENTRANCE_NODE_ID, 0.0, 0.0 ),
+      _node( LION_NODE_ID, 10.0, 0.0 ),
+      _node( PENGUIN_NODE_ID, 18.0, 0.0 ),
+      _node( CHEETAH_NODE_ID, 26.0, 0.0 ),
+      _node( ENCOUNTER_NODE_ID, 30.0, 0.0 ),
+   ],
+   'edges': [
+      {
+         'from': ENTRANCE_NODE_ID,
+         'to': LION_NODE_ID,
+         'length_px': _edge_length_px( 6 ),
+      },
+      {
+         'from': LION_NODE_ID,
+         'to': PENGUIN_NODE_ID,
+         'length_px': _edge_length_px( 4 ),
+      },
+      {
+         'from': PENGUIN_NODE_ID,
+         'to': CHEETAH_NODE_ID,
+         'length_px': _edge_length_px( 4 ),
+      },
+      {
+         'from': CHEETAH_NODE_ID,
+         'to': ENCOUNTER_NODE_ID,
+         'length_px': _edge_length_px( 2 ),
+      },
+   ],
+}
+
+
 def _encounter_anchor_stop(
       *,
       start_time: str,
@@ -191,6 +233,45 @@ def _encounter_anchor_stop(
       is_fixed_time=True,
       start_time=start_time,
       end_time=end_time )
+
+
+def _rhino_encounter_anchor_stop() -> ItineraryStop:
+   return ItineraryStop(
+      walk_node_ids=[ ENCOUNTER_NODE_ID ],
+      schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
+      item_key='Guardians of White Rhinos',
+      meeting_spot='Wild Encounter - Penguin Meeting Spot',
+      is_fixed_time=True,
+      start_time=RHINO_ENCOUNTER_START,
+      end_time=RHINO_ENCOUNTER_END )
+
+
+def _africa_savanna_prepared_unit() -> PreparedLoopScheduleUnit:
+   return _prepared_loop_unit(
+      loop_id=SAVANNA_LOOP_ID,
+      stops=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            enclosure_name=None,
+            old_likelihood=None,
+            new_likelihood=100 ),
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100 ),
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Africa Savanna',
+            enclosure_name=None,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+      entry_walk_node_id=LION_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=3 * SAVANNA_DWELL_SECONDS )
 
 
 def _south_australasia_prepared_unit() -> PreparedLoopScheduleUnit:
@@ -402,6 +483,37 @@ def Test_Pack_TestTwoWayLoop_ExpectShorterApproachOrientation() -> None:
 
 ZEBRA_TALK_START_SECONDS = 11 * 3600
 BACTRIAN_CAMELS_START_SECONDS = 15 * 3600 + 30 * 60
+RHINO_ENCOUNTER_START_SECONDS = 9 * 3600 + 52 * 60
+
+
+def Test_PackAllBeforeDeadline_TestSavannaLoopBeforeRhinoEncounter_ExpectPacked() -> None:
+   savanna_unit = _africa_savanna_prepared_unit()
+
+   packed_units = LoopWindowPacker.pack_all_before_deadline(
+      SAVANNA_PACK_GRAPH,
+      prepared_units=[ savanna_unit ],
+      window_start_seconds=_seconds( '9:00 AM' ),
+      deadline_seconds=RHINO_ENCOUNTER_START_SECONDS,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units is not None
+   assert [ unit.unit.loop_id for unit in packed_units ] == [ SAVANNA_LOOP_ID ]
+
+
+def Test_Pack_TestRhinoEncounterWindow_ExpectSavannaLoopPackedBeforeAnchor() -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+
+   packed_units = LoopWindowPacker.pack(
+      SAVANNA_PACK_GRAPH,
+      ItineraryScheduleWindow(
+         start_seconds=window_start_seconds,
+         end_seconds=_seconds( RHINO_ENCOUNTER_START ),
+         anchor_stop=_rhino_encounter_anchor_stop() ),
+      prepared_units=[ _africa_savanna_prepared_unit() ],
+      cursor_seconds=window_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [ SAVANNA_LOOP_ID ]
 
 
 def Test_PackAllBeforeDeadline_TestUnitsFitBeforePinnedTalk_ExpectAllPacked() -> None:
