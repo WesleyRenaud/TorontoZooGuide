@@ -298,6 +298,23 @@ def Test_Reversed_TestTwoWayLoop_ExpectSwappedEndpointsAndStops(
    ]
 
 
+def Test_Orientations_TestTwoWayLoop_ExpectForwardAndReversed(
+      stub_loop_schedule_unit_builder_dependencies: None ) -> None:
+   loop_units = LoopScheduleUnitBuilder.build(
+      MasterRouteLoopAnimalGrouper.group( [ HIGHLAND_CATTLE, WEST_CAUCASIAN_TUR ] ) )
+   orientations = LoopScheduleUnitBuilder.orientations( loop_units[ 0 ] )
+
+   assert len( orientations ) == 2
+   assert orientations[ 0 ].entry_walk_node_id == 'n-highland'
+   assert orientations[ 0 ].exit_walk_node_id == 'n-tur'
+   assert orientations[ 1 ].entry_walk_node_id == 'n-tur'
+   assert orientations[ 1 ].exit_walk_node_id == 'n-highland'
+   assert [ animal.species for animal in orientations[ 1 ].stops ] == [
+      'West Caucasian Tur',
+      'Highland Cattle',
+   ]
+
+
 def Test_Build_TestLoopViewingSpotOrder_ExpectSortedStops(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(

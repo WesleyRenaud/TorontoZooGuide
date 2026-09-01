@@ -226,6 +226,44 @@ def Test_StopsMatchingPrevious_TestAldabraRainforestOutdoorToIndoor_ExpectIndoor
    ] == [ ( 'Aldabra Tortoise', ALDABRA_INDOOR_ENCLOSURE ) ]
 
 
+def Test_Stops_TestClearedAttractionSchedule_ExpectCarouselStillSelected() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM' ),
+      ],
+      attraction_rows=[
+         ItineraryAttractionRecord(
+            attraction=CAROUSEL,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+   )
+
+   stops = BulkScheduleStopSelector.stops(
+      saved,
+      only_previously_scheduled=False )
+
+   assert [
+      attraction.attraction
+      for attraction in BulkScheduleStopSelector.attractions(
+         saved,
+         only_previously_scheduled=False )
+   ] == [ CAROUSEL ]
+   assert BulkScheduleStopSelector.attractions(
+      saved,
+      only_previously_scheduled=True ) == []
+   assert len( stops ) == 2
+
+
 def Test_Stops_TestAllGuestStops_ExpectAnimalsAttractionsAndTransportation() -> None:
    stops = BulkScheduleStopSelector.stops(
       _saved(),
