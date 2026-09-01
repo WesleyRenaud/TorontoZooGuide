@@ -32,3 +32,30 @@ def Test_BuildNotEnoughTimeIssue_TestAnimalAndAttraction_ExpectIssueItems() -> N
       ( 'African Lion', ItinerarySaveIssueItemType.ANIMAL, 'Africa Savanna' ),
       ( CAROUSEL, ItinerarySaveIssueItemType.ATTRACTION, '' ),
    ]
+
+
+def Test_BuildNotEnoughTimeIssue_TestPenguinAndLion_ExpectIssueOrderPreserved() -> None:
+   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
+      [
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100 ),
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ] )
+
+   assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
+   assert [ item.name for item in issue.items ] == [
+      'African Penguin',
+      'African Lion',
+   ]
+   assert [ item.location for item in issue.items ] == [
+      'Africa Savanna',
+      'Africa Savanna',
+   ]
