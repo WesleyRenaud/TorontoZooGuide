@@ -6,6 +6,7 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.models import Animal
+from api.models import Attraction
 from api.models import Itinerary
 from api.models import WildEncounter
 from api.shared.enums import ScheduleItemKind
@@ -26,6 +27,8 @@ ENTRANCE_NODE_ID = 'n-1'
 LION_WALK_NODE_ID = 'n-2001'
 ENCOUNTER_WALK_NODE_ID = 'n-3001'
 
+KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
+WALK_THRU_WALK_NODE_ID = 'n-walk-thru'
 MEETING_SPOT = 'Wild Encounter - Penguin Meeting Spot'
 
 
@@ -82,6 +85,32 @@ ENCOUNTER_MAP_LOCATION = MapLocationWalkNode(
    snap_distance_px=0.0,
 )
 
+COVERED_KANGAROO = Animal(
+   species='Western Grey Kangaroo',
+   exhibit='Australasia Outdoor',
+   covered_by_talk=True,
+   start_time='11:00 AM',
+   end_time='11:30 AM',
+)
+
+SCHEDULED_WALK_THRU = Attraction(
+   name=KANGAROO_WALK_THRU,
+   free_with_admission=0,
+   likelihood=100,
+   start_time='11:00 AM',
+   end_time='11:30 AM',
+)
+
+WALK_THRU_MAP_LOCATION = MapLocationWalkNode(
+   kind=MapLocationKind.ATTRACTION,
+   name=KANGAROO_WALK_THRU,
+   location='',
+   x=45.0,
+   y=50.0,
+   walk_node_id=WALK_THRU_WALK_NODE_ID,
+   snap_distance_px=0.0,
+)
+
 
 def _clear_walk_graph_provider_cache() -> None:
    WalkGraphProvider.fetch.cache_clear()
@@ -108,12 +137,13 @@ def stub_itinerary_stop_dependencies( monkeypatch: pytest.MonkeyPatch ) -> None:
 def _itinerary(
       *,
       animals: list[ Animal ] | None = None,
+      attractions: list[ Attraction ] | None = None,
       wild_encounters: list[ WildEncounter ] | None = None ) -> Itinerary:
    return ItineraryBuilder.build(
       date=VISIT_DATE,
       selected_exhibits=[],
       animals=animals or [],
-      attractions=[],
+      attractions=attractions or [],
       transportations=[],
       transportation_stations=[],
       guardians_talks=[],
@@ -171,3 +201,46 @@ def Test_ResolveFixedTime_TestWildEncounter_ExpectOnlyFixedTimeStops(
 
    assert len( fixed_time_stops ) == 1
    assert fixed_time_stops[ 0 ].item_key == 'Guardians of White Rhinos'
+
+
+def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
+      stub_itinerary_stop_dependencies: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      MapLocationWalkNodeLookup,
+      'for_map_location',
+      lambda kind, name, *, location='': (
+         WALK_THRU_MAP_LOCATION
+         if kind == MapLocationKind.ATTRACTION and name == KANGAROO_WALK_THRU
+         else (
+            ENCOUNTER_MAP_LOCATION
+            if kind == MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT
+            else None
+         ) ) )
+
+   stops = ItineraryStopResolver.resolve(
+      _itinerary(
+         animals=[ COVERED_KANGAROO ],
+         attractions=[ SCHEDULED_WALK_THRU ],
+      ) )
+
+   animal_stops = [
+      stop
+      for stop in stops
+      if (
+         stop.schedule_item_kind == ScheduleItemKind.ANIMAL
+         and 'Western Grey Kangaroo' in stop.item_key )
+   ]
+   attraction_stops = [
+      stop
+      for stop in stops
+      if (
+         stop.schedule_item_kind == ScheduleItemKind.ATTRACTION
+         and stop.item_key == KANGAROO_WALK_THRU )
+   ]
+
+   assert animal_stops == []
+   assert len( attraction_stops ) == 1
+   assert attraction_stops[ 0 ].start_time == '11:00 AM'
+   assert attraction_stops[ 0 ].end_time == '11:30 AM'
+   assert attraction_stops[ 0 ].walk_node_ids == [ WALK_THRU_WALK_NODE_ID ]

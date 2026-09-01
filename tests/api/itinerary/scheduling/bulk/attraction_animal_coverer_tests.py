@@ -6,6 +6,8 @@ import pytest
 
 from api.attractions.data_access.attraction_animal_record import AttractionAnimalRecord
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from api.itinerary.scheduling.core.time_block import TimeBlock
 
@@ -32,6 +34,14 @@ CREATE TABLE ItineraryAnimal (
    START_TIME           TEXT,
    END_TIME             TEXT
 );
+
+CREATE TABLE ItineraryAttraction (
+   ATTRACTION           TEXT        NOT NULL PRIMARY KEY,
+   OLD_LIKELIHOOD       INTEGER,
+   NEW_LIKELIHOOD       INTEGER,
+   START_TIME           TEXT,
+   END_TIME             TEXT
+);
 """
 
 KANGAROO_ROW = ItineraryAnimalRecord(
@@ -47,6 +57,12 @@ TIGER_ROW = ItineraryAnimalRecord(
    exhibit='Eurasia Wilds',
    start_time='12:00 PM',
    end_time='12:08 PM',
+)
+
+UNCOVERED_KANGAROO_ROW = ItineraryAnimalRecord(
+   species='Western Grey Kangaroo',
+   exhibit='Australasia Outdoor',
+   new_likelihood=100,
 )
 
 
@@ -83,6 +99,78 @@ def coverer_conn() -> sqlite3.Connection:
       (
          'Western Grey Kangaroo',
          'Australasia Outdoor',
+         '11:00 AM',
+         '11:30 AM',
+      ) )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+@pytest.fixture
+def apply_coverer_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( COVERER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO AttractionAnimal (
+               ATTRACTION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES ( ?, ?, ?, NULL );
+      """,
+      (
+         KANGAROO_WALK_THRU,
+         'Western Grey Kangaroo',
+         'Australasia Outdoor',
+      ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               COVERED_BY_TALK
+            )
+            VALUES ( ?, ?, NULL, 100, 0 );
+      """,
+      (
+         'Western Grey Kangaroo',
+         'Australasia Outdoor',
+      ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               START_TIME,
+               END_TIME,
+               COVERED_BY_TALK
+            )
+            VALUES ( ?, ?, NULL, 100, ?, ?, 0 );
+      """,
+      (
+         'Amur Tiger',
+         'Eurasia Wilds',
+         '12:00 PM',
+         '12:08 PM',
+      ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               NEW_LIKELIHOOD,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, 100, ?, ? );
+      """,
+      (
+         KANGAROO_WALK_THRU,
          '11:00 AM',
          '11:30 AM',
       ) )
@@ -140,3 +228,57 @@ def Test_RestoreAfterRemoved_TestCoveredKangaroo_ExpectDefaultDurationSchedule(
    assert row[ 'START_TIME' ] == '11:00 AM'
    assert row[ 'END_TIME' ] == '11:05 AM'
    assert row[ 'COVERED_BY_TALK' ] == 0
+
+
+def Test_Apply_TestScheduledWalkThru_ExpectKangarooCoveredWithAttractionTimes(
+      apply_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_animal_coverer.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='9:00 AM',
+         departure_time='5:00 PM',
+         attraction_rows=[
+            ItineraryAttractionRecord(
+               attraction=KANGAROO_WALK_THRU,
+               old_likelihood=None,
+               new_likelihood=100,
+               start_time='11:00 AM',
+               end_time='11:30 AM',
+            ),
+         ],
+      ) )
+
+   covered = AttractionAnimalCoverer.keys_to_cover(
+      apply_coverer_conn,
+      [ KANGAROO_WALK_THRU ],
+      [ UNCOVERED_KANGAROO_ROW, TIGER_ROW ],
+   )
+
+   AttractionAnimalCoverer.apply( apply_coverer_conn, covered )
+
+   kangaroo = apply_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 'Western Grey Kangaroo', 'Australasia Outdoor' ),
+   ).fetchone()
+   tiger = apply_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 'Amur Tiger', 'Eurasia Wilds' ),
+   ).fetchone()
+
+   assert kangaroo is not None
+   assert kangaroo[ 'COVERED_BY_TALK' ] == 1
+   assert kangaroo[ 'START_TIME' ] == '11:00 AM'
+   assert kangaroo[ 'END_TIME' ] == '11:30 AM'
+   assert tiger is not None
+   assert tiger[ 'COVERED_BY_TALK' ] == 0
+   assert tiger[ 'START_TIME' ] == '12:00 PM'
