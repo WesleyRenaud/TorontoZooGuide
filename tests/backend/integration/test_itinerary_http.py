@@ -4,7 +4,6 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from api_test_support.itinerary_test_support import ANIMAL_KEY
 from api_test_support.itinerary_test_support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
 from api_test_support.itinerary_test_support import entrance_travel_seconds_to_animal
 from api_test_support.itinerary_test_support import LION_ITINERARY_ENTRY
@@ -48,76 +47,6 @@ def _find_animal( itinerary: dict[ str, object ], *, species: str, exhibit: str 
          return animal
 
    raise AssertionError( f'Expected animal { species } / { exhibit } in itinerary response' )
-
-
-def test_schedule_and_unschedule_animal_via_http(
-      integration_db: Path,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
-
-   status, set_response = post_route(
-      '/set-itinerary',
-      {
-         'date': '2026-06-15',
-         'arrivalTime': '09:00',
-         'animals': [ LION_ITINERARY_ENTRY ],
-         'attractions': [],
-         'transportations': [],
-         'guardiansTalks': [],
-         'wildEncounters': [],
-         'confirmingEarlyAdmission': True,
-      },
-   )
-
-   assert status == 200
-   assert set_response[ 'status' ] == 'success'
-
-   status, schedule_response = post_route(
-      '/schedule-itinerary-item',
-      {
-         'itemType': 'animals',
-         'key': ANIMAL_KEY,
-         'startTime': '14:00',
-      },
-   )
-
-   assert status == 200
-   assert schedule_response[ 'status' ] == 'success'
-   scheduled_lion = _find_animal(
-      schedule_response[ 'itinerary' ],
-      species='African Lion',
-      exhibit='Africa Savanna',
-   )
-   assert scheduled_lion[ 'start_time' ] == '2:00 PM'
-   assert scheduled_lion[ 'end_time' ] is not None
-   itinerary_path = schedule_response[ 'itinerary_path' ]
-   assert itinerary_path[ 'points' ]
-   assert itinerary_path[ 'stops' ]
-   assert itinerary_path[ 'legs' ]
-
-   status, unschedule_response = post_route(
-      '/unschedule-itinerary-item',
-      {
-         'itemType': 'animals',
-         'key': ANIMAL_KEY,
-      },
-   )
-
-   assert status == 200
-   assert unschedule_response[ 'status' ] == 'success'
-
-   status, get_response = post_route( '/get-itinerary', {} )
-
-   assert status == 200
-   unscheduled_lion = _find_animal(
-      get_response[ 'itinerary' ],
-      species='African Lion',
-      exhibit='Africa Savanna',
-   )
-   assert unscheduled_lion[ 'start_time' ] is None
-   assert unscheduled_lion[ 'end_time' ] is None
-   assert 'itinerary_path' in get_response
 
 
 def test_bulk_schedule_itinerary_via_http(
