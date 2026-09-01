@@ -8,7 +8,7 @@ from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResu
 from api.models import Itinerary
 
 
-class StubItineraryCoordinator():
+class StubItineraryCoordinator:
    instances: list[ StubItineraryCoordinator ] = []
    default_success: bool = True
 
@@ -117,9 +117,9 @@ class StubItineraryCoordinator():
 
    def accept_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'AcceptItineraryProvider.accept_itinerary', kwargs ) )
-      return True
+      return type( self ).default_success
 
 
    def clear_itinerary( self ) -> bool:
       self.calls.append( ( 'ClearItineraryProvider.clear_itinerary', {} ) )
-      return True
+      return type( self ).default_success

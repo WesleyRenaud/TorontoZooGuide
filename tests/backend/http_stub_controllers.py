@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from api_test_support.stub_itinerary_coordinator import StubItineraryCoordinator
 from http_stub_amenities import AmenitiesStubMixin
 from http_stub_animals import AnimalsExhibitsStubMixin
 from http_stub_events import EventsStubMixin
-from http_stub_itinerary import ItineraryStubMixin
 from http_stub_locations import LocationsStubMixin
 from http_stub_transportation_route import TransportationRouteStubMixin
 from http_stub_updates import UpdatesStubMixin
@@ -24,7 +24,7 @@ class StubControllerNamespace:
       return getattr( self._root, name )
 
 
-class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, TransportationRouteStubMixin, EventsStubMixin, LocationsStubMixin, UpdatesStubMixin, ItineraryStubMixin, ZooHoursStubMixin ):
+class StubZooControllers( AnimalsExhibitsStubMixin, AmenitiesStubMixin, TransportationRouteStubMixin, EventsStubMixin, LocationsStubMixin, UpdatesStubMixin, StubItineraryCoordinator, ZooHoursStubMixin ):
    instances: list[ StubZooControllers ] = []
    default_success: bool = True
    controller_attributes: list[ str ] = [
