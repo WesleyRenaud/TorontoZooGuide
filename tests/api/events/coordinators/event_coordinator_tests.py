@@ -1,20 +1,31 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from datetime import date
 
+from api_test_support.frozen_datetime import patch_database_today
+from api_test_support.seeded_database import SeededDatabase
+import pytest
+
 from api.events.coordinators.event_coordinator import EventCoordinator
-from conftest import DbControllers
 
 
-def test_create_event_persists_event_fields( db: DbControllers ) -> None:
+EVENT_NAME = 'Conservation Carousel Ride Night'
+EVENT_LOCATION = 'Front Courtyard'
+EVENT_DESCRIPTION = 'Evening carousel rides for a special cause.'
+EVENT_LINK = 'https://www.torontozoo.com/events/carousel-night'
+EVENT_START_DATE = '2026-06-15'
+EVENT_END_DATE = '2026-06-30'
+
+
+def Test_CreateEvent_TestValidEvent_ExpectPersistsEventFields(
+      db: SeededDatabase ) -> None:
    assert EventCoordinator.create_event(
-      name='Conservation Carousel Ride Night',
-      location='Front Courtyard',
-      description='Evening carousel rides for a special cause.',
-      link='https://www.torontozoo.com/events/carousel-night',
-      start_date='2026-06-15',
-      end_date='2026-06-30' ) is True
+      name=EVENT_NAME,
+      location=EVENT_LOCATION,
+      description=EVENT_DESCRIPTION,
+      link=EVENT_LINK,
+      start_date=EVENT_START_DATE,
+      end_date=EVENT_END_DATE ) is True
 
    assert db.conn is not None
    row = db.conn.execute(
@@ -22,26 +33,27 @@ def test_create_event_persists_event_fields( db: DbControllers ) -> None:
             FROM ZooEvent
             WHERE NAME = ?;
       """,
-      ( 'Conservation Carousel Ride Night', ) ).fetchone()
+      ( EVENT_NAME, ) ).fetchone()
 
    assert row is not None
    assert tuple( row ) == (
-      'Conservation Carousel Ride Night',
-      'Front Courtyard',
-      'Evening carousel rides for a special cause.',
-      'https://www.torontozoo.com/events/carousel-night',
-      '2026-06-15',
-      '2026-06-30'
+      EVENT_NAME,
+      EVENT_LOCATION,
+      EVENT_DESCRIPTION,
+      EVENT_LINK,
+      EVENT_START_DATE,
+      EVENT_END_DATE,
    )
 
 
-def test_create_event_persists_open_ended_event( db: DbControllers ) -> None:
+def Test_CreateEvent_TestOpenEndedEvent_ExpectPersistsNullEndDate(
+      db: SeededDatabase ) -> None:
    assert EventCoordinator.create_event(
-      name='Conservation Carousel Ride Night',
-      location='Front Courtyard',
-      description='Evening carousel rides for a special cause.',
-      link='https://www.torontozoo.com/events/carousel-night',
-      start_date='2026-06-15',
+      name=EVENT_NAME,
+      location=EVENT_LOCATION,
+      description=EVENT_DESCRIPTION,
+      link=EVENT_LINK,
+      start_date=EVENT_START_DATE,
       end_date=None ) is True
 
    assert db.conn is not None
@@ -50,32 +62,32 @@ def test_create_event_persists_open_ended_event( db: DbControllers ) -> None:
             FROM ZooEvent
             WHERE NAME = ?;
       """,
-      ( 'Conservation Carousel Ride Night', ) ).fetchone()
+      ( EVENT_NAME, ) ).fetchone()
 
    assert row is not None
-   assert tuple( row ) == ( '2026-06-15', None )
+   assert tuple( row ) == ( EVENT_START_DATE, None )
 
 
-def test_create_event_rejects_duplicate_name_and_start_date(
-      db: DbControllers ) -> None:
+def Test_CreateEvent_TestDuplicateNameAndStartDate_ExpectRejectsSecondInsert(
+      db: SeededDatabase ) -> None:
    assert EventCoordinator.create_event(
-      name='Conservation Carousel Ride Night',
-      location='Front Courtyard',
+      name=EVENT_NAME,
+      location=EVENT_LOCATION,
       description='First description.',
       link='https://www.torontozoo.com/events/one',
-      start_date='2026-06-15',
+      start_date=EVENT_START_DATE,
       end_date=None ) is True
 
    assert EventCoordinator.create_event(
-      name='Conservation Carousel Ride Night',
+      name=EVENT_NAME,
       location='Africa Savanna',
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
-      start_date='2026-06-15',
+      start_date=EVENT_START_DATE,
       end_date=None ) is False
 
    assert EventCoordinator.create_event(
-      name='Conservation Carousel Ride Night',
+      name=EVENT_NAME,
       location='Africa Savanna',
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
@@ -83,10 +95,10 @@ def test_create_event_rejects_duplicate_name_and_start_date(
       end_date=None ) is True
 
 
-def test_get_events_for_visit_date_includes_upcoming_and_excludes_expired_events(
-      db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 6, 15 ) )
+def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpired(
+      db: SeededDatabase,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   patch_database_today( monkeypatch, date( 2026, 6, 15 ) )
 
    assert EventCoordinator.create_event(
       name='Active open-ended event',

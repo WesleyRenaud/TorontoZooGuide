@@ -7,7 +7,7 @@
       "clean": "node tools/cleanBuildArtifacts.js",
       "coverage": "node tools/coverageSummary.js",
       "coverage:js": "node --test --experimental-test-coverage --test-coverage-include='scripts/**/*.js' tests/frontend/frontend.test.mjs",
-      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/api -n auto --cov=api/animals --cov=api/attractions --cov=api/defibrillators --cov=api/drinking_fountains --cov=api/emergency_intercoms --cov=api/event_sites --cov=api/events --cov=api/exhibits --cov=api/giftshops --cov=api/guardians --cov=api/guest_services --cov=api/pavilions --cov=api/picnic_sites --cov=api/restaurants --cov=api/restrooms --cov=api/search --cov=api/shared --cov=api/static --cov=api/transportation --cov=api/updates --cov=api/wild_encounters --cov=api/zoo_hours --cov-report=term:skip-covered --cov-precision=2",
+      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/api -n auto --cov=api --cov-report=term:skip-covered --cov-precision=2",
       "clear:itinerary": "python3 -m api.seed.user_itinerary_data_cleaner",
       "clear:itinerary-config": "python3 -m api.seed.user_itinerary_config_cleaner",
       "lint": "node tools/lint/mapSvgIntegrity.js && npm run lint:js && npm run lint:py",
@@ -17,10 +17,9 @@
       "seed": "python3 -m api.seed.seed_runner",
       "seed:schema": "python3 -m api.seed.schema_applier",
       "seed:data": "python3 -m api.seed.seed_data_applier",
-      "test:integration": "python3 -m pytest tests/backend/integration",
       "test:js": "node --test tests/frontend/frontend.test.mjs",
       "test:api": "python3 -m pytest tests/api -n auto",
-      "test:py": "python3 -m pytest tests/api tests/backend -n auto",
+      "test:py": "python3 -m pytest tests/api -n auto",
       "start": "python3 -m api"
    },
    "devDependencies": {
