@@ -2,9 +2,15 @@ from __future__ import annotations
 
 from datetime import date
 
+import pytest
+
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
 from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuilder
+from api.animals.domain.indoor_outdoor_viewing_visibility_builder import IndoorOutdoorViewingVisibilityBuilder
+from api.app_string_provider import AppStringProvider
+from api.models import Animal
 from api.shared.enums import ScheduleStatus
+from api.walk_graph.viewing_walk_node_id_applier import ViewingWalkNodeIdApplier
 
 
 TARGET_DATE = date( 2026, 6, 15 )
@@ -13,10 +19,17 @@ OFF_DISPLAY_MESSAGE = 'Temporarily hidden.'
 LIMITED_VIEWING_MESSAGE = 'Morning only.'
 VIEWING_ALERT_MESSAGE = 'Low visibility.'
 CLOSED_MESSAGE = 'Closed.'
+SEASONALLY_OFF_DISPLAY_MESSAGE = 'Seasonally unavailable.'
+EXHIBIT_LIKELY_CLOSED_MESSAGE = 'Exhibit likely closed.'
+SPECIES_LIKELY_OFF_DISPLAY_MESSAGE = 'Species likely off display.'
 SCHEDULE_START_DATE = '2026-06-01'
 SCHEDULE_END_DATE = '2026-06-30'
 DAILY_START_TIME = '09:00'
 DAILY_END_TIME = '11:00'
+SPECIES = 'African Lion'
+EXHIBIT = 'Africa Savanna'
+TEMP = 20.0
+SIGMA = 2
 
 
 def _make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRecord:
@@ -230,3 +243,258 @@ def Test_GetActiveExhibitStatus_TestExpiredRecordOnTargetDate_ExpectOpenStatus()
    assert AnimalViewabilityBuilder.get_active_exhibit_status(
       expired_record,
       TARGET_DATE ) == ( ScheduleStatus.OPEN, None )
+
+
+def Test_GetActiveLimitedViewingStatus_TestExpiredRecord_ExpectInactiveDefault() -> None:
+   expired_record = _make_animal_viewability_record(
+      schedule_start_date=SCHEDULE_START_DATE,
+      schedule_end_date=SCHEDULE_END_DATE,
+      daily_start_time=DAILY_START_TIME,
+      daily_end_time=DAILY_END_TIME,
+      viewing_message=LIMITED_VIEWING_MESSAGE )
+
+   assert AnimalViewabilityBuilder.get_active_limited_viewing_status(
+      expired_record,
+      EXPIRED_TARGET_DATE ) == ( False, None )
+
+
+def Test_GetActiveViewingAlertStatus_TestExpiredRecord_ExpectInactiveDefault() -> None:
+   expired_record = _make_animal_viewability_record(
+      alert_message=VIEWING_ALERT_MESSAGE,
+      alert_start_date=SCHEDULE_START_DATE,
+      alert_end_date=SCHEDULE_END_DATE )
+
+   assert AnimalViewabilityBuilder.get_active_viewing_alert_status(
+      expired_record,
+      EXPIRED_TARGET_DATE ) == ( False, None )
+
+
+def Test_GetActiveExhibitStatus_TestDateOutsideRange_ExpectUnknownStatus() -> None:
+   record = _make_animal_viewability_record(
+      is_closed=1,
+      closed_message=CLOSED_MESSAGE,
+      closed_start=SCHEDULE_START_DATE,
+      closed_end=SCHEDULE_END_DATE )
+
+   assert AnimalViewabilityBuilder.get_active_exhibit_status(
+      record,
+      EXPIRED_TARGET_DATE ) == ( ScheduleStatus.UNKNOWN, None )
+
+
+def Test_BuildViewableAnimalFromRecord_TestOffDisplay_ExpectZeroLikelihoodAndMessage(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_off_display=1,
+      off_display_message=OFF_DISPLAY_MESSAGE,
+      off_display_start=SCHEDULE_START_DATE,
+      off_display_end=SCHEDULE_END_DATE,
+      enclosure_type='Outdoor',
+      min_temperature=0,
+      animal_day_seasonal_multiplier=1.0,
+      exhibit_day_seasonal_availability_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.species == SPECIES
+   assert animal.likelihood == 0
+   assert animal.off_display_message == OFF_DISPLAY_MESSAGE
+
+
+def Test_BuildViewableAnimalFromRecord_TestClosedExhibit_ExpectZeroLikelihoodAndClosedMessage(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_closed=1,
+      closed_message=CLOSED_MESSAGE,
+      closed_start=SCHEDULE_START_DATE,
+      closed_end=SCHEDULE_END_DATE,
+      enclosure_type='Indoor' )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 0
+   assert animal.off_display_message == CLOSED_MESSAGE
+
+
+def Test_BuildViewableAnimalFromRecord_TestLimitedViewingAndAlert_ExpectFlagsAndMessages(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      enclosure_type='Indoor',
+      schedule_start_date=SCHEDULE_START_DATE,
+      schedule_end_date=SCHEDULE_END_DATE,
+      daily_start_time=DAILY_START_TIME,
+      daily_end_time=DAILY_END_TIME,
+      viewing_message=LIMITED_VIEWING_MESSAGE,
+      alert_message=VIEWING_ALERT_MESSAGE,
+      alert_start_date=SCHEDULE_START_DATE,
+      alert_end_date=SCHEDULE_END_DATE,
+      is_closed=0,
+      closed_start=SCHEDULE_START_DATE,
+      closed_end=SCHEDULE_END_DATE,
+      animal_day_seasonal_multiplier=1.0,
+      exhibit_day_seasonal_availability_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 100
+   assert animal.has_limited_viewing_schedule is True
+   assert animal.limited_viewing_message == LIMITED_VIEWING_MESSAGE
+   assert animal.viewing_alert_messages == [ VIEWING_ALERT_MESSAGE ]
+   assert animal.off_display_message is None
+
+
+def Test_BuildViewableAnimalFromRecord_TestUnknownExhibitMultiplierZero_ExpectExhibitClosedMessage(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      enclosure_type='Indoor',
+      exhibit_day_seasonal_availability_multiplier=0,
+      animal_day_seasonal_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+   monkeypatch.setattr(
+      AppStringProvider,
+      'format',
+      lambda key, **kwargs: EXHIBIT_LIKELY_CLOSED_MESSAGE
+      if key == 'guestStatus.animals.exhibitLikelyClosedOnDay' and kwargs.get( 'exhibit' ) == EXHIBIT
+      else key )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 0
+   assert animal.off_display_message == EXHIBIT_LIKELY_CLOSED_MESSAGE
+
+
+def Test_BuildViewableAnimalFromRecord_TestSeasonallyOffDisplayMessage_ExpectSeasonalMessage(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      enclosure_type='Outdoor',
+      min_temperature=100,
+      animal_day_seasonal_multiplier=0,
+      exhibit_day_seasonal_availability_multiplier=1.0,
+      seasonally_off_display_message=SEASONALLY_OFF_DISPLAY_MESSAGE )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+   monkeypatch.setattr(
+      AnimalViewabilityBuilder,
+      'calculate_animal_likelihood',
+      lambda **_kwargs: 0 )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 0
+   assert animal.off_display_message == SEASONALLY_OFF_DISPLAY_MESSAGE
+
+
+def Test_BuildViewableAnimalFromRecord_TestZeroLikelihoodWithoutSeasonalMessage_ExpectSpeciesMessage(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      enclosure_type='Outdoor',
+      animal_day_seasonal_multiplier=0,
+      exhibit_day_seasonal_availability_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+   monkeypatch.setattr(
+      AnimalViewabilityBuilder,
+      'calculate_animal_likelihood',
+      lambda **_kwargs: 0 )
+   monkeypatch.setattr(
+      AppStringProvider,
+      'format',
+      lambda key, **kwargs: SPECIES_LIKELY_OFF_DISPLAY_MESSAGE
+      if key == 'guestStatus.animals.speciesLikelyOffDisplayOnDay' and kwargs.get( 'species' ) == SPECIES
+      else key )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 0
+   assert animal.off_display_message == SPECIES_LIKELY_OFF_DISPLAY_MESSAGE
+
+
+def Test_BuildViewableAnimalsOnDay_TestThresholdAndIncludeOffDisplay_ExpectFiltered(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   high = Animal( species='High', exhibit=EXHIBIT, likelihood=80 )
+   low = Animal( species='Low', exhibit=EXHIBIT, likelihood=10 )
+   off_display = Animal( species='Off', exhibit=EXHIBIT, likelihood=0 )
+   records = [
+      _make_animal_viewability_record( species='High', exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species='Low', exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species='Off', exhibit=EXHIBIT ),
+   ]
+   built = {
+      'High': high,
+      'Low': low,
+      'Off': off_display,
+   }
+
+   monkeypatch.setattr(
+      AnimalViewabilityBuilder,
+      'build_viewable_animal_from_record',
+      lambda record, **_kwargs: built[ record.species ] )
+   monkeypatch.setattr(
+      IndoorOutdoorViewingVisibilityBuilder,
+      'apply',
+      lambda animals: animals )
+
+   assert [
+      animal.species
+      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
+         records,
+         target_date=TARGET_DATE,
+         temp=TEMP,
+         sigma=SIGMA,
+         threshold=50 )
+   ] == [ 'High' ]
+
+   assert [
+      animal.species
+      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
+         records,
+         target_date=TARGET_DATE,
+         temp=TEMP,
+         sigma=SIGMA,
+         include_off_display_animals=True )
+   ] == [ 'High', 'Low', 'Off' ]
+
+   assert [
+      animal.species
+      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
+         records,
+         target_date=TARGET_DATE,
+         temp=TEMP,
+         sigma=SIGMA )
+   ] == [ 'High', 'Low' ]
