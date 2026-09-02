@@ -106,3 +106,55 @@ def Test_FetchZooHoursRecord_TestDecember25_ExpectHolidayHours(
    assert record.open_time == '11:00'
    assert record.last_admission_time == '15:00'
    assert record.close_time == '16:00'
+
+
+def Test_FetchZooHoursRecord_TestMissingDate_ExpectNone(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   assert ZooHoursProvider.fetch_zoo_hours_record(
+      zoo_hours_provider_conn,
+      '2026-01-01' ) is None
+
+
+def Test_FetchZooHoursRecordsBetween_TestInclusiveEndDate_ExpectOrderedRange(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   records = ZooHoursProvider.fetch_zoo_hours_records_between(
+      zoo_hours_provider_conn,
+      '2026-06-20',
+      '2026-06-22' )
+
+   assert [
+      (
+         record.operating_date,
+         record.early_admission_time,
+         record.open_time,
+         record.last_admission_time,
+         record.close_time,
+      )
+      for record in records
+   ] == [
+      JUNE_20_ROW,
+      JUNE_22_ROW,
+   ]
+
+
+def Test_FetchZooHoursRecordsBetween_TestOpenEnded_ExpectFromStartOnward(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   records = ZooHoursProvider.fetch_zoo_hours_records_between(
+      zoo_hours_provider_conn,
+      '2026-06-22' )
+
+   assert [
+      record.operating_date
+      for record in records
+   ] == [
+      '2026-06-22',
+      '2026-12-25',
+   ]
+
+
+def Test_FetchZooHoursRecordsBetween_TestEmptyRange_ExpectEmptyList(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   assert ZooHoursProvider.fetch_zoo_hours_records_between(
+      zoo_hours_provider_conn,
+      '2026-07-01',
+      '2026-07-31' ) == []

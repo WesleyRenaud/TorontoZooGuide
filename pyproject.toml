@@ -2,15 +2,7 @@
 source = [ "api" ]
 omit = [
    "api/__main__.py",
-   "api/seed/**",
-   "api/**/coordinators/**",
-   "api/**/data_access/**",
-   "api/**/*_routes.py",
    "api/**/__init__.py",
-   "api/models/**",
-   "api/**/itinerary/**",
-   "api/**/scheduling/*_conflict_resolver.py",
-   "api/**/scheduling/*_time_bounds_builder.py",
 ]
 
 [tool.ruff]
