@@ -1,6 +1,6 @@
 import { asTrimmedString } from '../api/normalizeValues.js';
-import { formatJoinedTimes } from '../shared/formatJoinedTimes.js';
+import { JoinedTimesFormatter } from '../shared/joinedTimesFormatter.js';
 
 export function formatMapOccurrenceTimes(item = {}) {
-   return formatJoinedTimes(item.times) || asTrimmedString(item.start_time);
+   return JoinedTimesFormatter.format(item.times) || asTrimmedString(item.start_time);
 }
