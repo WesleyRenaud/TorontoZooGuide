@@ -1,0 +1,14 @@
+{
+   "include": [
+      "scripts/shared/joinedTimesFormatter.js"
+   ],
+   "exclude": [
+      "scripts/mainMap.js",
+      "scripts/mainItinerary.js",
+      "scripts/consoleOperations.js",
+      "scripts/strings.js",
+      "scripts/strings/**",
+      "scripts/config/**",
+      "scripts/consoleOperations/templates/fragments.js"
+   ]
+}

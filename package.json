@@ -11,7 +11,7 @@
       "clear:itinerary": "python3 -m api.seed.user_itinerary_data_cleaner",
       "clear:itinerary-config": "python3 -m api.seed.user_itinerary_config_cleaner",
       "lint": "node tools/lint/mapSvgIntegrity.js && npm run lint:js && npm run lint:py",
-      "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && eslint scripts && echo 'All checks passed!'",
+      "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && node tools/lint/jsOneClassPerFile.js && eslint scripts && echo 'All checks passed!'",
       "lint:py": "python3 tools/lint/pythonImportStyle.py && python3 tools/lint/pythonHouseStyle.py && python3 tools/lint/pythonOneClassPerFile.py && python3 tools/lint/pythonNamespaceStyle.py && python3 tools/lint/pythonUnitTestStyle.py && python3 tools/lint/jsonSeedStyle.py && ruff check .",
       "migrate": "python3 -m api.seed.migrations.migration_runner",
       "seed": "python3 -m api.seed.seed_runner",

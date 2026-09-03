@@ -7,7 +7,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
 import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
-import { formatJoinedTimes } from '../../../shared/formatJoinedTimes.js';
+import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -117,7 +117,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    function handleSubmitSuccess(result) {
       setStatus(
          statusEl,
-         `${result.talk} in ${result.location} on ${result.date} at ${formatJoinedTimes(result.times)} was cancelled.`,
+         `${result.talk} in ${result.location} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
          'is-success'
       );
 
