@@ -1,9 +1,4 @@
-import {
-   getAttractionHoursScheduleTimeBounds,
-   replaceAttractionHoursScheduleOverlaps,
-   setAttractionHoursSchedule,
-   trimAttractionHoursScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
 import {
@@ -53,10 +48,10 @@ export function createAttractionHoursScheduleController({
    weekendHolidayEndTimePicker = null,
    activatePanel,
    loadAttractions = loadAttractionOptions,
-   loadTimeBounds = getAttractionHoursScheduleTimeBounds,
-   saveSchedule = setAttractionHoursSchedule,
-   replaceScheduleOverlaps = replaceAttractionHoursScheduleOverlaps,
-   trimScheduleOverlaps = trimAttractionHoursScheduleOverlaps,
+   loadTimeBounds = ConsoleOperationsApi.getAttractionHoursScheduleTimeBounds,
+   saveSchedule = ConsoleOperationsApi.setAttractionHoursSchedule,
+   replaceScheduleOverlaps = ConsoleOperationsApi.replaceAttractionHoursScheduleOverlaps,
+   trimScheduleOverlaps = ConsoleOperationsApi.trimAttractionHoursScheduleOverlaps,
 } = {}) {
    const formFieldEls = [
       attractionEl,

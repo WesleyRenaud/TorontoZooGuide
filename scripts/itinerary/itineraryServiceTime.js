@@ -1,7 +1,4 @@
-import {
-   setItineraryArrivalTimeRequest,
-   setItineraryDepartureTimeRequest,
-} from '../api/itineraryApi.js';
+import { ItineraryApi } from '../api/itineraryApi.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
@@ -141,14 +138,14 @@ async function setItineraryTimeAndDispatch(requestFn, timeValue) {
 
 export async function setItineraryArrivalTime(arrivalTime) {
    return setItineraryTimeAndDispatch(
-      setItineraryArrivalTimeRequest,
+      ItineraryApi.setItineraryArrivalTimeRequest,
       arrivalTime
    );
 }
 
 export async function setItineraryDepartureTime(departureTime) {
    return setItineraryTimeAndDispatch(
-      setItineraryDepartureTimeRequest,
+      ItineraryApi.setItineraryDepartureTimeRequest,
       departureTime
    );
 }

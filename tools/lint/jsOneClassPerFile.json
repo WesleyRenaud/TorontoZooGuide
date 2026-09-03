@@ -13,7 +13,13 @@
       "scripts/likelihood/likelihoodScale.js",
       "scripts/likelihood/likelihoodValues.js",
       "scripts/likelihood/likelihoodColors.js",
-      "scripts/likelihood/likelihoodPresentation.js"
+      "scripts/likelihood/likelihoodPresentation.js",
+      "scripts/api/animalsApi.js",
+      "scripts/api/searchApi.js",
+      "scripts/api/mapApi.js",
+      "scripts/api/itineraryApi.js",
+      "scripts/api/itinerarySelectorApi.js",
+      "scripts/api/consoleOperationsApi.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

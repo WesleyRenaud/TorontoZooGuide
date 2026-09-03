@@ -1,4 +1,4 @@
-import { searchItineraryItems } from '../../api/searchApi.js';
+import { SearchApi } from '../../api/searchApi.js';
 
 export const SELECTOR_SEARCH_DEBOUNCE_MS = 250;
 
@@ -18,7 +18,7 @@ export function createSelectorSearchRunner({
    getContext,
    getQuery,
    onRows,
-   searchItems = searchItineraryItems,
+   searchItems = SearchApi.searchItineraryItems,
    debounceMs = SELECTOR_SEARCH_DEBOUNCE_MS,
 } = {}) {
    let latestSearchRequestId = 0;

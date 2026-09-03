@@ -1,4 +1,4 @@
-import { setRestroomAlert } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -85,7 +85,7 @@ export function createRestroomAlertController({
       endDate,
       message,
    }) {
-      return setRestroomAlert({
+      return ConsoleOperationsApi.setRestroomAlert({
          restroom,
          alertStartDate: startDate || null,
          alertEndDate: endDate || null,

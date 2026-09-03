@@ -71,37 +71,29 @@ function normalizeAnimalInformationResponse(response) {
    return informationRows[0] ?? null;
 }
 
-export async function getRegions() {
-   const response = await ApiClient.postJson('/get-regions', {});
-   return normalizeRegionsResponse(response);
-}
+export class AnimalsApi {
+   static async getRegions() {
+      const response = await ApiClient.postJson('/get-regions', {});
+      return normalizeRegionsResponse(response);
+   }
 
-export async function getExhibitsInRegion(region) {
-   const response = await ApiClient.postJson('/get-exhibits-in-region', { region });
-   return normalizeExhibitsResponse(response);
-}
+   static async getExhibitsInRegion(region) {
+      const response = await ApiClient.postJson('/get-exhibits-in-region', { region });
+      return normalizeExhibitsResponse(response);
+   }
 
-export async function getAnimalsInExhibit(exhibit) {
-   const response = await ApiClient.postJson('/get-animal-names-by-exhibit', { exhibit });
-   return normalizeAnimalsResponse(response);
-}
+   static async getAnimalsInExhibit(exhibit) {
+      const response = await ApiClient.postJson('/get-animal-names-by-exhibit', { exhibit });
+      return normalizeAnimalsResponse(response);
+   }
 
-export async function getAnimalViewingScopes({ species, exhibit } = {}) {
-   const response = await ApiClient.postJson('/get-animal-viewing-scopes', { species, exhibit });
-   return normalizeAnimalViewingScopesResponse(response);
-}
+   static async getAnimalViewingScopes({ species, exhibit } = {}) {
+      const response = await ApiClient.postJson('/get-animal-viewing-scopes', { species, exhibit });
+      return normalizeAnimalViewingScopesResponse(response);
+   }
 
-export async function getAnimalInformation({ species, exhibit }) {
-   const response = await ApiClient.postJson('/get-animal-information', { species, exhibit });
-   return normalizeAnimalInformationResponse(response);
-}
-
-export function createAnimalsApi() {
-   return {
-      getRegions,
-      getExhibitsInRegion,
-      getAnimalsInExhibit,
-      getAnimalViewingScopes,
-      getAnimalInformation,
-   };
+   static async getAnimalInformation({ species, exhibit }) {
+      const response = await ApiClient.postJson('/get-animal-information', { species, exhibit });
+      return normalizeAnimalInformationResponse(response);
+   }
 }

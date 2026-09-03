@@ -1,4 +1,4 @@
-import { getAnimalInformation } from '../api/animalsApi.js';
+import { AnimalsApi } from '../api/animalsApi.js';
 import { normalizeGuardiansTalkLinkedAnimals } from './normalizeGuardiansTalkLinkedAnimals.js';
 import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
 
@@ -14,7 +14,7 @@ export async function openGuardiansTalkLinkedAnimal(talk) {
       return;
    }
 
-   const animal = await getAnimalInformation(linked);
+   const animal = await AnimalsApi.getAnimalInformation(linked);
 
    if (animal) {
       openAnimalSpeciesOverlay(animal, { linkedAnimals });

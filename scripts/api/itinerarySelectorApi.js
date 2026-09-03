@@ -22,21 +22,23 @@ function normalizeAnimal(animal) {
    };
 }
 
-export async function getExhibitsByRegion(payload = {}) {
-   const response = await ApiClient.postJson('/get-exhibits-by-region', payload);
+export class ItinerarySelectorApi {
+   static async getExhibitsByRegion(payload = {}) {
+      const response = await ApiClient.postJson('/get-exhibits-by-region', payload);
 
-   return Array.isArray(response?.regions)
-      ? response.regions.map(normalizeRegion).filter((region) => region.name)
-      : [];
-}
+      return Array.isArray(response?.regions)
+         ? response.regions.map(normalizeRegion).filter((region) => region.name)
+         : [];
+   }
 
-export async function getAnimalsByExhibit(exhibitsToInclude, payload = {}) {
-   const response = await ApiClient.postJson('/get-animals-by-exhibit', {
-      ...payload,
-      exhibitsToInclude,
-   });
+   static async getAnimalsByExhibit(exhibitsToInclude, payload = {}) {
+      const response = await ApiClient.postJson('/get-animals-by-exhibit', {
+         ...payload,
+         exhibitsToInclude,
+      });
 
-   return Array.isArray(response?.animals)
-      ? response.animals.map(normalizeAnimal).filter((animal) => animal.species)
-      : [];
+      return Array.isArray(response?.animals)
+         ? response.animals.map(normalizeAnimal).filter((animal) => animal.species)
+         : [];
+   }
 }

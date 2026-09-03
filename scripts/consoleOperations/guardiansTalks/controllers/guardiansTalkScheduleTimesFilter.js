@@ -1,4 +1,4 @@
-import { getGuardiansTalkScheduleTimes } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import {
    resolveScheduleTimesListEl,
    updateScheduleTimesCheckboxList,
@@ -10,7 +10,7 @@ export function createGuardiansTalkScheduleTimesFilterController({
    locationEl,
    timesEl,
    loadScheduleTimes = async ({ talk, location }) => {
-      const result = await getGuardiansTalkScheduleTimes({
+      const result = await ConsoleOperationsApi.getGuardiansTalkScheduleTimes({
          talk,
          location,
       });

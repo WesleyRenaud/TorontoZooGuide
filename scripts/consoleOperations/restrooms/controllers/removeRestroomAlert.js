@@ -1,4 +1,4 @@
-import { removeRestroomAlert } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -73,7 +73,7 @@ export function createRemoveRestroomAlertController({
       }
 
       try {
-         const result = await removeRestroomAlert({ restroom });
+         const result = await ConsoleOperationsApi.removeRestroomAlert({ restroom });
 
          if (result.success) {
             handleSubmitSuccess(result);

@@ -1,4 +1,4 @@
-import { setRestroomClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { loadRestrooms } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createRestroomClosedController({
       entityEl: restroomEl,
       loadOptions: loadRestrooms,
       populateOptions: populateRestroomDropdown,
-      submitClosedStatus: ({ entity, startDate, endDate, message }) => setRestroomClosed({
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setRestroomClosed({
          restroom: entity,
          startDate: startDate || null,
          endDate: endDate || null,

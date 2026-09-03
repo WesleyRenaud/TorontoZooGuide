@@ -1,7 +1,4 @@
-import {
-   removeItemFromItineraryRequest,
-   unscheduleItineraryItemRequest,
-} from '../../api/itineraryApi.js';
+import { ItineraryApi } from '../../api/itineraryApi.js';
 import { showScheduleItemModule } from './components/showScheduleItemModule.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
 import { isItinerarySuccess } from '../itineraryErrorTypes.js';
@@ -54,8 +51,8 @@ export function buildItineraryPanelScheduleHandlers(
 ) {
    const {
       openModule = openScheduleItemModule,
-      unscheduleItem = unscheduleItineraryItemRequest,
-      removeItem = removeItemFromItineraryRequest,
+      unscheduleItem = ItineraryApi.unscheduleItineraryItemRequest,
+      removeItem = ItineraryApi.removeItemFromItineraryRequest,
       removeAnimalDraft = removeAnimalFromItineraryAnimalDraft,
       requiresRemoveConfirmation = requiresRemoveItineraryItemConfirmation,
       showRemoveConfirmation = showRemoveItineraryItemConfirmation,

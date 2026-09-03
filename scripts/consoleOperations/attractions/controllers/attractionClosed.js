@@ -1,4 +1,4 @@
-import { setAttractionClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createAttractionClosedController({
       entityEl: attractionEl,
       loadOptions: loadAttractions,
       populateOptions: populateAttractionDropdown,
-      submitClosedStatus: ({ entity, startDate, endDate, message }) => setAttractionClosed({
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setAttractionClosed({
          attraction: entity,
          startDate: startDate || null,
          endDate: endDate || null,

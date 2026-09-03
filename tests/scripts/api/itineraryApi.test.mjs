@@ -1,22 +1,8 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import {
-   acceptItineraryRequest,
-   bulkScheduleItineraryRequest,
-   getItineraryDateRequest,
-   getItineraryRequest,
-   getZooHoursRequest,
-   removeItemFromItineraryRequest,
-   scheduleItineraryItemRequest,
-   unscheduleItineraryItemRequest,
-   unscheduleAllItineraryItemsRequest,
-   setItineraryArrivalTimeRequest,
-   setItineraryDepartureTimeRequest,
-   setItineraryRequest,
-   suppressItineraryWarningRequest,
-} from '../../scripts/api/itineraryApi.js';
-import { mockJsonResponse } from './helpers/fetchMock.mjs';
+import { ItineraryApi } from '../../../scripts/api/itineraryApi.js';
+import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
 const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
@@ -136,15 +122,15 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('normalizes empty itinerary date as null', async () => {
+test('Test_GetItineraryDateRequest_TestEmptyDate_ExpectNull', async () => {
    globalThis.fetch = async () => mockJsonResponse({ date: null });
 
-   assert.deepEqual(await getItineraryDateRequest(), {
+   assert.deepEqual(await ItineraryApi.getItineraryDateRequest(), {
       date: null,
    });
 });
 
-test('normalizes stored itinerary date response', async () => {
+test('Test_GetItineraryDateRequest_TestStoredDate_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-itinerary-date');
       assert.equal(options.method, 'POST');
@@ -155,12 +141,12 @@ test('normalizes stored itinerary date response', async () => {
       });
    };
 
-   assert.deepEqual(await getItineraryDateRequest(), {
+   assert.deepEqual(await ItineraryApi.getItineraryDateRequest(), {
       date: '2026-06-15',
    });
 });
 
-test('normalizes stored itinerary response from snake case backend keys', async () => {
+test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-itinerary');
       assert.equal(options.method, 'POST');
@@ -184,7 +170,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
       });
    };
 
-   assert.deepEqual(await getItineraryRequest(), {
+   assert.deepEqual(await ItineraryApi.getItineraryRequest(), {
       ...normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
@@ -232,7 +218,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
    });
 });
 
-test('defaults itinerary path to empty arrays when itinerary is returned without itinerary_path', async () => {
+test('Test_SetItineraryRequest_TestMissingPath_ExpectEmptyArrays', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       status: 'success',
       itinerary: {
@@ -243,12 +229,12 @@ test('defaults itinerary path to empty arrays when itinerary is returned without
    });
 
    assert.deepEqual(
-      (await setItineraryRequest({ date: '2026-06-15' })).itineraryPath,
+      (await ItineraryApi.setItineraryRequest({ date: '2026-06-15' })).itineraryPath,
       normalizedItineraryPath()
    );
 });
 
-test('normalizes set itinerary failures without dropping returned itinerary data', async () => {
+test('Test_SetItineraryRequest_TestFailurePayload_ExpectItineraryKept', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
       status: 'arrivalDepartureTooClose',
@@ -260,7 +246,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
       ...mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(await setItineraryRequest({ date: '2026-06-15' }), {
+   assert.deepEqual(await ItineraryApi.setItineraryRequest({ date: '2026-06-15' }), {
       ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
       itinerary: {
          date: '2026-06-15',
@@ -280,7 +266,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
    });
 });
 
-test('sets itinerary arrival and departure times through focused endpoints', async () => {
+test('Test_SetItineraryArrivalTimeRequest_TestFocusedEndpoints_ExpectNormalized', async () => {
    const calls = [];
 
    globalThis.fetch = async (url, options) => {
@@ -291,11 +277,11 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
       });
    };
 
-   assert.deepEqual(await setItineraryArrivalTimeRequest(' 09:45 '), {
+   assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest(' 09:45 '), {
       ...normalizedItineraryResultFields('success'),
       itineraryConfig: normalizedItineraryConfig(),
    });
-   assert.deepEqual(await setItineraryDepartureTimeRequest(''), {
+   assert.deepEqual(await ItineraryApi.setItineraryDepartureTimeRequest(''), {
       ...normalizedItineraryResultFields('success'),
       itineraryConfig: normalizedItineraryConfig(),
    });
@@ -318,7 +304,7 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
    ]);
 });
 
-test('suppress itinerary warning request posts warning type', async () => {
+test('Test_SuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/suppress-itinerary-warning');
       assert.deepEqual(JSON.parse(options.body), {
@@ -335,7 +321,7 @@ test('suppress itinerary warning request posts warning type', async () => {
    };
 
    assert.deepEqual(
-      await suppressItineraryWarningRequest('arrivalDepartureTooClose'),
+      await ItineraryApi.suppressItineraryWarningRequest('arrivalDepartureTooClose'),
       {
          ...normalizedItineraryResultFields('success'),
          itineraryConfig: normalizedItineraryConfig({
@@ -345,21 +331,21 @@ test('suppress itinerary warning request posts warning type', async () => {
    );
 });
 
-test('normalizes suppressed warnings on itinerary results', async () => {
+test('Test_SetItineraryArrivalTimeRequest_TestSuppressedWarnings_ExpectNormalized', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       status: 'success',
       suppressed_warnings: ['arrivalDepartureTooClose'],
       ...mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(await setItineraryArrivalTimeRequest('09:45'), {
+   assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest('09:45'), {
       ...normalizedItineraryResultFields('success'),
       suppressedWarnings: ['arrivalDepartureTooClose'],
       itineraryConfig: normalizedItineraryConfig(),
    });
 });
 
-test('normalizes itinerary adjustments on save results', async () => {
+test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       status: 'success',
       reasons: [],
@@ -383,7 +369,7 @@ test('normalizes itinerary adjustments on save results', async () => {
       ...mockItineraryConfigResponse(),
    });
 
-   const result = await setItineraryRequest({
+   const result = await ItineraryApi.setItineraryRequest({
       date: '2026-06-22',
       arrivalTime: '09:00',
       departureTime: '17:00',
@@ -405,14 +391,14 @@ test('normalizes itinerary adjustments on save results', async () => {
    assert.equal(result.itinerary.arrivalTime, '09:30');
 });
 
-test('normalizes short visit warning from itinerary time endpoints', async () => {
+test('Test_SetItineraryArrivalTimeRequest_TestShortVisit_ExpectWarning', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
       status: 'arrivalDepartureTooClose',
       ...mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(await setItineraryArrivalTimeRequest('11:35', {
+   assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest('11:35', {
       confirmingShortVisit: true,
    }), {
       ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
@@ -420,7 +406,7 @@ test('normalizes short visit warning from itinerary time endpoints', async () =>
    });
 });
 
-test('normalizes accept itinerary response', async () => {
+test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/accept-itinerary');
       assert.equal(options.method, 'POST');
@@ -463,7 +449,7 @@ test('normalizes accept itinerary response', async () => {
       });
    };
 
-   assert.deepEqual(await acceptItineraryRequest(), {
+   assert.deepEqual(await ItineraryApi.acceptItineraryRequest(), {
       ...normalizedItineraryResultFields('success', [
          {
             code: 'wildEncounterTimeConflict',
@@ -504,7 +490,7 @@ test('normalizes accept itinerary response', async () => {
    });
 });
 
-test('normalizes itinerary config from itinerary responses', async () => {
+test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       itinerary: {
          date: '2026-06-15',
@@ -531,7 +517,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
       }),
    });
 
-   assert.deepEqual(await getItineraryRequest(), {
+   assert.deepEqual(await ItineraryApi.getItineraryRequest(), {
       ...normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
@@ -564,7 +550,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
    });
 });
 
-test('normalizes zoo hours response', async () => {
+test('Test_GetZooHoursRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-zoo-hours');
       assert.equal(options.method, 'POST');
@@ -586,7 +572,7 @@ test('normalizes zoo hours response', async () => {
    };
 
    assert.deepEqual(
-      await getZooHoursRequest({ day: 20, month: 'JUN', year: 2026 }),
+      await ItineraryApi.getZooHoursRequest({ day: 20, month: 'JUN', year: 2026 }),
       {
       hours: {
          date: '2026-06-20',
@@ -598,7 +584,7 @@ test('normalizes zoo hours response', async () => {
    });
 });
 
-test('normalizes unschedule itinerary item response', async () => {
+test('Test_UnscheduleItineraryItemRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/unschedule-itinerary-item');
       assert.deepEqual(JSON.parse(options.body), {
@@ -612,7 +598,7 @@ test('normalizes unschedule itinerary item response', async () => {
    };
 
    assert.deepEqual(
-      await unscheduleItineraryItemRequest({
+      await ItineraryApi.unscheduleItineraryItemRequest({
          itemType: 'animals',
          key: 'African Lion||Africa Savanna',
       }),
@@ -620,7 +606,7 @@ test('normalizes unschedule itinerary item response', async () => {
    );
 });
 
-test('normalizes remove item from itinerary response', async () => {
+test('Test_RemoveItemFromItineraryRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/remove-item-from-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
@@ -634,7 +620,7 @@ test('normalizes remove item from itinerary response', async () => {
    };
 
    assert.deepEqual(
-      await removeItemFromItineraryRequest({
+      await ItineraryApi.removeItemFromItineraryRequest({
          itemType: 'attractions',
          key: 'Conservation Carousel',
       }),
@@ -642,7 +628,7 @@ test('normalizes remove item from itinerary response', async () => {
    );
 });
 
-test('normalizes schedule itinerary item response', async () => {
+test('Test_ScheduleItineraryItemRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/schedule-itinerary-item');
       assert.deepEqual(JSON.parse(options.body), {
@@ -662,12 +648,12 @@ test('normalizes schedule itinerary item response', async () => {
    };
 
    assert.deepEqual(
-      await scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
+      await ItineraryApi.scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
       normalizedItineraryResultFields('noAvailableSlot')
    );
 });
 
-test('normalizes bulk schedule animals response', async () => {
+test('Test_BulkScheduleItineraryRequest_TestAnimals_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/bulk-schedule-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
@@ -710,7 +696,7 @@ test('normalizes bulk schedule animals response', async () => {
       });
    };
 
-   const result = await bulkScheduleItineraryRequest(true);
+   const result = await ItineraryApi.bulkScheduleItineraryRequest(true);
 
    assert.equal(result.status, 'success');
    assert.equal(result.reasons.length, 1);
@@ -719,7 +705,7 @@ test('normalizes bulk schedule animals response', async () => {
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
 });
 
-test('normalizes unschedule all itinerary items response', async () => {
+test('Test_UnscheduleAllItineraryItemsRequest_TestResponse_ExpectNormalized', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/unschedule-all-itinerary-items');
       assert.deepEqual(JSON.parse(options.body), { temp: true });
@@ -740,7 +726,7 @@ test('normalizes unschedule all itinerary items response', async () => {
       });
    };
 
-   const result = await unscheduleAllItineraryItemsRequest(true);
+   const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(true);
 
    assert.equal(result.status, 'success');
    assert.equal(result.itinerary.date, '2026-06-20');

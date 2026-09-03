@@ -1,4 +1,4 @@
-import { getWildEncounterScheduleTimes } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import {
    resolveScheduleTimesListEl,
    updateScheduleTimesCheckboxList,
@@ -9,7 +9,7 @@ export function createWildEncounterScheduleTimesFilterController({
    wildEncounterEl,
    timesEl,
    loadScheduleTimes = async ({ wildEncounter }) => {
-      const result = await getWildEncounterScheduleTimes({
+      const result = await ConsoleOperationsApi.getWildEncounterScheduleTimes({
          wildEncounter,
       });
 

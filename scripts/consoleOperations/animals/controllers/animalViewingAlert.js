@@ -1,4 +1,4 @@
-import { setAnimalViewingAlert } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
@@ -80,7 +80,7 @@ export function createAnimalViewingAlertController({
       endDate,
       message,
    }) {
-      return setAnimalViewingAlert({
+      return ConsoleOperationsApi.setAnimalViewingAlert({
          species,
          exhibit,
          alertStartDate: startDate || null,

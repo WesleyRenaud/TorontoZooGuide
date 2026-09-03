@@ -1,4 +1,4 @@
-import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
@@ -87,7 +87,7 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    async function submitOccurrenceCancellation({ wildEncounter, date, times }) {
-      return cancelWildEncounterOccurrence({
+      return ConsoleOperationsApi.cancelWildEncounterOccurrence({
          wildEncounter,
          date,
          times,

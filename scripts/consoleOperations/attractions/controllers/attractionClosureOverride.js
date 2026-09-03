@@ -1,4 +1,4 @@
-import { setAttractionClosureOverride } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions } from '../../options/loaders.js';
@@ -14,7 +14,7 @@ export function createAttractionClosureOverrideController({
       loadOptions: loadAttractions,
       populateOptions: populateAttractionDropdown,
       submitClosedStatus: ({ entity, startDate, endDate, message }) => (
-         setAttractionClosureOverride({
+         ConsoleOperationsApi.setAttractionClosureOverride({
             attraction: entity,
             startDate: startDate || null,
             endDate: endDate || null,

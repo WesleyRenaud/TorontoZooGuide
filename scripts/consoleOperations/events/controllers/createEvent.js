@@ -1,4 +1,4 @@
-import { createEvent } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -71,7 +71,7 @@ export function createCreateEventController({
       }
 
       try {
-         const result = await createEvent(values);
+         const result = await ConsoleOperationsApi.createEvent(values);
 
          if (result.success) {
             setStatus(

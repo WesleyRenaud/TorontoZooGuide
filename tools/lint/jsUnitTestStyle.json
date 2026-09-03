@@ -13,7 +13,10 @@
       "tests/scripts/likelihood/likelihoodScale.test.mjs",
       "tests/scripts/likelihood/likelihoodValues.test.mjs",
       "tests/scripts/likelihood/likelihoodColors.test.mjs",
-      "tests/scripts/likelihood/likelihoodPresentation.test.mjs"
+      "tests/scripts/likelihood/likelihoodPresentation.test.mjs",
+      "tests/scripts/api/animalsApi.test.mjs",
+      "tests/scripts/api/searchApi.test.mjs",
+      "tests/scripts/api/itineraryApi.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

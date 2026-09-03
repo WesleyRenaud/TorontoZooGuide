@@ -1,4 +1,4 @@
-import { searchZoo } from '../api/searchApi.js';
+import { SearchApi } from '../api/searchApi.js';
 import { renderSearchResults } from './resultsView.js';
 import { flattenSearchRows } from './searchRows.js';
 
@@ -78,7 +78,7 @@ function createSearchRunner({
       }
 
       try {
-         const response = await searchZoo(
+         const response = await SearchApi.searchZoo(
             await buildSearchRequest({
                query,
                getIncludeFlags,

@@ -1,4 +1,4 @@
-import { createUpdate } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -69,7 +69,7 @@ export function createCreateUpdateController({
       }
 
       try {
-         const result = await createUpdate(values);
+         const result = await ConsoleOperationsApi.createUpdate(values);
 
          if (result.success) {
             setStatus(

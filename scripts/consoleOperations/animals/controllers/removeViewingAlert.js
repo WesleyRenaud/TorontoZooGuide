@@ -1,4 +1,4 @@
-import { removeAnimalViewingAlert } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
@@ -71,7 +71,7 @@ export function createRemoveViewingAlertController({
    }
 
    async function submitViewingAlertRemoval({ species, exhibit }) {
-      return removeAnimalViewingAlert({
+      return ConsoleOperationsApi.removeAnimalViewingAlert({
          species,
          exhibit,
       });

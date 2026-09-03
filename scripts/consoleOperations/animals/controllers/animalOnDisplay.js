@@ -1,5 +1,5 @@
 import { createAnimalViewingScopeControl } from './animalViewingScopeControl.js';
-import { setAnimalOnDisplay } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
@@ -62,7 +62,7 @@ export function createAnimalOnDisplayController({
    }
 
    async function submitOnDisplayStatus({ species, exhibit, viewingScope }) {
-      return setAnimalOnDisplay({
+      return ConsoleOperationsApi.setAnimalOnDisplay({
          species,
          exhibit,
          viewingScope,

@@ -1,4 +1,4 @@
-import { setExhibitOpen } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityOpenFormController } from '../../forms/entityOpenFormController.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createExhibitOpenController({
       entityEl: exhibitEl,
       loadOptions: loadExhibits,
       populateOptions: populateExhibitDropdown,
-      submitOpenStatus: ({ entity, startDate, endDate }) => setExhibitOpen({
+      submitOpenStatus: ({ entity, startDate, endDate }) => ConsoleOperationsApi.setExhibitOpen({
          exhibit: entity,
          startDate: startDate || null,
          endDate: endDate || null,

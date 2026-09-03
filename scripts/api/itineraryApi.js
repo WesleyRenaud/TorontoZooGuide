@@ -302,141 +302,143 @@ function normalizeItineraryDateResponse(response) {
    };
 }
 
-export async function getItineraryDateRequest() {
-   const response = await ApiClient.postJson('/get-itinerary-date', {});
-   return normalizeItineraryDateResponse(response);
-}
-
-export async function getItineraryRequest(temp) {
-   const response = await ApiClient.postJson('/get-itinerary', { temp });
-   return normalizeItineraryResponse(response);
-}
-
-export async function getZooHoursRequest({ day, month, year }) {
-   const response = await ApiClient.postJson('/get-zoo-hours', { day, month, year });
-   return normalizeZooHoursResponse(response);
-}
-
-export async function setItineraryRequest(payload) {
-   const response = await ApiClient.postJson('/set-itinerary', payload);
-   return normalizeItineraryResponse(response);
-}
-
 function normalizeScheduleItineraryItemResponse(response) {
    return normalizeItineraryResult(response, { includeItinerary: true });
-}
-
-export async function scheduleItineraryItemRequest(
-   request,
-   {
-      confirmingScheduleItemNotOnItinerary = false,
-      confirmingAttractionOutsideOperatingHours = false,
-      confirmingGuardiansTalkUnschedule = false,
-      confirmingWildEncounterUnschedule = false,
-      confirmingFixedTimeItemLongWait = false,
-      confirmingGuardiansTalkWithoutAnimal = false,
-   } = {}
-) {
-   const response = await ApiClient.postJson('/schedule-itinerary-item', {
-      ...request,
-      key: mapScheduleItemKeyToWire(request.itemType, request.key),
-      confirmingScheduleItemNotOnItinerary,
-      confirmingAttractionOutsideOperatingHours,
-      confirmingGuardiansTalkUnschedule,
-      confirmingWildEncounterUnschedule,
-      confirmingFixedTimeItemLongWait,
-      confirmingGuardiansTalkWithoutAnimal,
-   });
-
-   return normalizeScheduleItineraryItemResponse(response);
-}
-
-export async function unscheduleItineraryItemRequest({ itemType, key }) {
-   const response = await ApiClient.postJson('/unschedule-itinerary-item', {
-      itemType: ValueNormalizer.asTrimmedString(itemType),
-      key: mapScheduleItemKeyToWire(itemType, key),
-   });
-
-   return normalizeScheduleItineraryItemResponse(response);
-}
-
-export async function removeItemFromItineraryRequest({ itemType, key }) {
-   const response = await ApiClient.postJson('/remove-item-from-itinerary', {
-      itemType: ValueNormalizer.asTrimmedString(itemType),
-      key: mapScheduleItemKeyToWire(itemType, key),
-   });
-
-   return normalizeScheduleItineraryItemResponse(response);
 }
 
 function normalizeItineraryTimeSetResponse(response) {
    return normalizeItineraryResult(response, { includeItinerary: true });
 }
 
-export async function setItineraryArrivalTimeRequest(
-   arrivalTime,
-   {
-      confirmingShortVisit = false,
-      confirmingEarlyAdmission = false,
-   } = {}
-) {
-   const response = await ApiClient.postJson('/set-itinerary-arrival-time', {
-      arrivalTime: ValueNormalizer.asTrimmedString(arrivalTime),
-      confirmingShortVisit,
-      confirmingEarlyAdmission,
-   });
+export class ItineraryApi {
+   static async getItineraryDateRequest() {
+      const response = await ApiClient.postJson('/get-itinerary-date', {});
+      return normalizeItineraryDateResponse(response);
+   }
 
-   return normalizeItineraryTimeSetResponse(response);
-}
+   static async getItineraryRequest(temp) {
+      const response = await ApiClient.postJson('/get-itinerary', { temp });
+      return normalizeItineraryResponse(response);
+   }
 
-export async function setItineraryDepartureTimeRequest(
-   departureTime,
-   { confirmingShortVisit = false } = {}
-) {
-   const response = await ApiClient.postJson('/set-itinerary-departure-time', {
-      departureTime: ValueNormalizer.asTrimmedString(departureTime),
-      confirmingShortVisit,
-   });
+   static async getZooHoursRequest({ day, month, year }) {
+      const response = await ApiClient.postJson('/get-zoo-hours', { day, month, year });
+      return normalizeZooHoursResponse(response);
+   }
 
-   return normalizeItineraryTimeSetResponse(response);
-}
+   static async setItineraryRequest(payload) {
+      const response = await ApiClient.postJson('/set-itinerary', payload);
+      return normalizeItineraryResponse(response);
+   }
 
-export async function suppressItineraryWarningRequest(warningType) {
-   const response = await ApiClient.postJson('/suppress-itinerary-warning', {
-      warningType: ValueNormalizer.asTrimmedString(warningType),
-   });
+   static async scheduleItineraryItemRequest(
+      request,
+      {
+         confirmingScheduleItemNotOnItinerary = false,
+         confirmingAttractionOutsideOperatingHours = false,
+         confirmingGuardiansTalkUnschedule = false,
+         confirmingWildEncounterUnschedule = false,
+         confirmingFixedTimeItemLongWait = false,
+         confirmingGuardiansTalkWithoutAnimal = false,
+      } = {}
+   ) {
+      const response = await ApiClient.postJson('/schedule-itinerary-item', {
+         ...request,
+         key: mapScheduleItemKeyToWire(request.itemType, request.key),
+         confirmingScheduleItemNotOnItinerary,
+         confirmingAttractionOutsideOperatingHours,
+         confirmingGuardiansTalkUnschedule,
+         confirmingWildEncounterUnschedule,
+         confirmingFixedTimeItemLongWait,
+         confirmingGuardiansTalkWithoutAnimal,
+      });
 
-   return normalizeItineraryResult(response, { includeItinerary: false });
-}
+      return normalizeScheduleItineraryItemResponse(response);
+   }
 
-export async function bulkScheduleItineraryRequest(
-   temp,
-   { confirmingFixedTimeItemLongWait = false } = {}
-) {
-   const response = await ApiClient.postJson('/bulk-schedule-itinerary', {
+   static async unscheduleItineraryItemRequest({ itemType, key }) {
+      const response = await ApiClient.postJson('/unschedule-itinerary-item', {
+         itemType: ValueNormalizer.asTrimmedString(itemType),
+         key: mapScheduleItemKeyToWire(itemType, key),
+      });
+
+      return normalizeScheduleItineraryItemResponse(response);
+   }
+
+   static async removeItemFromItineraryRequest({ itemType, key }) {
+      const response = await ApiClient.postJson('/remove-item-from-itinerary', {
+         itemType: ValueNormalizer.asTrimmedString(itemType),
+         key: mapScheduleItemKeyToWire(itemType, key),
+      });
+
+      return normalizeScheduleItineraryItemResponse(response);
+   }
+
+   static async setItineraryArrivalTimeRequest(
+      arrivalTime,
+      {
+         confirmingShortVisit = false,
+         confirmingEarlyAdmission = false,
+      } = {}
+   ) {
+      const response = await ApiClient.postJson('/set-itinerary-arrival-time', {
+         arrivalTime: ValueNormalizer.asTrimmedString(arrivalTime),
+         confirmingShortVisit,
+         confirmingEarlyAdmission,
+      });
+
+      return normalizeItineraryTimeSetResponse(response);
+   }
+
+   static async setItineraryDepartureTimeRequest(
+      departureTime,
+      { confirmingShortVisit = false } = {}
+   ) {
+      const response = await ApiClient.postJson('/set-itinerary-departure-time', {
+         departureTime: ValueNormalizer.asTrimmedString(departureTime),
+         confirmingShortVisit,
+      });
+
+      return normalizeItineraryTimeSetResponse(response);
+   }
+
+   static async suppressItineraryWarningRequest(warningType) {
+      const response = await ApiClient.postJson('/suppress-itinerary-warning', {
+         warningType: ValueNormalizer.asTrimmedString(warningType),
+      });
+
+      return normalizeItineraryResult(response, { includeItinerary: false });
+   }
+
+   static async bulkScheduleItineraryRequest(
       temp,
-      confirmingFixedTimeItemLongWait,
-   });
-   return normalizeItineraryResponse(response);
-}
+      { confirmingFixedTimeItemLongWait = false } = {}
+   ) {
+      const response = await ApiClient.postJson('/bulk-schedule-itinerary', {
+         temp,
+         confirmingFixedTimeItemLongWait,
+      });
+      return normalizeItineraryResponse(response);
+   }
 
-export async function unscheduleAllItineraryItemsRequest(temp) {
-   const response = await ApiClient.postJson('/unschedule-all-itinerary-items', { temp });
-   return normalizeItineraryResponse(response);
-}
+   static async unscheduleAllItineraryItemsRequest(temp) {
+      const response = await ApiClient.postJson('/unschedule-all-itinerary-items', { temp });
+      return normalizeItineraryResponse(response);
+   }
 
-export async function acceptItineraryRequest(
-   temp,
-   { animalsToKeep = [], attractionsToKeep = [] } = {}
-) {
-   const response = await ApiClient.postJson('/accept-itinerary', {
+   static async acceptItineraryRequest(
       temp,
-      animalsToKeep,
-      attractionsToKeep,
-   });
-   return normalizeItineraryResponse(response);
-}
+      { animalsToKeep = [], attractionsToKeep = [] } = {}
+   ) {
+      const response = await ApiClient.postJson('/accept-itinerary', {
+         temp,
+         animalsToKeep,
+         attractionsToKeep,
+      });
+      return normalizeItineraryResponse(response);
+   }
 
-export function clearItineraryRequest() {
-   return ApiClient.postJson('/clear-itinerary', {});
+   static clearItineraryRequest() {
+      return ApiClient.postJson('/clear-itinerary', {});
+   }
 }

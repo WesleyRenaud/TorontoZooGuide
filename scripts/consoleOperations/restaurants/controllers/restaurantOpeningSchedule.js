@@ -1,8 +1,4 @@
-import {
-   replaceRestaurantOpeningScheduleOverlaps,
-   setRestaurantOpeningSchedule,
-   trimRestaurantOpeningScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
@@ -19,7 +15,7 @@ export function createRestaurantOpeningScheduleController({
       entityEl: restaurantEl,
       loadOptions: loadRestaurants,
       populateOptions: populateRestaurantDropdown,
-      submitSchedule: setRestaurantOpeningSchedule,
+      submitSchedule: ConsoleOperationsApi.setRestaurantOpeningSchedule,
       entityLabel: APP_STRINGS.entityLabels.restaurant,
       optionsLabel: APP_STRINGS.entityLabels.restaurants,
       payloadKey: 'restaurant',
@@ -28,11 +24,11 @@ export function createRestaurantOpeningScheduleController({
          const resolution = await showOpeningScheduleOverlapDialog();
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-            return replaceRestaurantOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.replaceRestaurantOpeningScheduleOverlaps(payload);
          }
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-            return trimRestaurantOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.trimRestaurantOpeningScheduleOverlaps(payload);
          }
 
          return null;

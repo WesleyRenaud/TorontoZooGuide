@@ -1,4 +1,4 @@
-import { getTransportationRoutes } from '../api/mapApi.js';
+import { MapApi } from '../api/mapApi.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -76,7 +76,7 @@ export function renderTransportationRouteControls(container, transportations) {
 }
 
 export async function initTransportationRouteControls(container) {
-   const transportations = await getTransportationRoutes();
+   const transportations = await MapApi.getTransportationRoutes();
    renderTransportationRouteControls(container, transportations);
    return transportations;
 }

@@ -1,7 +1,4 @@
-import {
-   getItineraryDateRequest,
-   setItineraryRequest,
-} from '../api/itineraryApi.js';
+import { ItineraryApi } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
 import {
    isItinerarySuccess,
@@ -17,7 +14,7 @@ import {
 import { resolveEffectiveItineraryHoursDateIso } from './visitDateEarliest.js';
 
 export async function ensureItineraryVisitDate(itinerary = {}) {
-   const { date: serverDate } = await getItineraryDateRequest();
+   const { date: serverDate } = await ItineraryApi.getItineraryDateRequest();
 
    if (serverDate) {
       setStoredItineraryDate(serverDate);
@@ -34,7 +31,7 @@ export async function ensureItineraryVisitDate(itinerary = {}) {
 
    const date = await resolveEffectiveItineraryHoursDateIso(itinerary);
    const { temp } = await getItineraryDateSearchContext({ date, includeTemp: false });
-   const result = await setItineraryRequest({
+   const result = await ItineraryApi.setItineraryRequest({
       ...toSetItineraryPayload(normalizeItineraryDraft({
          ...itinerary,
          date,

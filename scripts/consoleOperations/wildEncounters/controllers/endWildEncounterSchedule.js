@@ -1,4 +1,4 @@
-import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
@@ -34,7 +34,7 @@ export function createEndWildEncounterScheduleController({
    }
 
    async function submitEndSchedule({ wildEncounter, times, endDate }) {
-      return endWildEncounterSchedule({
+      return ConsoleOperationsApi.endWildEncounterSchedule({
          wildEncounter,
          times,
          endDate: endDate || null,

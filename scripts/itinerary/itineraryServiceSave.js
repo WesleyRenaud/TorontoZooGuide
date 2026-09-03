@@ -1,4 +1,4 @@
-import { setItineraryRequest } from '../api/itineraryApi.js';
+import { ItineraryApi } from '../api/itineraryApi.js';
 import { createItineraryConfirmationCancelledResult } from './itineraryConfirmationResult.js';
 import {
    isItinerarySuccess,
@@ -77,7 +77,7 @@ async function requestSetItineraryWithConfirmations(
    payload,
    diffBaseline = null,
 ) {
-   const initialResult = await setItineraryRequest(payload);
+   const initialResult = await ItineraryApi.setItineraryRequest(payload);
 
    if (isItinerarySuccess(initialResult.errorType)) {
       return createConfirmedSetItineraryResult(initialResult, diffBaseline);
