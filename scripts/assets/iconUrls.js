@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from './normalizeAssetKey.js';
+import { AssetKeyNormalizer } from './assetKeyNormalizer.js';
 
 function buildCssUrl(path) {
    return `url("${path}")`;
@@ -16,15 +16,15 @@ function isOpenIconVariant(token) {
 }
 
 function buildAnimalIconPath(exhibit, species, variantToken) {
-   const normalizedExhibit = normalizeAssetKey(exhibit);
-   const normalizedAnimal = normalizeAssetKey(species);
+   const normalizedExhibit = AssetKeyNormalizer.normalize(exhibit);
+   const normalizedAnimal = AssetKeyNormalizer.normalize(species);
    const normalizedVariant = normalizeIconVariantToken(variantToken);
 
    return `/images/icons/animals/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${normalizedVariant}.png`;
 }
 
 function buildAttractionIconPath(attractionName, variantToken) {
-   const normalizedAttraction = normalizeAssetKey(attractionName);
+   const normalizedAttraction = AssetKeyNormalizer.normalize(attractionName);
 
    if (isOpenIconVariant(variantToken)) {
       return `/images/icons/attractions/${normalizedAttraction}-open.png`;
@@ -91,7 +91,7 @@ export function getDrinkingFountainIconUrl(backgroundColourForUrl) {
 }
 
 export function getGuestServiceIconUrl(serviceType) {
-   const normalizedServiceType = normalizeAssetKey(serviceType);
+   const normalizedServiceType = AssetKeyNormalizer.normalize(serviceType);
 
    return buildCssUrl(
       `/images/icons/guest-services/${normalizedServiceType}.png`
@@ -99,7 +99,7 @@ export function getGuestServiceIconUrl(serviceType) {
 }
 
 export function getEventSiteIconUrl(eventSiteName) {
-   const normalizedEventSiteName = normalizeAssetKey(eventSiteName);
+   const normalizedEventSiteName = AssetKeyNormalizer.normalize(eventSiteName);
 
    return buildCssUrl(
       `/images/icons/event-center/${normalizedEventSiteName}.png`

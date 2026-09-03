@@ -1,66 +1,59 @@
 import { postJson } from './apiClient.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
-import {
-   asArray,
-   asBoolean,
-   asNullableString,
-   asObject,
-   asTrimmedString,
-   normalizeNumber,
-} from './normalizeValues.js';
+import { ValueNormalizer } from './valueNormalizer.js';
 
 function normalizeAttractionRow(row) {
-   const source = asObject(row);
+   const source = ValueNormalizer.asObject(row);
 
    return {
       ...source,
-      name: asTrimmedString(source.name),
-      free_with_admission: asBoolean(source.free_with_admission),
-      part_of_seasonal_attraction: asBoolean(source.part_of_seasonal_attraction),
-      is_closed: asBoolean(source.is_closed),
-      is_also_transportation: asBoolean(source.is_also_transportation),
-      route_duration_minutes: normalizeNumber(source.route_duration_minutes),
-      info_link: asNullableString(source.info_link),
-      open_time: asNullableString(source.open_time),
-      close_time: asNullableString(source.close_time),
+      name: ValueNormalizer.asTrimmedString(source.name),
+      free_with_admission: ValueNormalizer.asBoolean(source.free_with_admission),
+      part_of_seasonal_attraction: ValueNormalizer.asBoolean(source.part_of_seasonal_attraction),
+      is_closed: ValueNormalizer.asBoolean(source.is_closed),
+      is_also_transportation: ValueNormalizer.asBoolean(source.is_also_transportation),
+      route_duration_minutes: ValueNormalizer.normalizeNumber(source.route_duration_minutes),
+      info_link: ValueNormalizer.asNullableString(source.info_link),
+      open_time: ValueNormalizer.asNullableString(source.open_time),
+      close_time: ValueNormalizer.asNullableString(source.close_time),
    };
 }
 
 function normalizeGuardiansTalkRow(row) {
-   const source = asObject(row);
+   const source = ValueNormalizer.asObject(row);
 
    return {
       ...source,
-      name: asTrimmedString(source.name),
-      location: asTrimmedString(source.location),
-      start_time: asTrimmedString(source.start_time),
+      name: ValueNormalizer.asTrimmedString(source.name),
+      location: ValueNormalizer.asTrimmedString(source.location),
+      start_time: ValueNormalizer.asTrimmedString(source.start_time),
       linked_animals: normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
    };
 }
 
 function normalizeWildEncounterRow(row) {
-   const source = asObject(row);
+   const source = ValueNormalizer.asObject(row);
 
    return {
       ...source,
-      name: asTrimmedString(source.name),
-      meeting_spot: asTrimmedString(source.meeting_spot),
-      start_time: asTrimmedString(source.start_time),
-      link: asNullableString(source.link),
+      name: ValueNormalizer.asTrimmedString(source.name),
+      meeting_spot: ValueNormalizer.asTrimmedString(source.meeting_spot),
+      start_time: ValueNormalizer.asTrimmedString(source.start_time),
+      link: ValueNormalizer.asNullableString(source.link),
    };
 }
 
 function normalizeTransportationRow(row) {
-   const source = asObject(row);
+   const source = ValueNormalizer.asObject(row);
 
    return {
       ...source,
-      name: asTrimmedString(source.name),
-      free_with_admission: asBoolean(source.free_with_admission),
-      is_also_attraction: asBoolean(source.is_also_attraction),
-      info_link: asNullableString(source.info_link),
-      open_time: asNullableString(source.open_time),
-      close_time: asNullableString(source.close_time),
+      name: ValueNormalizer.asTrimmedString(source.name),
+      free_with_admission: ValueNormalizer.asBoolean(source.free_with_admission),
+      is_also_attraction: ValueNormalizer.asBoolean(source.is_also_attraction),
+      info_link: ValueNormalizer.asNullableString(source.info_link),
+      open_time: ValueNormalizer.asNullableString(source.open_time),
+      close_time: ValueNormalizer.asNullableString(source.close_time),
    };
 }
 
@@ -69,19 +62,19 @@ const SEARCH_RESPONSE_NORMALIZERS = {
 };
 
 export function normalizeSearchResponse(response) {
-   const source = asObject(response);
+   const source = ValueNormalizer.asObject(response);
 
    return {
-      animals: asArray(source.animals),
-      pavilions: asArray(source.pavilions),
-      restaurants: asArray(source.restaurants),
-      restrooms: asArray(source.restrooms),
-      gift_shops: asArray(source.gift_shops),
-      attractions: asArray(source.attractions).map(normalizeAttractionRow),
-      transportations: asArray(source.transportations).map(normalizeTransportationRow),
-      transportation_stations: asArray(source.transportation_stations),
-      guardians_talks: asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
-      wild_encounters: asArray(source.wild_encounters).map(normalizeWildEncounterRow),
+      animals: ValueNormalizer.asArray(source.animals),
+      pavilions: ValueNormalizer.asArray(source.pavilions),
+      restaurants: ValueNormalizer.asArray(source.restaurants),
+      restrooms: ValueNormalizer.asArray(source.restrooms),
+      gift_shops: ValueNormalizer.asArray(source.gift_shops),
+      attractions: ValueNormalizer.asArray(source.attractions).map(normalizeAttractionRow),
+      transportations: ValueNormalizer.asArray(source.transportations).map(normalizeTransportationRow),
+      transportation_stations: ValueNormalizer.asArray(source.transportation_stations),
+      guardians_talks: ValueNormalizer.asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
+      wild_encounters: ValueNormalizer.asArray(source.wild_encounters).map(normalizeWildEncounterRow),
    };
 }
 

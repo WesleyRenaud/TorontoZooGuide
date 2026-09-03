@@ -1,8 +1,8 @@
 import { createSpeciesLinkTitleElement } from '../../animals/createSpeciesLinkTitle.js';
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { createTooltipCard } from './cardFactory.js';
-import { formatMapOccurrenceTimes } from '../formatMapOccurrenceTimes.js';
 import { getGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
+import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const guardiansTalkRenderer = {
@@ -10,8 +10,8 @@ export const guardiansTalkRenderer = {
 
    createCard(t, index) {
       const name = t.name || APP_STRINGS.entityLabels.guardiansTalk;
-      const normalizedName = normalizeAssetKey(name);
-      const times = formatMapOccurrenceTimes(t);
+      const normalizedName = AssetKeyNormalizer.normalize(name);
+      const times = MapOccurrenceTimesFormatter.format(t);
       const linkedAnimal = getGuardiansTalkLinkedAnimal(t);
       const title = linkedAnimal
          ? {

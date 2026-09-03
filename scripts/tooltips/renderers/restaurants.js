@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { createTooltipCard } from './cardFactory.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -7,7 +7,7 @@ export const restaurantRenderer = {
 
    createCard(r, index) {
       const name = r.name || APP_STRINGS.entityLabels.restaurant;
-      const normalizedName = normalizeAssetKey(name);
+      const normalizedName = AssetKeyNormalizer.normalize(name);
 
       return createTooltipCard({
          index,

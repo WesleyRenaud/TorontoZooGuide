@@ -3,7 +3,7 @@
  * Hex values live only in styles/tokens.css (--color-region-*).
  */
 
-import { asTrimmedString } from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { normalizeAnimalIdentitySearchFields } from '../itinerary/animalIdentity.js';
 
 export const REGION_COLOR_SLUGS = Object.freeze({
@@ -50,7 +50,7 @@ export function resolveRegionNameForExhibit(exhibitName = '') {
 }
 
 export function resolveRegionColorSlug(regionName = '') {
-   const regionKey = asTrimmedString(regionName);
+   const regionKey = ValueNormalizer.asTrimmedString(regionName);
 
    if (!regionKey) {
       return '';
@@ -64,19 +64,19 @@ export function resolveRegionColorSlugForExhibit(exhibitName = '') {
 }
 
 export function resolveRegionColorSlugForScheduledItem(item = null) {
-   const region = asTrimmedString(item?.region);
+   const region = ValueNormalizer.asTrimmedString(item?.region);
 
    if (region) {
       return resolveRegionColorSlug(region);
    }
 
-   const exhibit = asTrimmedString(item?.exhibit);
+   const exhibit = ValueNormalizer.asTrimmedString(item?.exhibit);
 
    if (exhibit) {
       return resolveRegionColorSlugForExhibit(exhibit);
    }
 
-   const location = asTrimmedString(item?.location);
+   const location = ValueNormalizer.asTrimmedString(item?.location);
 
    if (location) {
       return resolveRegionColorSlugForExhibit(location);
@@ -86,7 +86,7 @@ export function resolveRegionColorSlugForScheduledItem(item = null) {
 }
 
 export function applyRegionColorsToElement(element, regionSlug = '') {
-   const slug = asTrimmedString(regionSlug);
+   const slug = ValueNormalizer.asTrimmedString(regionSlug);
 
    if (!element || !slug) {
       return false;

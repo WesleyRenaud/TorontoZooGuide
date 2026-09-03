@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { createTooltipCard } from './cardFactory.js';
 import { getAttractionSubtitle } from '../../itinerary/selectors/attractionSelector/model.js';
 import { normalizeStoredLink } from '../../itinerary/selectors/base/storedSelection.js';
@@ -9,7 +9,7 @@ export const attractionRenderer = {
 
    createCard(a, index) {
       const name = a.name || APP_STRINGS.entityLabels.attraction;
-      const normalizedName = normalizeAssetKey(name);
+      const normalizedName = AssetKeyNormalizer.normalize(name);
       const infoLink = normalizeStoredLink(a.info_link);
 
       return createTooltipCard({

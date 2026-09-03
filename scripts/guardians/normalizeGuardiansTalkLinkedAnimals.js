@@ -1,17 +1,13 @@
-import {
-   asArray,
-   asObject,
-   asTrimmedString,
-} from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 
 export function normalizeGuardiansTalkLinkedAnimals(value) {
-   return asArray(value)
+   return ValueNormalizer.asArray(value)
       .map((entry) => {
-         const linked = asObject(entry);
+         const linked = ValueNormalizer.asObject(entry);
 
          return {
-            species: asTrimmedString(linked.species),
-            exhibit: asTrimmedString(linked.exhibit),
+            species: ValueNormalizer.asTrimmedString(linked.species),
+            exhibit: ValueNormalizer.asTrimmedString(linked.exhibit),
          };
       })
       .filter((linked) => linked.species && linked.exhibit);

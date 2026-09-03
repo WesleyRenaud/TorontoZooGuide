@@ -1,4 +1,4 @@
-import { asTrimmedStringList } from '../../api/normalizeValues.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
@@ -86,7 +86,7 @@ export function populateScheduleTimesCheckboxList(
       return;
    }
 
-   const normalizedTimes = asTrimmedStringList(times);
+   const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
 
    if (!normalizedTimes.length) {
       renderScheduleTimesListMessage(
@@ -131,7 +131,7 @@ export function updateScheduleTimesCheckboxList(el, {
       return;
    }
 
-   const normalizedTimes = asTrimmedStringList(times);
+   const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
 
    if (normalizedTimes.length) {
       populateScheduleTimesCheckboxList(listEl, normalizedTimes, {

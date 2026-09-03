@@ -1,3 +1,3 @@
-export const MapItemType = Object.freeze({
-   TRANSPORTATION_STATION: 'transportationStation',
-});
+export class MapItemType {
+   static TRANSPORTATION_STATION = 'transportationStation';
+}

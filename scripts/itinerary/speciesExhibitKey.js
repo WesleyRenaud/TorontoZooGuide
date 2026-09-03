@@ -1,5 +1,5 @@
 import { normalizeAnimalIdentitySearchFields } from './animalIdentity.js';
-import { normalizeEnclosureType } from '../shared/enums/enclosureType.js';
+import { EnclosureType } from '../shared/enums/enclosureType.js';
 
 export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
    const { species, exhibit } = normalizeAnimalIdentitySearchFields(animal);
@@ -18,7 +18,7 @@ function buildViewingSpotSuffix(animal = {}) {
       return enclosureName;
    }
 
-   const enclosureType = normalizeEnclosureType(animal?.enclosure_type);
+   const enclosureType = EnclosureType.normalizeEnclosureType(animal?.enclosure_type);
 
    return enclosureType ? enclosureType.toLowerCase() : '';
 }

@@ -1,4 +1,4 @@
-import { asTrimmedString } from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 
 export const map = {
    exploreMenuAria: 'Explore menu',
@@ -69,7 +69,7 @@ export const map = {
       current: 'Current Route',
       title: name => `${name} route`,
       route: route => {
-         const normalized = asTrimmedString(route);
+         const normalized = ValueNormalizer.asTrimmedString(route);
 
          if (!normalized) {
             return '';

@@ -1,20 +1,23 @@
-import { asTrimmedString } from '../../api/normalizeValues.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 
-export const EnclosureType = Object.freeze({
-   INDOOR: 'Indoor',
-   OUTDOOR: 'Outdoor',
-});
+export class EnclosureType {
+   static INDOOR = 'Indoor';
+   static OUTDOOR = 'Outdoor';
 
-const ENCLOSURE_TYPES = new Set(Object.values(EnclosureType));
+   static normalizeEnclosureType(value) {
+      const normalized = ValueNormalizer.asTrimmedString(value);
 
-export function normalizeEnclosureType(value) {
-   const normalized = asTrimmedString(value);
+      return ENCLOSURE_TYPES.has(normalized)
+         ? normalized
+         : null;
+   }
 
-   return ENCLOSURE_TYPES.has(normalized)
-      ? normalized
-      : null;
+   static isEnclosureType(value) {
+      return EnclosureType.normalizeEnclosureType(value) !== null;
+   }
 }
 
-export function isEnclosureType(value) {
-   return normalizeEnclosureType(value) !== null;
-}
+const ENCLOSURE_TYPES = new Set([
+   EnclosureType.INDOOR,
+   EnclosureType.OUTDOOR,
+]);

@@ -7,7 +7,7 @@ import {
    isItinerarySuccess,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
-import { normalizeItineraryFromApiResult } from './itineraryNormalization.js';
+import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
 import {
@@ -48,7 +48,7 @@ export async function ensureItineraryVisitDate(itinerary = {}) {
 
    setStoredItineraryDate(date);
 
-   const normalizedItinerary = normalizeItineraryFromApiResult(result);
+   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 
    dispatchItineraryUpdated(normalizedItinerary);
 

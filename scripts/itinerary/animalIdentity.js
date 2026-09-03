@@ -1,13 +1,10 @@
-import {
-   asNullableString,
-   asTrimmedString,
-} from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 
 export function normalizeAnimalIdentityFields(source = {}) {
    return {
-      species: asTrimmedString(source?.species),
-      exhibit: asTrimmedString(source?.exhibit),
-      enclosure_name: asNullableString(source?.enclosure_name),
+      species: ValueNormalizer.asTrimmedString(source?.species),
+      exhibit: ValueNormalizer.asTrimmedString(source?.exhibit),
+      enclosure_name: ValueNormalizer.asNullableString(source?.enclosure_name),
    };
 }
 

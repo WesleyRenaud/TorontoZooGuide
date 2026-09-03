@@ -1,10 +1,10 @@
 import { addGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -103,7 +103,7 @@ export function createAddGuardiansTalkOccurrenceController({
          if (!result.success) {
             setStatus(
                statusEl,
-               resolveConsoleMutationError(result),
+               ApiErrorMessageResolver.resolveConsoleMutationError(result),
                'is-error'
             );
             return;

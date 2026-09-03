@@ -13,11 +13,7 @@ import {
    getWildEncounterKey,
 } from '../selectors/wildEncounterSelector/model.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
-import {
-   isFixedTimeScheduleItemKind,
-   ScheduleItemKind,
-   scheduleItemKindFromItemType,
-} from '../../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 function itineraryWildEncounterId(encounter) {
    return WildEncounterScheduleItemKey.fromRow(encounter)?.toWire() ?? null;
@@ -139,7 +135,7 @@ export function getScheduleItemRowId(row) {
 }
 
 export function getItineraryItemKey(itemType, item) {
-   const kind = scheduleItemKindFromItemType(itemType);
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
 
    if (kind === ScheduleItemKind.ANIMAL) {
       return getAnimalId(item);
@@ -354,7 +350,7 @@ export function filterScheduleItemRowsForScheduleModule(
       rowsWithoutScheduledOccurrences,
       itinerary,
       { unscheduledOnly: true }
-   ).filter((row) => !isFixedTimeScheduleItemKind(getScheduleItemRowKind(row)));
+   ).filter((row) => !ScheduleItemKind.isFixedTimeScheduleItemKind(getScheduleItemRowKind(row)));
 }
 
 export function extractScheduleItemSearchRows(moduleType, response = {}) {

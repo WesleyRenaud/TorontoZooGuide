@@ -1,5 +1,5 @@
 import { getTransportationRoutes } from '../api/mapApi.js';
-import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 
 function createRouteOption({
@@ -25,7 +25,7 @@ function createRouteOption({
 }
 
 function radioGroupName(transportationName) {
-   return `transportationRoute-${normalizeAssetKey(transportationName)}`;
+   return `transportationRoute-${AssetKeyNormalizer.normalize(transportationName)}`;
 }
 
 function createTransportationRouteSection(transportation) {

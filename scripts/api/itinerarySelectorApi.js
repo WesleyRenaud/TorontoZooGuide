@@ -1,27 +1,24 @@
 import { postJson } from './apiClient.js';
-import {
-   asObject,
-   asTrimmedString,
-} from './normalizeValues.js';
+import { ValueNormalizer } from './valueNormalizer.js';
 
 function normalizeRegion(region) {
-   const source = asObject(region);
+   const source = ValueNormalizer.asObject(region);
 
    return {
-      name: asTrimmedString(source.name),
+      name: ValueNormalizer.asTrimmedString(source.name),
       exhibits: Array.isArray(source.exhibits)
-         ? source.exhibits.map(asTrimmedString).filter(Boolean)
+         ? source.exhibits.map(ValueNormalizer.asTrimmedString).filter(Boolean)
          : [],
    };
 }
 
 function normalizeAnimal(animal) {
-   const source = asObject(animal);
+   const source = ValueNormalizer.asObject(animal);
 
    return {
       ...source,
-      species: asTrimmedString(source.species),
-      exhibit: asTrimmedString(source.exhibit),
+      species: ValueNormalizer.asTrimmedString(source.species),
+      exhibit: ValueNormalizer.asTrimmedString(source.exhibit),
    };
 }
 

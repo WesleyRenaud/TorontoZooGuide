@@ -1,6 +1,12 @@
 {
    "include": [
-      "scripts/shared/joinedTimesFormatter.js"
+      "scripts/shared/joinedTimesFormatter.js",
+      "scripts/api/valueNormalizer.js",
+      "scripts/assets/assetKeyNormalizer.js",
+      "scripts/consoleOperations/apiErrorMessageResolver.js",
+      "scripts/tooltips/mapOccurrenceTimesFormatter.js",
+      "scripts/itinerary/itineraryNormalizer.js",
+      "scripts/shared/enums/**"
    ],
    "exclude": [
       "scripts/mainMap.js",

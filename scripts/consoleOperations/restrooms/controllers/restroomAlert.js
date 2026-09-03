@@ -1,4 +1,5 @@
 import { setRestroomAlert } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hideConsolePanel,
@@ -8,7 +9,6 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { loadRestrooms } from '../../options/loaders.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -122,7 +122,7 @@ export function createRestroomAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
+            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch(err) {

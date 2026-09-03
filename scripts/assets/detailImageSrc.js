@@ -1,9 +1,9 @@
-import { normalizeAssetKey } from './normalizeAssetKey.js';
+import { AssetKeyNormalizer } from './assetKeyNormalizer.js';
 
 export function buildDetailImageSrc(imageDirectory, name, {
    basePath = 'images/details',
 } = {}) {
-   const file = normalizeAssetKey(String(name).trim());
+   const file = AssetKeyNormalizer.normalize(String(name).trim());
 
    if (!file) {
       return null;
@@ -16,7 +16,7 @@ export function buildDetailImageSrcFromParts(pathParts, {
    basePath = 'images/details',
 } = {}) {
    const normalizedParts = pathParts
-      .map((part) => normalizeAssetKey(part))
+      .map((part) => AssetKeyNormalizer.normalize(part))
       .filter(Boolean);
 
    if (normalizedParts.length !== pathParts.length) {

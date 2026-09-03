@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import {
    formatMinutesAsClockTime,
    parseClockTimeMinutes,
@@ -8,7 +8,7 @@ import { APP_STRINGS } from '../../strings.js';
 
 export function buildImageSrc(...pathParts) {
    const normalizedParts = pathParts
-      .map((part) => normalizeAssetKey(part))
+      .map((part) => AssetKeyNormalizer.normalize(part))
       .filter(Boolean);
 
    if (normalizedParts.length !== pathParts.length) {

@@ -1,13 +1,13 @@
 import { normalizeAnimalIdentityFields } from '../../animalIdentity.js';
 import { formatSpeciesEnclosureLine } from '../../../animals/animalDisplayLines.js';
-import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import {
    migrateStoredSelectionItems,
    normalizeStoredId,
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
-import { normalizeEnclosureType } from '../../../shared/enums/enclosureType.js';
+import { EnclosureType } from '../../../shared/enums/enclosureType.js';
 
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
@@ -28,7 +28,7 @@ export function getAnimalEnclosureName(row) {
 }
 
 export function getAnimalEnclosureType(row) {
-   return normalizeEnclosureType(row?.enclosure_type) ?? '';
+   return EnclosureType.normalizeEnclosureType(row?.enclosure_type) ?? '';
 }
 
 export function getAnimalTitleLine(row) {
@@ -80,8 +80,8 @@ export function getAnimalSubtitle(row) {
 }
 
 export function buildAnimalImageSrc(row) {
-   const exhibitFile = normalizeAssetKey(getAnimalExhibit(row));
-   const speciesFile = normalizeAssetKey(getAnimalSpecies(row));
+   const exhibitFile = AssetKeyNormalizer.normalize(getAnimalExhibit(row));
+   const speciesFile = AssetKeyNormalizer.normalize(getAnimalSpecies(row));
 
    if (!exhibitFile || !speciesFile) {
       return null;

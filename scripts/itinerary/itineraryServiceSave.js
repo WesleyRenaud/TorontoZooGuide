@@ -10,7 +10,7 @@ import {
    requiresWildEncounterUnscheduleConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
-import { normalizeItineraryFromApiResult } from './itineraryNormalization.js';
+import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
 import {
@@ -224,7 +224,7 @@ export async function saveItinerary(
       throw new Error(resolveItineraryErrorMessage(result.errorType));
    }
 
-   const normalizedItinerary = normalizeItineraryFromApiResult(result);
+   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    const saveDiff = buildItineraryDiff(
       normalizeItineraryDraft(diffBaseline ?? itinerary),
       normalizedItinerary,
