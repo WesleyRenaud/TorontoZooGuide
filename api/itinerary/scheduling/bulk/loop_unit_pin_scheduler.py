@@ -287,7 +287,6 @@ class LoopUnitPinScheduler():
             raise LoopUnitSchedulePersistError( animals )
 
          animal_slots, segment_end_cursor_seconds = slot_assignment
-         effective_start_seconds = latest_start_seconds
       else:
          if start_seconds >= segment_end_seconds:
             raise LoopUnitSchedulePersistError( animals )
@@ -298,10 +297,6 @@ class LoopUnitPinScheduler():
          animal_slots, segment_end_cursor_seconds = LoopScheduleSlotAssigner.assign_contiguous(
             prepared_stops,
             start_seconds=start_seconds )
-         effective_start_seconds = start_seconds
-
-      if effective_start_seconds < start_seconds:
-         raise LoopUnitSchedulePersistError( animals )
 
       if not animal_slots:
          raise LoopUnitSchedulePersistError( animals )

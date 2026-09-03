@@ -1,0 +1,78 @@
+from __future__ import annotations
+
+from api.seed.data import Data
+from api.seed.tables.animal_day_seasonal_viewability_multiplier_seed_table import animal_day_seasonal_viewability_multipliers
+from api.seed.tables.animal_seed_table import animals
+from api.seed.tables.attraction_day_seasonal_availability_multiplier_seed_table import attraction_day_seasonal_availability_multipliers
+from api.seed.tables.attraction_seed_table import attractions
+from api.seed.tables.defibrillator_seed_table import defibrillators
+from api.seed.tables.drinking_fountain_day_seasonal_availability_multiplier_seed_table import drinking_fountain_day_seasonal_availability_multipliers
+from api.seed.tables.drinking_fountain_seed_table import drinking_fountains
+from api.seed.tables.emergency_intercom_seed_table import emergency_intercoms
+from api.seed.tables.enclosure_seed_table import enclosures
+from api.seed.tables.enclosure_viewing_seed_table import enclosure_viewings
+from api.seed.tables.event_site_seed_table import event_sites
+from api.seed.tables.exhibit_day_seasonal_availability_multiplier_seed_table import exhibit_day_seasonal_availability_multipliers
+from api.seed.tables.exhibit_seed_table import exhibits
+from api.seed.tables.gift_shop_day_seasonal_availability_multiplier_seed_table import gift_shop_day_seasonal_availability_multipliers
+from api.seed.tables.gift_shop_seed_table import gift_shops
+from api.seed.tables.guest_service_seed_table import guest_services
+from api.seed.tables.itinerary_event_default_seed_table import itinerary_event_defaults
+from api.seed.tables.itinerary_status_seed_table import itinerary_statuses
+from api.seed.tables.meet_the_guardians_talk_seed_table import guardians_talks
+from api.seed.tables.pavilion_seed_table import pavilions
+from api.seed.tables.picnic_site_seed_table import picnic_sites
+from api.seed.tables.region_seed_table import regions
+from api.seed.tables.restaurant_day_seasonal_availability_multiplier_seed_table import restaurant_day_seasonal_availability_multipliers
+from api.seed.tables.restaurant_seed_table import restaurants
+from api.seed.tables.restroom_seed_table import restrooms
+from api.seed.tables.transportation_day_route_seed_table import transportation_day_routes
+from api.seed.tables.transportation_leg_seed_table import transportation_legs
+from api.seed.tables.transportation_route_leg_marker_seed_table import transportation_route_leg_markers
+from api.seed.tables.transportation_route_leg_seed_table import transportation_route_legs
+from api.seed.tables.transportation_route_seed_table import transportation_routes
+from api.seed.tables.transportation_route_station_seed_table import transportation_route_stations
+from api.seed.tables.transportation_seed_table import transportations
+from api.seed.tables.transportation_station_seed_table import transportation_stations
+from api.seed.tables.wild_encounter_meeting_spot_seed_table import wild_encounter_meeting_spots
+from api.seed.tables.wild_encounter_seed_table import wild_encounters
+from api.seed.tables.zoo_hours_seed_table import zoo_hours
+
+
+def Test_Data_TestSeedTables_ExpectWired() -> None:
+   assert Data.animals is animals
+   assert Data.animal_day_seasonal_viewability_multipliers is animal_day_seasonal_viewability_multipliers
+   assert Data.attractions is attractions
+   assert Data.attraction_day_seasonal_availability_multipliers is attraction_day_seasonal_availability_multipliers
+   assert Data.defibrillators is defibrillators
+   assert Data.drinking_fountains is drinking_fountains
+   assert Data.drinking_fountain_day_seasonal_availability_multipliers is drinking_fountain_day_seasonal_availability_multipliers
+   assert Data.emergency_intercoms is emergency_intercoms
+   assert Data.enclosures is enclosures
+   assert Data.enclosure_viewings is enclosure_viewings
+   assert Data.event_sites is event_sites
+   assert Data.exhibits is exhibits
+   assert Data.exhibit_day_seasonal_availability_multipliers is exhibit_day_seasonal_availability_multipliers
+   assert Data.gift_shops is gift_shops
+   assert Data.gift_shop_day_seasonal_availability_multipliers is gift_shop_day_seasonal_availability_multipliers
+   assert Data.guest_services is guest_services
+   assert Data.itinerary_event_defaults is itinerary_event_defaults
+   assert Data.itinerary_statuses is itinerary_statuses
+   assert Data.guardians_talks is guardians_talks
+   assert Data.pavilions is pavilions
+   assert Data.picnic_sites is picnic_sites
+   assert Data.regions is regions
+   assert Data.restaurants is restaurants
+   assert Data.restaurant_day_seasonal_availability_multipliers is restaurant_day_seasonal_availability_multipliers
+   assert Data.restrooms is restrooms
+   assert Data.transportations is transportations
+   assert Data.transportation_day_routes is transportation_day_routes
+   assert Data.transportation_legs is transportation_legs
+   assert Data.transportation_routes is transportation_routes
+   assert Data.transportation_route_legs is transportation_route_legs
+   assert Data.transportation_route_leg_markers is transportation_route_leg_markers
+   assert Data.transportation_route_stations is transportation_route_stations
+   assert Data.transportation_stations is transportation_stations
+   assert Data.wild_encounters is wild_encounters
+   assert Data.wild_encounter_meeting_spots is wild_encounter_meeting_spots
+   assert Data.zoo_hours is zoo_hours

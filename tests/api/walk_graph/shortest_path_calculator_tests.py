@@ -48,6 +48,42 @@ ONE_WAY_CHAIN_GRAPH: WalkGraph = {
    ],
 }
 
+STALE_QUEUE_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': 'n-1',
+   'nodes': [
+      _node( 'n-1', 0.0, 0.0 ),
+      _node( 'n-2', 10.0, 0.0 ),
+      _node( 'n-3', 20.0, 0.0 ),
+   ],
+   'edges': [
+      { 'from': 'n-1', 'to': 'n-2', 'length_px': 10.0 },
+      { 'from': 'n-1', 'to': 'n-3', 'length_px': 1.0 },
+      { 'from': 'n-3', 'to': 'n-2', 'length_px': 1.0 },
+   ],
+}
+
+STALE_INTERMEDIATE_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': 'n-1',
+   'nodes': [
+      _node( 'n-1', 0.0, 0.0 ),
+      _node( 'n-2', 10.0, 0.0 ),
+      _node( 'n-3', 20.0, 0.0 ),
+      _node( 'n-4', 30.0, 0.0 ),
+      _node( 'n-5', 40.0, 0.0 ),
+   ],
+   'edges': [
+      { 'from': 'n-1', 'to': 'n-3', 'length_px': 10.0 },
+      { 'from': 'n-1', 'to': 'n-2', 'length_px': 1.0 },
+      { 'from': 'n-2', 'to': 'n-3', 'length_px': 1.0 },
+      { 'from': 'n-3', 'to': 'n-4', 'length_px': 1.0 },
+      { 'from': 'n-3', 'to': 'n-5', 'length_px': 50.0 },
+   ],
+}
+
 
 def Test_Distance_TestSameNode_ExpectZero() -> None:
    assert ShortestPathCalculator.distance(
@@ -62,6 +98,17 @@ def Test_Distance_TestKnownNodes_ExpectSymmetricDistance() -> None:
 
    assert forward is not None
    assert reverse == pytest.approx( forward )
+
+
+def Test_Find_TestSameNode_ExpectZeroLengthPath() -> None:
+   path = ShortestPathCalculator.find(
+      BIDIRECTIONAL_GRAPH,
+      'n-1',
+      'n-1' )
+
+   assert path is not None
+   assert path.node_ids == [ 'n-1' ]
+   assert path.length_px == 0.0
 
 
 def Test_Find_TestNeighborPath_ExpectLengthMatchesDistanceLookup() -> None:
@@ -97,3 +144,31 @@ def Test_Find_TestOneWayChain_ExpectForwardPathAndNoReverseRoute() -> None:
          ONE_WAY_CHAIN_GRAPH,
          'n-1',
          'n-4' )
+
+
+def Test_Distances_TestStaleQueueEntry_ExpectShortestDistance() -> None:
+   assert ShortestPathCalculator.distances(
+      STALE_QUEUE_GRAPH,
+      'n-1' )[ 'n-2' ] == 2.0
+
+
+def Test_Find_TestStaleQueueEntry_ExpectShortestPath() -> None:
+   path = ShortestPathCalculator.find(
+      STALE_QUEUE_GRAPH,
+      'n-1',
+      'n-2' )
+
+   assert path is not None
+   assert path.length_px == 2.0
+   assert path.node_ids == [ 'n-1', 'n-3', 'n-2' ]
+
+
+def Test_Find_TestStaleIntermediateNode_ExpectShortestPath() -> None:
+   path = ShortestPathCalculator.find(
+      STALE_INTERMEDIATE_GRAPH,
+      'n-1',
+      'n-5' )
+
+   assert path is not None
+   assert path.length_px == 52.0
+   assert path.node_ids == [ 'n-1', 'n-2', 'n-3', 'n-5' ]

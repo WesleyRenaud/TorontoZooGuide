@@ -610,3 +610,104 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
 
    assert cleared == [ 'arrival', 'departure' ]
    assert current_itinerary.animals[ 0 ].start_time == '10:00 AM'
+
+
+def Test_ClearIfBecameIncomplete_TestNoPreviousItinerary_ExpectNoClear(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   cleared: list[ str ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: cleared.append( 'arrival' ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: cleared.append( 'departure' ) or True )
+
+   ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
+      syncer_conn,
+      previous_itinerary=None,
+      current_itinerary=_fully_scheduled_lion_itinerary() )
+
+   assert cleared == []
+
+
+def Test_ClearIfBecameIncomplete_TestPreviousIncomplete_ExpectNoClear(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   cleared: list[ str ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: cleared.append( 'arrival' ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: cleared.append( 'departure' ) or True )
+
+   previous_itinerary = ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=[
+         Animal(
+            species='African Lion',
+            exhibit='Africa Savanna' ),
+      ],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:50 AM',
+      departure_time='10:18 AM' )
+
+   ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
+      syncer_conn,
+      previous_itinerary=previous_itinerary,
+      current_itinerary=_fully_scheduled_lion_itinerary() )
+
+   assert cleared == []
+
+
+def Test_ClearIfBecameIncomplete_TestStillFullyScheduled_ExpectNoClear(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   cleared: list[ str ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: cleared.append( 'arrival' ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: cleared.append( 'departure' ) or True )
+
+   itinerary = _fully_scheduled_lion_itinerary()
+
+   ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
+      syncer_conn,
+      previous_itinerary=itinerary,
+      current_itinerary=itinerary )
+
+   assert cleared == []
+
+
+def Test_SeedIfComplete_TestMissingLatestEndSeconds_ExpectNoUpdate(
+      syncer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   updated: dict[ str, str | None ] = {}
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.TimeBlockBuilder.latest_end_seconds',
+      lambda itinerary: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_arrival_time',
+      lambda conn, arrival_time: updated.__setitem__( 'arrival_time', arrival_time ) or True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
+      lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
+      syncer_conn,
+      _fully_scheduled_lion_itinerary() )
+
+   assert updated == {}

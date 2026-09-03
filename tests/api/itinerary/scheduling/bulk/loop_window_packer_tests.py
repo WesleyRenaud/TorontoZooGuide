@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopScheduleSlotAssigner
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.itinerary.scheduling.bulk.loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
+from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
@@ -17,7 +21,7 @@ from api.walk_graph.domain.master_route_loop import TWO_WAY_LOOP_TRAVERSAL
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
-
+from api.walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 ENTRANCE_NODE_ID = 'n-1'
 CHEETAH_NODE_ID = 'n-cheetah'
@@ -832,3 +836,525 @@ def Test_Pack_TestTightKangarooHours_ExpectKangarooAndTundraBeforeAfrica() -> No
       SAVANNA_LOOP_ID,
       INDO_LOOP_ID,
    ]
+
+
+def Test_PrepareUnits_TestStopsPrepared_ExpectOccupiedSeconds(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   cheetah = ItineraryAnimalRecord(
+      species='Cheetah',
+      exhibit='Indo-Malaya Outdoor',
+      enclosure_name=None,
+      old_likelihood=None,
+      new_likelihood=100 )
+   unit = LoopScheduleUnit(
+      loop_id=INDO_LOOP_ID,
+      stops=[ cheetah ],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      side_cluster_id=None,
+      loop_index_in_side_cluster=None,
+      traversal=None )
+   prepared_stop = TimedLoopScheduleStop(
+      stop=cheetah,
+      duration_seconds=CHEETAH_DWELL_SECONDS,
+      travel_before_seconds=0 )
+   prepare_results = {
+      id( unit ): [ prepared_stop ],
+   }
+
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'prepare_stops',
+      lambda conn, walk_graph, stops, *, adjacency=None: prepare_results.get(
+         id( unit ) ) )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'total_occupied_seconds',
+      lambda stops: CHEETAH_DWELL_SECONDS )
+
+   prepared_units = LoopWindowPacker.prepare_units(
+      object(),
+      [ unit ],
+      walk_graph=TEST_GRAPH )
+
+   assert prepared_units is not None
+   assert len( prepared_units ) == 1
+   assert prepared_units[ 0 ].unit is unit
+   assert prepared_units[ 0 ].occupied_seconds == CHEETAH_DWELL_SECONDS
+
+
+def Test_PrepareUnits_TestPrepareStopsFails_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   unit = LoopScheduleUnit(
+      loop_id=INDO_LOOP_ID,
+      stops=[
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Indo-Malaya Outdoor',
+            enclosure_name=None,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      side_cluster_id=None,
+      loop_index_in_side_cluster=None,
+      traversal=None )
+
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'prepare_stops',
+      lambda conn, walk_graph, stops, *, adjacency=None: None )
+
+   assert LoopWindowPacker.prepare_units(
+      object(),
+      [ unit ],
+      walk_graph=TEST_GRAPH ) is None
+
+
+def Test_Pack_TestEmptyPreparedUnits_ExpectEmptyList() -> None:
+   packed_units = LoopWindowPacker.pack(
+      TEST_GRAPH,
+      ItineraryScheduleWindow(
+         start_seconds=_seconds( '9:00 AM' ),
+         end_seconds=_seconds( '12:00 PM' ) ),
+      prepared_units=[],
+      cursor_seconds=_seconds( '9:00 AM' ),
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units == []
+
+
+def Test_Pack_TestCursorPastWindowEnd_ExpectEmptyList() -> None:
+   packed_units = LoopWindowPacker.pack(
+      TEST_GRAPH,
+      ItineraryScheduleWindow(
+         start_seconds=_seconds( '9:00 AM' ),
+         end_seconds=_seconds( '10:00 AM' ) ),
+      prepared_units=[ _indo_prepared_unit() ],
+      cursor_seconds=_seconds( '11:00 AM' ),
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units == []
+
+
+def Test_PackAllBeforeDeadline_TestEmptyOrClosedWindow_ExpectNone() -> None:
+   assert LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=[],
+      window_start_seconds=_seconds( '9:00 AM' ),
+      deadline_seconds=_seconds( '12:00 PM' ),
+      current_node_id=ENTRANCE_NODE_ID ) is None
+
+   assert LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=[ _indo_prepared_unit() ],
+      window_start_seconds=_seconds( '12:00 PM' ),
+      deadline_seconds=_seconds( '12:00 PM' ),
+      current_node_id=ENTRANCE_NODE_ID ) is None
+
+
+def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   prepared_units = [ _indo_prepared_unit(), _australasia_prepared_unit() ]
+
+   monkeypatch.setattr(
+      LoopUnitTravelTimeCalculator,
+      'packed_units_occupied_seconds',
+      lambda walk_graph, units, *, from_node_id: 60 )
+   monkeypatch.setattr(
+      LoopWindowPacker,
+      '_pack_loops_for_open_window',
+      lambda *args, **kwargs: [ prepared_units[ 0 ] ] )
+
+   assert LoopWindowPacker.pack_all_before_deadline(
+      TEST_GRAPH,
+      prepared_units=prepared_units,
+      window_start_seconds=_seconds( '9:00 AM' ),
+      deadline_seconds=_seconds( '5:00 PM' ),
+      current_node_id=ENTRANCE_NODE_ID ) is None
+
+
+def Test_TravelDistanceToUnitEntry_TestMissingEntry_ExpectInfinity() -> None:
+   adjacency = WalkGraphAdjacencyBuilder.build( TEST_GRAPH )
+   prepared_unit = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=None,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=CHEETAH_DWELL_SECONDS )
+
+   assert LoopWindowPacker._travel_distance_to_unit_entry(
+      TEST_GRAPH,
+      from_node_id=ENTRANCE_NODE_ID,
+      prepared_unit=prepared_unit,
+      adjacency=adjacency ) == float( 'inf' )
+
+
+def Test_TravelDistanceToUnitEntry_TestTwoWayMissingExit_ExpectForwardDistance() -> None:
+   adjacency = WalkGraphAdjacencyBuilder.build( ORIENTATION_GRAPH )
+   prepared_unit = _prepared_loop_unit(
+      loop_id=EURASIA_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=HIGHLAND_NODE_ID,
+      exit_walk_node_id=None,
+      duration_seconds=EURASIA_DWELL_SECONDS,
+      traversal=TWO_WAY_LOOP_TRAVERSAL )
+   forward_distance = ShortestPathCalculator.distance(
+      ORIENTATION_GRAPH,
+      TEMPLE_NODE_ID,
+      HIGHLAND_NODE_ID )
+
+   assert LoopWindowPacker._travel_distance_to_unit_entry(
+      ORIENTATION_GRAPH,
+      from_node_id=TEMPLE_NODE_ID,
+      prepared_unit=prepared_unit,
+      adjacency=adjacency ) == forward_distance
+
+
+def Test_WalkDistancePx_TestEmptyNodeIds_ExpectInfinity() -> None:
+   adjacency = WalkGraphAdjacencyBuilder.build( TEST_GRAPH )
+
+   assert LoopWindowPacker._walk_distance_px(
+      TEST_GRAPH,
+      '',
+      CHEETAH_NODE_ID,
+      adjacency=adjacency ) == float( 'inf' )
+   assert LoopWindowPacker._walk_distance_px(
+      TEST_GRAPH,
+      ENTRANCE_NODE_ID,
+      '',
+      adjacency=adjacency ) == float( 'inf' )
+
+
+def Test_RemoveMatching_TestSharedLoopId_ExpectRemovedByLoop() -> None:
+   remaining = [ _indo_prepared_unit(), _australasia_prepared_unit() ]
+   matching = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=CHEETAH_DWELL_SECONDS )
+
+   LoopWindowPacker.remove_matching( remaining, matching )
+
+   assert [ unit.unit.loop_id for unit in remaining ] == [ AUSTRALASIA_LOOP_ID ]
+
+
+def Test_RemoveMatching_TestNoneLoopIds_ExpectIdentityMatchOnly() -> None:
+   first = _prepared_loop_unit(
+      loop_id=None,
+      stops=[],
+      entry_walk_node_id=ENTRANCE_NODE_ID,
+      exit_walk_node_id=ENTRANCE_NODE_ID,
+      duration_seconds=60 )
+   second = _prepared_loop_unit(
+      loop_id=None,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=60 )
+   remaining = [ first, second ]
+
+   LoopWindowPacker.remove_matching( remaining, second )
+
+   assert remaining == [ first ]
+   assert LoopWindowPacker._prepared_units_share_loop( first, second ) is False
+   assert LoopWindowPacker._prepared_units_share_loop( first, first ) is True
+
+
+def Test_PackLoopsWithTerminalUnit_TestTerminalOccupiesEntireWindow_ExpectEmpty() -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+   window_end_seconds = window_start_seconds + 5 * 60
+   indo = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=10 * 60 )
+
+   packed_units = LoopWindowPacker._pack_loops_with_terminal_unit(
+      TEST_GRAPH,
+      [ indo ],
+      terminal_unit=indo,
+      window_start_seconds=window_start_seconds,
+      window_end_seconds=window_end_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      anchor_node_id=ENCOUNTER_NODE_ID )
+
+   assert packed_units == []
+
+
+def Test_GreedyPrefixUnitsBeforeTerminal_TestExactFill_ExpectRemainingUnitsUnpacked(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   first = _prepared_loop_unit(
+      loop_id=AUSTRALASIA_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=KOOKABURRA_NODE_ID,
+      exit_walk_node_id=KOOKABURRA_NODE_ID,
+      duration_seconds=10 * 60,
+      side_cluster_id=SOUTH_CLUSTER_ID )
+   second = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=10 * 60,
+      side_cluster_id=SOUTH_CLUSTER_ID )
+   large = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=60 * 60,
+      side_cluster_id=SOUTH_CLUSTER_ID )
+   terminal = _south_indo_prepared_unit()
+   window_start_seconds = _seconds( '9:30 AM' )
+   terminal_start_seconds = window_start_seconds + 20 * 60
+
+   monkeypatch.setattr(
+      LoopUnitTravelTimeCalculator,
+      'approach_seconds_to_unit',
+      lambda walk_graph, walk_node_id, unit, *, adjacency=None: 0 )
+
+   packed_units = LoopWindowPacker._greedy_prefix_units_before_terminal(
+      SMART_PACK_GRAPH,
+      [ first, second, large ],
+      window_start_seconds=window_start_seconds,
+      terminal_start_seconds=terminal_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      terminal_side_cluster_id=terminal.unit.side_cluster_id )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
+
+
+def Test_GreedyPrefixUnitsBeforeTerminal_TestNoUnitFits_ExpectEmpty() -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   terminal_start_seconds = window_start_seconds + 10 * 60
+   oversized = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=60 * 60 )
+
+   packed_units = LoopWindowPacker._greedy_prefix_units_before_terminal(
+      TEST_GRAPH,
+      [ oversized ],
+      window_start_seconds=window_start_seconds,
+      terminal_start_seconds=terminal_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID,
+      terminal_side_cluster_id=None )
+
+   assert packed_units == []
+
+
+def Test_PackLoopsForOpenWindow_TestExactWindowFill_ExpectPartialPack(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+   window_end_seconds = window_start_seconds + 20 * 60
+   first = _prepared_loop_unit(
+      loop_id=AUSTRALASIA_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=KOOKABURRA_NODE_ID,
+      exit_walk_node_id=KOOKABURRA_NODE_ID,
+      duration_seconds=10 * 60 )
+   second = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=10 * 60 )
+   third = _prepared_loop_unit(
+      loop_id=INDO_LOOP_ID,
+      stops=[],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=60 * 60 )
+
+   monkeypatch.setattr(
+      LoopUnitTravelTimeCalculator,
+      'approach_seconds_to_unit',
+      lambda walk_graph, walk_node_id, unit, *, adjacency=None: 0 )
+
+   packed_units = LoopWindowPacker._pack_loops_for_open_window(
+      SMART_PACK_GRAPH,
+      ItineraryScheduleWindow(
+         start_seconds=window_start_seconds,
+         end_seconds=window_end_seconds ),
+      prepared_units=[ first, second, third ],
+      window_start_seconds=window_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
+
+
+def Test_ChooseSideClusterPackingOrder_TestSoftPinWithoutSideCluster_ExpectNoneNone() -> None:
+   prepared_units = [
+      _prepared_loop_unit(
+         loop_id=AUSTRALASIA_LOOP_ID,
+         stops=[],
+         entry_walk_node_id=ENTRANCE_NODE_ID,
+         exit_walk_node_id=ENTRANCE_NODE_ID,
+         duration_seconds=KANGAROO_CLUSTER_DWELL_SECONDS,
+         side_cluster_id=None ),
+   ]
+
+   sequence, prefer_soft_pin_loop_ids = LoopWindowPacker._choose_side_cluster_packing_order(
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_GENEROUS_SECONDS ),
+      prepared_units=prepared_units,
+      walk_graph=TEST_GRAPH,
+      current_node_id=ENTRANCE_NODE_ID,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS )
+
+   assert sequence is None
+   assert prefer_soft_pin_loop_ids is None
+
+
+def Test_SoftPinsFitBeforeClose_TestClusterMissingFromOrder_ExpectTrue() -> None:
+   prepared_units = _side_cluster_prepared_units()
+
+   assert LoopWindowPacker._soft_pins_fit_before_close(
+      _kangaroo_soft_pin_schedule_window(
+         close_seconds=KANGAROO_CLOSE_GENEROUS_SECONDS ),
+      prepared_units=prepared_units,
+      cluster_order=[ LoopSideClusterId.SOUTH ],
+      soft_pin_loop_ids=[ AUSTRALASIA_LOOP_ID ],
+      soft_pin_late_in_own_cluster=True,
+      walk_graph=TEST_GRAPH,
+      current_node_id=ENTRANCE_NODE_ID,
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS ) is True
+
+
+def Test_PackLoopsForAnchoredWindow_TestAllTerminalAttemptsFail_ExpectOpenWindowFallback(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   window_start_seconds = _seconds( '9:00 AM' )
+   open_window_result = [ _south_australasia_prepared_unit() ]
+
+   monkeypatch.setattr(
+      LoopWindowPacker,
+      '_pack_loops_with_terminal_unit',
+      lambda *args, **kwargs: [] )
+   monkeypatch.setattr(
+      LoopWindowPacker,
+      '_pack_loops_for_open_window',
+      lambda *args, **kwargs: open_window_result )
+
+   packed_units = LoopWindowPacker._pack_loops_for_anchored_window(
+      SMART_PACK_GRAPH,
+      _anchored_pre_encounter_window(
+         start_time='9:00 AM',
+         end_time=GIRAFFE_ENCOUNTER_START ),
+      prepared_units=[
+         _south_australasia_prepared_unit(),
+         _south_indo_prepared_unit(),
+      ],
+      window_start_seconds=window_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert packed_units == open_window_result
+
+
+def Test_PackLoopsForAnchoredWindow_TestOneTerminalOrientationEmpty_ExpectBestSequence(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   window_start_seconds = _seconds( '9:30 AM' )
+   australasia = _south_australasia_prepared_unit()
+   indo = _south_indo_prepared_unit()
+   call_count = { 'value': 0 }
+
+   def pack_terminal(
+         walk_graph: WalkGraph,
+         prepared_units: list[ PreparedLoopScheduleUnit ],
+         *,
+         terminal_unit: PreparedLoopScheduleUnit,
+         window_start_seconds: int,
+         window_end_seconds: int,
+         current_node_id: str,
+         anchor_node_id: str,
+         departure_side_cluster_id: str | None = None,
+   ) -> list[ PreparedLoopScheduleUnit ]:
+      call_count[ 'value' ] += 1
+      if call_count[ 'value' ] == 1:
+         return []
+      return [ australasia, indo ]
+
+   monkeypatch.setattr(
+      LoopWindowPacker,
+      '_pack_loops_with_terminal_unit',
+      pack_terminal )
+
+   packed_units = LoopWindowPacker._pack_loops_for_anchored_window(
+      SMART_PACK_GRAPH,
+      _anchored_pre_encounter_window(
+         start_time='9:30 AM',
+         end_time=GIRAFFE_ENCOUNTER_START ),
+      prepared_units=[ australasia, indo ],
+      window_start_seconds=window_start_seconds,
+      current_node_id=ENTRANCE_NODE_ID )
+
+   assert [ unit.unit.loop_id for unit in packed_units ] == [
+      AUSTRALASIA_LOOP_ID,
+      INDO_LOOP_ID,
+   ]
+
+
+def Test_PreparedUnitWithBestApproachOrientation_TestForwardAlreadyShorter_ExpectUnchanged() -> None:
+   highland = ItineraryAnimalRecord(
+      species='Highland Cattle',
+      exhibit='Eurasia Wilds',
+      enclosure_name=None,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tur = ItineraryAnimalRecord(
+      species='West Caucasian Tur',
+      exhibit='Eurasia Wilds',
+      enclosure_name=None,
+      old_likelihood=None,
+      new_likelihood=100 )
+   prepared_unit = _prepared_loop_unit(
+      loop_id=EURASIA_LOOP_ID,
+      stops=[ highland, tur ],
+      entry_walk_node_id=HIGHLAND_NODE_ID,
+      exit_walk_node_id=TUR_NODE_ID,
+      duration_seconds=EURASIA_DWELL_SECONDS,
+      traversal=TWO_WAY_LOOP_TRAVERSAL )
+   adjacency = WalkGraphAdjacencyBuilder.build( ORIENTATION_GRAPH )
+
+   oriented = LoopWindowPacker._prepared_unit_with_best_approach_orientation(
+      ORIENTATION_GRAPH,
+      from_node_id=HIGHLAND_NODE_ID,
+      prepared_unit=prepared_unit,
+      adjacency=adjacency )
+
+   assert oriented.unit.entry_walk_node_id == HIGHLAND_NODE_ID
+   assert oriented.unit.exit_walk_node_id == TUR_NODE_ID
+
+
+def Test_RemoveMatching_TestEqualUnitsWithoutSharedLoop_ExpectFallbackRemove() -> None:
+   first = _prepared_loop_unit(
+      loop_id=None,
+      stops=[],
+      entry_walk_node_id=ENTRANCE_NODE_ID,
+      exit_walk_node_id=ENTRANCE_NODE_ID,
+      duration_seconds=60 )
+   equal_other = _prepared_loop_unit(
+      loop_id=None,
+      stops=[],
+      entry_walk_node_id=ENTRANCE_NODE_ID,
+      exit_walk_node_id=ENTRANCE_NODE_ID,
+      duration_seconds=60 )
+   remaining = [ first ]
+
+   LoopWindowPacker.remove_matching( remaining, equal_other )
+
+   assert remaining == []
+   assert first == equal_other
+   assert first is not equal_other
+   assert LoopWindowPacker._prepared_units_share_loop( first, equal_other ) is False

@@ -6,6 +6,7 @@ import pytest
 
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.data_access.remove_itinerary_item_provider import RemoveItineraryItemProvider
+from api.itinerary.operations.itinerary_item_remover import ItineraryItemRemover
 from api.shared.enums import ItineraryEventType
 
 
@@ -184,7 +185,6 @@ def Test_DeleteItineraryEvent_TestLunchRow_ExpectRowRemoved(
 
 def Test_ApplyViaRemover_TestAnimalKey_ExpectProviderDeletesRow(
       remove_provider_conn: sqlite3.Connection ) -> None:
-   from api.itinerary.operations.itinerary_item_remover import ItineraryItemRemover
 
    cur = remove_provider_conn.cursor()
    ItineraryItemRemover.apply(

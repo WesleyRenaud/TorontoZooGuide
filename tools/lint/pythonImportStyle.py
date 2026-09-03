@@ -89,7 +89,7 @@ def get_module_docstring_node( tree: ast.Module ) -> ast.Expr | None:
    return None
 
 
-def get_import_preamble_nodes( tree: ast.Module ) -> list[ ast.Import | ast.ImportFrom ]:
+def get_allowed_import_nodes( tree: ast.Module ) -> list[ ast.Import | ast.ImportFrom ]:
    nodes = list( tree.body )
    docstring_node = get_module_docstring_node( tree )
 
@@ -105,6 +105,135 @@ def get_import_preamble_nodes( tree: ast.Module ) -> list[ ast.Import | ast.Impo
       imports.append( node )
 
    return imports
+
+
+def find_inline_import_violations(
+      path: Path,
+      tree: ast.Module ) -> list[ str ]:
+   allowed = {
+      id( node )
+      for node in get_allowed_import_nodes( tree )
+   }
+   violations: list[ str ] = []
+
+   for node in ast.walk( tree ):
+      if not isinstance( node, ( ast.Import, ast.ImportFrom ) ):
+         continue
+
+      if id( node ) in allowed:
+         continue
+
+      display_path = get_display_path( path )
+      violations.append(
+         f'{ display_path }:{ node.lineno }: imports must appear at the top of the file' )
+
+   return violations
+
+
+def get_import_insert_line( tree: ast.Module ) -> int:
+   insert_line = 0
+
+   for node in tree.body:
+      if (
+            isinstance( node, ast.ImportFrom )
+            and node.module == '__future__' ):
+         insert_line = node.end_lineno or node.lineno
+         continue
+
+      if (
+            isinstance( node, ast.Expr )
+            and isinstance( node.value, ast.Constant )
+            and isinstance( node.value.value, str ) ):
+         insert_line = node.end_lineno or node.lineno
+         continue
+
+      break
+
+   return insert_line
+
+
+def hoist_inline_imports( path: Path ) -> bool:
+   file_text = path.read_text()
+
+   try:
+      tree = ast.parse( file_text )
+   except SyntaxError:
+      return False
+
+   allowed = {
+      id( node )
+      for node in get_allowed_import_nodes( tree )
+   }
+   all_import_nodes: list[ ast.Import | ast.ImportFrom ] = []
+
+   for node in ast.walk( tree ):
+      if not isinstance( node, ( ast.Import, ast.ImportFrom ) ):
+         continue
+
+      all_import_nodes.append( node )
+
+   inline_imports = [
+      node
+      for node in all_import_nodes
+      if id( node ) not in allowed
+   ]
+
+   if not inline_imports:
+      return False
+
+   unique_imports: list[ ast.Import | ast.ImportFrom ] = []
+   seen_text: set[ str ] = set()
+
+   for node in all_import_nodes:
+      text = format_import_node( node )
+
+      if text in seen_text:
+         continue
+
+      seen_text.add( text )
+      unique_imports.append( node )
+
+   import_line_numbers: set[ int ] = set()
+
+   for node in all_import_nodes:
+      end_line = node.end_lineno or node.lineno
+
+      import_line_numbers.update( range( node.lineno, end_line + 1 ) )
+
+   lines = file_text.splitlines()
+   kept_lines = [
+      line
+      for line_number, line in enumerate( lines, start=1 )
+      if line_number not in import_line_numbers
+   ]
+   insert_line = get_import_insert_line( tree )
+   kept_insert_index = sum(
+      1
+      for line_number in range( 1, insert_line + 1 )
+      if line_number not in import_line_numbers )
+   import_block = build_expected_import_block( unique_imports ).splitlines()
+   updated_lines = [
+      *kept_lines[ :kept_insert_index ],
+      *import_block,
+      *kept_lines[ kept_insert_index: ],
+   ]
+
+   while (
+         kept_insert_index < len( updated_lines )
+         and updated_lines[ kept_insert_index ] == ''
+         and kept_insert_index > 0
+         and updated_lines[ kept_insert_index - 1 ] == '' ):
+      del updated_lines[ kept_insert_index ]
+
+   path.write_text(
+      '\n'.join( updated_lines )
+      + ( '\n' if file_text.endswith( '\n' ) else '' ) )
+
+   return True
+
+
+def get_import_preamble_nodes( tree: ast.Module ) -> list[ ast.Import | ast.ImportFrom ]:
+   return get_allowed_import_nodes( tree )
 
 
 def format_alias( alias: ast.alias ) -> str:
@@ -220,58 +349,70 @@ def get_import_block_line_range(
    return first_line, last_line
 
 
-def check_file( path: Path ) -> bool:
+def check_file( path: Path ) -> list[ str ]:
    file_text = path.read_text()
 
    try:
       tree = ast.parse( file_text )
    except SyntaxError:
-      return False
+      return []
+
+   if SHOULD_FIX:
+      if hoist_inline_imports( path ):
+         file_text = path.read_text()
+         tree = ast.parse( file_text )
+
+   violations = find_inline_import_violations( path, tree )
+
+   if violations and not SHOULD_FIX:
+      return violations
 
    import_nodes = get_import_preamble_nodes( tree )
 
    if not import_nodes:
-      return False
+      return violations
 
    start_line, end_line = get_import_block_line_range( import_nodes )
    lines = file_text.splitlines()
    current_block = '\n'.join( lines[ start_line - 1:end_line ] ).strip()
    expected_block = build_expected_import_block( import_nodes )
 
-   if current_block == expected_block:
-      return False
+   if current_block != expected_block:
+      if SHOULD_FIX:
+         updated_lines = [
+            *lines[ :start_line - 1 ],
+            *expected_block.splitlines(),
+            *lines[ end_line: ],
+         ]
+         path.write_text(
+            '\n'.join( updated_lines )
+            + ( '\n' if file_text.endswith( '\n' ) else '' ) )
+      else:
+         violations.append(
+            f'{ get_display_path( path ) }: imports must be alphabetized and grouped by source' )
 
-   if SHOULD_FIX:
-      updated_lines = [
-         *lines[ :start_line - 1 ],
-         *expected_block.splitlines(),
-         *lines[ end_line: ],
-      ]
-      path.write_text( '\n'.join( updated_lines ) + ( '\n' if file_text.endswith( '\n' ) else '' ) )
-
-   return True
+   return violations
 
 
 def main() -> int:
    style_config = load_style_config()
    excluded_patterns = style_config.get( 'exclude', [] )
-   violations = []
+   violations: list[ str ] = []
 
    for path in sorted( ROOT.rglob( '*.py' ) ):
       if is_excluded_path( path, excluded_patterns ):
          continue
 
-      if check_file( path ):
-         violations.append( get_display_path( path ) )
+      violations.extend( check_file( path ) )
 
    if not violations:
       return 0
 
    if not SHOULD_FIX:
-      print( 'Python imports must be alphabetized and grouped by source:' )
+      print( 'Python import style violations:' )
 
-      for path in violations:
-         print( path )
+      for violation in violations:
+         print( violation )
 
       print( '\nRun `python3 tools/lint/pythonImportStyle.py --fix` to update imports.' )
       return 1

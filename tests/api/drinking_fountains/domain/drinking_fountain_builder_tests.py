@@ -80,3 +80,14 @@ def Test_RecordToModel_TestClosedFountain_ExpectClosedMessageOnlyWhenClosed() ->
 
    assert fountain.is_closed is True
    assert fountain.closed_message == CLOSED_MESSAGE
+
+
+def Test_BuildDrinkingFountains_TestRecords_ExpectModels() -> None:
+   fountains = DrinkingFountainBuilder.build_drinking_fountains(
+      [ DrinkingFountainRecord( x_coord=1.0, y_coord=2.0 ) ],
+      is_closed=True,
+      closed_message='Closed',
+      likelihood=0.0 )
+
+   assert len( fountains ) == 1
+   assert fountains[ 0 ].is_closed is True

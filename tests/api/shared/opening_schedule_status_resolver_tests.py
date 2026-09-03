@@ -203,3 +203,29 @@ def Test_ResolveAmenityLikelihoodAndMessage_TestUnknownScheduleWithZeroSeasonal_
    assert likelihood == 0
    assert message is not None
    assert 'Africa Restaurant' in message
+
+
+def Test_GetActiveOpeningScheduleStatus_TestClosedWithBuilder_ExpectCustomMessage() -> None:
+   status, message = OpeningScheduleStatusResolver.get_active_opening_schedule_status(
+      schedule_records=[ _weekday_schedule() ],
+      target_date=MONDAY_VISIT_DATE,
+      weekday=MONDAY_VISIT_DATE.weekday(),
+      build_closed_message=lambda record: 'Custom closed.' )
+
+   assert status == ScheduleStatus.CLOSED
+   assert message == 'Custom closed.'
+
+
+def Test_GetActiveScheduleOverrideStatus_TestOpenOverride_ExpectOpen() -> None:
+   override = SampleScheduleOverrideRecord(
+      override_start_date='2026-06-01',
+      override_end_date=None,
+      is_closed=False,
+      override_message=None )
+
+   status, message = OpeningScheduleStatusResolver.get_active_schedule_override_status(
+      override_records=[ override ],
+      target_date=MONDAY_VISIT_DATE )
+
+   assert status == ScheduleStatus.OPEN
+   assert message is None

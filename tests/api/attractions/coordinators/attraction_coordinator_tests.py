@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import date
-from typing import cast
 
 import pytest
 
@@ -18,8 +16,8 @@ from api.attractions.scheduling.attraction_hours_schedule_time_bounds_builder im
 from api.attractions.scheduling.attraction_hours_time_bounds import AttractionHoursTimeBounds
 from api.attractions.search.attractions_matching_query_builder import AttractionsMatchingQueryBuilder
 from api.attractions.status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
+from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.models.attraction import Attraction
-from api.request_connection_provider import RequestConnectionProvider
 from api.types import Types
 
 
@@ -28,6 +26,8 @@ VISIT_MONTH = 'June'
 VISIT_YEAR = 2026
 VISIT_DATE = date( 2026, 6, 15 )
 ATTRACTION_NAME = 'Conservation Carousel'
+CAROUSEL = 'Conservation Carousel'
+GREENHOUSE = 'Greenhouse'
 QUERY = 'carousel'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
@@ -61,17 +61,10 @@ TIME_BOUNDS = AttractionHoursScheduleTimeBounds(
       operating_date=START_DATE ) )
 
 
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
-
-
-@pytest.fixture
-def stub_request_connection( monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_CONNECTION )
+def _attraction( name: str ) -> Attraction:
+   return Attraction(
+      name=name,
+      free_with_admission=True )
 
 
 def Test_GetAttractionNames_TestProviderNames_ExpectReturned(
@@ -473,3 +466,57 @@ def Test_TrimAttractionHoursScheduleOverlaps_TestResolver_ExpectCalled(
       WEEKEND_START,
       WEEKEND_END ) is True
    assert saved == [ HOURS_SCHEDULE ]
+
+
+def Test_GetAttractionsForSavedItinerary_TestEmptySavedAttractions_ExpectEmpty() -> None:
+   assert AttractionCoordinator.get_attractions_for_saved_itinerary(
+      day=VISIT_DAY,
+      month=VISIT_MONTH,
+      year=VISIT_YEAR,
+      saved_attractions=[],
+   ) == []
+
+
+def Test_GetAttractionsForSavedItinerary_TestSavedAttractions_ExpectBuilderFilteredAttractions(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   attractions = [
+      _attraction( GREENHOUSE ),
+      _attraction( CAROUSEL ),
+      _attraction( 'Tundra Air' ),
+   ]
+   captured: dict[ str, object ] = {}
+
+   def get_attractions( **kwargs: object ) -> list[ Attraction ]:
+      captured[ 'kwargs' ] = kwargs
+      return attractions
+
+   monkeypatch.setattr(
+      AttractionCoordinator,
+      'get_attractions',
+      get_attractions )
+
+   saved_attractions = [
+      ItineraryAttractionRecord(
+         attraction=GREENHOUSE,
+         old_likelihood=None,
+         new_likelihood=None ),
+      ItineraryAttractionRecord(
+         attraction=CAROUSEL,
+         old_likelihood=None,
+         new_likelihood=None ),
+   ]
+
+   result = AttractionCoordinator.get_attractions_for_saved_itinerary(
+      day=VISIT_DAY,
+      month=VISIT_MONTH,
+      year=VISIT_YEAR,
+      saved_attractions=saved_attractions,
+   )
+
+   assert captured[ 'kwargs' ] == {
+      'day': VISIT_DAY,
+      'month': VISIT_MONTH,
+      'year': VISIT_YEAR,
+      'include_closed_attractions': True,
+   }
+   assert [ attraction.name for attraction in result ] == [ CAROUSEL, GREENHOUSE ]

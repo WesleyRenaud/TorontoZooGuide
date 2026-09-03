@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import cast
-
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -32,7 +30,6 @@ from api.itinerary.validation.itinerary_departure_time_validator import Itinerar
 from api.itinerary.warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
 from api.itinerary.warnings.short_visit_warning_builder import ShortVisitWarningBuilder
 from api.models import Itinerary
-from api.request_connection_provider import RequestConnectionProvider
 from api.shared.enums import ItineraryErrorType
 from api.types import Types
 from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
@@ -54,20 +51,6 @@ SAVED_ITINERARY = SavedItinerary(
    arrival_time=ARRIVAL_TIME,
    departure_time=DEPARTURE_TIME )
 ZOO_HOURS_RECORD = object()
-
-
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
-
-
-@pytest.fixture
-def stub_request_connection( monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_CONNECTION )
-
 
 def Test_GetItineraryDate_TestProviderDate_ExpectReturned(
       stub_request_connection: None,
@@ -117,7 +100,7 @@ def Test_SetItinerary_TestSetter_ExpectDelegated(
       date=ITINERARY_DATE,
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       confirming_short_visit=True ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'date' ] == ITINERARY_DATE
    assert captured[ 'kwargs' ][ 'confirming_short_visit' ] is True
 
@@ -143,7 +126,7 @@ def Test_ScheduleItineraryItem_TestScheduler_ExpectDelegated(
       schedule_key,
       start_time=ARRIVAL_TIME,
       confirming_fixed_time_item_long_wait=True ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
    assert captured[ 'kwargs' ][ 'start_time' ] == ARRIVAL_TIME
    assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is True
@@ -176,7 +159,7 @@ def Test_BulkScheduleItinerary_TestRunner_ExpectDelegated(
    assert ItineraryCoordinator.bulk_schedule_itinerary(
       visit_date_temp=VISIT_DATE_TEMP,
       confirming_fixed_time_item_long_wait=True ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'stops_to_schedule' ] is stops
    assert captured[ 'kwargs' ][ 'visit_date_temp' ] == VISIT_DATE_TEMP
    assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is True
@@ -188,7 +171,7 @@ def Test_ClearItinerary_TestProvider_ExpectCleared(
    monkeypatch.setattr(
       ClearItineraryProvider,
       'clear_itinerary',
-      lambda conn: conn is STUB_CONNECTION )
+      lambda conn: conn is STUB_REQUEST_CONNECTION )
 
    assert ItineraryCoordinator.clear_itinerary() is True
 
@@ -210,7 +193,7 @@ def Test_UnscheduleAllItineraryItems_TestUnscheduler_ExpectDelegated(
 
    assert ItineraryCoordinator.unschedule_all_itinerary_items(
       visit_date_temp=VISIT_DATE_TEMP ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'visit_date_temp' ] == VISIT_DATE_TEMP
 
 
@@ -230,7 +213,7 @@ def Test_UnscheduleItineraryItem_TestUnscheduler_ExpectDelegated(
    monkeypatch.setattr( ItineraryItemUnscheduler, 'unschedule', unschedule )
 
    assert ItineraryCoordinator.unschedule_itinerary_item( schedule_key ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
 
 
@@ -250,7 +233,7 @@ def Test_RemoveItineraryItem_TestRemover_ExpectDelegated(
    monkeypatch.setattr( ItineraryItemRemover, 'remove', remove )
 
    assert ItineraryCoordinator.remove_itinerary_item( schedule_key ) is SAVE_RESULT
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
 
 
@@ -270,7 +253,7 @@ def Test_SuppressItineraryWarning_TestSuppressor_ExpectDelegated(
    monkeypatch.setattr( ItineraryWarningSuppressor, 'suppress', suppress )
 
    assert ItineraryCoordinator.suppress_itinerary_warning( WARNING_TYPE ) is expected
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'warning_type' ] == WARNING_TYPE
 
 
@@ -307,7 +290,7 @@ def Test_AcceptItinerary_TestProvider_ExpectMappedKeepLists(
    assert ItineraryCoordinator.accept_itinerary(
       animals_to_keep=animals_to_keep,
       attractions_to_keep=attractions_to_keep ) is True
-   assert captured[ 'conn' ] is STUB_CONNECTION
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'animals' ] is mapped_animals
    assert captured[ 'attractions' ] is mapped_attractions
 
@@ -340,9 +323,9 @@ def Test_SetArrivalTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert cleared == [ ( STUB_CONNECTION, None ) ]
+   assert cleared == [ ( STUB_REQUEST_CONNECTION, None ) ]
    assert cleared_schedules == [
-      ( STUB_CONNECTION, ARRIVAL_TIME, DEPARTURE_TIME ),
+      ( STUB_REQUEST_CONNECTION, ARRIVAL_TIME, DEPARTURE_TIME ),
    ]
 
 
@@ -496,7 +479,7 @@ def Test_SetArrivalTime_TestValidTime_ExpectPersistedAndItinerary(
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert saved_times == [ ( STUB_CONNECTION, ARRIVAL_TIME ) ]
+   assert saved_times == [ ( STUB_REQUEST_CONNECTION, ARRIVAL_TIME ) ]
 
 
 def Test_SetDepartureTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
@@ -525,7 +508,7 @@ def Test_SetDepartureTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert cleared == [ ( STUB_CONNECTION, None ) ]
+   assert cleared == [ ( STUB_REQUEST_CONNECTION, None ) ]
 
 
 def Test_SetDepartureTime_TestValidationFailure_ExpectStatusOnly(
@@ -625,4 +608,4 @@ def Test_SetDepartureTime_TestValidTime_ExpectPersistedAndItinerary(
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert saved_times == [ ( STUB_CONNECTION, DEPARTURE_TIME ) ]
+   assert saved_times == [ ( STUB_REQUEST_CONNECTION, DEPARTURE_TIME ) ]

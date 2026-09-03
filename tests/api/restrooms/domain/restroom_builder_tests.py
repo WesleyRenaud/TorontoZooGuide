@@ -80,3 +80,9 @@ def Test_BuildRestrooms_TestClosedRestroom_ExpectExcludedUnlessRequested() -> No
    assert open_only == []
    assert len( with_closed ) == 1
    assert with_closed[ 0 ].title == RESTROOM_NAME
+
+
+def Test_IsStatusActive_TestNullIsClosed_ExpectFalse() -> None:
+   record = _restroom_record( is_closed=None )
+
+   assert RestroomBuilder.is_status_active( record, target_date=VISIT_DATE ) is False

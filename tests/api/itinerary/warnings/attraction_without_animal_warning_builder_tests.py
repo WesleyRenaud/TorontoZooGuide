@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.animals.search.species_exhibit_key import SpeciesExhibitKey
 from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
@@ -18,6 +19,10 @@ KANGAROO_LINK = {
    'species': 'Western Grey Kangaroo',
    'exhibit': 'Australasia Outdoor',
 }
+
+KANGAROO_SPECIES_EXHIBIT = SpeciesExhibitKey.from_values(
+   'Western Grey Kangaroo',
+   'Australasia Outdoor' )
 
 
 def _validated_itinerary(
@@ -135,3 +140,61 @@ def Test_BuildIssueFromAttractions_TestLinkedAttraction_ExpectWithoutAnimalIssue
 
    assert issue.code == ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
    assert [ item.name for item in issue.items ] == [ KANGAROO_WALK_THRU ]
+
+
+def Test_AttractionsWithoutMatchingAnimal_TestMatchingAnimal_ExpectEmpty(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionAnimalProvider,
+      'fetch_attraction_linked_animals',
+      lambda conn, name: [ KANGAROO_SPECIES_EXHIBIT ] )
+
+   missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal(
+      _validated_itinerary(
+         animals=[
+            AnimalDiff(
+               species='Western Grey Kangaroo',
+               exhibit='Australasia Outdoor',
+               old_likelihood=None,
+               new_likelihood=100 ),
+         ],
+         attractions=[
+            AttractionDiff(
+               name=KANGAROO_WALK_THRU,
+               old_likelihood=None,
+               new_likelihood=100 ),
+         ] ),
+      None )
+
+   assert missing == []
+
+
+def Test_NewlyAddedWithoutMatchingAnimal_TestNoSavedItinerary_ExpectMissing(
+      stub_attraction_animal_links: None ) -> None:
+   missing = AttractionWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
+      _validated_itinerary(
+         attractions=[
+            AttractionDiff(
+               name=KANGAROO_WALK_THRU,
+               old_likelihood=None,
+               new_likelihood=100 ),
+         ] ),
+      None,
+      saved_itinerary=None )
+
+   assert [ item.name for item in missing ] == [ KANGAROO_WALK_THRU ]
+
+
+def Test_IsRequired_TestMissingAnimalWithoutConfirmation_ExpectTrue(
+      stub_attraction_animal_links: None ) -> None:
+   assert AttractionWithoutAnimalWarningBuilder.is_required(
+      _validated_itinerary(
+         attractions=[
+            AttractionDiff(
+               name=KANGAROO_WALK_THRU,
+               old_likelihood=None,
+               new_likelihood=100 ),
+         ] ),
+      None,
+      confirming_attraction_without_animal=False,
+      saved_itinerary=None ) is True

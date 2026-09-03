@@ -115,21 +115,21 @@ def Test_resolve_visit_calendar_month(
    assert isinstance( got, int )
 
 
-def Test_resolve_visit_calendar_month_rejects_invalid_values() -> None:
+def Test_ResolveVisitCalendarMonth_TestInvalidValues_ExpectRaises() -> None:
    with pytest.raises( ValueError ):
       CalendarDates.resolve_visit_calendar_month( 13 )
 
 
-def Test_resolve_visit_day_of_month() -> None:
+def Test_ResolveVisitDayOfMonth_TestValidValues_ExpectDayNumber() -> None:
    assert CalendarDates.resolve_visit_day_of_month( '15' ) == 15
    assert CalendarDates.resolve_visit_day_of_month( 7 ) == 7
 
 
-def Test_resolve_visit_calendar_year_explicit() -> None:
+def Test_ResolveVisitCalendarYear_TestExplicitYear_ExpectValue() -> None:
    assert CalendarDates.resolve_visit_calendar_year( 2029 ) == 2029
 
 
-def Test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pytest.MonkeyPatch ) -> None:
+def Test_ResolveVisitCalendarYear_TestNone_ExpectModuleDatetime( monkeypatch: pytest.MonkeyPatch ) -> None:
    class Fixed( datetime ):
       @classmethod
       def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
@@ -139,20 +139,20 @@ def Test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pyt
    assert CalendarDates.resolve_visit_calendar_year( None ) == 2032
 
 
-def Test_visit_target_date() -> None:
+def Test_VisitTargetDate_TestValidInputs_ExpectDate() -> None:
    assert CalendarDates.visit_target_date( 'June', 15, 2026 ) == date( 2026, 6, 15 )
    assert CalendarDates.visit_target_date( 6, 15, 2026 ) == date( 2026, 6, 15 )
    assert CalendarDates.visit_target_date( 'January', 10, '2028' ) == date( 2028, 1, 10 )
 
 
-def Test_schedule_includes_weekday_monday_first() -> None:
+def Test_ScheduleIncludesWeekday_TestMondayFirst_ExpectTrue() -> None:
    flags = ( True, False, False, False, False, False, False )
 
    assert CalendarDates.schedule_includes_weekday( 0, flags ) is True
    assert CalendarDates.schedule_includes_weekday( 1, flags ) is False
 
 
-def Test_schedule_includes_weekday_rejects_bad_index() -> None:
+def Test_ScheduleIncludesWeekday_TestBadIndex_ExpectRaises() -> None:
    flags = ( True, ) * 7
 
    assert CalendarDates.schedule_includes_weekday( -1, flags ) is False
@@ -236,11 +236,11 @@ def Test_is_peak_season_month( month: Types.MonthInput, expected: bool ) -> None
    assert CalendarDates.is_peak_season_month( month ) is expected
 
 
-def Test_get_easter_date() -> None:
+def Test_GetEasterDate_TestYear2026_ExpectAprilFifth() -> None:
    assert CalendarDates.get_easter_date( 2026 ) == date( 2026, 4, 5 )
 
 
-def Test_canadian_holiday_dates_for_2026() -> None:
+def Test_GetCanadianHolidays_TestYear2026_ExpectExpectedDates() -> None:
    assert CalendarDates.get_family_day( 2026 ) == date( 2026, 2, 16 )
    assert CalendarDates.get_good_friday( 2026 ) == date( 2026, 4, 3 )
    assert CalendarDates.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
@@ -267,20 +267,31 @@ def Test_is_holiday_recognizes_canadian_holidays( holiday: date ) -> None:
    assert CalendarDates.is_holiday( holiday ) is True
 
 
-def Test_is_holiday_rejects_regular_days() -> None:
+def Test_IsHoliday_TestRegularDays_ExpectFalse() -> None:
    assert CalendarDates.is_holiday( date( 2026, 12, 24 ) ) is False
    assert CalendarDates.is_holiday( date( 2026, 6, 15 ) ) is False
 
 
-def Test_next_weekday_date_advances_from_weekend() -> None:
+def Test_NextWeekdayDate_TestFromWeekend_ExpectMonday() -> None:
    assert CalendarDates.next_weekday_date( date( 2026, 6, 20 ) ) == date( 2026, 6, 22 )
    assert CalendarDates.next_weekday_date( date( 2026, 6, 15 ) ) == date( 2026, 6, 15 )
 
 
-def Test_next_weekend_or_holiday_date_advances_from_weekday() -> None:
+def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectSaturday() -> None:
    assert CalendarDates.next_weekend_or_holiday_date(
       date( 2026, 6, 15 ) ) == date( 2026, 6, 20 )
    assert CalendarDates.next_weekend_or_holiday_date(
       date( 2026, 6, 20 ) ) == date( 2026, 6, 20 )
    assert CalendarDates.next_weekend_or_holiday_date(
       date( 2026, 7, 1 ) ) == date( 2026, 7, 1 )
+
+
+def Test_ResolveVisitCalendarMonth_TestNormalizeReturnsNone_ExpectValueError(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      CalendarDates,
+      'normalize_month',
+      lambda **kwargs: None )
+
+   with pytest.raises( ValueError, match='Invalid month' ):
+      CalendarDates.resolve_visit_calendar_month( 'June' )

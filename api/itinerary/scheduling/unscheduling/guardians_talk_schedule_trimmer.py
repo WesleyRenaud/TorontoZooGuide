@@ -43,9 +43,6 @@ class GuardiansTalkScheduleTrimmer():
       if blocker_start > start and blocker_end < end:
          return ( blocker_end, end )
 
-      raise ValueError(
-         AppStringProvider.format( 'guestStatus.itinerary.guardiansTalkUnexpectedBlockerOverlap' ) )
-
 
    @classmethod
    def trim_times(

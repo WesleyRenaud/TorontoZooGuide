@@ -15,6 +15,19 @@ def Test_Build_TestMatchingQuery_ExpectMatchingRestroomOnly() -> None:
    assert [ restroom.title for restroom in matches ] == [ 'Zootique Restroom' ]
 
 
+def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingRestroomOnly() -> None:
+   restrooms = [
+      Restroom( 'Zootique Restroom' ),
+      Restroom( 'Entrance Restroom' ),
+   ]
+
+   matches = RestroomsMatchingQueryBuilder.filter_matching_query(
+      restrooms,
+      'zootique' )
+
+   assert [ restroom.title for restroom in matches ] == [ 'Zootique Restroom' ]
+
+
 def Test_Build_TestEmptyQuery_ExpectAllRestroomsInInputOrder() -> None:
    restrooms = [
       Restroom( 'Zootique Restroom' ),

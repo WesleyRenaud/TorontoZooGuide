@@ -6,17 +6,22 @@ import sqlite3
 import pytest
 
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
+from api.itinerary.data_access.attraction_also_transportation_provider import AttractionAlsoTransportationProvider
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.listed_itinerary_item_scheduler import ListedItineraryItemScheduler
 from api.itinerary.scheduling.items.listed_schedule_target import ListedScheduleTarget
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
 from api.shared.enums import ItineraryErrorType
 from api.shared.operating_hours import OperatingHours
 
@@ -144,6 +149,33 @@ def _stub_listed_schedule_flow(
       commit )
 
 
+def _stub_listed_schedule_window(
+      monkeypatch: pytest.MonkeyPatch,
+      *,
+      saved_itinerary: SavedItinerary = SAVED_ITINERARY,
+      visit_window: tuple[ int, int ] = VISIT_WINDOW,
+      ) -> None:
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=visit_window,
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=ZOO_HOURS )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+
+
 def Test_Schedule_TestHonorsRequestedStartTime_ExpectExplicitStart(
       scheduler_conn: sqlite3.Connection,
       stub_save_result: None,
@@ -232,33 +264,6 @@ def Test_Schedule_TestAlreadyScheduledAnimal_ExpectItemAlreadyScheduled(
       confirming_schedule_item_not_on_itinerary=False )
 
    assert result.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
-
-
-def _stub_listed_schedule_window(
-      monkeypatch: pytest.MonkeyPatch,
-      *,
-      saved_itinerary: SavedItinerary = SAVED_ITINERARY,
-      visit_window: tuple[ int, int ] = VISIT_WINDOW,
-      ) -> None:
-   prepared_window = PreparedScheduleWindow(
-      saved_itinerary=saved_itinerary,
-      window=visit_window,
-      visit_date=VISIT_DATE,
-      zoo_operating_hours=ZOO_HOURS )
-
-   monkeypatch.setattr(
-      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
-      lambda conn: saved_itinerary )
-   monkeypatch.setattr(
-      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
-      lambda conn, saved_itinerary, **context: prepared_window )
-   monkeypatch.setattr(
-      'api.itinerary.scheduling.items.schedule_slot_time_resolver.ScheduleWindowPreparer.prepare_zoo_hours',
-      lambda conn, saved_itinerary, **context: prepared_window )
-   monkeypatch.setattr(
-      ItineraryBuilder,
-      'build_current',
-      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
 
 
 def Test_Schedule_TestItemNotOnItinerary_ExpectError(
@@ -462,3 +467,96 @@ def Test_Schedule_TestEarlyAdmissionWindow_ExpectNineAmStart(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert committed_times == [ ( '9:00 AM', '9:08 AM' ) ]
+
+
+def Test_Schedule_TestPrepareWindowFailed_ExpectPropagatedResult(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: ItinerarySaveResult(
+         status=ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_Schedule_TestMissingDefaultDuration_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      stub_no_suppressed_status: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _stub_listed_schedule_flow(
+      monkeypatch,
+      default_duration_seconds=None )
+
+   result = ListedItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_WalkNodeIdForListedItem_TestAttractionAlsoTransportation_ExpectTransportNode(
+      scheduler_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionAlsoTransportationProvider,
+      'attraction_is_also_transportation',
+      lambda conn, name: True )
+   monkeypatch.setattr(
+      TransportationWalkNodeResolver,
+      'resolve',
+      lambda name, legs=None, endpoint=None: 'n-onboard' )
+
+   node_id = ListedItineraryItemScheduler._walk_node_id_for_listed_item(
+      scheduler_conn,
+      AttractionScheduleItemKey( name='Zoomobile' ) )
+
+   assert node_id == 'n-onboard'
+
+
+def Test_WalkNodeIdForListedItem_TestAttraction_ExpectAttractionNode(
+      scheduler_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionAlsoTransportationProvider,
+      'attraction_is_also_transportation',
+      lambda conn, name: False )
+   monkeypatch.setattr(
+      ScheduleItemTravelTimeCalculator,
+      'walk_node_id_for_attraction',
+      lambda name: 'n-carousel' )
+
+   node_id = ListedItineraryItemScheduler._walk_node_id_for_listed_item(
+      scheduler_conn,
+      AttractionScheduleItemKey( name='Conservation Carousel' ) )
+
+   assert node_id == 'n-carousel'
+
+
+def Test_WalkNodeIdForListedItem_TestUnknownKey_ExpectNone(
+      scheduler_conn: sqlite3.Connection ) -> None:
+
+   assert ListedItineraryItemScheduler._walk_node_id_for_listed_item(
+      scheduler_conn,
+      GuardiansTalkScheduleItemKey(
+         name='African Lion',
+         start_time='2:00 PM',
+      ),
+   ) is None

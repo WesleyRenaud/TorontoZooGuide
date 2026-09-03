@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sqlite3
+
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
@@ -106,7 +110,7 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
       [ encounter ] )
 
 
-def Test_PrepareValidatedForReschedule_TestClearsListedSchedules() -> None:
+def Test_PrepareValidatedForReschedule_TestClearsListedSchedules_ExpectValidatedItinerary() -> None:
    encounter = WildEncounterDiff(
       name=RAINFOREST,
       is_deleted=False,
@@ -136,3 +140,61 @@ def Test_PrepareValidatedForReschedule_TestClearsListedSchedules() -> None:
 
    assert prepared.animals[ 0 ].start_time is None
    assert prepared.animals[ 0 ].end_time is None
+
+
+def Test_ApplyToValidatedItinerary_TestNewEncounter_ExpectPreparedItinerary() -> None:
+   encounter = WildEncounterDiff(
+      name=RAINFOREST,
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM' )
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[
+         AnimalDiff(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='2:00 PM',
+            end_time='2:08 PM' ),
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[ encounter ],
+      events=[],
+      transportations=[],
+   )
+
+   prepared = WildEncounterUnschedulePreparer.apply_to_validated_itinerary(
+      validated,
+      [ encounter ] )
+
+   assert prepared.animals[ 0 ].start_time is None
+
+
+def Test_ClearOverlappingSavedSchedules_TestOverlap_ExpectDelegateCalled(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+
+   conn = sqlite3.connect( ':memory:' )
+   cur = conn.cursor()
+   called: list[ str ] = []
+   encounter = WildEncounterDiff(
+      name=RAINFOREST,
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM' )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.unscheduling.wild_encounter_unschedule_preparer.FixedTimeActivityUnschedulePreparer.clear_overlapping_saved_schedules',
+      lambda cur, saved_itinerary, blockers: called.append( 'cleared' ) )
+
+   WildEncounterUnschedulePreparer.clear_overlapping_saved_schedules(
+      cur,
+      _empty_saved(),
+      [ encounter ] )
+
+   assert called == [ 'cleared' ]
+   cur.close()
+   conn.close()

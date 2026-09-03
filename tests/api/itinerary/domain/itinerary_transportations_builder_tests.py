@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import cast
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
@@ -21,7 +21,6 @@ ZOOMOBILE = 'Zoomobile'
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 ROUTE_DURATION_MINUTES = 75
-STUB_CONNECTION = cast( Types.Connection, None )
 
 MAIN_STATION_RECORD = TransportationStationRecord(
    name=MAIN_STATION,
@@ -56,7 +55,7 @@ SAVED_TRANSPORTATION = ItineraryTransportationRecord(
 
 @pytest.fixture
 def stub_itinerary_transportations_builder( monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_CONNECTION )
+   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_REQUEST_CONNECTION )
    monkeypatch.setattr(
       TransportationProvider,
       'fetch_transportation_records',

@@ -24,3 +24,16 @@ def Test_Build_TestMatchingQuery_ExpectMatchingAttractionsOnly() -> None:
    matches = AttractionsMatchingQueryBuilder.build( attractions, SEARCH_QUERY )
 
    assert [ attraction.name for attraction in matches ] == [ CAROUSEL_NAME ]
+
+
+def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingAttractionsOnly() -> None:
+   attractions = [
+      _attraction( CAROUSEL_NAME ),
+      _attraction( ZOOMOBILE_NAME ),
+   ]
+
+   matches = AttractionsMatchingQueryBuilder.filter_matching_query(
+      attractions,
+      SEARCH_QUERY )
+
+   assert [ attraction.name for attraction in matches ] == [ CAROUSEL_NAME ]

@@ -185,3 +185,22 @@ def Test_Commit_TestScheduledItem_ExpectCoverForActivity(
       'current_arrival_time': '9:30 AM',
       'current_departure_time': '5:00 PM',
    }
+
+
+def Test_Commit_TestApplyFailed_ExpectItemNotOnItinerary(
+      persister_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.listed_schedule_item_persister.ListedScheduleTargetResolver.apply',
+      lambda *args, **kwargs: False )
+
+   result = ListedScheduleItemPersister.commit(
+      persister_conn,
+      schedule_item_key=SCHEDULE_ITEM_KEY,
+      start_time='10:00 AM',
+      end_time='10:08 AM',
+      insert_if_missing=False,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result.status == ItineraryErrorType.ITEM_NOT_ON_ITINERARY

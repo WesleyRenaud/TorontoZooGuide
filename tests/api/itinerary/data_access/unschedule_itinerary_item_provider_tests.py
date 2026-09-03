@@ -160,6 +160,37 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
 
    conn.close()
 
+GUARDIANS_SCHEMA = """
+CREATE TABLE ItineraryGuardiansTalk (
+   TALK_NAME TEXT NOT NULL PRIMARY KEY,
+   START_TIME TEXT,
+   END_TIME TEXT,
+   IS_DELETED INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE ItineraryWildEncounter (
+   WILD_ENCOUNTER TEXT NOT NULL,
+   START_TIME TEXT NOT NULL,
+   END_TIME TEXT,
+   IS_DELETED INTEGER NOT NULL DEFAULT 0,
+   PRIMARY KEY ( WILD_ENCOUNTER, START_TIME )
+);
+"""
+LION_TALK = 'African Lion'
+
+@pytest.fixture
+def guardians_unschedule_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.executescript( UNSCHEDULE_SCHEMA + GUARDIANS_SCHEMA )
+   conn.execute(
+      'INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, START_TIME, END_TIME ) VALUES ( ?, ?, ? );',
+      ( LION_TALK, '10:00 AM', '10:30 AM' ) )
+   conn.execute(
+      'INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER, START_TIME, END_TIME ) VALUES ( ?, ?, ? );',
+      ( 'White Rhinoceros', '1:00 PM', '1:45 PM' ) )
+   conn.commit()
+   yield conn
+   conn.close()
+
 
 def Test_ClearItineraryAnimalSchedule_TestScheduledAnimal_ExpectClearedTimes(
       unschedule_conn: sqlite3.Connection ) -> None:
@@ -272,3 +303,23 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
    assert leg_count[ 'COUNT' ] == 0
    assert marker_count is not None
    assert marker_count[ 'COUNT' ] == 0
+
+
+def Test_ClearItineraryGuardiansTalkSchedule_TestTalk_ExpectDeleted(
+      guardians_unschedule_conn: sqlite3.Connection ) -> None:
+   cur = guardians_unschedule_conn.cursor()
+   UnscheduleItineraryItemProvider.clear_itinerary_guardians_talk_schedule(
+      cur, talk_name=LION_TALK )
+   guardians_unschedule_conn.commit()
+   assert guardians_unschedule_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk' ).fetchone()[ 0 ] == 0
+
+
+def Test_ClearItineraryWildEncounterSchedule_TestEncounter_ExpectDeleted(
+      guardians_unschedule_conn: sqlite3.Connection ) -> None:
+   cur = guardians_unschedule_conn.cursor()
+   UnscheduleItineraryItemProvider.clear_itinerary_wild_encounter_schedule(
+      cur, wild_encounter='White Rhinoceros' )
+   guardians_unschedule_conn.commit()
+   assert guardians_unschedule_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryWildEncounter' ).fetchone()[ 0 ] == 0

@@ -381,3 +381,105 @@ def Test_Run_TestRemainingStopsFromPacker_ExpectSuccessWithNotEnoughTimeIssue(
       result.reasons[ 0 ].code
       == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert result.itinerary.departure_time is None
+
+
+def Test_Run_TestPrepareWindowFailure_ExpectSaveResult(
+      bulk_runner_conn: sqlite3.Connection,
+      stub_bulk_runner_context: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   failure = ItinerarySaveResult(
+      status=ItineraryErrorType.SAVE_FAILED,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+   )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: failure )
+
+   result = BulkScheduleItineraryRunner.run(
+      bulk_runner_conn,
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator,
+      animals_to_schedule=list( saved_itinerary.animal_rows ) )
+
+   assert result is failure
+
+
+def Test_Run_TestEmptyPackingResult_ExpectFinalize(
+      bulk_runner_conn: sqlite3.Connection,
+      stub_bulk_runner_context: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+   )
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_date=date( 2026, 6, 20 ),
+   )
+   prep = _TalkOnlyPrep()
+   empty_packing = BulkScheduleLoopPackingResult(
+      remaining_stops=[],
+      covered_by_talk=False,
+      covered_by_attraction=False,
+      schedule_windows=[],
+      loop_units=[] )
+   finalized = ItinerarySaveResult(
+      status=ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner.ScheduleWindowPreparer.prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      BulkScheduleWindowPreparer,
+      'prepare_windows',
+      lambda conn, *, prepared_window, itinerary_context: prep )
+   monkeypatch.setattr(
+      BulkScheduleLoopPacker,
+      'pack_stops',
+      lambda conn, *, prep, stops_to_schedule: empty_packing )
+   monkeypatch.setattr(
+      BulkScheduleFinalizeBuilder,
+      'finalize',
+      lambda conn, *, previous_itinerary, itinerary_context: finalized )
+
+   result = BulkScheduleItineraryRunner.run(
+      bulk_runner_conn,
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator )
+
+   assert result is finalized

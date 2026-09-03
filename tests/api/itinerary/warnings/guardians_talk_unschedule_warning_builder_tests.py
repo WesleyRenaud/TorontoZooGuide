@@ -112,3 +112,26 @@ def Test_BuildIssue_TestTalks_ExpectUnscheduleIssue() -> None:
 
    assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
    assert [ item.name for item in issue.items ] == [ ZEBRA_TALK ]
+
+
+def Test_IsRequired_TestNoNewTalks_ExpectFalse() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+   validated = ValidatedItinerary(
+      animals=[],
+      attractions=[],
+      transportations=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   assert not GuardiansTalkUnscheduleWarningBuilder.is_required(
+      saved,
+      validated,
+      confirming_guardians_talk_unschedule=False )

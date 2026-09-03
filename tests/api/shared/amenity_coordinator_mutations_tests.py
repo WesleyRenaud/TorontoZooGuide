@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import cast
-
 import pytest
 
-from api.request_connection_provider import RequestConnectionProvider
 from api.restaurants.scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
 from api.restaurants.scheduling.restaurant_schedule_override import RestaurantScheduleOverride
 from api.shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
@@ -16,14 +12,6 @@ AMENITY_NAME = 'Africa Restaurant'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 MESSAGE = 'Closed for testing.'
-
-
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
 
 
 def _mutations(
@@ -72,9 +60,33 @@ def _mutations(
       save_trimming_overlaps=lambda _conn, schedule: trimmed.append( schedule ) or True )
 
 
-@pytest.fixture
-def stub_request_connection( monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_CONNECTION )
+def Test_SetOpeningSchedule_TestPayload_ExpectBuiltScheduleSaved(
+      stub_request_connection: None,
+) -> None:
+   saved_schedules: list[ RestaurantOpeningSchedule ] = []
+
+   mutations = _mutations(
+      saved_schedules=saved_schedules,
+      saved_overrides=[],
+      replaced=[],
+      trimmed=[] )
+
+   assert mutations.set_opening_schedule(
+      AMENITY_NAME,
+      START_DATE,
+      END_DATE,
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      holidays_only=False,
+      message=MESSAGE ) is True
+
+   assert len( saved_schedules ) == 1
+   assert saved_schedules[ 0 ].monday is True
 
 
 def Test_SetAsClosed_TestPayload_ExpectBuiltScheduleSaved(

@@ -594,3 +594,279 @@ def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
    assert row[ 'COVERED_BY_TALK' ] == 0
    assert row[ 'START_TIME' ] == '11:00 AM'
    assert row[ 'END_TIME' ] == '11:08 AM'
+
+
+def Test_KeysToCover_TestLinkWithoutMatchingAnimalRow_ExpectEmpty(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      lion_coverer_conn,
+      [ _lion_loop_pin() ],
+      [ PENGUIN_OUTDOOR_ROW ],
+   )
+
+   assert covered == {}
+
+
+def Test_Apply_TestEmptyCoveredDict_ExpectNoDatabaseChange(
+      lion_coverer_conn: sqlite3.Connection ) -> None:
+   GuardiansTalkAnimalCoverer.apply( lion_coverer_conn, {} )
+
+   row = lion_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'African Lion';
+      """,
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'COVERED_BY_TALK' ] == 0
+   assert row[ 'START_TIME' ] is None
+
+
+def Test_UncoverForTalk_TestCoveredAnimal_ExpectScheduleCleared(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      lion_coverer_conn,
+      [ _lion_loop_pin() ],
+      [ LION_ROW ],
+   )
+   GuardiansTalkAnimalCoverer.apply( lion_coverer_conn, covered )
+
+   cur = lion_coverer_conn.cursor()
+   uncovered = GuardiansTalkAnimalCoverer.uncover_for_talk(
+      cur,
+      lion_coverer_conn,
+      talk_name=LION_TALK,
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            covered_by_talk=True,
+            start_time='11:00 AM',
+            end_time='11:30 AM',
+         ),
+      ],
+   )
+   lion_coverer_conn.commit()
+   cur.close()
+
+   assert len( uncovered ) == 1
+   row = lion_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'African Lion';
+      """,
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'START_TIME' ] is None
+   assert row[ 'END_TIME' ] is None
+
+
+def Test_UncoverForTalk_TestNotCoveredAnimal_ExpectEmpty(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+
+   cur = lion_coverer_conn.cursor()
+   uncovered = GuardiansTalkAnimalCoverer.uncover_for_talk(
+      cur,
+      lion_coverer_conn,
+      talk_name=LION_TALK,
+      animal_rows=[ LION_ROW ],
+   )
+   cur.close()
+
+   assert uncovered == []
+
+
+def Test_RestoreAfterRemoved_TestMissingDuration_ExpectScheduleCleared(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
+      lambda conn, species, exhibit, enclosure_name: None )
+   covered = GuardiansTalkAnimalCoverer.keys_to_cover(
+      lion_coverer_conn,
+      [ _lion_loop_pin() ],
+      [ LION_ROW ],
+   )
+   GuardiansTalkAnimalCoverer.apply( lion_coverer_conn, covered )
+
+   cur = lion_coverer_conn.cursor()
+   restored = GuardiansTalkAnimalCoverer.restore_after_removed(
+      cur,
+      lion_coverer_conn,
+      talk_name=LION_TALK,
+      talk_block=TimeBlock(
+         start_seconds=11 * 3600,
+         end_seconds=11 * 3600 + 30 * 60,
+      ),
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            covered_by_talk=True,
+            start_time='11:00 AM',
+            end_time='11:30 AM',
+         ),
+      ],
+   )
+   lion_coverer_conn.commit()
+   cur.close()
+
+   assert restored.animals == []
+   assert restored.replacement_end_seconds is None
+   row = lion_coverer_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'African Lion';
+      """,
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'START_TIME' ] is None
+   assert row[ 'END_TIME' ] is None
+
+
+def Test_UncoverForUnavailableTalks_TestActiveTalk_ExpectNoChange(
+      talk_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ CARIBOU_LINK ] )
+
+   animals = [
+      AnimalDiff(
+         species='Caribou',
+         exhibit='Tundra Trek',
+         old_likelihood=100,
+         new_likelihood=100,
+         covered_by_talk=True,
+         start_time='3:00 PM',
+         end_time='3:30 PM',
+      ),
+   ]
+   result = GuardiansTalkAnimalCoverer.uncover_for_unavailable_talks(
+      talk_coverer_conn,
+      animals,
+      [
+         GuardiansTalkDiff(
+            name=CARIBOU_TALK,
+            is_deleted=False,
+            start_time='3:00 PM',
+            end_time='3:30 PM',
+            location='Tundra Trek',
+         ),
+      ],
+   )
+
+   assert result[ 0 ].covered_by_talk is True
+   assert result[ 0 ].start_time == '3:00 PM'
+
+
+def Test_UncoverForUnavailableTalks_TestDeletedTalkInvalidTimes_ExpectNoChange(
+      talk_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ CARIBOU_LINK ] )
+
+   animals = [
+      AnimalDiff(
+         species='Caribou',
+         exhibit='Tundra Trek',
+         old_likelihood=100,
+         new_likelihood=100,
+         covered_by_talk=True,
+         start_time='3:00 PM',
+         end_time='3:30 PM',
+      ),
+   ]
+   result = GuardiansTalkAnimalCoverer.uncover_for_unavailable_talks(
+      talk_coverer_conn,
+      animals,
+      [
+         GuardiansTalkDiff(
+            name=CARIBOU_TALK,
+            is_deleted=True,
+            start_time=None,
+            end_time=None,
+            location='Tundra Trek',
+         ),
+      ],
+   )
+
+   assert result[ 0 ].covered_by_talk is True
+
+
+def Test_UncoverForUnavailableTalks_TestDeletedTalkUnlinkedAnimal_ExpectNoChange(
+      talk_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ CARIBOU_LINK ] )
+
+   animals = [
+      AnimalDiff(
+         species='African Lion',
+         exhibit='Africa Savanna',
+         old_likelihood=100,
+         new_likelihood=100,
+         covered_by_talk=True,
+         start_time='11:00 AM',
+         end_time='11:30 AM',
+      ),
+   ]
+   result = GuardiansTalkAnimalCoverer.uncover_for_unavailable_talks(
+      talk_coverer_conn,
+      animals,
+      [ DELETED_CARIBOU_TALK ],
+   )
+
+   assert result[ 0 ].covered_by_talk is True
+   assert result[ 0 ].start_time == '11:00 AM'
+
+
+def Test_RestoreAfterRemoved_TestUncoveredLinkedAnimal_ExpectSkipped(
+      lion_coverer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
+      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+
+   cur = lion_coverer_conn.cursor()
+   restored = GuardiansTalkAnimalCoverer.restore_after_removed(
+      cur,
+      lion_coverer_conn,
+      talk_name=LION_TALK,
+      talk_block=TimeBlock(
+         start_seconds=11 * 3600,
+         end_seconds=11 * 3600 + 30 * 60,
+      ),
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            covered_by_talk=False,
+         ),
+      ],
+   )
+   cur.close()
+
+   assert restored.animals == []
+   assert restored.replacement_end_seconds is None

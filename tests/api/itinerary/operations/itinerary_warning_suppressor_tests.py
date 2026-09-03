@@ -69,3 +69,23 @@ def Test_Suppress_TestUnknownWarning_ExpectSaveFailed() -> None:
       assert result.status == ItineraryErrorType.SAVE_FAILED
    finally:
       conn.close()
+
+
+def Test_Suppress_TestEmptyWarningType_ExpectSaveFailed() -> None:
+   conn = sqlite3.connect( ':memory:' )
+
+   try:
+      result = ItineraryWarningSuppressor.suppress( conn, '' )
+
+      assert result.status == ItineraryErrorType.SAVE_FAILED
+   finally:
+      conn.close()
+
+
+def Test_Suppress_TestNonSuppressableWarning_ExpectSaveFailed(
+      suppressor_conn: sqlite3.Connection ) -> None:
+   result = ItineraryWarningSuppressor.suppress(
+      suppressor_conn,
+      ItineraryErrorType.SUCCESS.value )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED

@@ -52,6 +52,58 @@ def Test_Matches_TestIdenticalRoutes_ExpectTrue() -> None:
    assert ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, SAMPLE_ROUTE )
 
 
+def Test_Matches_TestDifferentLegCount_ExpectFalse() -> None:
+   shorter_legs_route = ItineraryWalkRoute(
+      stops=SAMPLE_ROUTE.stops,
+      legs=[],
+      points=SAMPLE_ROUTE.points )
+
+   assert not ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, shorter_legs_route )
+
+
+def Test_Matches_TestDifferentPointCount_ExpectFalse() -> None:
+   shorter_points_route = ItineraryWalkRoute(
+      stops=SAMPLE_ROUTE.stops,
+      legs=SAMPLE_ROUTE.legs,
+      points=[ ENTRANCE_POINT ] )
+
+   assert not ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, shorter_points_route )
+
+
+def Test_Matches_TestDifferentStop_ExpectFalse() -> None:
+   altered_stop_route = ItineraryWalkRoute(
+      stops=[
+         ENTRANCE_STOP,
+         ItineraryWalkRouteStop(
+            schedule_item_kind=ScheduleItemKind.ANIMAL,
+            item_key='Amur Tiger||Eurasia Wilds||Outdoor',
+            walk_node_id='n-3',
+            start_time='10:00 AM',
+            end_time='10:30 AM' ),
+      ],
+      legs=SAMPLE_ROUTE.legs,
+      points=SAMPLE_ROUTE.points )
+
+   assert not ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, altered_stop_route )
+
+
+def Test_Matches_TestDifferentPoint_ExpectFalse() -> None:
+   altered_point_route = ItineraryWalkRoute(
+      stops=SAMPLE_ROUTE.stops,
+      legs=SAMPLE_ROUTE.legs,
+      points=[
+         ENTRANCE_POINT,
+         WalkRoutePoint(
+            node_id='n-2',
+            x=11.0,
+            y=10.0,
+            x_px=11.0,
+            y_px=10.0 ),
+      ] )
+
+   assert not ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, altered_point_route )
+
+
 def Test_Matches_TestDifferentStopCount_ExpectFalse() -> None:
    shorter_route = ItineraryWalkRoute(
       stops=[ ENTRANCE_STOP ],

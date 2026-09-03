@@ -7,6 +7,7 @@ from ...domain.itinerary_adjustment import ItineraryAdjustment
 from ...domain.itinerary_builder import ItineraryBuilder
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
+from ...routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 from ....shared.enums import ItineraryErrorType
 from ....types import Types
 
@@ -51,6 +52,4 @@ class ItinerarySaveResultBuilder():
          cls,
          conn: Types.Connection,
          **itinerary_context: Any ) -> None:
-      from ...routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
-
       ItineraryWalkRoutePersister.rebuild_and_persist( conn, **itinerary_context )

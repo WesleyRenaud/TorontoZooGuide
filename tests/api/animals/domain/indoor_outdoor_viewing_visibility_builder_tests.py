@@ -244,6 +244,24 @@ def Test_Apply_TestClosedExhibit_ExpectZeroLikelihoodRetained() -> None:
    assert all( animal.likelihood == 0 for animal in visible )
 
 
+def Test_SingleHabitatAlternateEnclosureViewingAlertMessage_TestMissingEnclosureType_ExpectNone() -> None:
+   animal = _animal( enclosure_type='', likelihood=80 )
+
+   assert IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
+      animal ) is None
+
+
+def Test_ApplySingleHabitatAlternateEnclosureViewingAlert_TestMissingEnclosureType_ExpectNoAlert() -> None:
+   animal = _animal( enclosure_type='', likelihood=80 )
+
+   IndoorOutdoorViewingVisibilityBuilder.apply_single_habitat_alternate_enclosure_viewing_alert(
+      animal,
+      outdoor_likelihood=80 )
+
+   assert animal.has_viewing_alert is False
+   assert animal.viewing_alert_messages == []
+
+
 def Test_Apply_TestIncludeAllViewingSpots_ExpectBothEnclosures() -> None:
    animals = [
       _animal(

@@ -50,3 +50,13 @@ def Test_Resolve_TestOverlappingRequestedSlot_ExpectNone() -> None:
       day_end_seconds=DAY_END_SECONDS,
       start_time='10:00',
    ) is None
+
+
+def Test_Resolve_TestBlankStartTime_ExpectNone() -> None:
+   assert ScheduleSlotResolver.resolve(
+      [],
+      anchor_seconds=ANCHOR_SECONDS,
+      duration_seconds=DURATION_SECONDS,
+      day_end_seconds=DAY_END_SECONDS,
+      start_time='',
+   ) is None

@@ -19,6 +19,8 @@ from api.itinerary.scheduling.items.itinerary_item_scheduler import ItineraryIte
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.listed_itinerary_item_scheduler import ListedItineraryItemScheduler
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
+from api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler import WildEncounterItineraryItemScheduler
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -266,3 +268,43 @@ def Test_Schedule_TestGuardiansTalkKey_ExpectTalkSchedulerCalled(
 
    assert result == SUCCESS_RESULT
    assert calls == [ TALK_KEY ]
+
+
+def Test_Schedule_TestWildEncounterKey_ExpectEncounterSchedulerCalled(
+      item_scheduler_conn: sqlite3.Connection,
+      stub_item_scheduler_context: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+
+   encounter_key = WildEncounterScheduleItemKey(
+      name='African Rainforest',
+      start_time='2:00 PM',
+   )
+   parsed_options = ParsedScheduleTimeOptions(
+      start_time='2:00 PM',
+      duration_minutes=None )
+   calls: list[ object ] = []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.itinerary_item_scheduler.ScheduleTimeOptionsParser.parse',
+      lambda start_time, duration_minutes: parsed_options )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      'schedule',
+      lambda conn, schedule_item_key, **kwargs: calls.append( schedule_item_key ) or SUCCESS_RESULT )
+
+   result = ItineraryItemScheduler.schedule(
+      item_scheduler_conn,
+      encounter_key,
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=True,
+      confirming_fixed_time_item_long_wait=True,
+      confirming_guardians_talk_without_animal=False )
+
+   assert result == SUCCESS_RESULT
+   assert calls == [ encounter_key ]

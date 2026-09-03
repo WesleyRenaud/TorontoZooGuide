@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import pytest
+
 from api.attractions.scheduling.attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBounds
 from api.attractions.scheduling.attraction_hours_schedule_time_bounds_builder import AttractionHoursScheduleTimeBoundsBuilder
 from api.attractions.scheduling.attraction_hours_time_bounds import AttractionHoursTimeBounds
+from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -32,6 +35,10 @@ def Test_ResolveDateRange_TestExplicitDates_ExpectNormalizedRange() -> None:
 
    assert start_date == START_DATE
    assert end_date == END_DATE
+
+
+def Test_BuildTimeBounds_TestEmptyRecords_ExpectNone() -> None:
+   assert AttractionHoursScheduleTimeBoundsBuilder._build_time_bounds( [] ) is None
 
 
 def Test_BuildTimeBounds_TestMultipleRecords_ExpectLatestOpenAndEarliestClose() -> None:
@@ -112,3 +119,50 @@ def Test_TimesAreWithinBounds_TestOutOfRangeWeekdayEnd_ExpectFalse() -> None:
       weekday_end_time='8:00 PM',
       weekend_holiday_start_time='11:00 AM',
       weekend_holiday_end_time='5:00 PM' )
+
+
+def Test_Fetch_TestWeekdayAndWeekendRecords_ExpectScheduleBounds(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   records = [
+      _zoo_hours_record(
+         operating_date=WEEKDAY_OPERATING_DATE,
+         open_time='9:30 AM',
+         close_time='7:00 PM' ),
+      _zoo_hours_record(
+         operating_date=WEEKEND_OPERATING_DATE,
+         open_time='10:00 AM',
+         close_time='6:00 PM' ),
+   ]
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_records_between',
+      lambda _conn, _start, _end: records )
+
+   bounds = AttractionHoursScheduleTimeBoundsBuilder.fetch(
+      None,
+      start_date=START_DATE,
+      end_date=END_DATE )
+
+   assert bounds.weekday.open_time == '9:30 AM'
+   assert bounds.weekday.close_time == '7:00 PM'
+   assert bounds.weekend_holiday.open_time == '10:00 AM'
+   assert bounds.weekend_holiday.close_time == '6:00 PM'
+
+
+def Test_Fetch_TestMissingDayKindBounds_ExpectValueError(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_records_between',
+      lambda _conn, _start, _end: [
+         _zoo_hours_record(
+            operating_date=WEEKDAY_OPERATING_DATE,
+            open_time='9:30 AM',
+            close_time='7:00 PM' ),
+      ] )
+
+   with pytest.raises( ValueError, match='Could not resolve zoo hours bounds' ):
+      AttractionHoursScheduleTimeBoundsBuilder.fetch(
+         None,
+         start_date=START_DATE,
+         end_date=END_DATE )

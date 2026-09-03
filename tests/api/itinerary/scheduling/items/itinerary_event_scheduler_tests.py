@@ -172,3 +172,65 @@ def Test_Schedule_TestLunchAfterDeparture_ExpectCoverForActivity(
       'current_arrival_time': '9:30 AM',
       'current_departure_time': '12:00 PM',
    }
+
+
+def Test_Schedule_TestPrepareFailure_ExpectSaveResult(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   failure = ItinerarySaveResult(
+      status=ItineraryErrorType.SAVE_FAILED,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.itinerary_event_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.itinerary_event_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: failure )
+
+   assert ItineraryEventScheduler.schedule(
+      scheduler_conn,
+      event_type=ItineraryEventType.LUNCH,
+      time_options=ParsedScheduleTimeOptions( start_time='12:00 PM', duration_minutes=30 ),
+      itinerary_context=ITINERARY_CONTEXT ) is failure
+
+
+def Test_Schedule_TestMissingDuration_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _stub_event_schedule_flow( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.itinerary_event_scheduler.ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds',
+      lambda conn, event_type: None )
+
+   result = ItineraryEventScheduler.schedule(
+      scheduler_conn,
+      event_type=ItineraryEventType.LUNCH,
+      time_options=ParsedScheduleTimeOptions( start_time='12:00 PM', duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Schedule_TestSlotError_ExpectErrorResult(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _stub_event_schedule_flow( monkeypatch )
+   slot_error = ItinerarySaveResult(
+      status=ItineraryErrorType.TIME_OUT_OF_BOUNDS,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.itinerary_event_scheduler.ScheduleSlotTimeResolver.resolve_allowing_visit_extension',
+      lambda *args, **kwargs: ( None, slot_error ) )
+
+   result = ItineraryEventScheduler.schedule(
+      scheduler_conn,
+      event_type=ItineraryEventType.LUNCH,
+      time_options=ParsedScheduleTimeOptions( start_time='12:00 PM', duration_minutes=30 ),
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is slot_error

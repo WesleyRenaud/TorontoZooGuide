@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sqlite3
+
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
@@ -106,7 +110,7 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
    assert GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap( saved, [ talk ] )
 
 
-def Test_PrepareValidatedForReschedule_TestClearsListedSchedulesAndOverlappingEvents() -> None:
+def Test_PrepareValidatedForReschedule_TestClearsListedSchedulesAndOverlappingEvents_ExpectValidatedItinerary() -> None:
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
@@ -151,3 +155,66 @@ def Test_PrepareValidatedForReschedule_TestClearsListedSchedulesAndOverlappingEv
    ] == [
       ( ItineraryEventType.LUNCH, '2:00 PM' ),
    ]
+
+
+def Test_ApplyToValidatedItinerary_TestNewTalk_ExpectPreparedItinerary() -> None:
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=False,
+      start_time='12:00 PM',
+      end_time='12:30 PM' )
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[
+         AnimalDiff(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='11:00 AM',
+            end_time='11:08 AM' ),
+      ],
+      attractions=[],
+      guardians_talks=[ talk ],
+      wild_encounters=[],
+      events=[],
+      transportations=[],
+   )
+
+   prepared = GuardiansTalkUnschedulePreparer.apply_to_validated_itinerary(
+      validated,
+      [ talk ] )
+
+   assert prepared.animals[ 0 ].start_time is None
+
+
+def Test_ClearOverlappingSavedSchedules_TestOverlap_ExpectDelegateCalled(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+
+   conn = sqlite3.connect( ':memory:' )
+   cur = conn.cursor()
+   called: list[ str ] = []
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=False,
+      start_time='12:00 PM',
+      end_time='12:30 PM' )
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.unscheduling.guardians_talk_unschedule_preparer.FixedTimeActivityUnschedulePreparer.clear_overlapping_saved_schedules',
+      lambda cur, saved_itinerary, blockers: called.append( 'cleared' ) )
+
+   GuardiansTalkUnschedulePreparer.clear_overlapping_saved_schedules(
+      cur,
+      saved,
+      [ talk ] )
+
+   assert called == [ 'cleared' ]
+   cur.close()
+   conn.close()

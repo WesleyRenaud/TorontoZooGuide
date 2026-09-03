@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.core.itinerary_activity_scheduler import ItineraryActivityScheduler
 from api.models import Animal
 from api.models import Attraction
@@ -46,3 +47,27 @@ def Test_ScheduleActivities_TestAllItemKinds_ExpectTimesAndLunchEvent() -> None:
       'end_time': '2:30 PM',
       'type': 'itineraryEvent',
    }
+
+def Test_ScheduleAnimal_TestUnknownAnimal_ExpectFalse() -> None:
+   itinerary = ItineraryBuilder.empty()
+   scheduler = ItineraryActivityScheduler( itinerary )
+
+   assert not scheduler.schedule_animal( 'Lion', 'Savanna', '10:00', '10:20' )
+
+def Test_ScheduleAttraction_TestUnknownAttraction_ExpectFalse() -> None:
+   itinerary = ItineraryBuilder.empty()
+   scheduler = ItineraryActivityScheduler( itinerary )
+
+   assert not scheduler.schedule_attraction( 'Carousel', '11:00', '11:30' )
+
+def Test_ScheduleGuardiansTalk_TestUnknownTalk_ExpectFalse() -> None:
+   itinerary = ItineraryBuilder.empty()
+   scheduler = ItineraryActivityScheduler( itinerary )
+
+   assert not scheduler.schedule_guardians_talk( 'Rhino Talk', '12:00', '12:30' )
+
+def Test_ScheduleWildEncounter_TestUnknownEncounter_ExpectFalse() -> None:
+   itinerary = ItineraryBuilder.empty()
+   scheduler = ItineraryActivityScheduler( itinerary )
+
+   assert not scheduler.schedule_wild_encounter( 'Capybara', '13:00', '13:45' )

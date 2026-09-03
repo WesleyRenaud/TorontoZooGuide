@@ -156,3 +156,27 @@ def Test_FetchTransportationRouteLegs_TestSummerRoute_ExpectMappedSegments(
    assert legs[ 1 ].from_station == CANADA
    assert legs[ 1 ].to_station == AFRICA
    assert legs[ 1 ].duration_minutes == 10
+
+
+def Test_FetchTransportationActiveRoute_TestMissingSchedule_ExpectNone(
+      day_loop_provider_conn: sqlite3.Connection ) -> None:
+   assert TransportationDayLoopProvider.fetch_transportation_active_route(
+      day_loop_provider_conn,
+      transportation=ZOOMOBILE,
+      target_date=date( 2026, 7, 1 ) ) is None
+
+
+def Test_FetchTransportationDayRoute_TestMissingDate_ExpectNone(
+      day_loop_provider_conn: sqlite3.Connection ) -> None:
+   assert TransportationDayLoopProvider.fetch_transportation_day_route(
+      day_loop_provider_conn,
+      transportation=ZOOMOBILE,
+      month=7,
+      day=4 ) is None
+
+
+def Test_FetchMainTransportationStation_TestMissingStation_ExpectNone(
+      day_loop_provider_conn: sqlite3.Connection ) -> None:
+   assert TransportationDayLoopProvider.fetch_main_transportation_station(
+      day_loop_provider_conn,
+      'Tundra Trek Ride' ) is None

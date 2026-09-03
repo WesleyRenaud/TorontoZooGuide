@@ -16,6 +16,7 @@ from api.itinerary.data_access.itinerary_save_input import ItinerarySaveInput
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.validation.itinerary_save_validator import ItinerarySaveValidator
 from api.models.animal import Animal
+from api.models.guardians_talk import GuardiansTalk
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -305,3 +306,55 @@ def Test_ValidateForSave_TestDateChangeGuestAnimalTimes_ExpectCarryoverPreserved
    assert by_species[ 'Cheetah' ].start_time == '10:30 AM'
    assert by_species[ 'Cheetah' ].end_time == '10:35 AM'
    assert validated.needs_schedule_reschedule is True
+
+
+def Test_ValidateForSave_TestSameDateFixedTimeTalk_ExpectArrivalAndDepartureAdjusted(
+      save_validator_conn: sqlite3.Connection,
+      stub_save_validator_coordinators: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+
+   monkeypatch.setattr(
+      'api.itinerary.validation.itinerary_save_validator.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SavedItinerary(
+         date_value='2026-06-20',
+         arrival_time='11:00 AM',
+         departure_time='3:00 PM',
+         selected_exhibits=[ 'Africa Savanna' ],
+      ) )
+   monkeypatch.setattr(
+      GuardiansCoordinator,
+      'get_guardians_talk_schedule',
+      lambda **kwargs: [
+         GuardiansTalk(
+            name='African Lion',
+            location='Africa Savanna',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='10:00 AM',
+            end_time='10:30 AM' ),
+      ] )
+
+   validated = ItinerarySaveValidator.validate_for_save(
+      save_validator_conn,
+      ItinerarySaveInput(
+         date=date( 2026, 6, 20 ),
+         arrival_time='11:00',
+         departure_time='15:00',
+         selected_exhibits=[ 'Africa Savanna' ],
+         animals=[ LION_INPUT ],
+         guardians_talks=[
+            ItineraryGuardiansTalkInput(
+               name='African Lion',
+               start_time='10:00',
+               end_time='10:30' ),
+         ],
+      ),
+      AnimalCoordinator,
+      AttractionCoordinator,
+      GuardiansCoordinator,
+      WildEncounterCoordinator,
+      old_visit_date='2026-06-20',
+   )
+
+   assert validated.arrival_time == '10:00'
+   assert validated.departure_time == '15:00'

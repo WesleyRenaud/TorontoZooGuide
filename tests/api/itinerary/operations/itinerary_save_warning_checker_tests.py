@@ -17,6 +17,7 @@ from api.itinerary.operations.itinerary_save_context import ItinerarySaveContext
 from api.itinerary.operations.itinerary_save_warning_checker import ItinerarySaveWarningChecker
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -67,6 +68,18 @@ def warning_checker_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
    yield conn
    conn.close()
+
+
+def _base_warning_stubs( monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, date_value: object() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.EarlyAdmissionWarningBuilder.is_required',
+      lambda conn, arrival_time, zoo_hours_record, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ShortVisitWarningBuilder.is_required',
+      lambda conn, arrival_time, departure_time, **kwargs: False )
 
 
 def Test_Check_TestEarlyAdmissionRequired_ExpectWarningResult(
@@ -257,3 +270,180 @@ def Test_Check_TestNoWarnings_ExpectNone(
 
    assert warning is None
    assert updated_context.suppressed_warnings == []
+
+
+def Test_Check_TestScheduleConflict_ExpectConflictResult(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   conflict = ItinerarySaveResult(
+      status=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+
+   _base_warning_stubs( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItineraryScheduleTimeConflictWarningBuilder.build',
+      lambda *args, **kwargs: conflict )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=True,
+      confirming_early_admission=True,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=False,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False )
+
+   assert warning is not None
+   assert warning.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert updated_context.suppressed_warnings == []
+
+
+def Test_Check_TestGuardiansTalkWithoutAnimal_ExpectPendingReason(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:30 PM',
+      location='Africa Savanna' )
+   reason = ItineraryResultReason(
+      code=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL )
+
+   _base_warning_stubs( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItineraryScheduleTimeConflictWarningBuilder.build',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.GuardiansTalkWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.GuardiansTalkWithoutAnimalWarningBuilder.newly_added_without_matching_animal',
+      lambda *args, **kwargs: [ talk ] )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks',
+      lambda talks: reason )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.AttractionWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.FixedTimeItemLongWaitWarningBuilder.has_unscheduled_listed_items',
+      lambda validated_itinerary: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
+      lambda conn, status, controller_kwargs, **kwargs: ItinerarySaveResult(
+         status=status,
+         reasons=kwargs.get( 'reasons', [] ),
+         itinerary=ItineraryBuilder.empty() ) )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=True,
+      confirming_early_admission=True,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=False,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False )
+
+   assert warning is not None
+   assert warning.status == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+
+
+def Test_Check_TestAttractionWithoutAnimal_ExpectPendingReason(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   attraction = AttractionDiff(
+      name='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+   reason = ItineraryResultReason(
+      code=ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL )
+
+   _base_warning_stubs( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItineraryScheduleTimeConflictWarningBuilder.build',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.GuardiansTalkWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.AttractionWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.AttractionWithoutAnimalWarningBuilder.newly_added_without_matching_animal',
+      lambda *args, **kwargs: [ attraction ] )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.AttractionWithoutAnimalWarningBuilder.build_issue_from_attractions',
+      lambda attractions: reason )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.FixedTimeItemLongWaitWarningBuilder.has_unscheduled_listed_items',
+      lambda validated_itinerary: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
+      lambda conn, status, controller_kwargs, **kwargs: ItinerarySaveResult(
+         status=status,
+         reasons=kwargs.get( 'reasons', [] ),
+         itinerary=ItineraryBuilder.empty() ) )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=True,
+      confirming_early_admission=True,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=True,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False )
+
+   assert warning is not None
+   assert warning.status == ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
+
+
+def Test_Check_TestLongWaitReason_ExpectPendingReason(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   reason = ItineraryResultReason(
+      code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT )
+
+   _base_warning_stubs( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItineraryScheduleTimeConflictWarningBuilder.build',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.GuardiansTalkWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.AttractionWithoutAnimalWarningBuilder.is_required',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.FixedTimeItemLongWaitWarningBuilder.has_unscheduled_listed_items',
+      lambda validated_itinerary: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.BulkRescheduleLongWaitSimulator.newly_added_reason',
+      lambda *args, **kwargs: reason )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
+      lambda conn, status, controller_kwargs, **kwargs: ItinerarySaveResult(
+         status=status,
+         reasons=kwargs.get( 'reasons', [] ),
+         itinerary=ItineraryBuilder.empty() ) )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=True,
+      confirming_early_admission=True,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=True,
+      confirming_attraction_without_animal=True,
+      overriding_conflicting_guardians_talks=False )
+
+   assert warning is not None
+   assert warning.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT

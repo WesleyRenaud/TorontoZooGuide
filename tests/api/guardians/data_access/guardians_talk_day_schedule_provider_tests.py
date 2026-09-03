@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import cast
-
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.guardians.data_access.guardians_talk_day_schedule_provider import GuardiansTalkDayScheduleProvider
@@ -12,7 +10,6 @@ from api.guardians.data_access.guardians_talk_schedule_provider import Guardians
 from api.guardians.data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from api.types import Types
 
-
 TALK_NAME = 'African Lion'
 TALK_LOCATION = 'Africa Savanna'
 STATION_COORD = 0.0
@@ -20,14 +17,6 @@ WEDNESDAY_VISIT_DATE = '2026-06-17'
 THURSDAY_VISIT_DATE = '2026-06-18'
 ADDED_OCCURRENCE_DATE = '2026-06-15'
 ADDED_TALK_TIME = '11:00 AM'
-
-
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
 
 
 def _schedule_record(
@@ -63,6 +52,25 @@ def _added_occurrence_day_record() -> GuardiansTalkDayScheduleRecord:
       talk_time=ADDED_TALK_TIME )
 
 
+def Test_FetchDayScheduleRecords_TestInvalidTargetDate_ExpectEmpty(
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   def fetch_day_schedule_records_from_schedule(
+         _conn: Types.Connection,
+         _target_date: Types.DateKey,
+   ) -> list[ GuardiansTalkScheduleRecord ]:
+      raise AssertionError( 'schedule provider should not be called for invalid dates' )
+
+   monkeypatch.setattr(
+      GuardiansTalkScheduleProvider,
+      'fetch_day_schedule_records_from_schedule',
+      fetch_day_schedule_records_from_schedule )
+
+   assert GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
+      STUB_REQUEST_CONNECTION,
+      None ) == []
+
+
 def Test_FetchDayScheduleRecords_TestDifferentWeekdayTimes_ExpectMatchingTalkTimeOnly(
       monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -91,10 +99,10 @@ def Test_FetchDayScheduleRecords_TestDifferentWeekdayTimes_ExpectMatchingTalkTim
       fetch_day_schedule_records_from_occurrences )
 
    wednesday_records = GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       WEDNESDAY_VISIT_DATE )
    thursday_records = GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       THURSDAY_VISIT_DATE )
 
    assert [ record.talk_time for record in wednesday_records ] == [ '1:00 PM' ]
@@ -129,7 +137,7 @@ def Test_FetchDayScheduleRecords_TestAddedOccurrenceWithoutSchedule_ExpectAddedT
       fetch_day_schedule_records_from_occurrences )
 
    records = GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       ADDED_OCCURRENCE_DATE )
 
    assert len( records ) == 1

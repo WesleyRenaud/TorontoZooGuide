@@ -22,6 +22,17 @@ def _talk(
       is_available=is_available )
 
 
+def Test_FindOnDaySchedule_TestInvalidStartTime_ExpectNone() -> None:
+   day_schedule = [ _talk() ]
+
+   match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
+      day_schedule,
+      'African Lion',
+      start_time='not-a-time' )
+
+   assert match is None
+
+
 def Test_FindOnDaySchedule_TestMatchingTalk_ExpectTalk() -> None:
    day_schedule = [ _talk() ]
 

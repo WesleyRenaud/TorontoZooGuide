@@ -35,3 +35,7 @@ def Test_DisplayOrderResolver_TestKnownType_ExpectConfiguredOrder() -> None:
 
 def Test_DisplayOrderResolver_TestUnknownType_ExpectSortsAfterKnownTypes() -> None:
    assert UpdateTypeDisplayOrderResolver.resolve( 'Unknown Type' ) == len( UpdateType )
+
+
+def Test_Normalize_TestNone_ExpectNone() -> None:
+   assert UpdateType.normalize( None ) is None

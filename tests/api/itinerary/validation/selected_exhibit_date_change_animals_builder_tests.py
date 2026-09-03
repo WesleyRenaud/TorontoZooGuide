@@ -286,3 +286,61 @@ def Test_ApplyOnDateChange_TestDeselectedExhibit_ExpectAmericasAnimalsOmitted(
    assert all(
       animal.exhibit != AMERICAS
       for animal in animals )
+
+
+def Test_ApplyOnDateChange_TestSavedSpeciesExhibitMatch_ExpectSkippedDuplicate(
+      stub_selected_exhibit_animal_coordinator: None ) -> None:
+   animals = SelectedExhibitDateChangeAnimalsBuilder.apply_on_date_change(
+      AnimalCoordinator,
+      existing_animals=[
+         _animal_diff(
+            species='African Penguin',
+            exhibit=AFRICA_SAVANNA,
+            enclosure_name='Outdoor',
+            new_likelihood=100 ),
+         _animal_diff(
+            species='African Penguin',
+            exhibit=AFRICA_SAVANNA,
+            enclosure_name='Indoor',
+            new_likelihood=100 ),
+      ],
+      selected_exhibits=[ AFRICA_SAVANNA ],
+      previously_selected_exhibits=[ AFRICA_SAVANNA, AMERICAS ],
+      saved_animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit=AFRICA_SAVANNA,
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+      visit_date=date( 2026, 10, 17 ),
+      old_visit_date=date( 2026, 10, 31 ),
+      visit_date_temp=18 )
+
+   indoor = next(
+      animal
+      for animal in animals
+      if animal.enclosure_name == 'Indoor' )
+   assert indoor.is_added is False
+
+
+def Test_ApplyOnDateChange_TestDeselectedExhibitAnimal_ExpectNotMarkedAdded(
+      stub_selected_exhibit_animal_coordinator: None ) -> None:
+   animals = SelectedExhibitDateChangeAnimalsBuilder.apply_on_date_change(
+      AnimalCoordinator,
+      existing_animals=[
+         _animal_diff(
+            species='Capybara',
+            exhibit=AMERICAS,
+            new_likelihood=90 ),
+      ],
+      selected_exhibits=[ AFRICA_SAVANNA ],
+      previously_selected_exhibits=[ AFRICA_SAVANNA, AMERICAS ],
+      saved_animal_rows=[],
+      visit_date=date( 2026, 10, 17 ),
+      old_visit_date=date( 2026, 10, 31 ),
+      visit_date_temp=18 )
+
+   assert animals[ 0 ].is_added is False

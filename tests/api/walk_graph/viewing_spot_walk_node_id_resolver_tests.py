@@ -75,3 +75,20 @@ def Test_Resolve_TestCoordinates_ExpectWalkNodeId(
       None,
       47.091,
       66.261 ) == 'v-9001'
+
+
+def Test_ResolveForCoordinates_TestMissingCoordinate_ExpectNone() -> None:
+   assert ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
+      'Aldabra Tortoise',
+      'African Rainforest Pavilion',
+      47.091,
+      None ) is None
+
+
+def Test_ResolveForCoordinates_TestUnknownSpot_ExpectNone(
+      stub_enclosure_viewing_walk_nodes: None ) -> None:
+   assert ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
+      'Unknown Species',
+      'Nowhere',
+      0.0,
+      0.0 ) is None

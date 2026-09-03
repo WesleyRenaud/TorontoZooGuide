@@ -7,6 +7,7 @@ from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
 from api.models import Animal
 from api.models import Attraction
+from api.models import GuardiansTalk
 from api.models import Itinerary
 from api.models import WildEncounter
 from api.shared.enums import ScheduleItemKind
@@ -119,6 +120,41 @@ WALK_THRU_MAP_LOCATION = MapLocationWalkNode(
    snap_distance_px=0.0,
 )
 
+TALK_WALK_NODE_ID = 'n-talk'
+SCHEDULED_TALK = GuardiansTalk(
+   name='Turtle Talk',
+   location='Americas Pavilion',
+   x_coord=35.0,
+   y_coord=45.0,
+   start_time='2:00 PM',
+   end_time='2:15 PM',
+)
+DELETED_TALK = GuardiansTalk(
+   name='Deleted Talk',
+   location='Americas Pavilion',
+   x_coord=35.0,
+   y_coord=45.0,
+   is_deleted=True,
+   start_time='3:00 PM',
+   end_time='3:15 PM',
+)
+DELETED_ENCOUNTER = WildEncounter(
+   name='Deleted Encounter',
+   meeting_spot=MEETING_SPOT,
+   link='',
+   is_deleted=True,
+   start_time='11:00 AM',
+   end_time='11:45 AM',
+)
+TALK_MAP_LOCATION = MapLocationWalkNode(
+   kind=MapLocationKind.GUARDIANS_TALK,
+   name='Turtle Talk',
+   location='Americas Pavilion',
+   x=35.0,
+   y=45.0,
+   walk_node_id=TALK_WALK_NODE_ID,
+   snap_distance_px=0.0,
+)
 
 def _clear_walk_graph_provider_cache() -> None:
    WalkGraphProvider.fetch.cache_clear()
@@ -267,3 +303,70 @@ def Test_Resolve_TestCoveredLionTalk_ExpectNoAnimalStop(
    ]
 
    assert animal_stops == []
+
+
+def Test_Resolve_TestGuardiansTalk_ExpectTalkStop(
+      stub_itinerary_stop_dependencies: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   def for_map_location(
+         kind: MapLocationKind,
+         name: str,
+         *,
+         location: str = '' ) -> MapLocationWalkNode | None:
+      if kind == MapLocationKind.GUARDIANS_TALK and name == 'Turtle Talk':
+         return TALK_MAP_LOCATION
+      return None
+
+   monkeypatch.setattr( MapLocationWalkNodeLookup, 'for_map_location', for_map_location )
+
+   stops = ItineraryStopResolver.resolve(
+      ItineraryBuilder.build(
+         date=VISIT_DATE,
+         selected_exhibits=[],
+         animals=[],
+         attractions=[],
+         transportations=[],
+         transportation_stations=[],
+         guardians_talks=[ SCHEDULED_TALK, DELETED_TALK ],
+         wild_encounters=[],
+         events=[],
+         arrival_time=ARRIVAL_TIME,
+         departure_time=DEPARTURE_TIME ) )
+
+   talk_stops = [
+      stop
+      for stop in stops
+      if stop.schedule_item_kind == ScheduleItemKind.GUARDIANS_TALK
+   ]
+
+   assert len( talk_stops ) == 1
+   assert talk_stops[ 0 ].item_key == 'Turtle Talk'
+   assert talk_stops[ 0 ].walk_node_ids == [ TALK_WALK_NODE_ID ]
+
+
+def Test_Resolve_TestDeletedWildEncounter_ExpectSkipped(
+      stub_itinerary_stop_dependencies: None ) -> None:
+   stops = ItineraryStopResolver.resolve(
+      ItineraryBuilder.build(
+         date=VISIT_DATE,
+         selected_exhibits=[],
+         animals=[],
+         attractions=[],
+         transportations=[],
+         transportation_stations=[],
+         guardians_talks=[],
+         wild_encounters=[ DELETED_ENCOUNTER ],
+         events=[],
+         arrival_time=ARRIVAL_TIME,
+         departure_time=DEPARTURE_TIME ) )
+
+   assert [
+      stop
+      for stop in stops
+      if stop.schedule_item_kind == ScheduleItemKind.WILD_ENCOUNTER
+   ] == []
+
+
+def Test_WalkGraphNodeById_TestMissingNode_ExpectValueError() -> None:
+   with pytest.raises( ValueError, match='not found' ):
+      ItineraryStopResolver._walk_graph_node_by_id( TEST_GRAPH, 'missing-node' )

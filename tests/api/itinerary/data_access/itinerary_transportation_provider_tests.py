@@ -264,3 +264,42 @@ def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersR
    assert transportation_count == 0
    assert leg_count == 0
    assert marker_count == 0
+
+
+def Test_ClearAllItineraryTransportationScheduleTimes_TestScheduledRows_ExpectAllCleared(
+      transportation_provider_conn: sqlite3.Connection ) -> None:
+   cur = transportation_provider_conn.cursor()
+   ItineraryTransportationProvider.insert_itinerary_transportation(
+      cur,
+      transportation=ZOOMOBILE,
+      old_likelihood=None,
+      new_likelihood=100,
+      added_as_attraction=True,
+      start_time='10:00 AM',
+      end_time='11:15 AM',
+      route='summer' )
+   ItineraryTransportationProvider.insert_itinerary_transportation(
+      cur,
+      transportation=ZOOMOBILE,
+      old_likelihood=None,
+      new_likelihood=100,
+      added_as_attraction=False,
+      start_time='11:30 AM',
+      end_time='12:00 PM',
+      route='transit' )
+   ItineraryTransportationProvider.clear_all_itinerary_transportation_schedule_times( cur )
+   transportation_provider_conn.commit()
+   cur.close()
+
+   rows = transportation_provider_conn.execute(
+      """   SELECT START_TIME, END_TIME, ROUTE, BULK_TRANSIT_EVALUATED
+            FROM ItineraryTransportation
+            ORDER BY ADDED_AS_ATTRACTION;
+      """,
+   ).fetchall()
+
+   assert len( rows ) == 2
+   assert all( row[ 'START_TIME' ] is None for row in rows )
+   assert all( row[ 'END_TIME' ] is None for row in rows )
+   assert all( row[ 'ROUTE' ] is None for row in rows )
+   assert all( row[ 'BULK_TRANSIT_EVALUATED' ] == 0 for row in rows )

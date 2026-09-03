@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftPin
@@ -120,3 +122,109 @@ def Test_Resolve_TestAttractionNotOnLoop_ExpectEmpty() -> None:
          close_seconds=19 * 3600 ) )
 
    assert soft_pins == []
+
+
+def Test_Resolve_TestSplashOnLoopWithHours_ExpectSoftPin(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = ItineraryAttractionRecord(
+      attraction='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+   hours = OperatingHours(
+      open_seconds=12 * 3600,
+      close_seconds=17 * 3600 )
+   loop_units = [
+      _loop_unit(
+         'splash',
+         [ splash ] ),
+   ]
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction, *, visit_date, zoo_operating_hours: hours )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.LoopPinSegmentSplitter.viewing_spot_index_for_stop',
+      lambda loop_id, stop: 0 )
+
+   soft_pins = AttractionHoursSoftPinResolver.resolve(
+      object(),
+      attractions=[ splash ],
+      loop_units=loop_units,
+      visit_date='2026-06-20',
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) )
+
+   assert soft_pins == [
+      AttractionHoursSoftPin(
+         loop_id='splash',
+         viewing_spot_index=0,
+         attraction_name='Splash Island',
+         open_seconds=12 * 3600,
+         close_seconds=17 * 3600 ),
+   ]
+
+
+def Test_Resolve_TestHoursClosedOrInvalid_ExpectEmpty(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = ItineraryAttractionRecord(
+      attraction='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction, *, visit_date, zoo_operating_hours: OperatingHours(
+         open_seconds=12 * 3600,
+         close_seconds=12 * 3600 ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.LoopPinSegmentSplitter.viewing_spot_index_for_stop',
+      lambda loop_id, stop: 0 )
+
+   assert AttractionHoursSoftPinResolver.resolve(
+      object(),
+      attractions=[ splash ],
+      loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
+      visit_date='2026-06-20',
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) ) == []
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction, *, visit_date, zoo_operating_hours: None )
+
+   assert AttractionHoursSoftPinResolver.resolve(
+      object(),
+      attractions=[ splash ],
+      loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
+      visit_date='2026-06-20',
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) ) == []
+
+
+def Test_Resolve_TestAttractionWithoutViewingSpotIndex_ExpectEmpty(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = ItineraryAttractionRecord(
+      attraction='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100 )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda conn, attraction, *, visit_date, zoo_operating_hours: OperatingHours(
+         open_seconds=12 * 3600,
+         close_seconds=17 * 3600 ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.LoopPinSegmentSplitter.viewing_spot_index_for_stop',
+      lambda loop_id, stop: None )
+
+   assert AttractionHoursSoftPinResolver.resolve(
+      object(),
+      attractions=[ splash ],
+      loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
+      visit_date='2026-06-20',
+      zoo_operating_hours=OperatingHours(
+         open_seconds=9 * 3600,
+         close_seconds=19 * 3600 ) ) == []

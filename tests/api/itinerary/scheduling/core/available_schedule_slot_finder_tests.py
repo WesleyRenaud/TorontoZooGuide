@@ -78,3 +78,27 @@ def Test_FindNext_TestWindowTooShort_ExpectNone() -> None:
       duration_seconds=8 * 60,
       day_end_seconds=9 * 3600 + 35 * 60,
    ) is None
+
+
+def Test_FindNext_TestAnchorAtDayEnd_ExpectNone() -> None:
+   assert AvailableScheduleSlotFinder.find_next(
+      [],
+      anchor_seconds=17 * 3600,
+      duration_seconds=8 * 60,
+      day_end_seconds=17 * 3600,
+   ) is None
+
+
+def Test_FindPrevious_TestFullyBlockedWindow_ExpectNone() -> None:
+   blockers = [
+      TimeBlock(
+         start_seconds=9 * 3600 + 30 * 60,
+         end_seconds=12 * 3600 ),
+   ]
+
+   assert AvailableScheduleSlotFinder.find_previous(
+      blockers,
+      end_before_seconds=12 * 3600,
+      duration_seconds=8 * 60,
+      day_start_seconds=9 * 3600 + 30 * 60,
+   ) is None

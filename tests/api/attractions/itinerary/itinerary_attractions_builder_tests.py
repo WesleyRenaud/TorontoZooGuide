@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 from api.attractions.itinerary.itinerary_attractions_builder import ItineraryAttractionsBuilder
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from api.models.attraction import Attraction
 
 
@@ -62,6 +65,33 @@ def Test_Build_TestSortsByName_ExpectCaseInsensitiveOrder() -> None:
    result = ItineraryAttractionsBuilder.build( attractions, saved_attractions )
 
    assert [ attraction.name for attraction in result ] == [ CAROUSEL, GREENHOUSE ]
+
+
+def Test_Build_TestMissingSavedLookup_ExpectSkipsScheduleApplication(
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   build_results = iter( [
+      'carousel-key',
+      'carousel-key',
+      'carousel-key',
+      'missing-key',
+   ] )
+
+   monkeypatch.setattr(
+      ItineraryNameKeyBuilder,
+      'build',
+      lambda _name: next( build_results ) )
+   attractions = [ _attraction( CAROUSEL ) ]
+   saved_attractions = [
+      _saved_attraction( attraction=CAROUSEL ),
+   ]
+
+   result = ItineraryAttractionsBuilder.build( attractions, saved_attractions )
+
+   assert len( result ) == 1
+   assert result[ 0 ].old_likelihood is None
+   assert result[ 0 ].start_time is None
+   assert result[ 0 ].end_time is None
 
 
 def Test_Build_TestAppliesSavedSchedule_ExpectOldLikelihoodAndTimes() -> None:

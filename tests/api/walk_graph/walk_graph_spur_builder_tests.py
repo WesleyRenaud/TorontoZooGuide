@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
+from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 from api.walk_graph.walk_graph_spur import WalkGraphSpur
@@ -16,9 +19,10 @@ def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
    }
 
 
-def _bridged_spur_graph() -> WalkGraph:
+def _bridged_spur_graph(
+      *,
+      spur_node_count: int = 15 ) -> WalkGraph:
    main_node_count = 61
-   spur_node_count = 15
    nodes = [
       _node( f'm-{ index }', float( index ), 0.0 )
       for index in range( main_node_count )
@@ -39,6 +43,11 @@ def _bridged_spur_graph() -> WalkGraph:
       'to': 's-0',
       'length_px': 10.0,
    } )
+   edges.append( {
+      'from': 's-0',
+      'to': 'm-60',
+      'length_px': 10.0,
+   } )
    edges.extend( {
       'from': f's-{ index }',
       'to': f's-{ index + 1 }',
@@ -56,6 +65,30 @@ def _bridged_spur_graph() -> WalkGraph:
       'map_width_px': 100,
       'map_height_px': 100,
       'entrance_node_id': 'm-0',
+      'nodes': nodes,
+      'edges': edges,
+   }
+
+
+def _cycle_graph() -> WalkGraph:
+   nodes = [
+      _node( 'a', 0.0, 0.0 ),
+      _node( 'b', 10.0, 0.0 ),
+      _node( 'c', 5.0, 10.0 ),
+   ]
+   edges = [
+      { 'from': 'a', 'to': 'b', 'length_px': 10.0 },
+      { 'from': 'b', 'to': 'a', 'length_px': 10.0 },
+      { 'from': 'b', 'to': 'c', 'length_px': 10.0 },
+      { 'from': 'c', 'to': 'b', 'length_px': 10.0 },
+      { 'from': 'c', 'to': 'a', 'length_px': 10.0 },
+      { 'from': 'a', 'to': 'c', 'length_px': 10.0 },
+   ]
+
+   return {
+      'map_width_px': 100,
+      'map_height_px': 100,
+      'entrance_node_id': 'a',
       'nodes': nodes,
       'edges': edges,
    }
@@ -119,3 +152,58 @@ def Test_BuildForGraph_TestBridgedPeninsula_ExpectSpurWithAttachmentNode() -> No
    assert len( spur.node_ids ) >= 15
    assert 's-0' in spur.node_ids
    assert 'm-60' in spur.attachment_node_ids
+
+
+def Test_Build_TestCachedProviderGraph_ExpectSameAsBuildForGraph(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   graph = _bridged_spur_graph()
+   WalkGraphSpurBuilder.build.cache_clear()
+   monkeypatch.setattr(
+      WalkGraphProvider,
+      'fetch',
+      lambda: graph )
+
+   assert WalkGraphSpurBuilder.build() == WalkGraphSpurBuilder.build_for_graph( graph )
+   WalkGraphSpurBuilder.build.cache_clear()
+
+
+def Test_BuildForGraph_TestShortSpur_ExpectSkipped() -> None:
+   assert WalkGraphSpurBuilder.build_for_graph(
+      _bridged_spur_graph( spur_node_count=5 ) ) == []
+
+
+def Test_AppendRegion_TestSameNodeIds_ExpectMergedAttachments() -> None:
+   spur_regions: list[ WalkGraphSpur ] = []
+   other_node_ids = { 'x-0' }
+   spur_node_ids = { 's-0', 's-1', 's-2' }
+
+   WalkGraphSpurBuilder._append_region(
+      spur_regions,
+      spur_node_ids=other_node_ids,
+      attachment_node_id='m-0' )
+   WalkGraphSpurBuilder._append_region(
+      spur_regions,
+      spur_node_ids=spur_node_ids,
+      attachment_node_id='m-1' )
+   WalkGraphSpurBuilder._append_region(
+      spur_regions,
+      spur_node_ids=spur_node_ids,
+      attachment_node_id='m-2' )
+
+   assert len( spur_regions ) == 2
+   assert spur_regions[ 1 ].attachment_node_ids == frozenset( { 'm-1', 'm-2' } )
+
+
+def Test_MergeSubsetSpurs_TestNestedSpurs_ExpectLargestOnly() -> None:
+   large = WalkGraphSpur(
+      node_ids=frozenset( { 'a', 'b', 'c', 'd' } ),
+      attachment_node_ids=frozenset( { 'm-1' } ) )
+   small = WalkGraphSpur(
+      node_ids=frozenset( { 'a', 'b' } ),
+      attachment_node_ids=frozenset( { 'm-2' } ) )
+
+   assert WalkGraphSpurBuilder._merge_subset_spurs( [ small, large ] ) == [ large ]
+
+
+def Test_BuildForGraph_TestCycleGraph_ExpectNoSpurs() -> None:
+   assert WalkGraphSpurBuilder.build_for_graph( _cycle_graph() ) == []

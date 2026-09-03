@@ -68,6 +68,17 @@ def guardians_talk_animal_provider_conn() -> sqlite3.Connection:
    conn.close()
 
 
+def Test_FetchLinkedAnimals_TestPenguinTalk_ExpectSpeciesExhibitKey(
+      guardians_talk_animal_provider_conn: sqlite3.Connection ) -> None:
+   keys = GuardiansTalkAnimalProvider.fetch_linked_animals(
+      guardians_talk_animal_provider_conn,
+      PENGUIN_TALK )
+
+   assert len( keys ) == 1
+   assert keys[ 0 ].species == 'african penguin'
+   assert keys[ 0 ].exhibit == 'africa savanna'
+
+
 def Test_FetchAnimalLinks_TestPenguinTalk_ExpectOutdoorEnclosure(
       guardians_talk_animal_provider_conn: sqlite3.Connection ) -> None:
    links = GuardiansTalkAnimalProvider.fetch_animal_links(

@@ -51,11 +51,11 @@ def Test_normalize_date_key( value: Types.DateInput, expected: Types.DateKey | N
    assert DateValues.normalize_date_key( value ) == expected
 
 
-def Test_normalize_date_key_returns_none_for_unsupported_date_strings() -> None:
+def Test_NormalizeDateKey_TestUnsupportedDateStrings_ExpectNone() -> None:
    assert DateValues.normalize_date_key( 'June 15, 2026' ) is None
 
 
-def Test_resolve_open_ended_date_range_keeps_open_end_date() -> None:
+def Test_ResolveOpenEndedDateRange_TestOpenEndDate_ExpectPreserved() -> None:
    date_range = DateValues.resolve_open_ended_date_range(
       start_date='2026-06-01',
       end_date=None )
@@ -89,7 +89,7 @@ def Test_parse_datetime_value( value: str | None, expected: datetime | None ) ->
    assert DateValues.parse_datetime_value( value ) == expected
 
 
-def Test_parse_values_raise_for_unsupported_formats() -> None:
+def Test_ParseValues_TestUnsupportedFormats_ExpectValueError() -> None:
    with pytest.raises( ValueError ):
       DateValues.parse_date_value( 'June 15, 2026' )
 
@@ -149,6 +149,7 @@ def Test_normalize_unique_schedule_times(
       expected: list[ str ] ) -> None:
    assert DateValues.normalize_unique_schedule_times( values ) == expected
 
+
 @pytest.mark.parametrize(
    'value, expected',
    [
@@ -180,7 +181,7 @@ def Test_time_value_in_seconds(
    assert DateValues.time_value_in_seconds( value ) == expected
 
 
-def Test_time_value_is_at_or_after() -> None:
+def Test_TimeValueIsAtOrAfter_TestVariousPairs_ExpectComparisonResult() -> None:
    assert DateValues.time_value_is_at_or_after( '10:30 AM', '10:30 AM' )
    assert DateValues.time_value_is_at_or_after( '10:30 AM', '10:15 AM' )
    assert not DateValues.time_value_is_at_or_after( '10:15 AM', '10:30 AM' )
@@ -242,3 +243,83 @@ def Test_is_date_in_range(
       end: Types.DateInput,
       expected: bool ) -> None:
    assert DateValues.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
+
+
+def Test_ParseTimeValue_TestDatetimeInput_ExpectTimeComponent() -> None:
+   assert DateValues.parse_time_value( datetime( 2026, 6, 15, 14, 30, 45 ) ) == datetime( 2026, 6, 15, 14, 30, 45 ).time()
+
+
+def Test_FormatTimeValue_TestSecondsPresent_ExpectHmsFormat() -> None:
+   assert DateValues.format_time_value( '14:30:45' ) == '14:30:45'
+
+
+def Test_ScheduleTimeKeyFromSeconds_TestInvalidSeconds_ExpectValueError() -> None:
+   with pytest.raises( ValueError ):
+      DateValues.schedule_time_key_from_seconds( -1 )
+
+
+def Test_ScheduleTimeKeyFromMinutes_TestInvalidMinutes_ExpectValueError() -> None:
+   with pytest.raises( ValueError ):
+      DateValues.schedule_time_key_from_minutes( -5 )
+
+
+def Test_AddMinutesToTime_TestNonPositiveDuration_ExpectNone() -> None:
+   assert DateValues.add_minutes_to_time( '10:00 AM', 0 ) is None
+   assert DateValues.add_minutes_to_time( '10:00 AM', -5 ) is None
+
+
+def Test_NormalizeDateKey_TestInvalidDate_ExpectNone() -> None:
+   assert DateValues.normalize_date_key( 'not-a-date' ) is None
+
+
+def Test_FormatDisplayDateValue_TestValidDate_ExpectMonthDayYear() -> None:
+   assert DateValues.format_display_date_value( '2026-06-15' ) == 'June 15, 2026'
+
+
+def Test_FormatDisplayDateValue_TestInvalidDate_ExpectNone() -> None:
+   assert DateValues.format_display_date_value( None ) is None
+
+
+def Test_FormatTimeValue_TestEmptyTime_ExpectNone() -> None:
+   assert DateValues.format_time_value( '' ) is None
+
+
+def Test_FormatTimeValue_TestWithoutSeconds_ExpectHmFormat() -> None:
+   assert DateValues.format_time_value( '14:30' ) == '14:30'
+
+
+def Test_NormalizeUniqueItineraryScheduleTimes_TestDelegates_ExpectUniqueTimes() -> None:
+   assert DateValues.normalize_unique_itinerary_schedule_times(
+      [ '10:00 AM', '10:00 AM', '11:00 AM' ] ) == [ '10:00 AM', '11:00 AM' ]
+
+
+def Test_ScheduleTimeKeyFromSeconds_TestFormatReturnsNone_ExpectValueError(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      DateValues,
+      'format_display_time_value',
+      lambda _time: None )
+
+   with pytest.raises( ValueError, match='Invalid schedule time seconds' ):
+      DateValues.schedule_time_key_from_seconds( 3600 )
+
+
+def Test_ScheduleTimeKeyFromMinutes_TestFormatReturnsNone_ExpectValueError(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      DateValues,
+      'format_display_time_value',
+      lambda _time: None )
+
+   with pytest.raises( ValueError, match='Invalid schedule time minutes' ):
+      DateValues.schedule_time_key_from_minutes( 90 )
+
+
+def Test_NormalizeDateKey_TestParseReturnsNone_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      DateValues,
+      'parse_date_value',
+      lambda _value: None )
+
+   assert DateValues.normalize_date_key( '2026-06-15' ) is None

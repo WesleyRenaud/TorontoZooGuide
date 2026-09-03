@@ -457,3 +457,74 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
    assert result[ 'species' ] == ANIMAL_NAME
    assert result[ 'exhibit' ] == ANIMAL_EXHIBIT
    assert result.get( 'error' ) is None
+
+
+@pytest.mark.parametrize(
+   'route, coordinator_method, api_error_type',
+   [
+      (
+         '/set-animal-on-display',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+            'viewingScope': 'outdoor',
+         },
+         'noOffDisplayEntryFound',
+      ),
+      (
+         '/set-animal-visibility-schedule',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+            'scheduleStartDate': VISIBILITY_SCHEDULE_START_DATE,
+            'scheduleEndDate': VISIBILITY_SCHEDULE_END_DATE,
+            'dailyStartTime': VISIBILITY_SCHEDULE_DAILY_START_TIME,
+            'dailyEndTime': VISIBILITY_SCHEDULE_DAILY_END_TIME,
+            'message': VISIBILITY_SCHEDULE_MESSAGE,
+         },
+         'couldNotSetLimitedViewingSchedule',
+      ),
+      (
+         '/remove-animal-visibility-schedule',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+         },
+         'couldNotRemoveVisibilitySchedule',
+      ),
+      (
+         '/set-animal-viewing-alert',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+            'alertStartDate': VIEWING_ALERT_START_DATE,
+            'alertEndDate': VIEWING_ALERT_END_DATE,
+            'message': VIEWING_ALERT_MESSAGE,
+         },
+         'couldNotSetViewingAlert',
+      ),
+      (
+         '/remove-animal-viewing-alert',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+         },
+         'couldNotRemoveViewingAlert',
+      ),
+   ],
+)
+def Test_AnimalMutationEndpoints_TestCoordinatorFailure_ExpectApiError(
+      stub_animal_coordinator: StubAnimalCoordinator,
+      route: str,
+      coordinator_method: dict[ str, str ],
+      api_error_type: str ) -> None:
+   StubAnimalCoordinator.default_success = False
+   handler = make_handler( route, coordinator_method )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == api_error_type

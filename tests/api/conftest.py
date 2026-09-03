@@ -4,12 +4,20 @@ from collections.abc import Generator
 from pathlib import Path
 import shutil
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 from api_test_support.seeded_database import SeededDatabase
 import pytest
 
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from api.seed.seed_runner import SeedRunner
+
+@pytest.fixture
+def stub_request_connection( monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      RequestConnectionProvider,
+      'get',
+      lambda: STUB_REQUEST_CONNECTION )
 
 
 @pytest.fixture( scope='session' )

@@ -3,6 +3,7 @@ source = [ "api" ]
 omit = [
    "api/__main__.py",
    "api/**/__init__.py",
+   "api/server_runner.py",
 ]
 
 [tool.ruff]
@@ -49,8 +50,17 @@ include = [
    "api/**/*.py",
 ]
 
+[tool.tzg_python_unit_tests]
+include = [
+   "tests/api/**/*.py",
+]
+exclude = [
+   "tests/api/api_test_support/**",
+]
+
 [tool.pytest.ini_options]
 python_files = [ "*_tests.py", "test_*.py" ]
 python_functions = [ "Test_*", "test_*" ]
 pythonpath = [ "tests/api" ]
 testpaths = [ "tests/api" ]
+addopts = [ "--import-mode=importlib" ]
