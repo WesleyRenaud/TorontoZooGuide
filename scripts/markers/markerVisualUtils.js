@@ -1,5 +1,5 @@
-import { likelihoodToColor } from '../likelihood/likelihoodColors.js';
-import { clampLikelihood } from '../likelihood/likelihoodScale.js';
+import { LikelihoodColors } from '../likelihood/likelihoodColors.js';
+import { LikelihoodScale } from '../likelihood/likelihoodScale.js';
 
 const DEFAULT_STACK_MARKER_COLOR = '#5e9600f2';
 
@@ -75,11 +75,11 @@ export function applyGenericIcon(markerEl, iconUrl, count) {
    applyBackgroundImage(markerEl, iconUrl);
 }
 
-export { clampLikelihood };
+export const clampLikelihood = LikelihoodScale.clampLikelihood;
 
 export function getLikelihoodVisual(likelihood) {
-   const clampedLikelihood = clampLikelihood(likelihood);
-   const colour = likelihoodToColor(clampedLikelihood);
+   const clampedLikelihood = LikelihoodScale.clampLikelihood(likelihood);
+   const colour = LikelihoodColors.likelihoodToColor(clampedLikelihood);
    const iconToken = clampedLikelihood >= 100
       ? 'open'
       : String(colour || '').replace('#', '');

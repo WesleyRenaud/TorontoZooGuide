@@ -1,8 +1,8 @@
 import { buildItemKey } from './itemKey.js';
-import { likelihoodToFraction } from '../../../likelihood/likelihoodValues.js';
+import { LikelihoodValues } from '../../../likelihood/likelihoodValues.js';
 
 function getAnimalLikelihood(animal) {
-   return likelihoodToFraction(animal?.likelihood);
+   return LikelihoodValues.likelihoodToFraction(animal?.likelihood);
 }
 
 function buildAnimalsBySpecies(animals = []) {

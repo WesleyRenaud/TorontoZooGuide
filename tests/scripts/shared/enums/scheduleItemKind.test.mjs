@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
-test('ScheduleItemKind pairs kind with API itemType', () => {
+test('Test_Animal_TestStaticFields_ExpectKindAndItemType', () => {
    assert.equal(ScheduleItemKind.ANIMAL.kind, 'animal');
    assert.equal(ScheduleItemKind.ANIMAL.itemType, 'animals');
    assert.equal(ScheduleItemKind.ATTRACTION.kind, 'attraction');
    assert.equal(ScheduleItemKind.ATTRACTION.itemType, 'attractions');
 });
 
-test('ScheduleItemKind.scheduleItemKindFromItemType accepts module and kind strings', () => {
+test('Test_ScheduleItemKindFromItemType_TestModuleAndKindStrings_ExpectMatchingKind', () => {
    assert.equal(
       ScheduleItemKind.scheduleItemKindFromItemType('animals'),
       ScheduleItemKind.ANIMAL
@@ -25,7 +25,7 @@ test('ScheduleItemKind.scheduleItemKindFromItemType accepts module and kind stri
    );
 });
 
-test('ScheduleItemKind.isScheduleItemModuleItemType recognizes module item types only', () => {
+test('Test_IsScheduleItemModuleItemType_TestModuleTypes_ExpectRecognizedOnly', () => {
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('animals'), true);
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('attractions'), true);
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('transportations'), true);
@@ -37,7 +37,7 @@ test('ScheduleItemKind.isScheduleItemModuleItemType recognizes module item types
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(null), false);
 });
 
-test('ScheduleItemKind.isFixedTimeScheduleItemKind applies to guardians talks and wild encounters only', () => {
+test('Test_IsFixedTimeScheduleItemKind_TestTalksAndEncounters_ExpectTrueOnly', () => {
    assert.equal(
       ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.itemType),
       true
@@ -59,7 +59,7 @@ test('ScheduleItemKind.isFixedTimeScheduleItemKind applies to guardians talks an
    assert.equal(ScheduleItemKind.isFixedTimeScheduleItemKind('lunch'), false);
 });
 
-test('ScheduleItemKind.usesScheduledTimelineEventCard covers fixed-time items and attractions', () => {
+test('Test_UsesScheduledTimelineEventCard_TestFixedTimeAndAttractions_ExpectTrue', () => {
    assert.equal(
       ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.itemType),
       true
@@ -86,7 +86,7 @@ test('ScheduleItemKind.usesScheduledTimelineEventCard covers fixed-time items an
    );
 });
 
-test('ScheduleItemKind.scheduleItemKindFromItemType returns null for unknown and blank values', () => {
+test('Test_ScheduleItemKindFromItemType_TestUnknownAndBlank_ExpectNullOrEvent', () => {
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType('event'), ScheduleItemKind.EVENT);
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType('lunch'), null);
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(''), null);
@@ -97,7 +97,7 @@ test('ScheduleItemKind.scheduleItemKindFromItemType returns null for unknown and
    );
 });
 
-test('ScheduleItemKind.scheduleItemModuleItemTypeForKind maps schedulable kinds to API item types', () => {
+test('Test_ScheduleItemModuleItemTypeForKind_TestSchedulableKinds_ExpectItemTypes', () => {
    assert.equal(
       ScheduleItemKind.scheduleItemModuleItemTypeForKind('animal'),
       ScheduleItemKind.ANIMAL.itemType

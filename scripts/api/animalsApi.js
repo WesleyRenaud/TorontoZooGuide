@@ -1,4 +1,4 @@
-import { postJson } from './apiClient.js';
+import { ApiClient } from './apiClient.js';
 import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
@@ -72,27 +72,27 @@ function normalizeAnimalInformationResponse(response) {
 }
 
 export async function getRegions() {
-   const response = await postJson('/get-regions', {});
+   const response = await ApiClient.postJson('/get-regions', {});
    return normalizeRegionsResponse(response);
 }
 
 export async function getExhibitsInRegion(region) {
-   const response = await postJson('/get-exhibits-in-region', { region });
+   const response = await ApiClient.postJson('/get-exhibits-in-region', { region });
    return normalizeExhibitsResponse(response);
 }
 
 export async function getAnimalsInExhibit(exhibit) {
-   const response = await postJson('/get-animal-names-by-exhibit', { exhibit });
+   const response = await ApiClient.postJson('/get-animal-names-by-exhibit', { exhibit });
    return normalizeAnimalsResponse(response);
 }
 
 export async function getAnimalViewingScopes({ species, exhibit } = {}) {
-   const response = await postJson('/get-animal-viewing-scopes', { species, exhibit });
+   const response = await ApiClient.postJson('/get-animal-viewing-scopes', { species, exhibit });
    return normalizeAnimalViewingScopesResponse(response);
 }
 
 export async function getAnimalInformation({ species, exhibit }) {
-   const response = await postJson('/get-animal-information', { species, exhibit });
+   const response = await ApiClient.postJson('/get-animal-information', { species, exhibit });
    return normalizeAnimalInformationResponse(response);
 }
 

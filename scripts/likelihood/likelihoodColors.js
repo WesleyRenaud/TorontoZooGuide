@@ -1,4 +1,4 @@
-import { clampLikelihood } from './likelihoodScale.js';
+import { LikelihoodScale } from './likelihoodScale.js';
 
 const LIKELIHOOD_COLORS = Object.freeze([
    '#7a0000',
@@ -23,11 +23,13 @@ const LIKELIHOOD_COLORS = Object.freeze([
    '#1fa544',
 ]);
 
-export function likelihoodToColor(likelihood) {
-   const value = clampLikelihood(likelihood);
-   const index = Math.round(
-      (value / 100) * (LIKELIHOOD_COLORS.length - 1)
-   );
+export class LikelihoodColors {
+   static likelihoodToColor(likelihood) {
+      const value = LikelihoodScale.clampLikelihood(likelihood);
+      const index = Math.round(
+         (value / 100) * (LIKELIHOOD_COLORS.length - 1)
+      );
 
-   return LIKELIHOOD_COLORS[index];
+      return LIKELIHOOD_COLORS[index];
+   }
 }

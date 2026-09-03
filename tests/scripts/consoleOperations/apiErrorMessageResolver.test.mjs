@@ -3,14 +3,14 @@ import test from 'node:test';
 
 import { ApiErrorMessageResolver } from '../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 
-test('ApiErrorMessageResolver.resolveApiErrorMessage formats api error templates from the catalog', () => {
+test('Test_ResolveApiErrorMessage_TestCatalogTemplate_ExpectFormattedMessage', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveApiErrorMessage('couldNotSetClosed', { name: 'Africa Savanna' }),
       'Could not set "Africa Savanna" as closed.'
    );
 });
 
-test('ApiErrorMessageResolver.resolveConsoleMutationError resolves apiErrorType payloads', () => {
+test('Test_ResolveConsoleMutationError_TestSpeciesMissing_ExpectCatalogMessage', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({
          success: false,
@@ -21,7 +21,7 @@ test('ApiErrorMessageResolver.resolveConsoleMutationError resolves apiErrorType 
    );
 });
 
-test('ApiErrorMessageResolver.resolveConsoleMutationError resolves invalid attraction hours errors', () => {
+test('Test_ResolveConsoleMutationError_TestInvalidAttractionHours_ExpectCatalogMessage', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({
          success: false,
@@ -31,7 +31,7 @@ test('ApiErrorMessageResolver.resolveConsoleMutationError resolves invalid attra
    );
 });
 
-test('ApiErrorMessageResolver.resolveConsoleMutationError resolves attraction hours time bounds errors', () => {
+test('Test_ResolveConsoleMutationError_TestHoursBounds_ExpectCatalogMessage', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({
          success: false,
@@ -41,7 +41,7 @@ test('ApiErrorMessageResolver.resolveConsoleMutationError resolves attraction ho
    );
 });
 
-test('ApiErrorMessageResolver.resolveConsoleMutationError falls back when api error is missing', () => {
+test('Test_ResolveConsoleMutationError_TestMissingApiError_ExpectFallback', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({ success: false }, 'fallback'),
       'fallback'

@@ -6,7 +6,7 @@ import {
    getAnimalSpecies,
    getAnimalSubtitle,
 } from '../../itinerary/selectors/animalSelector/model.js';
-import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
+import { LikelihoodPresentation } from '../../likelihood/likelihoodPresentation.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const animalRenderer = {
@@ -49,7 +49,7 @@ export const animalRenderer = {
          details: [
             getAnimalSubtitle(a),
             APP_STRINGS.tooltips.likelihoodDetail(
-               getLikelihoodPhrase(a.likelihood),
+               LikelihoodPresentation.getLikelihoodPhrase(a.likelihood),
                a.likelihood
             ),
          ],

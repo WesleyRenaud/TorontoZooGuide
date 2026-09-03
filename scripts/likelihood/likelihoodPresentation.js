@@ -1,4 +1,4 @@
-import { clampLikelihood } from './likelihoodScale.js';
+import { LikelihoodScale } from './likelihoodScale.js';
 import { APP_STRINGS } from '../strings.js';
 
 const LIKELIHOOD_PHRASES = Object.freeze([
@@ -10,10 +10,12 @@ const LIKELIHOOD_PHRASES = Object.freeze([
    { minimum: 0, label: APP_STRINGS.likelihood.veryLow },
 ]);
 
-export function getLikelihoodPhrase(likelihood) {
-   const value = clampLikelihood(likelihood);
+export class LikelihoodPresentation {
+   static getLikelihoodPhrase(likelihood) {
+      const value = LikelihoodScale.clampLikelihood(likelihood);
 
-   return LIKELIHOOD_PHRASES.find((phrase) => (
-      value >= phrase.minimum
-   ))?.label || APP_STRINGS.likelihood.veryLow;
+      return LIKELIHOOD_PHRASES.find((phrase) => (
+         value >= phrase.minimum
+      ))?.label || APP_STRINGS.likelihood.veryLow;
+   }
 }
