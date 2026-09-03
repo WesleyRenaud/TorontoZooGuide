@@ -1,8 +1,8 @@
-import { asTrimmedString } from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { DETAIL_SEPARATOR } from '../shared/constants.js';
 
 export function formatAnimalTitleSuffix(enclosureName) {
-   const normalizedEnclosureName = asTrimmedString(enclosureName);
+   const normalizedEnclosureName = ValueNormalizer.asTrimmedString(enclosureName);
 
    if (!normalizedEnclosureName) {
       return '';
@@ -12,8 +12,8 @@ export function formatAnimalTitleSuffix(enclosureName) {
 }
 
 export function formatSpeciesEnclosureLine(species, enclosureName) {
-   const normalizedSpecies = asTrimmedString(species);
-   const normalizedEnclosureName = asTrimmedString(enclosureName);
+   const normalizedSpecies = ValueNormalizer.asTrimmedString(species);
+   const normalizedEnclosureName = ValueNormalizer.asTrimmedString(enclosureName);
 
    if (!normalizedEnclosureName) {
       return normalizedSpecies;
@@ -23,8 +23,8 @@ export function formatSpeciesEnclosureLine(species, enclosureName) {
 }
 
 export function formatExhibitEnclosureTypeLine(exhibit, enclosureType) {
-   const normalizedExhibit = asTrimmedString(exhibit);
-   const normalizedEnclosureType = asTrimmedString(enclosureType);
+   const normalizedExhibit = ValueNormalizer.asTrimmedString(exhibit);
+   const normalizedEnclosureType = ValueNormalizer.asTrimmedString(enclosureType);
 
    if (!normalizedEnclosureType) {
       return normalizedExhibit;

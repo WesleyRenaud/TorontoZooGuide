@@ -1,4 +1,4 @@
-import { asTrimmedString } from '../../api/normalizeValues.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import {
    clearConsoleMenuButtonSelection,
    clearConsolePanelUrlParam,
@@ -22,7 +22,7 @@ export function resetFieldValue(fieldEl) {
 }
 
 export function getFieldValue(fieldEl) {
-   return asTrimmedString(fieldEl?.value);
+   return ValueNormalizer.asTrimmedString(fieldEl?.value);
 }
 
 export function resetFormFields(fieldEls = []) {

@@ -1,11 +1,11 @@
 import { createUpdate } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -80,7 +80,7 @@ export function createCreateUpdateController({
             resetForm();
          }
          else {
-            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
+            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {

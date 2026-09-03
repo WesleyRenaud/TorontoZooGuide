@@ -14,19 +14,8 @@ import {
 import { updateItineraryTransportationStationRolesFromConfig } from '../itinerary/itineraryTransportationStationRoles.js';
 import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
-import {
-   asArray,
-   asBoolean,
-   asNullableString,
-   asObject,
-   asTrimmedString,
-   asTrimmedStringList,
-   normalizeNumber,
-} from './normalizeValues.js';
-import {
-   ScheduleItemKind,
-   scheduleItemKindFromItemType,
-} from '../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
+import { ValueNormalizer } from './valueNormalizer.js';
 
 const ITINERARY_COLLECTION_FIELDS = [
    ['animals', 'animals'],
@@ -38,7 +27,7 @@ const ITINERARY_COLLECTION_FIELDS = [
 ];
 
 function mapScheduleItemKeyToWire(itemType, key) {
-   const kind = scheduleItemKindFromItemType(itemType);
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
 
    if (
       kind === ScheduleItemKind.WILD_ENCOUNTER
@@ -54,50 +43,50 @@ function mapScheduleItemKeyToWire(itemType, key) {
       return key.toWire();
    }
 
-   return asTrimmedString(key);
+   return ValueNormalizer.asTrimmedString(key);
 }
 
 function normalizeItineraryEvent(event) {
-   const source = asObject(event);
+   const source = ValueNormalizer.asObject(event);
 
    return {
-      event_type: asTrimmedString(source.event_type),
-      start_time: asTrimmedString(source.start_time),
-      end_time: asTrimmedString(source.end_time),
+      event_type: ValueNormalizer.asTrimmedString(source.event_type),
+      start_time: ValueNormalizer.asTrimmedString(source.start_time),
+      end_time: ValueNormalizer.asTrimmedString(source.end_time),
    };
 }
 
 function normalizeItineraryEvents(events) {
-   return asArray(events)
+   return ValueNormalizer.asArray(events)
       .map(normalizeItineraryEvent)
       .filter((event) => Boolean(event.event_type));
 }
 
 function normalizeItineraryTransportation(row) {
-   const source = asObject(row);
+   const source = ValueNormalizer.asObject(row);
 
    return {
       ...source,
-      name: asTrimmedString(source.name),
-      route: asTrimmedString(source.route),
-      route_marker_sequences: asArray(source.route_marker_sequences).map(
-         asTrimmedStringList
+      name: ValueNormalizer.asTrimmedString(source.name),
+      route: ValueNormalizer.asTrimmedString(source.route),
+      route_marker_sequences: ValueNormalizer.asArray(source.route_marker_sequences).map(
+         ValueNormalizer.asTrimmedStringList
       ),
-      route_duration_minutes: normalizeNumber(source.route_duration_minutes),
-      added_as_attraction: asBoolean(source.added_as_attraction),
-      bulk_transit_evaluated: asBoolean(source.bulk_transit_evaluated),
+      route_duration_minutes: ValueNormalizer.normalizeNumber(source.route_duration_minutes),
+      added_as_attraction: ValueNormalizer.asBoolean(source.added_as_attraction),
+      bulk_transit_evaluated: ValueNormalizer.asBoolean(source.bulk_transit_evaluated),
    };
 }
 
 function normalizeItineraryTransportations(transportations) {
-   return asArray(transportations).map(normalizeItineraryTransportation);
+   return ValueNormalizer.asArray(transportations).map(normalizeItineraryTransportation);
 }
 
 function normalizeCollectionFields(source = {}, fields) {
    return Object.fromEntries(
       fields.map(([targetKey, responseKey]) => [
          targetKey,
-         asArray(source[responseKey]),
+         ValueNormalizer.asArray(source[responseKey]),
       ])
    );
 }
@@ -107,14 +96,14 @@ function normalizeItineraryCollections(source = {}) {
 }
 
 function normalizeItineraryModel(itinerary) {
-   const source = asObject(itinerary);
+   const source = ValueNormalizer.asObject(itinerary);
    const collections = normalizeItineraryCollections(source);
 
    return {
-      date: asTrimmedString(source.date),
-      arrivalTime: asTrimmedString(source.arrival_time),
-      departureTime: asTrimmedString(source.departure_time),
-      selectedExhibits: asTrimmedStringList(source.selected_exhibits),
+      date: ValueNormalizer.asTrimmedString(source.date),
+      arrivalTime: ValueNormalizer.asTrimmedString(source.arrival_time),
+      departureTime: ValueNormalizer.asTrimmedString(source.departure_time),
+      selectedExhibits: ValueNormalizer.asTrimmedStringList(source.selected_exhibits),
       ...collections,
       transportations: normalizeItineraryTransportations(source.transportations),
       events: normalizeItineraryEvents(source.events),
@@ -122,12 +111,12 @@ function normalizeItineraryModel(itinerary) {
 }
 
 function normalizeNamedStringMap(values) {
-   const source = asObject(values);
+   const source = ValueNormalizer.asObject(values);
 
    return Object.freeze(
       Object.fromEntries(
          Object.entries(source)
-            .map(([key, value]) => [key, asTrimmedString(value)])
+            .map(([key, value]) => [key, ValueNormalizer.asTrimmedString(value)])
             .filter(([, value]) => value)
       )
    );
@@ -142,21 +131,21 @@ function normalizeItineraryAdjustmentTypes(adjustmentTypes) {
 }
 
 function normalizeVisitBoundaryEventTypes(config) {
-   const source = asObject(config.itinerary_visit_boundary_event_types);
+   const source = ValueNormalizer.asObject(config.itinerary_visit_boundary_event_types);
 
    return {
-      arrival: asTrimmedString(source.arrival),
-      departure: asTrimmedString(source.departure),
+      arrival: ValueNormalizer.asTrimmedString(source.arrival),
+      departure: ValueNormalizer.asTrimmedString(source.departure),
    };
 }
 
 function normalizeItineraryStatuses(statuses) {
-   return asArray(statuses)
+   return ValueNormalizer.asArray(statuses)
       .map((entry) => {
-         const source = asObject(entry);
+         const source = ValueNormalizer.asObject(entry);
 
          return {
-            status: asTrimmedString(source.status),
+            status: ValueNormalizer.asTrimmedString(source.status),
             isSuppressable: Boolean(source.is_suppressable),
             isSuppressed: Boolean(source.is_suppressed),
          };
@@ -165,13 +154,13 @@ function normalizeItineraryStatuses(statuses) {
 }
 
 function normalizeItineraryConfig(config) {
-   const source = asObject(config);
+   const source = ValueNormalizer.asObject(config);
    const normalizedStatuses = normalizeItineraryStatuses(source.itinerary_statuses);
    const normalizedConfig = {
       animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
       itineraryAnimalMinLikelihood: source.itinerary_animal_min_likelihood,
-      eventTypes: asArray(source.itinerary_event_types)
-         .map(asTrimmedString)
+      eventTypes: ValueNormalizer.asArray(source.itinerary_event_types)
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean),
       visitBoundaryEventTypes: normalizeVisitBoundaryEventTypes(source),
       errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
@@ -181,19 +170,19 @@ function normalizeItineraryConfig(config) {
       transportationStationRoles: normalizeNamedStringMap(
          source.itinerary_transportation_station_roles
       ),
-      transportationStationOnboardingRoles: asArray(
+      transportationStationOnboardingRoles: ValueNormalizer.asArray(
          source.itinerary_transportation_station_onboarding_roles
       )
-         .map(asTrimmedString)
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean),
-      transportationStationOffboardingRoles: asArray(
+      transportationStationOffboardingRoles: ValueNormalizer.asArray(
          source.itinerary_transportation_station_offboarding_roles
       )
-         .map(asTrimmedString)
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean),
       statuses: normalizedStatuses,
-      suppressedErrorTypes: asArray(source.suppressed_error_types)
-         .map(asTrimmedString)
+      suppressedErrorTypes: ValueNormalizer.asArray(source.suppressed_error_types)
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean),
    };
 
@@ -214,44 +203,44 @@ function normalizeItineraryConfig(config) {
 }
 
 function normalizeItineraryReason(reason) {
-   const source = asObject(reason);
-   const code = asTrimmedString(source.code);
+   const source = ValueNormalizer.asObject(reason);
+   const code = ValueNormalizer.asTrimmedString(source.code);
 
    return {
       code,
       type: code,
-      items: asArray(source.items),
+      items: ValueNormalizer.asArray(source.items),
    };
 }
 
 function normalizeItineraryAdjustment(adjustment) {
-   const source = asObject(adjustment);
+   const source = ValueNormalizer.asObject(adjustment);
 
    return {
       type: normalizeItineraryAdjustmentType(source.type),
-      field: asTrimmedString(source.field),
-      previousValue: asTrimmedString(source.previous_value ?? source.previousValue),
-      value: asTrimmedString(source.value),
-      reason: asTrimmedString(source.reason),
+      field: ValueNormalizer.asTrimmedString(source.field),
+      previousValue: ValueNormalizer.asTrimmedString(source.previous_value ?? source.previousValue),
+      value: ValueNormalizer.asTrimmedString(source.value),
+      reason: ValueNormalizer.asTrimmedString(source.reason),
    };
 }
 
 function normalizeItineraryResult(source = {}, { includeItinerary = true } = {}) {
-   const response = asObject(source);
+   const response = ValueNormalizer.asObject(source);
 
    if (response.itinerary_config !== undefined) {
       normalizeItineraryConfig(response.itinerary_config);
    }
 
    const status = normalizeItineraryErrorTypeFromResponse(response);
-   const reasons = asArray(response.reasons).map(
+   const reasons = ValueNormalizer.asArray(response.reasons).map(
       normalizeItineraryReason
    );
-   const adjustments = asArray(response.adjustments).map(
+   const adjustments = ValueNormalizer.asArray(response.adjustments).map(
       normalizeItineraryAdjustment
    );
-   const suppressedWarnings = asArray(response.suppressed_warnings)
-      .map(asTrimmedString)
+   const suppressedWarnings = ValueNormalizer.asArray(response.suppressed_warnings)
+      .map(ValueNormalizer.asTrimmedString)
       .filter(Boolean);
    const result = {
       status,
@@ -286,19 +275,19 @@ function normalizeItineraryResponse(response) {
 }
 
 function normalizeZooHours(hours) {
-   const source = asObject(hours);
+   const source = ValueNormalizer.asObject(hours);
 
    return {
-      date: asTrimmedString(source.date),
-      earlyAdmissionTime: asTrimmedString(source.earlyAdmissionTime),
-      openTime: asTrimmedString(source.openTime),
-      lastAdmissionTime: asTrimmedString(source.lastAdmissionTime),
-      closeTime: asTrimmedString(source.closeTime),
+      date: ValueNormalizer.asTrimmedString(source.date),
+      earlyAdmissionTime: ValueNormalizer.asTrimmedString(source.earlyAdmissionTime),
+      openTime: ValueNormalizer.asTrimmedString(source.openTime),
+      lastAdmissionTime: ValueNormalizer.asTrimmedString(source.lastAdmissionTime),
+      closeTime: ValueNormalizer.asTrimmedString(source.closeTime),
    };
 }
 
 function normalizeZooHoursResponse(response) {
-   const source = asObject(response);
+   const source = ValueNormalizer.asObject(response);
 
    return {
       hours: normalizeZooHours(source.hours),
@@ -306,10 +295,10 @@ function normalizeZooHoursResponse(response) {
 }
 
 function normalizeItineraryDateResponse(response) {
-   const source = asObject(response);
+   const source = ValueNormalizer.asObject(response);
 
    return {
-      date: asNullableString(source.date),
+      date: ValueNormalizer.asNullableString(source.date),
    };
 }
 
@@ -364,7 +353,7 @@ export async function scheduleItineraryItemRequest(
 
 export async function unscheduleItineraryItemRequest({ itemType, key }) {
    const response = await postJson('/unschedule-itinerary-item', {
-      itemType: asTrimmedString(itemType),
+      itemType: ValueNormalizer.asTrimmedString(itemType),
       key: mapScheduleItemKeyToWire(itemType, key),
    });
 
@@ -373,7 +362,7 @@ export async function unscheduleItineraryItemRequest({ itemType, key }) {
 
 export async function removeItemFromItineraryRequest({ itemType, key }) {
    const response = await postJson('/remove-item-from-itinerary', {
-      itemType: asTrimmedString(itemType),
+      itemType: ValueNormalizer.asTrimmedString(itemType),
       key: mapScheduleItemKeyToWire(itemType, key),
    });
 
@@ -392,7 +381,7 @@ export async function setItineraryArrivalTimeRequest(
    } = {}
 ) {
    const response = await postJson('/set-itinerary-arrival-time', {
-      arrivalTime: asTrimmedString(arrivalTime),
+      arrivalTime: ValueNormalizer.asTrimmedString(arrivalTime),
       confirmingShortVisit,
       confirmingEarlyAdmission,
    });
@@ -405,7 +394,7 @@ export async function setItineraryDepartureTimeRequest(
    { confirmingShortVisit = false } = {}
 ) {
    const response = await postJson('/set-itinerary-departure-time', {
-      departureTime: asTrimmedString(departureTime),
+      departureTime: ValueNormalizer.asTrimmedString(departureTime),
       confirmingShortVisit,
    });
 
@@ -414,7 +403,7 @@ export async function setItineraryDepartureTimeRequest(
 
 export async function suppressItineraryWarningRequest(warningType) {
    const response = await postJson('/suppress-itinerary-warning', {
-      warningType: asTrimmedString(warningType),
+      warningType: ValueNormalizer.asTrimmedString(warningType),
    });
 
    return normalizeItineraryResult(response, { includeItinerary: false });

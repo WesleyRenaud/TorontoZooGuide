@@ -1,5 +1,5 @@
 import { formatSpeciesEnclosureLine } from '../animals/animalDisplayLines.js';
-import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import {
    getAnimalEnclosureName,
    getAnimalExhibit,
@@ -22,7 +22,7 @@ function createTextElement(tagName, className, text) {
 function createSpeciesImage(animal) {
    const image = document.createElement('img');
    image.className = 'new-animal-image';
-   image.src = `images/details/animals/${normalizeAssetKey(animal.exhibit)}/${normalizeAssetKey(animal.species)}.png`;
+   image.src = `images/details/animals/${AssetKeyNormalizer.normalize(animal.exhibit)}/${AssetKeyNormalizer.normalize(animal.species)}.png`;
    image.alt = readText(animal.species);
    return image;
 }

@@ -1,5 +1,5 @@
 import { createAnimalTitleLinkElement } from '../../animals/createSpeciesLinkTitle.js';
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { createTooltipCard } from './cardFactory.js';
 import {
    getAnimalEnclosureName,
@@ -23,8 +23,8 @@ export const animalRenderer = {
    },
 
    createCard(a, index) {
-      const exhibit = normalizeAssetKey(a.exhibit);
-      const species = normalizeAssetKey(a.species);
+      const exhibit = AssetKeyNormalizer.normalize(a.exhibit);
+      const species = AssetKeyNormalizer.normalize(a.species);
 
       return createTooltipCard({
          index,

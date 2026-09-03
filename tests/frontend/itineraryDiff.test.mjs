@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { applyItineraryDiffToValidation } from '../../scripts/itinerary/itineraryValidationResult.js';
-import { normalizeItinerary } from '../../scripts/itinerary/itineraryNormalization.js';
+import { ItineraryNormalizer } from '../../scripts/itinerary/itineraryNormalizer.js';
 import { normalizeItineraryDraft } from '../../scripts/itinerary/itineraryShape.js';
 import {
    buildItineraryDiff,
@@ -251,7 +251,7 @@ test('date change validation lists deleted guardians talk only once in removed',
          },
       ],
    });
-   const validatedItinerary = normalizeItinerary({
+   const validatedItinerary = ItineraryNormalizer.normalizeItinerary({
       date: '2026-06-22',
       guardiansTalks: [
          {

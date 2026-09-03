@@ -1,5 +1,5 @@
-export const AnimalViewingScope = Object.freeze({
-   ALL: 'all',
-   INDOOR: 'indoor',
-   OUTDOOR: 'outdoor',
-});
+export class AnimalViewingScope {
+   static ALL = 'all';
+   static INDOOR = 'indoor';
+   static OUTDOOR = 'outdoor';
+}

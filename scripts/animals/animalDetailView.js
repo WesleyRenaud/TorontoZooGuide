@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 
 function readText(value = '') {
@@ -39,9 +39,9 @@ function buildDetailSection(title, value) {
 }
 
 function buildAnimalImage(animal) {
-   const exhibitFile = normalizeAssetKey(readText(animal?.exhibit));
+   const exhibitFile = AssetKeyNormalizer.normalize(readText(animal?.exhibit));
    const species = readText(animal?.species);
-   const speciesFile = normalizeAssetKey(species);
+   const speciesFile = AssetKeyNormalizer.normalize(species);
 
    if (!exhibitFile || !speciesFile) {
       return null;

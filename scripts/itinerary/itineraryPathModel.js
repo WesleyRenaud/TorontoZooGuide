@@ -1,8 +1,4 @@
-import {
-   asArray,
-   asObject,
-   asTrimmedString,
-} from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 
 export const EMPTY_ITINERARY_PATH = Object.freeze({
    stops: [],
@@ -11,37 +7,37 @@ export const EMPTY_ITINERARY_PATH = Object.freeze({
 });
 
 function normalizeItineraryPathStop(stop) {
-   const source = asObject(stop);
-   const walkNodeId = asTrimmedString(source.walk_node_id);
+   const source = ValueNormalizer.asObject(stop);
+   const walkNodeId = ValueNormalizer.asTrimmedString(source.walk_node_id);
 
    return {
-      scheduleItemKind: asTrimmedString(source.schedule_item_kind),
-      itemKey: asTrimmedString(source.item_key),
+      scheduleItemKind: ValueNormalizer.asTrimmedString(source.schedule_item_kind),
+      itemKey: ValueNormalizer.asTrimmedString(source.item_key),
       walkNodeId: walkNodeId || null,
-      startTime: asTrimmedString(source.start_time) || null,
-      endTime: asTrimmedString(source.end_time) || null,
+      startTime: ValueNormalizer.asTrimmedString(source.start_time) || null,
+      endTime: ValueNormalizer.asTrimmedString(source.end_time) || null,
    };
 }
 
 function normalizeItineraryPathLeg(leg) {
-   const source = asObject(leg);
+   const source = ValueNormalizer.asObject(leg);
 
    return {
-      fromItemKey: asTrimmedString(source.from_item_key),
-      toItemKey: asTrimmedString(source.to_item_key),
-      fromScheduleItemKind: asTrimmedString(source.from_schedule_item_kind),
-      toScheduleItemKind: asTrimmedString(source.to_schedule_item_kind),
-      nodeIds: asArray(source.node_ids)
-         .map(asTrimmedString)
+      fromItemKey: ValueNormalizer.asTrimmedString(source.from_item_key),
+      toItemKey: ValueNormalizer.asTrimmedString(source.to_item_key),
+      fromScheduleItemKind: ValueNormalizer.asTrimmedString(source.from_schedule_item_kind),
+      toScheduleItemKind: ValueNormalizer.asTrimmedString(source.to_schedule_item_kind),
+      nodeIds: ValueNormalizer.asArray(source.node_ids)
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean),
    };
 }
 
 function normalizeItineraryPathPoint(point) {
-   const source = asObject(point);
+   const source = ValueNormalizer.asObject(point);
 
    return {
-      nodeId: asTrimmedString(source.node_id),
+      nodeId: ValueNormalizer.asTrimmedString(source.node_id),
       x: Number(source.x),
       y: Number(source.y),
       xPx: Number(source.x_px),
@@ -54,11 +50,11 @@ export function resolveItineraryPath(options, itinerary) {
 }
 
 export function normalizeItineraryPath(itineraryPath) {
-   const source = asObject(itineraryPath);
+   const source = ValueNormalizer.asObject(itineraryPath);
 
    return {
-      stops: asArray(source.stops).map(normalizeItineraryPathStop),
-      legs: asArray(source.legs).map(normalizeItineraryPathLeg),
-      points: asArray(source.points).map(normalizeItineraryPathPoint),
+      stops: ValueNormalizer.asArray(source.stops).map(normalizeItineraryPathStop),
+      legs: ValueNormalizer.asArray(source.legs).map(normalizeItineraryPathLeg),
+      points: ValueNormalizer.asArray(source.points).map(normalizeItineraryPathPoint),
    };
 }

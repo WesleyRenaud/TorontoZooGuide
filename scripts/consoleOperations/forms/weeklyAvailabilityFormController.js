@@ -1,3 +1,4 @@
+import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hasCheckedField,
@@ -7,7 +8,6 @@ import {
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
 import { resultHasOpeningScheduleOverlap } from './openingScheduleOverlap.js';
-import { resolveConsoleMutationError } from '../resolveApiErrorMessage.js';
 import { setStatus } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -264,7 +264,7 @@ export function createWeeklyAvailabilityFormController({
             return;
          }
 
-         setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
+         setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
       }
       catch(err) {
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');

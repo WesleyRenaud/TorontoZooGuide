@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { el } from './dom.js';
 import { buildScheduledTimeFieldLine } from './rowPresentation.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
@@ -56,7 +56,7 @@ function handleConflictItemButtonClick(selection, item, buttonEntries) {
 }
 
 export function buildConflictItemImageSrc(item) {
-   const file = normalizeAssetKey(item?.name || '');
+   const file = AssetKeyNormalizer.normalize(item?.name || '');
 
    if (!file) {
       return null;

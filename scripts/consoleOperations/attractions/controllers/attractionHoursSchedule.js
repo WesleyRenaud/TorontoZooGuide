@@ -4,6 +4,7 @@ import {
    setAttractionHoursSchedule,
    trimAttractionHoursScheduleOverlaps,
 } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
 import {
    OPENING_SCHEDULE_OVERLAP_RESOLUTION,
@@ -19,7 +20,6 @@ import {
 import { parseClockTimeMinutes } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -154,7 +154,7 @@ export function createAttractionHoursScheduleController({
       applyTimeBounds(null);
       setStatus(
          statusEl,
-         resolveConsoleMutationError(
+         ApiErrorMessageResolver.resolveConsoleMutationError(
             boundsResult,
             APP_STRINGS.loadErrors.attractionHoursTimeBounds
          ),
@@ -249,7 +249,7 @@ export function createAttractionHoursScheduleController({
 
             setStatus(
                statusEl,
-               resolveConsoleMutationError(resolved),
+               ApiErrorMessageResolver.resolveConsoleMutationError(resolved),
                'is-error'
             );
             return;
@@ -257,7 +257,7 @@ export function createAttractionHoursScheduleController({
 
          setStatus(
             statusEl,
-            resolveConsoleMutationError(result),
+            ApiErrorMessageResolver.resolveConsoleMutationError(result),
             'is-error'
          );
       }

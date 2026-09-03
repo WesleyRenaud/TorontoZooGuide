@@ -8,10 +8,7 @@ import {
 } from './scheduledPillOverlap.js';
 import { getScheduledItemViewingWalkNodeId } from './scheduledPillViewingWalkNode.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import {
-   isScheduleItemModuleItemType,
-   ScheduleItemKind,
-} from '../../../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 export function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
    const startDelta = leftItem.startMinutes - rightItem.startMinutes;
@@ -52,7 +49,7 @@ function getClusterWallSpanMinutes(items = []) {
 }
 
 function isCarouselMergeableItem(scheduledItem = {}) {
-   return isScheduleItemModuleItemType(scheduledItem.scheduleItemKind);
+   return ScheduleItemKind.isScheduleItemModuleItemType(scheduledItem.scheduleItemKind);
 }
 
 function canMergeCarouselLayoutUnits(leftUnit = {}, rightUnit = {}) {

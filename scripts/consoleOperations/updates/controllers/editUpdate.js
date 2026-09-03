@@ -1,11 +1,11 @@
 import { editUpdate } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 import {
@@ -111,7 +111,7 @@ export function createEditUpdateController({
             resetForm();
          }
          else {
-            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
+            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {

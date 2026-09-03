@@ -1,10 +1,6 @@
 import { canShowItineraryItemScheduleControls } from '../rowActionProps.js';
 import { sortScheduledItemsForGroupDisplay } from './scheduledPillOverlap.js';
-import {
-   isFixedTimeScheduleItemKind,
-   isScheduleItemModuleItemType,
-   ScheduleItemKind,
-} from '../../../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function flattenScheduledItemsForPillGroup(scheduledItems = []) {
    return scheduledItems.flatMap((scheduledItem) => (
@@ -30,11 +26,11 @@ function buildScheduledPillMenuItems(
    if (
       typeof scheduleHandlers.onUnscheduleItineraryItem === 'function'
       && scheduleItemKind !== ScheduleItemKind.EVENT.kind
-      && !isFixedTimeScheduleItemKind(scheduleItemKind)
+      && !ScheduleItemKind.isFixedTimeScheduleItemKind(scheduleItemKind)
       && canShowItineraryItemScheduleControls(scheduleItemKind, item)
    ) {
       if (
-         isScheduleItemModuleItemType(scheduleItemKind)
+         ScheduleItemKind.isScheduleItemModuleItemType(scheduleItemKind)
          && scheduleItemKey
       ) {
          menuItems.push({

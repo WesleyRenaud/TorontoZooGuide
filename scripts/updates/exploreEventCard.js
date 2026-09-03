@@ -1,4 +1,4 @@
-import { asTrimmedString } from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 import { formatLocalDateRange } from '../visitDates/visitDateRules.js';
 
@@ -7,8 +7,8 @@ function createEventTitleEl(event) {
    titleEl.className = 'explore-update-title';
 
    const name = event.name || APP_STRINGS.map.events.title;
-   const location = asTrimmedString(event.location);
-   const link = asTrimmedString(event.link);
+   const location = ValueNormalizer.asTrimmedString(event.location);
+   const link = ValueNormalizer.asTrimmedString(event.link);
 
    if (link) {
       const linkEl = document.createElement('a');

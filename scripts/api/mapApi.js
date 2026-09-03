@@ -1,27 +1,23 @@
 import { postJson } from './apiClient.js';
-import {
-   asArray,
-   asObject,
-   asTrimmedString,
-} from './normalizeValues.js';
+import { ValueNormalizer } from './valueNormalizer.js';
 
 const EMPTY_PAYLOAD = Object.freeze({});
 
 function asStringArray(value) {
-   return asArray(value)
-      .map(asTrimmedString)
+   return ValueNormalizer.asArray(value)
+      .map(ValueNormalizer.asTrimmedString)
       .filter(Boolean);
 }
 
 function readResponseCollection(response, responseKey) {
-   return asArray(asObject(response)[responseKey]);
+   return ValueNormalizer.asArray(ValueNormalizer.asObject(response)[responseKey]);
 }
 
 function normalizeRouteResponse(response) {
-   const source = asObject(response);
+   const source = ValueNormalizer.asObject(response);
 
    return {
-      route: asTrimmedString(source.route).toLowerCase(),
+      route: ValueNormalizer.asTrimmedString(source.route).toLowerCase(),
       transportationStations: readResponseCollection(source, 'transportation_stations'),
    };
 }
@@ -69,10 +65,10 @@ export async function getTransportationRoute(payload = EMPTY_PAYLOAD) {
 }
 
 function normalizeTransportationRoutesResponse(response) {
-   return asArray(asObject(response).transportations)
+   return ValueNormalizer.asArray(ValueNormalizer.asObject(response).transportations)
       .map((entry) => {
-         const source = asObject(entry);
-         const name = asTrimmedString(source.name);
+         const source = ValueNormalizer.asObject(entry);
+         const name = ValueNormalizer.asTrimmedString(source.name);
 
          if (!name) {
             return null;

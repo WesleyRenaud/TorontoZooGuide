@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 
 export function createAnimalsListView({ listEl }) {
@@ -30,7 +30,7 @@ export function createAnimalsListView({ listEl }) {
       clear();
 
       regions.forEach(r => {
-         const fileName = normalizeAssetKey(r.name);
+         const fileName = AssetKeyNormalizer.normalize(r.name);
          renderButton({
             label: r.name,
             imageSrc: `../images/details/regions/${fileName}.png`,
@@ -49,7 +49,7 @@ export function createAnimalsListView({ listEl }) {
       });
 
       exhibits.forEach(exhibit => {
-         const fileName = normalizeAssetKey(exhibit);
+         const fileName = AssetKeyNormalizer.normalize(exhibit);
          renderButton({
             label: exhibit,
             imageSrc: `../images/details/exhibits/${fileName}.png`,
@@ -68,8 +68,8 @@ export function createAnimalsListView({ listEl }) {
       });
 
       animals.forEach(animalName => {
-         const normalizedExhibit = normalizeAssetKey(exhibitName);
-         const normalizedAnimal = normalizeAssetKey(animalName);
+         const normalizedExhibit = AssetKeyNormalizer.normalize(exhibitName);
+         const normalizedAnimal = AssetKeyNormalizer.normalize(animalName);
 
          renderButton({
             label: animalName,

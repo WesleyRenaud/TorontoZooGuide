@@ -10,10 +10,7 @@ import {
 } from './itineraryPillMenu.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import {
-   ScheduleItemKind,
-   usesScheduledTimelineEventCard,
-} from '../../../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import {
    applyRegionColorsToElement,
    resolveRegionColorSlugForScheduledItem,
@@ -122,7 +119,7 @@ function makeScheduledItemBlock(
 function usesScheduledTimelineEventBlock(scheduledItem) {
    return Boolean(
       scheduledItem.row
-      && usesScheduledTimelineEventCard(scheduledItem.scheduleItemKind)
+      && ScheduleItemKind.usesScheduledTimelineEventCard(scheduledItem.scheduleItemKind)
    );
 }
 

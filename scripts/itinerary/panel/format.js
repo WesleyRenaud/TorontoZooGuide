@@ -1,12 +1,8 @@
-import {
-   asArray,
-   asTrimmedStringList,
-   normalizeNumber,
-} from '../../api/normalizeValues.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
 
-export { normalizeNumber };
+export const normalizeNumber = ValueNormalizer.normalizeNumber;
 
 function asObject(value) {
    return value && typeof value === 'object'
@@ -26,7 +22,7 @@ function normalizeOptionalText(value) {
 }
 
 export function normalizeNonNegativeNumber(value) {
-   const number = normalizeNumber(value);
+   const number = ValueNormalizer.normalizeNumber(value);
 
    if (number == null || number < 0) {
       return null;
@@ -52,7 +48,7 @@ export function parseDurationMinutes(value) {
 }
 
 function normalizeMaximumDuration(value) {
-   const maximumDuration = normalizeNumber(value);
+   const maximumDuration = ValueNormalizer.normalizeNumber(value);
    return maximumDuration && maximumDuration > 0 ? maximumDuration : null;
 }
 
@@ -126,8 +122,8 @@ export function normalizeAnimal(value) {
       exhibit: normalizeText(source.exhibit),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
-      likelihoodBefore: normalizeNumber(source.likelihoodBefore),
-      likelihoodAfter: normalizeNumber(source.likelihoodAfter),
+      likelihoodBefore: ValueNormalizer.normalizeNumber(source.likelihoodBefore),
+      likelihoodAfter: ValueNormalizer.normalizeNumber(source.likelihoodAfter),
    };
 }
 
@@ -174,8 +170,8 @@ export function normalizeTransportation(value) {
             role: normalizeText(sourceStation.role),
             type: normalizeText(sourceStation.type),
             description: normalizeText(sourceStation.description),
-            x_coord: normalizeNumber(sourceStation.x_coord),
-            y_coord: normalizeNumber(sourceStation.y_coord),
+            x_coord: ValueNormalizer.normalizeNumber(sourceStation.x_coord),
+            y_coord: ValueNormalizer.normalizeNumber(sourceStation.y_coord),
          };
       })
       : [];
@@ -190,8 +186,8 @@ export function normalizeTransportation(value) {
       legs,
       stations,
       route: normalizeOptionalText(source.route),
-      route_marker_sequences: asArray(source.route_marker_sequences).map(
-         asTrimmedStringList
+      route_marker_sequences: ValueNormalizer.asArray(source.route_marker_sequences).map(
+         ValueNormalizer.asTrimmedStringList
       ),
       removalReason: normalizeOptionalText(source.removalReason),
    };

@@ -1,3 +1,4 @@
+import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import {
    getFieldValue,
    hasCheckedField,
@@ -5,7 +6,6 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
-import { resolveConsoleMutationError } from '../resolveApiErrorMessage.js';
 import { setStatus } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -159,7 +159,7 @@ export function createRecurringScheduleFormController({
             handleSubmitSuccess(result);
          }
          else if (shouldReportSubmitFailure?.(result) ?? true) {
-            setStatus(statusEl, resolveConsoleMutationError(result), 'is-error');
+            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {

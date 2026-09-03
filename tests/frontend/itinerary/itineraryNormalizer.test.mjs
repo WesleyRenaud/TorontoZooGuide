@@ -1,13 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   isItineraryEmpty,
-   normalizeItinerary,
-} from '../../scripts/itinerary/itineraryService.js';
-import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
-
-installItineraryServiceTestHooks();
+import { ItineraryNormalizer } from '../../../scripts/itinerary/itineraryNormalizer.js';
 
 test('normalizeItinerary exposes itineraryConfig and active state', () => {
    const config = {
@@ -16,7 +10,7 @@ test('normalizeItinerary exposes itineraryConfig and active state', () => {
       suppressedErrorTypes: [],
    };
 
-   const normalized = normalizeItinerary({
+   const normalized = ItineraryNormalizer.normalizeItinerary({
       date: '2026-06-15',
       animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
       itineraryConfig: config,
@@ -24,11 +18,11 @@ test('normalizeItinerary exposes itineraryConfig and active state', () => {
 
    assert.equal(normalized.itineraryConfig, config);
    assert.equal(normalized.isActive, true);
-   assert.equal(isItineraryEmpty(normalized), false);
+   assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
 test('normalizeItinerary preserves scheduled generic events', () => {
-   const normalized = normalizeItinerary({
+   const normalized = ItineraryNormalizer.normalizeItinerary({
       date: '2026-06-15',
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    });
@@ -38,20 +32,20 @@ test('normalizeItinerary preserves scheduled generic events', () => {
       start_time: '12:00',
       end_time: '12:40',
    }]);
-   assert.equal(isItineraryEmpty(normalized), false);
+   assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
 test('normalizeItinerary treats a date-only itinerary as active saved content', () => {
-   const normalized = normalizeItinerary({
+   const normalized = ItineraryNormalizer.normalizeItinerary({
       date: '2026-06-15',
    });
 
    assert.equal(normalized.isActive, true);
-   assert.equal(isItineraryEmpty(normalized), false);
+   assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
 test('normalizeItinerary treats missing collections as empty', () => {
-   const normalized = normalizeItinerary({
+   const normalized = ItineraryNormalizer.normalizeItinerary({
       animals: 'not-an-array',
       attractions: null,
    });

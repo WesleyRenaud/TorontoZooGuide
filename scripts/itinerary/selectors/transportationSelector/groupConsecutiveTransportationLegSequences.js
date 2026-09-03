@@ -1,11 +1,11 @@
-import { asObject } from '../../../api/normalizeValues.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 
 function normalizeLegs(legs) {
    if (!Array.isArray(legs)) {
       return [];
    }
 
-   return legs.map((leg) => asObject(leg));
+   return legs.map((leg) => ValueNormalizer.asObject(leg));
 }
 
 /**

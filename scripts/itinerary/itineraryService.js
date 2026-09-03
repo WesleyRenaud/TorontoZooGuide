@@ -12,12 +12,7 @@ import {
    isItinerarySuccess,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
-import {
-   createEmptyItinerary,
-   isItineraryEmpty,
-   normalizeItinerary,
-   normalizeItineraryFromApiResult,
-} from './itineraryNormalization.js';
+import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import { hasSavedItineraryContent } from './itineraryShape.js';
 import {
@@ -26,7 +21,8 @@ import {
    getYear,
 } from '../visitDates/visitDateRules.js';
 
-export { isItineraryEmpty, normalizeItinerary };
+export const isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
+export const normalizeItinerary = ItineraryNormalizer.normalizeItinerary;
 
 export function dispatchItineraryUpdated(itinerary) {
    window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
@@ -39,7 +35,7 @@ export function dispatchScheduleItineraryItemResult(result) {
       return;
    }
 
-   dispatchItineraryUpdated(normalizeItineraryFromApiResult(result));
+   dispatchItineraryUpdated(ItineraryNormalizer.normalizeItineraryFromApiResult(result));
 }
 
 async function fetchSavedItineraryVisitDate() {
@@ -56,7 +52,7 @@ export async function getItinerary() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
    const result = await getItineraryRequest(temp);
-   return normalizeItineraryFromApiResult(result);
+   return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 }
 
 export async function getZooHours(date) {
@@ -78,7 +74,7 @@ export async function getZooHours(date) {
 
 export async function clearItinerary() {
    const result = await clearItineraryRequest();
-   const clearedItinerary = createEmptyItinerary();
+   const clearedItinerary = ItineraryNormalizer.createEmptyItinerary();
 
    window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
    dispatchItineraryUpdated(clearedItinerary);
@@ -103,7 +99,7 @@ export async function bulkScheduleItinerary({
       };
    }
 
-   const normalizedItinerary = normalizeItineraryFromApiResult(result);
+   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    dispatchItineraryUpdated(normalizedItinerary);
 
    return {
@@ -124,7 +120,7 @@ export async function unscheduleAllItineraryItems() {
       };
    }
 
-   const normalizedItinerary = normalizeItineraryFromApiResult(result);
+   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    dispatchItineraryUpdated(normalizedItinerary);
 
    return {
@@ -142,7 +138,7 @@ export async function acceptItinerary({
       temp,
       { animalsToKeep, attractionsToKeep }
    );
-   const acceptedItinerary = normalizeItineraryFromApiResult(result);
+   const acceptedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 
    dispatchItineraryUpdated(acceptedItinerary);
 

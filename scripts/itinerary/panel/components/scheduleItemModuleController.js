@@ -27,7 +27,7 @@ import {
    isScheduleItemTypeUnset,
 } from '../scheduleItemTypes.js';
 import { isScheduleItemTransportationRow } from '../../selectors/transportationSelector/model.js';
-import { isFixedTimeScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -108,7 +108,7 @@ export function createScheduleItemModuleController({
 
       const rowKind = getScheduleItemRowKind(selectedRow);
 
-      if (isFixedTimeScheduleItemKind(rowKind)) {
+      if (ScheduleItemKind.isFixedTimeScheduleItemKind(rowKind)) {
          scheduleTimeFields.setFixedDurationScheduleMode?.({ lockDuration: false });
          scheduleTimeFields.setFixedTimeScheduleMode?.({ lockTimes: true });
          return;

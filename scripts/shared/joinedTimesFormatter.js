@@ -1,7 +1,7 @@
-import { asTrimmedStringList } from '../api/normalizeValues.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 
 export class JoinedTimesFormatter {
    static format(times) {
-      return asTrimmedStringList(times).join(', ');
+      return ValueNormalizer.asTrimmedStringList(times).join(', ');
    }
 }

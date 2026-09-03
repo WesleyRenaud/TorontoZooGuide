@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import {
    migrateStoredSelectionItems,
    normalizeStoredBoolean,
@@ -62,7 +62,7 @@ export function getAttractionSubtitle(row) {
 }
 
 export function buildAttractionImageSrc(row) {
-   const attractionFile = normalizeAssetKey(getAttractionName(row));
+   const attractionFile = AssetKeyNormalizer.normalize(getAttractionName(row));
 
    if (!attractionFile) {
       return null;

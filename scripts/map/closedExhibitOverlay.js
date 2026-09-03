@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 
 const CLOSED_EXHIBIT_OVERLAY_ID_PREFIX = 'closed-exhibit-overlay-';
 const CLOSED_EXHIBIT_OVERLAY_SELECTOR = `[id^="${CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}"]`;
@@ -30,7 +30,7 @@ function showClosedExhibitOverlay(exhibitKey) {
 function normalizeClosedExhibitKeys(closedExhibits) {
    return Array.isArray(closedExhibits)
       ? closedExhibits
-         .map(normalizeAssetKey)
+         .map(AssetKeyNormalizer.normalize)
          .filter(Boolean)
       : [];
 }

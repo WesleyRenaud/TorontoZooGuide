@@ -1,5 +1,6 @@
 import { createAnimalViewingScopeControl } from './animalViewingScopeControl.js';
 import { setAnimalOnDisplay } from '../../../api/consoleOperationsApi.js';
+import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
    getFieldValue,
@@ -9,7 +10,6 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
-import { resolveConsoleMutationError } from '../../resolveApiErrorMessage.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -114,7 +114,7 @@ export function createAnimalOnDisplayController({
          else {
             setStatus(
                statusEl,
-               resolveConsoleMutationError(result),
+               ApiErrorMessageResolver.resolveConsoleMutationError(result),
                'is-error'
             );
          }
