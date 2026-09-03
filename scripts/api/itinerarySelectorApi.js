@@ -1,4 +1,4 @@
-import { postJson } from './apiClient.js';
+import { ApiClient } from './apiClient.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
 function normalizeRegion(region) {
@@ -23,7 +23,7 @@ function normalizeAnimal(animal) {
 }
 
 export async function getExhibitsByRegion(payload = {}) {
-   const response = await postJson('/get-exhibits-by-region', payload);
+   const response = await ApiClient.postJson('/get-exhibits-by-region', payload);
 
    return Array.isArray(response?.regions)
       ? response.regions.map(normalizeRegion).filter((region) => region.name)
@@ -31,7 +31,7 @@ export async function getExhibitsByRegion(payload = {}) {
 }
 
 export async function getAnimalsByExhibit(exhibitsToInclude, payload = {}) {
-   const response = await postJson('/get-animals-by-exhibit', {
+   const response = await ApiClient.postJson('/get-animals-by-exhibit', {
       ...payload,
       exhibitsToInclude,
    });

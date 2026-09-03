@@ -43,10 +43,12 @@ function fetchForecastDateTemp(dateStr) {
       });
 }
 
-export function fetchWeatherTempForDate(dateStr) {
-   if (isTodayDate(dateStr)) {
-      return fetchCurrentTemp();
-   }
+export class WeatherApi {
+   static fetchWeatherTempForDate(dateStr) {
+      if (isTodayDate(dateStr)) {
+         return fetchCurrentTemp();
+      }
 
-   return fetchForecastDateTemp(dateStr);
+      return fetchForecastDateTemp(dateStr);
+   }
 }

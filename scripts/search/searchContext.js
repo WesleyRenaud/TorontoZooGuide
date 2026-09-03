@@ -1,4 +1,4 @@
-import { fetchWeatherTempForDate } from '../api/weatherApi.js';
+import { WeatherApi } from '../api/weatherApi.js';
 import {
    getDay,
    getMonth,
@@ -33,7 +33,7 @@ export async function buildDateSearchContext(iso, { includeTemp = true } = {}) {
    }
 
    try {
-      const temp = await fetchWeatherTempForDate(date);
+      const temp = await WeatherApi.fetchWeatherTempForDate(date);
       return { date, month, day, year, dayOfWeek, temp };
    } catch {
       return { date, month, day, year, dayOfWeek, temp: null };

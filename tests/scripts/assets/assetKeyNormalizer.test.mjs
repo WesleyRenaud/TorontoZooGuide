@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { AssetKeyNormalizer } from '../../../scripts/assets/assetKeyNormalizer.js';
 
-test('normalizes seeded names into asset-safe keys', () => {
+test('Test_Normalize_TestSeededNames_ExpectAssetSafeKeys', () => {
    assert.equal(AssetKeyNormalizer.normalize('Ballin\' with the Armadillos'), 'ballin-with-the-armadillos');
    assert.equal(
       AssetKeyNormalizer.normalize('Wildlife Health & Science Centre'),
@@ -19,7 +19,7 @@ test('normalizes seeded names into asset-safe keys', () => {
    );
 });
 
-test('normalizes punctuation, accents, and repeated spacing', () => {
+test('Test_Normalize_TestPunctuationAndSpacing_ExpectCollapsedKey', () => {
    assert.equal(AssetKeyNormalizer.normalize('  Café   Zootique  '), 'cafe-zootique');
    assert.equal(AssetKeyNormalizer.normalize('Guardians of Snow Leopards'), 'guardians-of-snow-leopards');
    assert.equal(AssetKeyNormalizer.normalize(null), '');

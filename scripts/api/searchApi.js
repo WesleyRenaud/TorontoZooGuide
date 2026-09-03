@@ -1,4 +1,4 @@
-import { postJson } from './apiClient.js';
+import { ApiClient } from './apiClient.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
@@ -89,7 +89,7 @@ function normalizeSearchEndpointResponse(endpoint, response) {
 }
 
 export async function searchItineraryItems(endpoint, payload) {
-   const response = await postJson(endpoint, payload);
+   const response = await ApiClient.postJson(endpoint, payload);
    return normalizeSearchEndpointResponse(endpoint, response);
 }
 

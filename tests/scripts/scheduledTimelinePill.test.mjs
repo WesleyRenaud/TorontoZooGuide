@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { makeScheduledPill } from '../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+
+installDomTestHooks();
 
 test('makeScheduledPill adds extended layout for longer visits', () => {
    const pill = makeScheduledPill('Lunch', 40, {

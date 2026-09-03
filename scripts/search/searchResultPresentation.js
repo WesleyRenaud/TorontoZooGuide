@@ -1,4 +1,4 @@
-import { buildDetailImageSrc } from '../assets/detailImageSrc.js';
+import { DetailImageSrc } from '../assets/detailImageSrc.js';
 import {
    getAnimalSubtitle,
    getAnimalTitleLine,
@@ -21,7 +21,7 @@ import { APP_STRINGS } from '../strings.js';
 const SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
 
 export function buildSearchDetailImageSrc(imageDirectory, name) {
-   return buildDetailImageSrc(imageDirectory, name, {
+   return DetailImageSrc.buildDetailImageSrc(imageDirectory, name, {
       basePath: SEARCH_DETAIL_IMAGE_BASE_PATH,
    });
 }

@@ -1,4 +1,4 @@
-import { buildDetailImageSrc } from '../assets/detailImageSrc.js';
+import { DetailImageSrc } from '../assets/detailImageSrc.js';
 import { normalizeStoredString } from './selectors/base/storedSelection.js';
 
 export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
@@ -6,7 +6,7 @@ export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
       return null;
    }
 
-   return buildDetailImageSrc(imageDirectory, name, {
+   return DetailImageSrc.buildDetailImageSrc(imageDirectory, name, {
       basePath: '../images/details',
    });
 }

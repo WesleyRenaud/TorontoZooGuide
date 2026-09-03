@@ -6,7 +6,14 @@
       "scripts/consoleOperations/apiErrorMessageResolver.js",
       "scripts/tooltips/mapOccurrenceTimesFormatter.js",
       "scripts/itinerary/itineraryNormalizer.js",
-      "scripts/shared/enums/**"
+      "scripts/shared/enums/**",
+      "scripts/api/apiClient.js",
+      "scripts/api/weatherApi.js",
+      "scripts/assets/detailImageSrc.js",
+      "scripts/likelihood/likelihoodScale.js",
+      "scripts/likelihood/likelihoodValues.js",
+      "scripts/likelihood/likelihoodColors.js",
+      "scripts/likelihood/likelihoodPresentation.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

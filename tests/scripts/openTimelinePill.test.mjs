@@ -5,6 +5,9 @@ import {
    makeBoundaryMarker,
    makeOpenPill,
 } from '../../scripts/itinerary/panel/components/openTimelinePill.js';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+
+installDomTestHooks();
 
 test('makeOpenPill returns null for an empty label', () => {
    assert.equal(makeOpenPill(''), null);

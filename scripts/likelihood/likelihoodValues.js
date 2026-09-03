@@ -1,4 +1,4 @@
-import { clampLikelihood } from './likelihoodScale.js';
+import { LikelihoodScale } from './likelihoodScale.js';
 
 /**
  * Convert a likelihood to a 0–100 percent value.
@@ -7,34 +7,36 @@ import { clampLikelihood } from './likelihoodScale.js';
  * pass fractional values in the 0–1 range (e.g. 0.25 for 25%). Integer
  * values must not be scaled: 1 means 1%, not 100%.
  */
-export function likelihoodToPercent(value) {
-   if (value == null || value === '') {
-      return null;
+export class LikelihoodValues {
+   static likelihoodToPercent(value) {
+      if (value == null || value === '') {
+         return null;
+      }
+
+      const likelihood = Number(value);
+
+      if (!Number.isFinite(likelihood)) {
+         return null;
+      }
+
+      if (Number.isInteger(likelihood)) {
+         return LikelihoodScale.clampLikelihood(likelihood);
+      }
+
+      if (likelihood >= 0 && likelihood <= 1) {
+         return LikelihoodScale.clampLikelihood(likelihood * 100);
+      }
+
+      return LikelihoodScale.clampLikelihood(likelihood);
    }
 
-   const likelihood = Number(value);
+   static likelihoodToFraction(value) {
+      const percent = LikelihoodValues.likelihoodToPercent(value);
 
-   if (!Number.isFinite(likelihood)) {
-      return null;
+      if (percent == null) {
+         return null;
+      }
+
+      return percent / 100;
    }
-
-   if (Number.isInteger(likelihood)) {
-      return clampLikelihood(likelihood);
-   }
-
-   if (likelihood >= 0 && likelihood <= 1) {
-      return clampLikelihood(likelihood * 100);
-   }
-
-   return clampLikelihood(likelihood);
-}
-
-export function likelihoodToFraction(value) {
-   const percent = likelihoodToPercent(value);
-
-   if (percent == null) {
-      return null;
-   }
-
-   return percent / 100;
 }

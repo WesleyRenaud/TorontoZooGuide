@@ -1,0 +1,21 @@
+{
+   "include": [
+      "tests/scripts/shared/joinedTimesFormatter.test.mjs",
+      "tests/scripts/api/valueNormalizer.test.mjs",
+      "tests/scripts/assets/assetKeyNormalizer.test.mjs",
+      "tests/scripts/consoleOperations/apiErrorMessageResolver.test.mjs",
+      "tests/scripts/tooltips/mapOccurrenceTimesFormatter.test.mjs",
+      "tests/scripts/itinerary/itineraryNormalizer.test.mjs",
+      "tests/scripts/shared/enums/scheduleItemKind.test.mjs",
+      "tests/scripts/api/apiClient.test.mjs",
+      "tests/scripts/api/weatherApi.test.mjs",
+      "tests/scripts/assets/detailImageSrc.test.mjs",
+      "tests/scripts/likelihood/likelihoodScale.test.mjs",
+      "tests/scripts/likelihood/likelihoodValues.test.mjs",
+      "tests/scripts/likelihood/likelihoodColors.test.mjs",
+      "tests/scripts/likelihood/likelihoodPresentation.test.mjs"
+   ],
+   "exclude": [
+      "tests/scripts/helpers/**"
+   ]
+}

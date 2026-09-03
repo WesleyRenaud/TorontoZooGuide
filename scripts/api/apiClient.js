@@ -44,13 +44,15 @@ async function readJsonResponse(response, url) {
    }
 }
 
-export async function postJson(url, data = {}) {
-   const response = await fetch(url, buildJsonRequestOptions(data));
-   const payload = await readJsonResponse(response, url);
+export class ApiClient {
+   static async postJson(url, data = {}) {
+      const response = await fetch(url, buildJsonRequestOptions(data));
+      const payload = await readJsonResponse(response, url);
 
-   if (!response.ok) {
-      throw buildHttpError(response, payload, url);
+      if (!response.ok) {
+         throw buildHttpError(response, payload, url);
+      }
+
+      return payload;
    }
-
-   return payload;
 }

@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { fetchWeatherTempForDate } from '../../scripts/api/weatherApi.js';
-import { mockFetchJsonResponse } from './helpers/fetchMock.mjs';
+import { WeatherApi } from '../../../scripts/api/weatherApi.js';
+import { mockFetchJsonResponse } from '../helpers/fetchMock.mjs';
 import {
    addLocalCalendarDays,
    getToday,
    toISODate,
-} from '../../scripts/visitDates/visitDateRules.js';
+} from '../../../scripts/visitDates/visitDateRules.js';
 
-test('fetches current temperature for today', async () => {
+test('Test_FetchWeatherTempForDate_TestToday_ExpectCurrentTemp', async () => {
    const today = toISODate(getToday());
    const urls = [];
    const originalFetch = globalThis.fetch;
@@ -24,7 +24,7 @@ test('fetches current temperature for today', async () => {
    };
 
    try {
-      assert.equal(await fetchWeatherTempForDate(today), 18.5);
+      assert.equal(await WeatherApi.fetchWeatherTempForDate(today), 18.5);
       assert.equal(urls.length, 1);
       assert.equal(urls[0].includes('/weather?'), true);
    } finally {
@@ -32,7 +32,7 @@ test('fetches current temperature for today', async () => {
    }
 });
 
-test('fetches averaged forecast temperature for future dates', async () => {
+test('Test_FetchWeatherTempForDate_TestFutureDate_ExpectAveragedForecast', async () => {
    const tomorrow = toISODate(addLocalCalendarDays(getToday(), 1));
    const urls = [];
    const originalFetch = globalThis.fetch;
@@ -49,7 +49,7 @@ test('fetches averaged forecast temperature for future dates', async () => {
    };
 
    try {
-      assert.equal(await fetchWeatherTempForDate(tomorrow), 15);
+      assert.equal(await WeatherApi.fetchWeatherTempForDate(tomorrow), 15);
       assert.equal(urls.length, 1);
       assert.equal(urls[0].includes('/forecast?'), true);
    } finally {

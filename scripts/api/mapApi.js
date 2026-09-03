@@ -1,4 +1,4 @@
-import { postJson } from './apiClient.js';
+import { ApiClient } from './apiClient.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
 const EMPTY_PAYLOAD = Object.freeze({});
@@ -23,7 +23,7 @@ function normalizeRouteResponse(response) {
 }
 
 async function fetchCollection(endpoint, responseKey, payload = EMPTY_PAYLOAD) {
-   const response = await postJson(endpoint, payload);
+   const response = await ApiClient.postJson(endpoint, payload);
    return readResponseCollection(response, responseKey);
 }
 
@@ -60,7 +60,7 @@ export async function getTransportations(payload = EMPTY_PAYLOAD) {
 }
 
 export async function getTransportationRoute(payload = EMPTY_PAYLOAD) {
-   const response = await postJson('/get-transportation-route', payload);
+   const response = await ApiClient.postJson('/get-transportation-route', payload);
    return normalizeRouteResponse(response);
 }
 
@@ -83,7 +83,7 @@ function normalizeTransportationRoutesResponse(response) {
 }
 
 export async function getTransportationRoutes() {
-   const response = await postJson('/get-transportation-routes', EMPTY_PAYLOAD);
+   const response = await ApiClient.postJson('/get-transportation-routes', EMPTY_PAYLOAD);
    return normalizeTransportationRoutesResponse(response);
 }
 

@@ -1,4 +1,4 @@
-import { likelihoodToPercent } from '../../likelihood/likelihoodValues.js';
+import { LikelihoodValues } from '../../likelihood/likelihoodValues.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const { removedItems } = APP_STRINGS.itinerary;
@@ -7,8 +7,8 @@ function getLikelihoodPair(animal) {
    const beforeRaw = animal?.likelihoodBefore;
    const afterRaw = animal?.likelihoodAfter;
 
-   const before = likelihoodToPercent(beforeRaw);
-   const after = likelihoodToPercent(afterRaw);
+   const before = LikelihoodValues.likelihoodToPercent(beforeRaw);
+   const after = LikelihoodValues.likelihoodToPercent(afterRaw);
 
    return { before, after };
 }

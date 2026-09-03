@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { postJson } from '../../scripts/api/apiClient.js';
+import { ApiClient } from '../../../scripts/api/apiClient.js';
 
 function mockResponse({
    ok = true,
@@ -21,7 +21,7 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('postJson sends JSON POST requests', async () => {
+test('Test_PostJson_TestValidPayload_ExpectParsedResponse', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(options, {
@@ -41,7 +41,7 @@ test('postJson sends JSON POST requests', async () => {
       });
    };
 
-   assert.deepEqual(await postJson('/set-itinerary', {
+   assert.deepEqual(await ApiClient.postJson('/set-itinerary', {
       date: '2026-06-15',
       animals: ['African Lion'],
    }), {
@@ -49,22 +49,22 @@ test('postJson sends JSON POST requests', async () => {
    });
 });
 
-test('postJson treats empty response bodies as empty objects', async () => {
+test('Test_PostJson_TestEmptyBody_ExpectEmptyObject', async () => {
    globalThis.fetch = async () => mockResponse({ text: '   ' });
 
-   assert.deepEqual(await postJson('/clear-itinerary'), {});
+   assert.deepEqual(await ApiClient.postJson('/clear-itinerary'), {});
 });
 
-test('postJson throws a clear error for invalid JSON responses', async () => {
+test('Test_PostJson_TestInvalidJson_ExpectThrows', async () => {
    globalThis.fetch = async () => mockResponse({ text: '{not-json' });
 
    await assert.rejects(
-      () => postJson('/get-itinerary'),
+      () => ApiClient.postJson('/get-itinerary'),
       /Invalid JSON response from \/get-itinerary/
    );
 });
 
-test('postJson throws API errors with response metadata', async () => {
+test('Test_PostJson_TestHttpError_ExpectApiClientErrorMetadata', async () => {
    globalThis.fetch = async () => mockResponse({
       ok: false,
       status: 500,
@@ -74,7 +74,7 @@ test('postJson throws API errors with response metadata', async () => {
 
    await assert.rejects(
       async () => {
-         await postJson('/set-itinerary');
+         await ApiClient.postJson('/set-itinerary');
       },
       (error) => {
          assert.equal(error.name, 'ApiClientError');

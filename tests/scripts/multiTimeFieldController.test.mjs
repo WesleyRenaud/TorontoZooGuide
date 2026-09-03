@@ -3,6 +3,9 @@ import test from 'node:test';
 
 import { createMultiTimeFieldController } from '../../scripts/consoleOperations/forms/multiTimeFieldController.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+
+installDomTestHooks();
 
 function createMultiTimeFieldDom() {
    const fieldEl = createDomNode('div', 'console-operations-multi-time-field');
