@@ -193,3 +193,21 @@ def Test_PackedUnitsOccupiedSeconds_TestTwoUnits_ExpectApproachAndDwell() -> Non
 
    assert occupied == first_approach + 300 + second_approach + 480
    assert occupied > 300 + 480
+
+
+def Test_InterStopSeconds_TestEmptyStops_ExpectEmpty() -> None:
+   assert LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, [] ) == []
+
+
+def Test_InterStopSeconds_TestMissingWalkNode_ExpectZeroTravel(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      LoopScheduleUnitBuilder,
+      'walk_node_id_for_stop',
+      lambda stop: None )
+   stops = [
+      _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ),
+      _animal_record( species='African Lion', exhibit='Africa Savanna' ),
+   ]
+
+   assert LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, stops ) == [ 0, 0 ]

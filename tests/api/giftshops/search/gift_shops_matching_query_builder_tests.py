@@ -13,3 +13,16 @@ def Test_Build_TestMatchingQuery_ExpectMatchingGiftShopOnly() -> None:
    matches = GiftShopsMatchingQueryBuilder.build( gift_shops, 'zootique' )
 
    assert [ shop.name for shop in matches ] == [ 'Zootique' ]
+
+
+def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingGiftShopOnly() -> None:
+   gift_shops = [
+      GiftShop( name='Zootique', location='Learning & Engagement Centre' ),
+      GiftShop( name='Africa Gift Shop', location='Africa' ),
+   ]
+
+   matches = GiftShopsMatchingQueryBuilder.filter_matching_query(
+      gift_shops,
+      'zootique' )
+
+   assert [ shop.name for shop in matches ] == [ 'Zootique' ]

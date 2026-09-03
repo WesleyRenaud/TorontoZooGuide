@@ -31,6 +31,22 @@ def Test_Build_TestCustomMessage_ExpectMappedSchedule() -> None:
    assert schedule.message == CUSTOM_MESSAGE
 
 
+def Test_Build_TestMissingMessageWithoutEndDate_ExpectOpenEndedGuestMessage() -> None:
+   schedule = AnimalLimitedViewingScheduleBuilder.build(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      start_date=START_DATE,
+      end_date=None,
+      daily_start_time=DAILY_START_TIME,
+      daily_end_time=DAILY_END_TIME,
+      message='' )
+
+   assert SPECIES in schedule.message
+   assert '10:00 AM' in schedule.message
+   assert '2:00 PM' in schedule.message
+   assert '2026' not in schedule.message
+
+
 def Test_Build_TestMissingMessageWithEndDate_ExpectFormattedGuestMessage() -> None:
    schedule = AnimalLimitedViewingScheduleBuilder.build(
       species=SPECIES,

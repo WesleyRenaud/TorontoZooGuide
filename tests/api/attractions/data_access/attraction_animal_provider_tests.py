@@ -67,3 +67,14 @@ def Test_FetchAttractionAnimalLinks_TestKangarooWalkThru_ExpectLinkedAnimal(
          None,
       ),
    ]
+
+
+def Test_FetchAttractionLinkedAnimals_TestKangarooWalkThru_ExpectSpeciesExhibitKeys(
+      attraction_animal_db: sqlite3.Connection ) -> None:
+   keys = AttractionAnimalProvider.fetch_attraction_linked_animals(
+      attraction_animal_db,
+      KANGAROO_WALK_THRU )
+
+   assert len( keys ) == 1
+   assert keys[ 0 ].species == 'western grey kangaroo'
+   assert keys[ 0 ].exhibit == 'australasia outdoor'

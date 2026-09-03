@@ -182,11 +182,6 @@ class LoopUnitAttractionHoursScheduler():
                schedule_cursor_seconds + before_total_seconds )
             before_end_seconds = attraction_start_seconds
 
-            if before_end_seconds - before_total_seconds < schedule_cursor_seconds:
-               return schedule_cursor_seconds, cls._still_unscheduled_stops(
-                  stops,
-                  scheduled_stop_ids=scheduled_stop_ids )
-
             slot_assignment = LoopScheduleSlotAssigner.assign_contiguous_ending_by(
                prepared_before_stops,
                end_seconds=before_end_seconds )

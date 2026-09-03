@@ -15,6 +15,19 @@ def Test_Build_TestMatchingQuery_ExpectMatchingTalkOnly() -> None:
    assert [ talk.name for talk in matches ] == [ 'Komodo Dragon' ]
 
 
+def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingTalkOnly() -> None:
+   guardians_talks = [
+      GuardiansTalk( 'Komodo Dragon', 'Australasia Pavilion', 0, 0 ),
+      GuardiansTalk( 'Arctic Wolf', 'Tundra Trek', 0, 0 ),
+   ]
+
+   matches = GuardiansTalksMatchingQueryBuilder.filter_matching_query(
+      guardians_talks,
+      'komodo' )
+
+   assert [ talk.name for talk in matches ] == [ 'Komodo Dragon' ]
+
+
 def Test_Build_TestEmptyQuery_ExpectAllTalks() -> None:
    guardians_talks = [
       GuardiansTalk( 'Komodo Dragon', 'Australasia Pavilion', 0, 0 ),

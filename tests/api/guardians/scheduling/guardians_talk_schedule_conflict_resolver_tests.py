@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
-from typing import cast
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.guardians.data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
@@ -21,14 +20,6 @@ TALK_TIME = '10:00 AM'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 MESSAGE = 'June schedule.'
-
-
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
 
 
 def _schedule_input( *, talk_time: str = TALK_TIME ) -> GuardiansTalkScheduleInput:
@@ -90,7 +81,7 @@ def Test_SaveReplacingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       save_replacing_overlaps )
 
    assert GuardiansTalkScheduleConflictResolver.save_replacing_overlaps(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       schedule ) is True
    assert saver_calls == [
       ( schedule, GuardiansTalkScheduleProvider.fetch_schedule_conflicts ),
@@ -120,7 +111,7 @@ def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       save_trimming_overlaps )
 
    assert GuardiansTalkScheduleConflictResolver.save_trimming_overlaps(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       schedule ) is True
    assert saver_calls == [ schedule ]
 
@@ -146,7 +137,7 @@ def Test_TrimConflict_TestConflictAndSchedule_ExpectTrimmerDelegation(
    monkeypatch.setattr( OpeningScheduleConflictTrimmer, 'trim', trim )
 
    GuardiansTalkScheduleConflictResolver.trim_conflict(
-      STUB_CONNECTION,
+      STUB_REQUEST_CONNECTION,
       conflict,
       schedule )
 

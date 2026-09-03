@@ -238,3 +238,23 @@ def Test_Resolve_TestMissingMasterRouteLoop_ExpectNone(
          start_time='1:00 PM',
          end_time='1:45 PM' ),
       meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+
+
+def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
+   wild_encounter = WildEncounter(
+      name=GRIZZLY_BEAR_ENCOUNTER,
+      meeting_spot=CANADIAN_DOMAIN_MEETING_SPOT,
+      link='https://example.com',
+      x_coord=0.0,
+      y_coord=0.0,
+      start_time='1:00 PM',
+      end_time='1:45 PM' )
+
+   assert WildEncounterLoopSchedulePinResolver.resolve(
+      wild_encounter,
+      _wild_encounter_stop(
+         item_key=GRIZZLY_BEAR_ENCOUNTER,
+         meeting_spot=CANADIAN_DOMAIN_MEETING_SPOT,
+         start_time=None,
+         end_time='1:45 PM' ),
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None

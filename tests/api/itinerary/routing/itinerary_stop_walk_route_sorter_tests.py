@@ -52,3 +52,13 @@ def Test_Sort_TestScheduledStops_ExpectEntranceFirstThenStartTimeOrder() -> None
       'Guardians of White Rhinos',
       'African Lion||Africa Savanna',
    ]
+
+
+def Test_Sort_TestScheduledStopsWithoutEntrance_ExpectScheduledOnly() -> None:
+   ordered_stops = ItineraryStopWalkRouteSorter.sort(
+      [ SCHEDULED_ENCOUNTER_STOP, SCHEDULED_LION_STOP ] )
+
+   assert [ stop.item_key for stop in ordered_stops ] == [
+      'Guardians of White Rhinos',
+      'African Lion||Africa Savanna',
+   ]

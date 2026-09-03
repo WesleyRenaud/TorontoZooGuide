@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import date
-from typing import cast
 
 import pytest
 
@@ -17,6 +15,7 @@ from api.guardians.data_access.meet_the_guardians_talk_record import MeetTheGuar
 from api.guardians.domain.guardians_talk_builder import GuardiansTalkBuilder
 from api.guardians.domain.guardians_talk_linked_animals_builder import GuardiansTalkLinkedAnimalsBuilder
 from api.guardians.itinerary.itinerary_guardians_talks_builder import ItineraryGuardiansTalksBuilder
+from api.guardians.occurrences.guardians_talk_occurrence_input import GuardiansTalkOccurrenceInput
 from api.guardians.scheduling.guardians_talk_day_schedule_builder import GuardiansTalkDayScheduleBuilder
 from api.guardians.scheduling.guardians_talk_day_schedule_finder import GuardiansTalkDayScheduleFinder
 from api.guardians.scheduling.guardians_talk_occurrences_builder import GuardiansTalkOccurrencesBuilder
@@ -28,7 +27,8 @@ from api.guardians.search.guardians_talks_matching_query_builder import Guardian
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.models import GuardiansTalk
 from api.models import ScheduledOccurrence
-from api.request_connection_provider import RequestConnectionProvider
+from api.shared.api_operation_failure import ApiOperationFailure
+from api.shared.enums.api_error_type import ApiErrorType
 from api.types import Types
 
 
@@ -37,6 +37,7 @@ TALK_LOCATION = 'Africa Savanna'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 TALK_TIME = '10:00 AM'
+ADDED_TALK_TIME = '11:00 AM'
 MESSAGE = 'Talk cancelled today.'
 VISIT_MONTH = 'June'
 VISIT_DAY = 15
@@ -77,19 +78,6 @@ GUARDIANS_TALK = GuardiansTalk(
    x_coord=1.0,
    y_coord=2.0,
    start_time=TALK_TIME )
-
-
-@dataclass
-class StubConnection():
-   pass
-
-
-STUB_CONNECTION = cast( Types.Connection, StubConnection() )
-
-
-@pytest.fixture
-def stub_request_connection( monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: STUB_CONNECTION )
 
 
 def Test_GetGuardiansTalkLocations_TestProviderNames_ExpectReturned(
@@ -566,3 +554,119 @@ def Test_GetGuardiansTalkOnDaySchedule_TestMissingDaySchedule_ExpectFetchesSched
       talk_name=TALK_NAME,
       year=VISIT_YEAR,
       start_time=TALK_TIME ) is GUARDIANS_TALK
+
+
+def Test_AddGuardiansTalkOccurrence_TestExistingOccurrence_ExpectAlreadyExistsFailure(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   def occurrence_exists(
+         _conn: Types.Connection,
+         talk_name: str,
+         location: str,
+         occurrence_date: Types.DateKey,
+         talk_time: str,
+   ) -> bool:
+      return (
+         talk_name == TALK_NAME
+         and location == TALK_LOCATION
+         and occurrence_date == OCCURRENCE_DATE
+         and talk_time == TALK_TIME )
+
+   monkeypatch.setattr(
+      GuardiansTalkOccurrenceProvider,
+      'occurrence_exists',
+      occurrence_exists )
+
+   success, failure = GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk=TALK_NAME,
+      location=TALK_LOCATION,
+      date=OCCURRENCE_DATE,
+      talk_times=[ TALK_TIME ] )
+
+   assert success is False
+   assert failure == ApiOperationFailure(
+      error_type=ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS,
+      params={
+         'talk': TALK_NAME,
+         'location': TALK_LOCATION,
+         'date': OCCURRENCE_DATE,
+         'talkTime': TALK_TIME,
+      } )
+
+
+def Test_AddGuardiansTalkOccurrence_TestSaveFailure_ExpectCouldNotAddFailure(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   monkeypatch.setattr(
+      GuardiansTalkOccurrenceProvider,
+      'occurrence_exists',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      GuardiansTalkOccurrenceProvider,
+      'save_occurrence',
+      lambda *_args, **_kwargs: False )
+
+   success, failure = GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk=TALK_NAME,
+      location=TALK_LOCATION,
+      date=OCCURRENCE_DATE,
+      talk_times=[ ADDED_TALK_TIME ] )
+
+   assert success is False
+   assert failure == ApiOperationFailure(
+      error_type=ApiErrorType.COULD_NOT_ADD_GUARDIANS_TALK_OCCURRENCE,
+      params={
+         'talk': TALK_NAME,
+         'location': TALK_LOCATION,
+         'date': OCCURRENCE_DATE,
+      } )
+
+
+def Test_AddGuardiansTalkOccurrence_TestNewOccurrence_ExpectSaved(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   saved_talk_times: list[ str ] = []
+
+   monkeypatch.setattr(
+      GuardiansTalkOccurrenceProvider,
+      'occurrence_exists',
+      lambda *_args, **_kwargs: False )
+
+   def save_occurrence(
+         _conn: Types.Connection,
+         occurrence: GuardiansTalkOccurrenceInput,
+   ) -> bool:
+      saved_talk_times.append( occurrence.talk_time )
+      return True
+
+   monkeypatch.setattr(
+      GuardiansTalkOccurrenceProvider,
+      'save_occurrence',
+      save_occurrence )
+
+   success, failure = GuardiansCoordinator.add_guardians_talk_occurrence(
+      talk=TALK_NAME,
+      location=TALK_LOCATION,
+      date=OCCURRENCE_DATE,
+      talk_times=[ ADDED_TALK_TIME ] )
+
+   assert success is True
+   assert failure is None
+   assert saved_talk_times == [ ADDED_TALK_TIME ]
+
+
+def Test_GetGuardiansTalkScheduleTimes_TestUnsortedProviderTimes_ExpectSorted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch,
+) -> None:
+   monkeypatch.setattr(
+      GuardiansTalkScheduleProvider,
+      'fetch_schedule_times',
+      lambda *_args, **_kwargs: [ '3:30 PM', '10:00 AM' ] )
+
+   assert GuardiansCoordinator.get_guardians_talk_schedule_times(
+      TALK_NAME,
+      TALK_LOCATION ) == [ '10:00 AM', '3:30 PM' ]

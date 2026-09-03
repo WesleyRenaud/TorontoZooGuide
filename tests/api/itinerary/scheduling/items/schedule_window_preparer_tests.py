@@ -5,8 +5,10 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.core.scheduling_anchor_resolver import SchedulingAnchorResolver
 from api.itinerary.scheduling.items.schedule_window_preparer import ScheduleWindowPreparer
+from api.shared.enums import ItineraryErrorType
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -57,6 +59,10 @@ def Test_ZooHoursWindowSeconds_TestGuestDepartureBeforeClose_ExpectZooCloseEnd()
    assert ScheduleWindowPreparer.zoo_hours_window_seconds(
       ZOO_HOURS )[ 1 ] == 19 * 3600
    assert SchedulingAnchorResolver.day_end_seconds( ZOO_HOURS, '3:00 PM' ) == 15 * 3600
+
+
+def Test_ZooHoursWindowSeconds_TestMissingHours_ExpectNone() -> None:
+   assert ScheduleWindowPreparer.zoo_hours_window_seconds( None ) is None
 
 
 def Test_PrepareZooHours_TestGuestDepartureBeforeClose_ExpectZooCloseWindow(
@@ -138,3 +144,212 @@ def Test_PrepareZooHours_TestSuppressedEarlyAdmission_ExpectNineAmAnchor(
       visit_date_temp=None )
 
    assert prepared.window[ 0 ] == 9 * 3600
+
+
+def Test_Prepare_TestMissingVisitDate_ExpectDateNotSetResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_Prepare_TestValidInputs_ExpectPreparedWindow(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-15' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, visit_date: ZOO_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryStatusProvider.is_itinerary_error_suppressed',
+      lambda conn, error_type: False )
+
+   prepared = ScheduleWindowPreparer.prepare(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert prepared.window == (
+      9 * 3600 + 30 * 60,
+      17 * 3600,
+   )
+
+
+def Test_Prepare_TestUnparseableVisitDate_ExpectDateNotSetResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-15' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.DateValues.parse_date_value',
+      lambda value: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_Prepare_TestUnavailableScheduleWindow_ExpectUnavailableResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-15' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, visit_date: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryStatusProvider.is_itinerary_error_suppressed',
+      lambda conn, error_type: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE
+
+
+def Test_PrepareZooHours_TestMissingVisitDate_ExpectDateNotSetResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare_zoo_hours(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_PrepareZooHours_TestUnparseableVisitDate_ExpectDateNotSetResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-15' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.DateValues.parse_date_value',
+      lambda value: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare_zoo_hours(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_PrepareZooHours_TestUnavailableScheduleWindow_ExpectUnavailableResult(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+   )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryProvider.fetch_itinerary_date',
+      lambda conn: '2026-06-15' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, visit_date: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItineraryStatusProvider.is_itinerary_error_suppressed',
+      lambda conn, error_type: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.schedule_window_preparer.ItinerarySaveResultBuilder.save_result',
+      lambda conn, status, **context: ItinerarySaveResult(
+         status=status,
+         reasons=[],
+         itinerary=None ) )
+
+   result = ScheduleWindowPreparer.prepare_zoo_hours(
+      sqlite3.connect( ':memory:' ),
+      saved_itinerary,
+      visit_date_temp=None )
+
+   assert isinstance( result, ItinerarySaveResult )
+   assert result.status == ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE

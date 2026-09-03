@@ -32,6 +32,23 @@ CREATE TABLE ItineraryTransportation (
    NEW_LIKELIHOOD           INTEGER
 );
 
+CREATE TABLE ItineraryTransportationLeg (
+   TRANSPORTATION           TEXT NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER NOT NULL DEFAULT 0,
+   FROM_STATION             TEXT NOT NULL,
+   TO_STATION               TEXT NOT NULL,
+   START_TIME               TEXT NOT NULL,
+   END_TIME                 TEXT NOT NULL
+);
+
+CREATE TABLE ItineraryTransportationRouteMarker (
+   TRANSPORTATION           TEXT NOT NULL,
+   ADDED_AS_ATTRACTION      INTEGER NOT NULL DEFAULT 0,
+   SEQUENCE                 INTEGER NOT NULL,
+   MARKER_ORDER             INTEGER NOT NULL,
+   MARKER_ID                TEXT NOT NULL
+);
+
 CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
@@ -107,6 +124,27 @@ def _insert_attraction(
             VALUES ( ?, ?, ? );
       """,
       ( attraction, old_likelihood, new_likelihood ),
+   )
+   conn.commit()
+
+
+def _insert_transportation(
+      conn: sqlite3.Connection,
+      *,
+      transportation: str,
+      added_as_attraction: int,
+      old_likelihood: int,
+      new_likelihood: int ) -> None:
+   conn.execute(
+      """   INSERT INTO ItineraryTransportation (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES ( ?, ?, ?, ? );
+      """,
+      ( transportation, added_as_attraction, old_likelihood, new_likelihood ),
    )
    conn.commit()
 
@@ -372,3 +410,25 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAtt
    assert len( rows ) == 1
    assert rows[ 0 ][ 'ATTRACTION' ] == 'Conservation Carousel'
    assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
+
+
+def Test_AcceptItinerary_TestZeroLikelihoodTransportations_ExpectAllRemoved(
+      accept_itinerary_conn: sqlite3.Connection ) -> None:
+   _insert_transportation(
+      accept_itinerary_conn,
+      transportation='Zoomobile',
+      added_as_attraction=0,
+      old_likelihood=100,
+      new_likelihood=0 )
+   _insert_transportation(
+      accept_itinerary_conn,
+      transportation='Zoomobile',
+      added_as_attraction=1,
+      old_likelihood=80,
+      new_likelihood=0 )
+
+   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
+
+   assert accept_itinerary_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryTransportation;'
+   ).fetchone()[ 0 ] == 0

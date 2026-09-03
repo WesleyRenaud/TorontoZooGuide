@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from datetime import date
 
+import pytest
+
+from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.attractions.data_access.attraction_record import AttractionRecord
 from api.attractions.scheduling.attraction_operating_hours_resolver import AttractionOperatingHoursResolver
 from api.shared.operating_hours import OperatingHours
@@ -92,3 +95,69 @@ def Test_OperatingHoursSeconds_TestMissingAttractionTimes_ExpectZooFallback() ->
 
    assert hours.open_seconds == ZOO_OPEN_SECONDS
    assert hours.close_seconds == ZOO_CLOSE_SECONDS
+
+
+def Test_FetchConfiguredOperatingHoursSeconds_TestMissingRecord_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_record_for_calendar_day',
+      lambda *_args, **_kwargs: None )
+   zoo_hours = OperatingHours(
+      open_seconds=ZOO_OPEN_SECONDS,
+      close_seconds=ZOO_CLOSE_SECONDS )
+
+   assert AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
+      None,
+      'Conservation Carousel',
+      visit_date=WEEKDAY_VISIT_DATE,
+      zoo_operating_hours=zoo_hours ) is None
+
+
+def Test_FetchConfiguredOperatingHoursSeconds_TestNoConfiguredHours_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   attraction_record = AttractionRecord(
+      name='Conservation Carousel',
+      free_with_admission=True,
+      description='Carousel',
+      info_link='https://example.com',
+      hyperlink_text='Learn more',
+      x_coord=1.0,
+      y_coord=2.0,
+      region='Americas',
+      weekday_multiplier=1.0,
+      weekend_holiday_multiplier=1.0 )
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_record_for_calendar_day',
+      lambda *_args, **_kwargs: attraction_record )
+   zoo_hours = OperatingHours(
+      open_seconds=ZOO_OPEN_SECONDS,
+      close_seconds=ZOO_CLOSE_SECONDS )
+
+   assert AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
+      None,
+      'Conservation Carousel',
+      visit_date=WEEKDAY_VISIT_DATE,
+      zoo_operating_hours=zoo_hours ) is None
+
+
+def Test_FetchConfiguredOperatingHoursSeconds_TestConfiguredHours_ExpectSeconds(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_record_for_calendar_day',
+      lambda *_args, **_kwargs: _attraction_record() )
+   zoo_hours = OperatingHours(
+      open_seconds=ZOO_OPEN_SECONDS,
+      close_seconds=ZOO_CLOSE_SECONDS )
+
+   hours = AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
+      None,
+      'Conservation Carousel',
+      visit_date=WEEKDAY_VISIT_DATE,
+      zoo_operating_hours=zoo_hours )
+
+   assert hours is not None
+   assert hours.open_seconds == 10 * 3600
+   assert hours.close_seconds == 16 * 3600

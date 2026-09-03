@@ -72,3 +72,15 @@ def Test_ToDict_TestSuppressedWarnings_ExpectWarningValues() -> None:
    assert payload[ 'suppressed_warnings' ] == [
       'earlyAdmissionRequiresMembership',
    ]
+
+
+def Test_ToDict_TestExtraPayload_ExpectMerged() -> None:
+   result = ItineraryTimeSetResult()
+
+   payload = ItineraryTimeSetResultResponseBuilder.to_dict(
+      result,
+      extra={ 'custom_flag': True },
+   )
+
+   assert payload[ 'custom_flag' ] is True
+   assert 'itinerary' not in payload

@@ -13,3 +13,11 @@ def Test_Build_TestMatchingQuery_ExpectMatchingRestaurantOnly() -> None:
    matches = RestaurantsMatchingQueryBuilder.build( restaurants, 'africa' )
 
    assert [ restaurant.name for restaurant in matches ] == [ 'Africa Restaurant' ]
+
+def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingRestaurantOnly() -> None:
+   restaurants = [
+      Restaurant( name='Africa Restaurant', location='Africa', sub_location=None ),
+      Restaurant( name='Beavertails', location='Tundra Trek', sub_location=None ),
+   ]
+   matches = RestaurantsMatchingQueryBuilder.filter_matching_query( restaurants, 'africa' )
+   assert [ restaurant.name for restaurant in matches ] == [ 'Africa Restaurant' ]

@@ -4,6 +4,7 @@ import pytest
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
 from api.walk_graph.master_route_provider import MasterRouteProvider
 
@@ -49,3 +50,21 @@ def Test_Sort_TestUnmappedAttractions_ExpectMappedFirstThenNameOrder(
       'AAA Unmapped Attraction A',
       'ZZZ Unmapped Attraction B',
    ]
+
+
+def Test_Sort_TestEmptyStops_ExpectEmpty(
+      stub_master_route_indexes: None ) -> None:
+   assert MasterRouteStopSorter.sort( [] ) == []
+
+
+def Test_Sort_TestUnmappedAnimal_ExpectExhibitNameOrder(
+      stub_master_route_indexes: None ) -> None:
+   zebra = ItineraryAnimalRecord(
+      species="Grevy's Zebra",
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100 )
+
+   ordered = MasterRouteStopSorter.sort( [ zebra ] )
+
+   assert ordered == [ zebra ]

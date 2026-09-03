@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 import sqlite3
 
 import pytest
@@ -15,6 +16,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_start_state import BulkSchedule
 from api.itinerary.scheduling.bulk.bulk_schedule_window_prep import BulkScheduleWindowPrep
 from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.shared.operating_hours import OperatingHours
 from api.walk_graph.domain.walk_graph import WalkGraph
 
 
@@ -204,3 +206,57 @@ def Test_PackStops_TestWalkThruAndAnimals_ExpectKangarooExcludedFromPackList(
 
    assert packing.covered_by_attraction == covered
    assert grouped_stops == [ [ TIGER, WALK_THRU ] ]
+
+
+def Test_PackStops_TestZooOperatingHours_ExpectSoftPinsAttached(
+      packer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   zoo_hours = OperatingHours.from_schedule_times( '10:00 AM', '4:00 PM' )
+   assert zoo_hours is not None
+   prep = BulkScheduleWindowPrep(
+      saved_itinerary=WINDOW_PREP.saved_itinerary,
+      previous_itinerary=WINDOW_PREP.previous_itinerary,
+      itinerary_context=WINDOW_PREP.itinerary_context,
+      anchor_seconds=WINDOW_PREP.anchor_seconds,
+      day_end_seconds=WINDOW_PREP.day_end_seconds,
+      blockers=WINDOW_PREP.blockers,
+      walk_graph=WINDOW_PREP.walk_graph,
+      start_state=WINDOW_PREP.start_state,
+      schedule_windows=list( WINDOW_PREP.schedule_windows ),
+      loop_pins=WINDOW_PREP.loop_pins,
+      visit_date=date( 2026, 6, 20 ),
+      zoo_operating_hours=zoo_hours,
+   )
+   captured_soft_pins: list[ object ] = []
+
+   monkeypatch.setattr(
+      GuardiansTalkAnimalCoverer,
+      'keys_to_cover',
+      lambda conn, loop_pins, animals: {} )
+   monkeypatch.setattr(
+      AttractionAnimalCoverer,
+      'keys_to_cover',
+      lambda conn, attraction_names, animals: {} )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_packer.MasterRouteLoopStopGrouper.group',
+      lambda stops: [ [ SPLASH ] ] )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_packer.LoopScheduleUnitBuilder.build',
+      lambda loop_groups: [] )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_packer.BulkScheduleLoopPinAttacher.attach_to_windows',
+      lambda schedule_windows, loop_pins: schedule_windows )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_packer.AttractionHoursSoftPinResolver.resolve',
+      lambda conn, *, attractions, loop_units, visit_date, zoo_operating_hours: (
+         captured_soft_pins.append( 'resolved' ) or [] ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_packer.AttractionHoursSoftPinResolver.attach_to_windows',
+      lambda schedule_windows, soft_pins: schedule_windows )
+
+   BulkScheduleLoopPacker.pack_stops(
+      packer_conn,
+      prep=prep,
+      stops_to_schedule=[ SPLASH ] )
+
+   assert captured_soft_pins == [ 'resolved' ]

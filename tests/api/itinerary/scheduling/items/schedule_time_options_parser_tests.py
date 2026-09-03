@@ -18,3 +18,10 @@ def Test_Parse_TestDurationWithoutTime_ExpectParsedOptions() -> None:
 
 def Test_Parse_TestInvalidStartTime_ExpectSaveFailed() -> None:
    assert ScheduleTimeOptionsParser.parse( 'not-a-time', None ) == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Parse_TestInvalidDuration_ExpectSaveFailed() -> None:
+   assert ScheduleTimeOptionsParser.parse(
+      '10:00 AM',
+      0,
+   ) == ItineraryErrorType.SAVE_FAILED

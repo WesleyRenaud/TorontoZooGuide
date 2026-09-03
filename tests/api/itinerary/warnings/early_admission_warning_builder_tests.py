@@ -4,7 +4,9 @@ import pytest
 
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
+from api.types import Types
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -91,3 +93,27 @@ def Test_IsRequired_TestSuppressed_ExpectFalseAndTracked(
    assert suppressed_warnings == [
       ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
    ]
+
+
+def Test_ArrivalIsDuringEarlyAdmission_TestInvalidOpenTime_ExpectFalse(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   original = DateValues.time_value_in_seconds
+
+   def fake_time_in_seconds( value: Types.TimeInput ) -> int | None:
+      if value == 'bad-open':
+         return None
+      return original( value )
+
+   monkeypatch.setattr(
+      'api.itinerary.warnings.early_admission_warning_builder.DateValues.time_value_in_seconds',
+      fake_time_in_seconds )
+
+   assert not EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
+      '09:15',
+      ZooHoursRecord(
+         operating_date='2026-06-20',
+         early_admission_time='09:00',
+         open_time='bad-open',
+         last_admission_time='18:00',
+         close_time='19:00',
+      ) )

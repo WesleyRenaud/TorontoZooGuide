@@ -263,3 +263,24 @@ def Test_Resolve_TestRiverOtterTalk_ExpectAmericasPavilionIndoorPin(
    assert loop_pin is not None
    assert loop_pin.loop_id == 'americas_pavilion'
    assert loop_pin.viewing_spot_index == 11
+
+
+def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
+   guardians_talk = GuardiansTalk(
+      name='African Lion',
+      location='Africa Savanna',
+      x_coord=0.0,
+      y_coord=0.0,
+      start_time='10:00 AM',
+      end_time='10:30 AM' )
+
+   assert GuardiansTalkLoopSchedulePinResolver.resolve(
+      None,
+      guardians_talk,
+      ItineraryStop(
+         schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+         item_key='African Lion',
+         walk_node_ids=( 'v-0000', ),
+         is_fixed_time=True,
+         start_time=None,
+         end_time='10:30 AM' ) ) is None

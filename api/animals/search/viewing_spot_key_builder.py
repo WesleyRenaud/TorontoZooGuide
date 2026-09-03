@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...models import Animal
+from ...models.animal import Animal
 from ...shared.value_conversion import ValueConversion
 from .species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ..animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
+from ..animals.search.species_exhibit_key import SpeciesExhibitKey
+from ..shared.value_conversion import ValueConversion
 from ..types import Types
 
 
@@ -28,10 +29,13 @@ class AnimalDiff:
 
 
    def viewing_spot_key( self ) -> tuple[ str, str, str | None ]:
-      return ViewingSpotKeyBuilder.from_values(
-         self.species,
-         self.exhibit,
-         self.enclosure_name )
+      key = SpeciesExhibitKey.from_values( self.species, self.exhibit )
+
+      return (
+         key.species,
+         key.exhibit,
+         ValueConversion.as_nullable_string( self.enclosure_name ),
+      )
 
 
    def to_dict( self ) -> dict[ str, object ]:

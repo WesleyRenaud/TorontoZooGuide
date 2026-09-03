@@ -168,6 +168,38 @@ def Test_SortAnimals_TestCrossLoopAnimals_ExpectMasterRouteOrder(
    ]
 
 
+def Test_WalkTravelDistancePx_TestResolvedViewingSpot_ExpectShortestDistance(
+      stub_bulk_schedule_walk_order_dependencies: None ) -> None:
+   distance_px = BulkScheduleWalkOrderBuilder.walk_travel_distance_px(
+      TEST_GRAPH,
+      ENTRANCE_NODE_ID,
+      'Cheetah',
+      'Indo-Malaya Outdoor' )
+
+   assert distance_px == 10.0
+
+
+def Test_SortByNearestNeighbor_TestEmptyList_ExpectEmpty() -> None:
+   assert BulkScheduleWalkOrderBuilder.sort_by_nearest_neighbor(
+      TEST_GRAPH,
+      [],
+      start_node_id=ENTRANCE_NODE_ID ) == []
+
+
+def Test_RepresentativeWalkNodeId_TestUnknownViewingSpot_ExpectNone(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ViewingSpotWalkNodeIdResolver,
+      'resolve',
+      lambda species, exhibit, enclosure_name=None: None )
+
+   assert BulkScheduleWalkOrderBuilder.representative_walk_node_id(
+      TEST_GRAPH,
+      ENTRANCE_NODE_ID,
+      'Unknown Animal',
+      'Nowhere' ) is None
+
+
 def Test_SortByNearestNeighbor_TestCheetahAndLion_ExpectCheetahFirst(
       stub_bulk_schedule_walk_order_dependencies: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:

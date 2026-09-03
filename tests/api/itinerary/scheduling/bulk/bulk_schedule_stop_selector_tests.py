@@ -278,3 +278,23 @@ def Test_Stops_TestAllGuestStops_ExpectAnimalsAttractionsAndTransportation() -> 
       ( None, CAROUSEL, None ),
       ( None, ZOOMOBILE, ZOOMOBILE ),
    ]
+
+
+def Test_Transportations_TestScheduledOnly_ExpectTimedRows() -> None:
+   assert [
+      row.transportation
+      for row in BulkScheduleStopSelector.transportations(
+         _saved(),
+         only_previously_scheduled=True )
+   ] == [ ZOOMOBILE ]
+
+
+def Test_TransitTransportations_TestNone_ExpectEmpty() -> None:
+   assert BulkScheduleStopSelector.transit_transportations( None ) == []
+
+
+def Test_StopsMatchingPrevious_TestNoneBeforeClear_ExpectEmpty() -> None:
+   assert BulkScheduleStopSelector.stops_matching_previous(
+      None,
+      _saved(),
+   ) == []

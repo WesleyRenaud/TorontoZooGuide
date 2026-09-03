@@ -65,3 +65,7 @@ def Test_ParseRows_TestEquivalentTimeFormats_ExpectDistinctEncounterTimes() -> N
    ] )
 
    assert [ row.encounter_time for row in rows ] == [ '3:30 PM', '2:00 PM' ]
+
+
+def Test_FromWire_TestInvalidRow_ExpectNone() -> None:
+   assert WildEncounterScheduleRowInput.from_wire( {} ) is None

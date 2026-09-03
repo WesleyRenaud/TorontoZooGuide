@@ -13,6 +13,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.scheduling.core.available_schedule_slot_finder import AvailableScheduleSlotFinder
 from api.itinerary.scheduling.items.attraction_itinerary_item_scheduler import AttractionItineraryItemScheduler
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
@@ -463,3 +464,263 @@ def Test_Schedule_TestShortVisitWindow_ExpectSlotAfterPriorAnimal(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert committed_times == [ ( '12:30 PM', '1:30 PM' ) ]
+
+
+def Test_Schedule_TestPrepareWindowFailed_ExpectPropagatedResult(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: ItinerarySaveResult(
+         status=ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+
+
+def Test_Schedule_TestMembershipError_ExpectPropagated(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=SAVED_ITINERARY,
+      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
+   membership_error = ItinerarySaveResult(
+      status=ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], membership_error ) )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.ITEM_NOT_ON_ITINERARY
+
+
+def Test_Schedule_TestAlreadyScheduled_ExpectItemAlreadyScheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      attraction_rows=[
+         ItineraryAttractionRecord(
+            attraction=SPLASH_ISLAND,
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='12:00 PM',
+            end_time='1:00 PM',
+         ),
+      ],
+   )
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=saved_itinerary,
+      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.ITEM_ALREADY_SCHEDULED
+
+
+def Test_Schedule_TestMissingDuration_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=SAVED_ITINERARY,
+      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOrTransportationDurationResolver.default_seconds',
+      lambda conn, attraction_name: None )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time=None, duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=False )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_AttractionHoursAdjustmentForRequestedTime_TestUnparseableStart_ExpectNone() -> None:
+   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+      '',
+      duration_seconds=60 * 60,
+      attraction_hours=WEEKEND_HOURS ) is None
+
+
+def Test_AttractionHoursAdjustmentForRequestedTime_TestMissingStart_ExpectNone() -> None:
+   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+      None,
+      duration_seconds=60 * 60,
+      attraction_hours=WEEKEND_HOURS ) is None
+
+
+def Test_AttractionHoursAdjustmentForRequestedTime_TestMissingHours_ExpectNone() -> None:
+   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+      '1:00 PM',
+      duration_seconds=60 * 60,
+      attraction_hours=None ) is None
+
+
+def Test_ResolveAdjustedAttractionSlot_TestBeforeOpen_ExpectResolverSlot(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleSlotTimeResolver.resolve',
+      lambda *args, **kwargs: ( ( '12:00 PM', '1:00 PM' ), None ) )
+
+   slot, error = AttractionItineraryItemScheduler._resolve_adjusted_attraction_slot(
+      scheduler_conn,
+      SAVED_ITINERARY,
+      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      60 * 60,
+      hours_adjustment=AttractionHoursScheduleAdjustment.BEFORE_OPEN,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert slot == ( '12:00 PM', '1:00 PM' )
+   assert error is None
+
+
+def Test_ResolveAdjustedAttractionSlot_TestAfterCloseNoSlot_ExpectNoAvailableSlot(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda saved_itinerary, **context: ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      AvailableScheduleSlotFinder,
+      'find_previous',
+      lambda *args, **kwargs: None )
+
+   slot, error = AttractionItineraryItemScheduler._resolve_adjusted_attraction_slot(
+      scheduler_conn,
+      SAVED_ITINERARY,
+      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      60 * 60,
+      hours_adjustment=AttractionHoursScheduleAdjustment.AFTER_CLOSE,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert slot is None
+   assert error is not None
+   assert error.status == ItineraryErrorType.NO_AVAILABLE_SLOT
+
+
+def Test_Schedule_TestConfirmedOutsideHoursSlotError_ExpectSuppressedSlotError(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   prepared_window = PreparedScheduleWindow(
+      saved_itinerary=SAVED_ITINERARY,
+      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_date=VISIT_DATE,
+      zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
+   slot_error = ItinerarySaveResult(
+      status=ItineraryErrorType.NO_AVAILABLE_SLOT,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleWindowPreparer.prepare',
+      lambda conn, saved_itinerary, **context: prepared_window )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
+      lambda *args, **kwargs: WEEKEND_HOURS )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ListedScheduleItemPersister.prepare',
+      lambda *args, **kwargs: ( [], None ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.AttractionOrTransportationDurationResolver.default_seconds',
+      lambda conn, attraction_name: 60 * 60 )
+   monkeypatch.setattr(
+      AttractionItineraryItemScheduler,
+      '_resolve_adjusted_attraction_slot',
+      lambda *args, **kwargs: ( None, slot_error ) )
+
+   result = AttractionItineraryItemScheduler.schedule(
+      scheduler_conn,
+      SCHEDULE_ITEM_KEY,
+      ParsedScheduleTimeOptions( start_time='10:00 AM', duration_minutes=None ),
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_schedule_item_not_on_itinerary=False,
+      confirming_attraction_outside_operating_hours=True )
+
+   assert result.status == ItineraryErrorType.NO_AVAILABLE_SLOT

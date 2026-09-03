@@ -261,3 +261,90 @@ def Test_Resolve_TestPackAfterScheduledLion_ExpectLaterSlot(
 
    assert error is None
    assert slot == ( '10:08 AM', '10:15 AM' )
+
+
+def Test_ResolveAllowingVisitExtension_TestUnexpectedResolveError_ExpectPropagated(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   unexpected_error = ItinerarySaveResult(
+      status=ItineraryErrorType.SAVE_FAILED,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      ScheduleSlotTimeResolver,
+      'resolve',
+      lambda conn, saved_itinerary, window, duration_seconds, **kwargs: ( None, unexpected_error ) )
+
+   slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
+      schedule_conn,
+      SAVED_ITINERARY,
+      VISIT_WINDOW,
+      DURATION_SECONDS,
+      start_time=None,
+      itinerary_context={} )
+
+   assert slot is None
+   assert error is not None
+   assert error.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_ResolveAllowingVisitExtension_TestZooHoursPrepareFailure_ExpectOriginalError(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   original_error = ItinerarySaveResult(
+      status=ItineraryErrorType.NO_AVAILABLE_SLOT,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      ScheduleSlotTimeResolver,
+      'resolve',
+      lambda conn, saved_itinerary, window, duration_seconds, **kwargs: ( None, original_error ) )
+   monkeypatch.setattr(
+      ScheduleWindowPreparer,
+      'prepare_zoo_hours',
+      lambda conn, saved_itinerary, **context: original_error )
+
+   slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
+      schedule_conn,
+      SAVED_ITINERARY,
+      VISIT_WINDOW,
+      DURATION_SECONDS,
+      start_time=None,
+      itinerary_context={} )
+
+   assert slot is None
+   assert error is not None
+   assert error.status == ItineraryErrorType.NO_AVAILABLE_SLOT
+
+
+def Test_ResolveAllowingVisitExtension_TestExtensionSearchFails_ExpectOriginalError(
+      schedule_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   original_error = ItinerarySaveResult(
+      status=ItineraryErrorType.NO_AVAILABLE_SLOT,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      ScheduleSlotTimeResolver,
+      'resolve',
+      lambda conn, saved_itinerary, window, duration_seconds, **kwargs: ( None, original_error ) )
+   monkeypatch.setattr(
+      ScheduleSlotTimeResolver,
+      '_resolve_extension_slot_before_or_after_visit',
+      lambda saved_itinerary, **kwargs: None )
+
+   slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
+      schedule_conn,
+      SAVED_ITINERARY,
+      VISIT_WINDOW,
+      DURATION_SECONDS,
+      start_time=None,
+      itinerary_context={},
+      day_hours_window=DAY_HOURS_WINDOW )
+
+   assert slot is None
+   assert error is not None
+   assert error.status == ItineraryErrorType.NO_AVAILABLE_SLOT

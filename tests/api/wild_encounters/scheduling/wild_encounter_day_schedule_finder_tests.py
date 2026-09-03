@@ -62,3 +62,19 @@ def Test_FindOnDaySchedule_TestUnavailableEncounter_ExpectUnavailableMatch() -> 
    assert match is not None
    assert match.is_available is False
    assert match.unavailable_message == 'Kangaroo is not scheduled on July 9.'
+
+
+def Test_FindOnDaySchedule_TestInvalidStartTime_ExpectNone() -> None:
+   assert WildEncounterDayScheduleFinder.find_on_day_schedule(
+      [ _encounter() ],
+      'Kangaroo',
+      start_time=None,
+   ) is None
+
+
+def Test_FindOnDaySchedule_TestNoMatchingStartTime_ExpectNone() -> None:
+   assert WildEncounterDayScheduleFinder.find_on_day_schedule(
+      [ _encounter( start_time='3:30 PM' ) ],
+      'Kangaroo',
+      start_time='2:00 PM',
+   ) is None

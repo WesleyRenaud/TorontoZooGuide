@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 import sqlite3
 
 import pytest
@@ -37,6 +38,54 @@ SAVED_ITINERARY_WITH_TALK = SavedItinerary(
       ),
    ],
 )
+
+CAROUSEL = 'Conservation Carousel'
+ENTRANCE_NODE_ID = 'n-entrance'
+LION_NODE_ID = 'n-lion'
+OPEN_ANCHOR_SECONDS = 9 * 3600 + 30 * 60
+
+LION = ItineraryAnimalRecord(
+   species='African Lion',
+   exhibit='Africa Savanna',
+   old_likelihood=None,
+   new_likelihood=100,
+)
+PENGUIN = ItineraryAnimalRecord(
+   species='African Penguin',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
+   old_likelihood=None,
+   new_likelihood=100,
+)
+
+TEST_GRAPH: WalkGraph = {
+   'map_width_px': 100,
+   'map_height_px': 100,
+   'entrance_node_id': ENTRANCE_NODE_ID,
+   'nodes': [
+      {
+         'id': ENTRANCE_NODE_ID,
+         'x': 0.0,
+         'y': 0.0,
+         'x_px': 0.0,
+         'y_px': 0.0,
+      },
+      {
+         'id': LION_NODE_ID,
+         'x': 0.1,
+         'y': 0.0,
+         'x_px': 10.0,
+         'y_px': 0.0,
+      },
+   ],
+   'edges': [
+      {
+         'from': ENTRANCE_NODE_ID,
+         'to': LION_NODE_ID,
+         'length_px': 10.0,
+      },
+   ],
+}
 
 
 def Test_HasItemsToRebuild_TestEmptyGuestItems_ExpectFalse() -> None:
@@ -118,58 +167,8 @@ def Test_HasItemsToRebuild_TestWildEncounterRow_ExpectTrue() -> None:
    assert BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
 
 
-CAROUSEL = 'Conservation Carousel'
-ENTRANCE_NODE_ID = 'n-entrance'
-LION_NODE_ID = 'n-lion'
-OPEN_ANCHOR_SECONDS = 9 * 3600 + 30 * 60
-
-LION = ItineraryAnimalRecord(
-   species='African Lion',
-   exhibit='Africa Savanna',
-   old_likelihood=None,
-   new_likelihood=100,
-)
-PENGUIN = ItineraryAnimalRecord(
-   species='African Penguin',
-   exhibit='Africa Savanna',
-   enclosure_name='Outdoor',
-   old_likelihood=None,
-   new_likelihood=100,
-)
-
-TEST_GRAPH: WalkGraph = {
-   'map_width_px': 100,
-   'map_height_px': 100,
-   'entrance_node_id': ENTRANCE_NODE_ID,
-   'nodes': [
-      {
-         'id': ENTRANCE_NODE_ID,
-         'x': 0.0,
-         'y': 0.0,
-         'x_px': 0.0,
-         'y_px': 0.0,
-      },
-      {
-         'id': LION_NODE_ID,
-         'x': 0.1,
-         'y': 0.0,
-         'x_px': 10.0,
-         'y_px': 0.0,
-      },
-   ],
-   'edges': [
-      {
-         'from': ENTRANCE_NODE_ID,
-         'to': LION_NODE_ID,
-         'length_px': 10.0,
-      },
-   ],
-}
-
-
 def Test_PrepareWindows_TestScheduledGuestItems_ExpectClearAllBeforeRepack(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   from datetime import date
 
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SavedItinerary(

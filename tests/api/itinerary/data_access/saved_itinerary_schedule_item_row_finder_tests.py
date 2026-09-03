@@ -5,10 +5,12 @@ from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.saved_itinerary_schedule_item_row_finder import SavedItineraryScheduleItemRowFinder
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryEventType
@@ -279,3 +281,63 @@ def Test_SavedScheduleItemIsAlreadyScheduled_TestScheduledLunch_ExpectTrue() -> 
    assert SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
       saved_itinerary,
       ItineraryEventType.LUNCH )
+
+
+def Test_FindSavedItineraryScheduleItemRow_TestDeletedGuardiansTalk_ExpectNone() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=None,
+      departure_time=None,
+      guardians_talk_rows=[
+         ItineraryGuardiansTalkRecord(
+            talk_name='African Lion',
+            start_time='2:00 PM',
+            end_time='2:30 PM',
+            is_deleted=True ),
+      ],
+   )
+
+   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      GuardiansTalkScheduleItemKey(
+         name='African Lion',
+         start_time='2:00 PM',
+      ),
+   ) is None
+
+
+def Test_FindSavedItineraryScheduleItemRow_TestDeletedWildEncounter_ExpectNone() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=None,
+      departure_time=None,
+      wild_encounter_rows=[
+         ItineraryWildEncounterRecord(
+            wild_encounter='Kangaroo',
+            start_time='1:00 PM',
+            end_time='1:45 PM',
+            is_deleted=True ),
+      ],
+   )
+
+   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      WildEncounterScheduleItemKey(
+         name='Kangaroo',
+         start_time='1:00 PM',
+      ),
+   ) is None
+
+
+def Test_FindSavedItineraryScheduleItemRow_TestUnknownKeyType_ExpectNone() -> None:
+   class UnknownScheduleItemKey:
+      pass
+
+   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+      SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time=None,
+         departure_time=None,
+      ),
+      UnknownScheduleItemKey(),  # type: ignore[arg-type]
+   ) is None

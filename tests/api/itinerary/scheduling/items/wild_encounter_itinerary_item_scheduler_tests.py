@@ -313,3 +313,148 @@ def Test_Schedule_TestNoOverlap_ExpectNoBulkReschedule(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert not reschedule_called
+
+
+def Test_InsertScheduledWildEncounter_TestInsertFailed_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ScheduleItineraryItemProvider.insert_itinerary_wild_encounter',
+      lambda *args, **kwargs: False )
+
+   result = WildEncounterItineraryItemScheduler._insert_scheduled_wild_encounter(
+      scheduler_conn,
+      wild_encounter_key=ENCOUNTER_KEY,
+      wild_encounter_diff=ENCOUNTER_DIFF,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is not None
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Schedule_TestLongWaitWarning_ExpectPendingReason(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_wild_encounter_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: ENCOUNTER_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.WildEncounterUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, encounters: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.WildEncounterLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk',
+      lambda *args, **kwargs: ItineraryResultReason(
+         code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT ) )
+
+   result = WildEncounterItineraryItemScheduler.schedule(
+      scheduler_conn,
+      ENCOUNTER_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False )
+
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+
+
+def Test_Schedule_TestInsertError_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_wild_encounter_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: ENCOUNTER_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.WildEncounterUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, encounters: False )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_insert_scheduled_wild_encounter',
+      lambda *args, **kwargs: ItinerarySaveResult(
+         status=ItineraryErrorType.SAVE_FAILED,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+
+   result = WildEncounterItineraryItemScheduler.schedule(
+      scheduler_conn,
+      ENCOUNTER_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=True )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Schedule_TestOverlapWithConfirmation_ExpectBulkReschedule(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   reschedule_called = False
+
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_wild_encounter_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: ENCOUNTER_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.WildEncounterUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, encounters: True )
+   monkeypatch.setattr(
+      WildEncounterItineraryItemScheduler,
+      '_insert_scheduled_wild_encounter',
+      lambda *args, **kwargs: None )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ScheduledActivityVisitTimesCoverer.cover_for_activity',
+      lambda *args, **kwargs: None )
+
+   def reschedule_after_add(
+         *args: object,
+         **kwargs: object ) -> ItinerarySaveResult:
+      nonlocal reschedule_called
+      reschedule_called = True
+      return ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() )
+
+   monkeypatch.setattr(
+      FixedTimeActivityRescheduler,
+      'reschedule_after_add',
+      reschedule_after_add )
+
+   result = WildEncounterItineraryItemScheduler.schedule(
+      scheduler_conn,
+      ENCOUNTER_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_wild_encounter_unschedule=True,
+      confirming_fixed_time_item_long_wait=True )
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert reschedule_called
+
+
+def Test_InsertScheduledWildEncounter_TestInsertSucceeded_ExpectNone(
+      scheduler_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.wild_encounter_itinerary_item_scheduler.ScheduleItineraryItemProvider.insert_itinerary_wild_encounter',
+      lambda *args, **kwargs: True )
+
+   result = WildEncounterItineraryItemScheduler._insert_scheduled_wild_encounter(
+      scheduler_conn,
+      wild_encounter_key=ENCOUNTER_KEY,
+      wild_encounter_diff=ENCOUNTER_DIFF,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is None

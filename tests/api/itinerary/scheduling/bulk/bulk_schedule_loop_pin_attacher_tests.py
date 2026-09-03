@@ -7,6 +7,7 @@ from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWin
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
+from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.shared.enums import ScheduleItemKind
 
@@ -228,3 +229,309 @@ def Test_SeparateBoundariesAndPins_TestUnpinnedWildEncounter_ExpectNoLoopPin(
 
    assert fixed_time_stops == [ encounter_stop ]
    assert loop_pins == []
+
+
+def Test_SeparateBoundariesAndPins_TestGuardiansTalkPinned_ExpectLoopPin(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk_stop = ItineraryStop(
+      schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+      item_key=AFRICAN_LION_TALK,
+      walk_node_ids=( 'v-0000', ),
+      is_fixed_time=True,
+      start_time='11:00 AM',
+      end_time='11:30 AM' )
+   expected_pin = _talk_loop_pin(
+      loop_id='africa_savanna_canadian_domain',
+      viewing_spot_index=0,
+      item_key=AFRICAN_LION_TALK,
+      start_seconds=11 * 3600,
+      end_seconds=11 * 3600 + 30 * 60 )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[
+         GuardiansTalk(
+            name=AFRICAN_LION_TALK,
+            location='Africa Savanna',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='11:00 AM',
+            end_time='11:30 AM' ),
+      ],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.GuardiansTalkLoopSchedulePinResolver.resolve',
+      lambda conn, talk, fixed_time_stop: expected_pin )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ talk_stop ] )
+
+   assert fixed_time_stops == [ talk_stop ]
+   assert loop_pins == [ expected_pin ]
+
+
+def Test_SeparateBoundariesAndPins_TestDeletedGuardiansTalk_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk_stop = ItineraryStop(
+      schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+      item_key=AFRICAN_LION_TALK,
+      walk_node_ids=( 'v-0000', ),
+      is_fixed_time=True,
+      start_time='11:00 AM',
+      end_time='11:30 AM' )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[
+         GuardiansTalk(
+            name=AFRICAN_LION_TALK,
+            location='Africa Savanna',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='11:00 AM',
+            end_time='11:30 AM',
+            is_deleted=True ),
+      ],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ talk_stop ] )
+
+   assert fixed_time_stops == [ talk_stop ]
+   assert loop_pins == []
+
+
+def Test_SeparateBoundariesAndPins_TestWildEncounterPinned_ExpectLoopPin(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   encounter_stop = _wild_encounter_stop( item_key=BACTRIAN_CAMELS_ENCOUNTER )
+   expected_pin = LoopSchedulePin(
+      loop_id='eurasia',
+      viewing_spot_index=1,
+      stop=encounter_stop,
+      start_seconds=15 * 3600 + 30 * 60,
+      end_seconds=16 * 3600 )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name=BACTRIAN_CAMELS_ENCOUNTER,
+            meeting_spot=EURASIA_MEETING_SPOT,
+            link='https://example.com',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='3:30 PM',
+            end_time='4:00 PM' ),
+      ],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: { EURASIA_MEETING_SPOT: object() } )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterLoopSchedulePinResolver.resolve',
+      lambda wild_encounter, fixed_time_stop, *, meeting_spot_loop_pins_by_name: expected_pin )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ encounter_stop ] )
+
+   assert fixed_time_stops == [ encounter_stop ]
+   assert loop_pins == [ expected_pin ]
+
+
+def Test_SeparateBoundariesAndPins_TestDeletedWildEncounter_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   encounter_stop = _wild_encounter_stop( item_key=BACTRIAN_CAMELS_ENCOUNTER )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name=BACTRIAN_CAMELS_ENCOUNTER,
+            meeting_spot=EURASIA_MEETING_SPOT,
+            link='https://example.com',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='3:30 PM',
+            end_time='4:00 PM',
+            is_deleted=True ),
+      ],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ encounter_stop ] )
+
+   assert fixed_time_stops == [ encounter_stop ]
+   assert loop_pins == []
+
+
+def Test_SeparateBoundariesAndPins_TestGuardiansTalkWithoutFixedStop_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[
+         GuardiansTalk(
+            name=AFRICAN_LION_TALK,
+            location='Africa Savanna',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='11:00 AM',
+            end_time='11:30 AM' ),
+      ],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [] )
+
+   assert fixed_time_stops == []
+   assert loop_pins == []
+
+
+def Test_SeparateBoundariesAndPins_TestGuardiansTalkResolveNone_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk_stop = ItineraryStop(
+      schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
+      item_key=AFRICAN_LION_TALK,
+      walk_node_ids=( 'v-0000', ),
+      is_fixed_time=True,
+      start_time='11:00 AM',
+      end_time='11:30 AM' )
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[
+         GuardiansTalk(
+            name=AFRICAN_LION_TALK,
+            location='Africa Savanna',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='11:00 AM',
+            end_time='11:30 AM' ),
+      ],
+      wild_encounters=[],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.GuardiansTalkLoopSchedulePinResolver.resolve',
+      lambda conn, talk, fixed_time_stop: None )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [ talk_stop ] )
+
+   assert fixed_time_stops == [ talk_stop ]
+   assert loop_pins == []
+
+
+def Test_SeparateBoundariesAndPins_TestWildEncounterWithoutFixedStop_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   itinerary = ItineraryBuilder.build(
+      date='2026-06-20',
+      selected_exhibits=[],
+      animals=[],
+      attractions=[],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name=BACTRIAN_CAMELS_ENCOUNTER,
+            meeting_spot=EURASIA_MEETING_SPOT,
+            link='https://example.com',
+            x_coord=0.0,
+            y_coord=0.0,
+            start_time='3:30 PM',
+            end_time='4:00 PM' ),
+      ],
+      events=[],
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM' )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher.WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name',
+      lambda conn: {} )
+
+   fixed_time_stops, loop_pins = BulkScheduleLoopPinAttacher.separate_boundaries_and_pins(
+      None,
+      itinerary,
+      [] )
+
+   assert fixed_time_stops == []
+   assert loop_pins == []
+
+
+def Test_AttachToWindows_TestEmptyLoopPins_ExpectSameWindows() -> None:
+   schedule_windows = [
+      ItineraryScheduleWindow(
+         start_seconds=9 * 3600,
+         end_seconds=12 * 3600 ),
+   ]
+
+   assert BulkScheduleLoopPinAttacher.attach_to_windows(
+      schedule_windows,
+      [] ) is schedule_windows

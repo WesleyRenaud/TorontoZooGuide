@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
@@ -101,3 +103,31 @@ def Test_Append_TestAwayFromEntrance_ExpectShortestPathLegAppended() -> None:
    assert route_stops[ -1 ].item_key == ENTRANCE_ITEM_KEY
    assert route_stops[ -1 ].walk_node_id == ENTRANCE_NODE_ID
    assert route_node_ids == list( expected_node_ids )
+
+
+def Test_Append_TestNoReturnPath_ExpectNoLegAppended(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   from_stop = ItineraryWalkRouteStop(
+      schedule_item_kind=ScheduleItemKind.ANIMAL,
+      item_key='Lion||Africa Savanna',
+      walk_node_id=DESTINATION_NODE_ID )
+   route_stops = [ from_stop ]
+   legs: list[ WalkRouteLeg ] = []
+   route_node_ids: list[ str ] = []
+   monkeypatch.setattr(
+      ShortestPathCalculator,
+      'find',
+      lambda *args, **kwargs: None )
+
+   ReturnToEntranceWalkRouteLegAppender.append(
+      TEST_GRAPH,
+      entrance_anchor=ENTRANCE_ANCHOR,
+      entrance_node_id=ENTRANCE_NODE_ID,
+      current_node_id=DESTINATION_NODE_ID,
+      route_stops=route_stops,
+      legs=legs,
+      route_node_ids=route_node_ids )
+
+   assert legs == []
+   assert route_stops == [ from_stop ]
+   assert route_node_ids == []

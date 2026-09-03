@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import runpy
 import sqlite3
 
 import pytest
@@ -182,6 +183,42 @@ def Test_Main_TestDatabasePath_ExpectClearsAndPrintsSuccess(
    conn.close()
 
    UserItineraryDataCleaner.main( str( path ) )
+
+   conn = sqlite3.connect( path )
+   count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ 0 ]
+   conn.close()
+
+   assert count == 0
+   assert 'User itinerary data cleared successfully.' in capsys.readouterr().out
+
+
+def Test_ModuleMain_TestDatabasePath_ExpectClearsAndPrintsSuccess(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   path = tmp_path / 'animals.db'
+   conn = sqlite3.connect( path )
+   conn.executescript( ITINERARY_CLEANER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryExhibit ( EXHIBIT )
+            VALUES ( 'Africa Savanna' );
+      """ )
+   conn.commit()
+   conn.close()
+
+   real_connect = sqlite3.connect
+
+   def connect_override( db_path: str ) -> sqlite3.Connection:
+      if db_path == 'animals.db':
+         return real_connect( str( path ) )
+
+      return real_connect( db_path )
+
+   monkeypatch.setattr(
+      'api.seed.user_itinerary_data_cleaner.sqlite3.connect',
+      connect_override )
+
+   runpy.run_module( 'api.seed.user_itinerary_data_cleaner', run_name='__main__' )
 
    conn = sqlite3.connect( path )
    count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ 0 ]

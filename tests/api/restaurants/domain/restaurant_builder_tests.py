@@ -188,3 +188,28 @@ def Test_BuildRestaurant_TestClosureOverrideOutsideRange_ExpectOpenFromSchedule(
 
    assert restaurant.is_closed is False
    assert restaurant.closed_message is None
+
+
+def Test_ResolveContext_TestVisitDay_ExpectVisitContext() -> None:
+   context = RestaurantBuilder.resolve_context( day=15, month='June', year=2026 )
+
+   assert context.normalized_day == 15
+   assert context.normalized_month == 6
+
+
+def Test_IsOpenOnDay_TestMondaySchedule_ExpectOpenOnMonday() -> None:
+   schedule = _schedule_record( monday=True )
+
+   assert RestaurantBuilder.is_open_on_day(
+      schedule,
+      weekday=VISIT_DATE.weekday(),
+      is_holiday=False ) is True
+
+
+def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> None:
+   status, message = RestaurantBuilder.get_active_schedule_override_status(
+      override_records=[ _override_record() ],
+      target_date=OVERRIDE_VISIT_DATE )
+
+   assert status == ScheduleStatus.CLOSED
+   assert message == CLOSURE_OVERRIDE_MESSAGE

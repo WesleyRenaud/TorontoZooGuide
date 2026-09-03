@@ -230,3 +230,29 @@ def Test_WalkNodeIdByEnclosureName_TestOstrichSpots_ExpectResolvedWalkNodes(
    assert walk_node_ids[
       ( 'Ostrich', AFRICAN_RAINFOREST_PAVILION, 'Savanna Overlook' )
    ] == 'v-4002'
+
+
+def Test_WalkNodeIdByEnclosureName_TestMissingWalkNodeMatch_ExpectSkipped(
+      stub_enclosure_viewing_walk_nodes: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _clear_lookup_cache()
+   stub_path = MagicMock()
+   stub_path.read_text.return_value = json.dumps( [
+      *ENCLOSURE_VIEWING_ROWS,
+      {
+         'species': 'Missing Walk Node',
+         'exhibit': 'Nowhere',
+         'name': None,
+         'enclosure_type': 'Outdoor',
+         'x_coord': 99.0,
+         'y_coord': 99.0,
+      },
+   ] )
+   monkeypatch.setattr(
+      'api.walk_graph.enclosure_viewing_walk_node_lookup.Paths.ENCLOSURE_VIEWING_PATH',
+      stub_path )
+
+   walk_node_ids = EnclosureViewingWalkNodeLookup.walk_node_id_by_enclosure_name()
+
+   assert ( 'Missing Walk Node', 'Nowhere', None ) not in walk_node_ids
+   _clear_lookup_cache()

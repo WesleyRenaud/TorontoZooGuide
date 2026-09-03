@@ -14,6 +14,24 @@ LION_KEY = 'African Lion||Africa Savanna'
 PENGUIN_KEY = 'African Penguin||Africa Savanna||Outdoor'
 
 
+def Test_FromWire_TestEmptyItemType_ExpectNone() -> None:
+   assert ScheduleItemKeyMapper.from_wire( '   ', LION_KEY ) is None
+
+
+def Test_FromWire_TestUnknownItemType_ExpectNone() -> None:
+   assert ScheduleItemKeyMapper.from_wire( 'unknown', LION_KEY ) is None
+
+
+def Test_FromWire_TestEventItemType_ExpectEventFromWireKey() -> None:
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'event', 'lunch' )
+
+   assert schedule_item_key == ItineraryEventType.LUNCH
+
+
+def Test_FromWire_TestEntranceItemType_ExpectNone() -> None:
+   assert ScheduleItemKeyMapper.from_wire( 'entrance', 'entrance' ) is None
+
+
 def Test_FromWire_TestAnimalKey_ExpectAnimalScheduleItemKey() -> None:
    schedule_item_key = ScheduleItemKeyMapper.from_wire( 'animals', LION_KEY )
 

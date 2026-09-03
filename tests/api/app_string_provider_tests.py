@@ -38,6 +38,11 @@ def Test_Format_TestGuestStatusTemplate_ExpectResolvedMessage() -> None:
       species='Giraffe' ) == 'The Giraffe is temporarily off-display.'
 
 
+def Test_Format_TestUnknownKey_ExpectKeyError() -> None:
+   with pytest.raises( KeyError, match='Unknown app string key: missing.key' ):
+      AppStringProvider.format( 'missing.key' )
+
+
 def Test_Format_TestLikelyOffDisplayTemplate_ExpectResolvedMessage() -> None:
    assert AppStringProvider.format(
       'guestStatus.animals.speciesLikelyOffDisplayOnDay',

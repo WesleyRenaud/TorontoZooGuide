@@ -8,9 +8,15 @@ from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
+from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
+from api.itinerary.operations.itinerary_item_schedule_change_committer import ItineraryItemScheduleChangeCommitter
 from api.itinerary.operations.itinerary_item_unscheduler import ItineraryItemUnscheduler
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 
 
@@ -68,6 +74,21 @@ CREATE TABLE ItineraryTransportationRouteMarker (
    MARKER_ORDER             INTEGER     NOT NULL,
    MARKER_ID                TEXT        NOT NULL
 );
+
+CREATE TABLE ItineraryGuardiansTalk (
+   TALK_NAME            TEXT        NOT NULL PRIMARY KEY,
+   START_TIME           TEXT,
+   END_TIME             TEXT,
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ItineraryWildEncounter (
+   WILD_ENCOUNTER       TEXT        NOT NULL,
+   START_TIME           TEXT        NOT NULL,
+   END_TIME             TEXT,
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0,
+   PRIMARY KEY ( WILD_ENCOUNTER, START_TIME )
+);
 """
 
 CAROUSEL = 'Conservation Carousel'
@@ -81,6 +102,9 @@ LION_KEY = AnimalScheduleItemKey(
    species='African Lion',
    exhibit='Africa Savanna',
 )
+
+LION_TALK = 'African Lion'
+RHINO_ENCOUNTER = 'White Rhinoceros'
 
 
 @pytest.fixture
@@ -121,6 +145,34 @@ def unscheduler_conn() -> sqlite3.Connection:
 
    yield conn
 
+   conn.close()
+
+
+@pytest.fixture
+def guardians_talk_unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   conn.execute(
+      """INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, START_TIME, END_TIME )
+         VALUES ( ?, ?, ? );""",
+      ( LION_TALK, '10:00 AM', '10:30 AM' ) )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def wild_encounter_unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   conn.execute(
+      """INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER, START_TIME, END_TIME )
+         VALUES ( ?, ?, ? );""",
+      ( RHINO_ENCOUNTER, '1:00 PM', '1:45 PM' ) )
+   conn.commit()
+   yield conn
    conn.close()
 
 
@@ -417,3 +469,45 @@ def Test_Apply_TestTransportationAttractionModeKey_ExpectAttractionModeClearedTr
    assert transit_row[ 'ROUTE' ] == ZOOMOBILE_TRANSIT_ROUTE
    assert transit_row[ 'BULK_TRANSIT_EVALUATED' ] == 1
    assert _fetch_transit_legs( zoomobile_unscheduler_conn ) == transit_legs_before
+
+
+def Test_Apply_TestGuardiansTalkKey_ExpectDeletedRow(
+      guardians_talk_unscheduler_conn: sqlite3.Connection ) -> None:
+   cur = guardians_talk_unscheduler_conn.cursor()
+   ItineraryItemUnscheduler.apply(
+      cur,
+      GuardiansTalkScheduleItemKey( name=LION_TALK, start_time='10:00 AM' ) )
+   guardians_talk_unscheduler_conn.commit()
+   cur.close()
+   count = guardians_talk_unscheduler_conn.execute(
+      'SELECT COUNT(*) AS COUNT FROM ItineraryGuardiansTalk;' ).fetchone()
+   assert count is not None
+   assert count[ 'COUNT' ] == 0
+
+
+def Test_Apply_TestWildEncounterKey_ExpectDeletedRow(
+      wild_encounter_unscheduler_conn: sqlite3.Connection ) -> None:
+   cur = wild_encounter_unscheduler_conn.cursor()
+   ItineraryItemUnscheduler.apply(
+      cur,
+      WildEncounterScheduleItemKey( name=RHINO_ENCOUNTER, start_time='1:00 PM' ) )
+   wild_encounter_unscheduler_conn.commit()
+   cur.close()
+   count = wild_encounter_unscheduler_conn.execute(
+      'SELECT COUNT(*) AS COUNT FROM ItineraryWildEncounter;' ).fetchone()
+   assert count is not None
+   assert count[ 'COUNT' ] == 0
+
+
+def Test_Unschedule_TestAnimalKey_ExpectCommitResult(
+      unscheduler_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      ItineraryItemScheduleChangeCommitter,
+      'commit',
+      lambda conn, key, apply: ItinerarySaveResult(
+         status=ItineraryErrorType.SUCCESS,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+   result = ItineraryItemUnscheduler.unschedule( unscheduler_conn, LION_KEY )
+   assert result.status == ItineraryErrorType.SUCCESS

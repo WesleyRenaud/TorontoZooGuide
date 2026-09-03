@@ -5,6 +5,16 @@ from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItineraryErrorType
 
+def Test_ScheduleTimeRange_TestInvalidEndBeforeStart_ExpectNone() -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='1:00 PM',
+      location='Africa Savanna' )
+
+   assert ScheduleTimeConflictIssueFinder._schedule_time_range( talk ) is None
+
 
 def Test_Find_TestOverlappingTalkAndEncounter_ExpectConflictIssue() -> None:
    talk = GuardiansTalkDiff(

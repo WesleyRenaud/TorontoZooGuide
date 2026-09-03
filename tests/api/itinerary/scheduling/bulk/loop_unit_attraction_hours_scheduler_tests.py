@@ -14,6 +14,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_slot_sink import LoopScheduleSl
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
 from api.itinerary.scheduling.bulk.loop_unit_attraction_hours_scheduler import LoopUnitAttractionHoursScheduler
+from api.itinerary.scheduling.bulk.loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
@@ -684,3 +685,626 @@ def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
    assert (
       abs( greenhouse_start - walk_thru_end ) <= 45 * 60
       or abs( greenhouse_end - walk_thru_start ) <= 45 * 60 )
+
+
+def Test_Schedule_TestPersistErrorFromMissingDuration_ExpectStopsAndUnchangedCursor(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = _splash_attraction()
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'splash', [ splash ] ),
+      occupied_seconds=60 * 60 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'duration_seconds_for_stop',
+      lambda conn, stop: None )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ _splash_soft_pin() ],
+      blockers=[],
+      window_start_seconds=9 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=9 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ splash ]
+   assert cursor == 9 * 3600
+
+
+def Test_EarliestStartSeconds_TestBeforeStopsPrepared_ExpectOpenMinusOccupied(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   wombat = ItineraryAnimalRecord(
+      species='Southern Hairy-Nosed Wombat',
+      exhibit='Australasia Pavilion',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( wombat ) ] = 30 * 60
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ (
+      'Southern Hairy-Nosed Wombat',
+      'Australasia Pavilion',
+      'Outdoor',
+   ) ] = 0
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+
+   earliest = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+      scheduler_conn,
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
+         occupied_seconds=90 * 60 ),
+      [ soft_pin ] )
+
+   assert earliest == SPLASH_OPEN_SECONDS - 30 * 60
+
+
+def Test_EarliestStartSeconds_TestBeforeStopsPrepareFails_ExpectNone(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   wombat = ItineraryAnimalRecord(
+      species='Southern Hairy-Nosed Wombat',
+      exhibit='Australasia Pavilion',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ (
+      'Southern Hairy-Nosed Wombat',
+      'Australasia Pavilion',
+      'Outdoor',
+   ) ] = 0
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'prepare_stops',
+      lambda conn, walk_graph, stops: None )
+
+   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+      scheduler_conn,
+      PreparedLoopScheduleUnit(
+         unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
+         occupied_seconds=90 * 60 ),
+      [ soft_pin ] ) is None
+
+
+def Test_Schedule_TestMissingAttractionStop_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   animal = ItineraryAnimalRecord(
+      species='Cheetah',
+      exhibit='Indo-Malaya Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( animal ) ] = 5 * 60
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'splash', [ animal ] ),
+      occupied_seconds=5 * 60 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ _splash_soft_pin() ],
+      blockers=[],
+      window_start_seconds=9 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=9 * 3600,
+      slot_sink=slot_sink )
+
+   assert unscheduled == [ animal ]
+   assert cursor == 9 * 3600
+   assert slot_sink.slots == []
+
+
+def Test_Schedule_TestBeforeStopsSaveFails_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   wombat = ItineraryAnimalRecord(
+      species='Southern Hairy-Nosed Wombat',
+      exhibit='Australasia Pavilion',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( wombat ) ] = 30 * 60
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ (
+      'Southern Hairy-Nosed Wombat',
+      'Australasia Pavilion',
+      'Outdoor',
+   ) ] = 0
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
+      occupied_seconds=90 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'save',
+      lambda conn, blockers, stop_slots, *, slot_sink=None: False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=10 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=10 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ wombat, walk_thru ]
+   assert cursor == 10 * 3600
+
+
+def Test_Schedule_TestAfterStopsWontFit_ExpectAttractionScheduledAfterUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tiger = ItineraryAnimalRecord(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( tiger ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ ( 'Amur Tiger', 'Eurasia Wilds', None ) ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, tiger ] ),
+      occupied_seconds=120 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   slot_sink = LoopScheduleSlotSink( persist=False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=SPLASH_OPEN_SECONDS,
+      window_end_seconds=SPLASH_OPEN_SECONDS + 60 * 60,
+      cursor_seconds=SPLASH_OPEN_SECONDS,
+      slot_sink=slot_sink )
+
+   assert unscheduled == [ tiger ]
+   assert cursor == SPLASH_OPEN_SECONDS + 60 * 60
+   assert slot_sink.slots == [ ( walk_thru, '12:00 PM', '1:00 PM' ) ]
+
+
+def Test_Schedule_TestAfterStopsSaveFails_ExpectAttractionKeptAfterUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tiger = ItineraryAnimalRecord(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( tiger ) ] = 8 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ ( 'Amur Tiger', 'Eurasia Wilds', None ) ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, tiger ] ),
+      occupied_seconds=68 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   save_results = [ True, False ]
+
+   def save(
+         conn: sqlite3.Connection,
+         blockers: list,
+         stop_slots: list,
+         *,
+         slot_sink: LoopScheduleSlotSink | None = None ) -> bool:
+      return save_results.pop( 0 )
+
+   monkeypatch.setattr( LoopScheduleSlotAssigner, 'save', save )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=SPLASH_OPEN_SECONDS,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=SPLASH_OPEN_SECONDS,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ tiger ]
+   assert cursor == SPLASH_OPEN_SECONDS + 60 * 60 + 8 * 60
+
+
+def Test_ScheduleStopsAroundAttractionHours_TestNoneLoopId_ExpectPersistError(
+      scheduler_conn: sqlite3.Connection ) -> None:
+   splash = _splash_attraction()
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( None, [ splash ] ),
+      occupied_seconds=60 * 60 )
+
+   with pytest.raises( LoopUnitSchedulePersistError ) as raised:
+      LoopUnitAttractionHoursScheduler._schedule_stops_around_attraction_hours(
+         scheduler_conn,
+         prepared,
+         [ _splash_soft_pin() ],
+         blockers=[],
+         window_start_seconds=9 * 3600,
+         window_end_seconds=17 * 3600,
+         cursor_seconds=9 * 3600 )
+
+   assert raised.value.stops == [ splash ]
+
+
+def Test_Schedule_TestBeforeStopsPrepareFails_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   wombat = ItineraryAnimalRecord(
+      species='Southern Hairy-Nosed Wombat',
+      exhibit='Australasia Pavilion',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ (
+      'Southern Hairy-Nosed Wombat',
+      'Australasia Pavilion',
+      'Outdoor',
+   ) ] = 0
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
+      occupied_seconds=90 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'prepare_stops',
+      lambda conn, walk_graph, stops: None )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=10 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=10 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ wombat, walk_thru ]
+   assert cursor == 10 * 3600
+
+
+def Test_Schedule_TestBeforeStopsAssignNone_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   wombat = ItineraryAnimalRecord(
+      species='Southern Hairy-Nosed Wombat',
+      exhibit='Australasia Pavilion',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( wombat ) ] = 30 * 60
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ (
+      'Southern Hairy-Nosed Wombat',
+      'Australasia Pavilion',
+      'Outdoor',
+   ) ] = 0
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
+      occupied_seconds=90 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'assign_contiguous_ending_by',
+      lambda prepared_stops, *, end_seconds: None )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=10 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=10 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ wombat, walk_thru ]
+   assert cursor == 10 * 3600
+
+
+def Test_Schedule_TestAttractionScheduleTimeInvalid_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = _splash_attraction()
+   DURATION_SECONDS_BY_STOP[ id( splash ) ] = 60 * 60
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'splash', [ splash ] ),
+      occupied_seconds=60 * 60 )
+   monkeypatch.setattr(
+      DateValues,
+      'schedule_time_key_from_seconds',
+      lambda seconds: None )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ _splash_soft_pin() ],
+      blockers=[],
+      window_start_seconds=9 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=9 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ splash ]
+   assert cursor == 9 * 3600
+
+
+def Test_Schedule_TestAttractionSaveFails_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = _splash_attraction()
+   DURATION_SECONDS_BY_STOP[ id( splash ) ] = 60 * 60
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'splash', [ splash ] ),
+      occupied_seconds=60 * 60 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'save',
+      lambda conn, blockers, stop_slots, *, slot_sink=None: False )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ _splash_soft_pin() ],
+      blockers=[],
+      window_start_seconds=9 * 3600,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=9 * 3600,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ splash ]
+   assert cursor == 9 * 3600
+
+
+def Test_Schedule_TestAfterStopsPrepareFails_ExpectAttractionUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tiger = ItineraryAnimalRecord(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( tiger ) ] = 8 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ ( 'Amur Tiger', 'Eurasia Wilds', None ) ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, tiger ] ),
+      occupied_seconds=68 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+
+   def prepare_stops(
+         conn: sqlite3.Connection,
+         walk_graph: WalkGraph,
+         stops: list[ LoopScheduleStop.Stop ],
+      ) -> list[ TimedLoopScheduleStop ] | None:
+      if any(
+            isinstance( stop, ItineraryAnimalRecord ) and stop.species == 'Amur Tiger'
+            for stop in stops ):
+         return None
+      return [
+         TimedLoopScheduleStop(
+            stop=stop,
+            duration_seconds=DURATION_SECONDS_BY_STOP.get( id( stop ), 60 * 60 ),
+            travel_before_seconds=0 )
+         for stop in stops
+      ]
+
+   monkeypatch.setattr( LoopScheduleSlotAssigner, 'prepare_stops', prepare_stops )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=SPLASH_OPEN_SECONDS,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=SPLASH_OPEN_SECONDS,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ tiger ]
+   assert cursor == SPLASH_OPEN_SECONDS + 60 * 60
+
+
+def Test_Schedule_TestAfterStopsAssignEmpty_ExpectAttractionUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tiger = ItineraryAnimalRecord(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( tiger ) ] = 8 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ ( 'Amur Tiger', 'Eurasia Wilds', None ) ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, tiger ] ),
+      occupied_seconds=68 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'assign_contiguous_respecting_attraction_hours',
+      lambda prepared_stops, *, start_seconds, hours_by_attraction_name: ( [], start_seconds ) )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=SPLASH_OPEN_SECONDS,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=SPLASH_OPEN_SECONDS,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == [ tiger ]
+   assert cursor == SPLASH_OPEN_SECONDS + 60 * 60
+
+
+def Test_Schedule_TestCursorPastWindowEnd_ExpectUnscheduled(
+      scheduler_conn: sqlite3.Connection,
+      stub_attraction_hours_scheduling: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_thru = ItineraryAttractionRecord(
+      attraction=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   tiger = ItineraryAnimalRecord(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   DURATION_SECONDS_BY_STOP[ id( walk_thru ) ] = 60 * 60
+   DURATION_SECONDS_BY_STOP[ id( tiger ) ] = 8 * 60
+   VIEWING_SPOT_INDEX_BY_ATTRACTION[ KANGAROO_WALK_THRU ] = 1
+   VIEWING_SPOT_INDEX_BY_ANIMAL[ ( 'Amur Tiger', 'Eurasia Wilds', None ) ] = 2
+   prepared = PreparedLoopScheduleUnit(
+      unit=_loop_unit( 'australasia', [ walk_thru, tiger ] ),
+      occupied_seconds=68 * 60 )
+   soft_pin = AttractionHoursSoftPin(
+      loop_id='australasia',
+      viewing_spot_index=1,
+      attraction_name=KANGAROO_WALK_THRU,
+      open_seconds=SPLASH_OPEN_SECONDS,
+      close_seconds=16 * 3600 )
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'assign_contiguous_respecting_attraction_hours',
+      lambda prepared_stops, *, start_seconds, hours_by_attraction_name: (
+         [
+            ( tiger, '1:00 PM', '1:08 PM' ),
+         ],
+         17 * 3600 + 30 * 60,
+      ) )
+
+   unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
+      scheduler_conn,
+      prepared,
+      [ soft_pin ],
+      blockers=[],
+      window_start_seconds=SPLASH_OPEN_SECONDS,
+      window_end_seconds=17 * 3600,
+      cursor_seconds=SPLASH_OPEN_SECONDS,
+      slot_sink=LoopScheduleSlotSink( persist=False ) )
+
+   assert unscheduled == []
+   assert cursor == 17 * 3600 + 30 * 60
+
+
+def Test_DurationSecondsOrRaise_TestMissingDuration_ExpectPersistError(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   splash = _splash_attraction()
+   monkeypatch.setattr(
+      LoopScheduleSlotAssigner,
+      'duration_seconds_for_stop',
+      lambda conn, stop: None )
+
+   with pytest.raises( LoopUnitSchedulePersistError ) as raised:
+      LoopUnitAttractionHoursScheduler._duration_seconds_or_raise(
+         object(),
+         splash,
+         all_stops=[ splash ] )
+
+   assert raised.value.stops == [ splash ]

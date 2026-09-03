@@ -174,3 +174,27 @@ def Test_ApplyItineraryTransportationSchedule_TestDiscontinuousLegs_ExpectSplitM
    assert { marker.sequence for marker in markers } == { 0, 1 }
    assert [ marker.marker_id for marker in markers if marker.sequence == 0 ] == [ 'm-a', 'm-b' ]
    assert [ marker.marker_id for marker in markers if marker.sequence == 1 ] == [ 'm-d', 'm-e' ]
+
+
+def Test_ApplyItineraryTransportationRideSegments_TestEmptySegments_ExpectFalse(
+      schedule_transportation_conn: sqlite3.Connection ) -> None:
+   cur = schedule_transportation_conn.cursor()
+   assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
+      cur,
+      name=ZOOMOBILE,
+      added_as_attraction=True,
+      route='summer',
+      segments=[] )
+   cur.close()
+
+
+def Test_ApplyItineraryTransportationRideSegments_TestEmptyLegs_ExpectFalse(
+      schedule_transportation_conn: sqlite3.Connection ) -> None:
+   cur = schedule_transportation_conn.cursor()
+   assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
+      cur,
+      name=ZOOMOBILE,
+      added_as_attraction=True,
+      route='summer',
+      segments=[ ( '10:00 AM', [] ) ] )
+   cur.close()

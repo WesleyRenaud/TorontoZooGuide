@@ -192,3 +192,35 @@ def Test_Build_TestAppliesSavedSchedule_ExpectTimesAndFlags() -> None:
    assert lion.covered_by_talk is True
    assert lion.start_time == '10:00 AM'
    assert lion.end_time == '10:08 AM'
+
+
+def Test_FindSavedAnimalForViewableAnimal_TestNoMatch_ExpectNone() -> None:
+   animal = _animal( species='African Lion', exhibit='Africa Savanna' )
+
+   assert ItineraryAnimalsBuilder._find_saved_animal_for_viewable_animal( [], animal ) is None
+
+
+def Test_ApplyOldLikelihood_TestNoSavedMatch_ExpectUnchanged() -> None:
+   animal = _animal( species='African Lion', exhibit='Africa Savanna' )
+
+   ItineraryAnimalsBuilder._apply_old_likelihood( [ animal ], [] )
+
+   assert animal.old_likelihood is None
+
+
+def Test_ApplyIsAdded_TestNoSavedMatch_ExpectUnchanged() -> None:
+   animal = _animal( species='African Lion', exhibit='Africa Savanna' )
+
+   ItineraryAnimalsBuilder._apply_is_added( [ animal ], [] )
+
+   assert animal.is_added is False
+
+
+def Test_ApplySchedule_TestNoSavedMatch_ExpectUnchanged() -> None:
+   animal = _animal( species='African Lion', exhibit='Africa Savanna' )
+
+   ItineraryAnimalsBuilder._apply_schedule( [ animal ], [] )
+
+   assert animal.start_time is None
+   assert animal.end_time is None
+   assert animal.covered_by_talk is False

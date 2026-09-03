@@ -75,3 +75,13 @@ def Test_BuildTransportationStationClosedStatus_TestEmptyMessage_ExpectDefaultGu
 
    assert status.transportation_station == STATION_NAME
    assert status.message == DEFAULT_CLOSED_MESSAGE
+
+
+def Test_BuildTransportations_TestRecords_ExpectModels() -> None:
+   context = _visit_context( target_date=WEEKDAY_VISIT_DATE, is_weekend_or_holiday=False )
+   transportations = TransportationBuilder.build_transportations(
+      [ _transportation_record() ],
+      context )
+
+   assert len( transportations ) == 1
+   assert transportations[ 0 ].name == 'Zoomobile'

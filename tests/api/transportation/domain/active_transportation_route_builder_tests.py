@@ -92,3 +92,15 @@ def Test_BuildActiveTransportationRouteResponse_TestRouteAndStations_ExpectRespo
    assert response.route == TransportationRouteId.SUMMER.value
    assert response.route_source == TransportationRouteSource.MANUAL.value
    assert response.transportation_stations == stations
+
+
+def Test_ResolveRequestedTransportationRoute_TestInvalidManualRoute_ExpectFallbackResolution() -> None:
+   route, source = ActiveTransportationRouteBuilder.resolve_requested_transportation_route(
+      'invalid',
+      active_route='summer',
+      day_route='summer',
+      valid_routes=[ 'summer', 'winter' ],
+   )
+
+   assert route == 'summer'
+   assert source == TransportationRouteSource.MANUAL.value

@@ -124,3 +124,57 @@ def Test_Build_TestExtraOccurrences_ExpectMergedSortedUnique(
       ( '2026-06-15', '10:00 AM' ),
       ( '2026-06-16', '11:00 AM' ),
    ]
+
+
+def Test_Build_TestScheduleEndsBeforeWindow_ExpectTruncatedEndDate(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+   record = SampleScheduleRecord(
+      schedule_start_date='2026-06-10',
+      schedule_end_date='2026-06-14',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      occurrence_time='10:00 AM',
+   )
+
+   occurrences = ScheduledOccurrenceBuilder.build(
+      [ record ],
+      days_ahead=7,
+      get_time=lambda row: row.occurrence_time,
+      get_weekday_flags=_weekday_flags,
+      is_cancelled=lambda _date_key, _time: False )
+
+   assert occurrences == []
+
+
+def Test_Build_TestEndBeforeStart_ExpectSkipped(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+   record = SampleScheduleRecord(
+      schedule_start_date='2026-06-20',
+      schedule_end_date='2026-06-10',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      occurrence_time='10:00 AM',
+   )
+
+   occurrences = ScheduledOccurrenceBuilder.build(
+      [ record ],
+      days_ahead=7,
+      get_time=lambda row: row.occurrence_time,
+      get_weekday_flags=_weekday_flags,
+      is_cancelled=lambda _date_key, _time: False )
+
+   assert occurrences == []

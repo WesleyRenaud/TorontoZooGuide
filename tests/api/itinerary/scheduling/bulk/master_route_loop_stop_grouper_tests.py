@@ -148,3 +148,7 @@ def Test_Group_TestAnimalGrouperDelegate_ExpectSameGroups(
 
    assert MasterRouteLoopAnimalGrouper.group( animals ) == MasterRouteLoopStopGrouper.group(
       animals )
+
+
+def Test_Group_TestEmptyStops_ExpectEmpty() -> None:
+   assert MasterRouteLoopStopGrouper.group( [] ) == []

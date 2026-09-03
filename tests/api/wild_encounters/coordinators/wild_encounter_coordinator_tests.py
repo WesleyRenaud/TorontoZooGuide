@@ -486,3 +486,17 @@ def Test_GetWildEncountersMatchingQuery_TestAvailableAndBuilder_ExpectMatches(
       month=VISIT_MONTH,
       day=VISIT_DAY,
       year=VISIT_YEAR ) == matched
+
+
+def Test_GetWildEncounterScheduleTimes_TestEncounter_ExpectSortedTimes(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.wild_encounters.coordinators.wild_encounter_coordinator.WildEncounterScheduleProvider.fetch_schedule_times',
+      lambda conn, *, wild_encounter, target_date: [ '2:00 PM', '11:00 AM' ] )
+   monkeypatch.setattr(
+      'api.wild_encounters.coordinators.wild_encounter_coordinator.RequestConnectionProvider.get',
+      lambda: object() )
+
+   assert WildEncounterCoordinator.get_wild_encounter_schedule_times(
+      'Kangaroo',
+   ) == [ '11:00 AM', '2:00 PM' ]

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.transportation.transportation_route_leg_orderer import TransportationRouteLegOrderer
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 
@@ -52,3 +54,32 @@ def Test_OrderFromStation_TestUnorderedLegs_ExpectClosedLoop() -> None:
       for leg in ordered
    ] == SUMMER_LEG_STATIONS
    assert sum( leg.duration_minutes for leg in ordered ) == 75
+
+def Test_OrderFromStation_TestEmptyLegs_ExpectEmpty() -> None:
+   assert TransportationRouteLegOrderer.order_from_station( [], start_station=MAIN ) == []
+
+def Test_OrderFromStation_TestDuplicateFromStation_ExpectValueError() -> None:
+   legs = [
+      TransportationRouteLegSegment( from_station=MAIN, to_station=CANADA, duration_minutes=10 ),
+      TransportationRouteLegSegment( from_station=MAIN, to_station=AFRICA, duration_minutes=10 ),
+   ]
+
+   with pytest.raises( ValueError, match='Duplicate outgoing leg' ):
+      TransportationRouteLegOrderer.order_from_station( legs, start_station=MAIN )
+
+def Test_OrderFromStation_TestMissingOutgoingLeg_ExpectValueError() -> None:
+   legs = [
+      TransportationRouteLegSegment( from_station=CANADA, to_station=AFRICA, duration_minutes=10 ),
+   ]
+
+   with pytest.raises( ValueError, match='No outgoing leg' ):
+      TransportationRouteLegOrderer.order_from_station( legs, start_station=MAIN )
+
+def Test_OrderFromStation_TestOpenLoop_ExpectValueError() -> None:
+   legs = [
+      TransportationRouteLegSegment( from_station=MAIN, to_station=CANADA, duration_minutes=10 ),
+      TransportationRouteLegSegment( from_station=CANADA, to_station=AFRICA, duration_minutes=10 ),
+   ]
+
+   with pytest.raises( ValueError, match='closed loop' ):
+      TransportationRouteLegOrderer.order_from_station( legs, start_station=MAIN )

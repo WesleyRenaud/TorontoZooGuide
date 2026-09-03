@@ -4,11 +4,13 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.validation.itinerary_schedule_reschedule_resolver import ItineraryScheduleRescheduleResolver
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItineraryEventType
 
 
@@ -228,3 +230,86 @@ def Test_NeedsReschedule_TestDateChangeShorterCloseCutsOffEveningAnimal_ExpectTr
       ),
       _validated(),
       requested_departure_time='18:00' )
+
+
+def Test_NeedsReschedule_TestNewWildEncounterOverlapsSaved_ExpectTrue() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+         ),
+      ],
+   )
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounterDiff(
+            name='Grizzly Bear',
+            is_deleted=False,
+            start_time='10:00 AM',
+            end_time='10:45 AM',
+            meeting_spot='Spot',
+            link='' ),
+      ],
+      events=[],
+   )
+
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      validated,
+      requested_departure_time='5:00 PM' )
+
+
+def Test_NeedsReschedule_TestDepartureCutsOffTransportation_ExpectTrue() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      transportation_rows=[
+         ItineraryTransportationRecord(
+            transportation='Zoomobile',
+            old_likelihood=None,
+            new_likelihood=None,
+            added_as_attraction=False,
+            start_time='4:30 PM',
+            end_time='4:45 PM',
+         ),
+      ],
+   )
+
+   assert ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated(),
+      requested_departure_time='4:15 PM' )
+
+
+def Test_NeedsReschedule_TestDepartureCutsOffArrivalEvent_ExpectFalse() -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      event_rows=[
+         ItineraryEventRecord(
+            event_type=ItineraryEventType.ARRIVAL,
+            start_time='9:30 AM',
+            end_time='9:30 AM',
+         ),
+      ],
+   )
+
+   assert not ItineraryScheduleRescheduleResolver.needs_reschedule(
+      saved,
+      _validated( arrival_time='10:00 AM' ),
+      requested_departure_time='4:15 PM' )

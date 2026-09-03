@@ -77,6 +77,9 @@ class ShortestPathCalculator():
       while queue:
          distance, node_id = heapq.heappop( queue )
 
+         if distance > distances[ node_id ]:
+            continue
+
          if node_id == to_node_id:
             path = [ to_node_id ]
 
@@ -85,9 +88,6 @@ class ShortestPathCalculator():
 
             path.reverse()
             return ShortestPath( node_ids=path, length_px=distance )
-
-         if distance > distances[ node_id ]:
-            continue
 
          for neighbor_id, edge_length_px in adjacency.get( node_id, [] ):
             next_distance = distance + edge_length_px

@@ -7,11 +7,15 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.loop_pin_gap_step import LoopPinGapStep
+import api.itinerary.scheduling.bulk.loop_pin_segment_splitter as loop_pin_segment_splitter_module
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.itinerary.scheduling.bulk.loop_pin_stop_segment import LoopPinStopSegment
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
 from api.shared.enums import ScheduleItemKind
-
+from api.walk_graph.domain.master_route_loop import MasterRouteLoop
+from api.walk_graph.domain.master_route_loop import ONE_WAY_LOOP_TRAVERSAL
+from api.walk_graph.domain.viewing_spot_reference import ViewingSpotReference
+from api.walk_graph.master_route_provider import MasterRouteProvider
 
 AFRICA_LOOP_ID = 'africa_savanna_canadian_domain'
 AUSTRALASIA_LOOP_ID = 'australasia'
@@ -356,3 +360,106 @@ def Test_ScheduleSteps_TestOtterTalkPin_ExpectSegmentsAndGap(
    assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'American Alligator' ]
    assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
    assert loop_pin.end_seconds < window_end_seconds
+
+
+def Test_AnimalsBeforeFirstPin_TestEmptySegments_ExpectEmpty(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      LoopPinSegmentSplitter,
+      'split_stops',
+      lambda *_args, **_kwargs: [] )
+
+   assert LoopPinSegmentSplitter.animals_before_first_pin(
+      [],
+      loop_id=AFRICA_LOOP_ID,
+      loop_pins=[ _hyena_loop_pin() ],
+   ) == []
+
+
+def Test_AnimalsBeforeFirstPin_TestStopsBeforePin_ExpectFirstSegment(
+      stub_viewing_spot_indexes: None ) -> None:
+   loop_pin = _hyena_loop_pin()
+   penguin = _animal_record(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+   )
+
+   assert LoopPinSegmentSplitter.animals_before_first_pin(
+      [ penguin ],
+      loop_id=AFRICA_LOOP_ID,
+      loop_pins=[ loop_pin ],
+   ) == [ penguin ]
+
+
+def Test_ViewingSpotIndexForStop_TestRealMasterRoute_ExpectResolvedIndex() -> None:
+   penguin = _animal_record(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+   )
+
+   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+      AFRICA_LOOP_ID,
+      penguin,
+   ) == 2
+
+
+def Test_ViewingSpotIndexForStop_TestStopNotOnLoop_ExpectNone() -> None:
+   kangaroo = _animal_record(
+      species='Western Grey Kangaroo',
+      exhibit='Australasia Outdoor',
+   )
+
+   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+      AFRICA_LOOP_ID,
+      kangaroo,
+   ) is None
+
+
+def Test_ViewingSpotIndexForStop_TestUnknownLoopId_ExpectNone() -> None:
+   penguin = _animal_record(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+   )
+
+   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+      'unknown_loop_id',
+      penguin,
+   ) is None
+
+
+def Test_ViewingSpotIndexForStop_TestDuplicateMatchingIndexes_ExpectMinimum(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   penguin = _animal_record(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+   )
+   duplicate_loop = MasterRouteLoop(
+      loop_id='duplicate_loop',
+      name='Duplicate Loop',
+      traversal=ONE_WAY_LOOP_TRAVERSAL,
+      viewing_spots=[
+         ViewingSpotReference(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            name='Outdoor' ),
+         ViewingSpotReference(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            name='Outdoor' ),
+      ],
+   )
+   loops = dict( MasterRouteProvider.loops_by_id() )
+   loops[ 'duplicate_loop' ] = duplicate_loop
+   monkeypatch.setattr(
+      loop_pin_segment_splitter_module.MasterRouteProvider,
+      'loops_by_id',
+      classmethod( lambda cls: loops ) )
+
+   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+      'duplicate_loop',
+      penguin,
+   ) == 0

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from api.itinerary.validation.itinerary_arrival_time_validator import ItineraryArrivalTimeValidator
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
@@ -34,6 +36,25 @@ def Test_EarliestAllowedArrivalMinutes_TestFixedZooStartTimes_ExpectEarliestStar
    assert ItineraryArrivalTimeValidator.earliest_allowed_arrival_minutes(
       ZOO_HOURS,
       [ '09:00 AM' ] ) == DateValues.time_value_in_minutes( '09:00 AM' )
+
+
+def Test_EarliestAllowedArrivalMinutes_TestInvalidFixedStart_ExpectSkipped(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   original_time_value_in_minutes = DateValues.time_value_in_minutes
+
+   def time_value_in_minutes( value: str ) -> int | None:
+      if value == 'not-a-time':
+         return None
+
+      return original_time_value_in_minutes( value )
+
+   monkeypatch.setattr(
+      'api.itinerary.validation.itinerary_arrival_time_validator.DateValues.time_value_in_minutes',
+      time_value_in_minutes )
+
+   assert ItineraryArrivalTimeValidator.earliest_allowed_arrival_minutes(
+      ZOO_HOURS,
+      [ 'not-a-time' ] ) == DateValues.time_value_in_minutes( '09:30' )
 
 
 def Test_ValidateForZooHours_TestBeforeOpen_ExpectOutOfBounds() -> None:

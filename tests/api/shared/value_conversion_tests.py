@@ -55,3 +55,7 @@ def Test_AsNullableString( value: Any, expected: str | None ) -> None:
 )
 def Test_AsSingletonList( value: str | None, expected: list[ str ] ) -> None:
    assert ValueConversion.as_singleton_list( value ) == expected
+
+
+def Test_AsNullableBoolean_TestNone_ExpectNone() -> None:
+   assert ValueConversion.as_nullable_boolean( None ) is None

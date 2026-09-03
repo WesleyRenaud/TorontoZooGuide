@@ -268,3 +268,46 @@ def Test_Restore_TestSnapshotState_ExpectScheduledRowsAndTimesRestored(
    assert times is not None
    assert times[ 'ARRIVAL_TIME' ] == '9:00 AM'
    assert times[ 'DEPARTURE_TIME' ] == '5:00 PM'
+
+
+def Test_Restore_TestCoveredByTalkAnimal_ExpectCoverFlagRestored(
+      restore_conn: sqlite3.Connection ) -> None:
+   saved = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+      animal_rows=[
+         ItineraryAnimalRecord(
+            species=LION_SPECIES,
+            exhibit=LION_EXHIBIT,
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='10:00 AM',
+            end_time='10:08 AM',
+            covered_by_talk=True,
+         ),
+      ],
+      attraction_rows=[
+         ItineraryAttractionRecord(
+            attraction=CAROUSEL,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ],
+   )
+
+   RestoreGuestScheduleStateBuilder.restore(
+      restore_conn,
+      saved,
+      EMPTY_WALK_ROUTE )
+
+   row = restore_conn.execute(
+      """   SELECT COVERED_BY_TALK, START_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( LION_SPECIES, ),
+   ).fetchone()
+
+   assert row is not None
+   assert row[ 'COVERED_BY_TALK' ] == 1
+   assert row[ 'START_TIME' ] == '10:00 AM'

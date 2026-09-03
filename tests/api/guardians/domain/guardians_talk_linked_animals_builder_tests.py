@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
-
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
@@ -11,9 +10,8 @@ from api.models.guardians_talk import GuardiansTalk
 from api.models.guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
 from api.types import Types
 
-
 STATION_COORD = 0.0
-STUB_CONNECTION = cast( Types.Connection, None )
+
 AFRICAN_LION_TALK = 'African Lion'
 NEW_WORLD_PRIMATES_TALK = 'New World Primates'
 UNMAPPED_TALK = 'Unmapped Talk'
@@ -72,7 +70,7 @@ def Test_Attach_TestLinkedTalks_ExpectMappedLinkedAnimals(
       fetch_animal_links )
 
    talks = GuardiansTalkLinkedAnimalsBuilder.attach(
-      conn=STUB_CONNECTION,
+      conn=STUB_REQUEST_CONNECTION,
       talks=[
          _talk( AFRICAN_LION_TALK, 'Africa Savanna' ),
          _talk( NEW_WORLD_PRIMATES_TALK, 'Americas Pavilion' ),
@@ -105,6 +103,6 @@ def Test_Attach_TestMissingTalkName_ExpectEmptyLinkedAnimals() -> None:
       x_coord=STATION_COORD,
       y_coord=STATION_COORD )
 
-   talks = GuardiansTalkLinkedAnimalsBuilder.attach( conn=STUB_CONNECTION, talks=[ talk ] )
+   talks = GuardiansTalkLinkedAnimalsBuilder.attach( conn=STUB_REQUEST_CONNECTION, talks=[ talk ] )
 
    assert talks[ 0 ].linked_animals == []

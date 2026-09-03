@@ -51,7 +51,7 @@ def Test_FilterWildEncounters_TestOutsideDeparture_ExpectDropped() -> None:
    assert [ encounter.name for encounter in kept ] == [ 'African Rainforest' ]
 
 
-def Test_EventsFromSavedRows_TestSkipsArrivalDepartureAndOutsideWindow() -> None:
+def Test_EventsFromSavedRows_TestSavedRows_ExpectSkipsArrivalDepartureAndOutsideWindow() -> None:
    events = ItineraryVisitWindowContentBuilder.events_from_saved_rows(
       [
          ItineraryEventRecord(

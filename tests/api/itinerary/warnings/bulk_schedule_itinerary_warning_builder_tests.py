@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
@@ -59,3 +60,19 @@ def Test_BuildNotEnoughTimeIssue_TestPenguinAndLion_ExpectIssueOrderPreserved() 
       'Africa Savanna',
       'Africa Savanna',
    ]
+
+
+def Test_BuildNotEnoughTimeIssue_TestTransportation_ExpectAttractionIssueItem() -> None:
+   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
+      [
+         ItineraryTransportationRecord(
+            transportation='Zoomobile',
+            old_likelihood=None,
+            new_likelihood=100,
+            added_as_attraction=True ),
+      ] )
+
+   assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
+   assert len( issue.items ) == 1
+   assert issue.items[ 0 ].name == 'Zoomobile'
+   assert issue.items[ 0 ].item_type == ItinerarySaveIssueItemType.ATTRACTION

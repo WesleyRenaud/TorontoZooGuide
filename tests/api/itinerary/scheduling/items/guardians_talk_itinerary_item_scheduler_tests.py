@@ -313,3 +313,183 @@ def Test_Schedule_TestValidTalk_ExpectCoverForActivity(
       'start_time': '2:00 PM',
       'end_time': '2:15 PM',
    }
+
+
+def Test_GuardiansTalkDiffForSavedItineraryDay_TestCoordinatorLookup_ExpectDiff(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk_payload = {
+      'name': 'Turtle Talk',
+      'start_time': '2:00 PM',
+      'end_time': '2:15 PM',
+      'location': 'Americas Pavilion',
+      'is_deleted': False,
+   }
+   captured: dict[ str, object ] = {}
+
+   def get_guardians_talk_on_day_schedule( **kwargs: object ) -> dict[ str, object ]:
+      captured.update( kwargs )
+      return talk_payload
+
+   monkeypatch.setattr(
+      GuardiansCoordinator,
+      'get_guardians_talk_on_day_schedule',
+      get_guardians_talk_on_day_schedule )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ScheduledOccurrenceBuilder.guardians_talk',
+      lambda name, talk: GuardiansTalkDiff(
+         name=name,
+         is_deleted=False,
+         start_time=talk[ 'start_time' ],
+         end_time=talk[ 'end_time' ],
+         location=talk[ 'location' ] ) )
+
+   result = GuardiansTalkItineraryItemScheduler._guardians_talk_diff_for_saved_itinerary_day(
+      SAVED_ITINERARY,
+      TALK_KEY,
+      GuardiansCoordinator )
+
+   assert result.name == 'Turtle Talk'
+   assert result.start_time == '2:00 PM'
+   assert captured[ 'talk_name' ] == 'Turtle Talk'
+   assert captured[ 'month' ] == 6
+   assert captured[ 'day' ] == 20
+   assert captured[ 'year' ] == 2026
+
+
+def Test_InsertScheduledGuardiansTalk_TestInsertFailed_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ScheduleItineraryItemProvider.insert_itinerary_guardians_talk',
+      lambda *args, **kwargs: False )
+
+   result = GuardiansTalkItineraryItemScheduler._insert_scheduled_guardians_talk(
+      scheduler_conn,
+      guardians_talk_key=TALK_KEY,
+      guardians_talk_diff=TALK_DIFF,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is not None
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Schedule_TestWithoutAnimalWarning_ExpectPendingReason(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_guardians_talk_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: TALK_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, talks: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk',
+      lambda *args, **kwargs: True )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks',
+      lambda talks: ItineraryResultReason(
+         code=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL ) )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk',
+      lambda *args, **kwargs: None )
+
+   result = GuardiansTalkItineraryItemScheduler.schedule(
+      scheduler_conn,
+      TALK_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_guardians_talk_unschedule=False,
+      confirming_fixed_time_item_long_wait=True,
+      confirming_guardians_talk_without_animal=False )
+
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+
+
+def Test_Schedule_TestLongWaitWarning_ExpectPendingReason(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_guardians_talk_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: TALK_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, talks: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkLongWaitWarningBuilder.reason_after_adding_with_simulated_bulk',
+      lambda *args, **kwargs: ItineraryResultReason(
+         code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT ) )
+
+   result = GuardiansTalkItineraryItemScheduler.schedule(
+      scheduler_conn,
+      TALK_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_guardians_talk_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=True )
+
+   assert result.status == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+
+
+def Test_Schedule_TestInsertError_ExpectSaveFailed(
+      scheduler_conn: sqlite3.Connection,
+      stub_save_result: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_guardians_talk_diff_for_saved_itinerary_day',
+      lambda *args, **kwargs: TALK_DIFF )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap',
+      lambda saved_itinerary, talks: False )
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk',
+      lambda *args, **kwargs: False )
+   monkeypatch.setattr(
+      GuardiansTalkItineraryItemScheduler,
+      '_insert_scheduled_guardians_talk',
+      lambda *args, **kwargs: ItinerarySaveResult(
+         status=ItineraryErrorType.SAVE_FAILED,
+         reasons=[],
+         itinerary=ItineraryBuilder.empty() ) )
+
+   result = GuardiansTalkItineraryItemScheduler.schedule(
+      scheduler_conn,
+      TALK_KEY,
+      itinerary_context=ITINERARY_CONTEXT,
+      confirming_guardians_talk_unschedule=False,
+      confirming_fixed_time_item_long_wait=True,
+      confirming_guardians_talk_without_animal=True )
+
+   assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_InsertScheduledGuardiansTalk_TestInsertSucceeded_ExpectNone(
+      scheduler_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ScheduleItineraryItemProvider.insert_itinerary_guardians_talk',
+      lambda *args, **kwargs: True )
+
+   result = GuardiansTalkItineraryItemScheduler._insert_scheduled_guardians_talk(
+      scheduler_conn,
+      guardians_talk_key=TALK_KEY,
+      guardians_talk_diff=TALK_DIFF,
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is None

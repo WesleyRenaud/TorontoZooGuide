@@ -68,3 +68,11 @@ def Test_MapRecord_TestWrongKeyLength_ExpectValueError() -> None:
          'kind': 'attraction',
          'key': [ 'Splash Island', 'extra' ],
       } )
+
+
+def Test_MapRecord_TestUnknownKind_ExpectValueError() -> None:
+   with pytest.raises( ValueError, match='Unknown master-route stop kind' ):
+      MasterRouteStopMapper.map_record( {
+         'kind': 'entrance',
+         'key': [ 'Main Entrance' ],
+      } )

@@ -144,3 +144,92 @@ def Test_ConflictTrimmer_TestEnclosedConflict_ExpectDeletePath() -> None:
       insert_copy=lambda *_args: None )
 
    assert deleted == [ conflict ]
+
+
+def Test_ConflictTrimmer_TestOverlapAtStart_ExpectShortenEndPath() -> None:
+   conflict = SampleConflict(
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-15' )
+   schedule = SampleSchedule(
+      start_date='2026-06-10',
+      end_date='2026-06-30' )
+   updates: list[ tuple[ str | None, str | None ] ] = []
+
+   OpeningScheduleConflictTrimmer.trim(
+      STUB_CONNECTION,
+      conflict,
+      schedule,
+      delete_conflict=lambda _conn, _item: None,
+      update_dates=lambda _conn, _item, start_date, end_date: updates.append(
+         ( start_date, end_date ) ),
+      insert_copy=lambda *_args: None )
+
+   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+
+
+def Test_ConflictTrimmer_TestOverlapAtEnd_ExpectShortenStartPath() -> None:
+   conflict = SampleConflict(
+      schedule_start_date='2026-06-15',
+      schedule_end_date='2026-06-30' )
+   schedule = SampleSchedule(
+      start_date='2026-06-01',
+      end_date='2026-06-20' )
+   updates: list[ tuple[ str | None, str | None ] ] = []
+
+   OpeningScheduleConflictTrimmer.trim(
+      STUB_CONNECTION,
+      conflict,
+      schedule,
+      delete_conflict=lambda _conn, _item: None,
+      update_dates=lambda _conn, _item, start_date, end_date: updates.append(
+         ( start_date, end_date ) ),
+      insert_copy=lambda *_args: None )
+
+   assert updates == [ ( '2026-06-21', '2026-06-30' ) ]
+
+
+def Test_ConflictTrimmer_TestConflictWrapsSchedule_ExpectSplitWrapPath() -> None:
+   conflict = SampleConflict(
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-30' )
+   schedule = SampleSchedule(
+      start_date='2026-06-10',
+      end_date='2026-06-20' )
+   updates: list[ tuple[ str | None, str | None ] ] = []
+   copies: list[ tuple[ str | None, str | None ] ] = []
+
+   OpeningScheduleConflictTrimmer.trim(
+      STUB_CONNECTION,
+      conflict,
+      schedule,
+      delete_conflict=lambda _conn, _item: None,
+      update_dates=lambda _conn, _item, start_date, end_date: updates.append(
+         ( start_date, end_date ) ),
+      insert_copy=lambda _conn, _item, start_date, end_date: copies.append(
+         ( start_date, end_date ) ) )
+
+   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+   assert copies == [ ( '2026-06-21', '2026-06-30' ) ]
+
+
+def Test_SplitWrapTrimmer_TestOpenEndedNewSchedule_ExpectNoTrailingCopy() -> None:
+   conflict = SampleConflict(
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-30' )
+   updates: list[ tuple[ str | None, str | None ] ] = []
+   copies: list[ tuple[ str | None, str | None ] ] = []
+
+   OpeningScheduleConflictSplitWrapTrimmer.trim(
+      STUB_CONNECTION,
+      conflict,
+      new_start_date=date( 2026, 6, 10 ),
+      new_end_date=date.max,
+      conflict_start_attr='schedule_start_date',
+      conflict_end_attr='schedule_end_date',
+      update_dates=lambda _conn, _item, start_date, end_date: updates.append(
+         ( start_date, end_date ) ),
+      insert_copy=lambda _conn, _item, start_date, end_date: copies.append(
+         ( start_date, end_date ) ) )
+
+   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+   assert copies == []
