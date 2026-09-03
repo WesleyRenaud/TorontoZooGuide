@@ -1,8 +1,4 @@
-import {
-   replaceAttractionOpeningScheduleOverlaps,
-   setAttractionOpeningSchedule,
-   trimAttractionOpeningScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
@@ -19,7 +15,7 @@ export function createAttractionOpeningScheduleController({
       entityEl: attractionEl,
       loadOptions: loadAttractions,
       populateOptions: populateAttractionDropdown,
-      submitSchedule: setAttractionOpeningSchedule,
+      submitSchedule: ConsoleOperationsApi.setAttractionOpeningSchedule,
       entityLabel: APP_STRINGS.entityLabels.attraction,
       optionsLabel: APP_STRINGS.entityLabels.attractions,
       payloadKey: 'attraction',
@@ -28,11 +24,11 @@ export function createAttractionOpeningScheduleController({
          const resolution = await showOpeningScheduleOverlapDialog();
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-            return replaceAttractionOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.replaceAttractionOpeningScheduleOverlaps(payload);
          }
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-            return trimAttractionOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.trimAttractionOpeningScheduleOverlaps(payload);
          }
 
          return null;

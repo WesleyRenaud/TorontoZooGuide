@@ -1,4 +1,4 @@
-import { getAnimalsInExhibit } from '../../../api/animalsApi.js';
+import { AnimalsApi } from '../../../api/animalsApi.js';
 import { loadSpecies } from '../../options/loaders.js';
 
 function normalizeSpeciesList(species) {
@@ -40,7 +40,7 @@ export function createAnimalSpeciesSource() {
          return speciesByExhibit.get(exhibitKey);
       }
 
-      const animals = await getAnimalsInExhibit(exhibitKey);
+      const animals = await AnimalsApi.getAnimalsInExhibit(exhibitKey);
       const species = normalizeSpeciesList(
          animals.map((animal) => String(animal || ''))
       );

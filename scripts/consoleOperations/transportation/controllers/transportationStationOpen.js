@@ -1,4 +1,4 @@
-import { setTransportationStationOpen } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityOpenFormController } from '../../forms/entityOpenFormController.js';
 import { populateTransportationStationDropdown } from '../../options/dropdowns.js';
 import { loadTransportationStations } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createTransportationStationOpenController({
       entityEl: transportationStationEl,
       loadOptions: loadTransportationStations,
       populateOptions: populateTransportationStationDropdown,
-      submitOpenStatus: ({ entity }) => setTransportationStationOpen({
+      submitOpenStatus: ({ entity }) => ConsoleOperationsApi.setTransportationStationOpen({
          transportationStation: entity,
       }),
       entityLabel: APP_STRINGS.entityLabels.transportationStation,

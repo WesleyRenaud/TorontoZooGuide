@@ -1,4 +1,4 @@
-import { setTransportationStationClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateTransportationStationDropdown } from '../../options/dropdowns.js';
 import { loadTransportationStations } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createTransportationStationClosedController({
       entityEl: transportationStationEl,
       loadOptions: loadTransportationStations,
       populateOptions: populateTransportationStationDropdown,
-      submitClosedStatus: ({ entity, startDate, endDate, message }) => setTransportationStationClosed({
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setTransportationStationClosed({
          transportationStation: entity,
          startDate: startDate || null,
          endDate: endDate || null,

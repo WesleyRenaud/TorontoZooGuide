@@ -1,12 +1,4 @@
-import {
-   acceptItineraryRequest,
-   bulkScheduleItineraryRequest,
-   clearItineraryRequest,
-   getItineraryDateRequest,
-   getItineraryRequest,
-   getZooHoursRequest,
-   unscheduleAllItineraryItemsRequest,
-} from '../api/itineraryApi.js';
+import { ItineraryApi } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
 import {
    isItinerarySuccess,
@@ -39,7 +31,7 @@ export function dispatchScheduleItineraryItemResult(result) {
 }
 
 async function fetchSavedItineraryVisitDate() {
-   const { date } = await getItineraryDateRequest();
+   const { date } = await ItineraryApi.getItineraryDateRequest();
 
    if (date) {
       setStoredItineraryDate(date);
@@ -51,7 +43,7 @@ async function fetchSavedItineraryVisitDate() {
 export async function getItinerary() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await getItineraryRequest(temp);
+   const result = await ItineraryApi.getItineraryRequest(temp);
    return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 }
 
@@ -68,12 +60,12 @@ export async function getZooHours(date) {
       return null;
    }
 
-   const result = await getZooHoursRequest({ day, month, year });
+   const result = await ItineraryApi.getZooHoursRequest({ day, month, year });
    return result?.hours || null;
 }
 
 export async function clearItinerary() {
-   const result = await clearItineraryRequest();
+   const result = await ItineraryApi.clearItineraryRequest();
    const clearedItinerary = ItineraryNormalizer.createEmptyItinerary();
 
    window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
@@ -87,7 +79,7 @@ export async function bulkScheduleItinerary({
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await bulkScheduleItineraryRequest(temp, {
+   const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
       confirmingFixedTimeItemLongWait,
    });
 
@@ -111,7 +103,7 @@ export async function bulkScheduleItinerary({
 export async function unscheduleAllItineraryItems() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await unscheduleAllItineraryItemsRequest(temp);
+   const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
 
    if (!isItinerarySuccess(result.errorType)) {
       return {
@@ -134,7 +126,7 @@ export async function acceptItinerary({
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await acceptItineraryRequest(
+   const result = await ItineraryApi.acceptItineraryRequest(
       temp,
       { animalsToKeep, attractionsToKeep }
    );

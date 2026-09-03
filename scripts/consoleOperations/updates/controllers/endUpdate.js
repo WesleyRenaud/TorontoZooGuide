@@ -1,4 +1,4 @@
-import { endUpdate } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -69,7 +69,7 @@ export function createEndUpdateController({
       }
 
       try {
-         const result = await endUpdate(values);
+         const result = await ConsoleOperationsApi.endUpdate(values);
 
          if (result.success) {
             setStatus(statusEl, APP_STRINGS.status.updateEnded, 'is-success');

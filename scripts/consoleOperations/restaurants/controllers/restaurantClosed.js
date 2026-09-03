@@ -1,4 +1,4 @@
-import { setRestaurantClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateRestaurantDropdown } from '../../options/dropdowns.js';
 import { loadRestaurants } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createRestaurantClosedController({
       entityEl: restaurantEl,
       loadOptions: loadRestaurants,
       populateOptions: populateRestaurantDropdown,
-      submitClosedStatus: ({ entity, startDate, endDate, message }) => setRestaurantClosed({
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setRestaurantClosed({
          restaurant: entity,
          startDate: startDate || null,
          endDate: endDate || null,

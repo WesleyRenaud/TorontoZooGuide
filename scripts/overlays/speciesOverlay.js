@@ -1,4 +1,4 @@
-import { getAnimalInformation } from '../api/animalsApi.js';
+import { AnimalsApi } from '../api/animalsApi.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { normalizeAnimalIdentityFields } from '../itinerary/animalIdentity.js';
 import { buildSpeciesContent } from './speciesOverlayContent.js';
@@ -158,7 +158,7 @@ export function initSpeciesOverlay() {
       state.isNavigating = true;
 
       try {
-         const animal = await getAnimalInformation(
+         const animal = await AnimalsApi.getAnimalInformation(
             state.linkedAnimals[nextIndex]
          );
 

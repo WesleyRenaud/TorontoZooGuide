@@ -1,4 +1,4 @@
-import { getExhibitsByRegion } from '../../api/itinerarySelectorApi.js';
+import { ItinerarySelectorApi } from '../../api/itinerarySelectorApi.js';
 import { loadArray } from '../draftStorage.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { selectedExhibitsNeedAnimalRebuild } from './regionSelector/regionSelection.js';
@@ -160,7 +160,7 @@ export function createItineraryRegionSelectorController({
 
    async function refreshRegions() {
       const context = await getItineraryDateSearchContext({ includeTemp: false });
-      state.setRegions(await getExhibitsByRegion(context));
+      state.setRegions(await ItinerarySelectorApi.getExhibitsByRegion(context));
       await state.hydrateSelectionsFromStorage();
       renderRegions();
    }

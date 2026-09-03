@@ -1,5 +1,5 @@
 import { normalizeAnimalIdentitySearchFields } from '../../animalIdentity.js';
-import { getAnimalsByExhibit } from '../../../api/itinerarySelectorApi.js';
+import { ItinerarySelectorApi } from '../../../api/itinerarySelectorApi.js';
 import {
    loadArray,
    saveArray,
@@ -132,7 +132,7 @@ export function createRegionSelectorState() {
          .filter(Boolean);
       const removedKeys = loadRemovedAnimalKeys();
       const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
-      const catalogAnimals = await getAnimalsByExhibit(selectedExhibits, {
+      const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
          month,
          day,
          temp,
@@ -251,7 +251,7 @@ export function createRegionSelectorState() {
       }
 
       const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
-      const fullAnimals = await getAnimalsByExhibit(selectedExhibits, {
+      const fullAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
          month,
          day,
          temp,

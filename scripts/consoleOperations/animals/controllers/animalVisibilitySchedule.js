@@ -1,4 +1,4 @@
-import { setAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
@@ -95,7 +95,7 @@ export function createAnimalVisibilityScheduleController({
       dailyEndTime,
       message,
    }) {
-      return setAnimalVisibilitySchedule({
+      return ConsoleOperationsApi.setAnimalVisibilitySchedule({
          species,
          exhibit,
          startDate: startDate || null,

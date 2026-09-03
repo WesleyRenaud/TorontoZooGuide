@@ -1,8 +1,4 @@
-import {
-   replaceGiftShopOpeningScheduleOverlaps,
-   setGiftShopOpeningSchedule,
-   trimGiftShopOpeningScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
@@ -19,7 +15,7 @@ export function createGiftShopOpeningScheduleController({
       entityEl: giftShopEl,
       loadOptions: loadGiftShops,
       populateOptions: populateGiftShopDropdown,
-      submitSchedule: setGiftShopOpeningSchedule,
+      submitSchedule: ConsoleOperationsApi.setGiftShopOpeningSchedule,
       entityLabel: APP_STRINGS.entityLabels.giftShop,
       optionsLabel: APP_STRINGS.entityLabels.giftShops,
       payloadKey: 'giftShop',
@@ -28,11 +24,11 @@ export function createGiftShopOpeningScheduleController({
          const resolution = await showOpeningScheduleOverlapDialog();
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-            return replaceGiftShopOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.replaceGiftShopOpeningScheduleOverlaps(payload);
          }
 
          if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-            return trimGiftShopOpeningScheduleOverlaps(payload);
+            return ConsoleOperationsApi.trimGiftShopOpeningScheduleOverlaps(payload);
          }
 
          return null;

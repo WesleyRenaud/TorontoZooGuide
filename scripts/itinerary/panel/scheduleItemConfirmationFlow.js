@@ -1,4 +1,4 @@
-import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
+import { ItineraryApi } from '../../api/itineraryApi.js';
 import { showAttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
@@ -86,7 +86,7 @@ export async function scheduleItineraryItemWithConfirmation(
    request,
    confirmationOptions = {}
 ) {
-   const initialResult = await scheduleItineraryItemRequest(request, confirmationOptions);
+   const initialResult = await ItineraryApi.scheduleItineraryItemRequest(request, confirmationOptions);
 
    if (isItinerarySuccess(initialResult.errorType)) {
       dispatchScheduleItineraryItemResult(initialResult);

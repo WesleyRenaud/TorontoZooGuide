@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { getItineraryRequest } from '../../scripts/api/itineraryApi.js';
+import { ItineraryApi } from '../../scripts/api/itineraryApi.js';
 import {
    buildSchedulableEventTypes,
    isItineraryVisitBoundaryEventType,
@@ -38,13 +38,13 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('getItineraryRequest maps visit boundary event types from backend config', async () => {
+test('ItineraryApi.getItineraryRequest maps visit boundary event types from backend config', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       itinerary: { date: '2026-06-20' },
       itinerary_config: BACKEND_ITINERARY_CONFIG,
    });
 
-   const result = await getItineraryRequest();
+   const result = await ItineraryApi.getItineraryRequest();
 
    assert.deepEqual(result.itineraryConfig.visitBoundaryEventTypes, {
       arrival: 'arrival',

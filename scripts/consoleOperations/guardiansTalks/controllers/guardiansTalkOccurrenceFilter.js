@@ -1,4 +1,4 @@
-import { getGuardiansTalkOccurrences } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import {
    resolveScheduleTimesListEl,
    updateScheduleTimesCheckboxList,
@@ -37,7 +37,7 @@ export function createGuardiansTalkOccurrenceFilterController({
       }),
       isSelectionReady: ({ talk, location }) => Boolean(talk && location),
       loadOccurrences: async ({ talk, location }) => {
-         const result = await getGuardiansTalkOccurrences({
+         const result = await ConsoleOperationsApi.getGuardiansTalkOccurrences({
             talk,
             location,
          });

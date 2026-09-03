@@ -1,14 +1,4 @@
-import {
-   getAttractionNameOptions,
-   getExhibitOptions,
-   getGiftShopNameOptions,
-   getGuardiansTalkNameOptions,
-   getRestaurantNameOptions,
-   getRestroomNameOptions,
-   getSpeciesOptions,
-   getTransportationStationNameOptions,
-   getWildEncounterNameOptions,
-} from '../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../api/consoleOperationsApi.js';
 import { sortNamedOptions } from './namedItems.js';
 
 const cachedOptionSets = {
@@ -44,7 +34,7 @@ async function loadCachedOptions({
 export async function loadSpecies() {
    return loadCachedOptions({
       cacheKey: 'species',
-      fetchOptions: getSpeciesOptions,
+      fetchOptions: ConsoleOperationsApi.getSpeciesOptions,
       resultKey: 'species',
    });
 }
@@ -52,7 +42,7 @@ export async function loadSpecies() {
 export async function loadExhibits() {
    return loadCachedOptions({
       cacheKey: 'exhibits',
-      fetchOptions: getExhibitOptions,
+      fetchOptions: ConsoleOperationsApi.getExhibitOptions,
       resultKey: 'exhibits',
    });
 }
@@ -60,7 +50,7 @@ export async function loadExhibits() {
 export async function loadRestaurants() {
    return loadCachedOptions({
       cacheKey: 'restaurants',
-      fetchOptions: getRestaurantNameOptions,
+      fetchOptions: ConsoleOperationsApi.getRestaurantNameOptions,
       resultKey: 'restaurants',
    });
 }
@@ -68,7 +58,7 @@ export async function loadRestaurants() {
 export async function loadRestrooms() {
    return loadCachedOptions({
       cacheKey: 'restrooms',
-      fetchOptions: getRestroomNameOptions,
+      fetchOptions: ConsoleOperationsApi.getRestroomNameOptions,
       resultKey: 'restrooms',
    });
 }
@@ -76,7 +66,7 @@ export async function loadRestrooms() {
 export async function loadGiftShops() {
    return loadCachedOptions({
       cacheKey: 'giftShops',
-      fetchOptions: getGiftShopNameOptions,
+      fetchOptions: ConsoleOperationsApi.getGiftShopNameOptions,
       resultKey: 'gift_shops',
    });
 }
@@ -84,7 +74,7 @@ export async function loadGiftShops() {
 export async function loadAttractions() {
    return loadCachedOptions({
       cacheKey: 'attractions',
-      fetchOptions: getAttractionNameOptions,
+      fetchOptions: ConsoleOperationsApi.getAttractionNameOptions,
       resultKey: 'attractions',
    });
 }
@@ -92,7 +82,7 @@ export async function loadAttractions() {
 export async function loadTransportationStations() {
    return loadCachedOptions({
       cacheKey: 'transportationStations',
-      fetchOptions: getTransportationStationNameOptions,
+      fetchOptions: ConsoleOperationsApi.getTransportationStationNameOptions,
       resultKey: 'transportation_stations',
    });
 }
@@ -100,7 +90,7 @@ export async function loadTransportationStations() {
 export async function loadGuardiansTalks() {
    return loadCachedOptions({
       cacheKey: 'guardiansTalks',
-      fetchOptions: getGuardiansTalkNameOptions,
+      fetchOptions: ConsoleOperationsApi.getGuardiansTalkNameOptions,
       resultKey: 'guardians_talks',
    });
 }
@@ -108,7 +98,7 @@ export async function loadGuardiansTalks() {
 export async function loadWildEncounters() {
    return loadCachedOptions({
       cacheKey: 'wildEncounters',
-      fetchOptions: getWildEncounterNameOptions,
+      fetchOptions: ConsoleOperationsApi.getWildEncounterNameOptions,
       resultKey: 'wild_encounters',
    });
 }

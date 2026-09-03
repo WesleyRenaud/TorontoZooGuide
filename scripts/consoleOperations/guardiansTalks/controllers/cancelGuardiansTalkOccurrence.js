@@ -1,4 +1,4 @@
-import { cancelGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
@@ -106,7 +106,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    async function submitOccurrenceCancellation({ talk, location, date, times }) {
-      return cancelGuardiansTalkOccurrence({
+      return ConsoleOperationsApi.cancelGuardiansTalkOccurrence({
          talk,
          location,
          date,

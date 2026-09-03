@@ -1,4 +1,4 @@
-import { getAnimalViewingScopes } from '../../../api/animalsApi.js';
+import { AnimalsApi } from '../../../api/animalsApi.js';
 import { getFieldValue } from '../../helpers/controllerUtils.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 
@@ -42,7 +42,7 @@ export function createAnimalViewingScopeControl({
       viewingScopeEl.disabled = true;
 
       try {
-         const scopes = await getAnimalViewingScopes({
+         const scopes = await AnimalsApi.getAnimalViewingScopes({
             species,
             exhibit,
          });

@@ -1,4 +1,4 @@
-import { setGiftShopClosureOverride } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { loadGiftShops } from '../../options/loaders.js';
@@ -14,7 +14,7 @@ export function createGiftShopClosureOverrideController({
       loadOptions: loadGiftShops,
       populateOptions: populateGiftShopDropdown,
       submitClosedStatus: ({ entity, startDate, endDate, message }) => (
-         setGiftShopClosureOverride({
+         ConsoleOperationsApi.setGiftShopClosureOverride({
             giftShop: entity,
             startDate: startDate || null,
             endDate: endDate || null,

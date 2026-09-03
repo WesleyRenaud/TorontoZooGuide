@@ -57,42 +57,38 @@ function normalizeTransportationRow(row) {
    };
 }
 
-const SEARCH_RESPONSE_NORMALIZERS = {
-   '/search': normalizeSearchResponse,
-};
-
-export function normalizeSearchResponse(response) {
-   const source = ValueNormalizer.asObject(response);
-
-   return {
-      animals: ValueNormalizer.asArray(source.animals),
-      pavilions: ValueNormalizer.asArray(source.pavilions),
-      restaurants: ValueNormalizer.asArray(source.restaurants),
-      restrooms: ValueNormalizer.asArray(source.restrooms),
-      gift_shops: ValueNormalizer.asArray(source.gift_shops),
-      attractions: ValueNormalizer.asArray(source.attractions).map(normalizeAttractionRow),
-      transportations: ValueNormalizer.asArray(source.transportations).map(normalizeTransportationRow),
-      transportation_stations: ValueNormalizer.asArray(source.transportation_stations),
-      guardians_talks: ValueNormalizer.asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
-      wild_encounters: ValueNormalizer.asArray(source.wild_encounters).map(normalizeWildEncounterRow),
-   };
-}
-
 function normalizeSearchEndpointResponse(endpoint, response) {
-   const normalizer = SEARCH_RESPONSE_NORMALIZERS[endpoint] ?? null;
-
-   if (typeof normalizer !== 'function') {
-      return response;
+   if (endpoint === '/search') {
+      return SearchApi.normalizeSearchResponse(response);
    }
 
-   return normalizer(response);
+   return response;
 }
 
-export async function searchItineraryItems(endpoint, payload) {
-   const response = await ApiClient.postJson(endpoint, payload);
-   return normalizeSearchEndpointResponse(endpoint, response);
-}
+export class SearchApi {
+   static normalizeSearchResponse(response) {
+      const source = ValueNormalizer.asObject(response);
 
-export async function searchZoo(payload) {
-   return await searchItineraryItems('/search', payload);
+      return {
+         animals: ValueNormalizer.asArray(source.animals),
+         pavilions: ValueNormalizer.asArray(source.pavilions),
+         restaurants: ValueNormalizer.asArray(source.restaurants),
+         restrooms: ValueNormalizer.asArray(source.restrooms),
+         gift_shops: ValueNormalizer.asArray(source.gift_shops),
+         attractions: ValueNormalizer.asArray(source.attractions).map(normalizeAttractionRow),
+         transportations: ValueNormalizer.asArray(source.transportations).map(normalizeTransportationRow),
+         transportation_stations: ValueNormalizer.asArray(source.transportation_stations),
+         guardians_talks: ValueNormalizer.asArray(source.guardians_talks).map(normalizeGuardiansTalkRow),
+         wild_encounters: ValueNormalizer.asArray(source.wild_encounters).map(normalizeWildEncounterRow),
+      };
+   }
+
+   static async searchItineraryItems(endpoint, payload) {
+      const response = await ApiClient.postJson(endpoint, payload);
+      return normalizeSearchEndpointResponse(endpoint, response);
+   }
+
+   static async searchZoo(payload) {
+      return await SearchApi.searchItineraryItems('/search', payload);
+   }
 }

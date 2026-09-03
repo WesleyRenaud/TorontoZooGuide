@@ -1,4 +1,4 @@
-import { editUpdate } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -104,7 +104,7 @@ export function createEditUpdateController({
       }
 
       try {
-         const result = await editUpdate(values);
+         const result = await ConsoleOperationsApi.editUpdate(values);
 
          if (result.success) {
             setStatus(statusEl, APP_STRINGS.status.updateEdited, 'is-success');

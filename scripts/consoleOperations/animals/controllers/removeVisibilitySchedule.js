@@ -1,4 +1,4 @@
-import { removeAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    bindResetValueOnChange,
@@ -71,7 +71,7 @@ export function createRemoveVisibilityScheduleController({
    }
 
    async function submitVisibilityScheduleRemoval({ species, exhibit }) {
-      return removeAnimalVisibilitySchedule({
+      return ConsoleOperationsApi.removeAnimalVisibilitySchedule({
          species,
          exhibit,
       });

@@ -1,9 +1,8 @@
 import { createAnimalDetailView } from './animalDetailView.js';
-import { createAnimalsApi } from '../api/animalsApi.js';
+import { AnimalsApi } from '../api/animalsApi.js';
 import { createAnimalsListView } from './listView.js';
 
 export function createAnimalsRouter({ listEl }) {
-   const api = createAnimalsApi();
    const listView = createAnimalsListView({ listEl });
    const detailView = createAnimalDetailView({ listEl });
    let latestNavigationId = 0;
@@ -49,7 +48,7 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showRegions() {
-      await runNavigation(() => api.getRegions(), (regions) => {
+      await runNavigation(() => AnimalsApi.getRegions(), (regions) => {
          listView.renderRegions(regions, {
             onRegionSelected: showRegionSelection,
          });
@@ -57,7 +56,7 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showExhibits(regionName) {
-      await runNavigation(() => api.getExhibitsInRegion(regionName), (exhibits) => {
+      await runNavigation(() => AnimalsApi.getExhibitsInRegion(regionName), (exhibits) => {
          listView.renderExhibits(regionName, exhibits, {
             onBack: showRegions,
             onExhibitSelected: exhibitName => showAnimals(regionName, exhibitName),
@@ -66,7 +65,7 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showAnimals(regionName, exhibitName) {
-      await runNavigation(() => api.getAnimalsInExhibit(exhibitName), (animals) => {
+      await runNavigation(() => AnimalsApi.getAnimalsInExhibit(exhibitName), (animals) => {
          listView.renderAnimals(regionName, exhibitName, animals, {
             onBack: createAnimalsBackHandler(regionName, exhibitName),
             onAnimalSelected: animalName => showAnimalDetail(regionName, exhibitName, animalName),
@@ -76,7 +75,7 @@ export function createAnimalsRouter({ listEl }) {
 
    async function showAnimalDetail(regionName, exhibitName, animalName) {
       await runNavigation(
-         () => api.getAnimalInformation({ species: animalName, exhibit: exhibitName }),
+         () => AnimalsApi.getAnimalInformation({ species: animalName, exhibit: exhibitName }),
          (animalInfo) => {
          detailView.render(animalInfo, {
             regionName,

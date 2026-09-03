@@ -31,39 +31,6 @@ async function fetchStringCollection(endpoint, responseKey, payload = EMPTY_PAYL
    return asStringArray(await fetchCollection(endpoint, responseKey, payload));
 }
 
-export async function getVisibleAnimals(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-visible-animals', 'animals', payload);
-}
-
-export async function getPavilions() {
-   return await fetchCollection('/get-pavilions', 'pavilions');
-}
-
-export async function getRestaurants(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-restaurants', 'restaurants', payload);
-}
-
-export async function getRestrooms(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-restrooms', 'restrooms', payload);
-}
-
-export async function getGiftShops(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-gift-shops', 'gift_shops', payload);
-}
-
-export async function getAttractions(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-attractions', 'attractions', payload);
-}
-
-export async function getTransportations(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-transportations', 'transportations', payload);
-}
-
-export async function getTransportationRoute(payload = EMPTY_PAYLOAD) {
-   const response = await ApiClient.postJson('/get-transportation-route', payload);
-   return normalizeRouteResponse(response);
-}
-
 function normalizeTransportationRoutesResponse(response) {
    return ValueNormalizer.asArray(ValueNormalizer.asObject(response).transportations)
       .map((entry) => {
@@ -82,55 +49,90 @@ function normalizeTransportationRoutesResponse(response) {
       .filter(Boolean);
 }
 
-export async function getTransportationRoutes() {
-   const response = await ApiClient.postJson('/get-transportation-routes', EMPTY_PAYLOAD);
-   return normalizeTransportationRoutesResponse(response);
-}
+export class MapApi {
+   static async getVisibleAnimals(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-visible-animals', 'animals', payload);
+   }
 
-export async function getGuardiansTalks(payload) {
-   return await fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
-}
+   static async getPavilions() {
+      return await fetchCollection('/get-pavilions', 'pavilions');
+   }
 
-export async function getWildEncounters(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
-}
+   static async getRestaurants(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-restaurants', 'restaurants', payload);
+   }
 
-export async function getDrinkingFountains(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-drinking-fountains', 'drinking_fountains', payload);
-}
+   static async getRestrooms(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-restrooms', 'restrooms', payload);
+   }
 
-export async function getDefibrillators() {
-   return await fetchCollection('/get-defibrillators', 'defibrillators');
-}
+   static async getGiftShops(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-gift-shops', 'gift_shops', payload);
+   }
 
-export async function getEmergencyIntercoms() {
-   return await fetchCollection('/get-emergency-intercoms', 'emergency_intercoms');
-}
+   static async getAttractions(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-attractions', 'attractions', payload);
+   }
 
-export async function getGuestServices() {
-   return await fetchCollection('/get-guest-services', 'guest_services');
-}
+   static async getTransportations(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-transportations', 'transportations', payload);
+   }
 
-export async function getPicnicSites() {
-   return await fetchCollection('/get-picnic-sites', 'picnic_sites');
-}
+   static async getTransportationRoute(payload = EMPTY_PAYLOAD) {
+      const response = await ApiClient.postJson('/get-transportation-route', payload);
+      return normalizeRouteResponse(response);
+   }
 
-export async function getEventSites() {
-   return await fetchCollection('/get-event-sites', 'event_sites');
-}
+   static async getTransportationRoutes() {
+      const response = await ApiClient.postJson('/get-transportation-routes', EMPTY_PAYLOAD);
+      return normalizeTransportationRoutesResponse(response);
+   }
 
-export async function getEvents(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-events', 'events', payload);
-}
+   static async getGuardiansTalks(payload) {
+      return await fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
+   }
 
-export async function getUpdates(payload = EMPTY_PAYLOAD) {
-   return await fetchCollection('/get-updates', 'updates', payload);
-}
+   static async getWildEncounters(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
+   }
 
-export async function getExhibits() {
-   return await fetchCollection('/get-exhibits', 'exhibits');
-}
+   static async getDrinkingFountains(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-drinking-fountains', 'drinking_fountains', payload);
+   }
 
-export async function getClosedExhibits(payload = EMPTY_PAYLOAD) {
-   return await fetchStringCollection('/get-closed-exhibits', 'closed_exhibits', payload);
+   static async getDefibrillators() {
+      return await fetchCollection('/get-defibrillators', 'defibrillators');
+   }
+
+   static async getEmergencyIntercoms() {
+      return await fetchCollection('/get-emergency-intercoms', 'emergency_intercoms');
+   }
+
+   static async getGuestServices() {
+      return await fetchCollection('/get-guest-services', 'guest_services');
+   }
+
+   static async getPicnicSites() {
+      return await fetchCollection('/get-picnic-sites', 'picnic_sites');
+   }
+
+   static async getEventSites() {
+      return await fetchCollection('/get-event-sites', 'event_sites');
+   }
+
+   static async getEvents(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-events', 'events', payload);
+   }
+
+   static async getUpdates(payload = EMPTY_PAYLOAD) {
+      return await fetchCollection('/get-updates', 'updates', payload);
+   }
+
+   static async getExhibits() {
+      return await fetchCollection('/get-exhibits', 'exhibits');
+   }
+
+   static async getClosedExhibits(payload = EMPTY_PAYLOAD) {
+      return await fetchStringCollection('/get-closed-exhibits', 'closed_exhibits', payload);
+   }
 }

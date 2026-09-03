@@ -1,4 +1,4 @@
-import { setCurrentTransportationRoute } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    getFieldValue,
@@ -74,7 +74,7 @@ export function createTransportationRouteController({
    }
 
    async function submitRouteChange({ route, startDate, endDate }) {
-      return setCurrentTransportationRoute({
+      return ConsoleOperationsApi.setCurrentTransportationRoute({
          route,
          startDate: startDate || null,
          endDate: endDate || null,

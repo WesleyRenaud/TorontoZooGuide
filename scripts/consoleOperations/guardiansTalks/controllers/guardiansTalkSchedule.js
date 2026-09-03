@@ -1,8 +1,4 @@
-import {
-   replaceGuardiansTalkScheduleOverlaps,
-   setGuardiansTalkSchedule,
-   trimGuardiansTalkScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import {
    OPENING_SCHEDULE_OVERLAP_RESOLUTION,
    resultHasOpeningScheduleOverlap,
@@ -77,7 +73,7 @@ export function createGuardiansTalkScheduleController({
          scheduleRows,
       };
 
-      const result = await setGuardiansTalkSchedule(payload);
+      const result = await ConsoleOperationsApi.setGuardiansTalkSchedule(payload);
 
       if (result.success || !resultHasOpeningScheduleOverlap(result)) {
          return result;
@@ -86,11 +82,11 @@ export function createGuardiansTalkScheduleController({
       const resolution = await showOpeningScheduleOverlapDialog();
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-         return replaceGuardiansTalkScheduleOverlaps(payload);
+         return ConsoleOperationsApi.replaceGuardiansTalkScheduleOverlaps(payload);
       }
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-         return trimGuardiansTalkScheduleOverlaps(payload);
+         return ConsoleOperationsApi.trimGuardiansTalkScheduleOverlaps(payload);
       }
 
       return { success: false, dismissed: true };

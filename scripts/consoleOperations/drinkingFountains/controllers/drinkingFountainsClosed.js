@@ -1,4 +1,4 @@
-import { setDrinkingFountainsClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import {
    resetFormFields,
@@ -40,7 +40,7 @@ export function createDrinkingFountainsClosedController({
       }
 
       try {
-         const result = await setDrinkingFountainsClosed({
+         const result = await ConsoleOperationsApi.setDrinkingFountainsClosed({
             startDate: startDate || null,
             endDate: endDate || null,
             message: messageEl?.value.trim() || '',

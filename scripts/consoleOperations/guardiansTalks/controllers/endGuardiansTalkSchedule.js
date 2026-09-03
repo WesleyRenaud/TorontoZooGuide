@@ -1,4 +1,4 @@
-import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
@@ -61,7 +61,7 @@ export function createEndGuardiansTalkScheduleController({
    }
 
    async function submitEndSchedule({ talk, location, times, endDate }) {
-      return endGuardiansTalkSchedule({
+      return ConsoleOperationsApi.endGuardiansTalkSchedule({
          talk,
          location,
          times,

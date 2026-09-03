@@ -1,4 +1,4 @@
-import { getActiveUpdateOptions } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function createPlaceholderOption(label) {
@@ -21,7 +21,7 @@ function formatUpdateOptionLabel(update) {
 }
 
 export async function loadActiveUpdates() {
-   const result = await getActiveUpdateOptions();
+   const result = await ConsoleOperationsApi.getActiveUpdateOptions();
    return result?.updates ?? [];
 }
 

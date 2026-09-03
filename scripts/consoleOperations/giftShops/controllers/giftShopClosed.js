@@ -1,4 +1,4 @@
-import { setGiftShopClosed } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { loadGiftShops } from '../../options/loaders.js';
@@ -13,7 +13,7 @@ export function createGiftShopClosedController({
       entityEl: giftShopEl,
       loadOptions: loadGiftShops,
       populateOptions: populateGiftShopDropdown,
-      submitClosedStatus: ({ entity, startDate, endDate, message }) => setGiftShopClosed({
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setGiftShopClosed({
          giftShop: entity,
          startDate: startDate || null,
          endDate: endDate || null,

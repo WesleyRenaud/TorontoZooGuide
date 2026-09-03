@@ -1,4 +1,4 @@
-import { searchItineraryItems } from '../../../api/searchApi.js';
+import { SearchApi } from '../../../api/searchApi.js';
 import { isItineraryConfirmationCancelled } from '../../itineraryConfirmationResult.js';
 import {
    isItinerarySuccess,
@@ -58,7 +58,7 @@ export function createScheduleItemModuleController({
    } = refs;
 
    const {
-      searchItineraryItems: searchItems = searchItineraryItems,
+      searchItineraryItems: searchItems = SearchApi.searchItineraryItems,
       getSearchContext = getItineraryDateSearchContext,
       scheduleSelectedItem = scheduleSelectedItineraryItem,
       showNotice = showScheduleItemNotice,

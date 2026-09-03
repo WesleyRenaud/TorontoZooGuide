@@ -1,8 +1,4 @@
-import {
-   replaceWildEncounterScheduleOverlaps,
-   setWildEncounterSchedule,
-   trimWildEncounterScheduleOverlaps,
-} from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import {
    OPENING_SCHEDULE_OVERLAP_RESOLUTION,
    resultHasOpeningScheduleOverlap,
@@ -58,7 +54,7 @@ export function createWildEncounterScheduleController({
          scheduleRows,
       };
 
-      const result = await setWildEncounterSchedule(payload);
+      const result = await ConsoleOperationsApi.setWildEncounterSchedule(payload);
 
       if (result.success || !resultHasOpeningScheduleOverlap(result)) {
          return result;
@@ -67,11 +63,11 @@ export function createWildEncounterScheduleController({
       const resolution = await showOpeningScheduleOverlapDialog();
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-         return replaceWildEncounterScheduleOverlaps(payload);
+         return ConsoleOperationsApi.replaceWildEncounterScheduleOverlaps(payload);
       }
 
       if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-         return trimWildEncounterScheduleOverlaps(payload);
+         return ConsoleOperationsApi.trimWildEncounterScheduleOverlaps(payload);
       }
 
       return { success: false, dismissed: true };

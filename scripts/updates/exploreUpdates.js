@@ -1,7 +1,4 @@
-import {
-   getEvents,
-   getUpdates,
-} from '../api/mapApi.js';
+import { MapApi } from '../api/mapApi.js';
 import { createEventCard } from './exploreEventCard.js';
 import { EXPLORE_TAB } from './exploreTabs.js';
 import { createUpdateCard } from './exploreUpdateCard.js';
@@ -162,8 +159,8 @@ export function createExploreUpdates({
 
       try {
          const [nextUpdates, nextEvents] = await Promise.all([
-            getUpdates(buildDatePayload(dateCtx)),
-            getEvents(buildDatePayload(dateCtx)),
+            MapApi.getUpdates(buildDatePayload(dateCtx)),
+            MapApi.getEvents(buildDatePayload(dateCtx)),
          ]);
 
          renderItems({
