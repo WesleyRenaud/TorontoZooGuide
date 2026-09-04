@@ -1,5 +1,5 @@
 import { GroupConsecutiveTransportationLegSequences } from './groupConsecutiveTransportationLegSequences.js';
-import { hasItineraryScheduleTimes } from '../../panel/rowActionProps.js';
+import { RowActionProps } from '../../panel/rowActionProps.js';
 
 export class TransportationSequenceItems {
    static buildTransportationSequenceItems(transportation) {
@@ -8,7 +8,7 @@ export class TransportationSequenceItems {
       );
 
       if (sequences.length === 0) {
-         return hasItineraryScheduleTimes(transportation)
+         return RowActionProps.hasItineraryScheduleTimes(transportation)
             ? [transportation]
             : [];
       }

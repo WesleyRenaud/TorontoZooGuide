@@ -1,3 +1,4 @@
+import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
 import {
    filterScheduleItemRowsForScheduleModule,
    getScheduleItemRowId,
@@ -5,7 +6,6 @@ import {
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
 import {
-   isScheduleItemEventType,
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
 } from '../scheduleItemTypes.js';
@@ -31,7 +31,7 @@ export function canScheduleModuleSelection({
       return Boolean(selectedRow);
    }
 
-   return isScheduleItemEventType(effectiveSelection, eventTypes);
+   return ItineraryEventTypes.isScheduleItemEventType(effectiveSelection, eventTypes);
 }
 
 export function filterVisibleScheduleModuleRows({

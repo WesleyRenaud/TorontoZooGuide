@@ -3,13 +3,8 @@ import {
    applyKeepOverrideButtonState,
    getKeepOverrideButtonState,
 } from './removedItemsPopupKeepButtonState.js';
-import {
-   getRemovedItemsPopupSectionSpecs,
-   resolveKeepOverride,
-} from './removedItemsPopupSectionSpecs.js';
+import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { APP_STRINGS } from '../../../strings.js';
-
-export { hasRemovedItemsPopupContent } from './removedItemsPopupSectionSpecs.js';
 
 function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopupOnly) {
    if (!rowNode) {
@@ -179,7 +174,7 @@ export function buildRemovedItemsPopupSections({
       isKeepAttractionSelected,
    };
 
-   return getRemovedItemsPopupSectionSpecs({
+   return RemovedItemsPopupSectionSpecs.getRemovedItemsPopupSectionSpecs({
       added,
       removed,
       unscheduled,
@@ -197,7 +192,7 @@ export function buildRemovedItemsPopupSections({
             onViewAlternatives,
             removePopupOnly,
             section.showViewAlternatives ?? true,
-            resolveKeepOverride(section, keepOverrideHandlers)
+            RemovedItemsPopupSectionSpecs.resolveKeepOverride(section, keepOverrideHandlers)
          )
       ))
       .filter(Boolean);

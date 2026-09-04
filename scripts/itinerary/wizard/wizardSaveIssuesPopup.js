@@ -5,7 +5,7 @@ import {
 } from '../panel/scheduleTimeConflictConfirmation.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { APP_STRINGS } from '../../strings.js';
-import { buildItineraryWithSelectedConflictResolutions } from './wildEncounterConflictResolution.js';
+import { WildEncounterConflictResolution } from './wildEncounterConflictResolution.js';
 
 export function showWizardSaveIssuesPopup(
    savedItinerary,
@@ -15,7 +15,7 @@ export function showWizardSaveIssuesPopup(
       saveFinalItinerary,
       createSaveIssues = createSaveIssuesContent,
       confirmSaveIssues = confirmSaveIssuesConflictSelection,
-      buildResolvedItinerary = buildItineraryWithSelectedConflictResolutions,
+      buildResolvedItinerary = WildEncounterConflictResolution.buildItineraryWithSelectedConflictResolutions,
    } = {}
 ) {
    const issues = savedItinerary.saveIssues;

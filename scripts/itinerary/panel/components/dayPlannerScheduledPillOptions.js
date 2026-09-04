@@ -1,4 +1,4 @@
-import { canShowItineraryItemScheduleControls } from '../rowActionProps.js';
+import { RowActionProps } from '../rowActionProps.js';
 import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
@@ -27,7 +27,7 @@ function buildScheduledPillMenuItems(
       typeof scheduleHandlers.onUnscheduleItineraryItem === 'function'
       && scheduleItemKind !== ScheduleItemKind.EVENT.kind
       && !ScheduleItemKind.isFixedTimeScheduleItemKind(scheduleItemKind)
-      && canShowItineraryItemScheduleControls(scheduleItemKind, item)
+      && RowActionProps.canShowItineraryItemScheduleControls(scheduleItemKind, item)
    ) {
       if (
          ScheduleItemKind.isScheduleItemModuleItemType(scheduleItemKind)

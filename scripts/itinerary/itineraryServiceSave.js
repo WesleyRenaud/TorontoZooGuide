@@ -30,7 +30,7 @@ import {
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
-import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
+import { WildEncounterConflictResolution } from './wizard/wildEncounterConflictResolution.js';
 
 function createConfirmedSetItineraryResult(result, diffBaseline = null) {
    return {
@@ -94,7 +94,7 @@ async function requestSetItineraryWithConfirmations(
             const {
                guardiansTalks,
                wildEncounters,
-            } = applyConflictSelectionToItineraryDraft(
+            } = WildEncounterConflictResolution.applyConflictSelectionToItineraryDraft(
                {
                   guardiansTalks: payload.guardiansTalks,
                   wildEncounters: payload.wildEncounters,

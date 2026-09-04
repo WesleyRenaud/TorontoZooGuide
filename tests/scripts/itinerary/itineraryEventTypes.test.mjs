@@ -1,15 +1,9 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { ItineraryApi } from '../../scripts/api/itineraryApi.js';
-import {
-   buildSchedulableEventTypes,
-   isItineraryVisitBoundaryEventType,
-   isScheduleItemEventType,
-   normalizeVisitBoundaryEventTypes,
-   requiresRemoveItineraryItemConfirmation,
-} from '../../scripts/itinerary/itineraryEventTypes.js';
-import { mockJsonResponse } from './helpers/fetchMock.mjs';
+import { ItineraryApi } from '../../../scripts/api/itineraryApi.js';
+import { ItineraryEventTypes } from '../../../scripts/itinerary/itineraryEventTypes.js';
+import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
 const BACKEND_ITINERARY_CONFIG = {
    animal_visibility_change_threshold: 20,
@@ -38,7 +32,7 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('ItineraryApi.getItineraryRequest maps visit boundary event types from backend config', async () => {
+test('Test_Behavior_TestItineraryApiGetItineraryRequestMapsVisitBoundaryEventTypesFromBackendC_ExpectOk', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       itinerary: { date: '2026-06-20' },
       itinerary_config: BACKEND_ITINERARY_CONFIG,
@@ -52,7 +46,7 @@ test('ItineraryApi.getItineraryRequest maps visit boundary event types from back
    });
 });
 
-test('buildSchedulableEventTypes excludes visit boundary types from config', () => {
+test('Test_BuildSchedulableEventTypes_TestExcludesVisitBoundaryTypesFromConfig_ExpectOk', () => {
    const itineraryConfig = {
       eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
       visitBoundaryEventTypes: {
@@ -61,7 +55,7 @@ test('buildSchedulableEventTypes excludes visit boundary types from config', () 
       },
    };
 
-   assert.deepEqual(buildSchedulableEventTypes(itineraryConfig), [
+   assert.deepEqual(ItineraryEventTypes.buildSchedulableEventTypes(itineraryConfig), [
       'breakfast',
       'break',
       'dinner',
@@ -70,14 +64,14 @@ test('buildSchedulableEventTypes excludes visit boundary types from config', () 
       'snack',
    ]);
    assert.equal(
-      isItineraryVisitBoundaryEventType(
+      ItineraryEventTypes.isItineraryVisitBoundaryEventType(
          'arrival',
          itineraryConfig.visitBoundaryEventTypes
       ),
       true
    );
    assert.equal(
-      isItineraryVisitBoundaryEventType(
+      ItineraryEventTypes.isItineraryVisitBoundaryEventType(
          'lunch',
          itineraryConfig.visitBoundaryEventTypes
       ),
@@ -85,42 +79,42 @@ test('buildSchedulableEventTypes excludes visit boundary types from config', () 
    );
 });
 
-test('normalizeVisitBoundaryEventTypes tolerates missing config', () => {
-   assert.deepEqual(normalizeVisitBoundaryEventTypes(), {
+test('Test_NormalizeVisitBoundaryEventTypes_TestToleratesMissingConfig_ExpectOk', () => {
+   assert.deepEqual(ItineraryEventTypes.normalizeVisitBoundaryEventTypes(), {
       arrival: '',
       departure: '',
    });
 });
 
-test('generic itinerary events skip remove confirmation when configured', () => {
+test('Test_Generic_TestItineraryEventsSkipRemoveConfirmationWhenConfigured_ExpectOk', () => {
    const itineraryConfig = {
       eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
    };
 
    assert.equal(
-      isScheduleItemEventType('lunch', itineraryConfig.eventTypes),
+      ItineraryEventTypes.isScheduleItemEventType('lunch', itineraryConfig.eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemEventType('break', itineraryConfig.eventTypes),
+      ItineraryEventTypes.isScheduleItemEventType('break', itineraryConfig.eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemEventType('animals', itineraryConfig.eventTypes),
+      ItineraryEventTypes.isScheduleItemEventType('animals', itineraryConfig.eventTypes),
       false
    );
    assert.equal(
-      requiresRemoveItineraryItemConfirmation('lunch', itineraryConfig),
+      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('lunch', itineraryConfig),
       false
    );
    assert.equal(
-      requiresRemoveItineraryItemConfirmation('animals', itineraryConfig),
+      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('animals', itineraryConfig),
       true
    );
    assert.equal(
-      requiresRemoveItineraryItemConfirmation('guardians_talks', itineraryConfig),
+      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('guardians_talks', itineraryConfig),
       true
    );
-   assert.equal(isScheduleItemEventType('lunch'), false);
-   assert.equal(requiresRemoveItineraryItemConfirmation('lunch', null), true);
+   assert.equal(ItineraryEventTypes.isScheduleItemEventType('lunch'), false);
+   assert.equal(ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('lunch', null), true);
 });

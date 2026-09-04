@@ -3,16 +3,16 @@ import { test } from 'node:test';
 
 import {
    buildRemovedItemsPopupSections,
-   hasRemovedItemsPopupContent,
 } from '../../scripts/itinerary/panel/components/removedItemsPopupContent.js';
+import { RemovedItemsPopupSectionSpecs } from '../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
 import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
-test('hasRemovedItemsPopupContent is re-exported from the content module', () => {
+test('RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent reports removed animals', () => {
    assert.equal(
-      hasRemovedItemsPopupContent({
+      RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
          removed: {
             animals: [{ species: 'Lion', exhibit: 'Savanna' }],
          },

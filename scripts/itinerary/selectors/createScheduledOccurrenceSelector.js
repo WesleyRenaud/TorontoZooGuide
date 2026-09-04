@@ -9,7 +9,7 @@ import {
    buildOccurrenceDetailImageSrc,
    buildOccurrenceSubtitle,
 } from '../scheduledOccurrencePresentation.js';
-import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -206,7 +206,7 @@ export function createScheduledOccurrenceSelectorController({
          [searchFlag]: true,
       }),
 
-      extractRows: (response) => sortScheduledOccurrencesByStartTime(
+      extractRows: (response) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
          response[responseKey],
          getTimeOfDay),
 

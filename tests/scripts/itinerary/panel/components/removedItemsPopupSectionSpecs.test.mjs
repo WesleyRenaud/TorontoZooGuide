@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   getRemovedItemsPopupSectionSpecs,
-   getUnscheduledSectionSpecs,
-   hasRemovedItemsPopupContent,
-   resolveKeepOverride,
-} from '../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { RemovedItemsPopupSectionSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
 
 const removedAnimal = {
    species: 'African Lion',
@@ -18,10 +13,10 @@ const removedAttraction = {
    name: 'Conservation Carousel',
 };
 
-test('hasRemovedItemsPopupContent is false when every section is empty', () => {
-   assert.equal(hasRemovedItemsPopupContent({}), false);
+test('Test_HasRemovedItemsPopupContent_TestIsFalseWhenEverySectionIsEmpty_ExpectOk', () => {
+   assert.equal(RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({}), false);
    assert.equal(
-      hasRemovedItemsPopupContent({
+      RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
          added: { animals: [] },
          removed: { animals: [] },
          adjustments: [],
@@ -30,9 +25,9 @@ test('hasRemovedItemsPopupContent is false when every section is empty', () => {
    );
 });
 
-test('hasRemovedItemsPopupContent detects adjustments and removed animals', () => {
+test('Test_HasRemovedItemsPopupContent_TestDetectsAdjustmentsAndRemovedAnimals_ExpectOk', () => {
    assert.equal(
-      hasRemovedItemsPopupContent({
+      RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
          adjustments: [{
             type: 'arrivalTimeAdjusted',
             previousValue: '09:00',
@@ -42,30 +37,30 @@ test('hasRemovedItemsPopupContent detects adjustments and removed animals', () =
       true
    );
    assert.equal(
-      hasRemovedItemsPopupContent({
+      RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
          removed: { animals: [removedAnimal] },
       }),
       true
    );
 });
 
-test('getUnscheduledSectionSpecs emits only populated unscheduled groups', () => {
+test('Test_GetUnscheduledSectionSpecs_TestEmitsOnlyPopulatedUnscheduledGroups_ExpectOk', () => {
    assert.deepEqual(
-      getUnscheduledSectionSpecs({
+      RemovedItemsPopupSectionSpecs.getUnscheduledSectionSpecs({
          animals: [removedAnimal],
       }).map((section) => section.title),
       [APP_STRINGS.itinerary.dayPlanner.unscheduledTitle]
    );
    assert.deepEqual(
-      getUnscheduledSectionSpecs({
+      RemovedItemsPopupSectionSpecs.getUnscheduledSectionSpecs({
          attractions: [removedAttraction],
       }).map((section) => section.title),
       [APP_STRINGS.map.filter.attractions]
    );
 });
 
-test('getRemovedItemsPopupSectionSpecs includes keep overrides for removed rows', () => {
-   const sections = getRemovedItemsPopupSectionSpecs({
+test('Test_GetRemovedItemsPopupSectionSpecs_TestIncludesKeepOverridesForRemovedRows_ExpectOk', () => {
+   const sections = RemovedItemsPopupSectionSpecs.getRemovedItemsPopupSectionSpecs({
       removed: {
          animals: [removedAnimal],
          attractions: [removedAttraction],
@@ -86,7 +81,7 @@ test('getRemovedItemsPopupSectionSpecs includes keep overrides for removed rows'
    assert.equal(removedAttractionSection?.items.length, 1);
 });
 
-test('resolveKeepOverride maps animal and attraction sections to keep handlers', () => {
+test('Test_ResolveKeepOverride_TestMapsAnimalAndAttractionSectionsToKeepHandlers_ExpectOk', () => {
    const animalHandlers = {
       onToggleKeepAnimal: () => {},
       isKeepAnimalSelected: () => false,
@@ -96,11 +91,11 @@ test('resolveKeepOverride maps animal and attraction sections to keep handlers',
       isKeepAttractionSelected: () => true,
    };
 
-   const animalOverride = resolveKeepOverride(
+   const animalOverride = RemovedItemsPopupSectionSpecs.resolveKeepOverride(
       { keepOverrideKey: 'animal' },
       animalHandlers
    );
-   const attractionOverride = resolveKeepOverride(
+   const attractionOverride = RemovedItemsPopupSectionSpecs.resolveKeepOverride(
       { keepOverrideKey: 'attraction' },
       attractionHandlers
    );
@@ -115,7 +110,7 @@ test('resolveKeepOverride maps animal and attraction sections to keep handlers',
       'carousel'
    );
    assert.equal(
-      resolveKeepOverride({ keepOverrideKey: 'wildEncounter' }, animalHandlers),
+      RemovedItemsPopupSectionSpecs.resolveKeepOverride({ keepOverrideKey: 'wildEncounter' }, animalHandlers),
       null
    );
 });

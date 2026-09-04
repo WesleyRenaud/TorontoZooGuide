@@ -1,7 +1,7 @@
 import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingWalkNode.js';
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
 import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
-import { hasItineraryScheduleTimes } from './rowActionProps.js';
+import { RowActionProps } from './rowActionProps.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
@@ -114,7 +114,7 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
 function buildScheduledAnimalRows(animals = []) {
    return SpeciesExhibitKey.buildUniqueSpeciesExhibitEntries(animals, {
       includeAnimal: (item) => (
-         hasItineraryScheduleTimes(item) && !isCoveredByTalk(item)
+         RowActionProps.hasItineraryScheduleTimes(item) && !isCoveredByTalk(item)
       ),
       buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
       requireExhibit: false,
@@ -191,7 +191,7 @@ function buildItineraryScheduledItemIndexes(items = []) {
    const indexes = new Set();
 
    items.forEach((item, index) => {
-      if (!hasItineraryScheduleTimes(item)) {
+      if (!RowActionProps.hasItineraryScheduleTimes(item)) {
          return;
       }
 
