@@ -82,74 +82,76 @@ function mergeScheduledPillMenuItems(items = [], scheduleHandlers = {}, strings 
    return menuItems;
 }
 
-export function resolveScheduledPillOptions(
-   scheduledItem = {},
-   scheduleHandlers = {},
-   strings = {}
-) {
-   const menuItems = buildScheduledPillMenuItems(
-      scheduledItem,
-      scheduleHandlers,
-      strings
-   );
-
-   if (!menuItems.length) {
-      return {};
-   }
-
-   return {
-      menuAriaLabel: strings.scheduledItemMenuAria,
-      menuItems,
-   };
-}
-
-export function buildGroupedScheduledPillItems(
-   scheduledItems = [],
-   scheduleHandlers = {},
-   strings = {},
-   resolveItemLabelClick = () => null
-) {
-   return ScheduledPillOverlap.sortScheduledItemsForGroupDisplay(
-      flattenScheduledItemsForPillGroup(scheduledItems)
-   ).map((scheduledItem) => ({
-      label: scheduledItem.label,
-      item: scheduledItem.item,
-      startTime: scheduledItem.item?.start_time ?? '',
-      endTime: scheduledItem.item?.end_time ?? '',
-      onLabelClick: resolveItemLabelClick(scheduledItem),
-      menuItems: buildScheduledPillMenuItems(
+export class DayPlannerScheduledPillOptions {
+   static resolveScheduledPillOptions(
+      scheduledItem = {},
+      scheduleHandlers = {},
+      strings = {}
+   ) {
+      const menuItems = buildScheduledPillMenuItems(
          scheduledItem,
          scheduleHandlers,
          strings
-      ),
-   }));
-}
+      );
 
-export function resolveGroupedScheduledPillOptions(
-   scheduledItems = [],
-   scheduleHandlers = {},
-   strings = {},
-   resolveItemLabelClick = () => null
-) {
-   const groupItems = buildGroupedScheduledPillItems(
-      scheduledItems,
-      scheduleHandlers,
-      strings,
-      resolveItemLabelClick
-   );
-   const menuItems = mergeScheduledPillMenuItems(
-      scheduledItems,
-      scheduleHandlers,
-      strings
-   );
+      if (!menuItems.length) {
+         return {};
+      }
 
-   if (!menuItems.length && groupItems.length <= 1) {
-      return {};
+      return {
+         menuAriaLabel: strings.scheduledItemMenuAria,
+         menuItems,
+      };
    }
 
-   return {
-      menuAriaLabel: strings.scheduledItemMenuAria,
-      menuItems,
-      groupItems,
-   };
+   static buildGroupedScheduledPillItems(
+      scheduledItems = [],
+      scheduleHandlers = {},
+      strings = {},
+      resolveItemLabelClick = () => null
+   ) {
+      return ScheduledPillOverlap.sortScheduledItemsForGroupDisplay(
+         flattenScheduledItemsForPillGroup(scheduledItems)
+      ).map((scheduledItem) => ({
+         label: scheduledItem.label,
+         item: scheduledItem.item,
+         startTime: scheduledItem.item?.start_time ?? '',
+         endTime: scheduledItem.item?.end_time ?? '',
+         onLabelClick: resolveItemLabelClick(scheduledItem),
+         menuItems: buildScheduledPillMenuItems(
+            scheduledItem,
+            scheduleHandlers,
+            strings
+         ),
+      }));
+   }
+
+   static resolveGroupedScheduledPillOptions(
+      scheduledItems = [],
+      scheduleHandlers = {},
+      strings = {},
+      resolveItemLabelClick = () => null
+   ) {
+      const groupItems = DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems(
+         scheduledItems,
+         scheduleHandlers,
+         strings,
+         resolveItemLabelClick
+      );
+      const menuItems = mergeScheduledPillMenuItems(
+         scheduledItems,
+         scheduleHandlers,
+         strings
+      );
+
+      if (!menuItems.length && groupItems.length <= 1) {
+         return {};
+      }
+
+      return {
+         menuAriaLabel: strings.scheduledItemMenuAria,
+         menuItems,
+         groupItems,
+      };
+   }
 }

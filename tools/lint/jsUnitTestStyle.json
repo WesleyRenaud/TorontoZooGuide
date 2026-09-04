@@ -73,7 +73,12 @@
       "tests/scripts/visitDates/visitDateRules.test.mjs",
       "tests/scripts/itinerary/draftStorage.test.mjs",
       "tests/scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.test.mjs",
-      "tests/scripts/itinerary/panel/scheduleTimeConflictButtonState.test.mjs"
+      "tests/scripts/itinerary/panel/scheduleTimeConflictButtonState.test.mjs",
+      "tests/scripts/itinerary/panel/scheduleTimeConflictResolution.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduleItemButton.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerScheduledItems.test.mjs",
+      "tests/scripts/itinerary/panel/panelRowBuilders.test.mjs",
+      "tests/scripts/datePickers/multiTimePicker.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

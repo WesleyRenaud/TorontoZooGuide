@@ -1,7 +1,4 @@
-import {
-   resolveGroupedScheduledPillOptions,
-   resolveScheduledPillOptions,
-} from './dayPlannerScheduledPillOptions.js';
+import { DayPlannerScheduledPillOptions } from './dayPlannerScheduledPillOptions.js';
 import { appendScheduledDurationPill } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import {
@@ -180,14 +177,14 @@ function resolveRenderGroupPillOptions(
    strings = {}
 ) {
    if ((renderGroup.items ?? []).length === 1) {
-      return resolveScheduledPillOptions(
+      return DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
          getRenderGroupPrimaryScheduledItem(renderGroup),
          scheduleHandlers,
          strings
       );
    }
 
-   return resolveGroupedScheduledPillOptions(
+   return DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions(
       renderGroup.items,
       scheduleHandlers,
       strings,
@@ -210,7 +207,7 @@ export function appendScheduledItems(
                scheduledItem.row,
                scheduledItem.maximumDuration,
                scheduledItem.offsetFraction,
-               resolveScheduledPillOptions(
+               DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
                   scheduledItem,
                   scheduleHandlers,
                   strings

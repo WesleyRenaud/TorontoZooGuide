@@ -2,13 +2,7 @@ import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingW
 import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
 import { RowActionProps } from './rowActionProps.js';
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-   buildGuardiansRows,
-   buildTransportationRows,
-   buildWildRows,
-} from './rows.js';
+import { Rows } from './rows.js';
 import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
@@ -113,7 +107,7 @@ function buildScheduledAnimalRows(animals = []) {
       buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
       requireExhibit: false,
    }).map(({ item, index }) => {
-      const [row] = buildAnimalRows([item]);
+      const [row] = Rows.buildAnimalRows([item]);
       const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
       const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(item);
@@ -142,7 +136,7 @@ function buildScheduledAnimalRows(animals = []) {
 function buildScheduledTransportationRows(transportations = []) {
    return transportations.flatMap((transportation, index) => (
       TransportationSequenceItems.buildTransportationSequenceItems(transportation).map((item) => {
-         const [row] = buildTransportationRows([item]);
+         const [row] = Rows.buildTransportationRows([item]);
          const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
          const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
          const maximumDuration = getDurationMinutesFromScheduleTimes(item);
@@ -250,7 +244,7 @@ export function buildScheduledItemRowsContext(
 ) {
    const guardiansTalkRows = buildScheduledItemRows(
       guardiansTalks.filter(isActiveScheduledOccurrence),
-      buildGuardiansRows,
+      Rows.buildGuardiansRows,
       getScheduledMaximumDuration
    ).map((scheduledItem) => ({
       ...scheduledItem,
@@ -259,7 +253,7 @@ export function buildScheduledItemRowsContext(
    }));
    const wildEncounterRows = buildScheduledItemRows(
       wildEncounters.filter(isActiveScheduledOccurrence),
-      buildWildRows,
+      Rows.buildWildRows,
       getScheduledMaximumDuration
    ).map((scheduledItem) => ({
       ...scheduledItem,
@@ -273,7 +267,7 @@ export function buildScheduledItemRowsContext(
    }));
    const attractionRows = buildScheduledItemRows(
       attractions,
-      buildAttractionRows,
+      Rows.buildAttractionRows,
       getDurationMinutesFromScheduleTimes
    ).map((scheduledItem) => ({
       ...scheduledItem,

@@ -3,10 +3,7 @@ import { test } from 'node:test';
 
 import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
 import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-} from '../../scripts/itinerary/panel/rows.js';
+import { Rows } from '../../scripts/itinerary/panel/rows.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,

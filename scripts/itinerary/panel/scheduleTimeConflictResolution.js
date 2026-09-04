@@ -3,68 +3,72 @@ import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedCo
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
-export function createScheduleTimeConflictResolutionConfirmations(
-   strings = APP_STRINGS
-) {
-   const confirmation = strings.itinerary.confirmation;
+export class ScheduleTimeConflictResolution {
+   static createScheduleTimeConflictResolutionConfirmations(
+      strings = APP_STRINGS
+   ) {
+      const confirmation = strings.itinerary.confirmation;
 
-   return {
-      showProceedWithoutSelection({ onConfirm } = {}) {
-         showSaveIssuesProceedConfirmation({
-            title: confirmation.proceedWithoutConflictSelectionTitle,
-            message: confirmation.proceedWithoutConflictSelectionMessage,
-            onConfirm: onConfirm ?? (() => {}),
-         });
-      },
-      showProceedWithUnresolved({ onConfirm } = {}) {
-         showSaveIssuesProceedConfirmation({
-            title: confirmation.proceedWithUnresolvedConflictsTitle,
-            message: confirmation.proceedWithUnresolvedConflictsMessage,
-            onConfirm,
-         });
-      },
-      showProceedWithAdditional({ onConfirm } = {}) {
-         showSaveIssuesProceedConfirmation({
-            title: confirmation.proceedWithAdditionalSelectableActivitiesTitle,
-            message: confirmation.proceedWithAdditionalSelectableActivitiesMessage,
-            onConfirm,
-         });
-      },
-   };
-}
-
-export async function resolveScheduleTimeConflictSelection(
-   conflictGroups,
-   onResolved,
-   confirmations = createScheduleTimeConflictResolutionConfirmations()
-) {
-   const selectedConflictItems = WildEncounterConflictResolution.getSelectedConflictItems(conflictGroups);
-
-   if (!WildEncounterConflictResolution.hasWildEncounterConflictSelection(conflictGroups)) {
-      confirmations.showProceedWithoutSelection();
-      return false;
-   }
-
-   if (WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
-      confirmations.showProceedWithUnresolved({
-         onConfirm: async () => {
-            await onResolved(selectedConflictItems);
+      return {
+         showProceedWithoutSelection({ onConfirm } = {}) {
+            showSaveIssuesProceedConfirmation({
+               title: confirmation.proceedWithoutConflictSelectionTitle,
+               message: confirmation.proceedWithoutConflictSelectionMessage,
+               onConfirm: onConfirm ?? (() => {}),
+            });
          },
-      });
-
-      return false;
-   }
-
-   if (ScheduleConflictCompatibility.hasAnyAdditionalSelectableConflictItems(conflictGroups)) {
-      confirmations.showProceedWithAdditional({
-         onConfirm: async () => {
-            await onResolved(selectedConflictItems);
+         showProceedWithUnresolved({ onConfirm } = {}) {
+            showSaveIssuesProceedConfirmation({
+               title: confirmation.proceedWithUnresolvedConflictsTitle,
+               message: confirmation.proceedWithUnresolvedConflictsMessage,
+               onConfirm,
+            });
          },
-      });
-
-      return false;
+         showProceedWithAdditional({ onConfirm } = {}) {
+            showSaveIssuesProceedConfirmation({
+               title: confirmation.proceedWithAdditionalSelectableActivitiesTitle,
+               message: confirmation.proceedWithAdditionalSelectableActivitiesMessage,
+               onConfirm,
+            });
+         },
+      };
    }
 
-   await onResolved(selectedConflictItems);
-   return true;
+   static async resolveScheduleTimeConflictSelection(
+      conflictGroups,
+      onResolved,
+      confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations()
+   ) {
+      const selectedConflictItems = WildEncounterConflictResolution.getSelectedConflictItems(
+         conflictGroups
+      );
+
+      if (!WildEncounterConflictResolution.hasWildEncounterConflictSelection(conflictGroups)) {
+         confirmations.showProceedWithoutSelection();
+         return false;
+      }
+
+      if (WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
+         confirmations.showProceedWithUnresolved({
+            onConfirm: async () => {
+               await onResolved(selectedConflictItems);
+            },
+         });
+
+         return false;
+      }
+
+      if (ScheduleConflictCompatibility.hasAnyAdditionalSelectableConflictItems(conflictGroups)) {
+         confirmations.showProceedWithAdditional({
+            onConfirm: async () => {
+               await onResolved(selectedConflictItems);
+            },
+         });
+
+         return false;
+      }
+
+      await onResolved(selectedConflictItems);
+      return true;
+   }
 }

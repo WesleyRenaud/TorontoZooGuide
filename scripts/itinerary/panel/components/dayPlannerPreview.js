@@ -21,11 +21,7 @@ import { appendItineraryTimeMarkers } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
-import {
-   makeScheduleActionsBar,
-   makeScheduleItemButton,
-   runScheduleItemButtonAction,
-} from './scheduleItemButton.js';
+import { ScheduleItemButton } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
@@ -102,7 +98,7 @@ function appendScheduleActionButtons(
 
    if (typeof onScheduleItemClick === 'function') {
       buttons.push(
-         makeScheduleItemButton({
+         ScheduleItemButton.makeScheduleItemButton({
             label: strings.scheduleItemButton,
             onClick: onScheduleItemClick,
          })
@@ -110,13 +106,13 @@ function appendScheduleActionButtons(
    }
 
    if (typeof onRebuildScheduleClick === 'function') {
-      const rebuildScheduleButton = makeScheduleItemButton({
+      const rebuildScheduleButton = ScheduleItemButton.makeScheduleItemButton({
          label: strings.rebuildScheduleButton,
          variant: 'secondary',
       });
 
       rebuildScheduleButton.addEventListener('click', () => {
-         void runScheduleItemButtonAction(
+         void ScheduleItemButton.runScheduleItemButtonAction(
             rebuildScheduleButton,
             onRebuildScheduleClick,
             strings.rebuildScheduleButtonBusy
@@ -127,13 +123,13 @@ function appendScheduleActionButtons(
    }
 
    if (typeof onUnscheduleAllItemsClick === 'function') {
-      const unscheduleAllButton = makeScheduleItemButton({
+      const unscheduleAllButton = ScheduleItemButton.makeScheduleItemButton({
          label: strings.unscheduleAllButton,
          variant: 'destructive',
       });
 
       unscheduleAllButton.addEventListener('click', () => {
-         void runScheduleItemButtonAction(
+         void ScheduleItemButton.runScheduleItemButtonAction(
             unscheduleAllButton,
             onUnscheduleAllItemsClick,
             strings.unscheduleAllButtonBusy
@@ -144,7 +140,7 @@ function appendScheduleActionButtons(
    }
 
    if (buttons.length > 0) {
-      container.appendChild(makeScheduleActionsBar(buttons));
+      container.appendChild(ScheduleItemButton.makeScheduleActionsBar(buttons));
 
       const feedbackSlot = appendDayPlannerActionFeedbackSlot(container);
 

@@ -8,13 +8,7 @@ import {
    getRestaurantIconUrl,
    getRestroomIconUrl,
 } from '../assets/iconUrls.js';
-import {
-   applyBackgroundImage,
-   applyCountMarker,
-   applyGenericIcon,
-   applyMarkerClass,
-   getLikelihoodVisual,
-} from './markerVisualUtils.js';
+import { MarkerVisualUtils } from './markerVisualUtils.js';
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
@@ -101,8 +95,8 @@ function applyOptionalSize(markerEl, item, applySize) {
 
 function createGenericIconMarkerRenderer(type) {
    return (markerEl, items) => {
-      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
-      applyGenericIcon(markerEl, GENERIC_ICON_PATHS[type], items.length);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
+      MarkerVisualUtils.applyGenericIcon(markerEl, GENERIC_ICON_PATHS[type], items.length);
    };
 }
 
@@ -116,30 +110,30 @@ function createLikelihoodIconMarkerRenderer({
       const item = items[0];
       const count = items.length;
 
-      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
       applyOptionalSize(markerEl, item, applySize);
 
-      const { colour, iconToken } = getLikelihoodVisual(getLikelihood(item));
+      const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(getLikelihood(item));
 
       if (count > 1) {
-         applyCountMarker(markerEl, count, colour);
+         MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
          return;
       }
 
-      applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
+      MarkerVisualUtils.applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
    };
 }
 
 function renderAnimalMarker(markerEl, items) {
    const animal = items[0];
    const count = items.length;
-   const { colour } = getLikelihoodVisual(animal?.likelihood);
+   const { colour } = MarkerVisualUtils.getLikelihoodVisual(animal?.likelihood);
    const colourForUrl = String(colour || '').replace('#', '');
 
    if (count > 1) {
-      applyCountMarker(markerEl, count, colour);
+      MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
    } else {
-      applyBackgroundImage(
+      MarkerVisualUtils.applyBackgroundImage(
          markerEl,
          getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
          colour
@@ -147,7 +141,7 @@ function renderAnimalMarker(markerEl, items) {
    }
 
    if (shouldShowLimitedViewingIndicator(animal)) {
-      applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
+      MarkerVisualUtils.applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
    }
 }
 
@@ -155,14 +149,14 @@ function renderRestroomMarker(markerEl, items) {
    const restroom = items[0];
    const count = items.length;
    const likelihood = restroom?.is_closed ? 0 : 100;
-   const { colour, iconToken } = getLikelihoodVisual(likelihood);
+   const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
 
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.restroom);
+   MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.restroom);
 
    if (count > 1) {
-      applyCountMarker(markerEl, count, colour);
+      MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
    } else {
-      applyBackgroundImage(
+      MarkerVisualUtils.applyBackgroundImage(
          markerEl,
          getRestroomIconUrl(
             restroom?.is_closed ? CLOSED_RESTROOM_ICON_TOKEN : iconToken
@@ -171,7 +165,7 @@ function renderRestroomMarker(markerEl, items) {
    }
 
    if (items.some(shouldShowRestroomAlertIndicator)) {
-      applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
+      MarkerVisualUtils.applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
    }
 }
 
@@ -181,7 +175,7 @@ function renderTransportationRouteMarker(markerEl, items) {
       || ZOOMOBILE_ROUTE_COLORS.default;
 
    markerEl.style.backgroundColor = routeColor;
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.transportationRouteMarker);
+   MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.transportationRouteMarker);
 }
 
 function renderDrinkingFountainMarker(markerEl, items) {
@@ -190,16 +184,16 @@ function renderDrinkingFountainMarker(markerEl, items) {
    const likelihood = Number.isFinite(Number(drinkingFountain?.likelihood))
       ? Number(drinkingFountain.likelihood) * 100
       : (drinkingFountain?.is_closed ? 0 : 100);
-   const { colour, iconToken } = getLikelihoodVisual(likelihood);
+   const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
 
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.drinkingFountain);
+   MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.drinkingFountain);
 
    if (count > 1) {
-      applyCountMarker(markerEl, count, colour);
+      MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
       return;
    }
 
-   applyBackgroundImage(
+   MarkerVisualUtils.applyBackgroundImage(
       markerEl,
       getDrinkingFountainIconUrl(iconToken)
    );
@@ -209,18 +203,18 @@ function renderGuestServiceMarker(markerEl, items) {
    const guestService = items[0];
    const serviceType = String(guestService?.service_type || '').trim();
 
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.guestService);
+   MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.guestService);
 
    if (serviceType === FIRST_AID_AND_FAMILY_CENTER_TYPE) {
-      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.firstAidGuestService);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.firstAidGuestService);
    }
 
    if (items.length > 1) {
-      applyCountMarker(markerEl, items.length);
+      MarkerVisualUtils.applyCountMarker(markerEl, items.length);
       return;
    }
 
-   applyBackgroundImage(
+   MarkerVisualUtils.applyBackgroundImage(
       markerEl,
       getGuestServiceIconUrl(serviceType)
    );
@@ -229,14 +223,14 @@ function renderGuestServiceMarker(markerEl, items) {
 function renderEventSiteMarker(markerEl, items) {
    const eventSite = items[0];
 
-   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.eventSite);
+   MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.eventSite);
 
    if (items.length > 1) {
-      applyCountMarker(markerEl, items.length);
+      MarkerVisualUtils.applyCountMarker(markerEl, items.length);
       return;
    }
 
-   applyBackgroundImage(
+   MarkerVisualUtils.applyBackgroundImage(
       markerEl,
       getEventSiteIconUrl(eventSite?.name)
    );
