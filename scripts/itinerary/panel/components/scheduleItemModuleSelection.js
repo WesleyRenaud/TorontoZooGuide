@@ -1,10 +1,5 @@
 import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
-import {
-   filterScheduleItemRowsForScheduleModule,
-   getScheduleItemRowId,
-   getScheduleItemRowKind,
-   resolveEffectiveScheduleItemSelection,
-} from '../scheduleItemSearch.js';
+import { ScheduleItemSearch } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../../selectors/attractionSelector/attractionSelectorModel.js';
@@ -19,7 +14,7 @@ export class ScheduleItemModuleSelection {
       selectedRow = null,
       eventTypes = [],
    } = {}) {
-      const effectiveSelection = resolveEffectiveScheduleItemSelection(selection, selectedRow);
+      const effectiveSelection = ScheduleItemSearch.resolveEffectiveScheduleItemSelection(selection, selectedRow);
 
       if (ScheduleItemTypes.isScheduleItemTypeUnset(effectiveSelection)) {
          return false;
@@ -37,7 +32,7 @@ export class ScheduleItemModuleSelection {
       itinerary = {},
       onlyItineraryItemsEnabled = false,
    } = {}) {
-      return filterScheduleItemRowsForScheduleModule(rows, itinerary, {
+      return ScheduleItemSearch.filterScheduleItemRowsForScheduleModule(rows, itinerary, {
          onlyItineraryItemsEnabled,
       });
    }
@@ -50,11 +45,11 @@ export class ScheduleItemModuleSelection {
          return false;
       }
 
-      return !visibleRows.some((row) => getScheduleItemRowId(row) === selectedRowId);
+      return !visibleRows.some((row) => ScheduleItemSearch.getScheduleItemRowId(row) === selectedRowId);
    }
 
    static resolveScheduleModuleSearchLabel(row) {
-      const kind = getScheduleItemRowKind(row);
+      const kind = ScheduleItemSearch.getScheduleItemRowKind(row);
 
       if (kind === ScheduleItemKind.ATTRACTION.itemType) {
          return AttractionSelectorModel.getAttractionTitle(row) || '';
@@ -83,7 +78,7 @@ export class ScheduleItemModuleSelection {
       renderGuardiansTalkRowLeft,
       renderWildEncounterRowLeft,
    }) {
-      const kind = getScheduleItemRowKind(row);
+      const kind = ScheduleItemSearch.getScheduleItemRowKind(row);
 
       if (kind === ScheduleItemKind.ATTRACTION.itemType) {
          return renderAttractionRowLeft(row);

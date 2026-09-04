@@ -1,51 +1,51 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { getItineraryItemKey } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
+import { ScheduleItemSearch } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import { GuardiansTalkScheduleItemKey } from '../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { TransportationScheduleItemKey } from '../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 
 test('getItineraryItemKey resolves keys for itinerary item types', () => {
    assert.equal(
-      getItineraryItemKey('animals', {
+      ScheduleItemSearch.getItineraryItemKey('animals', {
          species: 'African Lion',
          exhibit: 'Africa Savanna',
       }),
       'African Lion||Africa Savanna'
    );
    assert.equal(
-      getItineraryItemKey('attractions', { name: 'Zoomobile' }),
+      ScheduleItemSearch.getItineraryItemKey('attractions', { name: 'Zoomobile' }),
       'Zoomobile'
    );
    assert.equal(
-      getItineraryItemKey('transportations', { name: 'Zoomobile' }),
+      ScheduleItemSearch.getItineraryItemKey('transportations', { name: 'Zoomobile' }),
       ''
    );
    assert.equal(
-      getItineraryItemKey('transportations', {
+      ScheduleItemSearch.getItineraryItemKey('transportations', {
          name: 'Zoomobile',
          added_as_attraction: false,
       }),
       'Zoomobile||0'
    );
    assert.equal(
-      getItineraryItemKey('guardians_talks', { name: 'Amur Tiger' }),
+      ScheduleItemSearch.getItineraryItemKey('guardians_talks', { name: 'Amur Tiger' }),
       ''
    );
    assert.equal(
-      getItineraryItemKey('guardians_talks', {
+      ScheduleItemSearch.getItineraryItemKey('guardians_talks', {
          name: 'Amur Tiger',
          start_time: '14:00',
       }),
       'Amur Tiger||14:00'
    );
    assert.equal(
-      getItineraryItemKey('wild_encounters', { name: 'African Rainforest' }),
+      ScheduleItemSearch.getItineraryItemKey('wild_encounters', { name: 'African Rainforest' }),
       null
    );
    assert.deepEqual(
-      getItineraryItemKey('wild_encounters', {
+      ScheduleItemSearch.getItineraryItemKey('wild_encounters', {
          name: 'Masai Giraffe',
          start_time: '14:00',
       }),

@@ -4,12 +4,7 @@ import {
    appendDayPlannerActionFeedbackSlot,
 } from './dayPlannerActionFeedbackBanner.js';
 import { makeDayPlannerControls } from './dayPlannerControls.js';
-import {
-   buildHalfHourSlotStarts,
-   formatMinutesAsClockTime,
-   parseClockTimeMinutes,
-   resolveDayPlannerTimelineStartMinutes,
-} from '../dayPlannerSchedule.js';
+import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
 import {
    buildScheduledItemRowsContext,
    buildScheduledItinerary,
@@ -232,12 +227,12 @@ export function makeDayPlannerPreview(
    );
    header.appendChild(headerAside);
 
-   const earlyAdmissionMinutes = parseClockTimeMinutes(hours.earlyAdmissionTime);
-   const openMinutes = parseClockTimeMinutes(hours.openTime);
-   const lastAdmissionMinutes = parseClockTimeMinutes(hours.lastAdmissionTime);
-   const closeMinutes = parseClockTimeMinutes(hours.closeTime);
-   const timelineStartMinutes = resolveDayPlannerTimelineStartMinutes(hours, itinerary);
-   const halfHourSlotStarts = buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
+   const earlyAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.earlyAdmissionTime);
+   const openMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.openTime);
+   const lastAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.lastAdmissionTime);
+   const closeMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.closeTime);
+   const timelineStartMinutes = DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
+   const halfHourSlotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
    const itineraryTimeMarkers = DayPlannerTimelineMarkers.buildItineraryTimeMarkers(itinerary, strings);
    const timelineSlotStarts = buildTimelineSlotStarts(
       halfHourSlotStarts,
@@ -298,7 +293,7 @@ export function makeDayPlannerPreview(
          : TIMELINE_SLOT_MINUTES;
       const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
       const [timeCell, gridLine] = makeTimelineRow(
-         formatMinutesAsClockTime(slotStart),
+         DayPlannerSchedule.formatMinutesAsClockTime(slotStart),
          slotSpanMinutes
       );
 

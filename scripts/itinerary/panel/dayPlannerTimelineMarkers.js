@@ -1,4 +1,4 @@
-import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
+import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 
 export class DayPlannerTimelineMarkers {
@@ -9,12 +9,12 @@ export class DayPlannerTimelineMarkers {
 
       return [
          {
-            startMinutes: parseClockTimeMinutes(itinerary.arrivalTime),
+            startMinutes: DayPlannerSchedule.parseClockTimeMinutes(itinerary.arrivalTime),
             label: strings.arrivalLabel,
             kind: visitBoundaryEventTypes.arrival,
          },
          {
-            startMinutes: parseClockTimeMinutes(itinerary.departureTime),
+            startMinutes: DayPlannerSchedule.parseClockTimeMinutes(itinerary.departureTime),
             label: strings.departureLabel,
             kind: visitBoundaryEventTypes.departure,
          },

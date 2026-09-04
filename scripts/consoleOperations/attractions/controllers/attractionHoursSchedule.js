@@ -9,15 +9,15 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
-import { parseClockTimeMinutes } from '../../../itinerary/panel/dayPlannerSchedule.js';
+import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function timePairIsOrdered(startTime, endTime) {
-   const startMinutes = parseClockTimeMinutes(startTime);
-   const endMinutes = parseClockTimeMinutes(endTime);
+   const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(startTime);
+   const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(endTime);
 
    return (
       startMinutes != null

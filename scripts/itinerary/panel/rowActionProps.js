@@ -1,7 +1,4 @@
-import {
-   getItineraryItemKey,
-   tagScheduleItemRow,
-} from './scheduleItemSearch.js';
+import { ScheduleItemSearch } from './scheduleItemSearch.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -32,7 +29,7 @@ export class RowActionProps {
          return {};
       }
 
-      const row = tagScheduleItemRow(itemType, item);
+      const row = ScheduleItemSearch.tagScheduleItemRow(itemType, item);
 
       if (!row) {
          return {};
@@ -62,7 +59,7 @@ export class RowActionProps {
          return {};
       }
 
-      const key = getItineraryItemKey(itemType, item);
+      const key = ScheduleItemSearch.getItineraryItemKey(itemType, item);
 
       if (!key) {
          return {};
@@ -89,7 +86,7 @@ export class RowActionProps {
          return {};
       }
 
-      const key = getItineraryItemKey(itemType, item);
+      const key = ScheduleItemSearch.getItineraryItemKey(itemType, item);
 
       if (!key) {
          return {};

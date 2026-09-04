@@ -4,11 +4,7 @@ import {
    createScheduleItemSaveFailedResult,
    scheduleItineraryItemWithConfirmation,
 } from './scheduleItemConfirmationFlow.js';
-import {
-   getScheduleItemRowId,
-   getScheduleItemRowKind,
-   resolveEffectiveScheduleItemSelection,
-} from './scheduleItemSearch.js';
+import { ScheduleItemSearch } from './scheduleItemSearch.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
@@ -63,8 +59,8 @@ export function buildScheduleItemRequest(
    }
 
    return {
-      itemType: getScheduleItemRowKind(selectedRow),
-      key: getScheduleItemRowId(selectedRow),
+      itemType: ScheduleItemSearch.getScheduleItemRowKind(selectedRow),
+      key: ScheduleItemSearch.getScheduleItemRowId(selectedRow),
       ...timePayload,
    };
 }
@@ -76,7 +72,7 @@ export async function scheduleSelectedItineraryItem(
    eventTypes = [],
    scheduleOptions = {}
 ) {
-   const effectiveSelection = resolveEffectiveScheduleItemSelection(
+   const effectiveSelection = ScheduleItemSearch.resolveEffectiveScheduleItemSelection(
       selection,
       selectedRow
    );
