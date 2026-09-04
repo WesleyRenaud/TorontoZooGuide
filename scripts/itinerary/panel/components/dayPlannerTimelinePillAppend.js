@@ -1,7 +1,4 @@
-import {
-   createScheduledPillStrip,
-   getOrCreatePointPillStrip,
-} from './dayPlannerTimelinePillPlacement.js';
+import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlacement.js';
 import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
 import {
    makeBoundaryMarker,
@@ -40,7 +37,7 @@ export function appendTimelinePill(
       return;
    }
 
-   const strip = getOrCreatePointPillStrip(gridLine, offsetFraction);
+   const strip = DayPlannerTimelinePillPlacement.getOrCreatePointPillStrip(gridLine, offsetFraction);
 
    applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
    insertPointPillInStrip(strip, pill);
@@ -79,7 +76,7 @@ export function appendScheduledDurationPill(
       return;
    }
 
-   const strip = createScheduledPillStrip(
+   const strip = DayPlannerTimelinePillPlacement.createScheduledPillStrip(
       gridLine,
       offsetFraction,
       displayDurationMinutes,

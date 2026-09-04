@@ -21,15 +21,11 @@ import {
    makeTimelineRow,
    makeUnavailableMessage,
 } from './dayPlannerTimeline.js';
-import {
-   buildItineraryTimeMarkers,
-   buildMarkersByAnchorSlot,
-   resolveTimelinePillLabel,
-} from '../dayPlannerTimelineMarkers.js';
+import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
-import { planScheduledPillRenderGroupsByAnchor } from './scheduledPillRenderPlan.js';
+import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import {
    makeScheduleActionsBar,
    makeScheduleItemButton,
@@ -242,12 +238,12 @@ export function makeDayPlannerPreview(
    const closeMinutes = parseClockTimeMinutes(hours.closeTime);
    const timelineStartMinutes = resolveDayPlannerTimelineStartMinutes(hours, itinerary);
    const halfHourSlotStarts = buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
-   const itineraryTimeMarkers = buildItineraryTimeMarkers(itinerary, strings);
+   const itineraryTimeMarkers = DayPlannerTimelineMarkers.buildItineraryTimeMarkers(itinerary, strings);
    const timelineSlotStarts = buildTimelineSlotStarts(
       halfHourSlotStarts,
       closeMinutes
    );
-   const markersByAnchorSlot = buildMarkersByAnchorSlot(
+   const markersByAnchorSlot = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
       itineraryTimeMarkers,
       timelineSlotStarts,
       closeMinutes
@@ -257,7 +253,7 @@ export function makeDayPlannerPreview(
       timelineSlotStarts,
       closeMinutes
    );
-   const scheduledPillRenderGroupsByAnchor = planScheduledPillRenderGroupsByAnchor(
+   const scheduledPillRenderGroupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor(
       [...scheduledRowsContext.itemsByStart.values()].flat(),
       buildTimelinePointPillMarkers({
          earlyAdmissionMinutes,
@@ -300,7 +296,7 @@ export function makeDayPlannerPreview(
       const slotSpanMinutes = Number.isFinite(nextSlotStart)
          ? nextSlotStart - slotStart
          : TIMELINE_SLOT_MINUTES;
-      const pillLabel = resolveTimelinePillLabel(slotStart, pillContext, strings);
+      const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
       const [timeCell, gridLine] = makeTimelineRow(
          formatMinutesAsClockTime(slotStart),
          slotSpanMinutes

@@ -39,7 +39,12 @@
       "tests/scripts/itinerary/wizard/itineraryDiff.test.mjs",
       "tests/scripts/itinerary/itineraryValidation.test.mjs",
       "tests/scripts/itinerary/wizard/scheduleConflictCompatibility.test.mjs",
-      "tests/scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.test.mjs"
+      "tests/scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledPillOverlap.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledPillLayoutUnits.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledPillRenderPlan.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerTimelineMetrics.test.mjs",
+      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

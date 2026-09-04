@@ -1,38 +1,30 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
+import { makeScheduledItem } from '../../../helpers/scheduledPillTestSetup.mjs';
 import {
-   computeFirstFreeHorizontalOffsetIndex,
-   doScheduledTimeRangesOverlap,
-   formatScheduledPillGroupLabel,
-   getScheduledItemEndMinutes,
-   getScheduledItemTimeRange,
-   getScheduledPillMinDisplayMinutes,
-   getScheduledPillVisualBand,
    MAX_TIMELINE_PILL_COLUMNS,
-   scheduledPillsOverlapInDefaultPosition,
-   sortScheduledItemsForGroupDisplay,
-} from '../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
+   ScheduledPillOverlap,
+} from '../../../../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
 
-test('getScheduledItemEndMinutes uses parsed endMinutes from schedule times', () => {
+test('Test_GetScheduledItemEndMinutes_TestUsesParsedEndMinutesFromScheduleTimes_ExpectOk', () => {
    assert.equal(
-      getScheduledItemEndMinutes({
+      ScheduledPillOverlap.getScheduledItemEndMinutes({
          startMinutes: 600,
          maximumDuration: 8,
          endMinutes: 615,
       }),
       615
    );
-   assert.ok(Number.isNaN(getScheduledItemEndMinutes({
+   assert.ok(Number.isNaN(ScheduledPillOverlap.getScheduledItemEndMinutes({
       startMinutes: 600,
       maximumDuration: 8,
    })));
 });
 
-test('getScheduledItemTimeRange returns start and end minutes', () => {
+test('Test_GetScheduledItemTimeRange_TestReturnsStartAndEndMinutes_ExpectOk', () => {
    assert.deepEqual(
-      getScheduledItemTimeRange({
+      ScheduledPillOverlap.getScheduledItemTimeRange({
          startMinutes: 570,
          endMinutes: 600,
       }),
@@ -43,16 +35,16 @@ test('getScheduledItemTimeRange returns start and end minutes', () => {
    );
 });
 
-test('getScheduledPillVisualBand expands short visits to the minimum display span', () => {
-   const band = getScheduledPillVisualBand(
+test('Test_GetScheduledPillVisualBand_TestExpandsShortVisitsToTheMinimumDisplaySpan_ExpectOk', () => {
+   const band = ScheduledPillOverlap.getScheduledPillVisualBand(
       makeScheduledItem('Babirusa', 570, 2, 570)
    );
 
-   assert.equal(band.endMinutes - band.startMinutes, getScheduledPillMinDisplayMinutes());
+   assert.equal(band.endMinutes - band.startMinutes, ScheduledPillOverlap.getScheduledPillMinDisplayMinutes());
 });
 
-test('getScheduledPillVisualBand spans clustered summary items', () => {
-   const band = getScheduledPillVisualBand({
+test('Test_GetScheduledPillVisualBand_TestSpansClusteredSummaryItems_ExpectOk', () => {
+   const band = ScheduledPillOverlap.getScheduledPillVisualBand({
       summaryItems: [
          makeScheduledItem('Babirusa', 570, 2, 570),
          makeScheduledItem('Cheetah', 575, 2, 570),
@@ -63,16 +55,16 @@ test('getScheduledPillVisualBand spans clustered summary items', () => {
    assert.ok(band.endMinutes > 572);
 });
 
-test('doScheduledTimeRangesOverlap uses strict bounds for touching windows', () => {
+test('Test_DoScheduledTimeRangesOverlap_TestUsesStrictBoundsForTouchingWindows_ExpectOk', () => {
    assert.equal(
-      doScheduledTimeRangesOverlap(
+      ScheduledPillOverlap.doScheduledTimeRangesOverlap(
          { startMinutes: 570, endMinutes: 600 },
          { startMinutes: 590, endMinutes: 620 }
       ),
       true
    );
    assert.equal(
-      doScheduledTimeRangesOverlap(
+      ScheduledPillOverlap.doScheduledTimeRangesOverlap(
          { startMinutes: 570, endMinutes: 600 },
          { startMinutes: 600, endMinutes: 630 }
       ),
@@ -80,9 +72,9 @@ test('doScheduledTimeRangesOverlap uses strict bounds for touching windows', () 
    );
 });
 
-test('scheduledPillsOverlapInDefaultPosition detects overlap within a slot', () => {
+test('Test_ScheduledPillsOverlapInDefaultPosition_TestDetectsOverlapWithinASlot_ExpectOk', () => {
    assert.equal(
-      scheduledPillsOverlapInDefaultPosition(
+      ScheduledPillOverlap.scheduledPillsOverlapInDefaultPosition(
          makeScheduledItem('Babirusa', 570, 30),
          makeScheduledItem('Cheetah', 575, 30)
       ),
@@ -90,9 +82,9 @@ test('scheduledPillsOverlapInDefaultPosition detects overlap within a slot', () 
    );
 });
 
-test('scheduledPillsOverlapInDefaultPosition ignores back-to-back slot boundaries', () => {
+test('Test_ScheduledPillsOverlapInDefaultPosition_TestIgnoresBackToBackSlotBoundaries_ExpectOk', () => {
    assert.equal(
-      scheduledPillsOverlapInDefaultPosition(
+      ScheduledPillOverlap.scheduledPillsOverlapInDefaultPosition(
          makeScheduledItem('Babirusa', 570, 30, 570),
          makeScheduledItem('Greater One-Horned Rhinoceros', 600, 30, 600)
       ),
@@ -100,14 +92,14 @@ test('scheduledPillsOverlapInDefaultPosition ignores back-to-back slot boundarie
    );
 });
 
-test('computeFirstFreeHorizontalOffsetIndex reuses open columns', () => {
+test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReusesOpenColumns_ExpectOk', () => {
    const placedItems = [
       { ...makeScheduledItem('Babirusa', 570, 30), horizontalOffsetIndex: 0 },
       { ...makeScheduledItem('Red Panda', 630, 30), horizontalOffsetIndex: 2 },
    ];
 
    assert.equal(
-      computeFirstFreeHorizontalOffsetIndex(
+      ScheduledPillOverlap.computeFirstFreeHorizontalOffsetIndex(
          placedItems,
          makeScheduledItem('Cheetah', 575, 30)
       ),
@@ -115,7 +107,7 @@ test('computeFirstFreeHorizontalOffsetIndex reuses open columns', () => {
    );
 });
 
-test('computeFirstFreeHorizontalOffsetIndex returns past maxColumn when all columns are blocked', () => {
+test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReturnsPastMaxColumnWhenAllColumnsAreBlocked_ExpectOk', () => {
    const candidate = makeScheduledItem('Cheetah', 575, 30);
    const placedItems = [
       { ...makeScheduledItem('Babirusa', 570, 30), horizontalOffsetIndex: 0 },
@@ -123,20 +115,20 @@ test('computeFirstFreeHorizontalOffsetIndex returns past maxColumn when all colu
    ];
 
    assert.equal(
-      computeFirstFreeHorizontalOffsetIndex(placedItems, candidate),
+      ScheduledPillOverlap.computeFirstFreeHorizontalOffsetIndex(placedItems, candidate),
       MAX_TIMELINE_PILL_COLUMNS
    );
 });
 
-test('formatScheduledPillGroupLabel formats animal viewing spot labels', () => {
+test('Test_FormatScheduledPillGroupLabel_TestFormatsAnimalViewingSpotLabels_ExpectOk', () => {
    assert.equal(
-      formatScheduledPillGroupLabel([
+      ScheduledPillOverlap.formatScheduledPillGroupLabel([
          { label: 'Marabou Stork • Savanna Overlook' },
       ]),
       'Marabou Stork • Savanna Overlook'
    );
    assert.equal(
-      formatScheduledPillGroupLabel([
+      ScheduledPillOverlap.formatScheduledPillGroupLabel([
          { label: 'Marabou Stork • Savanna Overlook' },
          { label: 'Southern Ground Hornbill • Savanna Overlook' },
       ]),
@@ -144,13 +136,13 @@ test('formatScheduledPillGroupLabel formats animal viewing spot labels', () => {
    );
 });
 
-test('formatScheduledPillGroupLabel matches map-style counted labels', () => {
+test('Test_FormatScheduledPillGroupLabel_TestMatchesMapStyleCountedLabels_ExpectOk', () => {
    assert.equal(
-      formatScheduledPillGroupLabel([{ label: 'African Lion' }]),
+      ScheduledPillOverlap.formatScheduledPillGroupLabel([{ label: 'African Lion' }]),
       'African Lion'
    );
    assert.equal(
-      formatScheduledPillGroupLabel([
+      ScheduledPillOverlap.formatScheduledPillGroupLabel([
          { label: 'African Lion' },
          { label: 'Cheetah' },
       ]),
@@ -158,9 +150,9 @@ test('formatScheduledPillGroupLabel matches map-style counted labels', () => {
    );
 });
 
-test('formatScheduledPillGroupLabel prefers the longest visit duration', () => {
+test('Test_FormatScheduledPillGroupLabel_TestPrefersTheLongestVisitDuration_ExpectOk', () => {
    assert.equal(
-      formatScheduledPillGroupLabel([
+      ScheduledPillOverlap.formatScheduledPillGroupLabel([
          { label: 'Lake Malawi Cichlid', maximumDuration: 2 },
          { label: 'Masai Giraffe', maximumDuration: 30 },
       ]),
@@ -168,9 +160,9 @@ test('formatScheduledPillGroupLabel prefers the longest visit duration', () => {
    );
 });
 
-test('sortScheduledItemsForGroupDisplay orders grouped animals by max duration', () => {
+test('Test_SortScheduledItemsForGroupDisplay_TestOrdersGroupedAnimalsByMaxDuration_ExpectOk', () => {
    assert.deepEqual(
-      sortScheduledItemsForGroupDisplay([
+      ScheduledPillOverlap.sortScheduledItemsForGroupDisplay([
          { label: 'Lake Malawi Cichlid', maximumDuration: 2 },
          { label: 'Masai Giraffe', maximumDuration: 30 },
          { label: 'Red Panda', maximumDuration: 8 },

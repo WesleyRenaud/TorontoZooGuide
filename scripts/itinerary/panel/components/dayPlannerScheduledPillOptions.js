@@ -1,5 +1,5 @@
 import { canShowItineraryItemScheduleControls } from '../rowActionProps.js';
-import { sortScheduledItemsForGroupDisplay } from './scheduledPillOverlap.js';
+import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function flattenScheduledItemsForPillGroup(scheduledItems = []) {
@@ -109,7 +109,7 @@ export function buildGroupedScheduledPillItems(
    strings = {},
    resolveItemLabelClick = () => null
 ) {
-   return sortScheduledItemsForGroupDisplay(
+   return ScheduledPillOverlap.sortScheduledItemsForGroupDisplay(
       flattenScheduledItemsForPillGroup(scheduledItems)
    ).map((scheduledItem) => ({
       label: scheduledItem.label,
