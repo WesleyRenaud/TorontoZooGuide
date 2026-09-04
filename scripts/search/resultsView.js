@@ -7,13 +7,7 @@ import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelect
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
 import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
-import {
-   createSearchImageRowRenderer,
-   createSearchImageRowRenderers,
-   getRestaurantMenuLink,
-   getSearchResultPresentation,
-   SEARCH_RESULT_PRESENTATIONS,
-} from './searchResultPresentation.js';
+import { SearchResultPresentation } from './searchResultPresentation.js';
 import { APP_STRINGS } from '../strings.js';
 
 function openWildEncounterLink(row) {
@@ -52,20 +46,20 @@ const ROW_LEFT_RENDERERS = {
       onTitleClick: openAttractionInfoLink,
       shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
    }),
-   wildEncounter: createSearchImageRowRenderer({
-      presentation: SEARCH_RESULT_PRESENTATIONS.wildEncounter,
+   wildEncounter: SearchResultPresentation.createSearchImageRowRenderer({
+      presentation: SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS.wildEncounter,
       imageDirectory: 'wild-encounters',
       getInfoLink: () => null,
       onTitleClick: openWildEncounterLink,
    }),
-   guardiansTalk: createSearchImageRowRenderer({
-      presentation: SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
+   guardiansTalk: SearchResultPresentation.createSearchImageRowRenderer({
+      presentation: SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
       imageDirectory: 'guardians-talks',
       onTitleClick: openGuardiansTalkLinkedAnimal,
       shouldEnableTitleClick: (row) => Boolean(getGuardiansTalkLinkedAnimal(row)),
    }),
-   ...createSearchImageRowRenderers([
-      { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: getRestaurantMenuLink },
+   ...SearchResultPresentation.createSearchImageRowRenderers([
+      { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: SearchResultPresentation.getRestaurantMenuLink },
       { type: 'giftShop', imageDirectory: 'gift-shops' },
       { type: 'pavilion', imageDirectory: 'pavilions' },
       { type: 'transportationStation', imageDirectory: 'transportation-stations' },
@@ -73,7 +67,7 @@ const ROW_LEFT_RENDERERS = {
 };
 
 function getRowTitle(row) {
-   const presentation = getSearchResultPresentation(row);
+   const presentation = SearchResultPresentation.getSearchResultPresentation(row);
    const title = presentation.getTitle(row) || '';
    const suffix = typeof presentation.getTitleSuffix === 'function'
       ? presentation.getTitleSuffix(row)
@@ -83,7 +77,7 @@ function getRowTitle(row) {
 }
 
 function getRowSubtitle(row) {
-   return getSearchResultPresentation(row).getSubtitle(row);
+   return SearchResultPresentation.getSearchResultPresentation(row).getSubtitle(row);
 }
 
 function createTextElement(className, text) {

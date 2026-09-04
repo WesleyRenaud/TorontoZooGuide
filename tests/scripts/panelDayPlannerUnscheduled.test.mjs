@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { buildSectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
+import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
 import {
    buildAnimalRows,
    buildAttractionRows,

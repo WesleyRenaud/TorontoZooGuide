@@ -1,8 +1,5 @@
 import { el } from '../dom.js';
-import {
-   applyKeepOverrideButtonState,
-   getKeepOverrideButtonState,
-} from './removedItemsPopupKeepButtonState.js';
+import { RemovedItemsPopupKeepButtonState } from './removedItemsPopupKeepButtonState.js';
 import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -51,9 +48,9 @@ function addKeepOverrideButton(
    btn.type = 'button';
 
    function sync() {
-      applyKeepOverrideButtonState(
+      RemovedItemsPopupKeepButtonState.applyKeepOverrideButtonState(
          btn,
-         getKeepOverrideButtonState(isKeepSelected?.(key))
+         RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(isKeepSelected?.(key))
       );
    }
 

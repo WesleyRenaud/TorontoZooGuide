@@ -27,7 +27,7 @@ import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
 } from '../itineraryServiceTime.js';
-import { buildSectionConfigs } from './sectionConfigs.js';
+import { SectionConfigs } from './sectionConfigs.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function destroyRenderedPanelChildren(bodyEl) {
@@ -215,7 +215,7 @@ export function buildItineraryPanelContent(
       makeViewShell = makeItineraryPanelViewShell,
       makeActions = makeActionsBar,
       createDateCard = makeDateCard,
-      buildSections = buildSectionConfigs,
+      buildSections = SectionConfigs.buildSectionConfigs,
       createSection = makeSection,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       onAfterClear = null,

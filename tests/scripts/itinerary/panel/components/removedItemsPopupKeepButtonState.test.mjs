@@ -1,15 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   applyKeepOverrideButtonState,
-   getKeepOverrideButtonState,
-} from '../../scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { RemovedItemsPopupKeepButtonState } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
-test('getKeepOverrideButtonState returns keep labels for unselected items', () => {
-   assert.deepEqual(getKeepOverrideButtonState(false), {
+test('Test_GetKeepOverrideButtonState_TestUnselected_ExpectKeepLabels', () => {
+   assert.deepEqual(RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(false), {
       selected: false,
       textContent: APP_STRINGS.itinerary.removedItems.keepInItinerary,
       title: '',
@@ -17,8 +14,8 @@ test('getKeepOverrideButtonState returns keep labels for unselected items', () =
    });
 });
 
-test('getKeepOverrideButtonState returns remove labels for selected items', () => {
-   assert.deepEqual(getKeepOverrideButtonState(true), {
+test('Test_GetKeepOverrideButtonState_TestSelected_ExpectRemoveLabels', () => {
+   assert.deepEqual(RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(true), {
       selected: true,
       textContent: APP_STRINGS.itinerary.dayPlanner.remove,
       title: APP_STRINGS.itinerary.removedItems.removeFromItineraryHint,
@@ -26,10 +23,10 @@ test('getKeepOverrideButtonState returns remove labels for selected items', () =
    });
 });
 
-test('applyKeepOverrideButtonState syncs button presentation', () => {
+test('Test_ApplyKeepOverrideButtonState_TestToggle_ExpectSyncedPresentation', () => {
    const button = createDomNode('button', 'itin-removed-keep-btn');
 
-   applyKeepOverrideButtonState(button, getKeepOverrideButtonState(false));
+   RemovedItemsPopupKeepButtonState.applyKeepOverrideButtonState(button, RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(false));
 
    assert.equal(
       button.textContent,
@@ -38,7 +35,7 @@ test('applyKeepOverrideButtonState syncs button presentation', () => {
    assert.equal(button.getAttribute('aria-pressed'), 'false');
    assert.equal(button.classList.contains('is-selected'), false);
 
-   applyKeepOverrideButtonState(button, getKeepOverrideButtonState(true));
+   RemovedItemsPopupKeepButtonState.applyKeepOverrideButtonState(button, RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(true));
 
    assert.equal(button.textContent, APP_STRINGS.itinerary.dayPlanner.remove);
    assert.equal(button.getAttribute('aria-pressed'), 'true');

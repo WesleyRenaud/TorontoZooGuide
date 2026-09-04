@@ -1,5 +1,5 @@
 import { Format } from '../panel/format.js';
-import { ITINERARY_PANEL_SECTION_KEYS } from '../panel/sectionConfigs.js';
+import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
 
 function fixedTimeOccurrenceKey(row = {}) {
@@ -49,11 +49,11 @@ export class FilterDraftExcludingWarningFixedTimeItems {
       );
 
       return {
-         [ITINERARY_PANEL_SECTION_KEYS.guardiansTalks]: (
-            draft[ITINERARY_PANEL_SECTION_KEYS.guardiansTalks] ?? []
+         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks]: (
+            draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks] ?? []
          ).filter((talk) => keepDraftItem(talk, rejectedTalkKeys)),
-         [ITINERARY_PANEL_SECTION_KEYS.wildEncounters]: (
-            draft[ITINERARY_PANEL_SECTION_KEYS.wildEncounters] ?? []
+         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters]: (
+            draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters] ?? []
          ).filter((encounter) => (
             keepDraftItem(encounter, rejectedEncounterKeys)
          )),

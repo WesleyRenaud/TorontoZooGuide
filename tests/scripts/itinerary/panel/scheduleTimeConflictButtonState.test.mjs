@@ -1,14 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import {
-   applyConflictSelectionButtonState,
-   getConflictSelectionButtonState,
-} from '../../scripts/itinerary/panel/scheduleTimeConflictButtonState.js';
-import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { ScheduleTimeConflictButtonState } from '../../../../scripts/itinerary/panel/scheduleTimeConflictButtonState.js';
+import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
 
 const greatBarrierReef = {
    name: 'Great Barrier Reef',
@@ -32,11 +29,11 @@ const africanLionTalk = {
    location: 'Africa Savanna',
 };
 
-test('getConflictSelectionButtonState marks unselected selectable items as add actions', () => {
+test('Test_GetConflictSelectionButtonState_TestUnselectedSelectable_ExpectAddAction', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    assert.deepEqual(
-      getConflictSelectionButtonState(selection, greatBarrierReef),
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef),
       {
          selected: false,
          selectable: true,
@@ -48,13 +45,13 @@ test('getConflictSelectionButtonState marks unselected selectable items as add a
    );
 });
 
-test('getConflictSelectionButtonState marks selected items as remove actions', () => {
+test('Test_GetConflictSelectionButtonState_TestSelected_ExpectRemoveAction', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    ScheduleConflictCompatibility.toggleConflictItemSelection(selection, greatBarrierReef);
 
    assert.deepEqual(
-      getConflictSelectionButtonState(selection, greatBarrierReef),
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef),
       {
          selected: true,
          selectable: true,
@@ -66,31 +63,31 @@ test('getConflictSelectionButtonState marks selected items as remove actions', (
    );
 });
 
-test('getConflictSelectionButtonState disables blocked items and flags trim overrides', () => {
+test('Test_GetConflictSelectionButtonState_TestBlockedAndTrim_ExpectDisabledAndOverride', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    ScheduleConflictCompatibility.toggleConflictItemSelection(selection, grizzly);
 
    assert.equal(
-      getConflictSelectionButtonState(selection, greatBarrierReef).disabled,
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef).disabled,
       true
    );
    assert.equal(
-      getConflictSelectionButtonState(selection, africanLionTalk).requiresTrimOverride,
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, africanLionTalk).requiresTrimOverride,
       ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, africanLionTalk)
    );
    assert.equal(
-      getConflictSelectionButtonState(selection, africanLionTalk).ariaLabel,
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, africanLionTalk).ariaLabel,
       APP_STRINGS.itinerary.aria.addToItineraryWithScheduleOverride
    );
 });
 
-test('applyConflictSelectionButtonState updates button attributes and classes', () => {
+test('Test_ApplyConflictSelectionButtonState_TestToggle_ExpectAttributesAndClasses', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
    const button = createDomNode('button', 'itin-save-issue-select-btn');
-   const state = getConflictSelectionButtonState(selection, greatBarrierReef);
+   const state = ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef);
 
-   applyConflictSelectionButtonState(button, state);
+   ScheduleTimeConflictButtonState.applyConflictSelectionButtonState(button, state);
 
    assert.equal(button.disabled, false);
    assert.equal(button.textContent, APP_STRINGS.itinerary.actions.addSymbol);
@@ -102,9 +99,9 @@ test('applyConflictSelectionButtonState updates button attributes and classes', 
    assert.equal(button.classList.contains('requires-trim-override'), false);
 
    ScheduleConflictCompatibility.toggleConflictItemSelection(selection, greatBarrierReef);
-   applyConflictSelectionButtonState(
+   ScheduleTimeConflictButtonState.applyConflictSelectionButtonState(
       button,
-      getConflictSelectionButtonState(selection, greatBarrierReef)
+      ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef)
    );
 
    assert.equal(button.textContent, APP_STRINGS.itinerary.actions.remove);

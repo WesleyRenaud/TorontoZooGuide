@@ -111,7 +111,11 @@
       "scripts/itinerary/panel/format.js",
       "scripts/itinerary/itineraryShape.js",
       "scripts/visitDates/visitDateRules.js",
-      "scripts/itinerary/draftStorage.js"
+      "scripts/itinerary/draftStorage.js",
+      "scripts/itinerary/panel/sectionConfigs.js",
+      "scripts/search/searchResultPresentation.js",
+      "scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.js",
+      "scripts/itinerary/panel/scheduleTimeConflictButtonState.js"
    ],
    "exclude": [
       "scripts/mainMap.js",
