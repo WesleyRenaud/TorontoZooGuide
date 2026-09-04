@@ -1,7 +1,7 @@
 import { createWarningIcon } from '../../assets/warningIcon.js';
 import { mountDismissablePopup } from '../../itinerary/panel/components/popup.js';
 import { el } from '../../itinerary/panel/dom.js';
-import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from './openingScheduleOverlap.js';
+import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const ROOT_SELECTOR = '.console-overlap-dialog-root';
@@ -91,12 +91,12 @@ export function showOpeningScheduleOverlapDialog() {
 
       buttons.replace.addEventListener('click', () => {
          close();
-         resolve(OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE);
+         resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE);
       });
 
       buttons.trim.addEventListener('click', () => {
          close();
-         resolve(OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM);
+         resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM);
       });
    });
 }

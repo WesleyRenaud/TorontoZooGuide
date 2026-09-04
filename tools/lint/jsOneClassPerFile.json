@@ -91,7 +91,15 @@
       "scripts/itinerary/wizard/wizardStepConfigs.js",
       "scripts/itinerary/panel/itineraryPanelViewUrl.js",
       "scripts/itinerary/selectors/regionSelector/regionSelection.js",
-      "scripts/itinerary/panel/components/scheduleItemModuleSelection.js"
+      "scripts/itinerary/panel/components/scheduleItemModuleSelection.js",
+      "scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js",
+      "scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js",
+      "scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js",
+      "scripts/itinerary/scheduledOccurrenceTimeRange.js",
+      "scripts/itinerary/panel/rowAlerts.js",
+      "scripts/itinerary/panel/rowPresentation.js",
+      "scripts/consoleOperations/forms/openingScheduleOverlap.js",
+      "scripts/consoleOperations/animals/autocomplete/speciesMatcher.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

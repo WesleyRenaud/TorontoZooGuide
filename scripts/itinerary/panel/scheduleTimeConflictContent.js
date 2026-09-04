@@ -1,6 +1,6 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { el } from './dom.js';
-import { buildScheduledTimeFieldLine } from './rowPresentation.js';
+import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import {
    applyConflictSelectionButtonState,
@@ -90,7 +90,7 @@ function createScheduleConflictSubtitle(item) {
    const time = el(
       'span',
       'itin-panel-time-conflict',
-      buildScheduledTimeFieldLine(item)
+      RowPresentation.buildScheduledTimeFieldLine(item)
    );
    const locationLabel = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
       ? APP_STRINGS.labels.location

@@ -3,8 +3,8 @@ import { ItineraryAdjustmentTypes } from '../itinerary/itineraryAdjustmentTypes.
 import { ItineraryErrorTypes } from '../itinerary/itineraryErrorTypes.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
 import { ItineraryTransportationStationRoles } from '../itinerary/itineraryTransportationStationRoles.js';
-import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
-import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
+import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
+import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 

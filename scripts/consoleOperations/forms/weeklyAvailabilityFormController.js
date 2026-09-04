@@ -7,7 +7,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
-import { resultHasOpeningScheduleOverlap } from './openingScheduleOverlap.js';
+import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { setStatus } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -244,7 +244,7 @@ export function createWeeklyAvailabilityFormController({
             return;
          }
 
-         if (resultHasOpeningScheduleOverlap(result) && resolveOverlapConflict) {
+         if (OpeningScheduleOverlap.resultHasOpeningScheduleOverlap(result) && resolveOverlapConflict) {
             const resolvedResult = await resolveOverlapConflict(payload);
 
             if (resolvedResult?.success) {

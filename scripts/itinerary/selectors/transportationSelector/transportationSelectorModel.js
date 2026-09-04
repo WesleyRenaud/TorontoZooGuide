@@ -1,10 +1,10 @@
 import { StoredSelection } from '../base/storedSelection.js';
 import { ItineraryTransportationStationRoles } from '../../itineraryTransportationStationRoles.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { TransportationScheduleItemKey } from './scheduleItemKey.js';
+import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../../strings.js';
+import { TransportationScheduleItemKey } from './transportationScheduleItemKey.js';
 
 function asObject(value) {
    return value && typeof value === 'object'
@@ -240,7 +240,7 @@ export class TransportationSelectorModel {
          primaryValue: TransportationSelectorModel.isFreeWithAdmissionTransportation(row)
             ? APP_STRINGS.search.freeWithAdmission
             : APP_STRINGS.search.extraCharge,
-         timeRange: buildScheduledOccurrenceTimeRange({
+         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange({
             start_time: row?.open_time,
             end_time: row?.close_time,
          }),

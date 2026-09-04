@@ -1,5 +1,5 @@
 import { createAnimalSpeciesResultsView } from '../autocomplete/resultsView.js';
-import { filterSpeciesMatches } from '../autocomplete/speciesMatcher.js';
+import { SpeciesMatcher } from '../autocomplete/speciesMatcher.js';
 import { createAnimalSpeciesSource } from '../autocomplete/speciesSource.js';
 import { getFieldValue } from '../../helpers/controllerUtils.js';
 
@@ -48,7 +48,7 @@ export function createAnimalSpeciesAutocompleteController({
             return;
          }
 
-         const matches = filterSpeciesMatches(speciesList, query);
+         const matches = SpeciesMatcher.filterSpeciesMatches(speciesList, query);
          resultsView.render(matches);
       } catch (err) {
          if (requestId !== searchRequestId) {

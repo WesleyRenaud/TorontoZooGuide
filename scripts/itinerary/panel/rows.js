@@ -11,26 +11,13 @@ import {
 } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import { RowActionProps } from './rowActionProps.js';
-import {
-   buildAnimalAlert,
-   buildAttractionRemovalReasonLine,
-   buildGuardiansRemovalReasonLine,
-   buildWildRemovalReasonLine,
-} from './rowAlerts.js';
+import { RowAlerts } from './rowAlerts.js';
 import {
    buildNamedRows,
    buildRows,
    buildUniqueAnimals,
 } from './rowBuilders.js';
-import {
-   buildApproximateStartTimeFieldLine,
-   buildFieldLine,
-   buildImageSrc,
-   buildLinkRowProps,
-   buildMetaLines,
-   buildScheduledTimeFieldLine,
-   buildTitleLinkRowProps,
-} from './rowPresentation.js';
+import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
@@ -53,19 +40,19 @@ export function buildAnimalRows(
          buildUniqueAnimals(normalizedItems)
       ),
       buildRowProps: (animal) => {
-         const alert = buildAnimalAlert(animal);
+         const alert = RowAlerts.buildAnimalAlert(animal);
 
          return {
             species: AnimalSelectorModel.getAnimalSpecies(animal),
             enclosureName: AnimalSelectorModel.getAnimalEnclosureName(animal),
-            imageSrc: buildImageSrc('animals', animal.exhibit, AnimalSelectorModel.getAnimalSpecies(animal)),
-            metaLines: buildMetaLines([
+            imageSrc: RowPresentation.buildImageSrc('animals', animal.exhibit, AnimalSelectorModel.getAnimalSpecies(animal)),
+            metaLines: RowPresentation.buildMetaLines([
                AnimalSelectorModel.getAnimalSubtitle(animal),
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,
             onNameClick: () => openAnimalSpeciesOverlay(animal),
-            ...buildLinkRowProps(animal.link),
+            ...RowPresentation.buildLinkRowProps(animal.link),
             ...RowActionProps.buildRowScheduleActionProps(
                ScheduleItemKind.ANIMAL.itemType,
                animal,
@@ -92,13 +79,13 @@ export function buildAttractionRows(
       getName: (attraction) => attraction.name,
       getMetaLines: (attraction) => [
          attraction.subtitle,
-         buildFieldLine(APP_STRINGS.labels.location, attraction.region),
-         buildFieldLine(APP_STRINGS.labels.price, attraction.price),
-         buildApproximateStartTimeFieldLine(attraction),
+         RowPresentation.buildFieldLine(APP_STRINGS.labels.location, attraction.region),
+         RowPresentation.buildFieldLine(APP_STRINGS.labels.price, attraction.price),
+         RowPresentation.buildApproximateStartTimeFieldLine(attraction),
       ],
-      getAlertLine: buildAttractionRemovalReasonLine,
+      getAlertLine: RowAlerts.buildAttractionRemovalReasonLine,
       extendRowProps: (attraction) => ({
-         ...buildTitleLinkRowProps(attraction.infoLink),
+         ...RowPresentation.buildTitleLinkRowProps(attraction.infoLink),
          ...RowActionProps.buildRowScheduleActionProps(
             ScheduleItemKind.ATTRACTION.itemType,
             attraction,
@@ -124,11 +111,11 @@ export function buildTransportationRows(
       getName: TransportationSelectorModel.getTransportationName,
       getMetaLines: (transportation) => [
          TransportationSelectorModel.buildTransportationStationsLine(transportation),
-         buildApproximateStartTimeFieldLine(transportation),
+         RowPresentation.buildApproximateStartTimeFieldLine(transportation),
       ],
-      getAlertLine: buildAttractionRemovalReasonLine,
+      getAlertLine: RowAlerts.buildAttractionRemovalReasonLine,
       extendRowProps: (transportation) => ({
-         ...buildTitleLinkRowProps(transportation.infoLink),
+         ...RowPresentation.buildTitleLinkRowProps(transportation.infoLink),
          ...RowActionProps.buildRowScheduleActionProps(
             ScheduleItemKind.TRANSPORTATION.itemType,
             transportation,
@@ -151,10 +138,10 @@ export function buildGuardiansRows(
       getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
       getNameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
       getMetaLines: (talk) => [
-         buildFieldLine(APP_STRINGS.labels.location, talk.location),
-         buildScheduledTimeFieldLine(talk),
+         RowPresentation.buildFieldLine(APP_STRINGS.labels.location, talk.location),
+         RowPresentation.buildScheduledTimeFieldLine(talk),
       ],
-      getAlertLine: buildGuardiansRemovalReasonLine,
+      getAlertLine: RowAlerts.buildGuardiansRemovalReasonLine,
       getLink: (talk) => talk.link,
       extendRowProps: (talk) => ({
          ...(
@@ -189,12 +176,12 @@ export function buildWildRows(
       getImageName: WildEncounterSelectorModel.getWildEncounterName,
       getNameSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
       getMetaLines: (wild) => [
-         buildFieldLine(APP_STRINGS.itinerary.selectors.meetingSpot, wild.meeting_spot),
-         buildScheduledTimeFieldLine(wild),
+         RowPresentation.buildFieldLine(APP_STRINGS.itinerary.selectors.meetingSpot, wild.meeting_spot),
+         RowPresentation.buildScheduledTimeFieldLine(wild),
       ],
-      getAlertLine: buildWildRemovalReasonLine,
+      getAlertLine: RowAlerts.buildWildRemovalReasonLine,
       extendRowProps: (wild) => ({
-         ...buildTitleLinkRowProps(wild.link),
+         ...RowPresentation.buildTitleLinkRowProps(wild.link),
          ...RowActionProps.buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
       }),
    });

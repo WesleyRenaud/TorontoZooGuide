@@ -1,6 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
-import { TransportationScheduleItemKey } from '../selectors/transportationSelector/scheduleItemKey.js';
+import { TransportationScheduleItemKey } from '../selectors/transportationSelector/transportationScheduleItemKey.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
