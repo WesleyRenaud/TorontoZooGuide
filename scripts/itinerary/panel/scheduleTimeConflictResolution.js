@@ -1,11 +1,7 @@
 import { APP_STRINGS } from '../../strings.js';
 import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
-import {
-   getSelectedConflictItems,
-   hasUnresolvedWildEncounterConflictGroups,
-   hasWildEncounterConflictSelection,
-} from '../wizard/wildEncounterConflictResolution.js';
+import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
 export function createScheduleTimeConflictResolutionConfirmations(
    strings = APP_STRINGS
@@ -42,14 +38,14 @@ export async function resolveScheduleTimeConflictSelection(
    onResolved,
    confirmations = createScheduleTimeConflictResolutionConfirmations()
 ) {
-   const selectedConflictItems = getSelectedConflictItems(conflictGroups);
+   const selectedConflictItems = WildEncounterConflictResolution.getSelectedConflictItems(conflictGroups);
 
-   if (!hasWildEncounterConflictSelection(conflictGroups)) {
+   if (!WildEncounterConflictResolution.hasWildEncounterConflictSelection(conflictGroups)) {
       confirmations.showProceedWithoutSelection();
       return false;
    }
 
-   if (hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
+   if (WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
       confirmations.showProceedWithUnresolved({
          onConfirm: async () => {
             await onResolved(selectedConflictItems);

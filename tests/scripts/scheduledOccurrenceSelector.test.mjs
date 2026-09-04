@@ -1,11 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   sortScheduledOccurrencesByStartTime,
-} from '../../scripts/itinerary/scheduledOccurrenceSort.js';
+import { ScheduledOccurrenceSort } from '../../scripts/itinerary/scheduledOccurrenceSort.js';
 
-test('sortScheduledOccurrencesByStartTime sorts selector rows by start time', () => {
+test('ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime sorts selector rows by start time', () => {
    const rows = [
       { name: 'Kangaroo', start_time: '3:30 PM' },
       { name: 'Guardians of White Rhinos', start_time: '2:00 PM' },
@@ -15,7 +13,7 @@ test('sortScheduledOccurrencesByStartTime sorts selector rows by start time', ()
    ];
 
    assert.deepEqual(
-      sortScheduledOccurrencesByStartTime(rows).map((row) => row.name),
+      ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(rows).map((row) => row.name),
       [
          'Ballin\' with the Armadillos',
          'From Howls to Honks',
@@ -26,7 +24,7 @@ test('sortScheduledOccurrencesByStartTime sorts selector rows by start time', ()
    );
 });
 
-test('sortScheduledOccurrencesByStartTime sorts custom time fields and keeps bad times last', () => {
+test('ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime sorts custom time fields and keeps bad times last', () => {
    const rows = [
       { name: 'Missing Time' },
       { name: 'Morning', time: '10:00' },
@@ -35,7 +33,7 @@ test('sortScheduledOccurrencesByStartTime sorts custom time fields and keeps bad
    ];
 
    assert.deepEqual(
-      sortScheduledOccurrencesByStartTime(
+      ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
          rows,
          (row) => row.time
       ).map((row) => row.name),

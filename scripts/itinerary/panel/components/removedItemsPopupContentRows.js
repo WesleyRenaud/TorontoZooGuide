@@ -1,14 +1,16 @@
 import { makeItemRow } from './itemRow.js';
-import { buildAdjustmentRowSpec } from './removedItemsPopupAdjustmentSpecs.js';
+import { RemovedItemsPopupAdjustmentSpecs } from './removedItemsPopupAdjustmentSpecs.js';
 
-export function buildAdjustmentRows(adjustments = []) {
-   return adjustments.map((adjustment) => {
-      const rowSpec = buildAdjustmentRowSpec(adjustment);
+export class RemovedItemsPopupContentRows {
+   static buildAdjustmentRows(adjustments = []) {
+      return adjustments.map((adjustment) => {
+         const rowSpec = RemovedItemsPopupAdjustmentSpecs.buildAdjustmentRowSpec(adjustment);
 
-      if (!rowSpec) {
-         return null;
-      }
+         if (!rowSpec) {
+            return null;
+         }
 
-      return makeItemRow(rowSpec);
-   });
+         return makeItemRow(rowSpec);
+      });
+   }
 }

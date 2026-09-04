@@ -1,18 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import {
-   buildItineraryWithSelectedConflictResolutions,
-   buildItineraryWithSelectedWildEncounters,
-   getSelectedGuardiansTalks,
-   getSelectedWildEncounters,
-   getWildEncounterConflictIssueStartTime,
-   hasUnresolvedWildEncounterConflictGroups,
-   hasWildEncounterConflictSelection,
-   sortWildEncounterConflictIssuesByStartTime,
-} from '../../scripts/itinerary/wizard/wildEncounterConflictResolution.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { WildEncounterConflictResolution } from '../../../../scripts/itinerary/wizard/wildEncounterConflictResolution.js';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -54,16 +45,16 @@ const guardiansTalk = {
    location: 'Africa Savanna',
 };
 
-test('getWildEncounterConflictIssueStartTime uses the earliest encounter time', () => {
+test('Test_GetWildEncounterConflictIssueStartTime_TestUsesTheEarliestEncounterTime_ExpectOk', () => {
    assert.equal(
-      getWildEncounterConflictIssueStartTime({
+      WildEncounterConflictResolution.getWildEncounterConflictIssueStartTime({
          items: [thirdEncounter, fourthEncounter],
       }),
       '14:00'
    );
 });
 
-test('sortWildEncounterConflictIssuesByStartTime orders groups by earliest time', () => {
+test('Test_SortWildEncounterConflictIssuesByStartTime_TestOrdersGroupsByEarliestTime_ExpectOk', () => {
    const afternoonIssue = {
       items: [thirdEncounter, fourthEncounter],
    };
@@ -72,7 +63,7 @@ test('sortWildEncounterConflictIssuesByStartTime orders groups by earliest time'
    };
 
    assert.deepEqual(
-      sortWildEncounterConflictIssuesByStartTime([
+      WildEncounterConflictResolution.sortWildEncounterConflictIssuesByStartTime([
          afternoonIssue,
          middayIssue,
       ]),
@@ -80,19 +71,19 @@ test('sortWildEncounterConflictIssuesByStartTime orders groups by earliest time'
    );
 });
 
-test('getSelectedWildEncounters returns selections from each conflict group', () => {
+test('Test_GetSelectedWildEncounters_TestReturnsSelectionsFromEachConflictGroup_ExpectOk', () => {
    const conflictGroups = [
       { selection: { items: [firstEncounter] } },
       { selection: { items: [thirdEncounter] } },
    ];
 
    assert.deepEqual(
-      getSelectedWildEncounters(conflictGroups),
+      WildEncounterConflictResolution.getSelectedWildEncounters(conflictGroups),
       [firstEncounter, thirdEncounter]
    );
 });
 
-test('getSelectedWildEncounters returns multiple non-overlapping picks in one group', () => {
+test('Test_GetSelectedWildEncounters_TestReturnsMultipleNonOverlappingPicksInOneGroup_ExpectOk', () => {
    const conflictGroups = [
       {
          selection: {
@@ -102,53 +93,53 @@ test('getSelectedWildEncounters returns multiple non-overlapping picks in one gr
    ];
 
    assert.deepEqual(
-      getSelectedWildEncounters(conflictGroups),
+      WildEncounterConflictResolution.getSelectedWildEncounters(conflictGroups),
       [firstEncounter, thirdEncounter]
    );
 });
 
-test('getSelectedWildEncounters deduplicates the same encounter selected twice', () => {
+test('Test_GetSelectedWildEncounters_TestDeduplicatesTheSameEncounterSelectedTwice_ExpectOk', () => {
    const conflictGroups = [
       { selection: { items: [firstEncounter] } },
       { selection: { items: [firstEncounter] } },
    ];
 
    assert.deepEqual(
-      getSelectedWildEncounters(conflictGroups),
+      WildEncounterConflictResolution.getSelectedWildEncounters(conflictGroups),
       [firstEncounter]
    );
 });
 
-test('hasWildEncounterConflictSelection is false until a group has a selection', () => {
+test('Test_HasWildEncounterConflictSelection_TestIsFalseUntilAGroupHasASelection_ExpectOk', () => {
    const conflictGroups = [
       { selection: { items: [] } },
       { selection: { items: [thirdEncounter] } },
    ];
 
-   assert.equal(hasWildEncounterConflictSelection([]), false);
-   assert.equal(hasWildEncounterConflictSelection(conflictGroups), true);
+   assert.equal(WildEncounterConflictResolution.hasWildEncounterConflictSelection([]), false);
+   assert.equal(WildEncounterConflictResolution.hasWildEncounterConflictSelection(conflictGroups), true);
 });
 
-test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () => {
+test('Test_HasUnresolvedWildEncounterConflictGroups_TestDetectsPartialResolution_ExpectOk', () => {
    const conflictGroups = [
       { selection: { items: [firstEncounter] } },
       { selection: { items: [] } },
    ];
 
-   assert.equal(hasUnresolvedWildEncounterConflictGroups([]), false);
+   assert.equal(WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups([]), false);
    assert.equal(
-      hasUnresolvedWildEncounterConflictGroups(conflictGroups),
+      WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups(conflictGroups),
       true
    );
    assert.equal(
-      hasUnresolvedWildEncounterConflictGroups([
+      WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups([
          { selection: { items: [firstEncounter] } },
          { selection: { items: [thirdEncounter] } },
       ]),
       false
    );
    assert.equal(
-      hasUnresolvedWildEncounterConflictGroups([
+      WildEncounterConflictResolution.hasUnresolvedWildEncounterConflictGroups([
          { selection: { items: [] } },
          { selection: { items: [] } },
       ]),
@@ -156,7 +147,7 @@ test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () =
    );
 });
 
-test('isGuardiansTalkConflictItem identifies guardians talk issue items', () => {
+test('Test_IsGuardiansTalkConflictItem_TestIdentifiesGuardiansTalkIssueItems_ExpectOk', () => {
    assert.equal(
       ScheduleConflictCompatibility.isGuardiansTalkConflictItem(guardiansTalk),
       true
@@ -167,19 +158,19 @@ test('isGuardiansTalkConflictItem identifies guardians talk issue items', () => 
    );
 });
 
-test('getSelectedGuardiansTalks returns only guardians talk selections', () => {
+test('Test_GetSelectedGuardiansTalks_TestReturnsOnlyGuardiansTalkSelections_ExpectOk', () => {
    const conflictGroups = [
       { selection: { items: [guardiansTalk] } },
       { selection: { items: [firstEncounter] } },
    ];
 
    assert.deepEqual(
-      getSelectedGuardiansTalks(conflictGroups),
+      WildEncounterConflictResolution.getSelectedGuardiansTalks(conflictGroups),
       [guardiansTalk]
    );
 });
 
-test('buildItineraryWithSelectedConflictResolutions omits schedule times for backend trimming', () => {
+test('Test_BuildItineraryWithSelectedConflictResolutions_TestOmitsScheduleTimesForBackendTrimming_ExpectOk', () => {
    const itinerary = {
       date: '2026-06-15',
       animals: [],
@@ -203,7 +194,7 @@ test('buildItineraryWithSelectedConflictResolutions omits schedule times for bac
    };
 
    assert.deepEqual(
-      buildItineraryWithSelectedConflictResolutions(
+      WildEncounterConflictResolution.buildItineraryWithSelectedConflictResolutions(
          itinerary,
          [encounter, talk]
       ),
@@ -221,7 +212,7 @@ test('buildItineraryWithSelectedConflictResolutions omits schedule times for bac
    );
 });
 
-test('buildItineraryWithSelectedConflictResolutions appends talks and encounters', () => {
+test('Test_BuildItineraryWithSelectedConflictResolutions_TestAppendsTalksAndEncounters_ExpectOk', () => {
    const itinerary = {
       date: '2026-06-15',
       animals: [],
@@ -231,7 +222,7 @@ test('buildItineraryWithSelectedConflictResolutions appends talks and encounters
    };
 
    assert.deepEqual(
-      buildItineraryWithSelectedConflictResolutions(
+      WildEncounterConflictResolution.buildItineraryWithSelectedConflictResolutions(
          itinerary,
          [guardiansTalk, firstEncounter]
       ),
@@ -249,7 +240,7 @@ test('buildItineraryWithSelectedConflictResolutions appends talks and encounters
    );
 });
 
-test('buildItineraryWithSelectedWildEncounters appends all selected encounters', () => {
+test('Test_BuildItineraryWithSelectedWildEncounters_TestAppendsAllSelectedEncounters_ExpectOk', () => {
    const itinerary = {
       date: '2026-06-15',
       animals: [],
@@ -259,7 +250,7 @@ test('buildItineraryWithSelectedWildEncounters appends all selected encounters',
    };
 
    assert.deepEqual(
-      buildItineraryWithSelectedWildEncounters(
+      WildEncounterConflictResolution.buildItineraryWithSelectedWildEncounters(
          itinerary,
          [firstEncounter, secondEncounter, thirdEncounter, fourthEncounter]
       ),

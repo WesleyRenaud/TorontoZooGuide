@@ -1,15 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildUnscheduleRowProps,
-   canShowItineraryItemScheduleControls,
-} from '../../scripts/itinerary/panel/rowActionProps.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { RowActionProps } from '../../../../scripts/itinerary/panel/rowActionProps.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
-test('canShowItineraryItemScheduleControls hides schedule for pure transportations', () => {
+test('Test_CanShowItineraryItemScheduleControls_TestHidesScheduleForPureTransportations_ExpectOk', () => {
    assert.equal(
-      canShowItineraryItemScheduleControls(
+      RowActionProps.canShowItineraryItemScheduleControls(
          ScheduleItemKind.TRANSPORTATION.itemType,
          { name: 'Zoomobile', added_as_attraction: false }
       ),
@@ -17,9 +14,9 @@ test('canShowItineraryItemScheduleControls hides schedule for pure transportatio
    );
 });
 
-test('canShowItineraryItemScheduleControls allows schedule for added-as-attraction transportations', () => {
+test('Test_CanShowItineraryItemScheduleControls_TestAllowsScheduleForAddedAsAttractionTransportations_ExpectOk', () => {
    assert.equal(
-      canShowItineraryItemScheduleControls(
+      RowActionProps.canShowItineraryItemScheduleControls(
          ScheduleItemKind.TRANSPORTATION.itemType,
          { name: 'Zoomobile', added_as_attraction: true }
       ),
@@ -27,16 +24,16 @@ test('canShowItineraryItemScheduleControls allows schedule for added-as-attracti
    );
 });
 
-test('canShowItineraryItemScheduleControls allows schedule for non-transportation items', () => {
+test('Test_CanShowItineraryItemScheduleControls_TestAllowsScheduleForNonTransportationItems_ExpectOk', () => {
    assert.equal(
-      canShowItineraryItemScheduleControls(
+      RowActionProps.canShowItineraryItemScheduleControls(
          ScheduleItemKind.ANIMAL.itemType,
          { species: 'Giant Panda' }
       ),
       true
    );
    assert.equal(
-      canShowItineraryItemScheduleControls(
+      RowActionProps.canShowItineraryItemScheduleControls(
          ScheduleItemKind.ATTRACTION.itemType,
          { name: 'Conservation Carousel' }
       ),
@@ -44,9 +41,9 @@ test('canShowItineraryItemScheduleControls allows schedule for non-transportatio
    );
 });
 
-test('buildUnscheduleRowProps hides unschedule for pure transportations', () => {
+test('Test_BuildUnscheduleRowProps_TestHidesUnscheduleForPureTransportations_ExpectOk', () => {
    assert.deepEqual(
-      buildUnscheduleRowProps(
+      RowActionProps.buildUnscheduleRowProps(
          ScheduleItemKind.TRANSPORTATION.itemType,
          {
             name: 'Zoomobile',
@@ -60,8 +57,8 @@ test('buildUnscheduleRowProps hides unschedule for pure transportations', () => 
    );
 });
 
-test('buildUnscheduleRowProps allows unschedule for added-as-attraction transportations', () => {
-   const props = buildUnscheduleRowProps(
+test('Test_BuildUnscheduleRowProps_TestAllowsUnscheduleForAddedAsAttractionTransportations_ExpectOk', () => {
+   const props = RowActionProps.buildUnscheduleRowProps(
       ScheduleItemKind.TRANSPORTATION.itemType,
       {
          name: 'Zoomobile',

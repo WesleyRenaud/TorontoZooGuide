@@ -4,7 +4,6 @@ import {
    buildLinkRowProps,
    buildMetaLines,
 } from './rowPresentation.js';
-import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function normalizeItems(items = [], normalizeItem) {
@@ -98,5 +97,3 @@ export function buildNamedRows(
       },
    });
 }
-
-export { sortScheduledOccurrencesByStartTime };

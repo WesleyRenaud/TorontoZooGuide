@@ -1,22 +1,22 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
-import { buildAdjustmentRowSpec } from '../../scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { updateItineraryAdjustmentTypesFromConfig } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
+import { RemovedItemsPopupAdjustmentSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
 
 const ADJUSTMENT_TYPES = {
    ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
    DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
 };
 
-test('buildAdjustmentRowSpec maps arrival adjustments to item row content', () => {
+test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_ExpectOk', () => {
    updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 
    assert.deepEqual(
-      buildAdjustmentRowSpec({
+      RemovedItemsPopupAdjustmentSpecs.buildAdjustmentRowSpec({
          type: 'arrivalTimeAdjusted',
          previousValue: '09:00',
          value: '09:30',
@@ -31,13 +31,13 @@ test('buildAdjustmentRowSpec maps arrival adjustments to item row content', () =
    );
 });
 
-test('buildAdjustmentRowSpec maps departure adjustments to item row content', () => {
+test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_ExpectOk', () => {
    updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 
    assert.deepEqual(
-      buildAdjustmentRowSpec({
+      RemovedItemsPopupAdjustmentSpecs.buildAdjustmentRowSpec({
          type: 'departureTimeAdjusted',
          previousValue: '18:30',
          value: '18:00',
@@ -52,13 +52,13 @@ test('buildAdjustmentRowSpec maps departure adjustments to item row content', ()
    );
 });
 
-test('buildAdjustmentRowSpec ignores unknown or incomplete adjustments', () => {
+test('Test_BuildAdjustmentRowSpec_TestIgnoresUnknownOrIncompleteAdjustments_ExpectOk', () => {
    updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 
    assert.equal(
-      buildAdjustmentRowSpec({
+      RemovedItemsPopupAdjustmentSpecs.buildAdjustmentRowSpec({
          type: 'arrivalTimeAdjusted',
          previousValue: '',
          value: '09:30',
@@ -66,7 +66,7 @@ test('buildAdjustmentRowSpec ignores unknown or incomplete adjustments', () => {
       null
    );
    assert.equal(
-      buildAdjustmentRowSpec({
+      RemovedItemsPopupAdjustmentSpecs.buildAdjustmentRowSpec({
          type: 'otherAdjustment',
          previousValue: '09:00',
          value: '09:30',

@@ -1,8 +1,6 @@
-import {
-   buildRemovedItemsPopupSections,
-   hasRemovedItemsPopupContent,
-} from './removedItemsPopupContent.js';
+import { buildRemovedItemsPopupSections } from './removedItemsPopupContent.js';
 import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
+import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
 
@@ -36,7 +34,7 @@ export function showRemovedItemsPopup({
 } = {}) {
    if (!mountEl) return;
 
-   if (!hasRemovedItemsPopupContent({
+   if (!RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
       added,
       removed,
       unscheduled,

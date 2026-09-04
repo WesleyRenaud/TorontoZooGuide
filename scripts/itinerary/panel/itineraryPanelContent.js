@@ -13,6 +13,7 @@ import {
    showItineraryBuildWarningsConfirmation,
 } from './itineraryBuildWarningsConfirmation.js';
 import { requiresFixedTimeItemLongWaitConfirmation } from '../itineraryErrorTypes.js';
+import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
@@ -26,7 +27,6 @@ import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
 } from '../itineraryServiceTime.js';
-import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -61,7 +61,7 @@ function appendDayPlannerViewWithHours(
       requiresLongWaitConfirmation = requiresFixedTimeItemLongWaitConfirmation,
       showLongWaitConfirmation = showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
-      buildEventTypes = buildSchedulableEventTypes,
+      buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       makeDayPlanner = makeDayPlannerPreview,
       genericErrorMessage = APP_STRINGS.itinerary.errors.generic,

@@ -2,13 +2,12 @@ import { ItineraryApi } from '../../api/itineraryApi.js';
 import { showScheduleItemModule } from './components/showScheduleItemModule.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
 import { isItinerarySuccess } from '../itineraryErrorTypes.js';
-import { requiresRemoveItineraryItemConfirmation } from '../itineraryEventTypes.js';
+import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
    dispatchItineraryUpdated,
    getItinerary,
 } from '../itineraryService.js';
 import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
-import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 
 async function notifyItineraryUpdated({
    result,
@@ -54,9 +53,9 @@ export function buildItineraryPanelScheduleHandlers(
       unscheduleItem = ItineraryApi.unscheduleItineraryItemRequest,
       removeItem = ItineraryApi.removeItemFromItineraryRequest,
       removeAnimalDraft = removeAnimalFromItineraryAnimalDraft,
-      requiresRemoveConfirmation = requiresRemoveItineraryItemConfirmation,
+      requiresRemoveConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation,
       showRemoveConfirmation = showRemoveItineraryItemConfirmation,
-      buildEventTypes = buildSchedulableEventTypes,
+      buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       notifyUpdated = notifyItineraryUpdated,
    } = deps;
 

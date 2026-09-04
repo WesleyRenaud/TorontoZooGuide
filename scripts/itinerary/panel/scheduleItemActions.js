@@ -1,4 +1,5 @@
 import { EnsureItineraryVisitDate } from '../ensureItineraryVisitDate.js';
+import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
    createScheduleItemSaveFailedResult,
    scheduleItineraryItemWithConfirmation,
@@ -8,10 +9,7 @@ import {
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
 } from './scheduleItemSearch.js';
-import {
-   isScheduleItemEventType,
-   isScheduleItemSearchEnabled,
-} from './scheduleItemTypes.js';
+import { isScheduleItemSearchEnabled } from './scheduleItemTypes.js';
 import {
    getAnimalExhibit,
    getAnimalSpecies,
@@ -56,7 +54,7 @@ export function buildScheduleItemRequest(
       ...(durationMinutes != null ? { durationMinutes } : {}),
    };
 
-   if (isScheduleItemEventType(selection, eventTypes)) {
+   if (ItineraryEventTypes.isScheduleItemEventType(selection, eventTypes)) {
       return {
          itemType: selection,
          key: '',

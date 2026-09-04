@@ -10,10 +10,7 @@ import {
    openGuardiansTalkLinkedAnimal,
 } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
-import {
-   buildRemoveRowProps,
-   buildRowScheduleActionProps,
-} from './rowActionProps.js';
+import { RowActionProps } from './rowActionProps.js';
 import {
    buildAnimalAlert,
    buildAttractionRemovalReasonLine,
@@ -24,7 +21,6 @@ import {
    buildNamedRows,
    buildRows,
    buildUniqueAnimals,
-   sortScheduledOccurrencesByStartTime,
 } from './rowBuilders.js';
 import {
    buildApproximateStartTimeFieldLine,
@@ -35,6 +31,7 @@ import {
    buildScheduledTimeFieldLine,
    buildTitleLinkRowProps,
 } from './rowPresentation.js';
+import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import {
    getAnimalEnclosureName,
    getAnimalSpecies,
@@ -65,7 +62,7 @@ export function buildAnimalRows(
 ) {
    return buildRows(animals, {
       normalizeItem: normalizeAnimal,
-      prepareItems: (normalizedItems) => sortScheduledOccurrencesByStartTime(
+      prepareItems: (normalizedItems) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
          buildUniqueAnimals(normalizedItems)
       ),
       buildRowProps: (animal) => {
@@ -82,7 +79,7 @@ export function buildAnimalRows(
             alertTone: alert.tone,
             onNameClick: () => openAnimalSpeciesOverlay(animal),
             ...buildLinkRowProps(animal.link),
-            ...buildRowScheduleActionProps(
+            ...RowActionProps.buildRowScheduleActionProps(
                ScheduleItemKind.ANIMAL.itemType,
                animal,
                { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -102,7 +99,7 @@ export function buildAttractionRows(
 ) {
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
-      prepareItems: sortScheduledOccurrencesByStartTime,
+      prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.attraction,
       imageDirectory: 'attractions',
       getName: (attraction) => attraction.name,
@@ -115,7 +112,7 @@ export function buildAttractionRows(
       getAlertLine: buildAttractionRemovalReasonLine,
       extendRowProps: (attraction) => ({
          ...buildTitleLinkRowProps(attraction.infoLink),
-         ...buildRowScheduleActionProps(
+         ...RowActionProps.buildRowScheduleActionProps(
             ScheduleItemKind.ATTRACTION.itemType,
             attraction,
             { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -134,7 +131,7 @@ export function buildTransportationRows(
 ) {
    return buildNamedRows(transportations, {
       normalizeItem: normalizeTransportation,
-      prepareItems: sortScheduledOccurrencesByStartTime,
+      prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.transportation,
       imageDirectory: 'transportations',
       getName: getTransportationName,
@@ -145,7 +142,7 @@ export function buildTransportationRows(
       getAlertLine: buildAttractionRemovalReasonLine,
       extendRowProps: (transportation) => ({
          ...buildTitleLinkRowProps(transportation.infoLink),
-         ...buildRowScheduleActionProps(
+         ...RowActionProps.buildRowScheduleActionProps(
             ScheduleItemKind.TRANSPORTATION.itemType,
             transportation,
             { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -160,7 +157,7 @@ export function buildGuardiansRows(
 ) {
    return buildNamedRows(guardiansTalks, {
       normalizeItem: normalizeTalk,
-      prepareItems: sortScheduledOccurrencesByStartTime,
+      prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.guardiansTalk,
       imageDirectory: 'guardians-talks',
       getName: getGuardiansTalkName,
@@ -182,7 +179,7 @@ export function buildGuardiansRows(
                }
                : {}
          ),
-         ...buildRemoveRowProps(
+         ...RowActionProps.buildRemoveRowProps(
             'guardians_talks',
             talk,
             onRemoveItem,
@@ -198,7 +195,7 @@ export function buildWildRows(
 ) {
    return buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
-      prepareItems: sortScheduledOccurrencesByStartTime,
+      prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.wildEncounter,
       imageDirectory: 'wild-encounters',
       getName: getWildEncounterName,
@@ -211,7 +208,7 @@ export function buildWildRows(
       getAlertLine: buildWildRemovalReasonLine,
       extendRowProps: (wild) => ({
          ...buildTitleLinkRowProps(wild.link),
-         ...buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
+         ...RowActionProps.buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
       }),
    });
 }

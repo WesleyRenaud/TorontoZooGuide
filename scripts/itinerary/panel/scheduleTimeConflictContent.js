@@ -1,7 +1,7 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { el } from './dom.js';
 import { buildScheduledTimeFieldLine } from './rowPresentation.js';
-import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import {
    applyConflictSelectionButtonState,
    getConflictSelectionButtonState,
@@ -13,7 +13,7 @@ import {
 import { APP_STRINGS } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { showScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
-import { sortWildEncounterConflictIssuesByStartTime } from '../wizard/wildEncounterConflictResolution.js';
+import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
 export const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
 
@@ -140,7 +140,7 @@ function createWildEncounterConflictBlock(issue) {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
    const block = el('div', 'itin-save-issue-conflict');
    const buttonEntries = [];
-   const items = sortScheduledOccurrencesByStartTime(issue.items);
+   const items = ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(issue.items);
 
    block.appendChild(
       el(
@@ -209,7 +209,7 @@ export function createSaveIssuesContent(issues) {
 
    if (wildEncounterConflictIssues.length) {
       const sectionResult = createWildEncounterConflictSection(
-         sortWildEncounterConflictIssuesByStartTime(
+         WildEncounterConflictResolution.sortWildEncounterConflictIssuesByStartTime(
             wildEncounterConflictIssues
          )
       );

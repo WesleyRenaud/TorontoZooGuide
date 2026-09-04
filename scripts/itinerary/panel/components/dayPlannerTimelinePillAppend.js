@@ -1,5 +1,5 @@
 import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlacement.js';
-import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
+import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
 import {
    makeBoundaryMarker,
    makeOpenPill,
@@ -92,7 +92,7 @@ function resolveTimePillOptions(
    strings = {},
    visitBoundaryEventTypes = {}
 ) {
-   const boundaries = normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
+   const boundaries = ItineraryEventTypes.normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
 
    if (marker.kind === boundaries.arrival) {
       const options = {

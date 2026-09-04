@@ -1,5 +1,5 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { formatSpeciesEnclosureLine } from '../../../animals/animalDisplayLines.js';
+import { AnimalDisplayLines } from '../../../animals/animalDisplayLines.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import {
    migrateStoredSelectionItems,
@@ -32,7 +32,7 @@ export function getAnimalEnclosureType(row) {
 }
 
 export function getAnimalTitleLine(row) {
-   return formatSpeciesEnclosureLine(
+   return AnimalDisplayLines.formatSpeciesEnclosureLine(
       getAnimalSpecies(row),
       getAnimalEnclosureName(row));
 }

@@ -1,4 +1,4 @@
-import { formatSpeciesEnclosureLine } from '../animals/animalDisplayLines.js';
+import { AnimalDisplayLines } from '../animals/animalDisplayLines.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import {
    getAnimalEnclosureName,
@@ -58,7 +58,7 @@ export function buildSpeciesContent(animal) {
    const fragment = document.createDocumentFragment();
    const species = readText(animal?.species);
    const latinName = readText(animal?.latin_name);
-   const titleLine = formatSpeciesEnclosureLine(species, getAnimalEnclosureName(animal));
+   const titleLine = AnimalDisplayLines.formatSpeciesEnclosureLine(species, getAnimalEnclosureName(animal));
    const exhibitLine = getAnimalExhibit(animal);
 
    fragment.appendChild(createSpeciesImage(animal));

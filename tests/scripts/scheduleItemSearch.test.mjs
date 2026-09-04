@@ -14,12 +14,11 @@ import {
    tagScheduleItemRow,
 } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import {
-   buildSchedulableEventTypes,
    buildScheduleItemTypeOptions,
-   isScheduleItemEventType,
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
 } from '../../scripts/itinerary/panel/scheduleItemTypes.js';
+import { ItineraryEventTypes } from '../../scripts/itinerary/itineraryEventTypes.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 
@@ -74,9 +73,9 @@ test('buildScheduleItemSearchPayload limits search to guardians talks', () => {
    );
 });
 
-test('buildSchedulableEventTypes omits arrival and departure', () => {
+test('ItineraryEventTypes.buildSchedulableEventTypes omits arrival and departure', () => {
    assert.deepEqual(
-      buildSchedulableEventTypes({
+      ItineraryEventTypes.buildSchedulableEventTypes({
          eventTypes: ['arrival', 'lunch', 'departure', 'break'],
          visitBoundaryEventTypes: {
             arrival: 'arrival',
@@ -85,7 +84,7 @@ test('buildSchedulableEventTypes omits arrival and departure', () => {
       }),
       ['lunch', 'break']
    );
-   assert.deepEqual(buildSchedulableEventTypes(null), []);
+   assert.deepEqual(ItineraryEventTypes.buildSchedulableEventTypes(null), []);
 });
 
 test('event type selections do not search animals or attractions', () => {
@@ -144,9 +143,9 @@ test('placeholder enables global search; event types disable search', () => {
 
    assert.equal(isScheduleItemTypeUnset(''), true);
    assert.equal(isScheduleItemSearchEnabled('', eventTypes), true);
-   assert.equal(isScheduleItemEventType('', eventTypes), false);
+   assert.equal(ItineraryEventTypes.isScheduleItemEventType('', eventTypes), false);
    assert.equal(isScheduleItemSearchEnabled('lunch', eventTypes), false);
-   assert.equal(isScheduleItemEventType('lunch', eventTypes), true);
+   assert.equal(ItineraryEventTypes.isScheduleItemEventType('lunch', eventTypes), true);
    assert.equal(
       isScheduleItemSearchEnabled(ScheduleItemKind.ANIMAL.itemType, eventTypes),
       true

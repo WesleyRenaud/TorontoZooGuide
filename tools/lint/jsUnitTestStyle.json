@@ -44,7 +44,13 @@
       "tests/scripts/itinerary/panel/components/scheduledPillLayoutUnits.test.mjs",
       "tests/scripts/itinerary/panel/components/scheduledPillRenderPlan.test.mjs",
       "tests/scripts/itinerary/panel/dayPlannerTimelineMetrics.test.mjs",
-      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.test.mjs"
+      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.test.mjs",
+      "tests/scripts/itinerary/wizard/wildEncounterConflictResolution.test.mjs",
+      "tests/scripts/itinerary/itineraryEventTypes.test.mjs",
+      "tests/scripts/animals/animalDisplayLines.test.mjs",
+      "tests/scripts/itinerary/panel/rowActionProps.test.mjs",
+      "tests/scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.test.mjs",
+      "tests/scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

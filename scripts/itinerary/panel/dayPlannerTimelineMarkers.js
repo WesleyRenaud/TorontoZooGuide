@@ -1,9 +1,9 @@
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
-import { normalizeVisitBoundaryEventTypes } from '../itineraryEventTypes.js';
+import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 
 export class DayPlannerTimelineMarkers {
    static buildItineraryTimeMarkers(itinerary = {}, strings = {}) {
-      const visitBoundaryEventTypes = normalizeVisitBoundaryEventTypes(
+      const visitBoundaryEventTypes = ItineraryEventTypes.normalizeVisitBoundaryEventTypes(
          itinerary.itineraryConfig?.visitBoundaryEventTypes
       );
 
@@ -25,7 +25,6 @@ export class DayPlannerTimelineMarkers {
       ));
    }
 
-
    static findTimelineAnchorSlot(startMinutes, slotStarts = []) {
       if (!Number.isFinite(startMinutes) || slotStarts.length === 0) {
          return null;
@@ -44,7 +43,6 @@ export class DayPlannerTimelineMarkers {
       return anchorSlot;
    }
 
-
    static findTimelineSlotEndMinutes(anchorSlot, slotStarts = [], fallbackEndMinutes = null) {
       const anchorIndex = slotStarts.indexOf(anchorSlot);
 
@@ -54,7 +52,6 @@ export class DayPlannerTimelineMarkers {
 
       return fallbackEndMinutes;
    }
-
 
    static computeMarkerOffsetFraction(startMinutes, anchorSlot, slotEndMinutes) {
       if (startMinutes === anchorSlot) {
@@ -69,7 +66,6 @@ export class DayPlannerTimelineMarkers {
 
       return (startMinutes - anchorSlot) / slotSpanMinutes;
    }
-
 
    static buildMarkersByAnchorSlot(
       itineraryTimeMarkers = [],
@@ -107,7 +103,6 @@ export class DayPlannerTimelineMarkers {
          return markersMap;
       }, new Map());
    }
-
 
    static resolveTimelinePillLabel(
       slotStart,

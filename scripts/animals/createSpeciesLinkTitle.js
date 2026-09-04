@@ -1,4 +1,4 @@
-import { formatAnimalTitleSuffix } from './animalDisplayLines.js';
+import { AnimalDisplayLines } from './animalDisplayLines.js';
 
 function applyLinkDataset(element, dataset = {}) {
    Object.entries(dataset).forEach(([key, value]) => {
@@ -80,7 +80,7 @@ export function createAnimalTitleLinkElement({
 } = {}) {
    return createSpeciesLinkTitleElement({
       text: species,
-      suffix: formatAnimalTitleSuffix(enclosureName),
+      suffix: AnimalDisplayLines.formatAnimalTitleSuffix(enclosureName),
       className,
       tagName,
       onClick,
