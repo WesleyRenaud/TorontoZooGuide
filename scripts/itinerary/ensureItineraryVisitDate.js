@@ -11,43 +11,45 @@ import {
    normalizeItineraryDraft,
    toSetItineraryPayload,
 } from './itineraryShape.js';
-import { resolveEffectiveItineraryHoursDateIso } from './visitDateEarliest.js';
+import { VisitDateEarliest } from './visitDateEarliest.js';
 
-export async function ensureItineraryVisitDate(itinerary = {}) {
-   const { date: serverDate } = await ItineraryApi.getItineraryDateRequest();
+export class EnsureItineraryVisitDate {
+   static async ensureItineraryVisitDate(itinerary = {}) {
+      const { date: serverDate } = await ItineraryApi.getItineraryDateRequest();
 
-   if (serverDate) {
-      setStoredItineraryDate(serverDate);
+      if (serverDate) {
+         setStoredItineraryDate(serverDate);
 
-      if (itinerary?.date === serverDate) {
-         return itinerary;
+         if (itinerary?.date === serverDate) {
+            return itinerary;
+         }
+
+         return {
+            ...itinerary,
+            date: serverDate,
+         };
       }
 
-      return {
-         ...itinerary,
-         date: serverDate,
-      };
+      const date = await VisitDateEarliest.resolveEffectiveItineraryHoursDateIso(itinerary);
+      const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date, includeTemp: false });
+      const result = await ItineraryApi.setItineraryRequest({
+         ...toSetItineraryPayload(normalizeItineraryDraft({
+            ...itinerary,
+            date,
+         })),
+         temp,
+      });
+
+      if (!isItinerarySuccess(result.errorType)) {
+         throw new Error(resolveItineraryErrorMessage(result.errorType));
+      }
+
+      setStoredItineraryDate(date);
+
+      const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+
+      dispatchItineraryUpdated(normalizedItinerary);
+
+      return normalizedItinerary;
    }
-
-   const date = await resolveEffectiveItineraryHoursDateIso(itinerary);
-   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date, includeTemp: false });
-   const result = await ItineraryApi.setItineraryRequest({
-      ...toSetItineraryPayload(normalizeItineraryDraft({
-         ...itinerary,
-         date,
-      })),
-      temp,
-   });
-
-   if (!isItinerarySuccess(result.errorType)) {
-      throw new Error(resolveItineraryErrorMessage(result.errorType));
-   }
-
-   setStoredItineraryDate(date);
-
-   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-
-   dispatchItineraryUpdated(normalizedItinerary);
-
-   return normalizedItinerary;
 }

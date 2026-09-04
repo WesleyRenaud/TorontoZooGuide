@@ -13,28 +13,30 @@ function normalizeLegs(legs) {
  * A new sequence starts when stations are discontinuous or when leg times
  * are not contiguous (guest got off between rides).
  */
-export function groupConsecutiveTransportationLegSequences(legs = []) {
-   const sequences = [];
-   let currentSequence = [];
+export class GroupConsecutiveTransportationLegSequences {
+   static groupConsecutiveTransportationLegSequences(legs = []) {
+      const sequences = [];
+      let currentSequence = [];
 
-   normalizeLegs(legs).forEach((leg) => {
-      if (currentSequence.length > 0) {
-         const previousLeg = currentSequence[currentSequence.length - 1];
-         const stationGap = previousLeg.to_station !== leg.from_station;
-         const timeGap = previousLeg.end_time !== leg.start_time;
+      normalizeLegs(legs).forEach((leg) => {
+         if (currentSequence.length > 0) {
+            const previousLeg = currentSequence[currentSequence.length - 1];
+            const stationGap = previousLeg.to_station !== leg.from_station;
+            const timeGap = previousLeg.end_time !== leg.start_time;
 
-         if (stationGap || timeGap) {
-            sequences.push(currentSequence);
-            currentSequence = [];
+            if (stationGap || timeGap) {
+               sequences.push(currentSequence);
+               currentSequence = [];
+            }
          }
+
+         currentSequence.push(leg);
+      });
+
+      if (currentSequence.length > 0) {
+         sequences.push(currentSequence);
       }
 
-      currentSequence.push(leg);
-   });
-
-   if (currentSequence.length > 0) {
-      sequences.push(currentSequence);
+      return sequences;
    }
-
-   return sequences;
 }

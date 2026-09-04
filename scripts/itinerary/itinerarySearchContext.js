@@ -1,6 +1,6 @@
 import { getStoredItineraryDate } from './draftStorage.js';
 import { buildDateSearchContext } from '../search/searchContext.js';
-import { resolveEffectiveItineraryHoursDateIso } from './visitDateEarliest.js';
+import { VisitDateEarliest } from './visitDateEarliest.js';
 
 async function resolveItinerarySearchDate(dateOverride = '') {
    if (dateOverride) {
@@ -13,7 +13,7 @@ async function resolveItinerarySearchDate(dateOverride = '') {
       return stored;
    }
 
-   return resolveEffectiveItineraryHoursDateIso();
+   return VisitDateEarliest.resolveEffectiveItineraryHoursDateIso();
 }
 
 export class ItinerarySearchContext {

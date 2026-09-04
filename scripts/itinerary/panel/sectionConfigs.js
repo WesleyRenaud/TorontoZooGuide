@@ -6,7 +6,7 @@ import {
    buildWildRows,
 } from './rows.js';
 import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
-import { expandTransportationListItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
+import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const ITINERARY_PANEL_SECTION_KEYS = {
@@ -53,7 +53,7 @@ export function buildSectionConfigs(
    } = {}
 ) {
    const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
-   const listTransportations = expandTransportationListItems(
+   const listTransportations = TransportationSequenceItems.expandTransportationListItems(
       transportations,
       { splitSequences: splitTransportationSequences }
    );

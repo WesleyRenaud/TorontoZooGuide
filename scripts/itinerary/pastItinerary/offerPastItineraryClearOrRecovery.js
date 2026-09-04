@@ -6,7 +6,7 @@ import {
 } from './promptSession.js';
 import { recoverPastItineraryDate } from './recoverPastItineraryDate.js';
 import { showPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
-import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
+import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { isVisitDateBeforeEarliestFloor } from '../../visitDates/visitDateRules.js';
 
 /**
@@ -22,7 +22,7 @@ export async function offerPastItineraryClearOrRecovery({
 } = {}) {
    const {
       hasContent = hasSavedItineraryContent,
-      resolveEarliestVisitDate = resolveEarliestSelectableVisitDateNoon,
+      resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
       isVisitDateBeforeFloor = isVisitDateBeforeEarliestFloor,
       showChoicePrompt = showPastItineraryChoicePrompt,
       clearItinerary = clearPastItinerary,

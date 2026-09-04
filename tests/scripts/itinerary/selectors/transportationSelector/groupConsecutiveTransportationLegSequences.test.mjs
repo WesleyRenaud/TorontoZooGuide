@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { groupConsecutiveTransportationLegSequences } from '../../scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js';
+import { GroupConsecutiveTransportationLegSequences } from '../../../../../scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js';
 
-test('groupConsecutiveTransportationLegSequences splits on time gaps', () => {
-   const sequences = groupConsecutiveTransportationLegSequences([
+test('Test_GroupConsecutiveTransportationLegSequences_TestTimeGaps_ExpectSplit', () => {
+   const sequences = GroupConsecutiveTransportationLegSequences.groupConsecutiveTransportationLegSequences([
       {
          from_station: 'Main Zoomobile Station',
          to_station: 'Canadian Domain Zoomobile Station',
@@ -38,8 +38,8 @@ test('groupConsecutiveTransportationLegSequences splits on time gaps', () => {
    assert.equal(sequences[1].at(-1).to_station, 'Tundra Zoomobile Station');
 });
 
-test('groupConsecutiveTransportationLegSequences splits on station gaps', () => {
-   const sequences = groupConsecutiveTransportationLegSequences([
+test('Test_GroupConsecutiveTransportationLegSequences_TestStationGaps_ExpectSplit', () => {
+   const sequences = GroupConsecutiveTransportationLegSequences.groupConsecutiveTransportationLegSequences([
       {
          from_station: 'Main Zoomobile Station',
          to_station: 'Africa Zoomobile Station',

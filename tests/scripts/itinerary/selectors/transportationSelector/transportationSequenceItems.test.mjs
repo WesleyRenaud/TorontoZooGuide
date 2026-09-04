@@ -1,10 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildTransportationSequenceItems,
-   expandTransportationListItems,
-} from '../../scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js';
+import { TransportationSequenceItems } from '../../../../../scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js';
 
 const DISCONTINUOUS_ZOOMOBILE = {
    name: 'Zoomobile',
@@ -52,8 +49,8 @@ const DISCONTINUOUS_ZOOMOBILE = {
    ],
 };
 
-test('buildTransportationSequenceItems splits discontinuous rides', () => {
-   const sequences = buildTransportationSequenceItems(DISCONTINUOUS_ZOOMOBILE);
+test('Test_BuildTransportationSequenceItems_TestDiscontinuous_ExpectSplit', () => {
+   const sequences = TransportationSequenceItems.buildTransportationSequenceItems(DISCONTINUOUS_ZOOMOBILE);
 
    assert.equal(sequences.length, 2);
    assert.equal(sequences[0].start_time, '9:00 AM');
@@ -64,7 +61,7 @@ test('buildTransportationSequenceItems splits discontinuous rides', () => {
    assert.equal(sequences[1].legs.length, 4);
 });
 
-test('expandTransportationListItems keeps bulk-evaluated rows without legs', () => {
+test('Test_ExpandTransportationListItems_TestNoLegs_ExpectUnchanged', () => {
    const transportations = [
       {
          name: 'Zoomobile',
@@ -75,13 +72,13 @@ test('expandTransportationListItems keeps bulk-evaluated rows without legs', () 
    ];
 
    assert.deepEqual(
-      expandTransportationListItems(transportations, { splitSequences: true }),
+      TransportationSequenceItems.expandTransportationListItems(transportations, { splitSequences: true }),
       transportations
    );
 });
 
-test('expandTransportationListItems expands each ride sequence when enabled', () => {
-   const expanded = expandTransportationListItems(
+test('Test_ExpandTransportationListItems_TestSplitEnabled_ExpectExpanded', () => {
+   const expanded = TransportationSequenceItems.expandTransportationListItems(
       [DISCONTINUOUS_ZOOMOBILE],
       { splitSequences: true }
    );
@@ -91,9 +88,9 @@ test('expandTransportationListItems expands each ride sequence when enabled', ()
    assert.equal(expanded[1].legs.length, 4);
 });
 
-test('expandTransportationListItems leaves rows unchanged by default', () => {
+test('Test_ExpandTransportationListItems_TestDefault_ExpectUnchanged', () => {
    assert.deepEqual(
-      expandTransportationListItems([DISCONTINUOUS_ZOOMOBILE]),
+      TransportationSequenceItems.expandTransportationListItems([DISCONTINUOUS_ZOOMOBILE]),
       [DISCONTINUOUS_ZOOMOBILE]
    );
 });

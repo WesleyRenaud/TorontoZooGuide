@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { persistItineraryWarningSuppression } from '../../scripts/itinerary/persistItineraryWarningSuppression.js';
+import { PersistItineraryWarningSuppression } from '../../../scripts/itinerary/persistItineraryWarningSuppression.js';
 
-test('persistItineraryWarningSuppression no-ops for blank warning types', async () => {
+test('Test_PersistItineraryWarningSuppression_TestBlankType_ExpectNoOp', async () => {
    const requests = [];
 
-   await persistItineraryWarningSuppression('', {
+   await PersistItineraryWarningSuppression.persistItineraryWarningSuppression('', {
       suppressWarning: async (warningType) => {
          requests.push(warningType);
          return { errorType: 'success' };
@@ -16,10 +16,10 @@ test('persistItineraryWarningSuppression no-ops for blank warning types', async 
    assert.equal(requests.length, 0);
 });
 
-test('persistItineraryWarningSuppression returns the API result on success', async () => {
+test('Test_PersistItineraryWarningSuppression_TestSuccess_ExpectResult', async () => {
    const response = { errorType: 'success', suppressed: true };
 
-   const result = await persistItineraryWarningSuppression(
+   const result = await PersistItineraryWarningSuppression.persistItineraryWarningSuppression(
       'arrivalDepartureTooClose',
       {
          suppressWarning: async (warningType) => {
@@ -33,9 +33,9 @@ test('persistItineraryWarningSuppression returns the API result on success', asy
    assert.deepEqual(result, response);
 });
 
-test('persistItineraryWarningSuppression throws when the API reports failure', async () => {
+test('Test_PersistItineraryWarningSuppression_TestFailure_ExpectThrows', async () => {
    await assert.rejects(
-      () => persistItineraryWarningSuppression('shortVisit', {
+      () => PersistItineraryWarningSuppression.persistItineraryWarningSuppression('shortVisit', {
          suppressWarning: async () => ({ errorType: 'error' }),
          isSuccess: () => false,
       }),

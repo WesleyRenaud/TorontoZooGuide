@@ -25,7 +25,16 @@
       "tests/scripts/itinerary/itinerarySearchContext.test.mjs",
       "tests/scripts/itinerary/wizard/wizardFinalizeDecisions.test.mjs",
       "tests/scripts/itinerary/wizard/wizardDraft.test.mjs",
-      "tests/scripts/itinerary/wizard/wizardStepDraftSync.test.mjs"
+      "tests/scripts/itinerary/wizard/wizardStepDraftSync.test.mjs",
+      "tests/scripts/itinerary/panel/scheduledPillPresentation.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerActionFeedback.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerPlanActions.test.mjs",
+      "tests/scripts/itinerary/persistItineraryWarningSuppression.test.mjs",
+      "tests/scripts/itinerary/visitDateEarliest.test.mjs",
+      "tests/scripts/itinerary/ensureItineraryVisitDate.test.mjs",
+      "tests/scripts/itinerary/selectors/selectorControllerConfig.test.mjs",
+      "tests/scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.test.mjs",
+      "tests/scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

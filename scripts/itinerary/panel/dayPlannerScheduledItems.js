@@ -24,7 +24,7 @@ import {
    getTransportationScheduleItemKey,
    isTransitTransportationHandledForDayPlanner,
 } from '../selectors/transportationSelector/model.js';
-import { buildTransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
+import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -154,7 +154,7 @@ function buildScheduledAnimalRows(animals = []) {
 
 function buildScheduledTransportationRows(transportations = []) {
    return transportations.flatMap((transportation, index) => (
-      buildTransportationSequenceItems(transportation).map((item) => {
+      TransportationSequenceItems.buildTransportationSequenceItems(transportation).map((item) => {
          const [row] = buildTransportationRows([item]);
          const startMinutes = parseClockTimeMinutes(item.start_time);
          const endMinutes = parseClockTimeMinutes(item.end_time);

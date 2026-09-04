@@ -1,14 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildSelectionFingerprint,
-   validateSelectorConfig,
-} from '../../scripts/itinerary/selectors/selectorControllerConfig.js';
+import { SelectorControllerConfig } from '../../../../scripts/itinerary/selectors/selectorControllerConfig.js';
 
-test('buildSelectionFingerprint normalizes ids for stable comparisons', () => {
+test('Test_BuildSelectionFingerprint_TestIds_ExpectNormalized', () => {
    assert.equal(
-      buildSelectionFingerprint([
+      SelectorControllerConfig.buildSelectionFingerprint([
          { id: ' zebra ' },
          { id: 'Lion' },
          { id: '' },
@@ -17,9 +14,9 @@ test('buildSelectionFingerprint normalizes ids for stable comparisons', () => {
    );
 });
 
-test('validateSelectorConfig requires storageKey, getId, and extractRows', () => {
+test('Test_ValidateSelectorConfig_TestRequiredFields_ExpectThrowsOrPasses', () => {
    assert.throws(
-      () => validateSelectorConfig({
+      () => SelectorControllerConfig.validateSelectorConfig({
          getId: () => 'id',
          extractRows: () => [],
       }),
@@ -27,7 +24,7 @@ test('validateSelectorConfig requires storageKey, getId, and extractRows', () =>
    );
 
    assert.throws(
-      () => validateSelectorConfig({
+      () => SelectorControllerConfig.validateSelectorConfig({
          storageKey: 'tzg.items',
          extractRows: () => [],
       }),
@@ -35,14 +32,14 @@ test('validateSelectorConfig requires storageKey, getId, and extractRows', () =>
    );
 
    assert.throws(
-      () => validateSelectorConfig({
+      () => SelectorControllerConfig.validateSelectorConfig({
          storageKey: 'tzg.items',
          getId: () => 'id',
       }),
       /extractRows\(response\) is required/
    );
 
-   assert.doesNotThrow(() => validateSelectorConfig({
+   assert.doesNotThrow(() => SelectorControllerConfig.validateSelectorConfig({
       storageKey: 'tzg.items',
       getId: () => 'id',
       extractRows: () => [],
