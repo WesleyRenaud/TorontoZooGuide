@@ -5,7 +5,7 @@ import {
    buildRemovedItemsPopupSections,
 } from '../../scripts/itinerary/panel/components/removedItemsPopupContent.js';
 import { RemovedItemsPopupSectionSpecs } from '../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
-import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
+import { ItineraryAdjustmentTypes } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -24,7 +24,7 @@ test('RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent reports removed 
 test.describe('removedItemsPopupContent', () => {
    installDomTestHooks({
       before: () => {
-         updateItineraryAdjustmentTypesFromConfig({
+         ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
             adjustmentTypes: {
                ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
                DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',

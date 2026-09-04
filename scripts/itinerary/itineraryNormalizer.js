@@ -1,4 +1,4 @@
-import { EMPTY_ITINERARY_PATH } from './itineraryPathModel.js';
+import { ItineraryPathModel } from './itineraryPathModel.js';
 import {
    createEmptyItineraryDraft,
    hasSavedItineraryContent,
@@ -38,7 +38,7 @@ export class ItineraryNormalizer {
       return {
          ...normalizedDraft,
          itineraryConfig: itinerary?.itineraryConfig ?? null,
-         itineraryPath: itinerary?.itineraryPath ?? EMPTY_ITINERARY_PATH,
+         itineraryPath: itinerary?.itineraryPath ?? ItineraryPathModel.EMPTY_ITINERARY_PATH,
          validation: ItineraryValidation.buildItineraryValidationState(
             normalizedDraft,
             itinerary?.itineraryConfig ?? {}

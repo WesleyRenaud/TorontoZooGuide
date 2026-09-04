@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { EnsureItineraryVisitDate } from '../../../scripts/itinerary/ensureItineraryVisitDate.js';
 import { setStoredItineraryDate } from '../../../scripts/itinerary/draftStorage.js';
-import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
@@ -11,7 +11,7 @@ import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 installDomTestHooks({
    before: () => {
       globalThis.localStorage = createLocalStorageMock();
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: { SUCCESS: 'success', SAVE_FAILED: 'saveFailed' },
          suppressedErrorTypes: [],
       });

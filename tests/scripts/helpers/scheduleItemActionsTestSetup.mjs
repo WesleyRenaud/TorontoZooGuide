@@ -1,4 +1,4 @@
-import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from './domTestSetup.mjs';
 import { mockJsonResponse } from './fetchMock.mjs';
 import { createLocalStorageMock } from './localStorageMock.mjs';
@@ -57,7 +57,7 @@ export function installScheduleItemActionsTestHooks() {
                this.detail = options.detail;
             }
          };
-         updateItineraryErrorTypesFromConfig({
+         ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
             errorTypes: MOCK_ERROR_TYPES,
             suppressedErrorTypes: [],
          });

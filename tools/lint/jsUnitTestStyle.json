@@ -53,7 +53,8 @@
       "tests/scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.test.mjs",
       "tests/scripts/map/itineraryPathGeometry.test.mjs",
       "tests/scripts/map/sourceHelpers.test.mjs",
-      "tests/scripts/map/layerRequest.test.mjs"
+      "tests/scripts/map/layerRequest.test.mjs",
+      "tests/scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

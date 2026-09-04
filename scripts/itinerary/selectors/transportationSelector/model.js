@@ -5,10 +5,7 @@ import {
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
-import {
-   getItineraryTransportationStationOffboardingRoles,
-   getItineraryTransportationStationOnboardingRoles,
-} from '../../itineraryTransportationStationRoles.js';
+import { ItineraryTransportationStationRoles } from '../../itineraryTransportationStationRoles.js';
 import {
    buildOccurrenceDetailImageSrc,
    buildOccurrenceSubtitle,
@@ -78,7 +75,7 @@ function boardingStationNames(row) {
    if (stations.length > 0) {
       return namesForRoles(
          stations,
-         getItineraryTransportationStationOnboardingRoles()
+         ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles()
       );
    }
 
@@ -91,7 +88,7 @@ function offboardingStationNames(row) {
    if (stations.length > 0) {
       return namesForRoles(
          stations,
-         getItineraryTransportationStationOffboardingRoles()
+         ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles()
       );
    }
 

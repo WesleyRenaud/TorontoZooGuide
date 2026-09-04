@@ -13,11 +13,7 @@ import {
    resolveEffectiveScheduleItemSelection,
    tagScheduleItemRow,
 } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
-import {
-   buildScheduleItemTypeOptions,
-   isScheduleItemSearchEnabled,
-   isScheduleItemTypeUnset,
-} from '../../scripts/itinerary/panel/scheduleItemTypes.js';
+import { ScheduleItemTypes } from '../../scripts/itinerary/panel/scheduleItemTypes.js';
 import { ItineraryEventTypes } from '../../scripts/itinerary/itineraryEventTypes.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
@@ -112,7 +108,7 @@ test('placeholder search includes searchable schedule item kinds', () => {
 });
 
 test('type dropdown opens on a placeholder before event types and search kinds', () => {
-   const options = buildScheduleItemTypeOptions(
+   const options = ScheduleItemTypes.buildScheduleItemTypeOptions(
       ['breakfast', 'lunch'],
       { typePlaceholder: 'Choose what to schedule' }
    );
@@ -141,29 +137,29 @@ test('type dropdown opens on a placeholder before event types and search kinds',
 test('placeholder enables global search; event types disable search', () => {
    const eventTypes = ['lunch', 'break'];
 
-   assert.equal(isScheduleItemTypeUnset(''), true);
-   assert.equal(isScheduleItemSearchEnabled('', eventTypes), true);
+   assert.equal(ScheduleItemTypes.isScheduleItemTypeUnset(''), true);
+   assert.equal(ScheduleItemTypes.isScheduleItemSearchEnabled('', eventTypes), true);
    assert.equal(ItineraryEventTypes.isScheduleItemEventType('', eventTypes), false);
-   assert.equal(isScheduleItemSearchEnabled('lunch', eventTypes), false);
+   assert.equal(ScheduleItemTypes.isScheduleItemSearchEnabled('lunch', eventTypes), false);
    assert.equal(ItineraryEventTypes.isScheduleItemEventType('lunch', eventTypes), true);
    assert.equal(
-      isScheduleItemSearchEnabled(ScheduleItemKind.ANIMAL.itemType, eventTypes),
+      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.ANIMAL.itemType, eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemSearchEnabled(ScheduleItemKind.ATTRACTION.itemType, eventTypes),
+      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.ATTRACTION.itemType, eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemSearchEnabled(ScheduleItemKind.TRANSPORTATION.itemType, eventTypes),
+      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.TRANSPORTATION.itemType, eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemSearchEnabled(ScheduleItemKind.GUARDIANS_TALK.itemType, eventTypes),
+      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.GUARDIANS_TALK.itemType, eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemSearchEnabled(ScheduleItemKind.WILD_ENCOUNTER.itemType, eventTypes),
+      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.WILD_ENCOUNTER.itemType, eventTypes),
       true
    );
 });

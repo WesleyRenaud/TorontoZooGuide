@@ -1,10 +1,6 @@
 import { SearchApi } from '../../../api/searchApi.js';
-import { isItineraryConfirmationCancelled } from '../../itineraryConfirmationResult.js';
-import {
-   isItinerarySuccess,
-   requiresScheduleItemNotOnItineraryConfirmation,
-   resolveItineraryErrorMessage,
-} from '../../itineraryErrorTypes.js';
+import { ItineraryConfirmationResult } from '../../itineraryConfirmationResult.js';
+import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
 import {
@@ -22,10 +18,7 @@ import {
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
-import {
-   isScheduleItemSearchEnabled,
-   isScheduleItemTypeUnset,
-} from '../scheduleItemTypes.js';
+import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { isScheduleItemTransportationRow } from '../../selectors/transportationSelector/model.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
@@ -63,9 +56,9 @@ export function createScheduleItemModuleController({
       scheduleSelectedItem = scheduleSelectedItineraryItem,
       showNotice = showScheduleItemNotice,
       renderSearchResults = renderScheduleItemSearchResults,
-      itinerarySuccess = isItinerarySuccess,
-      requiresNotOnItineraryConfirmation = requiresScheduleItemNotOnItineraryConfirmation,
-      resolveErrorMessage = resolveItineraryErrorMessage,
+      itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,
+      requiresNotOnItineraryConfirmation = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation,
+      resolveErrorMessage = ItineraryErrorTypes.resolveItineraryErrorMessage,
       genericErrorMessage = APP_STRINGS.itinerary.errors.generic,
    } = deps;
 
@@ -128,7 +121,7 @@ export function createScheduleItemModuleController({
 
    function updateFieldVisibility() {
       const selection = getSelection();
-      const searchEnabled = isScheduleItemSearchEnabled(selection, eventTypes);
+      const searchEnabled = ScheduleItemTypes.isScheduleItemSearchEnabled(selection, eventTypes);
       const itemSelectionLocked = isItemSelectionLocked();
       const searchLocked = itemSelectionLocked || !searchEnabled;
 
@@ -168,7 +161,7 @@ export function createScheduleItemModuleController({
    function renderSearchResultsForRows(rows) {
       const selection = getSelection();
 
-      if (!isScheduleItemSearchEnabled(selection, eventTypes)) {
+      if (!ScheduleItemTypes.isScheduleItemSearchEnabled(selection, eventTypes)) {
          resultsEl?.replaceChildren();
          return;
       }
@@ -200,7 +193,7 @@ export function createScheduleItemModuleController({
                selectedRowId = id;
                selectedRow = row;
 
-               if (typeSelect && isScheduleItemTypeUnset(getSelection())) {
+               if (typeSelect && ScheduleItemTypes.isScheduleItemTypeUnset(getSelection())) {
                   typeSelect.value = getScheduleItemRowKind(row);
                }
             }
@@ -253,7 +246,7 @@ export function createScheduleItemModuleController({
    async function runSearch() {
       const selection = getSelection();
 
-      if (!isScheduleItemSearchEnabled(selection, eventTypes)) {
+      if (!ScheduleItemTypes.isScheduleItemSearchEnabled(selection, eventTypes)) {
          clearSearchResults();
          return;
       }
@@ -313,7 +306,7 @@ export function createScheduleItemModuleController({
             scheduleOptions
          );
 
-         if (isItineraryConfirmationCancelled(result)) {
+         if (ItineraryConfirmationResult.isItineraryConfirmationCancelled(result)) {
             return;
          }
 

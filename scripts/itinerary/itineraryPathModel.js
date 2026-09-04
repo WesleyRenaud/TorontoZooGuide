@@ -1,11 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 
-export const EMPTY_ITINERARY_PATH = Object.freeze({
-   stops: [],
-   legs: [],
-   points: [],
-});
-
 function normalizeItineraryPathStop(stop) {
    const source = ValueNormalizer.asObject(stop);
    const walkNodeId = ValueNormalizer.asTrimmedString(source.walk_node_id);
@@ -45,16 +39,26 @@ function normalizeItineraryPathPoint(point) {
    };
 }
 
-export function resolveItineraryPath(options, itinerary) {
-   return options?.itineraryPath ?? itinerary?.itineraryPath ?? EMPTY_ITINERARY_PATH;
-}
+export class ItineraryPathModel {
+   static EMPTY_ITINERARY_PATH = Object.freeze({
+      stops: [],
+      legs: [],
+      points: [],
+   });
 
-export function normalizeItineraryPath(itineraryPath) {
-   const source = ValueNormalizer.asObject(itineraryPath);
+   static resolveItineraryPath(options, itinerary) {
+      return options?.itineraryPath
+         ?? itinerary?.itineraryPath
+         ?? ItineraryPathModel.EMPTY_ITINERARY_PATH;
+   }
 
-   return {
-      stops: ValueNormalizer.asArray(source.stops).map(normalizeItineraryPathStop),
-      legs: ValueNormalizer.asArray(source.legs).map(normalizeItineraryPathLeg),
-      points: ValueNormalizer.asArray(source.points).map(normalizeItineraryPathPoint),
-   };
+   static normalizeItineraryPath(itineraryPath) {
+      const source = ValueNormalizer.asObject(itineraryPath);
+
+      return {
+         stops: ValueNormalizer.asArray(source.stops).map(normalizeItineraryPathStop),
+         legs: ValueNormalizer.asArray(source.legs).map(normalizeItineraryPathLeg),
+         points: ValueNormalizer.asArray(source.points).map(normalizeItineraryPathPoint),
+      };
+   }
 }

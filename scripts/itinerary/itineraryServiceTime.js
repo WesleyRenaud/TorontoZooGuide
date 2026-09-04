@@ -1,11 +1,5 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import {
-   getItineraryErrorTypes,
-   isItinerarySuccess,
-   requiresEarlyAdmissionConfirmation,
-   requiresShortVisitConfirmation,
-   resolveItineraryErrorMessage,
-} from './itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import {
    dispatchItineraryUpdated,
@@ -45,9 +39,9 @@ function requestConfirmedItineraryTimeChange({
                   confirmationOptions
                );
 
-               if (!isItinerarySuccess(confirmedResult.errorType)) {
+               if (!ItineraryErrorTypes.isItinerarySuccess(confirmedResult.errorType)) {
                   reject(new Error(
-                     resolveItineraryErrorMessage(confirmedResult.errorType)
+                     ItineraryErrorTypes.resolveItineraryErrorMessage(confirmedResult.errorType)
                   ));
                   return;
                }
@@ -68,17 +62,17 @@ function requestConfirmedItineraryTimeChange({
 async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
    const initialResult = await requestFn(timeValue);
 
-   if (isItinerarySuccess(initialResult.errorType)) {
+   if (ItineraryErrorTypes.isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
    }
 
-   if (requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
       return requestConfirmedItineraryTimeChange({
          showConfirmation: showEarlyAdmissionConfirmation,
          requestFn,
          timeValue,
          suppressionType: (
-            getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+            ItineraryErrorTypes.getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
          ),
          confirmationOptions: {
             confirmingEarlyAdmission: true,
@@ -86,15 +80,15 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
       });
    }
 
-   if (!requiresShortVisitConfirmation(initialResult.errorType)) {
-      throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
+   if (!ItineraryErrorTypes.requiresShortVisitConfirmation(initialResult.errorType)) {
+      throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(initialResult.errorType));
    }
 
    return requestConfirmedItineraryTimeChange({
       showConfirmation: showShortVisitConfirmation,
       requestFn,
       timeValue,
-      suppressionType: getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,
+      suppressionType: ItineraryErrorTypes.getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,
       confirmationOptions: {
          confirmingShortVisit: true,
       },

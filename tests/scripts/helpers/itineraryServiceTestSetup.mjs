@@ -1,12 +1,12 @@
 import { createLocalStorageMock } from './localStorageMock.mjs';
-import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from './domTestSetup.mjs';
 
 export function installItineraryServiceTestHooks() {
    installDomTestHooks({
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
-         updateItineraryErrorTypesFromConfig({
+         ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
             errorTypes: {
                SUCCESS: 'success',
                GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',

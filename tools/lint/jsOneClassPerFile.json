@@ -70,7 +70,15 @@
       "scripts/map/walkGraphPathGeometry.js",
       "scripts/map/itineraryPathGeometry.js",
       "scripts/map/sourceHelpers.js",
-      "scripts/map/layerRequest.js"
+      "scripts/map/layerRequest.js",
+      "scripts/itinerary/itineraryConfirmationResult.js",
+      "scripts/itinerary/itineraryAdjustmentTypes.js",
+      "scripts/itinerary/itineraryTransportationStationRoles.js",
+      "scripts/itinerary/itineraryErrorTypes.js",
+      "scripts/itinerary/itineraryPathModel.js",
+      "scripts/guardians/normalizeGuardiansTalkLinkedAnimals.js",
+      "scripts/itinerary/panel/scheduleItemTypes.js",
+      "scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

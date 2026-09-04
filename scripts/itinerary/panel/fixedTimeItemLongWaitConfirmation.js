@@ -4,7 +4,7 @@ import {
    formatClockTime,
    normalizeText,
 } from './format.js';
-import { getItineraryErrorTypes } from '../itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { APP_STRINGS } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
@@ -32,7 +32,7 @@ function resolveItemTypeMeta(item) {
 }
 
 function fixedTimeItemLongWaitIssueType() {
-   return getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
+   return ItineraryErrorTypes.getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
 }
 
 function isLongWaitIssue(issue) {

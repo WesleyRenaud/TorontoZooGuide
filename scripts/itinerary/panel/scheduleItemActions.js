@@ -9,7 +9,7 @@ import {
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
 } from './scheduleItemSearch.js';
-import { isScheduleItemSearchEnabled } from './scheduleItemTypes.js';
+import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import {
    getAnimalExhibit,
    getAnimalSpecies,
@@ -62,7 +62,7 @@ export function buildScheduleItemRequest(
       };
    }
 
-   if (!isScheduleItemSearchEnabled(selection, eventTypes) || !selectedRow) {
+   if (!ScheduleItemTypes.isScheduleItemSearchEnabled(selection, eventTypes) || !selectedRow) {
       return null;
    }
 

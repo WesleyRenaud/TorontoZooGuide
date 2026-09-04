@@ -1,6 +1,6 @@
 import { el } from '../dom.js';
 import { makeScheduleItemTimeFields } from './scheduleItemTimeFields.js';
-import { buildScheduleItemTypeOptions } from '../scheduleItemTypes.js';
+import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import {
    buildAnimalImageSrc,
    getAnimalEnclosureName,
@@ -157,7 +157,7 @@ export function buildScheduleItemModuleBody(strings, eventTypes = []) {
 
    const typeField = createSelectField({
       label: strings.typeLabel,
-      options: buildScheduleItemTypeOptions(eventTypes, strings),
+      options: ScheduleItemTypes.buildScheduleItemTypeOptions(eventTypes, strings),
       getOptionValue: (option) => option.value,
       getOptionLabel: (option) => option.label,
    });
