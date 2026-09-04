@@ -2,7 +2,7 @@ import {
    getItineraryItemKey,
    tagScheduleItemRow,
 } from './scheduleItemSearch.js';
-import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -16,7 +16,7 @@ export class RowActionProps {
          return true;
       }
 
-      return isTransportationAddedAsAttraction(item);
+      return TransportationSelectorModel.isTransportationAddedAsAttraction(item);
    }
 
    static buildScheduleRowProps(itemType, item, onScheduleItem) {

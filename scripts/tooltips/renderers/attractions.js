@@ -1,7 +1,7 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { createTooltipCard } from './cardFactory.js';
-import { getAttractionSubtitle } from '../../itinerary/selectors/attractionSelector/model.js';
-import { normalizeStoredLink } from '../../itinerary/selectors/base/storedSelection.js';
+import { AttractionSelectorModel } from '../../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
+import { StoredSelection } from '../../itinerary/selectors/base/storedSelection.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const attractionRenderer = {
@@ -10,7 +10,7 @@ export const attractionRenderer = {
    createCard(a, index) {
       const name = a.name || APP_STRINGS.entityLabels.attraction;
       const normalizedName = AssetKeyNormalizer.normalize(name);
-      const infoLink = normalizeStoredLink(a.info_link);
+      const infoLink = StoredSelection.normalizeStoredLink(a.info_link);
 
       return createTooltipCard({
          index,
@@ -28,7 +28,7 @@ export const attractionRenderer = {
             },
          },
          details: [
-            getAttractionSubtitle(a),
+            AttractionSelectorModel.getAttractionSubtitle(a),
             a.seasonal_schedule
                ? APP_STRINGS.tooltips.seasonalSchedule(a.seasonal_schedule)
                : '',

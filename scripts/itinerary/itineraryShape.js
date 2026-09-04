@@ -4,10 +4,7 @@ import {
    normalizeItineraryNamesForSave,
    normalizeWildEncounterListForSave,
 } from './panel/format.js';
-import {
-   getTransportationName,
-   isTransportationAddedAsAttraction,
-} from './selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from './selectors/transportationSelector/transportationSelectorModel.js';
 
 export const ITINERARY_ITEM_KEYS = Object.freeze([
    'animals',
@@ -182,11 +179,11 @@ export function hydrateWizardDraftFromSavedItinerary(draft = {}) {
    const normalized = normalizeItineraryDraft(draft);
    const attractionNames = buildAttractionNameSet(normalized.attractions);
    const fromTransportations = normalized.transportations.flatMap((item) => {
-      if (!isTransportationAddedAsAttraction(item)) {
+      if (!TransportationSelectorModel.isTransportationAddedAsAttraction(item)) {
          return [];
       }
 
-      const name = getTransportationName(item);
+      const name = TransportationSelectorModel.getTransportationName(item);
 
       if (!name || attractionNames.has(name)) {
          return [];
@@ -201,7 +198,7 @@ export function hydrateWizardDraftFromSavedItinerary(draft = {}) {
       ...normalized,
       attractions: [...normalized.attractions, ...fromTransportations],
       transportations: normalized.transportations.filter(
-         (item) => !isTransportationAddedAsAttraction(item)
+         (item) => !TransportationSelectorModel.isTransportationAddedAsAttraction(item)
       ),
    };
 }
@@ -230,7 +227,7 @@ function normalizeTransportationsForSave(draft = {}) {
          return {
             name,
             added_as_attraction: (
-               isTransportationAddedAsAttraction(item)
+               TransportationSelectorModel.isTransportationAddedAsAttraction(item)
                || isAttractionAddedAsAttraction(item)
             ),
          };

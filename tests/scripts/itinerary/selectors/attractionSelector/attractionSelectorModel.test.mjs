@@ -1,16 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildAlsoTransportationAttractionMessage,
-   buildAttractionImageSrc,
-   buildClosedAttractionMessage,
-   getAttractionSubtitle,
-   makeAttractionSelection,
-   migrateStoredAttractions,
-   shouldConfirmAlsoTransportationAttraction,
-   shouldConfirmClosedAttraction,
-} from '../../scripts/itinerary/selectors/attractionSelector/model.js';
+import { AttractionSelectorModel } from '../../../../../scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 
 const carouselRow = {
    name: 'Conservation Carousel',
@@ -20,14 +11,14 @@ const carouselRow = {
    info_link: ' https://example.com/carousel ',
 };
 
-test('attraction selector model derives presentation fields', () => {
-   assert.equal(getAttractionSubtitle(carouselRow), 'Free With Admission');
+test('Test_GetAttractionSubtitle_TestPresentationFields_ExpectDerivedValues', () => {
+   assert.equal(AttractionSelectorModel.getAttractionSubtitle(carouselRow), 'Free With Admission');
    assert.equal(
-      getAttractionSubtitle({ free_with_admission: false }),
+      AttractionSelectorModel.getAttractionSubtitle({ free_with_admission: false }),
       'Extra Charge'
    );
    assert.equal(
-      getAttractionSubtitle({
+      AttractionSelectorModel.getAttractionSubtitle({
          free_with_admission: false,
          open_time: '10:00 AM',
          close_time: '4:00 PM',
@@ -35,7 +26,7 @@ test('attraction selector model derives presentation fields', () => {
       'Extra Charge  •  10:00 AM - 4:00 PM'
    );
    assert.equal(
-      getAttractionSubtitle({
+      AttractionSelectorModel.getAttractionSubtitle({
          free_with_admission: true,
          open_time: '11:00 AM',
          close_time: '5:00 PM',
@@ -43,10 +34,10 @@ test('attraction selector model derives presentation fields', () => {
       'Free With Admission  •  11:00 AM - 5:00 PM'
    );
    assert.equal(
-      buildAttractionImageSrc(carouselRow),
+      AttractionSelectorModel.buildAttractionImageSrc(carouselRow),
       '../images/details/attractions/conservation-carousel.png'
    );
-   assert.deepEqual(makeAttractionSelection(carouselRow), {
+   assert.deepEqual(AttractionSelectorModel.makeAttractionSelection(carouselRow), {
       id: 'Conservation Carousel',
       name: 'Conservation Carousel',
       subtitle: 'Free With Admission',
@@ -58,7 +49,7 @@ test('attraction selector model derives presentation fields', () => {
       imageSrc: '../images/details/attractions/conservation-carousel.png',
    });
    assert.deepEqual(
-      makeAttractionSelection({
+      AttractionSelectorModel.makeAttractionSelection({
          name: 'Zoomobile',
          is_also_transportation: true,
          free_with_admission: false,
@@ -77,11 +68,11 @@ test('attraction selector model derives presentation fields', () => {
    );
 });
 
-test('shouldConfirmClosedAttraction only prompts for new closed attractions', () => {
+test('Test_ShouldConfirmClosedAttraction_TestNewClosed_ExpectPromptOnlyWhenAdding', () => {
    const closedRow = { is_closed: true };
 
    assert.equal(
-      shouldConfirmClosedAttraction({
+      AttractionSelectorModel.shouldConfirmClosedAttraction({
          row: closedRow,
          isSelected: false,
          includeClosedAttractions: true,
@@ -89,7 +80,7 @@ test('shouldConfirmClosedAttraction only prompts for new closed attractions', ()
       true
    );
    assert.equal(
-      shouldConfirmClosedAttraction({
+      AttractionSelectorModel.shouldConfirmClosedAttraction({
          row: closedRow,
          isSelected: true,
          includeClosedAttractions: true,
@@ -97,7 +88,7 @@ test('shouldConfirmClosedAttraction only prompts for new closed attractions', ()
       false
    );
    assert.equal(
-      shouldConfirmClosedAttraction({
+      AttractionSelectorModel.shouldConfirmClosedAttraction({
          row: closedRow,
          isSelected: false,
          includeClosedAttractions: false,
@@ -106,25 +97,25 @@ test('shouldConfirmClosedAttraction only prompts for new closed attractions', ()
    );
 });
 
-test('shouldConfirmAlsoTransportationAttraction only prompts when adding', () => {
+test('Test_ShouldConfirmAlsoTransportationAttraction_TestAdding_ExpectPromptOnlyWhenAdding', () => {
    const zoomobileRow = { is_also_transportation: true };
 
    assert.equal(
-      shouldConfirmAlsoTransportationAttraction({
+      AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
          row: zoomobileRow,
          isSelected: false,
       }),
       true
    );
    assert.equal(
-      shouldConfirmAlsoTransportationAttraction({
+      AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
          row: zoomobileRow,
          isSelected: true,
       }),
       false
    );
    assert.equal(
-      shouldConfirmAlsoTransportationAttraction({
+      AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
          row: carouselRow,
          isSelected: false,
       }),
@@ -132,27 +123,27 @@ test('shouldConfirmAlsoTransportationAttraction only prompts when adding', () =>
    );
 });
 
-test('buildClosedAttractionMessage falls back when the attraction name is missing', () => {
+test('Test_BuildClosedAttractionMessage_TestMissingName_ExpectFallback', () => {
    assert.equal(
-      buildClosedAttractionMessage({ name: 'Zoomobile' }),
+      AttractionSelectorModel.buildClosedAttractionMessage({ name: 'Zoomobile' }),
       'The Zoomobile is closed on your visit date. Do you still want to add it to your itinerary?'
    );
    assert.match(
-      buildClosedAttractionMessage({}),
+      AttractionSelectorModel.buildClosedAttractionMessage({}),
       /This attraction is closed/
    );
 });
 
-test('buildAlsoTransportationAttractionMessage explains attraction vs transportation', () => {
+test('Test_BuildAlsoTransportationAttractionMessage_TestZoomobile_ExpectExplainsModes', () => {
    assert.equal(
-      buildAlsoTransportationAttractionMessage({ name: 'Zoomobile' }),
+      AttractionSelectorModel.buildAlsoTransportationAttractionMessage({ name: 'Zoomobile' }),
       'The Zoomobile can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the Zoomobile as an attraction.'
    );
 });
 
-test('migrateStoredAttractions normalizes string and object entries', () => {
+test('Test_MigrateStoredAttractions_TestStringAndObject_ExpectNormalized', () => {
    assert.deepEqual(
-      migrateStoredAttractions([
+      AttractionSelectorModel.migrateStoredAttractions([
          'Zoomobile',
          {
             name: '  Conservation Carousel  ',

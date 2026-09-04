@@ -10,17 +10,13 @@ import {
    resolveEffectiveScheduleItemSelection,
 } from './scheduleItemSearch.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
-import {
-   getAnimalExhibit,
-   getAnimalSpecies,
-   getAnimalStoredEnclosureName,
-} from '../selectors/animalSelector/model.js';
-import { getAttractionName } from '../selectors/attractionSelector/model.js';
+import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
 
 export function buildAnimalDraftEntry(row) {
-   const species = getAnimalSpecies(row);
-   const exhibit = getAnimalExhibit(row);
-   const enclosureName = getAnimalStoredEnclosureName(row);
+   const species = AnimalSelectorModel.getAnimalSpecies(row);
+   const exhibit = AnimalSelectorModel.getAnimalExhibit(row);
+   const enclosureName = AnimalSelectorModel.getAnimalStoredEnclosureName(row);
 
    if (!species || !exhibit) {
       return null;
@@ -36,7 +32,7 @@ export function buildAnimalDraftEntry(row) {
 }
 
 export function buildAttractionDraftEntry(row) {
-   const name = getAttractionName(row);
+   const name = AttractionSelectorModel.getAttractionName(row);
 
    return name || null;
 }

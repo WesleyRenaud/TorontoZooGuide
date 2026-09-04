@@ -1,37 +1,39 @@
 import { DetailImageSrc } from '../assets/detailImageSrc.js';
-import { normalizeStoredString } from './selectors/base/storedSelection.js';
+import { StoredSelection } from './selectors/base/storedSelection.js';
 
-export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
-   if (!name) {
-      return null;
+export class ScheduledOccurrencePresentation {
+   static buildOccurrenceDetailImageSrc(imageDirectory, name) {
+      if (!name) {
+         return null;
+      }
+
+      return DetailImageSrc.buildDetailImageSrc(imageDirectory, name, {
+         basePath: '../images/details',
+      });
    }
 
-   return DetailImageSrc.buildDetailImageSrc(imageDirectory, name, {
-      basePath: '../images/details',
-   });
-}
+   static formatOccurrenceTitleSuffix(name, label) {
+      return StoredSelection.normalizeStoredString(name)
+         ? ` ${label}`
+         : '';
+   }
 
-export function formatOccurrenceTitleSuffix(name, label) {
-   return normalizeStoredString(name)
-      ? ` ${label}`
-      : '';
-}
+   static formatOccurrenceSearchTitle(name, label) {
+      const trimmed = StoredSelection.normalizeStoredString(name);
 
-export function formatOccurrenceSearchTitle(name, label) {
-   const trimmed = normalizeStoredString(name);
+      return trimmed
+         ? `${trimmed}${ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(trimmed, label)}`
+         : label;
+   }
 
-   return trimmed
-      ? `${trimmed}${formatOccurrenceTitleSuffix(trimmed, label)}`
-      : label;
-}
+   static buildOccurrenceSubtitle({
+      primaryValue = '',
+      timeRange = '',
+   } = {}) {
+      const parts = [primaryValue, timeRange].filter(Boolean);
 
-export function buildOccurrenceSubtitle({
-   primaryValue = '',
-   timeRange = '',
-} = {}) {
-   const parts = [primaryValue, timeRange].filter(Boolean);
-
-   return parts.length > 0
-      ? parts.join('  •  ')
-      : '-';
+      return parts.length > 0
+         ? parts.join('  •  ')
+         : '-';
+   }
 }

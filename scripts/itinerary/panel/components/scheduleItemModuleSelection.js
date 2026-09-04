@@ -6,11 +6,11 @@ import {
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
-import { getAnimalTitleLine } from '../../selectors/animalSelector/model.js';
-import { getAttractionTitle } from '../../selectors/attractionSelector/model.js';
-import { getGuardiansTalkName } from '../../selectors/guardiansTalkSelector/model.js';
-import { getTransportationName } from '../../selectors/transportationSelector/model.js';
-import { getWildEncounterName } from '../../selectors/wildEncounterSelector/model.js';
+import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../../selectors/attractionSelector/attractionSelectorModel.js';
+import { GuardiansTalkSelectorModel } from '../../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
+import { WildEncounterSelectorModel } from '../../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 export function canScheduleModuleSelection({
@@ -56,22 +56,22 @@ export function resolveScheduleModuleSearchLabel(row) {
    const kind = getScheduleItemRowKind(row);
 
    if (kind === ScheduleItemKind.ATTRACTION.itemType) {
-      return getAttractionTitle(row) || '';
+      return AttractionSelectorModel.getAttractionTitle(row) || '';
    }
 
    if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
-      return getTransportationName(row) || '';
+      return TransportationSelectorModel.getTransportationName(row) || '';
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-      return getGuardiansTalkName(row) || '';
+      return GuardiansTalkSelectorModel.getGuardiansTalkName(row) || '';
    }
 
    if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-      return getWildEncounterName(row) || '';
+      return WildEncounterSelectorModel.getWildEncounterName(row) || '';
    }
 
-   return getAnimalTitleLine(row);
+   return AnimalSelectorModel.getAnimalTitleLine(row);
 }
 
 export function resolveScheduleModuleSearchRowRenderer({

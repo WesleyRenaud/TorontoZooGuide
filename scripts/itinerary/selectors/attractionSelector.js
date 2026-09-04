@@ -1,16 +1,4 @@
-import {
-   buildAlsoTransportationAttractionMessage,
-   buildAttractionImageSrc,
-   buildClosedAttractionMessage,
-   getAttractionId,
-   getAttractionInfoLink,
-   getAttractionSubtitle,
-   getAttractionTitle,
-   makeAttractionSelection,
-   migrateStoredAttractions,
-   shouldConfirmAlsoTransportationAttraction,
-   shouldConfirmClosedAttraction,
-} from './attractionSelector/model.js';
+import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
 import { renderIncludeClosedAttractionsToggle } from './attractionSelector/view.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
@@ -22,7 +10,7 @@ const STORAGE_KEY = 'tzg.itineraryAttractions';
 function promptForClosedAttractionSelection(row, proceed) {
    showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.attractionMayBeClosed,
-      message: buildClosedAttractionMessage(row),
+      message: AttractionSelectorModel.buildClosedAttractionMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.add,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
       onConfirm: proceed,
@@ -32,7 +20,7 @@ function promptForClosedAttractionSelection(row, proceed) {
 function promptForAlsoTransportationAttractionSelection(row, proceed) {
    showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationTitle,
-      message: buildAlsoTransportationAttractionMessage(row),
+      message: AttractionSelectorModel.buildAlsoTransportationAttractionMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.confirm,
       cancelText: APP_STRINGS.animalsPage.back,
       onConfirm: proceed,
@@ -56,7 +44,7 @@ export function createItineraryAttractionSelectorController({
       onClose,
 
       storageKey: STORAGE_KEY,
-      migrateSelected: migrateStoredAttractions,
+      migrateSelected: AttractionSelectorModel.migrateStoredAttractions,
 
       getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),
 
@@ -68,21 +56,21 @@ export function createItineraryAttractionSelectorController({
 
       extractRows: response => response.attractions,
 
-      getId: getAttractionId,
-      getTitle: getAttractionTitle,
-      getSubtitle: getAttractionSubtitle,
-      getImageSrc: buildAttractionImageSrc,
+      getId: AttractionSelectorModel.getAttractionId,
+      getTitle: AttractionSelectorModel.getAttractionTitle,
+      getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
+      getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
       getInfoLink: () => null,
       onTitleClick: (row) => {
-         const link = getAttractionInfoLink(row);
+         const link = AttractionSelectorModel.getAttractionInfoLink(row);
 
          if (link) {
             window.open(link, '_blank');
          }
       },
-      shouldEnableTitleClick: (row) => Boolean(getAttractionInfoLink(row)),
+      shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
 
-      makeSelection: makeAttractionSelection,
+      makeSelection: AttractionSelectorModel.makeAttractionSelection,
 
       topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
       h1: APP_STRINGS.itinerary.selectors.titleAttractions,
@@ -91,7 +79,7 @@ export function createItineraryAttractionSelectorController({
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
          const continueAdd = () => {
-            if (!shouldConfirmAlsoTransportationAttraction({
+            if (!AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
                row,
                isSelected,
             })) {
@@ -102,7 +90,7 @@ export function createItineraryAttractionSelectorController({
             promptForAlsoTransportationAttractionSelection(row, proceed);
          };
 
-         if (!shouldConfirmClosedAttraction({
+         if (!AttractionSelectorModel.shouldConfirmClosedAttraction({
             row,
             isSelected,
             includeClosedAttractions,

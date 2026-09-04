@@ -1,21 +1,10 @@
 import { DetailImageSrc } from '../assets/detailImageSrc.js';
-import {
-   getAnimalSubtitle,
-   getAnimalTitleLine,
-} from '../itinerary/selectors/animalSelector/model.js';
-import { getAttractionSubtitle } from '../itinerary/selectors/attractionSelector/model.js';
+import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
-import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
-import {
-   getGuardiansTalkName,
-   getGuardiansTalkSubtitle,
-   getGuardiansTalkTitleSuffix,
-} from '../itinerary/selectors/guardiansTalkSelector/model.js';
-import {
-   getWildEncounterName,
-   getWildEncounterSubtitle,
-   getWildEncounterTitleSuffix,
-} from '../itinerary/selectors/wildEncounterSelector/model.js';
+import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
+import { GuardiansTalkSelectorModel } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { WildEncounterSelectorModel } from '../itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { APP_STRINGS } from '../strings.js';
 
 const SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
@@ -54,16 +43,16 @@ function buildNamedResultPresentation(fallbackTitle, getSubtitle) {
 
 export const SEARCH_RESULT_PRESENTATIONS = {
    wildEncounter: {
-      getTitle: getWildEncounterName,
-      getTitleSuffix: getWildEncounterTitleSuffix,
-      getImageName: getWildEncounterName,
-      getSubtitle: getWildEncounterSubtitle,
+      getTitle: WildEncounterSelectorModel.getWildEncounterName,
+      getTitleSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
+      getImageName: WildEncounterSelectorModel.getWildEncounterName,
+      getSubtitle: WildEncounterSelectorModel.getWildEncounterSubtitle,
    },
    guardiansTalk: {
-      getTitle: getGuardiansTalkName,
-      getTitleSuffix: getGuardiansTalkTitleSuffix,
-      getImageName: getGuardiansTalkName,
-      getSubtitle: getGuardiansTalkSubtitle,
+      getTitle: GuardiansTalkSelectorModel.getGuardiansTalkName,
+      getTitleSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
+      getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
+      getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,
    },
    transportationStation: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.transportationStation,
@@ -71,7 +60,7 @@ export const SEARCH_RESULT_PRESENTATIONS = {
    ),
    attraction: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.attraction,
-      getAttractionSubtitle
+      AttractionSelectorModel.getAttractionSubtitle
    ),
    giftShop: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.giftShop,
@@ -94,8 +83,8 @@ export const SEARCH_RESULT_PRESENTATIONS = {
 };
 
 const DEFAULT_SEARCH_RESULT_PRESENTATION = {
-   getTitle: getAnimalTitleLine,
-   getSubtitle: getAnimalSubtitle,
+   getTitle: AnimalSelectorModel.getAnimalTitleLine,
+   getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
 };
 
 export function getSearchResultPresentation(row) {
@@ -144,5 +133,5 @@ export function createSearchImageRowRenderers(configs = []) {
 }
 
 export function getRestaurantMenuLink(row) {
-   return normalizeStoredLink(row.menu_link);
+   return StoredSelection.normalizeStoredLink(row.menu_link);
 }

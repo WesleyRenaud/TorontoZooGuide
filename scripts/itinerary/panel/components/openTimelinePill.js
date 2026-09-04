@@ -7,10 +7,7 @@ import {
    bindPillMenu,
    buildPillMenuNodes,
 } from './itineraryPillMenu.js';
-import {
-   getAnimalEnclosureName,
-   getAnimalSpecies,
-} from '../../selectors/animalSelector/model.js';
+import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
 
 export function createPillLabelNode(
    label,
@@ -20,8 +17,8 @@ export function createPillLabelNode(
 ) {
    if (item?.species) {
       return createAnimalTitleLinkElement({
-         species: getAnimalSpecies(item),
-         enclosureName: getAnimalEnclosureName(item),
+         species: AnimalSelectorModel.getAnimalSpecies(item),
+         enclosureName: AnimalSelectorModel.getAnimalEnclosureName(item),
          className,
          tagName: 'span',
          onClick: onLabelClick,

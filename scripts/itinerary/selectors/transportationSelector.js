@@ -2,24 +2,14 @@ import { createItinerarySelectorController } from './createSelectorController.js
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
-import {
-   buildAddAsTransportationMessage,
-   buildTransportationImageSrc,
-   getTransportationId,
-   getTransportationInfoLink,
-   getTransportationSubtitle,
-   getTransportationTitle,
-   makeTransportationSelection,
-   migrateStoredTransportations,
-   shouldConfirmAddAsTransportation,
-} from './transportationSelector/model.js';
+import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 
 const STORAGE_KEY = 'tzg.itineraryTransportations';
 
 function promptForAddAsTransportationSelection(row, proceed) {
    showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.addAsTransportationTitle,
-      message: buildAddAsTransportationMessage(row),
+      message: TransportationSelectorModel.buildAddAsTransportationMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.confirm,
       cancelText: APP_STRINGS.animalsPage.back,
       onConfirm: proceed,
@@ -40,7 +30,7 @@ export function createItineraryTransportationSelectorController({
       hideNextButton: true,
 
       storageKey: STORAGE_KEY,
-      migrateSelected: migrateStoredTransportations,
+      migrateSelected: TransportationSelectorModel.migrateStoredTransportations,
 
       getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),
 
@@ -53,21 +43,21 @@ export function createItineraryTransportationSelectorController({
          Array.isArray(response.transportations) ? response.transportations : []
       ),
 
-      getId: getTransportationId,
-      getTitle: getTransportationTitle,
-      getSubtitle: getTransportationSubtitle,
-      getImageSrc: buildTransportationImageSrc,
+      getId: TransportationSelectorModel.getTransportationId,
+      getTitle: TransportationSelectorModel.getTransportationTitle,
+      getSubtitle: TransportationSelectorModel.getTransportationSubtitle,
+      getImageSrc: TransportationSelectorModel.buildTransportationImageSrc,
       getInfoLink: () => null,
       onTitleClick: (row) => {
-         const link = getTransportationInfoLink(row);
+         const link = TransportationSelectorModel.getTransportationInfoLink(row);
 
          if (link) {
             window.open(link, '_blank');
          }
       },
-      shouldEnableTitleClick: (row) => Boolean(getTransportationInfoLink(row)),
+      shouldEnableTitleClick: (row) => Boolean(TransportationSelectorModel.getTransportationInfoLink(row)),
 
-      makeSelection: makeTransportationSelection,
+      makeSelection: TransportationSelectorModel.makeTransportationSelection,
 
       topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
       h1: APP_STRINGS.itinerary.selectors.titleTransportations,
@@ -75,7 +65,7 @@ export function createItineraryTransportationSelectorController({
       emptyText: APP_STRINGS.itinerary.emptyText.transportations,
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
-         if (!shouldConfirmAddAsTransportation({
+         if (!TransportationSelectorModel.shouldConfirmAddAsTransportation({
             row,
             isSelected,
          })) {

@@ -1,14 +1,7 @@
-import {
-   migrateStoredSelectionItems,
-   normalizeStoredLink,
-   normalizeStoredString,
-} from './base/storedSelection.js';
+import { StoredSelection } from './base/storedSelection.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import {
-   buildOccurrenceDetailImageSrc,
-   buildOccurrenceSubtitle,
-} from '../scheduledOccurrencePresentation.js';
+import { ScheduledOccurrencePresentation } from '../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -21,7 +14,7 @@ function createStoredOccurrenceFromString(item, {
    emptyStoredFields,
    buildImageSrc,
 } = {}) {
-   const name = normalizeStoredString(item);
+   const name = StoredSelection.normalizeStoredString(item);
 
    if (!name) {
       return null;
@@ -41,8 +34,8 @@ function createStoredOccurrenceFromObject(item, {
    readStoredFields,
    getId,
 } = {}) {
-   const name = normalizeStoredString(item.name);
-   const id = normalizeStoredString(getId(item));
+   const name = StoredSelection.normalizeStoredString(item.name);
+   const id = StoredSelection.normalizeStoredString(getId(item));
 
    if (!id) {
       return null;
@@ -52,20 +45,20 @@ function createStoredOccurrenceFromObject(item, {
       id,
       name,
       ...readStoredFields(item),
-      imageSrc: normalizeStoredString(item.imageSrc) || buildImageSrc(name),
+      imageSrc: StoredSelection.normalizeStoredString(item.imageSrc) || buildImageSrc(name),
    };
 
    if (includeLink) {
-      storedOccurrence.link = normalizeStoredLink(item.link);
+      storedOccurrence.link = StoredSelection.normalizeStoredLink(item.link);
    }
 
-   const startTime = normalizeStoredString(item.start_time);
+   const startTime = StoredSelection.normalizeStoredString(item.start_time);
 
    if (startTime) {
       storedOccurrence.start_time = startTime;
    }
 
-   const endTime = normalizeStoredString(item.end_time);
+   const endTime = StoredSelection.normalizeStoredString(item.end_time);
 
    if (endTime) {
       storedOccurrence.end_time = endTime;
@@ -87,7 +80,7 @@ export function createScheduledOccurrenceMigration({
    readStoredFields,
    getId,
 } = {}) {
-   return (items) => migrateStoredSelectionItems(items, {
+   return (items) => StoredSelection.migrateStoredSelectionItems(items, {
       fromString: (item) => createStoredOccurrenceFromString(item, {
          emptyStoredFields,
          buildImageSrc,
@@ -110,7 +103,7 @@ function createOccurrenceSelection(row, {
    getTimeOfDay,
 } = {}) {
    const name = getName(row);
-   const startTime = normalizeStoredString(getTimeOfDay(row));
+   const startTime = StoredSelection.normalizeStoredString(getTimeOfDay(row));
    const selection = {
       id: getId(row),
       name,
@@ -134,7 +127,7 @@ function createOccurrenceSelection(row, {
       selection.start_time = startTime;
    }
 
-   const endTime = normalizeStoredString(row?.end_time);
+   const endTime = StoredSelection.normalizeStoredString(row?.end_time);
 
    if (endTime) {
       selection.end_time = endTime;
@@ -161,14 +154,14 @@ export function createScheduledOccurrenceSelectorController({
    getName = getOccurrenceName,
    getId = getName,
    getPrimaryValue,
-   getTimeOfDay = (row) => normalizeStoredString(row?.start_time),
+   getTimeOfDay = (row) => StoredSelection.normalizeStoredString(row?.start_time),
    getLink = null,
    emptyStoredFields = {},
    readStoredFields,
    buildSelectionFields,
 } = {}) {
    const buildImageSrc = (name) => (
-      buildOccurrenceDetailImageSrc(imageDirectory, name)
+      ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(imageDirectory, name)
    );
 
    const migrateSelected = createScheduledOccurrenceMigration({
@@ -212,7 +205,7 @@ export function createScheduledOccurrenceSelectorController({
 
       getId,
       getTitle: (row) => getName(row) || defaultTitle,
-      getSubtitle: (row) => buildOccurrenceSubtitle({
+      getSubtitle: (row) => ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: getPrimaryValue(row),
          timeRange: buildScheduledOccurrenceTimeRange(row),
       }),

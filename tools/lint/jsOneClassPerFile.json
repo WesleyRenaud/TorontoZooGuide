@@ -78,7 +78,14 @@
       "scripts/itinerary/itineraryPathModel.js",
       "scripts/guardians/normalizeGuardiansTalkLinkedAnimals.js",
       "scripts/itinerary/panel/scheduleItemTypes.js",
-      "scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.js"
+      "scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.js",
+      "scripts/itinerary/selectors/base/storedSelection.js",
+      "scripts/itinerary/scheduledOccurrencePresentation.js",
+      "scripts/itinerary/selectors/animalSelector/animalSelectorModel.js",
+      "scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.js",
+      "scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js",
+      "scripts/itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js",
+      "scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

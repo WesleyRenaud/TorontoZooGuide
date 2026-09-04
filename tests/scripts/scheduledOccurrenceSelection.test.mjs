@@ -3,10 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { createSelectorSelectionState } from '../../scripts/itinerary/selectors/base/selectionState.js';
 import { createScheduledOccurrenceMigration } from '../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
-import {
-   getGuardiansTalkId,
-   readGuardiansTalkStoredFields,
-} from '../../scripts/itinerary/selectors/guardiansTalkSelector/model.js';
+import { GuardiansTalkSelectorModel } from '../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
@@ -14,7 +11,7 @@ const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 function createGuardiansTalkSelectionState() {
    return createSelectorSelectionState({
       storageKey: STORAGE_KEY,
-      getId: getGuardiansTalkId,
+      getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
       migrateSelected: createScheduledOccurrenceMigration({
          emptyStoredFields: {
             location: '',
@@ -22,11 +19,11 @@ function createGuardiansTalkSelectionState() {
             end_time: '',
          },
          buildImageSrc: () => '',
-         readStoredFields: readGuardiansTalkStoredFields,
-         getId: getGuardiansTalkId,
+         readStoredFields: GuardiansTalkSelectorModel.readGuardiansTalkStoredFields,
+         getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
       }),
       makeSelection: (row) => ({
-         id: getGuardiansTalkId(row),
+         id: GuardiansTalkSelectorModel.getGuardiansTalkId(row),
          name: row.name,
          location: row.location ?? '',
          start_time: row.start_time ?? '',
@@ -64,7 +61,7 @@ test.describe('scheduled occurrence selection migration', () => {
          start_time: '11:30 AM',
          end_time: '12:00 PM',
       };
-      const catalogId = getGuardiansTalkId(catalogRow);
+      const catalogId = GuardiansTalkSelectorModel.getGuardiansTalkId(catalogRow);
 
       assert.equal(catalogId, 'New World Primates||11:30 AM||12:00 PM');
       assert.equal(state.isSelected(catalogId), true);

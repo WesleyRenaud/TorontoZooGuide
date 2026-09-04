@@ -2,13 +2,13 @@ import { AnimalVisibility } from './diff/animalVisibility.js';
 import { ItemKey } from './diff/itemKey.js';
 import { RemovedItems } from './diff/removedItems.js';
 import { normalizeNonNegativeNumber } from '../panel/format.js';
-import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function validatedAttractionPresenceItems(validated) {
    return [
       ...validated.attractions,
-      ...validated.transportations.filter(isTransportationAddedAsAttraction),
+      ...validated.transportations.filter(TransportationSelectorModel.isTransportationAddedAsAttraction),
    ];
 }
 

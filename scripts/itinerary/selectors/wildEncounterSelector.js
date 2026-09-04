@@ -1,14 +1,6 @@
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
 import { APP_STRINGS } from '../../strings.js';
-import {
-   buildWildEncounterSelectionFields,
-   getWildEncounterId,
-   getWildEncounterLink,
-   getWildEncounterMeetingSpot,
-   getWildEncounterName,
-   getWildEncounterScheduleStart,
-   readWildEncounterStoredFields,
-} from './wildEncounterSelector/model.js';
+import { WildEncounterSelectorModel } from './wildEncounterSelector/wildEncounterSelectorModel.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
 
@@ -35,17 +27,17 @@ export function createItineraryWildEncounterSelectorController({
       subtitle: APP_STRINGS.itinerary.selectors.wildEncounterSubtitle,
       emptyText: APP_STRINGS.itinerary.emptyText.wildEncounters,
 
-      getName: getWildEncounterName,
-      getId: getWildEncounterId,
-      getPrimaryValue: getWildEncounterMeetingSpot,
-      getTimeOfDay: getWildEncounterScheduleStart,
-      getLink: getWildEncounterLink,
+      getName: WildEncounterSelectorModel.getWildEncounterName,
+      getId: WildEncounterSelectorModel.getWildEncounterId,
+      getPrimaryValue: WildEncounterSelectorModel.getWildEncounterMeetingSpot,
+      getTimeOfDay: WildEncounterSelectorModel.getWildEncounterScheduleStart,
+      getLink: WildEncounterSelectorModel.getWildEncounterLink,
       emptyStoredFields: {
          meeting_spot: '',
          start_time: '',
          end_time: '',
       },
-      readStoredFields: readWildEncounterStoredFields,
-      buildSelectionFields: buildWildEncounterSelectionFields,
+      readStoredFields: WildEncounterSelectorModel.readWildEncounterStoredFields,
+      buildSelectionFields: WildEncounterSelectorModel.buildWildEncounterSelectionFields,
    });
 }
