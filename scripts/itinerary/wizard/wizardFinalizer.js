@@ -4,7 +4,7 @@ import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
-import { loadSelectedNames } from '../selectors/regionSelector/regionStorage.js';
+import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
 import { StorageKeys } from '../storageKeys.js';
 import { APP_STRINGS } from '../../strings.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
@@ -39,7 +39,7 @@ function saveFinalItinerary(
 ) {
    return saveItineraryFn(finalItinerary, {
       overridingConflictingGuardiansTalks,
-      selectedExhibits: loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY),
+      selectedExhibits: RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY),
    });
 }
 

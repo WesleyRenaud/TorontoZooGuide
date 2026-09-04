@@ -3,12 +3,7 @@ import {
    normalizeItineraryDraft,
 } from './itineraryShape.js';
 import { RegionSelection } from './selectors/regionSelector/regionSelection.js';
-import {
-   addRemovedAnimalKey,
-   clearRemovedAnimalKeys,
-   loadSelectedNames,
-   saveSelectedNames,
-} from './selectors/regionSelector/regionStorage.js';
+import { RegionStorage } from './selectors/regionSelector/regionStorage.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { StorageKeys } from './storageKeys.js';
 
@@ -165,10 +160,10 @@ function writeItineraryAnimalDraft(animals = []) {
 
 function pruneSelectedExhibitsWithoutAnimals(animals = []) {
    const presentExhibits = new Set(RegionSelection.getExhibitNamesFromAnimals(animals));
-   const nextSelectedExhibits = loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY)
+   const nextSelectedExhibits = RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY)
       .filter((exhibitName) => presentExhibits.has(exhibitName));
 
-   saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
+   RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
 }
 
 function syncSelectedExhibitsFromItinerary(itinerary = {}) {
@@ -176,13 +171,13 @@ function syncSelectedExhibitsFromItinerary(itinerary = {}) {
       return;
    }
 
-   saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
+   RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
 }
 
 export function syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
    writeItineraryAnimalDraft(itinerary.animals ?? []);
    syncSelectedExhibitsFromItinerary(itinerary);
-   clearRemovedAnimalKeys();
+   RegionStorage.clearRemovedAnimalKeys();
 }
 
 export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
@@ -196,7 +191,7 @@ export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
       return;
    }
 
-   addRemovedAnimalKey(removeKey);
+   RegionStorage.addRemovedAnimalKey(removeKey);
 
    const remainingAnimals = loadArray(StorageKeys.ANIMALS_KEY)
       .map(RegionSelection.normalizeSelectedAnimal)

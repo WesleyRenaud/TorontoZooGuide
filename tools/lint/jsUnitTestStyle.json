@@ -62,7 +62,11 @@
       "tests/scripts/itinerary/wizard/wizardStepConfigs.test.mjs",
       "tests/scripts/itinerary/panel/itineraryPanelViewUrl.test.mjs",
       "tests/scripts/itinerary/selectors/regionSelector/regionSelection.test.mjs",
-      "tests/scripts/itinerary/panel/components/scheduleItemModuleSelection.test.mjs"
+      "tests/scripts/itinerary/panel/components/scheduleItemModuleSelection.test.mjs",
+      "tests/scripts/itinerary/selectors/regionSelector/regionStorage.test.mjs",
+      "tests/scripts/markers/markerHoverText.test.mjs",
+      "tests/scripts/consoleOperations/forms/wildEncounterScheduleRows.test.mjs",
+      "tests/scripts/datePickers/readOpenPickerTime.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

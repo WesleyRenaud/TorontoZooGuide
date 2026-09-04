@@ -6,7 +6,7 @@ import {
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
-import { restoreRemovedAnimalKey } from './regionSelector/regionStorage.js';
+import { RegionStorage } from './regionSelector/regionStorage.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
@@ -93,7 +93,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
          const completeToggle = () => {
             if (!isSelected) {
-               restoreRemovedAnimalKey(AnimalSelectorModel.getAnimalId(row));
+               RegionStorage.restoreRemovedAnimalKey(AnimalSelectorModel.getAnimalId(row));
             }
 
             proceed();

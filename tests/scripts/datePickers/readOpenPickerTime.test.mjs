@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { readOpenPickerTime } from '../../scripts/datePickers/readOpenPickerTime.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-
+import { ReadOpenPickerTime } from '../../../scripts/datePickers/readOpenPickerTime.js';
 function createMockPickerInstance(overrides = {}) {
    return {
       isOpen: true,
@@ -27,17 +25,17 @@ function createMockPickerInstance(overrides = {}) {
    };
 }
 
-test('readOpenPickerTime reads the open picker default time controls', () => {
-   const time = readOpenPickerTime(createMockPickerInstance());
+test('Test_ReadOpenPickerTime_TestOpenDefaultControls_ExpectControlTime', () => {
+   const time = ReadOpenPickerTime.readOpenPickerTime(createMockPickerInstance());
 
    assert.equal(time, '12:00 PM');
 });
 
-test('readOpenPickerTime prefers selectedDates over picker controls', () => {
+test('Test_ReadOpenPickerTime_TestSelectedDatesPresent_ExpectSelectedOverControls', () => {
    const selectedDate = new Date();
    selectedDate.setHours(14, 30, 0, 0);
 
-   const time = readOpenPickerTime(createMockPickerInstance({
+   const time = ReadOpenPickerTime.readOpenPickerTime(createMockPickerInstance({
       selectedDates: [ selectedDate ],
    }));
 

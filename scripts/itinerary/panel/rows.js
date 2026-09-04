@@ -12,11 +12,7 @@ import {
 import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import { RowActionProps } from './rowActionProps.js';
 import { RowAlerts } from './rowAlerts.js';
-import {
-   buildNamedRows,
-   buildRows,
-   buildUniqueAnimals,
-} from './rowBuilders.js';
+import { RowBuilders } from './rowBuilders.js';
 import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
@@ -34,10 +30,10 @@ export function buildAnimalRows(
       onRemoveItem = null,
    } = {}
 ) {
-   return buildRows(animals, {
+   return RowBuilders.buildRows(animals, {
       normalizeItem: normalizeAnimal,
       prepareItems: (normalizedItems) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
-         buildUniqueAnimals(normalizedItems)
+         RowBuilders.buildUniqueAnimals(normalizedItems)
       ),
       buildRowProps: (animal) => {
          const alert = RowAlerts.buildAnimalAlert(animal);
@@ -71,7 +67,7 @@ export function buildAttractionRows(
       onRemoveItem = null,
    } = {}
 ) {
-   return buildNamedRows(attractions, {
+   return RowBuilders.buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.attraction,
@@ -103,7 +99,7 @@ export function buildTransportationRows(
       onRemoveItem = null,
    } = {}
 ) {
-   return buildNamedRows(transportations, {
+   return RowBuilders.buildNamedRows(transportations, {
       normalizeItem: normalizeTransportation,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.transportation,
@@ -129,7 +125,7 @@ export function buildGuardiansRows(
    guardiansTalks = [],
    { onRemoveItem = null } = {}
 ) {
-   return buildNamedRows(guardiansTalks, {
+   return RowBuilders.buildNamedRows(guardiansTalks, {
       normalizeItem: normalizeTalk,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.guardiansTalk,
@@ -167,7 +163,7 @@ export function buildWildRows(
    wildEncounters = [],
    { onRemoveItem = null } = {}
 ) {
-   return buildNamedRows(wildEncounters, {
+   return RowBuilders.buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.wildEncounter,

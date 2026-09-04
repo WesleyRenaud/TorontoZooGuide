@@ -1,4 +1,4 @@
-import { buildHoverText } from './markerHoverText.js';
+import { MarkerHoverText } from './markerHoverText.js';
 import { applyMarkerVisual } from './markerVisuals.js';
 
 export function createMarkerElement(group) {
@@ -7,7 +7,7 @@ export function createMarkerElement(group) {
    markerEl.style.left = `${group.x}%`;
    markerEl.style.top = `${group.y}%`;
    markerEl.__items = group.items;
-   markerEl.dataset.hover = buildHoverText(group.items);
+   markerEl.dataset.hover = MarkerHoverText.buildHoverText(group.items);
    markerEl.removeAttribute('title');
 
    applyMarkerVisual(markerEl, group.items);
