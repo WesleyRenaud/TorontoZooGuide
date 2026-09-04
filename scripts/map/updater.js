@@ -10,12 +10,8 @@ import {
    clearItineraryPathOverlay,
    renderItineraryPathOverlay,
 } from './itineraryPathOverlay.js';
-import {
-   buildItineraryRows,
-   buildLayerRequest,
-   resolveItineraryTransportationRouteMarkers,
-} from './layerRequest.js';
-import { setSourceRows } from './sourceHelpers.js';
+import { LayerRequest } from './layerRequest.js';
+import { SourceHelpers } from './sourceHelpers.js';
 import {
    hideTransportationRouteLayers,
    showTransportationRouteMarkers,
@@ -101,7 +97,7 @@ export function createMapUpdater({
       const {
          ctx,
          selectedTypes,
-      } = buildLayerRequest({
+      } = LayerRequest.buildLayerRequest({
          dateCtx,
          selectedTypes: controls.selectedTypes,
          transportationRoute: controls.transportationRoute,
@@ -121,7 +117,7 @@ export function createMapUpdater({
    }
 
    function syncItineraryTransportationRoute(itinerary) {
-      const routeMarkers = resolveItineraryTransportationRouteMarkers(itinerary);
+      const routeMarkers = LayerRequest.resolveItineraryTransportationRouteMarkers(itinerary);
 
       if (!routeMarkers) {
          hideTransportationRouteLayers();
@@ -137,7 +133,7 @@ export function createMapUpdater({
    async function renderItineraryOnly(dateCtx, itinerary, options) {
       try {
          syncItineraryTransportationRoute(itinerary);
-         markers.render(buildItineraryRows(itinerary));
+         markers.render(LayerRequest.buildItineraryRows(itinerary));
          renderItineraryPathOverlay(
             resolveItineraryPath(options, itinerary)
          );
@@ -158,13 +154,13 @@ export function createMapUpdater({
       const source = sources[layer];
 
       if (!source) {
-         return setSourceRows(store, layer, getStoredLayerRows(layer));
+         return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
       }
 
       try {
          return await source.fetch(ctx);
       } catch {
-         return setSourceRows(store, layer, getStoredLayerRows(layer));
+         return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
       }
    }
 

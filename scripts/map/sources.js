@@ -1,9 +1,5 @@
 import { MapApi } from '../api/mapApi.js';
-import {
-   createDynamicTypedSource,
-   createStaticTypedSource,
-   normalizeTypedRows,
-} from './sourceHelpers.js';
+import { SourceHelpers } from './sourceHelpers.js';
 import {
    hideTransportationRouteLayers,
    showTransportationRouteLayer,
@@ -27,15 +23,15 @@ function buildDatePayload(ctx, extra = {}) {
 }
 
 function createTypedDynamicApiSource(store, type, fetchRows, buildPayload) {
-   return createDynamicTypedSource(store, type, async (ctx) => {
+   return SourceHelpers.createDynamicTypedSource(store, type, async (ctx) => {
       const rows = await fetchRows(buildPayload(ctx));
-      return normalizeTypedRows(rows, type);
+      return SourceHelpers.normalizeTypedRows(rows, type);
    });
 }
 
 function createTypedStaticApiSource(store, type, fetchRows) {
-   return createStaticTypedSource(store, type, async () => (
-      normalizeTypedRows(await fetchRows(), type)
+   return SourceHelpers.createStaticTypedSource(store, type, async () => (
+      SourceHelpers.normalizeTypedRows(await fetchRows(), type)
    ));
 }
 

@@ -2,13 +2,6 @@ function asRows(value) {
    return Array.isArray(value) ? value : [];
 }
 
-export function normalizeTypedRows(rows, type) {
-   return asRows(rows).map((row) => ({
-      ...row,
-      type,
-   }));
-}
-
 function ensureStaticCache(store, type) {
    if (!store.cache[type]) {
       store.cache[type] = {
@@ -20,48 +13,57 @@ function ensureStaticCache(store, type) {
    return store.cache[type];
 }
 
-export function setSourceRows(store, type, rows) {
-   const normalizedRows = asRows(rows);
-   store.byType[type] = normalizedRows;
-   return normalizedRows;
-}
+export class SourceHelpers {
+   static normalizeTypedRows(rows, type) {
+      return asRows(rows).map((row) => ({
+         ...row,
+         type,
+      }));
+   }
 
-export function createDynamicTypedSource(store, type, fetchRows) {
-   return {
-      fetch: async (ctx) => {
-         const rows = await fetchRows(ctx);
-         return setSourceRows(store, type, rows);
-      },
-      cachePolicy: 'no-cache',
-   };
-}
+   static setSourceRows(store, type, rows) {
+      const normalizedRows = asRows(rows);
+      store.byType[type] = normalizedRows;
+      return normalizedRows;
+   }
 
-export function createStaticTypedSource(store, type, fetchRows) {
-   return {
-      fetch: async (ctx) => {
-         const cache = ensureStaticCache(store, type);
+   static createDynamicTypedSource(store, type, fetchRows) {
+      return {
+         fetch: async (ctx) => {
+            const rows = await fetchRows(ctx);
+            return SourceHelpers.setSourceRows(store, type, rows);
+         },
+         cachePolicy: 'no-cache',
+      };
+   }
 
-         if (cache.loaded) {
-            return store.byType[type] || [];
-         }
+   static createStaticTypedSource(store, type, fetchRows) {
+      return {
+         fetch: async (ctx) => {
+            const cache = ensureStaticCache(store, type);
 
-         if (cache.inFlight) {
+            if (cache.loaded) {
+               return store.byType[type] || [];
+            }
+
+            if (cache.inFlight) {
+               return cache.inFlight;
+            }
+
+            cache.inFlight = Promise.resolve(fetchRows(ctx))
+               .then((rows) => {
+                  cache.loaded = true;
+                  cache.inFlight = null;
+                  return SourceHelpers.setSourceRows(store, type, rows);
+               })
+               .catch((error) => {
+                  cache.inFlight = null;
+                  throw error;
+               });
+
             return cache.inFlight;
-         }
-
-         cache.inFlight = Promise.resolve(fetchRows(ctx))
-            .then((rows) => {
-               cache.loaded = true;
-               cache.inFlight = null;
-               return setSourceRows(store, type, rows);
-            })
-            .catch((error) => {
-               cache.inFlight = null;
-               throw error;
-            });
-
-         return cache.inFlight;
-      },
-      cachePolicy: 'static',
-   };
+         },
+         cachePolicy: 'static',
+      };
+   }
 }

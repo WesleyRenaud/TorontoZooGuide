@@ -1,15 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildItineraryRows,
-   buildLayerRequest,
-   buildSelectedTypes,
-   resolveItineraryTransportationRouteMarkers,
-} from '../../scripts/map/layerRequest.js';
+import { LayerRequest } from '../../../scripts/map/layerRequest.js';
 
-test('builds typed itinerary rows for map focus candidates', () => {
-   assert.deepEqual(buildItineraryRows({
+test('Test_BuildItineraryRows_TestFocusCandidates_ExpectTypedRows', () => {
+   assert.deepEqual(LayerRequest.buildItineraryRows({
       animals: [
          { species: 'African Lion' },
          { species: 'Cheetah', exhibit: 'Africa Savanna' },
@@ -31,8 +26,8 @@ test('builds typed itinerary rows for map focus candidates', () => {
    ]);
 });
 
-test('includes station markers without generic transportation icon for scheduled rides', () => {
-   assert.deepEqual(buildItineraryRows({
+test('Test_BuildItineraryRows_TestScheduledRideStations_ExpectStationMarkersOnly', () => {
+   assert.deepEqual(LayerRequest.buildItineraryRows({
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -83,8 +78,8 @@ test('includes station markers without generic transportation icon for scheduled
    ]);
 });
 
-test('includes only fully unscheduled transportations as generic markers', () => {
-   assert.deepEqual(buildItineraryRows({
+test('Test_BuildItineraryRows_TestUnscheduledTransport_ExpectGenericMarkers', () => {
+   assert.deepEqual(LayerRequest.buildItineraryRows({
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -104,8 +99,8 @@ test('includes only fully unscheduled transportations as generic markers', () =>
    ]);
 });
 
-test('hides generic transportation marker when either role is scheduled', () => {
-   assert.deepEqual(buildItineraryRows({
+test('Test_BuildItineraryRows_TestEitherRoleScheduled_ExpectHideGenericMarker', () => {
+   assert.deepEqual(LayerRequest.buildItineraryRows({
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -146,15 +141,15 @@ test('hides generic transportation marker when either role is scheduled', () => 
    ]);
 });
 
-test('resolves itinerary transportation route markers from scheduled legs', () => {
+test('Test_ResolveItineraryTransportationRouteMarkers_TestScheduledLegs_ExpectRouteMarkers', () => {
    assert.equal(
-      resolveItineraryTransportationRouteMarkers({
+      LayerRequest.resolveItineraryTransportationRouteMarkers({
          transportations: [{ name: 'Zoomobile', legs: [] }],
       }),
       null
    );
    assert.deepEqual(
-      resolveItineraryTransportationRouteMarkers({
+      LayerRequest.resolveItineraryTransportationRouteMarkers({
          transportations: [{
             name: 'Zoomobile',
             route: 'summer',
@@ -171,7 +166,7 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
       }
    );
    assert.deepEqual(
-      resolveItineraryTransportationRouteMarkers({
+      LayerRequest.resolveItineraryTransportationRouteMarkers({
          transportations: [{
             name: 'Zoo Shuttle',
             route: 'summer',
@@ -186,16 +181,16 @@ test('resolves itinerary transportation route markers from scheduled legs', () =
    );
 });
 
-test('adds focused type to selected types when needed', () => {
-   assert.deepEqual(buildSelectedTypes(['animal'], 'giftShop', 'none'), ['giftShop', 'animal']);
+test('Test_BuildSelectedTypes_TestFocusedType_ExpectAddedWhenNeeded', () => {
+   assert.deepEqual(LayerRequest.buildSelectedTypes(['animal'], 'giftShop', 'none'), ['giftShop', 'animal']);
    assert.deepEqual(
-      buildSelectedTypes(['transportationRoute'], 'transportationStation', 'summer'),
+      LayerRequest.buildSelectedTypes(['transportationRoute'], 'transportationStation', 'summer'),
       ['transportationRoute']
    );
 });
 
-test('builds layer request context with focused row includes', () => {
-   assert.deepEqual(buildLayerRequest({
+test('Test_BuildLayerRequest_TestFocusedRow_ExpectIncludes', () => {
+   assert.deepEqual(LayerRequest.buildLayerRequest({
       dateCtx: {
          month: 'JUN',
          day: 15,

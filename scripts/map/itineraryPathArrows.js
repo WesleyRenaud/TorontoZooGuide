@@ -1,13 +1,5 @@
-import {
-   ITINERARY_PATH_ARROW_CURVE_SAMPLE_STEP_PX,
-   ITINERARY_PATH_ARROW_INTERVAL_PX,
-   ITINERARY_PATH_ARROW_MIN_PATH_LENGTH_PX,
-   ITINERARY_PATH_ARROW_SKIP_END_PX,
-} from './itineraryPathConstants.js';
-import {
-   parseSvgPathD,
-   pointsNear,
-} from './svgPathParsing.js';
+import { ItineraryPathConstants } from './itineraryPathConstants.js';
+import { SvgPathParsing } from './svgPathParsing.js';
 
 function cubicBezierPoint(t, start, controlPoint1, controlPoint2, end) {
    const inverse = 1 - t;
@@ -44,69 +36,6 @@ function appendCubicBezierSamples(
          cubicBezierPoint(step / steps, start, controlPoint1, controlPoint2, end)
       );
    }
-}
-
-export function buildPathPolylines(pathD, stepPx = 8) {
-   const segments = parseSvgPathD(pathD);
-
-   if (segments.length === 0) {
-      return [];
-   }
-
-   const polylines = [];
-   let polyline = [];
-   let currentPoint = null;
-
-   function finishPolyline() {
-      if (polyline.length >= 2) {
-         polylines.push(polyline);
-      }
-
-      polyline = [];
-      currentPoint = null;
-   }
-
-   for (const segment of segments) {
-      if (segment.tag === 'M') {
-         finishPolyline();
-         currentPoint = { x: segment.x, y: segment.y };
-         polyline.push(currentPoint);
-         continue;
-      }
-
-      if (currentPoint == null) {
-         continue;
-      }
-
-      if (segment.tag === 'L' || segment.tag === 'H' || segment.tag === 'V') {
-         currentPoint = { x: segment.x, y: segment.y };
-         polyline.push(currentPoint);
-         continue;
-      }
-
-      if (segment.tag === 'C') {
-         const end = { x: segment.x, y: segment.y };
-         appendCubicBezierSamples(
-            polyline,
-            currentPoint,
-            {
-               x: segment.controlPoint1X,
-               y: segment.controlPoint1Y,
-            },
-            {
-               x: segment.controlPoint2X,
-               y: segment.controlPoint2Y,
-            },
-            end,
-            stepPx
-         );
-         currentPoint = end;
-      }
-   }
-
-   finishPolyline();
-
-   return polylines;
 }
 
 function polylineLength(polyline) {
@@ -163,7 +92,7 @@ function mergeConnectedPolylines(polylines, tolerance = 1.5) {
       const previousEnd = previous[previous.length - 1];
       const currentStart = current[0];
 
-      if (pointsNear(previousEnd, currentStart, tolerance)) {
+      if (SvgPathParsing.pointsNear(previousEnd, currentStart, tolerance)) {
          previous.push(...current.slice(1));
       }
       else {
@@ -172,19 +101,6 @@ function mergeConnectedPolylines(polylines, tolerance = 1.5) {
    }
 
    return merged;
-}
-
-export function offsetArrowPlacement(placement, offsetPx, side = 'left') {
-   const angleRadians = placement.angleDeg * (Math.PI / 180);
-   const sign = side === 'left' ? 1 : -1;
-   const offsetX = -Math.sin(angleRadians) * sign * offsetPx;
-   const offsetY = Math.cos(angleRadians) * sign * offsetPx;
-
-   return {
-      x: placement.x + offsetX,
-      y: placement.y + offsetY,
-      angleDeg: placement.angleDeg,
-   };
 }
 
 function buildPathArrowPlacementsForPolyline(polyline, {
@@ -219,22 +135,100 @@ function buildPathArrowPlacementsForPolyline(polyline, {
    return placements;
 }
 
-export function buildPathArrowPlacements(pathD, {
-   intervalPx = ITINERARY_PATH_ARROW_INTERVAL_PX,
-   skipEndPx = ITINERARY_PATH_ARROW_SKIP_END_PX,
-   curveSampleStepPx = ITINERARY_PATH_ARROW_CURVE_SAMPLE_STEP_PX,
-   minPathLengthPx = ITINERARY_PATH_ARROW_MIN_PATH_LENGTH_PX,
-} = {}) {
-   const polylines = mergeConnectedPolylines(
-      buildPathPolylines(pathD, curveSampleStepPx)
-   );
+export class ItineraryPathArrows {
+   static buildPathPolylines(pathD, stepPx = 8) {
+      const segments = SvgPathParsing.parseSvgPathD(pathD);
 
-   return polylines.flatMap((polyline) => buildPathArrowPlacementsForPolyline(
-      polyline,
-      {
-         intervalPx,
-         skipEndPx,
-         minPathLengthPx,
+      if (segments.length === 0) {
+         return [];
       }
-   ));
+
+      const polylines = [];
+      let polyline = [];
+      let currentPoint = null;
+
+      function finishPolyline() {
+         if (polyline.length >= 2) {
+            polylines.push(polyline);
+         }
+
+         polyline = [];
+         currentPoint = null;
+      }
+
+      for (const segment of segments) {
+         if (segment.tag === 'M') {
+            finishPolyline();
+            currentPoint = { x: segment.x, y: segment.y };
+            polyline.push(currentPoint);
+            continue;
+         }
+
+         if (currentPoint == null) {
+            continue;
+         }
+
+         if (segment.tag === 'L' || segment.tag === 'H' || segment.tag === 'V') {
+            currentPoint = { x: segment.x, y: segment.y };
+            polyline.push(currentPoint);
+            continue;
+         }
+
+         if (segment.tag === 'C') {
+            const end = { x: segment.x, y: segment.y };
+            appendCubicBezierSamples(
+               polyline,
+               currentPoint,
+               {
+                  x: segment.controlPoint1X,
+                  y: segment.controlPoint1Y,
+               },
+               {
+                  x: segment.controlPoint2X,
+                  y: segment.controlPoint2Y,
+               },
+               end,
+               stepPx
+            );
+            currentPoint = end;
+         }
+      }
+
+      finishPolyline();
+
+      return polylines;
+   }
+
+   static offsetArrowPlacement(placement, offsetPx, side = 'left') {
+      const angleRadians = placement.angleDeg * (Math.PI / 180);
+      const sign = side === 'left' ? 1 : -1;
+      const offsetX = -Math.sin(angleRadians) * sign * offsetPx;
+      const offsetY = Math.cos(angleRadians) * sign * offsetPx;
+
+      return {
+         x: placement.x + offsetX,
+         y: placement.y + offsetY,
+         angleDeg: placement.angleDeg,
+      };
+   }
+
+   static buildPathArrowPlacements(pathD, {
+      intervalPx = ItineraryPathConstants.ITINERARY_PATH_ARROW_INTERVAL_PX,
+      skipEndPx = ItineraryPathConstants.ITINERARY_PATH_ARROW_SKIP_END_PX,
+      curveSampleStepPx = ItineraryPathConstants.ITINERARY_PATH_ARROW_CURVE_SAMPLE_STEP_PX,
+      minPathLengthPx = ItineraryPathConstants.ITINERARY_PATH_ARROW_MIN_PATH_LENGTH_PX,
+   } = {}) {
+      const polylines = mergeConnectedPolylines(
+         ItineraryPathArrows.buildPathPolylines(pathD, curveSampleStepPx)
+      );
+
+      return polylines.flatMap((polyline) => buildPathArrowPlacementsForPolyline(
+         polyline,
+         {
+            intervalPx,
+            skipEndPx,
+            minPathLengthPx,
+         }
+      ));
+   }
 }

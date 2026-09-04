@@ -1,14 +1,11 @@
-import {
-   parseSvgPathD,
-   pointsNear,
-} from './svgPathParsing.js';
+import { SvgPathParsing } from './svgPathParsing.js';
 
 let cachedWalkGraphPath = null;
 
 function findSliceBetweenPoints(segments, fromPoint, toPoint, searchStartIndex = 0) {
    const fromIndices = segments
       .map((segment, segmentIndex) => (
-         segmentIndex >= searchStartIndex && pointsNear(segment, fromPoint)
+         segmentIndex >= searchStartIndex && SvgPathParsing.pointsNear(segment, fromPoint)
             ? segmentIndex
             : -1
       ))
@@ -24,7 +21,7 @@ function findSliceBetweenPoints(segments, fromPoint, toPoint, searchStartIndex =
             break;
          }
 
-         if (pointsNear(segments[toIndex], toPoint)) {
+         if (SvgPathParsing.pointsNear(segments[toIndex], toPoint)) {
             return {
                fromIndex,
                toIndex,
@@ -48,75 +45,77 @@ function appendSlice(pathParts, segments, fromIndex, toIndex, includeMove) {
    }
 }
 
-export function getWalkGraphPathSegments() {
-   const pathElement = document.querySelector('#walk-graph-path');
-   const pathD = pathElement?.getAttribute('d');
+export class WalkGraphPathGeometry {
+   static getWalkGraphPathSegments() {
+      const pathElement = document.querySelector('#walk-graph-path');
+      const pathD = pathElement?.getAttribute('d');
 
-   if (!pathD) {
-      return null;
-   }
-
-   if (cachedWalkGraphPath?.pathD !== pathD) {
-      cachedWalkGraphPath = {
-         pathD,
-         segments: parseSvgPathD(pathD),
-      };
-   }
-
-   return cachedWalkGraphPath.segments;
-}
-
-export function resetWalkGraphPathCache() {
-   cachedWalkGraphPath = null;
-}
-
-export function buildPathDFromWalkGraphSegments(segments, waypoints) {
-   if (!segments.length || waypoints.length < 2) {
-      return '';
-   }
-
-   const pathParts = [];
-   let searchStartIndex = 0;
-   let matchedSliceCount = 0;
-
-   for (let index = 0; index < waypoints.length - 1; index += 1) {
-      const fromPoint = waypoints[index];
-      const toPoint = waypoints[index + 1];
-      const slice = findSliceBetweenPoints(
-         segments,
-         fromPoint,
-         toPoint,
-         searchStartIndex
-      );
-
-      if (!slice) {
-         if (matchedSliceCount === 0) {
-            pathParts.push(
-               `M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`
-            );
-         }
-         else {
-            pathParts.push(`L ${toPoint.x} ${toPoint.y}`);
-         }
-
-         matchedSliceCount += 1;
-         continue;
+      if (!pathD) {
+         return null;
       }
 
-      appendSlice(
-         pathParts,
-         segments,
-         slice.fromIndex,
-         slice.toIndex,
-         matchedSliceCount === 0
-      );
-      matchedSliceCount += 1;
-      searchStartIndex = slice.toIndex;
+      if (cachedWalkGraphPath?.pathD !== pathD) {
+         cachedWalkGraphPath = {
+            pathD,
+            segments: SvgPathParsing.parseSvgPathD(pathD),
+         };
+      }
+
+      return cachedWalkGraphPath.segments;
    }
 
-   if (pathParts.length === 0) {
-      return '';
+   static resetWalkGraphPathCache() {
+      cachedWalkGraphPath = null;
    }
 
-   return pathParts.join(' ');
+   static buildPathDFromWalkGraphSegments(segments, waypoints) {
+      if (!segments.length || waypoints.length < 2) {
+         return '';
+      }
+
+      const pathParts = [];
+      let searchStartIndex = 0;
+      let matchedSliceCount = 0;
+
+      for (let index = 0; index < waypoints.length - 1; index += 1) {
+         const fromPoint = waypoints[index];
+         const toPoint = waypoints[index + 1];
+         const slice = findSliceBetweenPoints(
+            segments,
+            fromPoint,
+            toPoint,
+            searchStartIndex
+         );
+
+         if (!slice) {
+            if (matchedSliceCount === 0) {
+               pathParts.push(
+                  `M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`
+               );
+            }
+            else {
+               pathParts.push(`L ${toPoint.x} ${toPoint.y}`);
+            }
+
+            matchedSliceCount += 1;
+            continue;
+         }
+
+         appendSlice(
+            pathParts,
+            segments,
+            slice.fromIndex,
+            slice.toIndex,
+            matchedSliceCount === 0
+         );
+         matchedSliceCount += 1;
+         searchStartIndex = slice.toIndex;
+      }
+
+      if (pathParts.length === 0) {
+         return '';
+      }
+
+      return pathParts.join(' ');
+   }
 }

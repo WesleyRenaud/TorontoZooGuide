@@ -63,7 +63,14 @@
       "scripts/itinerary/panel/rowActionProps.js",
       "scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.js",
       "scripts/itinerary/panel/components/removedItemsPopupContentRows.js",
-      "scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js"
+      "scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js",
+      "scripts/map/svgPathParsing.js",
+      "scripts/map/itineraryPathConstants.js",
+      "scripts/map/itineraryPathArrows.js",
+      "scripts/map/walkGraphPathGeometry.js",
+      "scripts/map/itineraryPathGeometry.js",
+      "scripts/map/sourceHelpers.js",
+      "scripts/map/layerRequest.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

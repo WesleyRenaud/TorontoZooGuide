@@ -1,11 +1,6 @@
-import { ITINERARY_PATH_ARROW_SIDE_OFFSET_PX } from './itineraryPathConstants.js';
-import {
-   buildItineraryPathD,
-   buildItineraryPathDFromWalkLegs,
-   buildPathArrowPlacements,
-   buildRouteMapPoints,
-   offsetArrowPlacement,
-} from './itineraryPathGeometry.js';
+import { ItineraryPathArrows } from './itineraryPathArrows.js';
+import { ItineraryPathConstants } from './itineraryPathConstants.js';
+import { ItineraryPathGeometry } from './itineraryPathGeometry.js';
 import {
    ZOO_MAP_HEIGHT_PX,
    ZOO_MAP_WIDTH_PX,
@@ -43,19 +38,19 @@ function pointToMapPx(point) {
 
 function buildPathD(itineraryPath) {
    if (itineraryPath.legs.length > 0) {
-      return buildItineraryPathDFromWalkLegs(
+      return ItineraryPathGeometry.buildItineraryPathDFromWalkLegs(
          itineraryPath.legs,
          itineraryPath.points,
          { pointToMapPx }
       );
    }
 
-   const routePoints = buildRouteMapPoints(itineraryPath.points, {
+   const routePoints = ItineraryPathGeometry.buildRouteMapPoints(itineraryPath.points, {
       withEntranceLandmark: (normalizedPoints) => normalizedPoints,
       pointToMapPx,
    });
 
-   return buildItineraryPathD(routePoints);
+   return ItineraryPathGeometry.buildItineraryPathD(routePoints);
 }
 
 function createArrowMarker({ x, y, angleDeg }) {
@@ -78,9 +73,13 @@ function appendArrowMarkers(markersLayer, pathD) {
       return;
    }
 
-   for (const placement of buildPathArrowPlacements(pathD)) {
+   for (const placement of ItineraryPathArrows.buildPathArrowPlacements(pathD)) {
       markersLayer.appendChild(createArrowMarker(
-         offsetArrowPlacement(placement, ITINERARY_PATH_ARROW_SIDE_OFFSET_PX, 'left')
+         ItineraryPathArrows.offsetArrowPlacement(
+            placement,
+            ItineraryPathConstants.ITINERARY_PATH_ARROW_SIDE_OFFSET_PX,
+            'left'
+         )
       ));
    }
 }
