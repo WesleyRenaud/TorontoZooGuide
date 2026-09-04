@@ -1,11 +1,11 @@
 import { initTimePicker } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
-import { formatClockTime } from '../format.js';
+import { Format } from '../format.js';
 import { common } from '../../../strings/common.js';
 import { createValidationBubbleController } from '../../../validationBubble.js';
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
-   return formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
+   return Format.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
 }
 
 export function makeItineraryTimeInput({
@@ -26,7 +26,7 @@ export function makeItineraryTimeInput({
    const validationBubble = createValidationBubbleController({
       anchorEl: inputWrap,
    });
-   let committedValue = value ? formatClockTime(value) : '';
+   let committedValue = value ? Format.formatClockTime(value) : '';
    let flatpickrInstance = null;
    let latestPickerValue = committedValue;
    let suppressNextCloseSave = false;

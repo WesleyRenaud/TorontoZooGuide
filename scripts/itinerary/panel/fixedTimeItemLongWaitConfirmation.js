@@ -1,9 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import {
-   formatClockTime,
-   normalizeText,
-} from './format.js';
+import { Format } from './format.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -55,14 +52,14 @@ export function getFixedTimeItemsFromLongWaitIssues(issues = []) {
 
    return longWaitItems(issues)
       .map((item) => {
-         const itemName = normalizeText(item?.name);
+         const itemName = Format.normalizeText(item?.name);
 
          if (!itemName) {
             return null;
          }
 
          const itemMeta = resolveItemTypeMeta(item);
-         const itemTime = formatClockTime(item.start_time);
+         const itemTime = Format.formatClockTime(item.start_time);
 
          return {
             issueType,
@@ -77,7 +74,7 @@ export function getFixedTimeItemsFromLongWaitIssues(issues = []) {
 }
 
 function longWaitConfirmMessage(item, strings) {
-   const itemName = normalizeText(item.itemName);
+   const itemName = Format.normalizeText(item.itemName);
 
    return item.itemTime
       ? strings.fixedTimeItemLongWaitMessage(

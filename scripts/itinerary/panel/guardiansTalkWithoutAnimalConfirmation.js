@@ -1,9 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import {
-   formatClockTime,
-   normalizeText,
-} from './format.js';
+import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE = 'guardiansTalkWithoutAnimal';
@@ -26,13 +23,13 @@ export function getGuardiansTalksFromWithoutAnimalIssues(issues = []) {
       .filter((issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
       .flatMap((issue) => issue.items ?? [])
       .forEach((item) => {
-         const talkName = normalizeText(item?.name);
+         const talkName = Format.normalizeText(item?.name);
 
          if (!talkName) {
             return;
          }
 
-         const talkTime = formatClockTime(item?.start_time);
+         const talkTime = Format.formatClockTime(item?.start_time);
 
          talksByName.set(
             talkName,
@@ -66,7 +63,7 @@ export function showGuardiansTalkWithoutAnimalConfirmation({
    }
 
    const [talk] = talks;
-   const talkName = normalizeText(talk.talkName);
+   const talkName = Format.normalizeText(talk.talkName);
    const message = talk.talkTime
       ? strings.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
       : strings.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);

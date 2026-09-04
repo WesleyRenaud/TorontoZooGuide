@@ -3,7 +3,7 @@ import { setStoredItineraryDate } from './draftStorage.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
-import { hasSavedItineraryContent } from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import {
    getDay,
    getMonth,
@@ -136,5 +136,5 @@ export async function acceptItinerary({
 
 export async function hasActiveItinerary() {
    const itin = await getItinerary();
-   return Boolean(itin.isActive) && hasSavedItineraryContent(itin);
+   return Boolean(itin.isActive) && ItineraryShape.hasSavedItineraryContent(itin);
 }

@@ -1,9 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import {
-   formatClockTime,
-   normalizeText,
-} from './format.js';
+import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
@@ -26,13 +23,13 @@ export function getAttractionsFromWithoutAnimalIssues(issues = []) {
       .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
       .flatMap((issue) => issue.items ?? [])
       .forEach((item) => {
-         const attractionName = normalizeText(item?.name);
+         const attractionName = Format.normalizeText(item?.name);
 
          if (!attractionName) {
             return;
          }
 
-         const attractionTime = formatClockTime(item?.start_time);
+         const attractionTime = Format.formatClockTime(item?.start_time);
 
          attractionsByName.set(
             attractionName,
@@ -58,7 +55,7 @@ export function attractionWithoutAnimalMessage(
       strings = APP_STRINGS.itinerary.confirmation,
    } = {}
 ) {
-   const attractionName = normalizeText(attraction.attractionName);
+   const attractionName = Format.normalizeText(attraction.attractionName);
    const body = attraction.attractionTime
       ? strings.attractionWithoutAnimalBody(
          attractionName,

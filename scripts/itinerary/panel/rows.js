@@ -1,10 +1,4 @@
-import {
-   normalizeAnimal,
-   normalizeAttraction,
-   normalizeTalk,
-   normalizeTransportation,
-   normalizeWild,
-} from './format.js';
+import { Format } from './format.js';
 import {
    getGuardiansTalkLinkedAnimal,
    openGuardiansTalkLinkedAnimal,
@@ -31,7 +25,7 @@ export function buildAnimalRows(
    } = {}
 ) {
    return RowBuilders.buildRows(animals, {
-      normalizeItem: normalizeAnimal,
+      normalizeItem: Format.normalizeAnimal,
       prepareItems: (normalizedItems) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
          RowBuilders.buildUniqueAnimals(normalizedItems)
       ),
@@ -68,7 +62,7 @@ export function buildAttractionRows(
    } = {}
 ) {
    return RowBuilders.buildNamedRows(attractions, {
-      normalizeItem: normalizeAttraction,
+      normalizeItem: Format.normalizeAttraction,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.attraction,
       imageDirectory: 'attractions',
@@ -100,7 +94,7 @@ export function buildTransportationRows(
    } = {}
 ) {
    return RowBuilders.buildNamedRows(transportations, {
-      normalizeItem: normalizeTransportation,
+      normalizeItem: Format.normalizeTransportation,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.transportation,
       imageDirectory: 'transportations',
@@ -126,7 +120,7 @@ export function buildGuardiansRows(
    { onRemoveItem = null } = {}
 ) {
    return RowBuilders.buildNamedRows(guardiansTalks, {
-      normalizeItem: normalizeTalk,
+      normalizeItem: Format.normalizeTalk,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.guardiansTalk,
       imageDirectory: 'guardians-talks',
@@ -164,7 +158,7 @@ export function buildWildRows(
    { onRemoveItem = null } = {}
 ) {
    return RowBuilders.buildNamedRows(wildEncounters, {
-      normalizeItem: normalizeWild,
+      normalizeItem: Format.normalizeWild,
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.wildEncounter,
       imageDirectory: 'wild-encounters',

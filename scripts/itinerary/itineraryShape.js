@@ -1,18 +1,7 @@
 import { AnimalIdentity } from './animalIdentity.js';
-import {
-   normalizeGuardiansTalkForSave,
-   normalizeItineraryNamesForSave,
-   normalizeWildEncounterListForSave,
-} from './panel/format.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { Format } from './panel/format.js';
 import { TransportationSelectorModel } from './selectors/transportationSelector/transportationSelectorModel.js';
-
-export const ITINERARY_ITEM_KEYS = Object.freeze([
-   'animals',
-   'attractions',
-   'guardiansTalks',
-   'wildEncounters',
-   'transportations',
-]);
 
 function asItineraryDraftSource(value) {
    return value && typeof value === 'object'
@@ -30,12 +19,6 @@ function normalizeItineraryTime(value) {
    return typeof value === 'string'
       ? value
       : '';
-}
-
-export function normalizeItineraryItems(items) {
-   return Array.isArray(items)
-      ? items
-      : [];
 }
 
 function cloneItineraryItems(items) {
@@ -86,121 +69,38 @@ function areDraftValuesEqual(left, right) {
    return areObjectsEqual(left, right);
 }
 
-export function createEmptyItineraryDraft() {
-   return {
-      date: '',
-      arrivalTime: '',
-      departureTime: '',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-      transportations: [],
-      transportationStations: [],
-      events: [],
-   };
-}
-
-export function normalizeItineraryDraft(draft = {}) {
-   const source = asItineraryDraftSource(draft);
-
-   return {
-      date: normalizeItineraryDate(source.date),
-      arrivalTime: normalizeItineraryTime(source.arrivalTime),
-      departureTime: normalizeItineraryTime(source.departureTime),
-      animals: normalizeItineraryItems(source.animals),
-      attractions: normalizeItineraryItems(source.attractions),
-      guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
-      wildEncounters: normalizeItineraryItems(source.wildEncounters),
-      transportations: normalizeItineraryItems(source.transportations),
-      transportationStations: normalizeItineraryItems(source.transportationStations),
-      events: normalizeItineraryItems(source.events),
-   };
-}
-
-export function cloneItineraryDraft(draft = {}) {
-   const normalizedDraft = normalizeItineraryDraft(draft);
-
-   return {
-      date: normalizedDraft.date,
-      arrivalTime: normalizedDraft.arrivalTime,
-      departureTime: normalizedDraft.departureTime,
-      animals: cloneItineraryItems(normalizedDraft.animals),
-      attractions: cloneItineraryItems(normalizedDraft.attractions),
-      guardiansTalks: cloneItineraryItems(normalizedDraft.guardiansTalks),
-      wildEncounters: cloneItineraryItems(normalizedDraft.wildEncounters),
-      transportations: cloneItineraryItems(normalizedDraft.transportations),
-      transportationStations: cloneItineraryItems(
-         normalizedDraft.transportationStations
-      ),
-      events: cloneItineraryItems(normalizedDraft.events),
-   };
-}
-
 function normalizeGuardiansTalkListForSave(items) {
-   return normalizeItineraryItems(items)
-      .map(normalizeGuardiansTalkForSave)
+   return ItineraryShape.normalizeItineraryItems(items)
+      .map(Format.normalizeGuardiansTalkForSave)
       .filter((talk) => talk.name);
 }
 
 function normalizeTransportationNameForSave(item) {
    if (typeof item === 'string') {
-      return item.trim();
+      return ValueNormalizer.asTrimmedString(item);
    }
 
    if (!item || typeof item !== 'object') {
       return '';
    }
 
-   return typeof item.name === 'string'
-      ? item.name.trim()
-      : '';
+   return ValueNormalizer.asTrimmedString(item.name);
 }
 
 function getAttractionDraftName(item) {
    if (typeof item === 'string') {
-      return item.trim();
+      return ValueNormalizer.asTrimmedString(item);
    }
 
-   return typeof item?.name === 'string'
-      ? item.name.trim()
-      : '';
+   return ValueNormalizer.asTrimmedString(item?.name);
 }
 
 function buildAttractionNameSet(attractions = []) {
    return new Set(
-      normalizeItineraryItems(attractions)
+      ItineraryShape.normalizeItineraryItems(attractions)
          .map(getAttractionDraftName)
          .filter(Boolean)
    );
-}
-
-export function hydrateWizardDraftFromSavedItinerary(draft = {}) {
-   const normalized = normalizeItineraryDraft(draft);
-   const attractionNames = buildAttractionNameSet(normalized.attractions);
-   const fromTransportations = normalized.transportations.flatMap((item) => {
-      if (!TransportationSelectorModel.isTransportationAddedAsAttraction(item)) {
-         return [];
-      }
-
-      const name = TransportationSelectorModel.getTransportationName(item);
-
-      if (!name || attractionNames.has(name)) {
-         return [];
-      }
-
-      attractionNames.add(name);
-
-      return [{ name, addedAsAttraction: true }];
-   });
-
-   return {
-      ...normalized,
-      attractions: [...normalized.attractions, ...fromTransportations],
-      transportations: normalized.transportations.filter(
-         (item) => !TransportationSelectorModel.isTransportationAddedAsAttraction(item)
-      ),
-   };
 }
 
 function isAttractionAddedAsAttraction(item) {
@@ -208,7 +108,7 @@ function isAttractionAddedAsAttraction(item) {
 }
 
 function normalizeTransportationsForSave(draft = {}) {
-   const fromAttractions = normalizeItineraryItems(draft.attractions)
+   const fromAttractions = ItineraryShape.normalizeItineraryItems(draft.attractions)
       .filter(isAttractionAddedAsAttraction)
       .map((item) => ({
          name: normalizeTransportationNameForSave(item),
@@ -216,7 +116,7 @@ function normalizeTransportationsForSave(draft = {}) {
       }))
       .filter((item) => item.name);
 
-   const fromTransportations = normalizeItineraryItems(draft.transportations)
+   const fromTransportations = ItineraryShape.normalizeItineraryItems(draft.transportations)
       .map((item) => {
          const name = normalizeTransportationNameForSave(item);
 
@@ -247,26 +147,11 @@ function normalizeTransportationsForSave(draft = {}) {
 }
 
 function normalizeAttractionsForSave(attractions = []) {
-   return normalizeItineraryNamesForSave(
-      normalizeItineraryItems(attractions).filter((item) => (
+   return Format.normalizeItineraryNamesForSave(
+      ItineraryShape.normalizeItineraryItems(attractions).filter((item) => (
          !isAttractionAddedAsAttraction(item)
       ))
    );
-}
-
-export function toSetItineraryPayload(draft = {}) {
-   const base = normalizeItineraryDraft(draft);
-
-   return {
-      date: base.date,
-      arrivalTime: base.arrivalTime,
-      departureTime: base.departureTime,
-      animals: base.animals.map(AnimalIdentity.normalizeAnimalForSave).filter(Boolean),
-      attractions: normalizeAttractionsForSave(base.attractions),
-      transportations: normalizeTransportationsForSave(base),
-      guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
-      wildEncounters: normalizeWildEncounterListForSave(base.wildEncounters),
-   };
 }
 
 function sortStringsForComparison(values = []) {
@@ -285,9 +170,19 @@ function sortAnimalsForSaveComparison(animals = []) {
    ));
 }
 
-function areItineraryDraftSaveItemSelectionsEqual(
-      leftSave,
-      rightSave) {
+function sortScheduledItemsForSaveComparison(items = []) {
+   return [...items].sort((left, right) => (
+      left.name.localeCompare(right.name)
+   ));
+}
+
+function sortTransportationsForSaveComparison(items = []) {
+   return [...items].sort((left, right) => (
+      left.name.localeCompare(right.name)
+   ));
+}
+
+function areItineraryDraftSaveItemSelectionsEqual(leftSave, rightSave) {
    if (leftSave.arrivalTime !== rightSave.arrivalTime) {
       return false;
    }
@@ -323,57 +218,161 @@ function areItineraryDraftSaveItemSelectionsEqual(
    );
 }
 
-export function areItineraryDraftsSemanticallyEqual(left, right) {
-   const leftSave = toSetItineraryPayload(left);
-   const rightSave = toSetItineraryPayload(right);
+export class ItineraryShape {
+   static ITINERARY_ITEM_KEYS = Object.freeze([
+      'animals',
+      'attractions',
+      'guardiansTalks',
+      'wildEncounters',
+      'transportations',
+   ]);
 
-   if (leftSave.date !== rightSave.date) {
-      return false;
+   static normalizeItineraryItems(items) {
+      return Array.isArray(items)
+         ? items
+         : [];
    }
 
-   return areItineraryDraftSaveItemSelectionsEqual(leftSave, rightSave);
-}
-
-function sortScheduledItemsForSaveComparison(items = []) {
-   return [...items].sort((left, right) => (
-      left.name.localeCompare(right.name)
-   ));
-}
-
-function sortTransportationsForSaveComparison(items = []) {
-   return [...items].sort((left, right) => (
-      left.name.localeCompare(right.name)
-   ));
-}
-
-export function areItineraryDraftsEqual(left, right) {
-   return areDraftValuesEqual(
-      normalizeItineraryDraft(left),
-      normalizeItineraryDraft(right)
-   );
-}
-
-export function isItineraryEmptyDraft(draft = {}) {
-   const normalizedDraft = normalizeItineraryDraft(draft);
-
-   return !normalizedDraft.date
-   && !normalizedDraft.arrivalTime
-   && !normalizedDraft.departureTime
-   && normalizedDraft.events.length === 0
-   && normalizedDraft.transportations.length === 0
-   && ITINERARY_ITEM_KEYS.every((key) => (
-      normalizedDraft[key].length === 0
-   ));
-}
-
-export function hasSavedItineraryContent(draft = {}) {
-   return !isItineraryEmptyDraft(normalizeItineraryDraft(draft));
-}
-
-export function isItineraryCompletelyUnset(draft = {}) {
-   if (!draft || typeof draft !== 'object') {
-      return true;
+   static createEmptyItineraryDraft() {
+      return {
+         date: '',
+         arrivalTime: '',
+         departureTime: '',
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         transportations: [],
+         transportationStations: [],
+         events: [],
+      };
    }
 
-   return isItineraryEmptyDraft(normalizeItineraryDraft(draft));
+   static normalizeItineraryDraft(draft = {}) {
+      const source = asItineraryDraftSource(draft);
+
+      return {
+         date: normalizeItineraryDate(source.date),
+         arrivalTime: normalizeItineraryTime(source.arrivalTime),
+         departureTime: normalizeItineraryTime(source.departureTime),
+         animals: ItineraryShape.normalizeItineraryItems(source.animals),
+         attractions: ItineraryShape.normalizeItineraryItems(source.attractions),
+         guardiansTalks: ItineraryShape.normalizeItineraryItems(source.guardiansTalks),
+         wildEncounters: ItineraryShape.normalizeItineraryItems(source.wildEncounters),
+         transportations: ItineraryShape.normalizeItineraryItems(source.transportations),
+         transportationStations: ItineraryShape.normalizeItineraryItems(
+            source.transportationStations
+         ),
+         events: ItineraryShape.normalizeItineraryItems(source.events),
+      };
+   }
+
+   static cloneItineraryDraft(draft = {}) {
+      const normalizedDraft = ItineraryShape.normalizeItineraryDraft(draft);
+
+      return {
+         date: normalizedDraft.date,
+         arrivalTime: normalizedDraft.arrivalTime,
+         departureTime: normalizedDraft.departureTime,
+         animals: cloneItineraryItems(normalizedDraft.animals),
+         attractions: cloneItineraryItems(normalizedDraft.attractions),
+         guardiansTalks: cloneItineraryItems(normalizedDraft.guardiansTalks),
+         wildEncounters: cloneItineraryItems(normalizedDraft.wildEncounters),
+         transportations: cloneItineraryItems(normalizedDraft.transportations),
+         transportationStations: cloneItineraryItems(
+            normalizedDraft.transportationStations
+         ),
+         events: cloneItineraryItems(normalizedDraft.events),
+      };
+   }
+
+   static hydrateWizardDraftFromSavedItinerary(draft = {}) {
+      const normalized = ItineraryShape.normalizeItineraryDraft(draft);
+      const attractionNames = buildAttractionNameSet(normalized.attractions);
+      const fromTransportations = normalized.transportations.flatMap((item) => {
+         if (!TransportationSelectorModel.isTransportationAddedAsAttraction(item)) {
+            return [];
+         }
+
+         const name = TransportationSelectorModel.getTransportationName(item);
+
+         if (!name || attractionNames.has(name)) {
+            return [];
+         }
+
+         attractionNames.add(name);
+
+         return [{ name, addedAsAttraction: true }];
+      });
+
+      return {
+         ...normalized,
+         attractions: [...normalized.attractions, ...fromTransportations],
+         transportations: normalized.transportations.filter(
+            (item) => !TransportationSelectorModel.isTransportationAddedAsAttraction(item)
+         ),
+      };
+   }
+
+   static toSetItineraryPayload(draft = {}) {
+      const base = ItineraryShape.normalizeItineraryDraft(draft);
+
+      return {
+         date: base.date,
+         arrivalTime: base.arrivalTime,
+         departureTime: base.departureTime,
+         animals: base.animals.map(AnimalIdentity.normalizeAnimalForSave).filter(Boolean),
+         attractions: normalizeAttractionsForSave(base.attractions),
+         transportations: normalizeTransportationsForSave(base),
+         guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
+         wildEncounters: Format.normalizeWildEncounterListForSave(base.wildEncounters),
+      };
+   }
+
+   static areItineraryDraftsSemanticallyEqual(left, right) {
+      const leftSave = ItineraryShape.toSetItineraryPayload(left);
+      const rightSave = ItineraryShape.toSetItineraryPayload(right);
+
+      if (leftSave.date !== rightSave.date) {
+         return false;
+      }
+
+      return areItineraryDraftSaveItemSelectionsEqual(leftSave, rightSave);
+   }
+
+   static areItineraryDraftsEqual(left, right) {
+      return areDraftValuesEqual(
+         ItineraryShape.normalizeItineraryDraft(left),
+         ItineraryShape.normalizeItineraryDraft(right)
+      );
+   }
+
+   static isItineraryEmptyDraft(draft = {}) {
+      const normalizedDraft = ItineraryShape.normalizeItineraryDraft(draft);
+
+      return !normalizedDraft.date
+      && !normalizedDraft.arrivalTime
+      && !normalizedDraft.departureTime
+      && normalizedDraft.events.length === 0
+      && normalizedDraft.transportations.length === 0
+      && ItineraryShape.ITINERARY_ITEM_KEYS.every((key) => (
+         normalizedDraft[key].length === 0
+      ));
+   }
+
+   static hasSavedItineraryContent(draft = {}) {
+      return !ItineraryShape.isItineraryEmptyDraft(
+         ItineraryShape.normalizeItineraryDraft(draft)
+      );
+   }
+
+   static isItineraryCompletelyUnset(draft = {}) {
+      if (!draft || typeof draft !== 'object') {
+         return true;
+      }
+
+      return ItineraryShape.isItineraryEmptyDraft(
+         ItineraryShape.normalizeItineraryDraft(draft)
+      );
+   }
 }

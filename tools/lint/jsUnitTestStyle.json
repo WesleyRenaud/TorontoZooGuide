@@ -67,7 +67,9 @@
       "tests/scripts/markers/markerHoverText.test.mjs",
       "tests/scripts/consoleOperations/forms/wildEncounterScheduleRows.test.mjs",
       "tests/scripts/datePickers/readOpenPickerTime.test.mjs",
-      "tests/scripts/itinerary/panel/scheduleItemSearch.test.mjs"
+      "tests/scripts/itinerary/panel/scheduleItemSearch.test.mjs",
+      "tests/scripts/itinerary/panel/format.test.mjs",
+      "tests/scripts/itinerary/itineraryShape.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

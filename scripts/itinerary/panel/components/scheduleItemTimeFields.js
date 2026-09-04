@@ -1,16 +1,13 @@
 import { initTimePicker } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
-import {
-   formatClockTime,
-   parseDurationMinutes,
-} from '../format.js';
+import { Format } from '../format.js';
 
 function createFieldLabel(text) {
    return el('label', 'schedule-item-field-label', text);
 }
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
-   return formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
+   return Format.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
 }
 
 export function makeScheduleItemTimeFields(strings = {}) {
@@ -151,7 +148,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
          }
 
          const startTime = resolveSelectedStartTime();
-         const durationMinutes = parseDurationMinutes(durationInput.value);
+         const durationMinutes = Format.parseDurationMinutes(durationInput.value);
 
          return {
             startTime,

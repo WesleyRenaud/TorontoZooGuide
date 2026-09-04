@@ -1,13 +1,10 @@
-import {
-   formatClockTime,
-   normalizeText,
-} from '../panel/format.js';
+import { Format } from '../panel/format.js';
 import { ITINERARY_PANEL_SECTION_KEYS } from '../panel/sectionConfigs.js';
 import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
 
 function fixedTimeOccurrenceKey(row = {}) {
-   const name = normalizeText(row.name).toLowerCase();
-   const startTime = formatClockTime(row.start_time);
+   const name = Format.normalizeText(row.name).toLowerCase();
+   const startTime = Format.formatClockTime(row.start_time);
 
    if (!name) {
       return '';
@@ -34,7 +31,7 @@ function keepDraftItem(row, rejectedKeys) {
       return false;
    }
 
-   const nameKey = `name:${normalizeText(row.name).toLowerCase()}`;
+   const nameKey = `name:${Format.normalizeText(row.name).toLowerCase()}`;
 
    return !rejectedKeys.has(nameKey);
 }

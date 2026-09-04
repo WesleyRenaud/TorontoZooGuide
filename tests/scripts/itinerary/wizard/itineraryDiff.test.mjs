@@ -3,12 +3,12 @@ import test from 'node:test';
 
 import { ItineraryValidationResult } from '../../../../scripts/itinerary/itineraryValidationResult.js';
 import { ItineraryNormalizer } from '../../../../scripts/itinerary/itineraryNormalizer.js';
-import { normalizeItineraryDraft } from '../../../../scripts/itinerary/itineraryShape.js';
+import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js';
 import { ItineraryDiff } from '../../../../scripts/itinerary/wizard/itineraryDiff.js';
 import { Summary } from '../../../../scripts/itinerary/wizard/diff/summary.js';
 
 function draft(overrides = {}) {
-   return normalizeItineraryDraft(overrides);
+   return ItineraryShape.normalizeItineraryDraft(overrides);
 }
 
 test('Test_BuildItineraryDiff_TestSeededRemoved_ExpectRemovedAttractionsAndEncounters', () => {

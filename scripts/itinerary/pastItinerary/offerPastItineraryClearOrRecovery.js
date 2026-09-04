@@ -1,5 +1,5 @@
 import { clearPastItinerary } from './clearPastItinerary.js';
-import { hasSavedItineraryContent } from '../itineraryShape.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import {
    isPastItineraryPromptOpen,
    setPastItineraryPromptOpen,
@@ -21,7 +21,7 @@ export async function offerPastItineraryClearOrRecovery({
    deps = {},
 } = {}) {
    const {
-      hasContent = hasSavedItineraryContent,
+      hasContent = ItineraryShape.hasSavedItineraryContent,
       resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
       isVisitDateBeforeFloor = isVisitDateBeforeEarliestFloor,
       showChoicePrompt = showPastItineraryChoicePrompt,

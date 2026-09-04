@@ -1,21 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   areItineraryDraftsEqual,
-   areItineraryDraftsSemanticallyEqual,
-   cloneItineraryDraft,
-   createEmptyItineraryDraft,
-   hasSavedItineraryContent,
-   hydrateWizardDraftFromSavedItinerary,
-   isItineraryCompletelyUnset,
-   isItineraryEmptyDraft,
-   normalizeItineraryDraft,
-   toSetItineraryPayload,
-} from '../../scripts/itinerary/itineraryShape.js';
+import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
 
-test('creates and normalizes itinerary draft shape', () => {
-   assert.deepEqual(createEmptyItineraryDraft(), {
+test('Test_CreateAndNormalizeItineraryDraft_TestMixedInput_ExpectNormalizedShape', () => {
+   assert.deepEqual(ItineraryShape.createEmptyItineraryDraft(), {
       date: '',
       arrivalTime: '',
       departureTime: '',
@@ -28,7 +17,7 @@ test('creates and normalizes itinerary draft shape', () => {
       events: [],
    });
 
-   assert.deepEqual(normalizeItineraryDraft({
+   assert.deepEqual(ItineraryShape.normalizeItineraryDraft({
       date: '2026-06-15',
       arrivalTime: '09:30',
       departureTime: '17:00',
@@ -49,7 +38,7 @@ test('creates and normalizes itinerary draft shape', () => {
       events: [],
    });
 
-   assert.deepEqual(normalizeItineraryDraft({
+   assert.deepEqual(ItineraryShape.normalizeItineraryDraft({
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    }), {
       date: '',
@@ -65,7 +54,7 @@ test('creates and normalizes itinerary draft shape', () => {
    });
 });
 
-test('clones draft arrays without mutating the original draft', () => {
+test('Test_CloneItineraryDraft_TestArrayFields_ExpectIndependentCopy', () => {
    const draft = {
       date: '2026-06-15',
       animals: [{ species: 'African Lion' }],
@@ -74,15 +63,15 @@ test('clones draft arrays without mutating the original draft', () => {
       wildEncounters: [{ name: 'African Rainforest' }],
    };
 
-   const clone = cloneItineraryDraft(draft);
+   const clone = ItineraryShape.cloneItineraryDraft(draft);
    clone.animals.push({ species: 'Amur Tiger' });
 
    assert.notEqual(clone.animals, draft.animals);
    assert.deepEqual(draft.animals, [{ species: 'African Lion' }]);
 });
 
-test('compares normalized itinerary drafts deeply', () => {
-   assert.equal(areItineraryDraftsEqual(
+test('Test_AreItineraryDraftsEqual_TestNormalizedDrafts_ExpectDeepEquality', () => {
+   assert.equal(ItineraryShape.areItineraryDraftsEqual(
       {
          date: '2026-06-15',
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 }],
@@ -93,14 +82,14 @@ test('compares normalized itinerary drafts deeply', () => {
       }
    ), true);
 
-   assert.equal(areItineraryDraftsEqual(
+   assert.equal(ItineraryShape.areItineraryDraftsEqual(
       { animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] },
       { animals: [{ species: 'Amur Tiger', exhibit: 'Eurasia' }] }
    ), false);
 });
 
-test('semantic draft equality ignores animal metadata and list order', () => {
-   assert.equal(areItineraryDraftsSemanticallyEqual(
+test('Test_AreItineraryDraftsSemanticallyEqual_TestMetadataAndOrder_ExpectEqual', () => {
+   assert.equal(ItineraryShape.areItineraryDraftsSemanticallyEqual(
       {
          date: '2026-06-15',
          animals: [
@@ -115,7 +104,7 @@ test('semantic draft equality ignores animal metadata and list order', () => {
       }
    ), true);
 
-   assert.equal(areItineraryDraftsSemanticallyEqual(
+   assert.equal(ItineraryShape.areItineraryDraftsSemanticallyEqual(
       {
          date: '2026-06-15',
          animals: [
@@ -132,45 +121,45 @@ test('semantic draft equality ignores animal metadata and list order', () => {
       }
    ), true);
 
-   assert.equal(areItineraryDraftsSemanticallyEqual(
+   assert.equal(ItineraryShape.areItineraryDraftsSemanticallyEqual(
       { date: '2026-06-15', animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] },
       { date: '2026-06-16', animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] }
    ), false);
 });
 
-test('treats a draft with only a date as non-empty', () => {
-   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), false);
-   assert.equal(isItineraryEmptyDraft({
+test('Test_IsItineraryEmptyDraft_TestDateOnly_ExpectNonEmpty', () => {
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({ date: '2026-06-15' }), false);
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({
       date: '2026-06-15',
       arrivalTime: '09:30',
    }), false);
-   assert.equal(isItineraryEmptyDraft({
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({
       date: '2026-06-15',
       wildEncounters: [{ name: 'African Rainforest' }],
    }), false);
-   assert.equal(isItineraryEmptyDraft({
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({
       date: '2026-06-15',
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    }), false);
-   assert.equal(isItineraryEmptyDraft({
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({
       transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
    }), false);
 });
 
-test('distinguishes date-only drafts from completely unset itineraries', () => {
-   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), false);
-   assert.equal(hasSavedItineraryContent({ date: '2026-06-15' }), true);
-   assert.equal(isItineraryCompletelyUnset({ date: '2026-06-15' }), false);
-   assert.equal(isItineraryCompletelyUnset(null), true);
-   assert.equal(isItineraryCompletelyUnset({}), true);
-   assert.equal(isItineraryEmptyDraft({
+test('Test_IsItineraryCompletelyUnset_TestDateOnlyVsUnset_ExpectDistinguished', () => {
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({ date: '2026-06-15' }), false);
+   assert.equal(ItineraryShape.hasSavedItineraryContent({ date: '2026-06-15' }), true);
+   assert.equal(ItineraryShape.isItineraryCompletelyUnset({ date: '2026-06-15' }), false);
+   assert.equal(ItineraryShape.isItineraryCompletelyUnset(null), true);
+   assert.equal(ItineraryShape.isItineraryCompletelyUnset({}), true);
+   assert.equal(ItineraryShape.isItineraryEmptyDraft({
       date: '2026-06-15',
       animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
    }), false);
 });
 
-test('toSetItineraryPayload sends canonical shapes for the save API', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestCanonicalShapes_ExpectSaveApiShape', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-06-15',
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 },
@@ -207,8 +196,8 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
    });
 });
 
-test('hydrateWizardDraftFromSavedItinerary moves added-as-attraction transportations into attractions', () => {
-   assert.deepEqual(hydrateWizardDraftFromSavedItinerary({
+test('Test_HydrateWizardDraftFromSavedItinerary_TestAddedAsAttraction_ExpectMovedToAttractions', () => {
+   assert.deepEqual(ItineraryShape.hydrateWizardDraftFromSavedItinerary({
       date: '2026-08-17',
       attractions: [],
       transportations: [
@@ -229,8 +218,8 @@ test('hydrateWizardDraftFromSavedItinerary moves added-as-attraction transportat
    });
 });
 
-test('toSetItineraryPayload keeps both transportation roles for the same name', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestSameNameRoles_ExpectBothKept', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-08-17',
       attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
       transportations: [{ name: 'Zoomobile', addedAsAttraction: false }],
@@ -240,8 +229,8 @@ test('toSetItineraryPayload keeps both transportation roles for the same name', 
    ]);
 });
 
-test('toSetItineraryPayload keeps added_as_attraction from saved transportations', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestSavedAddedAsAttraction_ExpectPreserved', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-08-17',
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
@@ -251,8 +240,8 @@ test('toSetItineraryPayload keeps added_as_attraction from saved transportations
    }]);
 });
 
-test('toSetItineraryPayload moves also-transportation attractions into transportations', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestAlsoTransportationAttractions_ExpectMoved', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-06-15',
       attractions: [
          { name: 'Conservation Carousel' },
@@ -276,8 +265,8 @@ test('toSetItineraryPayload moves also-transportation attractions into transport
    });
 });
 
-test('toSetItineraryPayload serializes wild encounters as wire strings', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestWildEncounters_ExpectWireStrings', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-06-15',
       wildEncounters: [{
          name: 'Kangaroo',
@@ -287,8 +276,8 @@ test('toSetItineraryPayload serializes wild encounters as wire strings', () => {
    }).wildEncounters, ['Kangaroo||13:00||13:45']);
 });
 
-test('toSetItineraryPayload keeps schedule times when provided', () => {
-   assert.deepEqual(toSetItineraryPayload({
+test('Test_ToSetItineraryPayload_TestScheduleTimes_ExpectPreserved', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-06-15',
       arrivalTime: '09:30',
       departureTime: '17:00',

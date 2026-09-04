@@ -1,9 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import {
-   formatClockTime,
-   normalizeText,
-} from './format.js';
+import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
@@ -12,7 +9,7 @@ export function getGuardiansTalkNamesFromUnscheduleIssues(issues = []) {
    return issues
       .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => (issue.items ?? [])
-         .map((item) => normalizeText(item?.name))
+         .map((item) => Format.normalizeText(item?.name))
          .filter(Boolean));
 }
 
@@ -26,9 +23,9 @@ export function getPrimaryGuardiansTalkFromUnscheduleIssues(issues = []) {
    const talkItem = issues
       .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => issue.items ?? [])
-      .find((item) => normalizeText(item?.name) === talkName);
+      .find((item) => Format.normalizeText(item?.name) === talkName);
 
-   const talkTime = formatClockTime(talkItem?.start_time);
+   const talkTime = Format.formatClockTime(talkItem?.start_time);
 
    if (!talkTime) {
       return { talkName };
@@ -50,7 +47,7 @@ export function showGuardiansTalkUnscheduleConfirmation({
       return;
    }
 
-   const talkName = normalizeText(talk.talkName);
+   const talkName = Format.normalizeText(talk.talkName);
    const message = talk.talkTime
       ? strings.guardiansTalkRescheduleMessage(
          talkName,

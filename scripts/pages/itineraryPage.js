@@ -1,7 +1,7 @@
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import { getItinerary } from '../itinerary/itineraryService.js';
-import { hasSavedItineraryContent } from '../itinerary/itineraryShape.js';
+import { ItineraryShape } from '../itinerary/itineraryShape.js';
 import { getItineraryOverlayMountEl } from '../itinerary/panel/components/popup.js';
 import { offerPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
 import { Summary } from '../itinerary/wizard/diff/summary.js';
@@ -96,7 +96,7 @@ async function refreshItineraryPageContent(
 
    await renderItineraryPanel();
 
-   if (!itinerary || !hasSavedItineraryContent(itinerary)) {
+   if (!itinerary || !ItineraryShape.hasSavedItineraryContent(itinerary)) {
       if (openBuilderWhenEmpty) {
          openWizard();
       }

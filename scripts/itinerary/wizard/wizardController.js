@@ -10,7 +10,7 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from '../itineraryService.js';
-import { ITINERARY_ITEM_KEYS } from '../itineraryShape.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import { SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS } from '../panel/sectionConfigs.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -95,7 +95,7 @@ export async function openItineraryWizard({
          applyWizardDate(override.date);
       }
 
-      ITINERARY_ITEM_KEYS.forEach((selectionKey) => {
+      ItineraryShape.ITINERARY_ITEM_KEYS.forEach((selectionKey) => {
          if (!Object.prototype.hasOwnProperty.call(override, selectionKey)) {
             return;
          }
