@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
-import { ATTRACTIONS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 beforeEach(() => {
@@ -160,7 +160,7 @@ test('hydrates also-transportation attractions when opening wizard state', () =>
       addedAsAttraction: true,
    }]);
    assert.deepEqual(wizard.state.transportations, []);
-   assert.deepEqual(JSON.parse(localStorage.getItem(ATTRACTIONS_KEY)), [{
+   assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ATTRACTIONS_KEY)), [{
       name: 'Zoomobile',
       addedAsAttraction: true,
    }]);

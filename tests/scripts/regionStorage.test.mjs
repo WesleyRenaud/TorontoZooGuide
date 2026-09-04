@@ -10,7 +10,7 @@ import {
    restoreRemovedAnimalKey,
    saveSelectedNames,
 } from '../../scripts/itinerary/selectors/regionSelector/regionStorage.js';
-import { REMOVED_ANIMALS_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 beforeEach(() => {
@@ -23,21 +23,21 @@ afterEach(() => {
 
 test('loadSelectedNames trims and drops empty entries', () => {
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([' Africa Savanna ', '', 42, 'Eurasia Wilds'])
    );
 
-   assert.deepEqual(loadSelectedNames(SELECTED_EXHIBITS_KEY), [
+   assert.deepEqual(loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY), [
       'Africa Savanna',
       'Eurasia Wilds',
    ]);
 });
 
 test('saveSelectedNames normalizes exhibit names before persisting', () => {
-   saveSelectedNames(SELECTED_EXHIBITS_KEY, new Set([' Africa Savanna ', '', 'Eurasia Wilds']));
+   saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, new Set([' Africa Savanna ', '', 'Eurasia Wilds']));
 
    assert.deepEqual(
-      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
       ['Africa Savanna', 'Eurasia Wilds']
    );
 });
@@ -71,7 +71,7 @@ test('addRemovedAnimalKey ignores blank keys', () => {
    addRemovedAnimalKey('   ');
 
    assert.equal(loadRemovedAnimalKeys().size, 0);
-   assert.equal(localStorage.getItem(REMOVED_ANIMALS_KEY), null);
+   assert.equal(localStorage.getItem(StorageKeys.REMOVED_ANIMALS_KEY), null);
 });
 
 test('clearRemovedAnimalKeysForExhibit drops keys for one exhibit only', () => {

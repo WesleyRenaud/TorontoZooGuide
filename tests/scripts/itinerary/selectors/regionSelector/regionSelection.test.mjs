@@ -1,22 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildSelectedAnimalKey,
-   buildSelectedAnimalKeyFromWire,
-   draftAnimalsCoverCatalogAnimals,
-   getExhibitNamesFromAnimals,
-   mergeAnimals,
-   normalizeSelectedAnimal,
-   omitRemovedAnimals,
-   parseAnimalWireKey,
-   selectedExhibitsNeedAnimalRebuild,
-   shouldHideDuplicateSingleExhibit,
-} from '../../scripts/itinerary/selectors/regionSelector/regionSelection.js';
+import { RegionSelection } from '../../../../../scripts/itinerary/selectors/regionSelector/regionSelection.js';
 
-test('getExhibitNamesFromAnimals dedupes exhibits from normalized animals', () => {
+test('Test_GetExhibitNamesFromAnimals_TestNormalizedAnimals_ExpectDedupedExhibits', () => {
    assert.deepEqual(
-      getExhibitNamesFromAnimals([
+      RegionSelection.getExhibitNamesFromAnimals([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'African Penguin', exhibit: 'Africa Savanna' },
          { species: 'Amur Tiger', exhibit: 'Eurasia Wilds' },
@@ -25,7 +14,7 @@ test('getExhibitNamesFromAnimals dedupes exhibits from normalized animals', () =
    );
 });
 
-test('omitRemovedAnimals filters animals by normalized removal keys', () => {
+test('Test_OmitRemovedAnimals_TestRemovalKeys_ExpectFiltered', () => {
    const animals = [
       { species: 'African Lion', exhibit: 'Africa Savanna' },
       { species: 'African Penguin', exhibit: 'Africa Savanna' },
@@ -33,14 +22,14 @@ test('omitRemovedAnimals filters animals by normalized removal keys', () => {
    const removedKeys = new Set(['african penguin||africa savanna']);
 
    assert.deepEqual(
-      omitRemovedAnimals(animals, removedKeys).map((animal) => animal.species),
+      RegionSelection.omitRemovedAnimals(animals, removedKeys).map((animal) => animal.species),
       ['African Lion']
    );
 });
 
-test('buildSelectedAnimalKey prefers explicit animal ids', () => {
+test('Test_BuildSelectedAnimalKey_TestExplicitId_ExpectPreferred', () => {
    assert.equal(
-      buildSelectedAnimalKey({
+      RegionSelection.buildSelectedAnimalKey({
          id: 'Custom-Id',
          species: 'African Lion',
          exhibit: 'Africa Savanna',
@@ -49,9 +38,9 @@ test('buildSelectedAnimalKey prefers explicit animal ids', () => {
    );
 });
 
-test('parseAnimalWireKey splits species, exhibit, and enclosure name', () => {
+test('Test_ParseAnimalWireKey_TestSpeciesExhibitEnclosure_ExpectSplit', () => {
    assert.deepEqual(
-      parseAnimalWireKey('Masai Giraffe||Africa Savanna||Giraffe House'),
+      RegionSelection.parseAnimalWireKey('Masai Giraffe||Africa Savanna||Giraffe House'),
       {
          species: 'Masai Giraffe',
          exhibit: 'Africa Savanna',
@@ -59,7 +48,7 @@ test('parseAnimalWireKey splits species, exhibit, and enclosure name', () => {
       }
    );
    assert.deepEqual(
-      parseAnimalWireKey('African Lion||Africa Savanna'),
+      RegionSelection.parseAnimalWireKey('African Lion||Africa Savanna'),
       {
          species: 'African Lion',
          exhibit: 'Africa Savanna',
@@ -67,15 +56,15 @@ test('parseAnimalWireKey splits species, exhibit, and enclosure name', () => {
    );
 });
 
-test('buildSelectedAnimalKeyFromWire normalizes wire keys for removal', () => {
+test('Test_BuildSelectedAnimalKeyFromWire_TestWireKey_ExpectNormalized', () => {
    assert.equal(
-      buildSelectedAnimalKeyFromWire('African Penguin||Africa Savanna||Outdoor'),
+      RegionSelection.buildSelectedAnimalKeyFromWire('African Penguin||Africa Savanna||Outdoor'),
       'african penguin||africa savanna||outdoor'
    );
 });
 
-test('normalizeSelectedAnimal synthesizes ids from species and exhibit', () => {
-   const normalized = normalizeSelectedAnimal({
+test('Test_NormalizeSelectedAnimal_TestSpeciesAndExhibit_ExpectSynthesizedId', () => {
+   const normalized = RegionSelection.normalizeSelectedAnimal({
       species: 'African Lion',
       exhibit: 'Africa Savanna',
    });
@@ -84,8 +73,8 @@ test('normalizeSelectedAnimal synthesizes ids from species and exhibit', () => {
    assert.equal(normalized.imageSrc, null);
 });
 
-test('mergeAnimals dedupes by selected animal key', () => {
-   const merged = mergeAnimals(
+test('Test_MergeAnimals_TestDuplicates_ExpectDedupedByKey', () => {
+   const merged = RegionSelection.mergeAnimals(
       [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
@@ -99,16 +88,16 @@ test('mergeAnimals dedupes by selected animal key', () => {
    );
 });
 
-test('shouldHideDuplicateSingleExhibit hides lone exhibit rows that mirror the region name', () => {
+test('Test_ShouldHideDuplicateSingleExhibit_TestMirrorRegionName_ExpectHidden', () => {
    assert.equal(
-      shouldHideDuplicateSingleExhibit({
+      RegionSelection.shouldHideDuplicateSingleExhibit({
          name: 'Americas',
          exhibits: ['Americas'],
       }),
       true
    );
    assert.equal(
-      shouldHideDuplicateSingleExhibit({
+      RegionSelection.shouldHideDuplicateSingleExhibit({
          name: 'Africa',
          exhibits: ['Africa Savanna', 'Africa Rainforest'],
       }),
@@ -116,22 +105,22 @@ test('shouldHideDuplicateSingleExhibit hides lone exhibit rows that mirror the r
    );
 });
 
-test('selectedExhibitsNeedAnimalRebuild detects stale exhibit selection without animals', () => {
+test('Test_SelectedExhibitsNeedAnimalRebuild_TestStaleSelection_ExpectDetected', () => {
    const selectedExhibits = new Set(['Africa Savanna']);
 
    assert.equal(
-      selectedExhibitsNeedAnimalRebuild(selectedExhibits, []),
+      RegionSelection.selectedExhibitsNeedAnimalRebuild(selectedExhibits, []),
       true
    );
    assert.equal(
-      selectedExhibitsNeedAnimalRebuild(
+      RegionSelection.selectedExhibitsNeedAnimalRebuild(
          selectedExhibits,
          [{ species: 'African Lion', exhibit: 'Africa Savanna' }]
       ),
       false
    );
    assert.equal(
-      selectedExhibitsNeedAnimalRebuild(
+      RegionSelection.selectedExhibitsNeedAnimalRebuild(
          new Set(['Africa Savanna', 'Eurasia Wilds']),
          [{ species: 'African Lion', exhibit: 'Africa Savanna' }]
       ),
@@ -139,7 +128,7 @@ test('selectedExhibitsNeedAnimalRebuild detects stale exhibit selection without 
    );
 });
 
-test('draftAnimalsCoverCatalogAnimals requires every catalog animal on the draft', () => {
+test('Test_DraftAnimalsCoverCatalogAnimals_TestCoverage_ExpectEveryCatalogAnimal', () => {
    const draft = [
       { species: 'African Lion', exhibit: 'Africa Savanna' },
       { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
@@ -149,13 +138,13 @@ test('draftAnimalsCoverCatalogAnimals requires every catalog animal on the draft
       { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
    ];
 
-   assert.equal(draftAnimalsCoverCatalogAnimals(draft, catalog), true);
+   assert.equal(RegionSelection.draftAnimalsCoverCatalogAnimals(draft, catalog), true);
    assert.equal(
-      draftAnimalsCoverCatalogAnimals(
+      RegionSelection.draftAnimalsCoverCatalogAnimals(
          [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
          catalog
       ),
       false
    );
-   assert.equal(draftAnimalsCoverCatalogAnimals(draft, []), true);
+   assert.equal(RegionSelection.draftAnimalsCoverCatalogAnimals(draft, []), true);
 });

@@ -58,7 +58,11 @@
       "tests/scripts/itinerary/selectors/base/storedSelection.test.mjs",
       "tests/scripts/itinerary/selectors/animalSelector/animalSelectorModel.test.mjs",
       "tests/scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.test.mjs",
-      "tests/scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.test.mjs"
+      "tests/scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardStepConfigs.test.mjs",
+      "tests/scripts/itinerary/panel/itineraryPanelViewUrl.test.mjs",
+      "tests/scripts/itinerary/selectors/regionSelector/regionSelection.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduleItemModuleSelection.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

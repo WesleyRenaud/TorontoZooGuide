@@ -1,10 +1,12 @@
-export const ITIN_KEY = 'tzg.itinerary';
-export const DATE_KEY = 'tzg.itineraryDate';
-export const ANIMALS_KEY = 'tzg.itineraryAnimals';
-export const ATTRACTIONS_KEY = 'tzg.itineraryAttractions';
-export const GUARDIANS_KEY = 'tzg.itineraryGuardiansTalks';
-export const WILD_KEY = 'tzg.itineraryWildEncounters';
-export const TRANSPORTATIONS_KEY = 'tzg.itineraryTransportations';
-export const SELECTED_EXHIBITS_KEY = 'tzg.itinerarySelectedExhibits';
-export const SELECTED_REGIONS_KEY = 'tzg.itinerarySelectedRegions';
-export const REMOVED_ANIMALS_KEY = 'tzg.itineraryRemovedAnimals';
+export class StorageKeys {
+   static ITIN_KEY = 'tzg.itinerary';
+   static DATE_KEY = 'tzg.itineraryDate';
+   static ANIMALS_KEY = 'tzg.itineraryAnimals';
+   static ATTRACTIONS_KEY = 'tzg.itineraryAttractions';
+   static GUARDIANS_KEY = 'tzg.itineraryGuardiansTalks';
+   static WILD_KEY = 'tzg.itineraryWildEncounters';
+   static TRANSPORTATIONS_KEY = 'tzg.itineraryTransportations';
+   static SELECTED_EXHIBITS_KEY = 'tzg.itinerarySelectedExhibits';
+   static SELECTED_REGIONS_KEY = 'tzg.itinerarySelectedRegions';
+   static REMOVED_ANIMALS_KEY = 'tzg.itineraryRemovedAnimals';
+}

@@ -13,92 +13,94 @@ import { TransportationSelectorModel } from '../../selectors/transportationSelec
 import { WildEncounterSelectorModel } from '../../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
-export function canScheduleModuleSelection({
-   selection = '',
-   selectedRow = null,
-   eventTypes = [],
-} = {}) {
-   const effectiveSelection = resolveEffectiveScheduleItemSelection(selection, selectedRow);
+export class ScheduleItemModuleSelection {
+   static canScheduleModuleSelection({
+      selection = '',
+      selectedRow = null,
+      eventTypes = [],
+   } = {}) {
+      const effectiveSelection = resolveEffectiveScheduleItemSelection(selection, selectedRow);
 
-   if (ScheduleItemTypes.isScheduleItemTypeUnset(effectiveSelection)) {
-      return false;
+      if (ScheduleItemTypes.isScheduleItemTypeUnset(effectiveSelection)) {
+         return false;
+      }
+
+      if (ScheduleItemTypes.isScheduleItemSearchEnabled(effectiveSelection, eventTypes)) {
+         return Boolean(selectedRow);
+      }
+
+      return ItineraryEventTypes.isScheduleItemEventType(effectiveSelection, eventTypes);
    }
 
-   if (ScheduleItemTypes.isScheduleItemSearchEnabled(effectiveSelection, eventTypes)) {
-      return Boolean(selectedRow);
+   static filterVisibleScheduleModuleRows({
+      rows = [],
+      itinerary = {},
+      onlyItineraryItemsEnabled = false,
+   } = {}) {
+      return filterScheduleItemRowsForScheduleModule(rows, itinerary, {
+         onlyItineraryItemsEnabled,
+      });
    }
 
-   return ItineraryEventTypes.isScheduleItemEventType(effectiveSelection, eventTypes);
-}
+   static shouldClearSelectedScheduleRow({
+      selectedRowId = '',
+      visibleRows = [],
+   } = {}) {
+      if (!selectedRowId) {
+         return false;
+      }
 
-export function filterVisibleScheduleModuleRows({
-   rows = [],
-   itinerary = {},
-   onlyItineraryItemsEnabled = false,
-} = {}) {
-   return filterScheduleItemRowsForScheduleModule(rows, itinerary, {
-      onlyItineraryItemsEnabled,
-   });
-}
-
-export function shouldClearSelectedScheduleRow({
-   selectedRowId = '',
-   visibleRows = [],
-} = {}) {
-   if (!selectedRowId) {
-      return false;
+      return !visibleRows.some((row) => getScheduleItemRowId(row) === selectedRowId);
    }
 
-   return !visibleRows.some((row) => getScheduleItemRowId(row) === selectedRowId);
-}
+   static resolveScheduleModuleSearchLabel(row) {
+      const kind = getScheduleItemRowKind(row);
 
-export function resolveScheduleModuleSearchLabel(row) {
-   const kind = getScheduleItemRowKind(row);
+      if (kind === ScheduleItemKind.ATTRACTION.itemType) {
+         return AttractionSelectorModel.getAttractionTitle(row) || '';
+      }
 
-   if (kind === ScheduleItemKind.ATTRACTION.itemType) {
-      return AttractionSelectorModel.getAttractionTitle(row) || '';
+      if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+         return TransportationSelectorModel.getTransportationName(row) || '';
+      }
+
+      if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+         return GuardiansTalkSelectorModel.getGuardiansTalkName(row) || '';
+      }
+
+      if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+         return WildEncounterSelectorModel.getWildEncounterName(row) || '';
+      }
+
+      return AnimalSelectorModel.getAnimalTitleLine(row);
    }
 
-   if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
-      return TransportationSelectorModel.getTransportationName(row) || '';
+   static resolveScheduleModuleSearchRowRenderer({
+      row,
+      renderAnimalRowLeft,
+      renderAttractionRowLeft,
+      renderTransportationRowLeft,
+      renderGuardiansTalkRowLeft,
+      renderWildEncounterRowLeft,
+   }) {
+      const kind = getScheduleItemRowKind(row);
+
+      if (kind === ScheduleItemKind.ATTRACTION.itemType) {
+         return renderAttractionRowLeft(row);
+      }
+
+      if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
+         return renderTransportationRowLeft(row);
+      }
+
+      if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+         return renderGuardiansTalkRowLeft(row);
+      }
+
+      if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+         return renderWildEncounterRowLeft(row);
+      }
+
+      return renderAnimalRowLeft(row);
    }
-
-   if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-      return GuardiansTalkSelectorModel.getGuardiansTalkName(row) || '';
-   }
-
-   if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-      return WildEncounterSelectorModel.getWildEncounterName(row) || '';
-   }
-
-   return AnimalSelectorModel.getAnimalTitleLine(row);
-}
-
-export function resolveScheduleModuleSearchRowRenderer({
-   row,
-   renderAnimalRowLeft,
-   renderAttractionRowLeft,
-   renderTransportationRowLeft,
-   renderGuardiansTalkRowLeft,
-   renderWildEncounterRowLeft,
-}) {
-   const kind = getScheduleItemRowKind(row);
-
-   if (kind === ScheduleItemKind.ATTRACTION.itemType) {
-      return renderAttractionRowLeft(row);
-   }
-
-   if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
-      return renderTransportationRowLeft(row);
-   }
-
-   if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-      return renderGuardiansTalkRowLeft(row);
-   }
-
-   if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-      return renderWildEncounterRowLeft(row);
-   }
-
-   return renderAnimalRowLeft(row);
 }

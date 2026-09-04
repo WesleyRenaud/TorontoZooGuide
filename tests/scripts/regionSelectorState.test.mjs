@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { createRegionSelectorState } from '../../scripts/itinerary/selectors/regionSelector/state.js';
-import { ANIMALS_KEY, DATE_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 import { createFetchMock } from './helpers/fetchMock.mjs';
@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 test('getAnimalsByExhibit receives month and day from stored visit date', async () => {
-   localStorage.setItem(DATE_KEY, '2026-08-12');
+   localStorage.setItem(StorageKeys.DATE_KEY, '2026-08-12');
 
    globalThis.fetch = createFetchMock({
       '/get-animals-by-exhibit': (_url, options) => {
@@ -64,7 +64,7 @@ test('getAnimalsByExhibit falls back to today when no visit date is stored', asy
 
 test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete exhibit deselect', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          {
             species: 'African Lion',
@@ -77,7 +77,7 @@ test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete 
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -125,13 +125,13 @@ test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete 
 
 test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -158,21 +158,21 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
 
    assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
    assert.deepEqual(
-      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
       []
    );
 });
 
 test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new date', async () => {
-   localStorage.setItem(DATE_KEY, '2026-10-17');
+   localStorage.setItem(StorageKeys.DATE_KEY, '2026-10-17');
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -198,7 +198,7 @@ test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new d
    );
    assert.equal(state.selectedExhibitsNeedCatalogRebuild(), true);
    assert.deepEqual(
-      JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)),
+      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
       ['Africa Savanna']
    );
 
@@ -213,13 +213,13 @@ test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new d
 
 test('re-selecting an exhibit re-hydrates previously removed animals', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -255,14 +255,14 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
 
 test('deselecting a bulk exhibit removes its animals from the draft', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'African Penguin', exhibit: 'Africa Savanna' },
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -281,19 +281,19 @@ test('deselecting a bulk exhibit removes its animals from the draft', async () =
    const animals = await state.buildUpdatedAnimalsFromSelection();
 
    assert.deepEqual(animals, []);
-   assert.deepEqual(JSON.parse(localStorage.getItem(ANIMALS_KEY)), []);
+   assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)), []);
 });
 
 test('deselecting a bulk exhibit keeps manually added animals from other exhibits', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'Red Panda', exhibit: 'Indo-Malaya' },
       ])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 

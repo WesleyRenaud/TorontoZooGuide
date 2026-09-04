@@ -1,10 +1,7 @@
 import { makeItineraryPanelViews } from './components/dayPlanner.js';
-import {
-   getItineraryPanelViewFromUrl,
-   setItineraryPanelViewInUrl,
-} from './itineraryPanelViewUrl.js';
+import { ItineraryPanelViewUrl } from './itineraryPanelViewUrl.js';
 
-let activePanelView = getItineraryPanelViewFromUrl();
+let activePanelView = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl();
 
 export function getActiveItineraryPanelView() {
    return activePanelView;
@@ -12,7 +9,7 @@ export function getActiveItineraryPanelView() {
 
 export function setActiveItineraryPanelView(view) {
    activePanelView = view;
-   setItineraryPanelViewInUrl(view);
+   ItineraryPanelViewUrl.setItineraryPanelViewInUrl(view);
 }
 
 export function makeItineraryPanelViewShell() {
@@ -23,7 +20,7 @@ export function makeItineraryPanelViewShell() {
 }
 
 export function resetActiveItineraryPanelView(
-   view = getItineraryPanelViewFromUrl()
+   view = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl()
 ) {
    activePanelView = view;
 }

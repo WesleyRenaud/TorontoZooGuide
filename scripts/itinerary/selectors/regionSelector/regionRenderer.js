@@ -1,9 +1,4 @@
-import {
-   getRegionExhibits,
-   getRegionName,
-   isRegionFullySelected,
-   shouldHideDuplicateSingleExhibit,
-} from './regionSelection.js';
+import { RegionSelection } from './regionSelection.js';
 
 function createChoiceIndicator(isSelected) {
    const indicator = document.createElement('div');
@@ -50,9 +45,9 @@ function createChoiceRow({
 }
 
 export function buildRegionRows(region, selectedExhibitNames) {
-   const exhibits = getRegionExhibits(region);
-   const regionName = getRegionName(region);
-   const regionSelected = isRegionFullySelected(region, selectedExhibitNames);
+   const exhibits = RegionSelection.getRegionExhibits(region);
+   const regionName = RegionSelection.getRegionName(region);
+   const regionSelected = RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
 
    const rows = [
       createChoiceRow({
@@ -63,7 +58,7 @@ export function buildRegionRows(region, selectedExhibitNames) {
       }),
    ];
 
-   if (!shouldHideDuplicateSingleExhibit(region)) {
+   if (!RegionSelection.shouldHideDuplicateSingleExhibit(region)) {
       exhibits.forEach((exhibitName) => {
          rows.push(
             createChoiceRow({

@@ -3,14 +3,14 @@ import { test } from 'node:test';
 
 import { saveItinerary } from '../../scripts/itinerary/itineraryServiceSave.js';
 import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
 test('saveItinerary includes selected exhibits in the backend payload', async () => {
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna', '  ', 'Eurasia'])
    );
 
@@ -60,7 +60,7 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
 
 test('saveItinerary omits selected exhibits by default', async () => {
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 

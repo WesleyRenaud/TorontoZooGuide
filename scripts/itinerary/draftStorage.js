@@ -2,13 +2,7 @@ import {
    createEmptyItineraryDraft,
    normalizeItineraryDraft,
 } from './itineraryShape.js';
-import {
-   buildSelectedAnimalKey,
-   buildSelectedAnimalKeyFromWire,
-   getExhibitNamesFromAnimals,
-   makeSelectedAnimal,
-   normalizeSelectedAnimal,
-} from './selectors/regionSelector/regionSelection.js';
+import { RegionSelection } from './selectors/regionSelector/regionSelection.js';
 import {
    addRemovedAnimalKey,
    clearRemovedAnimalKeys,
@@ -16,17 +10,7 @@ import {
    saveSelectedNames,
 } from './selectors/regionSelector/regionStorage.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
-import {
-   ANIMALS_KEY,
-   ATTRACTIONS_KEY,
-   DATE_KEY,
-   GUARDIANS_KEY,
-   REMOVED_ANIMALS_KEY,
-   SELECTED_EXHIBITS_KEY,
-   SELECTED_REGIONS_KEY,
-   TRANSPORTATIONS_KEY,
-   WILD_KEY,
-} from './storageKeys.js';
+import { StorageKeys } from './storageKeys.js';
 
 export {
    areItineraryDraftsEqual,
@@ -37,26 +21,26 @@ export {
 } from './itineraryShape.js';
 
 const DRAFT_ITEM_STORAGE_KEYS = Object.freeze({
-   animals: ANIMALS_KEY,
-   attractions: ATTRACTIONS_KEY,
-   guardiansTalks: GUARDIANS_KEY,
-   wildEncounters: WILD_KEY,
-   transportations: TRANSPORTATIONS_KEY,
+   animals: StorageKeys.ANIMALS_KEY,
+   attractions: StorageKeys.ATTRACTIONS_KEY,
+   guardiansTalks: StorageKeys.GUARDIANS_KEY,
+   wildEncounters: StorageKeys.WILD_KEY,
+   transportations: StorageKeys.TRANSPORTATIONS_KEY,
 });
 
 export const ITINERARY_DRAFT_KEYS = [
-   DATE_KEY,
-   ANIMALS_KEY,
-   ATTRACTIONS_KEY,
-   GUARDIANS_KEY,
-   WILD_KEY,
-   TRANSPORTATIONS_KEY,
+   StorageKeys.DATE_KEY,
+   StorageKeys.ANIMALS_KEY,
+   StorageKeys.ATTRACTIONS_KEY,
+   StorageKeys.GUARDIANS_KEY,
+   StorageKeys.WILD_KEY,
+   StorageKeys.TRANSPORTATIONS_KEY,
 ];
 
 export const ITINERARY_SELECTION_KEYS = [
-   SELECTED_EXHIBITS_KEY,
-   SELECTED_REGIONS_KEY,
-   REMOVED_ANIMALS_KEY,
+   StorageKeys.SELECTED_EXHIBITS_KEY,
+   StorageKeys.SELECTED_REGIONS_KEY,
+   StorageKeys.REMOVED_ANIMALS_KEY,
 ];
 
 export const ITINERARY_STORAGE_KEYS = [
@@ -82,16 +66,16 @@ export function saveArray(key, items = []) {
 }
 
 export function getStoredItineraryDate() {
-   return localStorage.getItem(DATE_KEY) || '';
+   return localStorage.getItem(StorageKeys.DATE_KEY) || '';
 }
 
 export function setStoredItineraryDate(date) {
    if (!date) {
-      localStorage.removeItem(DATE_KEY);
+      localStorage.removeItem(StorageKeys.DATE_KEY);
       return;
    }
 
-   localStorage.setItem(DATE_KEY, date);
+   localStorage.setItem(StorageKeys.DATE_KEY, date);
 }
 
 function loadStoredDraftItems() {
@@ -173,18 +157,18 @@ export function clearItinerarySelectionStorage() {
 
 function writeItineraryAnimalDraft(animals = []) {
    const draftAnimals = animals
-      .map(makeSelectedAnimal)
+      .map(RegionSelection.makeSelectedAnimal)
       .filter(Boolean);
 
-   saveArray(ANIMALS_KEY, draftAnimals);
+   saveArray(StorageKeys.ANIMALS_KEY, draftAnimals);
 }
 
 function pruneSelectedExhibitsWithoutAnimals(animals = []) {
-   const presentExhibits = new Set(getExhibitNamesFromAnimals(animals));
-   const nextSelectedExhibits = loadSelectedNames(SELECTED_EXHIBITS_KEY)
+   const presentExhibits = new Set(RegionSelection.getExhibitNamesFromAnimals(animals));
+   const nextSelectedExhibits = loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY)
       .filter((exhibitName) => presentExhibits.has(exhibitName));
 
-   saveSelectedNames(SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
+   saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
 }
 
 function syncSelectedExhibitsFromItinerary(itinerary = {}) {
@@ -192,7 +176,7 @@ function syncSelectedExhibitsFromItinerary(itinerary = {}) {
       return;
    }
 
-   saveSelectedNames(SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
+   saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
 }
 
 export function syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
@@ -206,7 +190,7 @@ export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
       return;
    }
 
-   const removeKey = buildSelectedAnimalKeyFromWire(key);
+   const removeKey = RegionSelection.buildSelectedAnimalKeyFromWire(key);
 
    if (!removeKey) {
       return;
@@ -214,9 +198,9 @@ export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
 
    addRemovedAnimalKey(removeKey);
 
-   const remainingAnimals = loadArray(ANIMALS_KEY)
-      .map(normalizeSelectedAnimal)
-      .filter((animal) => animal && buildSelectedAnimalKey(animal) !== removeKey);
+   const remainingAnimals = loadArray(StorageKeys.ANIMALS_KEY)
+      .map(RegionSelection.normalizeSelectedAnimal)
+      .filter((animal) => animal && RegionSelection.buildSelectedAnimalKey(animal) !== removeKey);
 
    writeItineraryAnimalDraft(remainingAnimals);
    pruneSelectedExhibitsWithoutAnimals(remainingAnimals);
