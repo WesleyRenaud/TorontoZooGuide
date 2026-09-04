@@ -1,13 +1,13 @@
 import { el } from '../dom.js';
 import { getStoredItineraryDate } from '../../draftStorage.js';
-import { formatISODateLong } from '../format.js';
+import { Format } from '../format.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const { actions, selectors } = APP_STRINGS.itinerary;
 
 export function makeDateCard(itin = {}) {
    const date = itin.date || getStoredItineraryDate();
-   const prettyDate = formatISODateLong(date);
+   const prettyDate = Format.formatISODateLong(date);
 
    if (!prettyDate) return null;
 

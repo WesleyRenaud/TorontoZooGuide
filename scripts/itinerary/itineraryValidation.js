@@ -1,5 +1,5 @@
 import { LikelihoodValues } from '../likelihood/likelihoodValues.js';
-import { normalizeNonNegativeNumber } from './panel/format.js';
+import { Format } from './panel/format.js';
 import { SpeciesExhibitKey } from './speciesExhibitKey.js';
 import { Summary } from './wizard/diff/summary.js';
 
@@ -147,10 +147,10 @@ export class ItineraryValidation {
          itineraryAnimalMinLikelihood,
       } = {}
    ) {
-      const visibilityChangeThreshold = normalizeNonNegativeNumber(
+      const visibilityChangeThreshold = Format.normalizeNonNegativeNumber(
          animalVisibilityChangeThreshold
       );
-      const animalMinLikelihood = normalizeNonNegativeNumber(
+      const animalMinLikelihood = Format.normalizeNonNegativeNumber(
          itineraryAnimalMinLikelihood
       );
       const visibilityAnimals = aggregateAnimalsForVisibilityComparison(

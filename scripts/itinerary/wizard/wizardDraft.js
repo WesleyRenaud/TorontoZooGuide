@@ -1,8 +1,8 @@
-import { normalizeItineraryDraft } from '../itineraryShape.js';
+import { ItineraryShape } from '../itineraryShape.js';
 
 export class WizardDraft {
    static buildWizardDraft(wizardState, override = {}) {
-      return normalizeItineraryDraft({
+      return ItineraryShape.normalizeItineraryDraft({
          date: override.date ?? wizardState.date,
          arrivalTime: override.arrivalTime ?? wizardState.arrivalTime,
          departureTime: override.departureTime ?? wizardState.departureTime,

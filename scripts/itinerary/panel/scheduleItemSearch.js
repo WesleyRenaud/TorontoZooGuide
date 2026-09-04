@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { normalizeItineraryItems } from '../itineraryShape.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
@@ -213,7 +213,7 @@ export class ScheduleItemSearch {
       { unscheduledOnly = false, scheduledOnly = false } = {}
    ) {
       const pickItems = (items) => {
-         const list = normalizeItineraryItems(items);
+         const list = ItineraryShape.normalizeItineraryItems(items);
 
          if (scheduledOnly) {
             return list.filter((item) => !ScheduleItemSearch.isUnscheduledItineraryItem(item));

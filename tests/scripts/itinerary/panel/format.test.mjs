@@ -4,20 +4,12 @@ import { test } from 'node:test';
 import {
    TIMELINE_POINT_PILL_HEIGHT_PX,
    TIMELINE_SLOT_HEIGHT_PX,
-} from '../../scripts/shared/constants.js';
-import { DayPlannerSchedule } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
-import { timelineSlotRowHeightFraction } from '../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
-import { DayPlannerTimelineMarkers } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
-import { DayPlannerTimelinePillPlacement } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
-import {
-   formatClockTime,
-   formatISODateFull,
-   formatISODateLong,
-   normalizeAnimal,
-   normalizeAttraction,
-   normalizeTalk,
-   normalizeWild,
-} from '../../scripts/itinerary/panel/format.js';
+} from '../../../../scripts/shared/constants.js';
+import { DayPlannerSchedule } from '../../../../scripts/itinerary/panel/dayPlannerSchedule.js';
+import { timelineSlotRowHeightFraction } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
+import { DayPlannerTimelineMarkers } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
+import { DayPlannerTimelinePillPlacement } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
+import { Format } from '../../../../scripts/itinerary/panel/format.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -30,20 +22,20 @@ import {
    textFor,
    timelinePillTexts,
    timelineScheduledPillTexts,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../../helpers/panelRowsTestSetup.mjs';
 
 test.describe('itinerary panel format and schedule', () => {
    installPanelRowsTestHooks();
 
-   test('formats and normalizes itinerary panel item data', () => {
-      assert.match(formatISODateLong('2026-06-15'), /June 15, 2026/);
-      assert.equal(formatISODateLong('not-a-date'), '');
-      assert.equal(formatISODateFull('2026-06-20'), 'Saturday, June 20, 2026');
-      assert.equal(formatISODateFull('not-a-date', 'Fallback Date'), 'not-a-date');
-      assert.equal(formatClockTime('09:30'), '9:30 AM');
-      assert.equal(formatClockTime('09:30:30'), '9:30:30 AM');
-      assert.equal(formatClockTime('19:00'), '7:00 PM');
-      assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
+   test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
+      assert.match(Format.formatISODateLong('2026-06-15'), /June 15, 2026/);
+      assert.equal(Format.formatISODateLong('not-a-date'), '');
+      assert.equal(Format.formatISODateFull('2026-06-20'), 'Saturday, June 20, 2026');
+      assert.equal(Format.formatISODateFull('not-a-date', 'Fallback Date'), 'not-a-date');
+      assert.equal(Format.formatClockTime('09:30'), '9:30 AM');
+      assert.equal(Format.formatClockTime('09:30:30'), '9:30:30 AM');
+      assert.equal(Format.formatClockTime('19:00'), '7:00 PM');
+      assert.equal(Format.formatClockTime('', 'Fallback Time'), 'Fallback Time');
       assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30'), 570);
       assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30:30'), 570.5);
       assert.equal(DayPlannerSchedule.parseClockTimeMinutes('10:00 AM'), 600);
@@ -201,7 +193,7 @@ test.describe('itinerary panel format and schedule', () => {
       assert.equal(timelineSlotRowHeightFraction(30), 1);
       assert.equal(timelineSlotRowHeightFraction(0), 1);
       assert.equal(timelineSlotRowHeightFraction(null), 1);
-      assert.deepEqual(normalizeAnimal({
+      assert.deepEqual(Format.normalizeAnimal({
          species: '  African Lion  ',
          exhibit: '  Africa Savanna  ',
          likelihoodBefore: '0.9',
@@ -214,13 +206,13 @@ test.describe('itinerary panel format and schedule', () => {
          likelihoodBefore: 0.9,
          likelihoodAfter: 60,
       });
-      assert.equal(normalizeAttraction({
+      assert.equal(Format.normalizeAttraction({
          name: '  Conservation Carousel  ',
          info_link: '  https://www.torontozoo.com/tickets/carousel  ',
          region: '  Front Courtyard  ',
       }).infoLink, 'https://www.torontozoo.com/tickets/carousel');
       assert.deepEqual(
-         normalizeAttraction({
+         Format.normalizeAttraction({
             name: 'Zoomobile',
             region: 'Front Courtyard',
          }),
@@ -236,9 +228,9 @@ test.describe('itinerary panel format and schedule', () => {
             removalReason: null,
          }
       );
-      assert.equal(normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
+      assert.equal(Format.normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
       assert.deepEqual(
-         normalizeTalk({
+         Format.normalizeTalk({
             name: 'New World Primates',
             linked_animals: [
                { species: '  Golden Lion Tamarin  ', exhibit: '  Americas Pavilion  ' },
@@ -251,11 +243,11 @@ test.describe('itinerary panel format and schedule', () => {
             { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
          ]
       );
-      assert.deepEqual(normalizeTalk({ name: 'Unmapped Talk' }).linked_animals, []);
-      assert.equal(normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
+      assert.deepEqual(Format.normalizeTalk({ name: 'Unmapped Talk' }).linked_animals, []);
+      assert.equal(Format.normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
    });
    
-   test('timeline markers anchor to the preceding half-hour slot', () => {
+   test('Test_FindTimelineAnchorSlot_TestPrecedingHalfHour_ExpectAnchored', () => {
       const slotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(570, 1140);
       const markersByAnchor = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
          [
@@ -277,7 +269,7 @@ test.describe('itinerary panel format and schedule', () => {
          kind: 'arrival',
       }]);
    });
-   test('DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
+   test('Test_ComputeStripHorizontalOffsetIndex_TestOverlappingStrips_ExpectShifted', () => {
       const pointPillVerticalSpanFraction = (
          TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
       );
@@ -295,7 +287,7 @@ test.describe('itinerary panel format and schedule', () => {
       ], 0.6, pointPillVerticalSpanFraction), 2);
    });
    
-   test('DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex shifts later overlapping placements', () => {
+   test('Test_ComputeTimelineHorizontalOffsetIndex_TestOverlappingPlacements_ExpectShifted', () => {
       assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
       assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([
          { offsetFraction: 0.5, durationFraction: 0.5, horizontalOffsetIndex: 0 },

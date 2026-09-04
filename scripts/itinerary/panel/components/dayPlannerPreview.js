@@ -19,7 +19,7 @@ import {
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
-import { formatISODateFull } from '../format.js';
+import { Format } from '../format.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import {
    makeScheduleActionsBar,
@@ -214,7 +214,7 @@ export function makeDayPlannerPreview(
    const scheduleActions = el('div', 'itinerary-day-module-schedule-actions');
    const titleWrap = el('div');
    const title = el('h3', '', strings.title);
-   const date = formatISODateFull(hours.date, strings.date);
+   const date = Format.formatISODateFull(hours.date, strings.date);
    const timeline = el('div', 'itinerary-day-timeline');
 
    section.setAttribute('aria-label', strings.aria);

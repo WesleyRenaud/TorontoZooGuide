@@ -1,4 +1,4 @@
-import { formatClockTime } from '../format.js';
+import { Format } from '../format.js';
 import { ItineraryAdjustmentTypes } from '../../itineraryAdjustmentTypes.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -8,7 +8,7 @@ export class RemovedItemsPopupAdjustmentSpecs {
       {
          adjustmentTypes = ItineraryAdjustmentTypes.getItineraryAdjustmentTypes(),
          strings = APP_STRINGS,
-         formatTime = formatClockTime,
+         formatTime = Format.formatClockTime,
       } = {}
    ) {
       const oldTime = formatTime(adjustment.previousValue);

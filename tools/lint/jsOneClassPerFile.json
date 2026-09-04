@@ -107,7 +107,9 @@
       "scripts/itinerary/panel/rowBuilders.js",
       "scripts/datePickers/readOpenPickerTime.js",
       "scripts/itinerary/panel/dayPlannerSchedule.js",
-      "scripts/itinerary/panel/scheduleItemSearch.js"
+      "scripts/itinerary/panel/scheduleItemSearch.js",
+      "scripts/itinerary/panel/format.js",
+      "scripts/itinerary/itineraryShape.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

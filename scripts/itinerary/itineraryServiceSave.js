@@ -4,10 +4,7 @@ import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
-import {
-   normalizeItineraryDraft,
-   toSetItineraryPayload,
-} from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { showAttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
 import { showFixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
@@ -32,7 +29,7 @@ function createConfirmedSetItineraryResult(result, diffBaseline = null) {
 
 function getSetItineraryResultPayload(result) {
    return result?.itinerary
-      ? toSetItineraryPayload(result.itinerary)
+      ? ItineraryShape.toSetItineraryPayload(result.itinerary)
       : {};
 }
 
@@ -195,7 +192,7 @@ export async function saveItinerary(
       selectedExhibits = [],
    } = {},
 ) {
-   const savePayload = toSetItineraryPayload(itinerary);
+   const savePayload = ItineraryShape.toSetItineraryPayload(itinerary);
    const basePayload = {
       ...savePayload,
       selectedExhibits,
@@ -217,7 +214,7 @@ export async function saveItinerary(
 
    const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    const saveDiff = ItineraryDiff.buildItineraryDiff(
-      normalizeItineraryDraft(diffBaseline ?? itinerary),
+      ItineraryShape.normalizeItineraryDraft(diffBaseline ?? itinerary),
       normalizedItinerary,
       {},
       normalizedItinerary.itineraryConfig ?? {}

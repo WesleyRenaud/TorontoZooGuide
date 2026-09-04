@@ -1,14 +1,6 @@
 import { Summary } from './diff/summary.js';
-import {
-   cloneItineraryDraft,
-   writeStoredItineraryDraft,
-} from '../draftStorage.js';
-import {
-   areItineraryDraftsSemanticallyEqual,
-   hydrateWizardDraftFromSavedItinerary,
-   isItineraryEmptyDraft,
-   normalizeItineraryDraft,
-} from '../itineraryShape.js';
+import { writeStoredItineraryDraft } from '../draftStorage.js';
+import { ItineraryShape } from '../itineraryShape.js';
 
 function createPendingValidationState() {
    return {
@@ -21,7 +13,7 @@ function createPendingValidationState() {
 }
 
 function buildWizardDraftSnapshot(state = {}) {
-   return cloneItineraryDraft(state);
+   return ItineraryShape.cloneItineraryDraft(state);
 }
 
 function writeDraftState(draft) {
@@ -29,7 +21,7 @@ function writeDraftState(draft) {
 }
 
 function assignWizardDraft(state, draft) {
-   const normalizedDraft = normalizeItineraryDraft(draft);
+   const normalizedDraft = ItineraryShape.normalizeItineraryDraft(draft);
 
    state.date = normalizedDraft.date;
    state.animals = normalizedDraft.animals.slice();
@@ -99,8 +91,8 @@ function applyPendingValidation(state, {
 }
 
 export function createItineraryWizardState(existing = {}) {
-   const initialDraft = cloneItineraryDraft(
-      hydrateWizardDraftFromSavedItinerary(existing)
+   const initialDraft = ItineraryShape.cloneItineraryDraft(
+      ItineraryShape.hydrateWizardDraftFromSavedItinerary(existing)
    );
    const state = {
       ...buildWizardDraftSnapshot(initialDraft),
@@ -142,11 +134,11 @@ export function createItineraryWizardState(existing = {}) {
       hasUnsavedChanges() {
          const snapshot = buildWizardDraftSnapshot(state);
 
-         if (isItineraryEmptyDraft(snapshot) && isItineraryEmptyDraft(initialDraft)) {
+         if (ItineraryShape.isItineraryEmptyDraft(snapshot) && ItineraryShape.isItineraryEmptyDraft(initialDraft)) {
             return false;
          }
 
-         return !areItineraryDraftsSemanticallyEqual(snapshot, initialDraft);
+         return !ItineraryShape.areItineraryDraftsSemanticallyEqual(snapshot, initialDraft);
       },
 
       discardChanges() {

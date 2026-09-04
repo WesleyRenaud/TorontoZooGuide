@@ -1,9 +1,6 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import {
-   formatClockTime,
-   normalizeText,
-} from './format.js';
+import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE = 'wildEncounterWillUnscheduleItems';
@@ -12,7 +9,7 @@ export function getWildEncounterNamesFromUnscheduleIssues(issues = []) {
    return issues
       .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => (issue.items ?? [])
-         .map((item) => normalizeText(item?.name))
+         .map((item) => Format.normalizeText(item?.name))
          .filter(Boolean));
 }
 
@@ -26,9 +23,9 @@ export function getPrimaryWildEncounterFromUnscheduleIssues(issues = []) {
    const encounterItem = issues
       .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
       .flatMap((issue) => issue.items ?? [])
-      .find((item) => normalizeText(item?.name) === encounterName);
+      .find((item) => Format.normalizeText(item?.name) === encounterName);
 
-   const encounterTime = formatClockTime(encounterItem?.start_time);
+   const encounterTime = Format.formatClockTime(encounterItem?.start_time);
 
    if (!encounterTime) {
       return { encounterName };
@@ -50,7 +47,7 @@ export function showWildEncounterUnscheduleConfirmation({
       return;
    }
 
-   const encounterName = normalizeText(encounter.encounterName);
+   const encounterName = Format.normalizeText(encounter.encounterName);
    const message = encounter.encounterTime
       ? strings.wildEncounterRescheduleMessage(
          encounterName,

@@ -1,19 +1,9 @@
-import {
-   createEmptyItineraryDraft,
-   normalizeItineraryDraft,
-} from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import { RegionSelection } from './selectors/regionSelector/regionSelection.js';
 import { RegionStorage } from './selectors/regionSelector/regionStorage.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { StorageKeys } from './storageKeys.js';
 
-export {
-   areItineraryDraftsEqual,
-   cloneItineraryDraft,
-   createEmptyItineraryDraft,
-   isItineraryEmptyDraft,
-   normalizeItineraryDraft,
-} from './itineraryShape.js';
 
 const DRAFT_ITEM_STORAGE_KEYS = Object.freeze({
    animals: StorageKeys.ANIMALS_KEY,
@@ -82,14 +72,14 @@ function loadStoredDraftItems() {
 }
 
 export function loadStoredItineraryDraft() {
-   return normalizeItineraryDraft({
+   return ItineraryShape.normalizeItineraryDraft({
       date: getStoredItineraryDate(),
       ...loadStoredDraftItems(),
    });
 }
 
-export function writeStoredItineraryDraft(draft = createEmptyItineraryDraft()) {
-   const normalizedDraft = normalizeItineraryDraft(draft);
+export function writeStoredItineraryDraft(draft = ItineraryShape.createEmptyItineraryDraft()) {
+   const normalizedDraft = ItineraryShape.normalizeItineraryDraft(draft);
 
    setStoredItineraryDate(normalizedDraft.date);
 

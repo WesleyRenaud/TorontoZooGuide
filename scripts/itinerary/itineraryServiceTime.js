@@ -5,7 +5,7 @@ import {
    dispatchItineraryUpdated,
    getItinerary,
 } from './itineraryService.js';
-import { normalizeItineraryDraft } from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
@@ -102,7 +102,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
 
    const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    const timeDiff = ItineraryDiff.buildItineraryDiff(
-      normalizeItineraryDraft(previousItinerary),
+      ItineraryShape.normalizeItineraryDraft(previousItinerary),
       normalizedItinerary,
       {},
       normalizedItinerary.itineraryConfig ?? {}

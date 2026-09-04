@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { formatClockTime } from './format.js';
-import { normalizeItineraryItems } from '../itineraryShape.js';
+import { Format } from './format.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import { TIMELINE_SLOT_MINUTES } from '../../shared/constants.js';
 
 function isTimeWithinBounds(timeValue, bounds) {
@@ -89,15 +89,15 @@ export class DayPlannerSchedule {
    }
 
    static formatMinutesAsClockTime(totalMinutes) {
-      return formatClockTime(
+      return Format.formatClockTime(
          DayPlannerSchedule.formatMinutesAsScheduleTimeKey(totalMinutes)
       );
    }
 
    static collectFixedZooScheduleStartMinutes(itinerary = {}) {
       return [
-         ...normalizeItineraryItems(itinerary.guardiansTalks),
-         ...normalizeItineraryItems(itinerary.wildEncounters),
+         ...ItineraryShape.normalizeItineraryItems(itinerary.guardiansTalks),
+         ...ItineraryShape.normalizeItineraryItems(itinerary.wildEncounters),
       ]
          .filter((item) => item && item.is_deleted !== true)
          .map((item) => DayPlannerSchedule.parseClockTimeMinutes(item.start_time))

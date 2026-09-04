@@ -1,23 +1,17 @@
 import { ItineraryPathModel } from './itineraryPathModel.js';
-import {
-   createEmptyItineraryDraft,
-   hasSavedItineraryContent,
-   isItineraryEmptyDraft,
-   normalizeItineraryDraft,
-   normalizeItineraryItems,
-} from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidation } from './itineraryValidation.js';
 
 export class ItineraryNormalizer {
    static createEmptyItinerary() {
       return {
-         ...createEmptyItineraryDraft(),
+         ...ItineraryShape.createEmptyItineraryDraft(),
          isActive: false,
       };
    }
 
    static isItineraryEmpty(itinerary) {
-      return isItineraryEmptyDraft(
+      return ItineraryShape.isItineraryEmptyDraft(
          normalizeItinerarySource(itinerary)
       );
    }
@@ -31,7 +25,7 @@ export class ItineraryNormalizer {
    }
 
    static normalizeItinerary(itinerary) {
-      const normalizedDraft = normalizeItineraryDraft(
+      const normalizedDraft = ItineraryShape.normalizeItineraryDraft(
          normalizeItinerarySource(itinerary)
       );
 
@@ -43,7 +37,7 @@ export class ItineraryNormalizer {
             normalizedDraft,
             itinerary?.itineraryConfig ?? {}
          ),
-         isActive: hasSavedItineraryContent(normalizedDraft),
+         isActive: ItineraryShape.hasSavedItineraryContent(normalizedDraft),
       };
    }
 }
@@ -58,12 +52,12 @@ function normalizeItinerarySource(itinerary) {
       arrivalTime: source.arrivalTime,
       departureTime: source.departureTime,
       selectedExhibits: source.selectedExhibits,
-      animals: normalizeItineraryItems(source.animals),
-      attractions: normalizeItineraryItems(source.attractions),
-      guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
-      wildEncounters: normalizeItineraryItems(source.wildEncounters),
-      transportations: normalizeItineraryItems(source.transportations),
-      transportationStations: normalizeItineraryItems(source.transportationStations),
-      events: normalizeItineraryItems(source.events),
+      animals: ItineraryShape.normalizeItineraryItems(source.animals),
+      attractions: ItineraryShape.normalizeItineraryItems(source.attractions),
+      guardiansTalks: ItineraryShape.normalizeItineraryItems(source.guardiansTalks),
+      wildEncounters: ItineraryShape.normalizeItineraryItems(source.wildEncounters),
+      transportations: ItineraryShape.normalizeItineraryItems(source.transportations),
+      transportationStations: ItineraryShape.normalizeItineraryItems(source.transportationStations),
+      events: ItineraryShape.normalizeItineraryItems(source.events),
    };
 }

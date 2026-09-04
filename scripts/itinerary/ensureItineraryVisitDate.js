@@ -4,10 +4,7 @@ import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
-import {
-   normalizeItineraryDraft,
-   toSetItineraryPayload,
-} from './itineraryShape.js';
+import { ItineraryShape } from './itineraryShape.js';
 import { VisitDateEarliest } from './visitDateEarliest.js';
 
 export class EnsureItineraryVisitDate {
@@ -30,7 +27,7 @@ export class EnsureItineraryVisitDate {
       const date = await VisitDateEarliest.resolveEffectiveItineraryHoursDateIso(itinerary);
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date, includeTemp: false });
       const result = await ItineraryApi.setItineraryRequest({
-         ...toSetItineraryPayload(normalizeItineraryDraft({
+         ...ItineraryShape.toSetItineraryPayload(ItineraryShape.normalizeItineraryDraft({
             ...itinerary,
             date,
          })),

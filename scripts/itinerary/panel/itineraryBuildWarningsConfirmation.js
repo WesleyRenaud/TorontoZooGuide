@@ -6,7 +6,7 @@ import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
 import { el } from './dom.js';
 import { getFixedTimeItemsFromLongWaitIssues } from './fixedTimeItemLongWaitConfirmation.js';
-import { normalizeText } from './format.js';
+import { Format } from './format.js';
 import { getPrimaryGuardiansTalkFromUnscheduleIssues } from './guardiansTalkUnscheduleConfirmation.js';
 import { getGuardiansTalksFromWithoutAnimalIssues } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
@@ -72,7 +72,7 @@ function buildGuardiansTalkUnscheduleSection(issues, strings) {
       return null;
    }
 
-   const talkName = normalizeText(talk.talkName);
+   const talkName = Format.normalizeText(talk.talkName);
    const message = talk.talkTime
       ? strings.buildWarningScheduleOverlapMessage(talkName, talk.talkTime)
       : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
@@ -92,7 +92,7 @@ function buildWildEncounterUnscheduleSection(issues, strings) {
       return null;
    }
 
-   const encounterName = normalizeText(encounter.encounterName);
+   const encounterName = Format.normalizeText(encounter.encounterName);
    const message = encounter.encounterTime
       ? strings.buildWarningWildEncounterOverlapMessage(
          encounterName,
@@ -115,7 +115,7 @@ function buildGuardiansTalkWithoutAnimalSections(issues, strings) {
    }
 
    return getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
-      const talkName = normalizeText(talk.talkName);
+      const talkName = Format.normalizeText(talk.talkName);
       const message = talk.talkTime
          ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
          : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
@@ -150,7 +150,7 @@ function buildFixedTimeItemLongWaitSections(issues, strings) {
    }
 
    return getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
-      const itemName = normalizeText(item.itemName);
+      const itemName = Format.normalizeText(item.itemName);
       const message = item.itemTime
          ? strings.buildWarningLongWaitMessage(
             itemName,

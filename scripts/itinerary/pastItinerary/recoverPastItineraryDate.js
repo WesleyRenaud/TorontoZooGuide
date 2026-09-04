@@ -1,5 +1,5 @@
 import { saveItinerary } from '../itineraryServiceSave.js';
-import { normalizeItineraryDraft } from '../itineraryShape.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import { createItineraryDateSelectorController } from '../selectors/dateSelector.js';
 import { APP_STRINGS } from '../../strings.js';
 import { toISODate } from '../../visitDates/visitDateRules.js';
@@ -15,7 +15,7 @@ export function recoverPastItineraryDate({
    const {
       createDateController = createItineraryDateSelectorController,
       saveItineraryFn = saveItinerary,
-      normalizeDraft = normalizeItineraryDraft,
+      normalizeDraft = ItineraryShape.normalizeItineraryDraft,
       toIso = toISODate,
    } = deps;
 

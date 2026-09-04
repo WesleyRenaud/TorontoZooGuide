@@ -1,7 +1,7 @@
-import { normalizeItineraryDraft } from '../draftStorage.js';
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
+import { ItineraryShape } from '../itineraryShape.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
@@ -21,7 +21,7 @@ function clearWizardMount(mountEl) {
    mountEl?.replaceChildren();
 }
 
-function createFinalItineraryDraft(draft = {}, normalizeDraft = normalizeItineraryDraft) {
+function createFinalItineraryDraft(draft = {}, normalizeDraft = ItineraryShape.normalizeItineraryDraft) {
    return normalizeDraft(draft);
 }
 
@@ -49,7 +49,7 @@ export async function finalizeItineraryWizard(
    { onDone, allowEmpty = false, deps = {} } = {},
 ) {
    const {
-      normalizeDraft = normalizeItineraryDraft,
+      normalizeDraft = ItineraryShape.normalizeItineraryDraft,
       saveItineraryFn = saveItinerary,
       syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
       showWizardPopup = showItineraryWizardPopup,
