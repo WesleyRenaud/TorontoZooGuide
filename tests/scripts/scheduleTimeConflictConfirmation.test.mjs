@@ -6,7 +6,7 @@ import {
    showScheduleTimeConflictConfirmation,
    WILD_ENCOUNTER_TIME_CONFLICT,
 } from '../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
-import { createConflictSelection } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -131,7 +131,7 @@ test.describe('scheduleTimeConflictConfirmation', () => {
    });
 
    test('confirmSaveIssuesConflictSelection delegates to the resolution helper', async () => {
-      const selection = createConflictSelection();
+      const selection = ScheduleConflictCompatibility.createConflictSelection();
 
       selection.items.push(firstEncounter, secondEncounter);
 

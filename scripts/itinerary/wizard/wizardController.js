@@ -2,7 +2,7 @@ import {
    clearItinerarySelectionStorage,
    syncItineraryAnimalDraftFromItinerary,
 } from '../draftStorage.js';
-import { filterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
+import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
 import { isItineraryConfirmationCancelled } from '../itineraryConfirmationResult.js';
@@ -142,7 +142,7 @@ export async function openItineraryWizard({
       );
 
       if (isItineraryConfirmationCancelled(result)) {
-         const nextSelections = filterDraftExcludingWarningFixedTimeItems(
+         const nextSelections = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
             wizardState,
             result.issues
          );

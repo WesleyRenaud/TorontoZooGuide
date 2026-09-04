@@ -11,17 +11,9 @@ import {
    createSelectorTextColumn,
 } from '../selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../strings.js';
-import {
-   conflictItemRequiresTrimOverride,
-   createConflictSelection,
-   isConflictItemSelected,
-   toggleConflictItemSelection,
-} from '../wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { showScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
-import {
-   isGuardiansTalkConflictItem,
-   sortWildEncounterConflictIssuesByStartTime,
-} from '../wizard/wildEncounterConflictResolution.js';
+import { sortWildEncounterConflictIssuesByStartTime } from '../wizard/wildEncounterConflictResolution.js';
 
 export const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
 
@@ -35,23 +27,23 @@ function refreshConflictSelectionButtons(buttonEntries, selection) {
 }
 
 function handleConflictItemButtonClick(selection, item, buttonEntries) {
-   if (isConflictItemSelected(selection, item)) {
-      toggleConflictItemSelection(selection, item);
+   if (ScheduleConflictCompatibility.isConflictItemSelected(selection, item)) {
+      ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
       refreshConflictSelectionButtons(buttonEntries, selection);
       return;
    }
 
-   if (conflictItemRequiresTrimOverride(selection, item)) {
+   if (ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, item)) {
       showScheduleOverrideSelectionConfirmation({
          onConfirm: () => {
-            toggleConflictItemSelection(selection, item);
+            ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
             refreshConflictSelectionButtons(buttonEntries, selection);
          },
       });
       return;
    }
 
-   toggleConflictItemSelection(selection, item);
+   ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
    refreshConflictSelectionButtons(buttonEntries, selection);
 }
 
@@ -62,7 +54,7 @@ export function buildConflictItemImageSrc(item) {
       return null;
    }
 
-   const directory = isGuardiansTalkConflictItem(item)
+   const directory = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
       ? 'guardians-talks'
       : 'wild-encounters';
 
@@ -100,10 +92,10 @@ function createScheduleConflictSubtitle(item) {
       'itin-panel-time-conflict',
       buildScheduledTimeFieldLine(item)
    );
-   const locationLabel = isGuardiansTalkConflictItem(item)
+   const locationLabel = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
       ? APP_STRINGS.labels.location
       : APP_STRINGS.itinerary.selectors.meetingSpot;
-   const locationValue = isGuardiansTalkConflictItem(item)
+   const locationValue = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
       ? item.location
       : item.meeting_spot;
 
@@ -145,7 +137,7 @@ function createWildEncounterConflictRow({
 }
 
 function createWildEncounterConflictBlock(issue) {
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
    const block = el('div', 'itin-save-issue-conflict');
    const buttonEntries = [];
    const items = sortScheduledOccurrencesByStartTime(issue.items);

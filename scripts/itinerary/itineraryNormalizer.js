@@ -6,7 +6,7 @@ import {
    normalizeItineraryDraft,
    normalizeItineraryItems,
 } from './itineraryShape.js';
-import { buildItineraryValidationState } from './itineraryValidation.js';
+import { ItineraryValidation } from './itineraryValidation.js';
 
 export class ItineraryNormalizer {
    static createEmptyItinerary() {
@@ -39,7 +39,7 @@ export class ItineraryNormalizer {
          ...normalizedDraft,
          itineraryConfig: itinerary?.itineraryConfig ?? null,
          itineraryPath: itinerary?.itineraryPath ?? EMPTY_ITINERARY_PATH,
-         validation: buildItineraryValidationState(
+         validation: ItineraryValidation.buildItineraryValidationState(
             normalizedDraft,
             itinerary?.itineraryConfig ?? {}
          ),

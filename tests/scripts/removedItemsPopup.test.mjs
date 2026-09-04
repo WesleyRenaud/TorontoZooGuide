@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { showRemovedItemsPopup } from '../../scripts/itinerary/panel/components/removedItemsPopup.js';
-import { buildSpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
@@ -128,7 +128,7 @@ test.describe('showRemovedItemsPopup', () => {
          attractionsToKeep: [],
       }]);
       assert.equal(
-         buildSpeciesExhibitKey(removedAnimal),
+         SpeciesExhibitKey.buildSpeciesExhibitKey(removedAnimal),
          'african lion|africa savanna'
       );
    });

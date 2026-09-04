@@ -1,23 +1,6 @@
 import { parseClockTimeMinutes } from '../panel/dayPlannerSchedule.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 
-export function isWildEncounterConflictItem(item) {
-   return item.item_type === ItinerarySaveIssueItemType.wildEncounter;
-}
-
-export function isGuardiansTalkConflictItem(item) {
-   return item.item_type === ItinerarySaveIssueItemType.guardiansTalk;
-}
-
-export function scheduleTimesOverlap(first, second) {
-   const firstStart = parseClockTimeMinutes(first.start_time);
-   const firstEnd = parseClockTimeMinutes(first.end_time);
-   const secondStart = parseClockTimeMinutes(second.start_time);
-   const secondEnd = parseClockTimeMinutes(second.end_time);
-
-   return firstStart < secondEnd && secondStart < firstEnd;
-}
-
 function trimRangeAgainstBlocker(start, end, blockerStart, blockerEnd) {
    if (blockerEnd <= start || blockerStart >= end) {
       return { start, end };
@@ -77,6 +60,10 @@ function isGuardiansTalkFullyCoveredByBlockers(talk, blockers = []) {
    return trimmedRange.start >= trimmedRange.end;
 }
 
+function conflictItemKey(item) {
+   return `${item.item_type}::${item.name}`;
+}
+
 function getSelectionBlockersForItem(selection, item) {
    const blockers = [];
    let reachedCurrentItem = false;
@@ -87,7 +74,7 @@ function getSelectionBlockersForItem(selection, item) {
          continue;
       }
 
-      if (isWildEncounterConflictItem(selectedItem)) {
+      if (ScheduleConflictCompatibility.isWildEncounterConflictItem(selectedItem)) {
          blockers.push(selectedItem);
          continue;
       }
@@ -97,68 +84,15 @@ function getSelectionBlockersForItem(selection, item) {
       }
 
       if (
-         isGuardiansTalkConflictItem(selectedItem)
-         && isGuardiansTalkConflictItem(item)
-         && scheduleTimesOverlap(selectedItem, item)
+         ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)
+         && ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
+         && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
       ) {
          blockers.push(selectedItem);
       }
    }
 
    return blockers;
-}
-
-export function createConflictSelection() {
-   return { items: [] };
-}
-
-function conflictItemKey(item) {
-   return `${item.item_type}::${item.name}`;
-}
-
-export function isConflictItemSelected(selection, item) {
-   const key = conflictItemKey(item);
-
-   return selection.items.some(
-      (selectedItem) => conflictItemKey(selectedItem) === key
-   );
-}
-
-export function canSelectConflictItem(selection, item) {
-   if (isConflictItemSelected(selection, item)) {
-      return true;
-   }
-
-   if (isGuardiansTalkConflictItem(item)) {
-      return !isGuardiansTalkFullyCoveredByBlockers(
-         item,
-         getSelectionBlockersForItem(selection, item)
-      );
-   }
-
-   const overlapsSelectedWildEncounter = selection.items.some(
-      (selectedItem) => (
-         isWildEncounterConflictItem(selectedItem)
-         && scheduleTimesOverlap(selectedItem, item)
-      )
-   );
-
-   if (overlapsSelectedWildEncounter) {
-      return false;
-   }
-
-   const wouldFullyCoverSelectedTalk = selection.items.some(
-      (selectedItem) => (
-         isGuardiansTalkConflictItem(selectedItem)
-         && scheduleTimesOverlap(selectedItem, item)
-         && getTrimmedGuardiansTalkMinutes(
-            selectedItem,
-            getGuardiansTalkTrimBlockers(selection, selectedItem, item)
-         ) == null
-      )
-   );
-
-   return !wouldFullyCoverSelectedTalk;
 }
 
 function guardiansTalkRequiresTrimOverride(talk, blockers = []) {
@@ -195,11 +129,11 @@ function getGuardiansTalkTrimBlockers(selection, talk, extraBlocker = null) {
 function encounterHasScheduleExceptionWithSelectedTalks(selection, encounter) {
    return selection.items.some(
       (selectedItem) => {
-         if (!isGuardiansTalkConflictItem(selectedItem)) {
+         if (!ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)) {
             return false;
          }
 
-         if (!scheduleTimesOverlap(selectedItem, encounter)) {
+         if (!ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, encounter)) {
             return false;
          }
 
@@ -222,68 +156,136 @@ function encounterHasScheduleExceptionWithSelectedTalks(selection, encounter) {
    );
 }
 
-export function conflictItemRequiresTrimOverride(selection, item) {
-   if (isGuardiansTalkConflictItem(item)) {
-      if (
-         !isConflictItemSelected(selection, item)
-         && !canSelectConflictItem(selection, item)
-      ) {
-         return false;
-      }
+export class ScheduleConflictCompatibility {
+   static isWildEncounterConflictItem(item) {
+      return item.item_type === ItinerarySaveIssueItemType.wildEncounter;
+   }
 
-      return guardiansTalkRequiresTrimOverride(
-         item,
-         getSelectionBlockersForItem(selection, item)
+   static isGuardiansTalkConflictItem(item) {
+      return item.item_type === ItinerarySaveIssueItemType.guardiansTalk;
+   }
+
+   static scheduleTimesOverlap(first, second) {
+      const firstStart = parseClockTimeMinutes(first.start_time);
+      const firstEnd = parseClockTimeMinutes(first.end_time);
+      const secondStart = parseClockTimeMinutes(second.start_time);
+      const secondEnd = parseClockTimeMinutes(second.end_time);
+
+      return firstStart < secondEnd && secondStart < firstEnd;
+   }
+
+   static createConflictSelection() {
+      return { items: [] };
+   }
+
+   static isConflictItemSelected(selection, item) {
+      const key = conflictItemKey(item);
+
+      return selection.items.some(
+         (selectedItem) => conflictItemKey(selectedItem) === key
       );
    }
 
-   if (isWildEncounterConflictItem(item)) {
-      if (!canSelectConflictItem(selection, item)) {
+   static canSelectConflictItem(selection, item) {
+      if (ScheduleConflictCompatibility.isConflictItemSelected(selection, item)) {
+         return true;
+      }
+
+      if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
+         return !isGuardiansTalkFullyCoveredByBlockers(
+            item,
+            getSelectionBlockersForItem(selection, item)
+         );
+      }
+
+      const overlapsSelectedWildEncounter = selection.items.some(
+         (selectedItem) => (
+            ScheduleConflictCompatibility.isWildEncounterConflictItem(selectedItem)
+            && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
+         )
+      );
+
+      if (overlapsSelectedWildEncounter) {
          return false;
       }
 
-      return encounterHasScheduleExceptionWithSelectedTalks(selection, item);
+      const wouldFullyCoverSelectedTalk = selection.items.some(
+         (selectedItem) => (
+            ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)
+            && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
+            && getTrimmedGuardiansTalkMinutes(
+               selectedItem,
+               getGuardiansTalkTrimBlockers(selection, selectedItem, item)
+            ) == null
+         )
+      );
+
+      return !wouldFullyCoverSelectedTalk;
    }
 
-   return false;
-}
+   static conflictItemRequiresTrimOverride(selection, item) {
+      if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
+         if (
+            !ScheduleConflictCompatibility.isConflictItemSelected(selection, item)
+            && !ScheduleConflictCompatibility.canSelectConflictItem(selection, item)
+         ) {
+            return false;
+         }
 
-export function hasAdditionalSelectableConflictItems(items, selection) {
-   if (!selection.items.length) {
+         return guardiansTalkRequiresTrimOverride(
+            item,
+            getSelectionBlockersForItem(selection, item)
+         );
+      }
+
+      if (ScheduleConflictCompatibility.isWildEncounterConflictItem(item)) {
+         if (!ScheduleConflictCompatibility.canSelectConflictItem(selection, item)) {
+            return false;
+         }
+
+         return encounterHasScheduleExceptionWithSelectedTalks(selection, item);
+      }
+
       return false;
    }
 
-   return items.some(
-      (item) => (
-         !isConflictItemSelected(selection, item)
-         && canSelectConflictItem(selection, item)
-      )
-   );
-}
+   static hasAdditionalSelectableConflictItems(items, selection) {
+      if (!selection.items.length) {
+         return false;
+      }
 
-export function hasAnyAdditionalSelectableConflictItems(conflictGroups = []) {
-   return conflictGroups.some(
-      (group) => hasAdditionalSelectableConflictItems(
-         group.items,
-         group.selection
-      )
-   );
-}
-
-export function toggleConflictItemSelection(selection, item) {
-   if (isConflictItemSelected(selection, item)) {
-      const key = conflictItemKey(item);
-
-      selection.items = selection.items.filter(
-         (selectedItem) => conflictItemKey(selectedItem) !== key
+      return items.some(
+         (item) => (
+            !ScheduleConflictCompatibility.isConflictItemSelected(selection, item)
+            && ScheduleConflictCompatibility.canSelectConflictItem(selection, item)
+         )
       );
-
-      return;
    }
 
-   if (!canSelectConflictItem(selection, item)) {
-      return;
+   static hasAnyAdditionalSelectableConflictItems(conflictGroups = []) {
+      return conflictGroups.some(
+         (group) => ScheduleConflictCompatibility.hasAdditionalSelectableConflictItems(
+            group.items,
+            group.selection
+         )
+      );
    }
 
-   selection.items.push(item);
+   static toggleConflictItemSelection(selection, item) {
+      if (ScheduleConflictCompatibility.isConflictItemSelected(selection, item)) {
+         const key = conflictItemKey(item);
+
+         selection.items = selection.items.filter(
+            (selectedItem) => conflictItemKey(selectedItem) !== key
+         );
+
+         return;
+      }
+
+      if (!ScheduleConflictCompatibility.canSelectConflictItem(selection, item)) {
+         return;
+      }
+
+      selection.items.push(item);
+   }
 }

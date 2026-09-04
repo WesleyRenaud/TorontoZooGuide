@@ -6,13 +6,7 @@ import {
    applyConflictSelectionButtonState,
    getConflictSelectionButtonState,
 } from '../../scripts/itinerary/panel/scheduleTimeConflictButtonState.js';
-import {
-   canSelectConflictItem,
-   conflictItemRequiresTrimOverride,
-   createConflictSelection,
-   isConflictItemSelected,
-   toggleConflictItemSelection,
-} from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 
@@ -39,7 +33,7 @@ const africanLionTalk = {
 };
 
 test('getConflictSelectionButtonState marks unselected selectable items as add actions', () => {
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    assert.deepEqual(
       getConflictSelectionButtonState(selection, greatBarrierReef),
@@ -55,9 +49,9 @@ test('getConflictSelectionButtonState marks unselected selectable items as add a
 });
 
 test('getConflictSelectionButtonState marks selected items as remove actions', () => {
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
 
-   toggleConflictItemSelection(selection, greatBarrierReef);
+   ScheduleConflictCompatibility.toggleConflictItemSelection(selection, greatBarrierReef);
 
    assert.deepEqual(
       getConflictSelectionButtonState(selection, greatBarrierReef),
@@ -73,9 +67,9 @@ test('getConflictSelectionButtonState marks selected items as remove actions', (
 });
 
 test('getConflictSelectionButtonState disables blocked items and flags trim overrides', () => {
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
 
-   toggleConflictItemSelection(selection, grizzly);
+   ScheduleConflictCompatibility.toggleConflictItemSelection(selection, grizzly);
 
    assert.equal(
       getConflictSelectionButtonState(selection, greatBarrierReef).disabled,
@@ -83,7 +77,7 @@ test('getConflictSelectionButtonState disables blocked items and flags trim over
    );
    assert.equal(
       getConflictSelectionButtonState(selection, africanLionTalk).requiresTrimOverride,
-      conflictItemRequiresTrimOverride(selection, africanLionTalk)
+      ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, africanLionTalk)
    );
    assert.equal(
       getConflictSelectionButtonState(selection, africanLionTalk).ariaLabel,
@@ -92,7 +86,7 @@ test('getConflictSelectionButtonState disables blocked items and flags trim over
 });
 
 test('applyConflictSelectionButtonState updates button attributes and classes', () => {
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
    const button = createDomNode('button', 'itin-save-issue-select-btn');
    const state = getConflictSelectionButtonState(selection, greatBarrierReef);
 
@@ -107,7 +101,7 @@ test('applyConflictSelectionButtonState updates button attributes and classes', 
    assert.equal(button.classList.contains('is-added'), false);
    assert.equal(button.classList.contains('requires-trim-override'), false);
 
-   toggleConflictItemSelection(selection, greatBarrierReef);
+   ScheduleConflictCompatibility.toggleConflictItemSelection(selection, greatBarrierReef);
    applyConflictSelectionButtonState(
       button,
       getConflictSelectionButtonState(selection, greatBarrierReef)
@@ -116,11 +110,11 @@ test('applyConflictSelectionButtonState updates button attributes and classes', 
    assert.equal(button.textContent, APP_STRINGS.itinerary.actions.remove);
    assert.equal(button.classList.contains('is-added'), true);
    assert.equal(
-      isConflictItemSelected(selection, greatBarrierReef),
+      ScheduleConflictCompatibility.isConflictItemSelected(selection, greatBarrierReef),
       true
    );
    assert.equal(
-      canSelectConflictItem(selection, greatBarrierReef),
+      ScheduleConflictCompatibility.canSelectConflictItem(selection, greatBarrierReef),
       true
    );
 });

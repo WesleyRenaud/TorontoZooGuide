@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import {
    buildItineraryWithSelectedConflictResolutions,
    buildItineraryWithSelectedWildEncounters,
@@ -10,7 +11,6 @@ import {
    getWildEncounterConflictIssueStartTime,
    hasUnresolvedWildEncounterConflictGroups,
    hasWildEncounterConflictSelection,
-   isGuardiansTalkConflictItem,
    sortWildEncounterConflictIssuesByStartTime,
 } from '../../scripts/itinerary/wizard/wildEncounterConflictResolution.js';
 
@@ -157,8 +157,14 @@ test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () =
 });
 
 test('isGuardiansTalkConflictItem identifies guardians talk issue items', () => {
-   assert.equal(isGuardiansTalkConflictItem(guardiansTalk), true);
-   assert.equal(isGuardiansTalkConflictItem(firstEncounter), false);
+   assert.equal(
+      ScheduleConflictCompatibility.isGuardiansTalkConflictItem(guardiansTalk),
+      true
+   );
+   assert.equal(
+      ScheduleConflictCompatibility.isGuardiansTalkConflictItem(firstEncounter),
+      false
+   );
 });
 
 test('getSelectedGuardiansTalks returns only guardians talk selections', () => {

@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
 import { buildAnimalAlert } from '../../../scripts/itinerary/panel/rowAlerts.js';
-import { buildItineraryValidationState } from '../../../scripts/itinerary/itineraryValidation.js';
+import { ItineraryValidation } from '../../../scripts/itinerary/itineraryValidation.js';
 
 test('Test_LikelihoodToPercent_TestIntegerApiValues_ExpectPercents', () => {
    assert.equal(LikelihoodValues.likelihoodToPercent(1), 1);
@@ -35,7 +35,7 @@ test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
 });
 
 test('Test_BuildItineraryValidationState_TestOnePercentRising_ExpectImproved', () => {
-   const validation = buildItineraryValidationState({
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'Marabou Stork',

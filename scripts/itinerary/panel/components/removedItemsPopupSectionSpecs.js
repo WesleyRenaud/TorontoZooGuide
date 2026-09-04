@@ -5,9 +5,9 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../rows.js';
-import { buildSpeciesExhibitKey } from '../../speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { APP_STRINGS } from '../../../strings.js';
-import { buildItemKey } from '../../wizard/diff/itemKey.js';
+import { ItemKey } from '../../wizard/diff/itemKey.js';
 
 export function getUnscheduledSectionSpecs(
    safeUnscheduled = {},
@@ -133,7 +133,7 @@ export function resolveKeepOverride(section, {
 } = {}) {
    if (section.keepOverrideKey === 'animal') {
       return {
-         buildKey: buildSpeciesExhibitKey,
+         buildKey: SpeciesExhibitKey.buildSpeciesExhibitKey,
          onToggle: onToggleKeepAnimal,
          isSelected: isKeepAnimalSelected,
       };
@@ -141,7 +141,7 @@ export function resolveKeepOverride(section, {
 
    if (section.keepOverrideKey === 'attraction') {
       return {
-         buildKey: (item) => buildItemKey(item, 'name'),
+         buildKey: (item) => ItemKey.buildItemKey(item, 'name'),
          onToggle: onToggleKeepAttraction,
          isSelected: isKeepAttractionSelected,
       };

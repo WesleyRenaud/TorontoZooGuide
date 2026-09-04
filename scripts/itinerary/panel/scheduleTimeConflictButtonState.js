@@ -1,18 +1,14 @@
 import { APP_STRINGS } from '../../strings.js';
-import {
-   canSelectConflictItem,
-   conflictItemRequiresTrimOverride,
-   isConflictItemSelected,
-} from '../wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 
 export function getConflictSelectionButtonState(
    selection,
    item,
    strings = APP_STRINGS
 ) {
-   const selected = isConflictItemSelected(selection, item);
-   const selectable = canSelectConflictItem(selection, item);
-   const requiresTrimOverride = conflictItemRequiresTrimOverride(selection, item);
+   const selected = ScheduleConflictCompatibility.isConflictItemSelected(selection, item);
+   const selectable = ScheduleConflictCompatibility.canSelectConflictItem(selection, item);
+   const requiresTrimOverride = ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, item);
    const aria = strings.itinerary.aria;
 
    return {

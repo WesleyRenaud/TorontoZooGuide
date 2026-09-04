@@ -6,7 +6,7 @@ import {
    hasRemovedItemsPopupContent,
 } from '../../scripts/itinerary/panel/components/removedItemsPopupContent.js';
 import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
-import { buildSpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
@@ -71,7 +71,7 @@ test.describe('removedItemsPopupContent', () => {
             }],
          },
          onToggleKeepAnimal: (animal) => {
-            keptKeys.add(buildSpeciesExhibitKey(animal));
+            keptKeys.add(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
          },
          isKeepAnimalSelected: (key) => keptKeys.has(key),
       });

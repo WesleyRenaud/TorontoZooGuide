@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildItineraryValidationState } from '../../scripts/itinerary/itineraryValidation.js';
+import { ItineraryValidation } from '../../../scripts/itinerary/itineraryValidation.js';
 
-test('buildItineraryValidationState reports removed saved items', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestRemovedSaved_ExpectRemoved', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'African Lion',
@@ -57,8 +57,8 @@ test('buildItineraryValidationState reports removed saved items', () => {
    );
 });
 
-test('buildItineraryValidationState reports animal visibility changes', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestVisibility_ExpectReducedAndImproved', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'African Penguin',
@@ -95,8 +95,8 @@ test('buildItineraryValidationState reports animal visibility changes', () => {
    assert.equal(validation.hasChanges, true);
 });
 
-test('buildItineraryValidationState ignores active unchanged items', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestUnchanged_ExpectNoChanges', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'African Lion',
@@ -132,8 +132,8 @@ test('buildItineraryValidationState ignores active unchanged items', () => {
    assert.equal(validation.hasChanges, false);
 });
 
-test('buildItineraryValidationState reports animals added from selected exhibits', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestAddedAnimals_ExpectAdded', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'White Rhino',
@@ -175,8 +175,8 @@ test('buildItineraryValidationState reports animals added from selected exhibits
    assert.equal(validation.hasChanges, true);
 });
 
-test('buildItineraryValidationState ignores visibility changes when indoor viewing stays high', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestHighIndoor_ExpectNoVisibilityChange', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'Masai Giraffe',
@@ -203,8 +203,8 @@ test('buildItineraryValidationState ignores visibility changes when indoor viewi
    assert.deepEqual(validation.improvedVisibility.animals, []);
 });
 
-test('buildItineraryValidationState does not list zero-likelihood animals in reduced visibility', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestZeroLikelihood_ExpectNotReduced', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'Common Warthog',
@@ -231,8 +231,8 @@ test('buildItineraryValidationState does not list zero-likelihood animals in red
    assert.deepEqual(validation.reducedVisibility.animals, []);
 });
 
-test('buildItineraryValidationState ignores items without old likelihood values', () => {
-   const validation = buildItineraryValidationState({
+test('Test_BuildItineraryValidationState_TestMissingOldLikelihood_ExpectIgnored', () => {
+   const validation = ItineraryValidation.buildItineraryValidationState({
       animals: [
          {
             species: 'African Lion',

@@ -1,7 +1,5 @@
-import { isGuardiansTalkConflictItem } from './scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
-
-export { isGuardiansTalkConflictItem };
 
 export function getWildEncounterConflictIssueStartTime(issue) {
    const [earliestItem] = sortScheduledOccurrencesByStartTime(issue?.items ?? []);
@@ -34,13 +32,13 @@ export function getSelectedConflictItems(conflictGroups = []) {
 
 export function getSelectedWildEncounters(conflictGroups = []) {
    return getSelectedConflictItems(conflictGroups).filter(
-      (item) => !isGuardiansTalkConflictItem(item)
+      (item) => !ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
    );
 }
 
 export function getSelectedGuardiansTalks(conflictGroups = []) {
    return getSelectedConflictItems(conflictGroups).filter(
-      isGuardiansTalkConflictItem
+      ScheduleConflictCompatibility.isGuardiansTalkConflictItem
    );
 }
 
@@ -64,7 +62,7 @@ export function hasUnresolvedWildEncounterConflictGroups(conflictGroups = []) {
 }
 
 function toConflictResolutionDraftItem(item) {
-   if (isGuardiansTalkConflictItem(item)) {
+   if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
       return {
          name: item.name,
          location: item.location,
@@ -82,10 +80,10 @@ export function buildItineraryWithSelectedConflictResolutions(
    selectedItems = [],
 ) {
    const guardiansTalks = selectedItems
-      .filter(isGuardiansTalkConflictItem)
+      .filter(ScheduleConflictCompatibility.isGuardiansTalkConflictItem)
       .map(toConflictResolutionDraftItem);
    const wildEncounters = selectedItems
-      .filter((item) => !isGuardiansTalkConflictItem(item))
+      .filter((item) => !ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item))
       .map(toConflictResolutionDraftItem);
 
    return {

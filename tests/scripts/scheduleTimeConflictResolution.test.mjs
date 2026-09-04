@@ -7,7 +7,7 @@ import {
    resolveScheduleTimeConflictSelection,
 } from '../../scripts/itinerary/panel/scheduleTimeConflictResolution.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { createConflictSelection } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const firstEncounter = {
@@ -61,7 +61,7 @@ test('resolveScheduleTimeConflictSelection prompts when nothing is selected', as
 
    const resolved = await resolveScheduleTimeConflictSelection(
       [{
-         selection: createConflictSelection(),
+         selection: ScheduleConflictCompatibility.createConflictSelection(),
          items: [firstEncounter, secondEncounter],
       }],
       async (selectedItems) => {
@@ -78,8 +78,8 @@ test('resolveScheduleTimeConflictSelection prompts when nothing is selected', as
 test('resolveScheduleTimeConflictSelection prompts when conflict groups stay unresolved', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
-   const firstSelection = createConflictSelection();
-   const secondSelection = createConflictSelection();
+   const firstSelection = ScheduleConflictCompatibility.createConflictSelection();
+   const secondSelection = ScheduleConflictCompatibility.createConflictSelection();
 
    firstSelection.items.push(firstEncounter);
 
@@ -108,7 +108,7 @@ test('resolveScheduleTimeConflictSelection prompts when conflict groups stay unr
 test('resolveScheduleTimeConflictSelection prompts when more compatible activities remain', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    selection.items.push(firstEncounter);
 
@@ -131,7 +131,7 @@ test('resolveScheduleTimeConflictSelection prompts when more compatible activiti
 test('resolveScheduleTimeConflictSelection resolves immediately when every group is settled', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
-   const selection = createConflictSelection();
+   const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    selection.items.push(firstEncounter, secondEncounter);
 

@@ -6,6 +6,8 @@ function normalizeKeyPart(value) {
    return value.trim().toLowerCase();
 }
 
-export function buildItemKey(item, field) {
-   return normalizeKeyPart(item?.[field]);
+export class ItemKey {
+   static buildItemKey(item, field) {
+      return normalizeKeyPart(item?.[field]);
+   }
 }
