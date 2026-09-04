@@ -1,8 +1,7 @@
 import { SearchApi } from '../../api/searchApi.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 
-export const SELECTOR_SEARCH_DEBOUNCE_MS = 250;
-
-export function debounce(fn, delay = SELECTOR_SEARCH_DEBOUNCE_MS) {
+function debounce(fn, delay) {
    let timeoutId = null;
 
    return (...args) => {
@@ -11,59 +10,67 @@ export function debounce(fn, delay = SELECTOR_SEARCH_DEBOUNCE_MS) {
    };
 }
 
-export function createSelectorSearchRunner({
-   searchEndpoint,
-   buildSearchPayload,
-   extractRows,
-   getContext,
-   getQuery,
-   onRows,
-   searchItems = SearchApi.searchItineraryItems,
-   debounceMs = SELECTOR_SEARCH_DEBOUNCE_MS,
-} = {}) {
-   let latestSearchRequestId = 0;
+export class SelectorSearchRunner {
+   static SELECTOR_SEARCH_DEBOUNCE_MS = 250;
 
-   async function fetchRows(query) {
-      const context = typeof getContext === 'function'
-         ? await getContext()
-         : {};
-
-      const response = await searchItems(searchEndpoint, {
-         ...buildSearchPayload(query),
-         ...context,
-      });
-
-      return extractRows(response);
+   static debounce(fn, delay = SelectorSearchRunner.SELECTOR_SEARCH_DEBOUNCE_MS) {
+      return debounce(fn, delay);
    }
 
-   async function runCurrentQuery() {
-      const requestId = ++latestSearchRequestId;
-      const query = getQuery()?.trim() ?? '';
+   static createSelectorSearchRunner({
+      searchEndpoint,
+      buildSearchPayload,
+      extractRows,
+      getContext,
+      getQuery,
+      onRows,
+      searchItems = SearchApi.searchItineraryItems,
+      debounceMs = SelectorSearchRunner.SELECTOR_SEARCH_DEBOUNCE_MS,
+   } = {}) {
+      let latestSearchRequestId = 0;
 
-      try {
-         const rows = await fetchRows(query);
+      async function fetchRows(query) {
+         const context = typeof getContext === 'function'
+            ? await getContext()
+            : {};
 
-         if (requestId !== latestSearchRequestId) {
-            return;
-         }
+         const response = await searchItems(searchEndpoint, {
+            ...buildSearchPayload(query),
+            ...context,
+         });
 
-         onRows(rows);
+         return extractRows(response);
       }
-      catch {
-         if (requestId !== latestSearchRequestId) {
-            return;
-         }
 
-         onRows([]);
+      async function runCurrentQuery() {
+         const requestId = ++latestSearchRequestId;
+         const query = ValueNormalizer.asTrimmedString(getQuery?.());
+
+         try {
+            const rows = await fetchRows(query);
+
+            if (requestId !== latestSearchRequestId) {
+               return;
+            }
+
+            onRows(rows);
+         }
+         catch {
+            if (requestId !== latestSearchRequestId) {
+               return;
+            }
+
+            onRows([]);
+         }
       }
+
+      const scheduleCurrentQuery = SelectorSearchRunner.debounce(() => {
+         void runCurrentQuery();
+      }, debounceMs);
+
+      return {
+         runCurrentQuery,
+         scheduleCurrentQuery,
+      };
    }
-
-   const scheduleCurrentQuery = debounce(() => {
-      void runCurrentQuery();
-   }, debounceMs);
-
-   return {
-      runCurrentQuery,
-      scheduleCurrentQuery,
-   };
 }

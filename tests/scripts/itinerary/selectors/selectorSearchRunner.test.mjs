@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createSelectorSearchRunner } from '../../scripts/itinerary/selectors/selectorSearchRunner.js';
+import { SelectorSearchRunner } from '../../../../scripts/itinerary/selectors/selectorSearchRunner.js';
 
-test('createSelectorSearchRunner fetches rows for the current query', async () => {
+test('Test_CreateSelectorSearchRunner_TestCurrentQuery_ExpectRows', async () => {
    const renderedRows = [];
-   const runner = createSelectorSearchRunner({
+   const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query, includeAnimals: true }),
       extractRows: (response) => response.animals,
@@ -30,10 +30,10 @@ test('createSelectorSearchRunner fetches rows for the current query', async () =
    assert.deepEqual(renderedRows, [[{ id: 'lion', name: 'Lion' }]]);
 });
 
-test('createSelectorSearchRunner ignores stale responses', async () => {
+test('Test_CreateSelectorSearchRunner_TestStaleResponse_ExpectIgnored', async () => {
    const renderedRows = [];
    let resolveFirst = null;
-   const runner = createSelectorSearchRunner({
+   const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query }),
       extractRows: (response) => response.rows,
@@ -62,9 +62,9 @@ test('createSelectorSearchRunner ignores stale responses', async () => {
    assert.deepEqual(renderedRows, [['fresh']]);
 });
 
-test('createSelectorSearchRunner clears rows when search fails', async () => {
+test('Test_CreateSelectorSearchRunner_TestSearchFails_ExpectCleared', async () => {
    const renderedRows = [];
-   const runner = createSelectorSearchRunner({
+   const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query }),
       extractRows: (response) => response.rows,

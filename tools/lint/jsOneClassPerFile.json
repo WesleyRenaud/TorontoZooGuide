@@ -131,7 +131,15 @@
       "scripts/itinerary/panel/components/itineraryPillMenu.js",
       "scripts/itinerary/panel/components/openTimelinePill.js",
       "scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.js",
-      "scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js"
+      "scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js",
+      "scripts/markers/markers.js",
+      "scripts/visitDates/visitDateFlatpickr.js",
+      "scripts/itinerary/selectors/dateSelectionModel.js",
+      "scripts/itinerary/selectors/dateSelectorPickerBinding.js",
+      "scripts/itinerary/panel/components/itineraryPanelViews.js",
+      "scripts/itinerary/panel/itineraryPanelViewState.js",
+      "scripts/itinerary/selectors/base/selectionState.js",
+      "scripts/itinerary/selectors/selectorSearchRunner.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

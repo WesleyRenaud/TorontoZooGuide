@@ -1,11 +1,6 @@
 import { el } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
-export const ITINERARY_PANEL_VIEWS = {
-   list: 'list',
-   dayPlanner: 'dayPlanner',
-};
-
 function makeToggleButton({ label, view, activeView, onSelect }) {
    const button = el('button', 'itin-panel-view-toggle-button', label);
    button.type = 'button';
@@ -27,51 +22,58 @@ function setViewVisibility(root, selectedView) {
    });
 }
 
-export function makeItineraryPanelViews({
-   activeView = ITINERARY_PANEL_VIEWS.list,
-   onViewChange = null,
-} = {}) {
-   const root = el('div', 'itin-panel-view-shell');
-   const toggle = el('div', 'itin-panel-view-toggle');
-   const sharedHeader = el('div', 'itin-panel-shared-header');
-   const listView = el('div', 'itin-panel-view itin-panel-list-view');
-   const dayPlannerView = el('div', 'itin-panel-view itin-panel-day-planner-view');
-
-   listView.dataset.view = ITINERARY_PANEL_VIEWS.list;
-   dayPlannerView.dataset.view = ITINERARY_PANEL_VIEWS.dayPlanner;
-
-   const selectView = (view) => {
-      onViewChange?.(view);
-      setViewVisibility(root, view);
+export class ItineraryPanelViews {
+   static ITINERARY_PANEL_VIEWS = {
+      list: 'list',
+      dayPlanner: 'dayPlanner',
    };
 
-   toggle.appendChild(
-      makeToggleButton({
-         label: APP_STRINGS.itinerary.dayPlanner.listViewLabel,
-         view: ITINERARY_PANEL_VIEWS.list,
-         activeView,
-         onSelect: selectView,
-      })
-   );
-   toggle.appendChild(
-      makeToggleButton({
-         label: APP_STRINGS.itinerary.dayPlanner.dayPlannerLabel,
-         view: ITINERARY_PANEL_VIEWS.dayPlanner,
-         activeView,
-         onSelect: selectView,
-      })
-   );
+   static makeItineraryPanelViews({
+      activeView = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
+      onViewChange = null,
+   } = {}) {
+      const root = el('div', 'itin-panel-view-shell');
+      const toggle = el('div', 'itin-panel-view-toggle');
+      const sharedHeader = el('div', 'itin-panel-shared-header');
+      const listView = el('div', 'itin-panel-view itin-panel-list-view');
+      const dayPlannerView = el('div', 'itin-panel-view itin-panel-day-planner-view');
 
-   root.appendChild(sharedHeader);
-   root.appendChild(toggle);
-   root.appendChild(listView);
-   root.appendChild(dayPlannerView);
-   setViewVisibility(root, activeView);
+      listView.dataset.view = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
+      dayPlannerView.dataset.view = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner;
 
-   return {
-      root,
-      sharedHeader,
-      listView,
-      dayPlannerView,
-   };
+      const selectView = (view) => {
+         onViewChange?.(view);
+         setViewVisibility(root, view);
+      };
+
+      toggle.appendChild(
+         makeToggleButton({
+            label: APP_STRINGS.itinerary.dayPlanner.listViewLabel,
+            view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
+            activeView,
+            onSelect: selectView,
+         })
+      );
+      toggle.appendChild(
+         makeToggleButton({
+            label: APP_STRINGS.itinerary.dayPlanner.dayPlannerLabel,
+            view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner,
+            activeView,
+            onSelect: selectView,
+         })
+      );
+
+      root.appendChild(sharedHeader);
+      root.appendChild(toggle);
+      root.appendChild(listView);
+      root.appendChild(dayPlannerView);
+      setViewVisibility(root, activeView);
+
+      return {
+         root,
+         sharedHeader,
+         listView,
+         dayPlannerView,
+      };
+   }
 }

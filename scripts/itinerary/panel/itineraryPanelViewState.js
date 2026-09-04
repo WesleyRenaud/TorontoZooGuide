@@ -1,26 +1,28 @@
-import { makeItineraryPanelViews } from './components/dayPlanner.js';
+import { ItineraryPanelViews } from './components/itineraryPanelViews.js';
 import { ItineraryPanelViewUrl } from './itineraryPanelViewUrl.js';
 
 let activePanelView = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl();
 
-export function getActiveItineraryPanelView() {
-   return activePanelView;
-}
+export class ItineraryPanelViewState {
+   static getActiveItineraryPanelView() {
+      return activePanelView;
+   }
 
-export function setActiveItineraryPanelView(view) {
-   activePanelView = view;
-   ItineraryPanelViewUrl.setItineraryPanelViewInUrl(view);
-}
+   static setActiveItineraryPanelView(view) {
+      activePanelView = view;
+      ItineraryPanelViewUrl.setItineraryPanelViewInUrl(view);
+   }
 
-export function makeItineraryPanelViewShell() {
-   return makeItineraryPanelViews({
-      activeView: activePanelView,
-      onViewChange: setActiveItineraryPanelView,
-   });
-}
+   static makeItineraryPanelViewShell() {
+      return ItineraryPanelViews.makeItineraryPanelViews({
+         activeView: activePanelView,
+         onViewChange: ItineraryPanelViewState.setActiveItineraryPanelView,
+      });
+   }
 
-export function resetActiveItineraryPanelView(
-   view = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl()
-) {
-   activePanelView = view;
+   static resetActiveItineraryPanelView(
+      view = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl()
+   ) {
+      activePanelView = view;
+   }
 }

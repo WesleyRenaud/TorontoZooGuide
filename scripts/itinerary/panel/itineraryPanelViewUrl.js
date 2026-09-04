@@ -1,7 +1,7 @@
-import { ITINERARY_PANEL_VIEWS } from './components/itineraryPanelViews.js';
+import { ItineraryPanelViews } from './components/itineraryPanelViews.js';
 
 const VALID_ITINERARY_PANEL_VIEWS = new Set(
-   Object.values(ITINERARY_PANEL_VIEWS)
+   Object.values(ItineraryPanelViews.ITINERARY_PANEL_VIEWS)
 );
 
 function getDefaultLocation() {
@@ -18,14 +18,14 @@ export class ItineraryPanelViewUrl {
    static normalizeItineraryPanelView(view) {
       return VALID_ITINERARY_PANEL_VIEWS.has(view)
          ? view
-         : ITINERARY_PANEL_VIEWS.list;
+         : ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
    }
 
    static getItineraryPanelViewFromUrl(
       location = getDefaultLocation()
    ) {
       if (!location) {
-         return ITINERARY_PANEL_VIEWS.list;
+         return ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
       }
 
       const view = new URL(location.href).searchParams.get(

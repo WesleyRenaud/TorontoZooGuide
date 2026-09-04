@@ -9,7 +9,7 @@ import { createFocusController } from '../focus/focusController.js';
 import { openGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { initLabelVisibilityToggle } from './labelVisibility.js';
 import { createHoverTooltip } from '../markers/hoverTooltip.js';
-import { createMarkerLayer } from '../markers/markers.js';
+import { Markers } from '../markers/markers.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { createPanzoom } from './panzoom.js';
 import { createDataSources } from './sources.js';
@@ -133,7 +133,7 @@ export function createMapRuntime({
 
    initMapLabels(showMapLabelsCheckbox);
 
-   const markers = createMarkerLayer({
+   const markers = Markers.createMarkerLayer({
       mapInner,
       tooltip,
       hover,

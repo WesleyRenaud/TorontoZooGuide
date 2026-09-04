@@ -1,8 +1,5 @@
-import {
-   createDateSelectionModel,
-   formatVisitDateLong,
-} from './dateSelectionModel.js';
-import { createDatePickerBinding } from './dateSelectorPickerBinding.js';
+import { DateSelectionModel } from './dateSelectionModel.js';
+import { DateSelectorPickerBinding } from './dateSelectorPickerBinding.js';
 import { buildDateSelectorView } from './dateSelectorView.js';
 import { APP_STRINGS } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
@@ -21,7 +18,7 @@ export function createItineraryDateSelectorController({
 } = {}) {
    const {
       buildView = buildDateSelectorView,
-      createPicker = createDatePickerBinding,
+      createPicker = DateSelectorPickerBinding.createDatePickerBinding,
       getTodayFn = VisitDateRules.getToday,
    } = deps;
 
@@ -35,10 +32,10 @@ export function createItineraryDateSelectorController({
          return;
       }
 
-      elements.inputEl.value = date ? formatVisitDateLong(date) : '';
+      elements.inputEl.value = date ? DateSelectionModel.formatVisitDateLong(date) : '';
    }
 
-   const model = createDateSelectionModel({
+   const model = DateSelectionModel.createDateSelectionModel({
       initialDate,
       syncInputValue,
       earliestDateFloor: earliestFloor,

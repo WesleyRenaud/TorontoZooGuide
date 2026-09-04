@@ -82,7 +82,13 @@
       "tests/scripts/datePickers/consoleDatePickers.test.mjs",
       "tests/scripts/itinerary/panel/components/itineraryPillMenu.test.mjs",
       "tests/scripts/itinerary/panel/components/openTimelinePill.test.mjs",
-      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.test.mjs"
+      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.test.mjs",
+      "tests/scripts/visitDates/visitDateFlatpickr.test.mjs",
+      "tests/scripts/itinerary/selectors/dateSelectionModel.test.mjs",
+      "tests/scripts/itinerary/selectors/dateSelectorPickerBinding.test.mjs",
+      "tests/scripts/itinerary/panel/components/itineraryPanelViews.test.mjs",
+      "tests/scripts/itinerary/selectors/base/selectionState.test.mjs",
+      "tests/scripts/itinerary/selectors/selectorSearchRunner.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"
