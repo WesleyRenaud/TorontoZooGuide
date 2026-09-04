@@ -19,7 +19,7 @@ import {
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
-import { isScheduleItemTransportationRow } from '../../selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -107,7 +107,7 @@ export function createScheduleItemModuleController({
          return;
       }
 
-      if (isScheduleItemTransportationRow(selectedRow)) {
+      if (TransportationSelectorModel.isScheduleItemTransportationRow(selectedRow)) {
          scheduleTimeFields.setFixedTimeScheduleMode?.({ lockTimes: false });
          scheduleTimeFields.setFixedDurationScheduleMode?.({
             lockDuration: true,

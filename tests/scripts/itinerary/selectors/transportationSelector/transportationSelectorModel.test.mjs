@@ -1,20 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildAddAsTransportationMessage,
-   buildTransportationStationsLine,
-   isScheduleItemTransportationRow,
-   isTransitTransportationHandledForDayPlanner,
-   makeTransportationSelection,
-   migrateStoredTransportations,
-   shouldConfirmAddAsTransportation,
-} from '../../scripts/itinerary/selectors/transportationSelector/model.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { TransportationSelectorModel } from '../../../../../scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js';
+import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
 
-test('isTransitTransportationHandledForDayPlanner treats bulk evaluation as handled', () => {
+test('Test_IsTransitTransportationHandledForDayPlanner_TestBulkEvaluation_ExpectHandled', () => {
    assert.equal(
-      isTransitTransportationHandledForDayPlanner({
+      TransportationSelectorModel.isTransitTransportationHandledForDayPlanner({
          name: 'Zoomobile',
          added_as_attraction: false,
          bulk_transit_evaluated: true,
@@ -23,7 +15,7 @@ test('isTransitTransportationHandledForDayPlanner treats bulk evaluation as hand
       true
    );
    assert.equal(
-      isTransitTransportationHandledForDayPlanner({
+      TransportationSelectorModel.isTransitTransportationHandledForDayPlanner({
          name: 'Zoomobile',
          added_as_attraction: false,
          bulk_transit_evaluated: false,
@@ -33,9 +25,9 @@ test('isTransitTransportationHandledForDayPlanner treats bulk evaluation as hand
    );
 });
 
-test('buildTransportationStationsLine omits main-station round trip for pure transportations', () => {
+test('Test_BuildTransportationStationsLine_TestPureTransport_ExpectOmitMainStationRoundTrip', () => {
    assert.equal(
-      buildTransportationStationsLine({
+      TransportationSelectorModel.buildTransportationStationsLine({
          name: 'Zoomobile',
          added_as_attraction: false,
          main_station: 'Main Zoomobile Station',
@@ -44,7 +36,7 @@ test('buildTransportationStationsLine omits main-station round trip for pure tra
       ''
    );
    assert.equal(
-      buildTransportationStationsLine({
+      TransportationSelectorModel.buildTransportationStationsLine({
          name: 'Zoomobile',
          added_as_attraction: true,
          main_station: 'Main Zoomobile Station',
@@ -54,38 +46,38 @@ test('buildTransportationStationsLine omits main-station round trip for pure tra
    );
 });
 
-test('isScheduleItemTransportationRow recognizes transportations and added-as-attraction rows', () => {
+test('Test_IsScheduleItemTransportationRow_TestKinds_ExpectRecognized', () => {
    assert.equal(
-      isScheduleItemTransportationRow({
+      TransportationSelectorModel.isScheduleItemTransportationRow({
          scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
       }),
       true
    );
    assert.equal(
-      isScheduleItemTransportationRow({
+      TransportationSelectorModel.isScheduleItemTransportationRow({
          is_also_transportation: true,
          scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       }),
       false
    );
    assert.equal(
-      isScheduleItemTransportationRow({
+      TransportationSelectorModel.isScheduleItemTransportationRow({
          added_as_attraction: true,
          scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       }),
       true
    );
    assert.equal(
-      isScheduleItemTransportationRow({
+      TransportationSelectorModel.isScheduleItemTransportationRow({
          scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       }),
       false
    );
 });
 
-test('makeTransportationSelection stores pure transportation selections', () => {
+test('Test_MakeTransportationSelection_TestScheduledLegs_ExpectStationsSubtitle', () => {
    assert.deepEqual(
-      makeTransportationSelection({
+      TransportationSelectorModel.makeTransportationSelection({
          name: 'Zoomobile',
          info_link: 'https://example.com/zoomobile',
          free_with_admission: false,
@@ -109,9 +101,9 @@ test('makeTransportationSelection stores pure transportation selections', () => 
    );
 });
 
-test('makeTransportationSelection falls back to cost and hours subtitle', () => {
+test('Test_MakeTransportationSelection_TestNoLegs_ExpectCostAndHoursSubtitle', () => {
    assert.deepEqual(
-      makeTransportationSelection({
+      TransportationSelectorModel.makeTransportationSelection({
          name: 'Zoomobile',
          free_with_admission: false,
          open_time: '10:00 AM',
@@ -128,26 +120,26 @@ test('makeTransportationSelection falls back to cost and hours subtitle', () => 
    );
 });
 
-test('shouldConfirmAddAsTransportation only prompts when adding also-attraction rows', () => {
+test('Test_ShouldConfirmAddAsTransportation_TestAlsoAttraction_ExpectPromptOnlyWhenAdding', () => {
    const zoomobileRow = { is_also_attraction: true };
    const pureTransportationRow = { is_also_attraction: false };
 
    assert.equal(
-      shouldConfirmAddAsTransportation({
+      TransportationSelectorModel.shouldConfirmAddAsTransportation({
          row: zoomobileRow,
          isSelected: false,
       }),
       true
    );
    assert.equal(
-      shouldConfirmAddAsTransportation({
+      TransportationSelectorModel.shouldConfirmAddAsTransportation({
          row: zoomobileRow,
          isSelected: true,
       }),
       false
    );
    assert.equal(
-      shouldConfirmAddAsTransportation({
+      TransportationSelectorModel.shouldConfirmAddAsTransportation({
          row: pureTransportationRow,
          isSelected: false,
       }),
@@ -155,16 +147,16 @@ test('shouldConfirmAddAsTransportation only prompts when adding also-attraction 
    );
 });
 
-test('buildAddAsTransportationMessage explains bulk scheduling use', () => {
+test('Test_BuildAddAsTransportationMessage_TestZoomobile_ExpectBulkSchedulingCopy', () => {
    assert.equal(
-      buildAddAsTransportationMessage({ name: 'Zoomobile' }),
+      TransportationSelectorModel.buildAddAsTransportationMessage({ name: 'Zoomobile' }),
       'The Zoomobile will be used to reduce walking distance when bulk scheduling. This action will add the Zoomobile as a transportation method.'
    );
 });
 
-test('migrateStoredTransportations normalizes string and object selections', () => {
+test('Test_MigrateStoredTransportations_TestStringAndObject_ExpectNormalized', () => {
    assert.deepEqual(
-      migrateStoredTransportations([
+      TransportationSelectorModel.migrateStoredTransportations([
          'Zoomobile',
          {
             id: 'Zoomobile',

@@ -10,18 +10,12 @@ import {
    buildWildRows,
 } from './rows.js';
 import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
-import {
-   getAnimalId,
-   getAnimalTitleLine,
-} from '../selectors/animalSelector/model.js';
-import { getAttractionId } from '../selectors/attractionSelector/model.js';
-import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import {
-   getTransportationScheduleItemKey,
-   isTransitTransportationHandledForDayPlanner,
-} from '../selectors/transportationSelector/model.js';
+import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
+import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
-import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
+import { WildEncounterSelectorModel } from '../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
@@ -46,7 +40,7 @@ function isActiveScheduledOccurrence(item) {
 
 function getScheduledItemLabel(item) {
    if (item?.species) {
-      return getAnimalTitleLine(item);
+      return AnimalSelectorModel.getAnimalTitleLine(item);
    }
 
    return String(item?.name || '').trim();
@@ -177,7 +171,7 @@ function buildItineraryScheduledTransportationIndexes(items = []) {
    const indexes = new Set();
 
    items.forEach((item, index) => {
-      if (!isTransitTransportationHandledForDayPlanner(item)) {
+      if (!TransportationSelectorModel.isTransitTransportationHandledForDayPlanner(item)) {
          return;
       }
 
@@ -261,7 +255,7 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: 'guardians_talks',
-      scheduleItemKey: getGuardiansTalkId(scheduledItem.item),
+      scheduleItemKey: GuardiansTalkSelectorModel.getGuardiansTalkId(scheduledItem.item),
    }));
    const wildEncounterRows = buildScheduledItemRows(
       wildEncounters.filter(isActiveScheduledOccurrence),
@@ -270,12 +264,12 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: 'wild_encounters',
-      scheduleItemKey: getWildEncounterId(scheduledItem.item),
+      scheduleItemKey: WildEncounterSelectorModel.getWildEncounterId(scheduledItem.item),
    }));
    const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
-      scheduleItemKey: getAnimalId(scheduledItem.item),
+      scheduleItemKey: AnimalSelectorModel.getAnimalId(scheduledItem.item),
    }));
    const attractionRows = buildScheduledItemRows(
       attractions,
@@ -284,14 +278,14 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
-      scheduleItemKey: getAttractionId(scheduledItem.item),
+      scheduleItemKey: AttractionSelectorModel.getAttractionId(scheduledItem.item),
    }));
    const transportationRows = buildScheduledTransportationRows(
       transportations
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
-      scheduleItemKey: getTransportationScheduleItemKey(scheduledItem.item),
+      scheduleItemKey: TransportationSelectorModel.getTransportationScheduleItemKey(scheduledItem.item),
    }));
    const genericEventRows = buildGenericEventScheduledRows(events);
    const scheduledItems = [

@@ -1,19 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildAnimalImageSrc,
-   buildOffDisplayWarningMessage,
-   getAnimalEnclosureName,
-   getAnimalId,
-   getAnimalLikelihoodLevel,
-   getAnimalSubtitle,
-   getAnimalTitleLine,
-   isLikelyOffDisplayAnimal,
-   makeAnimalSelection,
-   migrateStoredAnimals,
-   OFF_DISPLAY_WARNING_THRESHOLD,
-} from '../../scripts/itinerary/selectors/animalSelector/model.js';
+import { AnimalSelectorModel } from '../../../../../scripts/itinerary/selectors/animalSelector/animalSelectorModel.js';
 
 const africanLionRow = {
    species: 'African Lion',
@@ -22,31 +10,31 @@ const africanLionRow = {
    likelihood: 75,
 };
 
-test('getAnimalEnclosureName normalizes nullable enclosure names', () => {
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Indoor' }), 'Indoor');
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Outdoor' }), 'Outdoor');
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
-   assert.equal(getAnimalEnclosureName({ enclosure_name: '  Savanna Overlook  ' }), 'Savanna Overlook');
-   assert.equal(getAnimalEnclosureName({ enclosure_name: null }), null);
-   assert.equal(getAnimalEnclosureName({ enclosure_name: '' }), null);
-   assert.equal(getAnimalEnclosureName({ enclosure_name: '   ' }), null);
-   assert.equal(getAnimalEnclosureName({}), null);
+test('Test_GetAnimalEnclosureName_TestNullableNames_ExpectNormalized', () => {
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: 'Indoor' }), 'Indoor');
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: 'Outdoor' }), 'Outdoor');
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: '  Savanna Overlook  ' }), 'Savanna Overlook');
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: null }), null);
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: '' }), null);
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({ enclosure_name: '   ' }), null);
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureName({}), null);
 });
 
-test('animal selector model derives ids, subtitles, and image paths', () => {
+test('Test_GetAnimalId_TestPresentationFields_ExpectIdsSubtitlesAndImages', () => {
    assert.equal(
-      getAnimalId({
+      AnimalSelectorModel.getAnimalId({
          species: 'Marabou Stork',
          exhibit: 'Africa Savanna',
          enclosure_name: 'White Rhino Viewing',
       }),
       'Marabou Stork||Africa Savanna||White Rhino Viewing'
    );
-   assert.equal(getAnimalId(africanLionRow), 'African Lion||African Savanna');
-   assert.equal(getAnimalTitleLine(africanLionRow), 'African Lion');
-   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna');
+   assert.equal(AnimalSelectorModel.getAnimalId(africanLionRow), 'African Lion||African Savanna');
+   assert.equal(AnimalSelectorModel.getAnimalTitleLine(africanLionRow), 'African Lion');
+   assert.equal(AnimalSelectorModel.getAnimalSubtitle(africanLionRow), 'African Savanna');
    assert.equal(
-      getAnimalTitleLine({
+      AnimalSelectorModel.getAnimalTitleLine({
          species: 'Marabou Stork',
          exhibit: 'Africa Savanna',
          enclosure_name: 'White Rhino Viewing',
@@ -55,7 +43,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'Marabou Stork \u2022 White Rhino Viewing'
    );
    assert.equal(
-      getAnimalSubtitle({
+      AnimalSelectorModel.getAnimalSubtitle({
          species: 'Marabou Stork',
          exhibit: 'Africa Savanna',
          enclosure_name: 'White Rhino Viewing',
@@ -64,7 +52,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'Africa Savanna'
    );
    assert.equal(
-      getAnimalTitleLine({
+      AnimalSelectorModel.getAnimalTitleLine({
          species: 'Red River Hog',
          exhibit: 'African Rainforest Pavilion',
          enclosure_type: 'Outdoor',
@@ -72,7 +60,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'Red River Hog'
    );
    assert.equal(
-      getAnimalSubtitle({
+      AnimalSelectorModel.getAnimalSubtitle({
          species: 'Red River Hog',
          exhibit: 'African Rainforest Pavilion',
          enclosure_type: 'Outdoor',
@@ -80,7 +68,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'African Rainforest Pavilion'
    );
    assert.equal(
-      getAnimalTitleLine({
+      AnimalSelectorModel.getAnimalTitleLine({
          species: 'Western Lowland Gorilla',
          exhibit: 'African Rainforest Pavilion',
          enclosure_name: 'Indoor',
@@ -89,7 +77,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'Western Lowland Gorilla \u2022 Indoor'
    );
    assert.equal(
-      getAnimalSubtitle({
+      AnimalSelectorModel.getAnimalSubtitle({
          species: 'Western Lowland Gorilla',
          exhibit: 'African Rainforest Pavilion',
          enclosure_name: 'Indoor',
@@ -98,10 +86,10 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
       'African Rainforest Pavilion'
    );
    assert.equal(
-      buildAnimalImageSrc(africanLionRow),
+      AnimalSelectorModel.buildAnimalImageSrc(africanLionRow),
       '../images/details/animals/african-savanna/african-lion.png'
    );
-   assert.deepEqual(makeAnimalSelection(africanLionRow), {
+   assert.deepEqual(AnimalSelectorModel.makeAnimalSelection(africanLionRow), {
       id: 'African Lion||African Savanna',
       species: 'African Lion',
       exhibit: 'African Savanna',
@@ -109,33 +97,33 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
    });
 });
 
-test('animal selector model classifies likelihood levels and off-display warnings', () => {
-   assert.equal(getAnimalLikelihoodLevel({ likelihood: 20 }), 'low');
-   assert.equal(getAnimalLikelihoodLevel({ likelihood: 60 }), 'medium');
-   assert.equal(getAnimalLikelihoodLevel({ likelihood: 90 }), null);
-   assert.equal(isLikelyOffDisplayAnimal({ likelihood: 79 }), true);
-   assert.equal(isLikelyOffDisplayAnimal({ likelihood: 80 }), false);
-   assert.equal(OFF_DISPLAY_WARNING_THRESHOLD, 80);
+test('Test_GetAnimalLikelihoodLevel_TestThresholds_ExpectLevelsAndWarnings', () => {
+   assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 20 }), 'low');
+   assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 60 }), 'medium');
+   assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 90 }), null);
+   assert.equal(AnimalSelectorModel.isLikelyOffDisplayAnimal({ likelihood: 79 }), true);
+   assert.equal(AnimalSelectorModel.isLikelyOffDisplayAnimal({ likelihood: 80 }), false);
+   assert.equal(AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD, 80);
 });
 
-test('buildOffDisplayWarningMessage handles missing and low likelihood values', () => {
+test('Test_BuildOffDisplayWarningMessage_TestMissingAndLowLikelihood_ExpectMessages', () => {
    assert.match(
-      buildOffDisplayWarningMessage({ species: 'African Lion' }),
+      AnimalSelectorModel.buildOffDisplayWarningMessage({ species: 'African Lion' }),
       /may be off display/
    );
    assert.match(
-      buildOffDisplayWarningMessage({ species: 'African Lion', likelihood: 55 }),
+      AnimalSelectorModel.buildOffDisplayWarningMessage({ species: 'African Lion', likelihood: 55 }),
       /viewing likelihood below 80% \(55%\)/
    );
    assert.match(
-      buildOffDisplayWarningMessage({}),
+      AnimalSelectorModel.buildOffDisplayWarningMessage({}),
       /This animal/
    );
 });
 
-test('migrateStoredAnimals normalizes legacy string and object entries', () => {
+test('Test_MigrateStoredAnimals_TestLegacyEntries_ExpectNormalized', () => {
    assert.deepEqual(
-      migrateStoredAnimals([
+      AnimalSelectorModel.migrateStoredAnimals([
          'African Lion',
          {
             species: '  Amur Tiger  ',

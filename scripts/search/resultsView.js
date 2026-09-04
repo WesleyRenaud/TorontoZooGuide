@@ -2,21 +2,10 @@ import {
    getGuardiansTalkLinkedAnimal,
    openGuardiansTalkLinkedAnimal,
 } from '../guardians/openGuardiansTalkLinkedAnimal.js';
-import {
-   buildAnimalImageSrc,
-   getAnimalEnclosureName,
-   getAnimalSpecies,
-   getAnimalSubtitle,
-   getAnimalTitleLine,
-} from '../itinerary/selectors/animalSelector/model.js';
-import {
-   buildAttractionImageSrc,
-   getAttractionInfoLink,
-   getAttractionSubtitle,
-   getAttractionTitle,
-} from '../itinerary/selectors/attractionSelector/model.js';
+import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
-import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
+import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
 import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import {
    createSearchImageRowRenderer,
@@ -28,7 +17,7 @@ import {
 import { APP_STRINGS } from '../strings.js';
 
 function openWildEncounterLink(row) {
-   const link = normalizeStoredLink(row.link);
+   const link = StoredSelection.normalizeStoredLink(row.link);
 
    if (link) {
       window.open(link, '_blank');
@@ -36,7 +25,7 @@ function openWildEncounterLink(row) {
 }
 
 function openAttractionInfoLink(row) {
-   const link = getAttractionInfoLink(row);
+   const link = AttractionSelectorModel.getAttractionInfoLink(row);
 
    if (link) {
       window.open(link, '_blank');
@@ -45,23 +34,23 @@ function openAttractionInfoLink(row) {
 
 const ROW_LEFT_RENDERERS = {
    animal: createDefaultSelectorRowLeftRenderer({
-      getTitle: getAnimalTitleLine,
+      getTitle: AnimalSelectorModel.getAnimalTitleLine,
       getTitleParts: (row) => ({
-         species: getAnimalSpecies(row),
-         enclosureName: getAnimalEnclosureName(row),
+         species: AnimalSelectorModel.getAnimalSpecies(row),
+         enclosureName: AnimalSelectorModel.getAnimalEnclosureName(row),
       }),
-      getSubtitle: getAnimalSubtitle,
-      getImageSrc: buildAnimalImageSrc,
+      getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
+      getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
       getInfoLink: () => null,
       onTitleClick: openAnimalSpeciesOverlay,
    }),
    attraction: createDefaultSelectorRowLeftRenderer({
-      getTitle: getAttractionTitle,
-      getSubtitle: getAttractionSubtitle,
-      getImageSrc: buildAttractionImageSrc,
+      getTitle: AttractionSelectorModel.getAttractionTitle,
+      getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
+      getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
       getInfoLink: () => null,
       onTitleClick: openAttractionInfoLink,
-      shouldEnableTitleClick: (row) => Boolean(getAttractionInfoLink(row)),
+      shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
    }),
    wildEncounter: createSearchImageRowRenderer({
       presentation: SEARCH_RESULT_PRESENTATIONS.wildEncounter,

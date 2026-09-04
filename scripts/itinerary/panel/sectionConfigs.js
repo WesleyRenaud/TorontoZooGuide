@@ -5,7 +5,7 @@ import {
    buildTransportationRows,
    buildWildRows,
 } from './rows.js';
-import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -61,12 +61,12 @@ export function buildSectionConfigs(
    const attractionRows = [
       ...buildAttractionRows(attractions, rowActionOptions),
       ...buildTransportationRows(
-         listTransportations.filter(isTransportationAddedAsAttraction),
+         listTransportations.filter(TransportationSelectorModel.isTransportationAddedAsAttraction),
          rowActionOptions
       ),
    ];
    const transportationRows = buildTransportationRows(
-      listTransportations.filter((item) => !isTransportationAddedAsAttraction(item)),
+      listTransportations.filter((item) => !TransportationSelectorModel.isTransportationAddedAsAttraction(item)),
       rowActionOptions
    );
    const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });

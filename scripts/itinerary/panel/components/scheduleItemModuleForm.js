@@ -1,39 +1,12 @@
 import { el } from '../dom.js';
 import { makeScheduleItemTimeFields } from './scheduleItemTimeFields.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
-import {
-   buildAnimalImageSrc,
-   getAnimalEnclosureName,
-   getAnimalSpecies,
-   getAnimalSubtitle,
-   getAnimalTitleLine,
-} from '../../selectors/animalSelector/model.js';
-import {
-   buildAttractionImageSrc,
-   getAttractionInfoLink,
-   getAttractionSubtitle,
-   getAttractionTitle,
-} from '../../selectors/attractionSelector/model.js';
+import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../../selectors/attractionSelector/attractionSelectorModel.js';
 import { createDefaultSelectorRowLeftRenderer } from '../../selectors/base/resultRenderer.js';
-import {
-   buildGuardiansTalkImageSrc,
-   getGuardiansTalkName,
-   getGuardiansTalkSubtitle,
-   getGuardiansTalkTitleSuffix,
-} from '../../selectors/guardiansTalkSelector/model.js';
-import {
-   buildTransportationImageSrc,
-   buildTransportationStationsLine,
-   getTransportationInfoLink,
-   getTransportationName,
-} from '../../selectors/transportationSelector/model.js';
-import {
-   buildWildEncounterImageSrc,
-   getWildEncounterLink,
-   getWildEncounterName,
-   getWildEncounterSubtitle,
-   getWildEncounterTitleSuffix,
-} from '../../selectors/wildEncounterSelector/model.js';
+import { GuardiansTalkSelectorModel } from '../../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
+import { WildEncounterSelectorModel } from '../../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function createFieldLabel(text) {
@@ -88,67 +61,67 @@ function createSelectField({
 export function buildSearchRowRenderer(moduleType) {
    if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getAnimalTitleLine,
+         getTitle: AnimalSelectorModel.getAnimalTitleLine,
          getTitleParts: (row) => ({
-            species: getAnimalSpecies(row),
-            enclosureName: getAnimalEnclosureName(row),
+            species: AnimalSelectorModel.getAnimalSpecies(row),
+            enclosureName: AnimalSelectorModel.getAnimalEnclosureName(row),
          }),
-         getSubtitle: getAnimalSubtitle,
-         getImageSrc: buildAnimalImageSrc,
+         getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
+         getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
          getInfoLink: () => null,
       });
    }
 
    if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getGuardiansTalkName,
-         getTitleSuffix: getGuardiansTalkTitleSuffix,
-         getSubtitle: getGuardiansTalkSubtitle,
-         getImageSrc: buildGuardiansTalkImageSrc,
+         getTitle: GuardiansTalkSelectorModel.getGuardiansTalkName,
+         getTitleSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
+         getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,
+         getImageSrc: GuardiansTalkSelectorModel.buildGuardiansTalkImageSrc,
          getInfoLink: () => null,
       });
    }
 
    if (moduleType === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getWildEncounterName,
-         getTitleSuffix: getWildEncounterTitleSuffix,
-         getSubtitle: getWildEncounterSubtitle,
-         getImageSrc: buildWildEncounterImageSrc,
-         getInfoLink: getWildEncounterLink,
+         getTitle: WildEncounterSelectorModel.getWildEncounterName,
+         getTitleSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
+         getSubtitle: WildEncounterSelectorModel.getWildEncounterSubtitle,
+         getImageSrc: WildEncounterSelectorModel.buildWildEncounterImageSrc,
+         getInfoLink: WildEncounterSelectorModel.getWildEncounterLink,
       });
    }
 
    if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getTransportationName,
-         getSubtitle: buildTransportationStationsLine,
-         getImageSrc: buildTransportationImageSrc,
+         getTitle: TransportationSelectorModel.getTransportationName,
+         getSubtitle: TransportationSelectorModel.buildTransportationStationsLine,
+         getImageSrc: TransportationSelectorModel.buildTransportationImageSrc,
          getInfoLink: () => null,
          onTitleClick: (row) => {
-            const link = getTransportationInfoLink(row);
+            const link = TransportationSelectorModel.getTransportationInfoLink(row);
 
             if (link) {
                window.open(link, '_blank');
             }
          },
-         shouldEnableTitleClick: (row) => Boolean(getTransportationInfoLink(row)),
+         shouldEnableTitleClick: (row) => Boolean(TransportationSelectorModel.getTransportationInfoLink(row)),
       });
    }
 
    return createDefaultSelectorRowLeftRenderer({
-      getTitle: getAttractionTitle,
-      getSubtitle: getAttractionSubtitle,
-      getImageSrc: buildAttractionImageSrc,
+      getTitle: AttractionSelectorModel.getAttractionTitle,
+      getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
+      getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
       getInfoLink: () => null,
       onTitleClick: (row) => {
-         const link = getAttractionInfoLink(row);
+         const link = AttractionSelectorModel.getAttractionInfoLink(row);
 
          if (link) {
             window.open(link, '_blank');
          }
       },
-      shouldEnableTitleClick: (row) => Boolean(getAttractionInfoLink(row)),
+      shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
    });
 }
 

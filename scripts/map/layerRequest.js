@@ -1,7 +1,4 @@
-import {
-   getTransportationName,
-   isTransportationScheduled,
-} from '../itinerary/selectors/transportationSelector/model.js';
+import { TransportationSelectorModel } from '../itinerary/selectors/transportationSelector/transportationSelectorModel.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
 import { SourceHelpers } from './sourceHelpers.js';
 
@@ -71,14 +68,14 @@ function isFullyUnscheduledTransportationName(
    }
 
    const rows = (transportations || []).filter(
-      (transportation) => getTransportationName(transportation) === name
+      (transportation) => TransportationSelectorModel.getTransportationName(transportation) === name
    );
 
    if (rows.length === 0) {
       return false;
    }
 
-   return rows.every((transportation) => !isTransportationScheduled(transportation));
+   return rows.every((transportation) => !TransportationSelectorModel.isTransportationScheduled(transportation));
 }
 
 function buildFullyUnscheduledTransportationRows(
@@ -92,7 +89,7 @@ function buildFullyUnscheduledTransportationRows(
    const rows = [];
 
    (transportations || []).forEach((transportation) => {
-      const name = getTransportationName(transportation);
+      const name = TransportationSelectorModel.getTransportationName(transportation);
 
       if (!name || seenNames.has(name)) {
          return;

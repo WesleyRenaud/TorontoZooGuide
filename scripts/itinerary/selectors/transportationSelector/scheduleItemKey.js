@@ -1,9 +1,9 @@
-import { normalizeStoredString } from '../base/storedSelection.js';
+import { StoredSelection } from '../base/storedSelection.js';
 
 export const TRANSPORTATION_ITEM_KEY_SEPARATOR = '||';
 
 function addedAsAttractionFromWire(part) {
-   const wire = normalizeStoredString(part);
+   const wire = StoredSelection.normalizeStoredString(part);
 
    if (wire === '1') {
       return true;
@@ -18,13 +18,13 @@ function addedAsAttractionFromWire(part) {
 
 export class TransportationScheduleItemKey {
    constructor(name, addedAsAttraction) {
-      this.name = normalizeStoredString(name);
+      this.name = StoredSelection.normalizeStoredString(name);
       this.addedAsAttraction = addedAsAttraction;
       Object.freeze(this);
    }
 
    static fromRow(row) {
-      const name = normalizeStoredString(row?.name);
+      const name = StoredSelection.normalizeStoredString(row?.name);
 
       if (!name || typeof row?.added_as_attraction !== 'boolean') {
          return null;
@@ -34,11 +34,11 @@ export class TransportationScheduleItemKey {
    }
 
    static fromWire(wire) {
-      const parts = normalizeStoredString(wire).split(
+      const parts = StoredSelection.normalizeStoredString(wire).split(
          TRANSPORTATION_ITEM_KEY_SEPARATOR,
          2
       );
-      const name = normalizeStoredString(parts[0]);
+      const name = StoredSelection.normalizeStoredString(parts[0]);
       const addedAsAttraction = addedAsAttractionFromWire(parts[1]);
 
       if (!name || parts.length !== 2 || addedAsAttraction === null) {

@@ -1,13 +1,4 @@
-import {
-   buildAnimalImageSrc,
-   buildOffDisplayWarningMessage,
-   getAnimalId,
-   getAnimalSubtitle,
-   getAnimalTitleLine,
-   isLikelyOffDisplayAnimal,
-   makeAnimalSelection,
-   migrateStoredAnimals,
-} from './animalSelector/model.js';
+import { AnimalSelectorModel } from './animalSelector/animalSelectorModel.js';
 import {
    renderAnimalSelectorRowLeft,
    renderIncludeOffDisplayToggle,
@@ -20,7 +11,7 @@ import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
 function getAnimalTitle(row) {
-   return getAnimalTitleLine(row);
+   return AnimalSelectorModel.getAnimalTitleLine(row);
 }
 
 function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {
@@ -45,13 +36,13 @@ function shouldConfirmOffDisplayAnimal({
       return false;
    }
 
-   return isLikelyOffDisplayAnimal(row);
+   return AnimalSelectorModel.isLikelyOffDisplayAnimal(row);
 }
 
 function promptForOffDisplayAnimalSelection(row, proceed) {
    showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay,
-      message: buildOffDisplayWarningMessage(row),
+      message: AnimalSelectorModel.buildOffDisplayWarningMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.add,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
       onConfirm: proceed,
@@ -77,7 +68,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       onClose,
 
       storageKey: STORAGE_KEY,
-      migrateSelected: migrateStoredAnimals,
+      migrateSelected: AnimalSelectorModel.migrateStoredAnimals,
 
       getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
@@ -85,12 +76,12 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
 
       extractRows: response => response.animals,
 
-      getId: getAnimalId,
+      getId: AnimalSelectorModel.getAnimalId,
       getTitle: getAnimalTitle,
-      getSubtitle: getAnimalSubtitle,
-      getImageSrc: buildAnimalImageSrc,
+      getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
+      getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
 
-      makeSelection: makeAnimalSelection,
+      makeSelection: AnimalSelectorModel.makeAnimalSelection,
 
       topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
       h1: APP_STRINGS.itinerary.selectors.titleAnimals,
@@ -102,7 +93,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
          const completeToggle = () => {
             if (!isSelected) {
-               restoreRemovedAnimalKey(getAnimalId(row));
+               restoreRemovedAnimalKey(AnimalSelectorModel.getAnimalId(row));
             }
 
             proceed();

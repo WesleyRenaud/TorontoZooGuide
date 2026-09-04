@@ -1,12 +1,5 @@
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
-import {
-   buildGuardiansTalkSelectionFields,
-   getGuardiansTalkId,
-   getGuardiansTalkLocation,
-   getGuardiansTalkName,
-   getGuardiansTalkScheduleStart,
-   readGuardiansTalkStoredFields,
-} from './guardiansTalkSelector/model.js';
+import { GuardiansTalkSelectorModel } from './guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
@@ -34,16 +27,16 @@ export function createItineraryGuardiansTalkSelectorController({
       subtitle: APP_STRINGS.itinerary.selectors.guardiansTalkSubtitle,
       emptyText: APP_STRINGS.itinerary.emptyText.guardiansTalks,
 
-      getName: getGuardiansTalkName,
-      getId: getGuardiansTalkId,
-      getPrimaryValue: getGuardiansTalkLocation,
-      getTimeOfDay: getGuardiansTalkScheduleStart,
+      getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
+      getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
+      getPrimaryValue: GuardiansTalkSelectorModel.getGuardiansTalkLocation,
+      getTimeOfDay: GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart,
       emptyStoredFields: {
          location: '',
          start_time: '',
          end_time: '',
       },
-      readStoredFields: readGuardiansTalkStoredFields,
-      buildSelectionFields: buildGuardiansTalkSelectionFields,
+      readStoredFields: GuardiansTalkSelectorModel.readGuardiansTalkStoredFields,
+      buildSelectionFields: GuardiansTalkSelectorModel.buildGuardiansTalkSelectionFields,
    });
 }

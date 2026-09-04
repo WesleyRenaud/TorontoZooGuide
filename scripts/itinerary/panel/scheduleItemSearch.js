@@ -1,18 +1,11 @@
 import { normalizeItineraryItems } from '../itineraryShape.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
-import { getAnimalId } from '../selectors/animalSelector/model.js';
-import { getAttractionId } from '../selectors/attractionSelector/model.js';
-import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import {
-   getTransportationId,
-   getTransportationScheduleItemKey,
-   isTransportationAddedAsAttraction,
-} from '../selectors/transportationSelector/model.js';
-import {
-   getWildEncounterId,
-   getWildEncounterKey,
-} from '../selectors/wildEncounterSelector/model.js';
+import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
+import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
+import { WildEncounterSelectorModel } from '../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 function itineraryWildEncounterId(encounter) {
@@ -94,7 +87,7 @@ export function tagScheduleItemRow(itemType, row) {
    }
 
    if (itemType === ScheduleItemKind.TRANSPORTATION.itemType) {
-      if (isTransportationAddedAsAttraction(row)) {
+      if (TransportationSelectorModel.isTransportationAddedAsAttraction(row)) {
          return tagAttractionRows([row])[0];
       }
 
@@ -116,45 +109,45 @@ export function getScheduleItemRowId(row) {
    const kind = getScheduleItemRowKind(row);
 
    if (kind === ScheduleItemKind.ATTRACTION.itemType) {
-      return getAttractionId(row);
+      return AttractionSelectorModel.getAttractionId(row);
    }
 
    if (kind === ScheduleItemKind.TRANSPORTATION.itemType) {
-      return getTransportationScheduleItemKey(row);
+      return TransportationSelectorModel.getTransportationScheduleItemKey(row);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-      return getGuardiansTalkId(row);
+      return GuardiansTalkSelectorModel.getGuardiansTalkId(row);
    }
 
    if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-      return getWildEncounterId(row);
+      return WildEncounterSelectorModel.getWildEncounterId(row);
    }
 
-   return getAnimalId(row);
+   return AnimalSelectorModel.getAnimalId(row);
 }
 
 export function getItineraryItemKey(itemType, item) {
    const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
 
    if (kind === ScheduleItemKind.ANIMAL) {
-      return getAnimalId(item);
+      return AnimalSelectorModel.getAnimalId(item);
    }
 
    if (kind === ScheduleItemKind.ATTRACTION) {
-      return getAttractionId(item);
+      return AttractionSelectorModel.getAttractionId(item);
    }
 
    if (kind === ScheduleItemKind.TRANSPORTATION) {
-      return getTransportationScheduleItemKey(item);
+      return TransportationSelectorModel.getTransportationScheduleItemKey(item);
    }
 
    if (kind === ScheduleItemKind.GUARDIANS_TALK) {
-      return getGuardiansTalkId(item);
+      return GuardiansTalkSelectorModel.getGuardiansTalkId(item);
    }
 
    if (kind === ScheduleItemKind.WILD_ENCOUNTER) {
-      return getWildEncounterKey(item);
+      return WildEncounterSelectorModel.getWildEncounterKey(item);
    }
 
    return '';
@@ -230,27 +223,27 @@ export function buildItineraryScheduleItemRowIds(
 
    const transportationItems = pickItems(itinerary.transportations);
    const attractionIds = new Set(
-      pickItems(itinerary.attractions).map((attraction) => getAttractionId(attraction))
+      pickItems(itinerary.attractions).map((attraction) => AttractionSelectorModel.getAttractionId(attraction))
    );
 
    transportationItems
-      .filter(isTransportationAddedAsAttraction)
+      .filter(TransportationSelectorModel.isTransportationAddedAsAttraction)
       .forEach((transportation) => {
-         attractionIds.add(getTransportationId(transportation));
+         attractionIds.add(TransportationSelectorModel.getTransportationId(transportation));
       });
 
    return {
       animalIds: new Set(
-         pickItems(itinerary.animals).map((animal) => getAnimalId(animal))
+         pickItems(itinerary.animals).map((animal) => AnimalSelectorModel.getAnimalId(animal))
       ),
       attractionIds,
       transportationIds: new Set(
          transportationItems
-            .filter((transportation) => !isTransportationAddedAsAttraction(transportation))
-            .map((transportation) => getTransportationScheduleItemKey(transportation))
+            .filter((transportation) => !TransportationSelectorModel.isTransportationAddedAsAttraction(transportation))
+            .map((transportation) => TransportationSelectorModel.getTransportationScheduleItemKey(transportation))
       ),
       guardiansTalkIds: new Set(
-         pickItems(itinerary.guardiansTalks).map((talk) => getGuardiansTalkId(talk))
+         pickItems(itinerary.guardiansTalks).map((talk) => GuardiansTalkSelectorModel.getGuardiansTalkId(talk))
       ),
       wildEncounterIds: new Set(
          pickItems(itinerary.wildEncounters)
@@ -288,7 +281,7 @@ export function filterScheduleItemRowsToItinerary(
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return wildEncounterIds.has(getWildEncounterId(row));
+         return wildEncounterIds.has(WildEncounterSelectorModel.getWildEncounterId(row));
       }
 
       return animalIds.has(getScheduleItemRowId(row));
@@ -322,7 +315,7 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return !wildEncounterIds.has(getWildEncounterId(row));
+         return !wildEncounterIds.has(WildEncounterSelectorModel.getWildEncounterId(row));
       }
 
       if (kind === ScheduleItemKind.ANIMAL.itemType) {

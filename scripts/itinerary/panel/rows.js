@@ -32,23 +32,10 @@ import {
    buildTitleLinkRowProps,
 } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-import {
-   getAnimalEnclosureName,
-   getAnimalSpecies,
-   getAnimalSubtitle,
-} from '../selectors/animalSelector/model.js';
-import {
-   getGuardiansTalkName,
-   getGuardiansTalkTitleSuffix,
-} from '../selectors/guardiansTalkSelector/model.js';
-import {
-   buildTransportationStationsLine,
-   getTransportationName,
-} from '../selectors/transportationSelector/model.js';
-import {
-   getWildEncounterName,
-   getWildEncounterTitleSuffix,
-} from '../selectors/wildEncounterSelector/model.js';
+import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
+import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
+import { WildEncounterSelectorModel } from '../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -69,11 +56,11 @@ export function buildAnimalRows(
          const alert = buildAnimalAlert(animal);
 
          return {
-            species: getAnimalSpecies(animal),
-            enclosureName: getAnimalEnclosureName(animal),
-            imageSrc: buildImageSrc('animals', animal.exhibit, getAnimalSpecies(animal)),
+            species: AnimalSelectorModel.getAnimalSpecies(animal),
+            enclosureName: AnimalSelectorModel.getAnimalEnclosureName(animal),
+            imageSrc: buildImageSrc('animals', animal.exhibit, AnimalSelectorModel.getAnimalSpecies(animal)),
             metaLines: buildMetaLines([
-               getAnimalSubtitle(animal),
+               AnimalSelectorModel.getAnimalSubtitle(animal),
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,
@@ -134,9 +121,9 @@ export function buildTransportationRows(
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.transportation,
       imageDirectory: 'transportations',
-      getName: getTransportationName,
+      getName: TransportationSelectorModel.getTransportationName,
       getMetaLines: (transportation) => [
-         buildTransportationStationsLine(transportation),
+         TransportationSelectorModel.buildTransportationStationsLine(transportation),
          buildApproximateStartTimeFieldLine(transportation),
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
@@ -160,9 +147,9 @@ export function buildGuardiansRows(
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.guardiansTalk,
       imageDirectory: 'guardians-talks',
-      getName: getGuardiansTalkName,
-      getImageName: getGuardiansTalkName,
-      getNameSuffix: getGuardiansTalkTitleSuffix,
+      getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
+      getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
+      getNameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
       getMetaLines: (talk) => [
          buildFieldLine(APP_STRINGS.labels.location, talk.location),
          buildScheduledTimeFieldLine(talk),
@@ -198,9 +185,9 @@ export function buildWildRows(
       prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
       defaultName: APP_STRINGS.entityLabels.wildEncounter,
       imageDirectory: 'wild-encounters',
-      getName: getWildEncounterName,
-      getImageName: getWildEncounterName,
-      getNameSuffix: getWildEncounterTitleSuffix,
+      getName: WildEncounterSelectorModel.getWildEncounterName,
+      getImageName: WildEncounterSelectorModel.getWildEncounterName,
+      getNameSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
       getMetaLines: (wild) => [
          buildFieldLine(APP_STRINGS.itinerary.selectors.meetingSpot, wild.meeting_spot),
          buildScheduledTimeFieldLine(wild),

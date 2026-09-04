@@ -54,7 +54,11 @@
       "tests/scripts/map/itineraryPathGeometry.test.mjs",
       "tests/scripts/map/sourceHelpers.test.mjs",
       "tests/scripts/map/layerRequest.test.mjs",
-      "tests/scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.test.mjs"
+      "tests/scripts/itinerary/panel/bulkScheduleItineraryNotEnoughTimeConfirmation.test.mjs",
+      "tests/scripts/itinerary/selectors/base/storedSelection.test.mjs",
+      "tests/scripts/itinerary/selectors/animalSelector/animalSelectorModel.test.mjs",
+      "tests/scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.test.mjs",
+      "tests/scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"
