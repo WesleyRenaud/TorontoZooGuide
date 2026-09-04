@@ -1,20 +1,17 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import {
-   ITINERARY_PANEL_VIEWS,
-   makeItineraryPanelViews,
-} from '../../scripts/itinerary/panel/components/itineraryPanelViews.js';
+import { ItineraryPanelViews } from '../../../../../scripts/itinerary/panel/components/itineraryPanelViews.js';
 import {
    installDocument,
    teardownDocument,
-} from './helpers/domMock.mjs';
+} from '../../../helpers/domMock.mjs';
 
 afterEach(() => {
    teardownDocument();
 });
 
-test('makeItineraryPanelViews toggles between list and day planner views', () => {
+test('Test_MakeItineraryPanelViews_TestToggle_ExpectListAndDayPlanner', () => {
    installDocument();
 
    let selectedView = '';
@@ -22,8 +19,8 @@ test('makeItineraryPanelViews toggles between list and day planner views', () =>
       root,
       listView,
       dayPlannerView,
-   } = makeItineraryPanelViews({
-      activeView: ITINERARY_PANEL_VIEWS.list,
+   } = ItineraryPanelViews.makeItineraryPanelViews({
+      activeView: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
       onViewChange: (view) => {
          selectedView = view;
       },
@@ -40,7 +37,7 @@ test('makeItineraryPanelViews toggles between list and day planner views', () =>
 
    buttons[1].listeners.click();
 
-   assert.equal(selectedView, ITINERARY_PANEL_VIEWS.dayPlanner);
+   assert.equal(selectedView, ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner);
    assert.equal(listView.hidden, true);
    assert.equal(dayPlannerView.hidden, false);
 });

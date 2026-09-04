@@ -18,7 +18,7 @@ import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
 } from './itineraryPanelScheduleHandlers.js';
-import { makeItineraryPanelViewShell } from './itineraryPanelViewState.js';
+import { ItineraryPanelViewState } from './itineraryPanelViewState.js';
 import {
    bulkScheduleItinerary,
    unscheduleAllItineraryItems,
@@ -212,7 +212,7 @@ export function buildItineraryPanelContent(
    } = {}
 ) {
    const {
-      makeViewShell = makeItineraryPanelViewShell,
+      makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
       makeActions = makeActionsBar,
       createDateCard = makeDateCard,
       buildSections = SectionConfigs.buildSectionConfigs,
@@ -289,7 +289,7 @@ export function buildEmptyItineraryPanelContent(
    } = {}
 ) {
    const {
-      makeViewShell = makeItineraryPanelViewShell,
+      makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
       renderEmptyState = renderBuildOnly,
    } = deps;
 

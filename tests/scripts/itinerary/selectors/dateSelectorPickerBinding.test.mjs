@@ -1,21 +1,21 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createDatePickerBinding } from '../../scripts/itinerary/selectors/dateSelectorPickerBinding.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
+import { DateSelectorPickerBinding } from '../../../../scripts/itinerary/selectors/dateSelectorPickerBinding.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 const maxDate = makeNoonDate(2026, 5, 17);
 
-test('createDatePickerBinding wires flatpickr callbacks into the selection model', () => {
+test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    const inputEl = createDomNode('input', 'itin-date-input');
    const syncedDates = [];
    let currentDate = floor;
    let syncedMaxDate = null;
    const flatpickrCalls = [];
 
-   const binding = createDatePickerBinding({
+   const binding = DateSelectorPickerBinding.createDatePickerBinding({
       inputEl,
       getDate: () => currentDate,
       setDate: (date, { updateInput = true } = {}) => {

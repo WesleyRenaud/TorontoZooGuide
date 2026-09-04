@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { createSelectorSelectionState } from '../../scripts/itinerary/selectors/base/selectionState.js';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { SelectionState } from '../../../../../scripts/itinerary/selectors/base/selectionState.js';
+import { createLocalStorageMock } from '../../../helpers/localStorageMock.mjs';
 
-test.describe('createSelectorSelectionState', () => {
+test.describe('Test_CreateSelectorSelectionState', () => {
    beforeEach(() => {
       globalThis.localStorage = createLocalStorageMock();
    });
@@ -13,13 +13,13 @@ test.describe('createSelectorSelectionState', () => {
       delete globalThis.localStorage;
    });
 
-   test('loads stored selections and toggles rows on and off', () => {
+   test('Test_CreateSelectorSelectionState_TestToggle_ExpectOnOff', () => {
       localStorage.setItem(
          'tzg.test-selection',
          JSON.stringify([{ id: 'lion', name: 'Lion' }])
       );
 
-      const state = createSelectorSelectionState({
+      const state = SelectionState.createSelectorSelectionState({
          storageKey: 'tzg.test-selection',
          getId: (row) => row.id,
          makeSelection: (row) => ({ id: row.id, name: row.name }),
@@ -42,13 +42,13 @@ test.describe('createSelectorSelectionState', () => {
       );
    });
 
-   test('migrateSelected normalizes stored rows on load and reload', () => {
+   test('Test_CreateSelectorSelectionState_TestMigrate_ExpectNormalized', () => {
       localStorage.setItem(
          'tzg.test-selection-migrate',
          JSON.stringify(['lion'])
       );
 
-      const state = createSelectorSelectionState({
+      const state = SelectionState.createSelectorSelectionState({
          storageKey: 'tzg.test-selection-migrate',
          getId: (row) => row.id,
          migrateSelected: (items) => items.map((id) => ({ id, name: id })),
@@ -64,8 +64,8 @@ test.describe('createSelectorSelectionState', () => {
       assert.deepEqual(state.reload(), [{ id: 'tiger', name: 'tiger' }]);
    });
 
-   test('toggleRow ignores rows without ids', () => {
-      const state = createSelectorSelectionState({
+   test('Test_CreateSelectorSelectionState_TestMissingId_ExpectIgnored', () => {
+      const state = SelectionState.createSelectorSelectionState({
          storageKey: 'tzg.test-selection-no-id',
          getId: () => '',
       });
@@ -74,8 +74,8 @@ test.describe('createSelectorSelectionState', () => {
       assert.equal(localStorage.getItem('tzg.test-selection-no-id'), null);
    });
 
-   test('makeSelection fallbacks still persist a stable id', () => {
-      const state = createSelectorSelectionState({
+   test('Test_CreateSelectorSelectionState_TestMakeSelectionFallback_ExpectStableId', () => {
+      const state = SelectionState.createSelectorSelectionState({
          storageKey: 'tzg.test-selection-fallback',
          getId: (row) => row.id,
          makeSelection: () => null,
@@ -86,8 +86,8 @@ test.describe('createSelectorSelectionState', () => {
       assert.deepEqual(state.getSelectedSnapshot(), [{ id: 'carousel' }]);
    });
 
-   test('getSelectedSnapshot returns a clone of the current selection', () => {
-      const state = createSelectorSelectionState({
+   test('Test_CreateSelectorSelectionState_TestSnapshot_ExpectClone', () => {
+      const state = SelectionState.createSelectorSelectionState({
          storageKey: 'tzg.test-selection-clone',
          getId: (row) => row.id,
       });

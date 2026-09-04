@@ -1,36 +1,32 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   createDateSelectionModel,
-   formatVisitDateLong,
-   readSavedItineraryVisitDate,
-} from '../../scripts/itinerary/selectors/dateSelectionModel.js';
-import { VisitDateRules } from '../../scripts/visitDates/visitDateRules.js';
+import { DateSelectionModel } from '../../../../scripts/itinerary/selectors/dateSelectionModel.js';
+import { VisitDateRules } from '../../../../scripts/visitDates/visitDateRules.js';
 
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 
-test('formatVisitDateLong formats a visit date for display', () => {
+test('Test_FormatVisitDateLong_TestDisplay_ExpectFormatted', () => {
    assert.match(
-      formatVisitDateLong(makeNoonDate(2026, 5, 15)),
+      DateSelectionModel.formatVisitDateLong(makeNoonDate(2026, 5, 15)),
       /June 15, 2026/
    );
 });
 
-test('readSavedItineraryVisitDate parses stored ISO dates at local noon', () => {
+test('Test_ReadSavedItineraryVisitDate_TestStoredIso_ExpectLocalNoon', () => {
    assert.deepEqual(
-      readSavedItineraryVisitDate(() => '2026-06-20'),
+      DateSelectionModel.readSavedItineraryVisitDate(() => '2026-06-20'),
       makeNoonDate(2026, 5, 20)
    );
-   assert.equal(readSavedItineraryVisitDate(() => ''), null);
-   assert.equal(readSavedItineraryVisitDate(() => 'not-a-date'), null);
+   assert.equal(DateSelectionModel.readSavedItineraryVisitDate(() => ''), null);
+   assert.equal(DateSelectionModel.readSavedItineraryVisitDate(() => 'not-a-date'), null);
 });
 
-test('createDateSelectionModel rejects dates outside the allowed window', () => {
+test('Test_CreateDateSelectionModel_TestOutsideWindow_ExpectRejected', () => {
    const syncedDates = [];
-   const model = createDateSelectionModel({
+   const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       daysAhead: 2,
@@ -49,8 +45,8 @@ test('createDateSelectionModel rejects dates outside the allowed window', () => 
    assert.deepEqual(syncedDates, ['2026-06-16']);
 });
 
-test('createDateSelectionModel prefers initial, saved, and floor dates for display', () => {
-   const model = createDateSelectionModel({
+test('Test_CreateDateSelectionModel_TestDisplayPriority_ExpectPreferred', () => {
+   const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       getStoredDate: () => '2026-06-18',
@@ -58,7 +54,7 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
 
    assert.equal(VisitDateRules.toISODate(model.getDisplayDate()), '2026-06-18');
 
-   const modelWithInitial = createDateSelectionModel({
+   const modelWithInitial = DateSelectionModel.createDateSelectionModel({
       initialDate: makeNoonDate(2026, 5, 20),
       earliestDateFloor: floor,
       getTodayFn: () => floor,
@@ -67,7 +63,7 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
 
    assert.equal(VisitDateRules.toISODate(modelWithInitial.getDisplayDate()), '2026-06-20');
 
-   const modelWithoutSaved = createDateSelectionModel({
+   const modelWithoutSaved = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       getStoredDate: () => null,
@@ -76,10 +72,10 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
    assert.equal(VisitDateRules.toISODate(modelWithoutSaved.getDisplayDate()), VisitDateRules.toISODate(floor));
 });
 
-test('createDateSelectionModel persists the current date and returns payload data', () => {
+test('Test_CreateDateSelectionModel_TestPersist_ExpectPayload', () => {
    const persistedDates = [];
    const tomorrow = makeNoonDate(2026, 5, 16);
-   const model = createDateSelectionModel({
+   const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       setStoredDate: (isoDate) => {
@@ -97,8 +93,8 @@ test('createDateSelectionModel persists the current date and returns payload dat
    assert.equal(model.persistCurrentDate()?.date, '2026-06-16');
 });
 
-test('createDateSelectionModel clamps saved display dates to the allowed range', () => {
-   const model = createDateSelectionModel({
+test('Test_CreateDateSelectionModel_TestSavedOutOfRange_ExpectClamped', () => {
+   const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       daysAhead: 2,

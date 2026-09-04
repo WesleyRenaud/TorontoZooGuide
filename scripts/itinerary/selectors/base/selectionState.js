@@ -41,64 +41,66 @@ function buildSelectionItem(row, {
    };
 }
 
-export function createSelectorSelectionState({
-   storageKey,
-   migrateSelected = identity,
-   getId,
-   makeSelection = (row) => ({ id: getId(row) }),
-} = {}) {
-   let selectedItems = loadSelectedItems(storageKey, migrateSelected);
+export class SelectionState {
+   static createSelectorSelectionState({
+      storageKey,
+      migrateSelected = identity,
+      getId,
+      makeSelection = (row) => ({ id: getId(row) }),
+   } = {}) {
+      let selectedItems = loadSelectedItems(storageKey, migrateSelected);
 
-   function getSelectedSnapshot() {
-      return cloneSelectedItems(selectedItems);
-   }
+      function getSelectedSnapshot() {
+         return cloneSelectedItems(selectedItems);
+      }
 
-   function replaceSelectedItems(nextSelectedItems) {
-      selectedItems = nextSelectedItems;
-      persistSelectedItems(storageKey, selectedItems);
-      return getSelectedSnapshot();
-   }
-
-   function reload() {
-      selectedItems = loadSelectedItems(storageKey, migrateSelected);
-      return getSelectedSnapshot();
-   }
-
-   function isSelected(id) {
-      return getSelectedIndexById(selectedItems, id) !== -1;
-   }
-
-   function toggleRow(row) {
-      const selectionItem = buildSelectionItem(row, {
-         getId,
-         makeSelection,
-      });
-
-      if (!selectionItem) {
+      function replaceSelectedItems(nextSelectedItems) {
+         selectedItems = nextSelectedItems;
+         persistSelectedItems(storageKey, selectedItems);
          return getSelectedSnapshot();
       }
 
-      const selectedIndex = getSelectedIndexById(
-         selectedItems,
-         selectionItem.id
-      );
-
-      if (selectedIndex === -1) {
-         return replaceSelectedItems([
-            ...selectedItems,
-            selectionItem,
-         ]);
+      function reload() {
+         selectedItems = loadSelectedItems(storageKey, migrateSelected);
+         return getSelectedSnapshot();
       }
 
-      return replaceSelectedItems(
-         selectedItems.filter((_, index) => index !== selectedIndex)
-      );
-   }
+      function isSelected(id) {
+         return getSelectedIndexById(selectedItems, id) !== -1;
+      }
 
-   return {
-      reload,
-      isSelected,
-      toggleRow,
-      getSelectedSnapshot,
-   };
+      function toggleRow(row) {
+         const selectionItem = buildSelectionItem(row, {
+            getId,
+            makeSelection,
+         });
+
+         if (!selectionItem) {
+            return getSelectedSnapshot();
+         }
+
+         const selectedIndex = getSelectedIndexById(
+            selectedItems,
+            selectionItem.id
+         );
+
+         if (selectedIndex === -1) {
+            return replaceSelectedItems([
+               ...selectedItems,
+               selectionItem,
+            ]);
+         }
+
+         return replaceSelectedItems(
+            selectedItems.filter((_, index) => index !== selectedIndex)
+         );
+      }
+
+      return {
+         reload,
+         isSelected,
+         toggleRow,
+         getSelectedSnapshot,
+      };
+   }
 }

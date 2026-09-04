@@ -1,18 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ITINERARY_PANEL_VIEWS } from '../../../../scripts/itinerary/panel/components/itineraryPanelViews.js';
+import { ItineraryPanelViews } from '../../../../scripts/itinerary/panel/components/itineraryPanelViews.js';
 import { ItineraryPanelViewUrl } from '../../../../scripts/itinerary/panel/itineraryPanelViewUrl.js';
 
 test('Test_NormalizeItineraryPanelView_TestUnknownValues_ExpectListFallback', () => {
    assert.equal(ItineraryPanelViewUrl.normalizeItineraryPanelView('dayPlanner'), 'dayPlanner');
    assert.equal(
       ItineraryPanelViewUrl.normalizeItineraryPanelView('invalid'),
-      ITINERARY_PANEL_VIEWS.list
+      ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list
    );
    assert.equal(
       ItineraryPanelViewUrl.normalizeItineraryPanelView(null),
-      ITINERARY_PANEL_VIEWS.list
+      ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list
    );
 });
 
@@ -23,7 +23,7 @@ test('Test_GetItineraryPanelViewFromUrl_TestViewQueryParam_ExpectDayPlanner', ()
 
    assert.equal(
       ItineraryPanelViewUrl.getItineraryPanelViewFromUrl(location),
-      ITINERARY_PANEL_VIEWS.dayPlanner
+      ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner
    );
 });
 
@@ -41,6 +41,6 @@ test('Test_SetItineraryPanelViewInUrl_TestViewQueryParam_ExpectUpdated', () => {
 
    assert.equal(
       ItineraryPanelViewUrl.getItineraryPanelViewFromUrl(location),
-      ITINERARY_PANEL_VIEWS.dayPlanner
+      ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner
    );
 });

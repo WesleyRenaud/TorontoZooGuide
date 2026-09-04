@@ -1,29 +1,29 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { initVisitDateFlatpickr } from '../../scripts/visitDates/visitDateFlatpickr.js';
-import { VisitDateRules } from '../../scripts/visitDates/visitDateRules.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { VisitDateFlatpickr } from '../../../scripts/visitDates/visitDateFlatpickr.js';
+import { VisitDateRules } from '../../../scripts/visitDates/visitDateRules.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { makeNoonDate } from '../helpers/visitDateMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 
-test.describe('initVisitDateFlatpickr', () => {
+test.describe('Test_InitVisitDateFlatpickr', () => {
    installDomTestHooks();
 
-   test('returns null when the input element is missing', () => {
-      assert.equal(initVisitDateFlatpickr(null), null);
+   test('Test_InitVisitDateFlatpickr_TestMissingInput_ExpectNull', () => {
+      assert.equal(VisitDateFlatpickr.initVisitDateFlatpickr(null), null);
    });
 
-   test('marks the input readonly and wires flatpickr callbacks', () => {
+   test('Test_InitVisitDateFlatpickr_TestCallbacks_ExpectReadonlyWired', () => {
       const inputEl = createDomNode('input', 'itin-date-input');
       const readyCalls = [];
       const changeCalls = [];
       const closeCalls = [];
       const flatpickrOptions = [];
 
-      const instance = initVisitDateFlatpickr(inputEl, {
+      const instance = VisitDateFlatpickr.initVisitDateFlatpickr(inputEl, {
          defaultDate: makeNoonDate(2026, 5, 16),
          daysAhead: 2,
          earliestNoon: floor,
@@ -73,11 +73,11 @@ test.describe('initVisitDateFlatpickr', () => {
       assert.equal(changeCalls[0][1], '2026-06-17');
    });
 
-   test('derives maxDate from getTodayFn when getMaxDateFn is omitted', () => {
+   test('Test_InitVisitDateFlatpickr_TestOmitMaxDateFn_ExpectDerivedMax', () => {
       const inputEl = createDomNode('input', 'itin-date-input');
       const flatpickrOptions = [];
 
-      initVisitDateFlatpickr(inputEl, {
+      VisitDateFlatpickr.initVisitDateFlatpickr(inputEl, {
          defaultDate: makeNoonDate(2026, 5, 16),
          daysAhead: 2,
          earliestNoon: floor,

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { createSelectorSelectionState } from '../../scripts/itinerary/selectors/base/selectionState.js';
+import { SelectionState } from '../../scripts/itinerary/selectors/base/selectionState.js';
 import { createScheduledOccurrenceMigration } from '../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
 import { GuardiansTalkSelectorModel } from '../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
@@ -9,7 +9,7 @@ import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 
 function createGuardiansTalkSelectionState() {
-   return createSelectorSelectionState({
+   return SelectionState.createSelectorSelectionState({
       storageKey: STORAGE_KEY,
       getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
       migrateSelected: createScheduledOccurrenceMigration({

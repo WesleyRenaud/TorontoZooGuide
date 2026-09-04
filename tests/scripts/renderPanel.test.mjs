@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { renderItineraryPanelInto, clearStoredItinerary } from '../../scripts/itinerary/panel/renderPanel.js';
-import { resetActiveItineraryPanelView } from '../../scripts/itinerary/panel/itineraryPanelViewState.js';
+import { ItineraryPanelViewState } from '../../scripts/itinerary/panel/itineraryPanelViewState.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
@@ -29,7 +29,7 @@ const POPULATED_ITINERARY = {
 test.describe('renderItineraryPanelInto', () => {
    installDomTestHooks({
       before: () => {
-         resetActiveItineraryPanelView('list');
+         ItineraryPanelViewState.resetActiveItineraryPanelView('list');
       },
    });
 

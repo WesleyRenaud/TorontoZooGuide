@@ -14,57 +14,59 @@ function shouldRenderMarkerGroup(group) {
    return group.items.length > 0;
 }
 
-export function createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEditing = false }) {
-   const markerElsByCoord = new Map();
+export class Markers {
+   static createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEditing = false }) {
+      const markerElsByCoord = new Map();
 
-   function clear() {
-      removeRenderedMarkers(mapInner);
-      markerElsByCoord.clear();
+      function clear() {
+         removeRenderedMarkers(mapInner);
+         markerElsByCoord.clear();
+      }
+
+      function createMarkerGroupElement(group) {
+         const markerEl = MarkerElement.createMarkerElement(group);
+
+         markerElsByCoord.set(group.key, markerEl);
+
+         MarkerElement.bindMarkerInteractions({
+            markerEl,
+            group,
+            mapInner,
+            tooltip,
+            hover,
+            enableCoordinateEditing,
+            enableMarkerCoordinateEditing,
+         });
+
+         return markerEl;
+      }
+
+      function buildMarkerFragment(items) {
+         const fragment = document.createDocumentFragment();
+         const markerMap = MarkerGroups.groupMarkersByCoordinate(items);
+
+         markerMap.forEach((group) => {
+            if (shouldRenderMarkerGroup(group)) {
+               fragment.appendChild(createMarkerGroupElement(group));
+            }
+         });
+
+         return fragment;
+      }
+
+      function render(items) {
+         clear();
+         mapInner.appendChild(buildMarkerFragment(items));
+      }
+
+      function getMarkerByCoord(key) {
+         return markerElsByCoord.get(key) || null;
+      }
+
+      function getAllMarkers() {
+         return Array.from(markerElsByCoord.values());
+      }
+
+      return { render, getMarkerByCoord, getAllMarkers };
    }
-
-   function createMarkerGroupElement(group) {
-      const markerEl = MarkerElement.createMarkerElement(group);
-
-      markerElsByCoord.set(group.key, markerEl);
-
-      MarkerElement.bindMarkerInteractions({
-         markerEl,
-         group,
-         mapInner,
-         tooltip,
-         hover,
-         enableCoordinateEditing,
-         enableMarkerCoordinateEditing,
-      });
-
-      return markerEl;
-   }
-
-   function buildMarkerFragment(items) {
-      const fragment = document.createDocumentFragment();
-      const markerMap = MarkerGroups.groupMarkersByCoordinate(items);
-
-      markerMap.forEach((group) => {
-         if (shouldRenderMarkerGroup(group)) {
-            fragment.appendChild(createMarkerGroupElement(group));
-         }
-      });
-
-      return fragment;
-   }
-
-   function render(items) {
-      clear();
-      mapInner.appendChild(buildMarkerFragment(items));
-   }
-
-   function getMarkerByCoord(key) {
-      return markerElsByCoord.get(key) || null;
-   }
-
-   function getAllMarkers() {
-      return Array.from(markerElsByCoord.values());
-   }
-
-   return { render, getMarkerByCoord, getAllMarkers };
 }

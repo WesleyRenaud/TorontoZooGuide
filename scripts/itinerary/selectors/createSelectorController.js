@@ -2,10 +2,10 @@ import {
    createDefaultSelectorRowLeftRenderer,
    renderSelectorResults,
 } from './base/resultRenderer.js';
-import { createSelectorSelectionState } from './base/selectionState.js';
+import { SelectionState } from './base/selectionState.js';
 import { SelectorControllerConfig } from './selectorControllerConfig.js';
 import { createSelectorElements } from './selectorControllerElements.js';
-import { createSelectorSearchRunner } from './selectorSearchRunner.js';
+import { SelectorSearchRunner } from './selectorSearchRunner.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function createItinerarySelectorController({
@@ -50,7 +50,7 @@ export function createItinerarySelectorController({
 } = {}) {
    const {
       buildElements = createSelectorElements,
-      createSearchRunner = createSelectorSearchRunner,
+      createSearchRunner = SelectorSearchRunner.createSelectorSearchRunner,
    } = deps;
 
    SelectorControllerConfig.validateSelectorConfig({
@@ -61,7 +61,7 @@ export function createItinerarySelectorController({
 
    let elements = null;
 
-   const selectionState = createSelectorSelectionState({
+   const selectionState = SelectionState.createSelectorSelectionState({
       storageKey,
       migrateSelected,
       getId,
