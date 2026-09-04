@@ -45,31 +45,33 @@ function applyTooltipPosition(hoverTooltipEl, { x, y }) {
    hoverTooltipEl.style.top = `${y}px`;
 }
 
-export function createHoverTooltip(hoverTooltipEl) {
-   function show(text, e) {
-      if (!hoverTooltipEl) return;
+export class HoverTooltip {
+   static createHoverTooltip(hoverTooltipEl) {
+      function show(text, e) {
+         if (!hoverTooltipEl) return;
 
-      hoverTooltipEl.textContent = text || '';
-      hoverTooltipEl.style.display = text ? 'block' : 'none';
+         hoverTooltipEl.textContent = text || '';
+         hoverTooltipEl.style.display = text ? 'block' : 'none';
 
-      if (e) move(e);
+         if (e) move(e);
+      }
+
+      function hide() {
+         if (!hoverTooltipEl) return;
+         hoverTooltipEl.style.display = 'none';
+      }
+
+      function move(e) {
+         if (!isTooltipVisible(hoverTooltipEl)) return;
+
+         const position = calculateTooltipPosition(
+            e,
+            hoverTooltipEl.getBoundingClientRect()
+         );
+
+         applyTooltipPosition(hoverTooltipEl, position);
+      }
+
+      return { show, hide, move };
    }
-
-   function hide() {
-      if (!hoverTooltipEl) return;
-      hoverTooltipEl.style.display = 'none';
-   }
-
-   function move(e) {
-      if (!isTooltipVisible(hoverTooltipEl)) return;
-
-      const position = calculateTooltipPosition(
-         e,
-         hoverTooltipEl.getBoundingClientRect()
-      );
-
-      applyTooltipPosition(hoverTooltipEl, position);
-   }
-
-   return { show, hide, move };
 }

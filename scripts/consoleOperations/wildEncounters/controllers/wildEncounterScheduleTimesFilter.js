@@ -1,8 +1,5 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
-import {
-   resolveScheduleTimesListEl,
-   updateScheduleTimesCheckboxList,
-} from '../../forms/scheduleTimesCheckboxField.js';
+import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { getFieldValue } from '../../helpers/controllerUtils.js';
 
 export function createWildEncounterScheduleTimesFilterController({
@@ -18,13 +15,13 @@ export function createWildEncounterScheduleTimesFilterController({
 } = {}) {
 
    function getTimesListEl() {
-      return resolveScheduleTimesListEl(timesEl);
+      return ScheduleTimesCheckboxField.resolveScheduleTimesListEl(timesEl);
    }
 
    function renderTimesList(times = []) {
       const wildEncounter = getFieldValue(wildEncounterEl);
 
-      updateScheduleTimesCheckboxList(getTimesListEl(), {
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
          times,
          hasWildEncounter: Boolean(wildEncounter),
          hasDate: true,
@@ -33,7 +30,7 @@ export function createWildEncounterScheduleTimesFilterController({
    }
 
    function clear() {
-      updateScheduleTimesCheckboxList(getTimesListEl(), {
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
          times: [],
          hasWildEncounter: false,
       });

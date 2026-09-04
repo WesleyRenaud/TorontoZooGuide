@@ -5,30 +5,8 @@ const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
 const SCHEDULE_TIMES_PLACEHOLDER_CLASS = 'console-operations-schedule-times-placeholder';
 const SCHEDULE_TIMES_SINGLE_CLASS = 'console-operations-schedule-times-single';
 
-export function resolveScheduleTimesListEl(el) {
-   if (el?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
-      return el;
-   }
-
-   if (el?.id) {
-      const byIdEl = document.getElementById(el.id);
-
-      if (byIdEl?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
-         return byIdEl;
-      }
-   }
-
-   const nestedEl = el?.querySelector?.(`.${SCHEDULE_TIMES_LIST_CLASS}`);
-
-   if (nestedEl) {
-      return nestedEl;
-   }
-
-   return document.getElementById('endWildEncounterScheduleTimes');
-}
-
 function getScheduleTimesListEl(el) {
-   return resolveScheduleTimesListEl(el);
+   return ScheduleTimesCheckboxField.resolveScheduleTimesListEl(el);
 }
 
 function renderScheduleTimesListMessage(listEl, message) {
@@ -38,29 +16,6 @@ function renderScheduleTimesListMessage(listEl, message) {
    placeholderEl.className = SCHEDULE_TIMES_PLACEHOLDER_CLASS;
    placeholderEl.textContent = message;
    listEl.appendChild(placeholderEl);
-}
-
-export function setScheduleTimesCheckboxListMessage(el, message) {
-   const listEl = getScheduleTimesListEl(el);
-
-   if (!listEl) {
-      return;
-   }
-
-   renderScheduleTimesListMessage(listEl, message);
-}
-
-export function resetScheduleTimesCheckboxList(el) {
-   const listEl = getScheduleTimesListEl(el);
-
-   if (!listEl) {
-      return;
-   }
-
-   renderScheduleTimesListMessage(
-      listEl,
-      APP_STRINGS.placeholders.selectWildEncounterFirst
-   );
 }
 
 function renderSingleSelectedScheduleTime(listEl, time) {
@@ -73,116 +28,167 @@ function renderSingleSelectedScheduleTime(listEl, time) {
    listEl.appendChild(timeEl);
 }
 
-export function populateScheduleTimesCheckboxList(
-   el,
-   times = [],
-   {
-      autoSelectSingleTime = false,
-   } = {}
-) {
-   const listEl = getScheduleTimesListEl(el);
+export class ScheduleTimesCheckboxField {
+   static resolveScheduleTimesListEl(el) {
+      if (el?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
+         return el;
+      }
 
-   if (!listEl) {
-      return;
+      if (el?.id) {
+         const byIdEl = document.getElementById(el.id);
+
+         if (byIdEl?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
+            return byIdEl;
+         }
+      }
+
+      const nestedEl = el?.querySelector?.(`.${SCHEDULE_TIMES_LIST_CLASS}`);
+
+      if (nestedEl) {
+         return nestedEl;
+      }
+
+      return document.getElementById('endWildEncounterScheduleTimes');
    }
 
-   const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
+   static setScheduleTimesCheckboxListMessage(el, message) {
+      const listEl = getScheduleTimesListEl(el);
 
-   if (!normalizedTimes.length) {
+      if (!listEl) {
+         return;
+      }
+
+      renderScheduleTimesListMessage(listEl, message);
+   }
+
+   static resetScheduleTimesCheckboxList(el) {
+      const listEl = getScheduleTimesListEl(el);
+
+      if (!listEl) {
+         return;
+      }
+
       renderScheduleTimesListMessage(
          listEl,
-         APP_STRINGS.help.noScheduledEncounterTimes
+         APP_STRINGS.placeholders.selectWildEncounterFirst
       );
-      return;
    }
 
-   if (autoSelectSingleTime && normalizedTimes.length === 1) {
-      renderSingleSelectedScheduleTime(listEl, normalizedTimes[0]);
-      return;
+   static populateScheduleTimesCheckboxList(
+      el,
+      times = [],
+      {
+         autoSelectSingleTime = false,
+      } = {}
+   ) {
+      const listEl = getScheduleTimesListEl(el);
+
+      if (!listEl) {
+         return;
+      }
+
+      const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
+
+      if (!normalizedTimes.length) {
+         renderScheduleTimesListMessage(
+            listEl,
+            APP_STRINGS.help.noScheduledEncounterTimes
+         );
+         return;
+      }
+
+      if (autoSelectSingleTime && normalizedTimes.length === 1) {
+         renderSingleSelectedScheduleTime(listEl, normalizedTimes[0]);
+         return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      normalizedTimes.forEach((time) => {
+         const optionEl = document.createElement('label');
+         optionEl.className = 'console-operations-checkbox-option';
+
+         const checkboxEl = document.createElement('input');
+         checkboxEl.type = 'checkbox';
+         checkboxEl.value = time;
+         checkboxEl.checked = false;
+
+         optionEl.append(checkboxEl, ` ${time}`);
+         fragment.appendChild(optionEl);
+      });
+
+      listEl.replaceChildren(fragment);
    }
 
-   const fragment = document.createDocumentFragment();
+   static updateScheduleTimesCheckboxList(el, {
+      times = [],
+      hasWildEncounter = false,
+      hasDate = false,
+      autoSelectSingleTime = false,
+   } = {}) {
+      const listEl = getScheduleTimesListEl(el);
 
-   normalizedTimes.forEach((time) => {
-      const optionEl = document.createElement('label');
-      optionEl.className = 'console-operations-checkbox-option';
+      if (!listEl) {
+         return;
+      }
 
-      const checkboxEl = document.createElement('input');
-      checkboxEl.type = 'checkbox';
-      checkboxEl.value = time;
-      checkboxEl.checked = false;
+      const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
 
-      optionEl.append(checkboxEl, ` ${time}`);
-      fragment.appendChild(optionEl);
-   });
+      if (normalizedTimes.length) {
+         ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(
+            listEl,
+            normalizedTimes,
+            { autoSelectSingleTime }
+         );
+         return;
+      }
 
-   listEl.replaceChildren(fragment);
-}
+      if (!hasWildEncounter) {
+         ScheduleTimesCheckboxField.resetScheduleTimesCheckboxList(listEl);
+         return;
+      }
 
-export function updateScheduleTimesCheckboxList(el, {
-   times = [],
-   hasWildEncounter = false,
-   hasDate = false,
-   autoSelectSingleTime = false,
-} = {}) {
-   const listEl = getScheduleTimesListEl(el);
+      if (!hasDate) {
+         ScheduleTimesCheckboxField.setScheduleTimesCheckboxListMessage(
+            listEl,
+            APP_STRINGS.placeholders.selectDateFirst
+         );
+         return;
+      }
 
-   if (!listEl) {
-      return;
-   }
-
-   const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
-
-   if (normalizedTimes.length) {
-      populateScheduleTimesCheckboxList(listEl, normalizedTimes, {
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, [], {
          autoSelectSingleTime,
       });
-      return;
    }
 
-   if (!hasWildEncounter) {
-      resetScheduleTimesCheckboxList(listEl);
-      return;
+   static clearScheduleTimesCheckboxList(el) {
+      ScheduleTimesCheckboxField.resetScheduleTimesCheckboxList(el);
    }
 
-   if (!hasDate) {
-      setScheduleTimesCheckboxListMessage(
-         listEl,
-         APP_STRINGS.placeholders.selectDateFirst
+   static getSelectedScheduleTimes(el) {
+      const listEl = getScheduleTimesListEl(el);
+
+      if (!listEl) {
+         return [];
+      }
+
+      const singleTimeEl = listEl.querySelector(`.${SCHEDULE_TIMES_SINGLE_CLASS}`);
+      const singleTime = ValueNormalizer.asTrimmedString(
+         singleTimeEl?.dataset?.scheduleTime
       );
-      return;
+
+      if (singleTime) {
+         return [singleTime];
+      }
+
+      return [
+         ...listEl.children,
+      ]
+         .flatMap((optionEl) =>
+            [...optionEl.children].filter((child) => child.type === 'checkbox')
+         )
+         .filter((checkbox) => checkbox.checked)
+         .map((checkbox) => ValueNormalizer.asTrimmedString(checkbox.value))
+         .filter(Boolean);
    }
-
-   populateScheduleTimesCheckboxList(listEl, [], {
-      autoSelectSingleTime,
-   });
-}
-
-export function clearScheduleTimesCheckboxList(el) {
-   resetScheduleTimesCheckboxList(el);
-}
-
-export function getSelectedScheduleTimes(el) {
-   const listEl = getScheduleTimesListEl(el);
-
-   if (!listEl) {
-      return [];
-   }
-
-   const singleTimeEl = listEl.querySelector(`.${SCHEDULE_TIMES_SINGLE_CLASS}`);
-   const singleTime = singleTimeEl?.dataset?.scheduleTime?.trim() ?? '';
-
-   if (singleTime) {
-      return [singleTime];
-   }
-
-   return [
-      ...listEl.children,
-   ]
-      .flatMap((optionEl) =>
-         [...optionEl.children].filter((child) => child.type === 'checkbox')
-      )
-      .filter((checkbox) => checkbox.checked)
-      .map((checkbox) => checkbox.value.trim())
-      .filter(Boolean);
 }

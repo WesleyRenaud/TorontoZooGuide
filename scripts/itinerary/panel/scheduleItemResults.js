@@ -84,37 +84,39 @@ function createResultRow({
    return item;
 }
 
-export function renderScheduleItemSearchResults({
-   resultsEl,
-   rows = [],
-   emptyText = '',
-   getId,
-   selectedRowId = '',
-   renderRowLeft,
-   onSelectRow,
-} = {}) {
-   if (!resultsEl) {
-      return;
+export class ScheduleItemResults {
+   static renderScheduleItemSearchResults({
+      resultsEl,
+      rows = [],
+      emptyText = '',
+      getId,
+      selectedRowId = '',
+      renderRowLeft,
+      onSelectRow,
+   } = {}) {
+      if (!resultsEl) {
+         return;
+      }
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+         resultsEl.replaceChildren(createEmptyState(emptyText));
+         return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      rows.forEach((row) => {
+         fragment.appendChild(
+            createResultRow({
+               row,
+               getId,
+               selectedRowId,
+               renderRowLeft,
+               onSelectRow,
+            })
+         );
+      });
+
+      resultsEl.replaceChildren(fragment);
    }
-
-   if (!Array.isArray(rows) || rows.length === 0) {
-      resultsEl.replaceChildren(createEmptyState(emptyText));
-      return;
-   }
-
-   const fragment = document.createDocumentFragment();
-
-   rows.forEach((row) => {
-      fragment.appendChild(
-         createResultRow({
-            row,
-            getId,
-            selectedRowId,
-            renderRowLeft,
-            onSelectRow,
-         })
-      );
-   });
-
-   resultsEl.replaceChildren(fragment);
 }

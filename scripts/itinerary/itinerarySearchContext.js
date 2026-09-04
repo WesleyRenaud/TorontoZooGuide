@@ -1,5 +1,5 @@
 import { DraftStorage } from './draftStorage.js';
-import { buildDateSearchContext } from '../search/searchContext.js';
+import { SearchContext } from '../search/searchContext.js';
 import { VisitDateEarliest } from './visitDateEarliest.js';
 
 async function resolveItinerarySearchDate(dateOverride = '') {
@@ -22,6 +22,6 @@ export class ItinerarySearchContext {
       date: dateOverride = '',
    } = {}) {
       const date = await resolveItinerarySearchDate(dateOverride);
-      return buildDateSearchContext(date, { includeTemp });
+      return SearchContext.buildDateSearchContext(date, { includeTemp });
    }
 }

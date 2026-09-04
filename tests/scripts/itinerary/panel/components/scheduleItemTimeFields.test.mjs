@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeScheduleItemTimeFields } from '../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ScheduleItemTimeFields } from '../../../../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 function getTimeInput(fields) {
    const timeField = fields.fields[0];
@@ -34,8 +34,8 @@ installDomTestHooks({
    },
 });
 
-test('makeScheduleItemTimeFields reads input value when submitting', () => {
-   const fields = makeScheduleItemTimeFields({
+test('Test_MakeScheduleItemTimeFields_TestSubmit_ExpectInputValue', () => {
+   const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
@@ -49,8 +49,8 @@ test('makeScheduleItemTimeFields reads input value when submitting', () => {
    });
 });
 
-test('makeScheduleItemTimeFields disables empty fields for fixed-time schedule items', () => {
-   const fields = makeScheduleItemTimeFields({
+test('Test_MakeScheduleItemTimeFields_TestFixedTime_ExpectDisabledEmpty', () => {
+   const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
@@ -76,8 +76,8 @@ test('makeScheduleItemTimeFields disables empty fields for fixed-time schedule i
    });
 });
 
-test('makeScheduleItemTimeFields re-enables fields after fixed-time mode is cleared', () => {
-   const fields = makeScheduleItemTimeFields({
+test('Test_MakeScheduleItemTimeFields_TestClearFixedTime_ExpectEnabled', () => {
+   const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
@@ -97,8 +97,8 @@ test('makeScheduleItemTimeFields re-enables fields after fixed-time mode is clea
    assert.equal(durationField.classList.contains('is-disabled'), false);
 });
 
-test('makeScheduleItemTimeFields allows duration without a start time', () => {
-   const fields = makeScheduleItemTimeFields({
+test('Test_MakeScheduleItemTimeFields_TestDurationOnly_ExpectAllowed', () => {
+   const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
@@ -113,8 +113,8 @@ test('makeScheduleItemTimeFields allows duration without a start time', () => {
    });
 });
 
-test('makeScheduleItemTimeFields shows fixed transportation duration while keeping start time editable', () => {
-   const fields = makeScheduleItemTimeFields({
+test('Test_MakeScheduleItemTimeFields_TestFixedDuration_ExpectEditableStart', () => {
+   const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });

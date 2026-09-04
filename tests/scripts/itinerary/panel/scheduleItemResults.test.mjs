@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { renderScheduleItemSearchResults } from '../../scripts/itinerary/panel/scheduleItemResults.js';
+import { ScheduleItemResults } from '../../../../scripts/itinerary/panel/scheduleItemResults.js';
 import {
    createDomNode,
    installDocument,
    teardownDocument,
-} from './helpers/domMock.mjs';
+} from '../../helpers/domMock.mjs';
 
 afterEach(() => {
    teardownDocument();
@@ -29,12 +29,12 @@ function createSingleSelectHandler() {
    };
 }
 
-test('renderScheduleItemSearchResults shows an empty state when there are no rows', () => {
+test('Test_RenderScheduleItemSearchResults_TestNoRows_ExpectEmptyState', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
 
-   renderScheduleItemSearchResults({
+   ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,
       rows: [],
       emptyText: 'No matching items',
@@ -47,7 +47,7 @@ test('renderScheduleItemSearchResults shows an empty state when there are no row
 });
 
 function renderRows(resultsEl, rows, selection) {
-   renderScheduleItemSearchResults({
+   ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,
       rows,
       emptyText: 'No matching items',
@@ -63,7 +63,7 @@ function renderRows(resultsEl, rows, selection) {
    });
 }
 
-test('renderScheduleItemSearchResults marks the selected row and + control', () => {
+test('Test_RenderScheduleItemSearchResults_TestSelectedRow_ExpectMarked', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
@@ -79,7 +79,7 @@ test('renderScheduleItemSearchResults marks the selected row and + control', () 
    assert.match(findSelectButton(activeRow).className, /is-added/);
 });
 
-test('renderScheduleItemSearchResults clears selection when the same row is chosen again', () => {
+test('Test_RenderScheduleItemSearchResults_TestReselectSame_ExpectCleared', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
@@ -94,13 +94,13 @@ test('renderScheduleItemSearchResults clears selection when the same row is chos
    assert.equal(resultsEl.children[0].getAttribute('aria-pressed'), 'false');
 });
 
-test('renderScheduleItemSearchResults supports keyboard selection', () => {
+test('Test_RenderScheduleItemSearchResults_TestKeyboard_ExpectSelected', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
    const selection = createSingleSelectHandler();
 
-   renderScheduleItemSearchResults({
+   ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,
       rows: [{ name: 'Carousel' }],
       emptyText: 'No matching items',

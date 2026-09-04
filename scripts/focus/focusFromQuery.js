@@ -1,12 +1,14 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
+
 function getFocusRequestFromQuery(search = window.location.search) {
    const params = new URLSearchParams(search);
-   const species = params.get('focus')?.trim() ?? '';
+   const species = ValueNormalizer.asTrimmedString(params.get('focus'));
 
    if (!species) {
       return null;
    }
 
-   const exhibit = params.get('exhibit')?.trim() || null;
+   const exhibit = ValueNormalizer.asNullableString(params.get('exhibit'));
 
    return {
       species,
@@ -14,14 +16,16 @@ function getFocusRequestFromQuery(search = window.location.search) {
    };
 }
 
-export function initFocusFromQuery({ onFocus } = {}) {
-   const focusRequest = getFocusRequestFromQuery();
+export class FocusFromQuery {
+   static initFocusFromQuery({ onFocus } = {}) {
+      const focusRequest = getFocusRequestFromQuery();
 
-   if (!focusRequest || typeof onFocus !== 'function') {
-      return;
+      if (!focusRequest || typeof onFocus !== 'function') {
+         return;
+      }
+
+      onFocus(focusRequest);
+
+      history.replaceState({}, '', window.location.pathname);
    }
-
-   onFocus(focusRequest);
-
-   history.replaceState({}, '', window.location.pathname);
 }

@@ -1,17 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
 import {
    createScheduleTimesCheckboxField,
-} from '../../scripts/consoleOperations/templates/fragments.js';
-import {
-   getSelectedScheduleTimes,
-   populateScheduleTimesCheckboxList,
-   resetScheduleTimesCheckboxList,
-   updateScheduleTimesCheckboxList,
-} from '../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+} from '../../../../scripts/consoleOperations/templates/fragments.js';
+import { ScheduleTimesCheckboxField } from '../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 function getCheckboxEls(listEl) {
    return [
@@ -21,10 +16,10 @@ function getCheckboxEls(listEl) {
    );
 }
 
-test.describe('schedule times checkbox field', () => {
+test.describe('Test_ScheduleTimesCheckboxField', () => {
    installDomTestHooks();
 
-   test('createScheduleTimesCheckboxField starts with the idle placeholder in a full-height list', () => {
+   test('Test_CreateScheduleTimesCheckboxField_TestIdle_ExpectPlaceholder', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesIdle',
@@ -39,14 +34,14 @@ test.describe('schedule times checkbox field', () => {
       );
    });
 
-   test('populateScheduleTimesCheckboxList renders unchecked time options', () => {
+   test('Test_PopulateScheduleTimesCheckboxList_TestTimes_ExpectUnchecked', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimes',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      populateScheduleTimesCheckboxList(listEl, [ '2:00 PM', '3:30 PM' ]);
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, [ '2:00 PM', '3:30 PM' ]);
 
       const checkboxes = getCheckboxEls(listEl);
 
@@ -57,14 +52,14 @@ test.describe('schedule times checkbox field', () => {
       assert.equal(checkboxes[0].checked, false);
    });
 
-   test('populateScheduleTimesCheckboxList auto-selects a single time without checkboxes', () => {
+   test('Test_PopulateScheduleTimesCheckboxList_TestSingleTime_ExpectAutoSelect', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingle',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      populateScheduleTimesCheckboxList(listEl, [ '2:00 PM' ], {
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, [ '2:00 PM' ], {
          autoSelectSingleTime: true,
       });
 
@@ -73,34 +68,34 @@ test.describe('schedule times checkbox field', () => {
          listEl.querySelector('.console-operations-schedule-times-single')?.textContent,
          '2:00 PM'
       );
-      assert.deepEqual(getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
    });
 
-   test('updateScheduleTimesCheckboxList auto-selects a single occurrence time', () => {
+   test('Test_UpdateScheduleTimesCheckboxList_TestSingleOccurrence_ExpectAutoSelect', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingleUpdate',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      updateScheduleTimesCheckboxList(listEl, {
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
          times: [ '3:30 PM' ],
          hasWildEncounter: true,
          hasDate: true,
          autoSelectSingleTime: true,
       });
 
-      assert.deepEqual(getSelectedScheduleTimes(listEl), [ '3:30 PM' ]);
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(listEl), [ '3:30 PM' ]);
    });
 
-   test('populateScheduleTimesCheckboxList shows the no-times message inside the list box', () => {
+   test('Test_PopulateScheduleTimesCheckboxList_TestEmpty_ExpectNoTimesMessage', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesEmpty',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      populateScheduleTimesCheckboxList(listEl, []);
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, []);
 
       const placeholderEl = listEl.querySelector('.console-operations-schedule-times-placeholder');
 
@@ -111,15 +106,15 @@ test.describe('schedule times checkbox field', () => {
       );
    });
 
-   test('resetScheduleTimesCheckboxList restores the idle placeholder', () => {
+   test('Test_ResetScheduleTimesCheckboxList_TestReset_ExpectIdlePlaceholder', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesReset',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      populateScheduleTimesCheckboxList(listEl, [ '2:00 PM' ]);
-      resetScheduleTimesCheckboxList(listEl);
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, [ '2:00 PM' ]);
+      ScheduleTimesCheckboxField.resetScheduleTimesCheckboxList(listEl);
 
       assert.equal(
          listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
@@ -127,14 +122,14 @@ test.describe('schedule times checkbox field', () => {
       );
    });
 
-   test('updateScheduleTimesCheckboxList shows the select-date placeholder when an encounter is selected', () => {
+   test('Test_UpdateScheduleTimesCheckboxList_TestEncounterNoDate_ExpectSelectDate', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelectDate',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      updateScheduleTimesCheckboxList(listEl, {
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
          times: [],
          hasWildEncounter: true,
          hasDate: false,
@@ -146,18 +141,18 @@ test.describe('schedule times checkbox field', () => {
       );
    });
 
-   test('getSelectedScheduleTimes returns checked values', () => {
+   test('Test_GetSelectedScheduleTimes_TestChecked_ExpectValues', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelected',
       });
       const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
 
-      populateScheduleTimesCheckboxList(listEl, [ '2:00 PM', '3:30 PM' ]);
+      ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(listEl, [ '2:00 PM', '3:30 PM' ]);
 
       const checkboxes = getCheckboxEls(listEl);
       checkboxes[0].checked = true;
 
-      assert.deepEqual(getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
    });
 });

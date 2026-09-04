@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createScheduleTimesCheckboxField } from '../../scripts/consoleOperations/templates/fragments.js';
-import { getSelectedScheduleTimes } from '../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
+import { ScheduleTimesCheckboxField } from '../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { createWildEncounterScheduleTimesFilterController } from '../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
@@ -63,6 +63,6 @@ test.describe('wild encounter schedule times filter', () => {
          timesEl.querySelector('.console-operations-schedule-times-single')?.textContent,
          '1:30 AM'
       );
-      assert.deepEqual(getSelectedScheduleTimes(timesEl), [ '1:30 AM' ]);
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), [ '1:30 AM' ]);
    });
 });

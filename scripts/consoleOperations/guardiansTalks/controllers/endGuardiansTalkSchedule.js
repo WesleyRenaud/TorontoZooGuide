@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
-import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
+import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import {
    getFieldValue,
    resetFormFields,
@@ -19,7 +19,7 @@ export function createEndGuardiansTalkScheduleController({
 } = {}) {
 
    function getSelectedTimes() {
-      return getSelectedScheduleTimes(timesEl);
+      return ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl);
    }
 
    function resetTalkDropdown() {

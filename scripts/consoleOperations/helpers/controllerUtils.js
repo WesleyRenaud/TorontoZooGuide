@@ -1,8 +1,5 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import {
-   clearConsoleMenuButtonSelection,
-   clearConsolePanelUrlParam,
-} from '../shell/panelNavigator.js';
+import { PanelNavigator } from '../shell/panelNavigator.js';
 import { APP_STRINGS } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
@@ -39,8 +36,8 @@ export function hideConsolePanel({
    setStatus,
 } = {}) {
    panelEl?.classList.remove('active');
-   clearConsolePanelUrlParam();
-   clearConsoleMenuButtonSelection();
+   PanelNavigator.clearConsolePanelUrlParam();
+   PanelNavigator.clearConsoleMenuButtonSelection();
    setStatus?.(statusEl, '');
 }
 
