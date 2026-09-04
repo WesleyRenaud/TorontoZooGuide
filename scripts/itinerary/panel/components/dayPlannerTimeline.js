@@ -1,10 +1,7 @@
 import { DayPlannerScheduledPillOptions } from './dayPlannerScheduledPillOptions.js';
-import { appendScheduledDurationPill } from './dayPlannerTimelinePillAppend.js';
+import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
-import {
-   bindPillMenu,
-   buildPillMenuNodes,
-} from './itineraryPillMenu.js';
+import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
@@ -64,14 +61,14 @@ function attachScheduledEventCardMenu(itemRow, {
       return;
    }
 
-   const { menu, menuButton, menuPanel } = buildPillMenuNodes(
+   const { menu, menuButton, menuPanel } = ItineraryPillMenu.buildPillMenuNodes(
       menuAriaLabel,
       menuItems
    );
 
    itemRow.classList.add('itinerary-day-event-card--with-menu');
    itemRow.appendChild(menu);
-   bindPillMenu(itemRow, {
+   ItineraryPillMenu.bindPillMenu(itemRow, {
       menuButton,
       menuPanel,
       menuItems,
@@ -218,7 +215,7 @@ export function appendScheduledItems(
          return;
       }
 
-      appendScheduledDurationPill(gridLine, {
+      DayPlannerTimelinePillAppend.appendScheduledDurationPill(gridLine, {
          label: resolveRenderGroupLabel(renderGroup),
          offsetFraction: renderGroup.offsetFraction,
          durationMinutes: renderGroup.durationMinutes,

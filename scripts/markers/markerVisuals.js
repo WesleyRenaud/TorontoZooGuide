@@ -1,7 +1,4 @@
-import {
-   renderAnimalIcon,
-   renderMarkerByType,
-} from './markerTypeRenderers.js';
+import { MarkerTypeRenderers } from './markerTypeRenderers.js';
 import { MarkerVisualUtils } from './markerVisualUtils.js';
 
 export class MarkerVisuals {
@@ -16,7 +13,7 @@ export class MarkerVisuals {
          return;
       }
 
-      if (renderMarkerByType(markerEl, items)) {
+      if (MarkerTypeRenderers.renderMarkerByType(markerEl, items)) {
          return;
       }
 
@@ -27,6 +24,6 @@ export class MarkerVisuals {
       if (!markerEl || !animal) return;
 
       MarkerVisualUtils.resetMarkerVisual(markerEl);
-      renderAnimalIcon(markerEl, animal);
+      MarkerTypeRenderers.renderAnimalIcon(markerEl, animal);
    }
 }

@@ -2,10 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { createAttractionHoursScheduleController } from '../../scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.js';
-import {
-   applyScheduleTimePickerBounds,
-   initAttractionHoursSchedulePickers,
-} from '../../scripts/datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../scripts/datePickers/consoleDatePickers.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 
@@ -275,7 +272,7 @@ test('attraction hours submit surfaces backend zoo hours errors', async () => {
    );
 });
 
-test('applyScheduleTimePickerBounds sets and clears picker limits', () => {
+test('ConsoleDatePickers.applyScheduleTimePickerBounds sets and clears picker limits', () => {
    const values = {};
    const picker = {
       set(property, value) {
@@ -283,7 +280,7 @@ test('applyScheduleTimePickerBounds sets and clears picker limits', () => {
       },
    };
 
-   applyScheduleTimePickerBounds(picker, {
+   ConsoleDatePickers.applyScheduleTimePickerBounds(picker, {
       openTime: '9:30 AM',
       closeTime: '6:00 PM',
    });
@@ -291,13 +288,13 @@ test('applyScheduleTimePickerBounds sets and clears picker limits', () => {
    assert.equal(values.minTime, '9:30 AM');
    assert.equal(values.maxTime, '6:00 PM');
 
-   applyScheduleTimePickerBounds(picker, null);
+   ConsoleDatePickers.applyScheduleTimePickerBounds(picker, null);
 
    assert.equal(values.minTime, null);
    assert.equal(values.maxTime, null);
 });
 
-test('initAttractionHoursSchedulePickers initializes date and time pickers', () => {
+test('ConsoleDatePickers.initAttractionHoursSchedulePickers initializes date and time pickers', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
    const weekdayStartTimeEl = createDomNode('input');
@@ -306,7 +303,7 @@ test('initAttractionHoursSchedulePickers initializes date and time pickers', () 
    const weekendHolidayEndTimeEl = createDomNode('input');
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
-   const pickers = initAttractionHoursSchedulePickers({
+   const pickers = ConsoleDatePickers.initAttractionHoursSchedulePickers({
       startDateEl,
       endDateEl,
       weekdayStartTimeEl,

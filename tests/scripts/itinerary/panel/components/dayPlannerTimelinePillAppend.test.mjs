@@ -1,13 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   appendItineraryTimeMarkers,
-   appendScheduledDurationPill,
-   appendTimelinePill,
-} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { DayPlannerTimelinePillAppend } from '../../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 function makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
@@ -18,13 +14,13 @@ function makeTimelineGridLine() {
    return { gridLine };
 }
 
-test.describe('dayPlannerTimelinePillAppend', () => {
+test.describe('Test_DayPlannerTimelinePillAppend', () => {
    installDomTestHooks();
 
-   test('appendTimelinePill adds an open pill to a point strip', () => {
+   test('Test_AppendTimelinePill_TestOpenPill_ExpectPointStrip', () => {
       const { gridLine } = makeTimelineGridLine();
 
-      appendTimelinePill(gridLine, 'Lunch', 0);
+      DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Lunch', 0);
 
       const strip = gridLine.querySelector('.itinerary-day-pill-strip');
       const pill = strip?.querySelector('.itinerary-day-open-pill');
@@ -37,10 +33,10 @@ test.describe('dayPlannerTimelinePillAppend', () => {
       assert.equal(strip?.getAttribute('data-scheduled-column'), null);
    });
 
-   test('appendTimelinePill adds a boundary marker with visit-boundary placement', () => {
+   test('Test_AppendTimelinePill_TestBoundaryPlacement_ExpectMarker', () => {
       const { gridLine } = makeTimelineGridLine();
 
-      appendTimelinePill(gridLine, 'Arrival', 0, {
+      DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Arrival', 0, {
          visitBoundaryPlacement: 'ends-at-anchor',
          onRemove: () => {},
          menuAriaLabel: 'Arrival options',
@@ -57,10 +53,10 @@ test.describe('dayPlannerTimelinePillAppend', () => {
       );
    });
 
-   test('appendScheduledDurationPill adds a scheduled pill strip and pill', () => {
+   test('Test_AppendScheduledDurationPill_TestDuration_ExpectStripAndPill', () => {
       const { gridLine } = makeTimelineGridLine();
 
-      appendScheduledDurationPill(gridLine, {
+      DayPlannerTimelinePillAppend.appendScheduledDurationPill(gridLine, {
          label: 'African Lion',
          durationMinutes: 30,
          startTime: '12:00 PM',
@@ -74,7 +70,7 @@ test.describe('dayPlannerTimelinePillAppend', () => {
       assert.ok(pill);
    });
 
-   test('appendItineraryTimeMarkers appends arrival markers for the active slot', () => {
+   test('Test_AppendItineraryTimeMarkers_TestArrivalSlot_ExpectAppended', () => {
       const { gridLine } = makeTimelineGridLine();
       const markersByAnchorSlot = new Map([
          [720, [{
@@ -84,7 +80,7 @@ test.describe('dayPlannerTimelinePillAppend', () => {
          }]],
       ]);
 
-      appendItineraryTimeMarkers(
+      DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
          gridLine,
          markersByAnchorSlot,
          720,

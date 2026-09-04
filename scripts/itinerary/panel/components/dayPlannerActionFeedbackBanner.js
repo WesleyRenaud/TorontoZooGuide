@@ -4,74 +4,76 @@ import {
    DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
 } from '../../../shared/constants.js';
 
-export function appendDayPlannerActionFeedbackSlot(container) {
-   if (!container) {
-      return null;
+export class DayPlannerActionFeedbackBanner {
+   static appendDayPlannerActionFeedbackSlot(container) {
+      if (!container) {
+         return null;
+      }
+
+      const slot = el('div', 'itinerary-day-action-feedback-slot');
+      slot.setAttribute('aria-live', 'polite');
+      container.appendChild(slot);
+
+      return slot;
    }
 
-   const slot = el('div', 'itinerary-day-action-feedback-slot');
-   slot.setAttribute('aria-live', 'polite');
-   container.appendChild(slot);
+   static appendDayPlannerActionFeedbackBanner(
+      slot,
+      {
+         variant = 'success',
+         message = '',
+      } = {},
+      {
+         dismissMs = DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
+         fadeMs = DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
+      } = {}
+   ) {
+      if (!slot || !message) {
+         return null;
+      }
 
-   return slot;
-}
+      const banner = el(
+         'div',
+         `itinerary-day-action-feedback itinerary-day-action-feedback--${variant}`,
+         message
+      );
 
-export function appendDayPlannerActionFeedbackBanner(
-   slot,
-   {
-      variant = 'success',
-      message = '',
-   } = {},
-   {
-      dismissMs = DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
-      fadeMs = DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
-   } = {}
-) {
-   if (!slot || !message) {
-      return null;
-   }
+      banner.setAttribute('role', 'status');
+      slot.appendChild(banner);
 
-   const banner = el(
-      'div',
-      `itinerary-day-action-feedback itinerary-day-action-feedback--${variant}`,
-      message
-   );
+      requestAnimationFrame(() => {
+         banner.classList.add('is-visible');
+      });
 
-   banner.setAttribute('role', 'status');
-   slot.appendChild(banner);
+      let dismissTimeoutId = null;
+      let fadeTimeoutId = null;
 
-   requestAnimationFrame(() => {
-      banner.classList.add('is-visible');
-   });
+      const cleanup = () => {
+         if (dismissTimeoutId !== null) {
+            clearTimeout(dismissTimeoutId);
+            dismissTimeoutId = null;
+         }
 
-   let dismissTimeoutId = null;
-   let fadeTimeoutId = null;
+         if (fadeTimeoutId !== null) {
+            clearTimeout(fadeTimeoutId);
+            fadeTimeoutId = null;
+         }
 
-   const cleanup = () => {
-      if (dismissTimeoutId !== null) {
-         clearTimeout(dismissTimeoutId);
+         banner.remove();
+      };
+
+      banner.__tzgCleanup = cleanup;
+
+      dismissTimeoutId = setTimeout(() => {
          dismissTimeoutId = null;
-      }
+         banner.classList.add('is-dismissing');
 
-      if (fadeTimeoutId !== null) {
-         clearTimeout(fadeTimeoutId);
-         fadeTimeoutId = null;
-      }
+         fadeTimeoutId = setTimeout(() => {
+            fadeTimeoutId = null;
+            cleanup();
+         }, fadeMs);
+      }, dismissMs);
 
-      banner.remove();
-   };
-
-   banner.__tzgCleanup = cleanup;
-
-   dismissTimeoutId = setTimeout(() => {
-      dismissTimeoutId = null;
-      banner.classList.add('is-dismissing');
-
-      fadeTimeoutId = setTimeout(() => {
-         fadeTimeoutId = null;
-         cleanup();
-      }, fadeMs);
-   }, dismissMs);
-
-   return banner;
+      return banner;
+   }
 }

@@ -1,7 +1,7 @@
-import { CONSOLE_TIME_PICKER_OPTIONS } from './consoleDatePickers.js';
+import { ConsoleDatePickers } from './consoleDatePickers.js';
 
 function getPickerDateFormat(instance) {
-   return instance.config?.dateFormat ?? CONSOLE_TIME_PICKER_OPTIONS.dateFormat;
+   return instance.config?.dateFormat ?? ConsoleDatePickers.CONSOLE_TIME_PICKER_OPTIONS.dateFormat;
 }
 
 function formatPickerDate(instance, date, dateFormat) {

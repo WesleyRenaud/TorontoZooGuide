@@ -1,9 +1,4 @@
-import {
-   initAttractionHoursSchedulePickers,
-   initDateRangePickers,
-   initScheduleDateTimePickers,
-   initTimePicker,
-} from '../../datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../datePickers/consoleDatePickers.js';
 
 const DATE_PICKER_BINDINGS = {
    dateRanges: [
@@ -62,14 +57,14 @@ function getNestedValue(source, path = []) {
 function initDateRangePickerBinding(refs, path) {
    const binding = getNestedValue(refs, path);
 
-   initDateRangePickers(
+   ConsoleDatePickers.initDateRangePickers(
       binding?.startDateEl,
       binding?.endDateEl
    );
 }
 
 function initSingleDatePickerBinding(refs, path) {
-   initDateRangePickers(
+   ConsoleDatePickers.initDateRangePickers(
       getNestedValue(refs, path),
       null
    );
@@ -85,12 +80,12 @@ function initDateTimePickerBinding(refs, {
 
    if (timeFieldKeys.length) {
       timeFieldKeys.forEach((fieldKey) => {
-         initTimePicker(binding?.[fieldKey]);
+         ConsoleDatePickers.initTimePicker(binding?.[fieldKey]);
       });
       return;
    }
 
-   initScheduleDateTimePickers(
+   ConsoleDatePickers.initScheduleDateTimePickers(
       binding?.startDateEl,
       binding?.endDateEl,
       binding?.[startTimeKey],
@@ -114,7 +109,7 @@ export function wireConsoleOperationDatePickers(refs) {
    if (refs.attractions?.hoursSchedule) {
       Object.assign(
          refs.attractions.hoursSchedule,
-         initAttractionHoursSchedulePickers(refs.attractions.hoursSchedule)
+         ConsoleDatePickers.initAttractionHoursSchedulePickers(refs.attractions.hoursSchedule)
       );
    }
 }

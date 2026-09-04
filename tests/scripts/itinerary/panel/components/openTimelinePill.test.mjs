@@ -1,21 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   makeBoundaryMarker,
-   makeOpenPill,
-} from '../../scripts/itinerary/panel/components/openTimelinePill.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { OpenTimelinePill } from '../../../../../scripts/itinerary/panel/components/openTimelinePill.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('makeOpenPill returns null for an empty label', () => {
-   assert.equal(makeOpenPill(''), null);
-   assert.equal(makeOpenPill(null), null);
+test('Test_MakeOpenPill_TestEmptyLabel_ExpectNull', () => {
+   assert.equal(OpenTimelinePill.makeOpenPill(''), null);
+   assert.equal(OpenTimelinePill.makeOpenPill(null), null);
 });
 
-test('makeOpenPill keeps a compact pill without a remove handler', () => {
-   const pill = makeOpenPill('Lunch');
+test('Test_MakeOpenPill_TestNoRemove_ExpectCompact', () => {
+   const pill = OpenTimelinePill.makeOpenPill('Lunch');
 
    assert.ok(pill.classList.contains('itinerary-day-open-pill'));
    assert.equal(pill.classList.contains('itinerary-day-open-pill--with-menu'), false);
@@ -26,8 +23,8 @@ test('makeOpenPill keeps a compact pill without a remove handler', () => {
    assert.equal(pill.querySelector('.itinerary-day-open-pill-menu'), null);
 });
 
-test('makeOpenPill adds a remove menu when onRemove is provided', () => {
-   const pill = makeOpenPill('Breakfast', {
+test('Test_MakeOpenPill_TestOnRemove_ExpectMenu', () => {
+   const pill = OpenTimelinePill.makeOpenPill('Breakfast', {
       onRemove: () => {},
       menuAriaLabel: 'Breakfast options',
       removeLabel: 'Remove',
@@ -48,12 +45,12 @@ test('makeOpenPill adds a remove menu when onRemove is provided', () => {
    );
 });
 
-test('makeBoundaryMarker returns null for an empty label', () => {
-   assert.equal(makeBoundaryMarker(''), null);
+test('Test_MakeBoundaryMarker_TestEmptyLabel_ExpectNull', () => {
+   assert.equal(OpenTimelinePill.makeBoundaryMarker(''), null);
 });
 
-test('makeBoundaryMarker renders a read-only arrival marker by default', () => {
-   const marker = makeBoundaryMarker('Arrival');
+test('Test_MakeBoundaryMarker_TestDefault_ExpectArrival', () => {
+   const marker = OpenTimelinePill.makeBoundaryMarker('Arrival');
 
    assert.ok(marker.classList.contains('itinerary-day-boundary-marker'));
    assert.equal(marker.getAttribute('aria-label'), 'Arrival');
@@ -62,16 +59,16 @@ test('makeBoundaryMarker renders a read-only arrival marker by default', () => {
    assert.equal(marker.querySelector('.itinerary-day-boundary-marker-btn'), null);
 });
 
-test('makeBoundaryMarker renders a departure marker for starts-at-anchor placement', () => {
-   const marker = makeBoundaryMarker('Departure', {
+test('Test_MakeBoundaryMarker_TestStartsAtAnchor_ExpectDeparture', () => {
+   const marker = OpenTimelinePill.makeBoundaryMarker('Departure', {
       visitBoundaryPlacement: 'starts-at-anchor',
    });
 
    assert.equal(marker.getAttribute('data-boundary-marker-kind'), 'departure');
 });
 
-test('makeBoundaryMarker adds a remove menu when onRemove is provided', () => {
-   const marker = makeBoundaryMarker('Arrival', {
+test('Test_MakeBoundaryMarker_TestOnRemove_ExpectMenu', () => {
+   const marker = OpenTimelinePill.makeBoundaryMarker('Arrival', {
       onRemove: () => {},
       menuAriaLabel: 'Arrival options',
       removeLabel: 'Clear arrival',

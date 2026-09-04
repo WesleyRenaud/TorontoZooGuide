@@ -274,18 +274,20 @@ const MARKER_TYPE_RENDERERS = {
    eventSite: renderEventSiteMarker,
 };
 
-export function renderMarkerByType(markerEl, items) {
-   const type = String(items?.[0]?.type || '');
-   const renderer = MARKER_TYPE_RENDERERS[type];
+export class MarkerTypeRenderers {
+   static renderMarkerByType(markerEl, items) {
+      const type = String(items?.[0]?.type || '');
+      const renderer = MARKER_TYPE_RENDERERS[type];
 
-   if (!renderer) {
-      return false;
+      if (!renderer) {
+         return false;
+      }
+
+      renderer(markerEl, items);
+      return true;
    }
 
-   renderer(markerEl, items);
-   return true;
-}
-
-export function renderAnimalIcon(markerEl, animal) {
-   renderAnimalMarker(markerEl, [animal]);
+   static renderAnimalIcon(markerEl, animal) {
+      renderAnimalMarker(markerEl, [animal]);
+   }
 }

@@ -123,7 +123,15 @@
       "scripts/itinerary/panel/scheduleTimeConflictResolution.js",
       "scripts/itinerary/panel/components/scheduleItemButton.js",
       "scripts/itinerary/panel/rows.js",
-      "scripts/datePickers/multiTimePicker.js"
+      "scripts/datePickers/multiTimePicker.js",
+      "scripts/markers/markerTypeRenderers.js",
+      "scripts/markers/markerElement.js",
+      "scripts/datePickers/flatpickr.js",
+      "scripts/datePickers/consoleDatePickers.js",
+      "scripts/itinerary/panel/components/itineraryPillMenu.js",
+      "scripts/itinerary/panel/components/openTimelinePill.js",
+      "scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.js",
+      "scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

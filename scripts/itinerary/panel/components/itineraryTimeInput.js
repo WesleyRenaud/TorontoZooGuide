@@ -1,4 +1,4 @@
-import { initTimePicker } from '../../../datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 import { common } from '../../../strings/common.js';
@@ -201,7 +201,7 @@ export function makeItineraryTimeInput({
    inputWrap.appendChild(input);
    inputWrap.appendChild(clearButton);
    syncClearButtonState();
-   flatpickrInstance = initTimePicker(input, {
+   flatpickrInstance = ConsoleDatePickers.initTimePicker(input, {
       allowInput: false,
       onChange(_selectedDates, dateStr, instance) {
          latestPickerValue = readPickerTimeValue(instance, dateStr, input);

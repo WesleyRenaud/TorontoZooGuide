@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import {
@@ -110,19 +110,19 @@ export function createAttractionHoursScheduleController({
    }
 
    function applyTimeBounds(bounds) {
-      applyScheduleTimePickerBounds(
+      ConsoleDatePickers.applyScheduleTimePickerBounds(
          weekdayStartTimePicker,
          bounds?.weekday
       );
-      applyScheduleTimePickerBounds(
+      ConsoleDatePickers.applyScheduleTimePickerBounds(
          weekdayEndTimePicker,
          bounds?.weekday
       );
-      applyScheduleTimePickerBounds(
+      ConsoleDatePickers.applyScheduleTimePickerBounds(
          weekendHolidayStartTimePicker,
          bounds?.weekendHoliday
       );
-      applyScheduleTimePickerBounds(
+      ConsoleDatePickers.applyScheduleTimePickerBounds(
          weekendHolidayEndTimePicker,
          bounds?.weekendHoliday
       );

@@ -1,4 +1,4 @@
-import { initTimePicker } from '../../datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../datePickers/consoleDatePickers.js';
 import { APP_STRINGS } from '../../strings.js';
 import { common } from '../../strings/common.js';
 import { WildEncounterScheduleRows } from './wildEncounterScheduleRows.js';
@@ -92,7 +92,7 @@ function createScheduleRow({
 
    rowEl.appendChild(removeSlotEl);
 
-   initTimePicker(timeInputEl);
+   ConsoleDatePickers.initTimePicker(timeInputEl);
 
    return {
       rowEl,

@@ -1,4 +1,4 @@
-import { initFlatpickr } from '../datePickers/flatpickr.js';
+import { Flatpickr } from '../datePickers/flatpickr.js';
 import { VisitDateRules } from './visitDateRules.js';
 
 export function initVisitDateFlatpickr(
@@ -11,7 +11,7 @@ export function initVisitDateFlatpickr(
       onChange = null,
       onReady = null,
       onClose = null,
-      initFlatpickr: initFlatpickrFn = initFlatpickr,
+      initFlatpickr: initFlatpickrFn = Flatpickr.initFlatpickr,
       getTodayFn = VisitDateRules.getToday,
       getMaxDateFn = null,
    } = {}
