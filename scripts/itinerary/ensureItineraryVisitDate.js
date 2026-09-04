@@ -5,7 +5,7 @@ import {
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
-import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
+import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
 import {
    normalizeItineraryDraft,
@@ -30,7 +30,7 @@ export async function ensureItineraryVisitDate(itinerary = {}) {
    }
 
    const date = await resolveEffectiveItineraryHoursDateIso(itinerary);
-   const { temp } = await getItineraryDateSearchContext({ date, includeTemp: false });
+   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date, includeTemp: false });
    const result = await ItineraryApi.setItineraryRequest({
       ...toSetItineraryPayload(normalizeItineraryDraft({
          ...itinerary,

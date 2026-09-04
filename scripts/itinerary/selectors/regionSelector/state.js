@@ -1,10 +1,10 @@
-import { normalizeAnimalIdentitySearchFields } from '../../animalIdentity.js';
+import { AnimalIdentity } from '../../animalIdentity.js';
 import { ItinerarySelectorApi } from '../../../api/itinerarySelectorApi.js';
 import {
    loadArray,
    saveArray,
 } from '../../draftStorage.js';
-import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
+import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import {
    buildSelectedAnimalKey,
    draftAnimalsCoverCatalogAnimals,
@@ -36,7 +36,7 @@ import {
 } from '../../../visitDates/visitDateRules.js';
 
 async function resolveAnimalsByExhibitQueryContext() {
-   let context = await getItineraryDateSearchContext();
+   let context = await ItinerarySearchContext.getItineraryDateSearchContext();
 
    if (!context.month || context.day == null) {
       context = await buildDateSearchContext(toISODate(getToday()));
@@ -54,7 +54,7 @@ export function createRegionSelectorState() {
    let selectedExhibitsNeedCatalogRebuild = false;
 
    function markExhibitBulkManaged(exhibitName) {
-      const { exhibit: normalizedExhibitName } = normalizeAnimalIdentitySearchFields({
+      const { exhibit: normalizedExhibitName } = AnimalIdentity.normalizeAnimalIdentitySearchFields({
          exhibit: exhibitName,
       });
 
@@ -65,7 +65,7 @@ export function createRegionSelectorState() {
 
    function isBulkManagedExhibit(exhibitName) {
       return bulkManagedExhibitNames.has(
-         normalizeAnimalIdentitySearchFields({ exhibit: exhibitName }).exhibit
+         AnimalIdentity.normalizeAnimalIdentitySearchFields({ exhibit: exhibitName }).exhibit
       );
    }
 
@@ -140,11 +140,11 @@ export function createRegionSelectorState() {
       });
 
       for (const exhibitName of selectedExhibits) {
-         const exhibitKey = normalizeAnimalIdentitySearchFields({
+         const exhibitKey = AnimalIdentity.normalizeAnimalIdentitySearchFields({
             exhibit: exhibitName,
          }).exhibit;
          const catalogForExhibit = catalogAnimals.filter((animal) => (
-            normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
+            AnimalIdentity.normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
          ));
 
          if (draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
@@ -224,7 +224,7 @@ export function createRegionSelectorState() {
 
    function preserveAnimalsOutsideBulkManagedExhibits(currentAnimals = []) {
       const remainingAnimals = currentAnimals.filter((animal) => {
-         const { exhibit } = normalizeAnimalIdentitySearchFields(animal);
+         const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
          if (!exhibit) {
             return true;
@@ -264,7 +264,7 @@ export function createRegionSelectorState() {
 
       const selectedExhibitSet = new Set(
          selectedExhibits.map(
-            (exhibitName) => normalizeAnimalIdentitySearchFields({
+            (exhibitName) => AnimalIdentity.normalizeAnimalIdentitySearchFields({
                exhibit: exhibitName,
             }).exhibit
          )
@@ -274,7 +274,7 @@ export function createRegionSelectorState() {
       );
 
       const preservedAnimals = currentAnimals.filter((animal) => {
-         const { exhibit } = normalizeAnimalIdentitySearchFields(animal);
+         const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
          if (!exhibit) {
             return true;

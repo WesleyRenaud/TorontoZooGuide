@@ -2,7 +2,7 @@ import {
    buildSchedulableEventTypes,
    isScheduleItemEventType,
 } from '../itineraryEventTypes.js';
-import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
+import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -21,7 +21,7 @@ export function isScheduleItemSearchEnabled(selection, eventTypes = []) {
 export function buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {
    const eventOptions = eventTypes.map((eventType) => ({
       value: eventType,
-      label: formatItineraryEventTypeLabel(eventType),
+      label: ScheduleItemEventLabels.formatItineraryEventTypeLabel(eventType),
    }));
 
    return [

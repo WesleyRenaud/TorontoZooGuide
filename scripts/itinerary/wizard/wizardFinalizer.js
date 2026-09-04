@@ -10,10 +10,7 @@ import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmati
 import { loadSelectedNames } from '../selectors/regionSelector/regionStorage.js';
 import { SELECTED_EXHIBITS_KEY } from '../storageKeys.js';
 import { APP_STRINGS } from '../../strings.js';
-import {
-   shouldBlockEmptyFinish,
-   shouldShowSaveIssuesPopup,
-} from './wizardFinalizeDecisions.js';
+import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 import { showWizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
 
@@ -62,8 +59,8 @@ export async function finalizeItineraryWizard(
       showNoticePopup = showItineraryNoticePopup,
       showProceedConfirmation = showSaveIssuesProceedConfirmation,
       showSaveIssuesPopup = showWizardSaveIssuesPopup,
-      shouldBlockEmpty = shouldBlockEmptyFinish,
-      shouldShowSaveIssues = shouldShowSaveIssuesPopup,
+      shouldBlockEmpty = WizardFinalizeDecisions.shouldBlockEmptyFinish,
+      shouldShowSaveIssues = WizardFinalizeDecisions.shouldShowSaveIssuesPopup,
    } = deps;
 
    const finalItinerary = createFinalItineraryDraft(draft, normalizeDraft);

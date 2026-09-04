@@ -1,7 +1,4 @@
-import {
-   buildAnimalIdentityComparisonKey,
-   normalizeAnimalForSave,
-} from './animalIdentity.js';
+import { AnimalIdentity } from './animalIdentity.js';
 import {
    normalizeGuardiansTalkForSave,
    normalizeItineraryNamesForSave,
@@ -267,7 +264,7 @@ export function toSetItineraryPayload(draft = {}) {
       date: base.date,
       arrivalTime: base.arrivalTime,
       departureTime: base.departureTime,
-      animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
+      animals: base.animals.map(AnimalIdentity.normalizeAnimalForSave).filter(Boolean),
       attractions: normalizeAttractionsForSave(base.attractions),
       transportations: normalizeTransportationsForSave(base),
       guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
@@ -285,8 +282,8 @@ function sortWildEncountersForSaveComparison(items = []) {
 
 function sortAnimalsForSaveComparison(animals = []) {
    return [...animals].sort((a, b) => (
-      buildAnimalIdentityComparisonKey(a).localeCompare(
-         buildAnimalIdentityComparisonKey(b)
+      AnimalIdentity.buildAnimalIdentityComparisonKey(a).localeCompare(
+         AnimalIdentity.buildAnimalIdentityComparisonKey(b)
       )
    ));
 }

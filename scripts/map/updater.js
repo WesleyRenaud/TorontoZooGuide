@@ -1,5 +1,5 @@
 import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
-import { buildMapDateContext } from './dateContext.js';
+import { DateContext } from './dateContext.js';
 import {
    normalizeSearchFocusRequest,
    resolveDeepLinkFocus,
@@ -217,7 +217,7 @@ export function createMapUpdater({
       rememberLastMapRequest(preset, dateStr);
 
       const resolvedOptions = resolvePendingUpdateOptions(options);
-      const dateContext = await buildMapDateContext(preset, dateStr);
+      const dateContext = await DateContext.buildMapDateContext(preset, dateStr);
       onDateContextChange?.(dateContext);
 
       return run(dateContext, resolvedOptions);

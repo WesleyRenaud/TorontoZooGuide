@@ -1,5 +1,5 @@
 import { createItinerarySelectorController } from './createSelectorController.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 import {
@@ -42,7 +42,7 @@ export function createItineraryTransportationSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateStoredTransportations,
 
-      getContext: () => getItineraryDateSearchContext({ includeTemp: false }),
+      getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),
 
       buildSearchPayload: query => ({
          query,

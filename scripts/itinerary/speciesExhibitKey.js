@@ -1,8 +1,8 @@
-import { normalizeAnimalIdentitySearchFields } from './animalIdentity.js';
+import { AnimalIdentity } from './animalIdentity.js';
 import { EnclosureType } from '../shared/enums/enclosureType.js';
 
 export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
-   const { species, exhibit } = normalizeAnimalIdentitySearchFields(animal);
+   const { species, exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
    if (!species || (requireExhibit && !exhibit)) {
       return '';
@@ -12,7 +12,7 @@ export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = 
 }
 
 function buildViewingSpotSuffix(animal = {}) {
-   const { enclosure_name: enclosureName } = normalizeAnimalIdentitySearchFields(animal);
+   const { enclosure_name: enclosureName } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
    if (enclosureName) {
       return enclosureName;

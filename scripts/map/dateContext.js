@@ -22,25 +22,27 @@ const PRESET_DATE_CONTEXTS = {
    },
 };
 
-export async function buildMapDateContext(preset, dateStr) {
-   const presetKey = String(preset || '').trim().toLowerCase();
-   const presetDateCtx = PRESET_DATE_CONTEXTS[presetKey];
+export class DateContext {
+   static async buildMapDateContext(preset, dateStr) {
+      const presetKey = String(preset || '').trim().toLowerCase();
+      const presetDateCtx = PRESET_DATE_CONTEXTS[presetKey];
 
-   if (presetDateCtx) {
-      const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
-      const anchorIso = getYear(trimmed) != null ? trimmed : toISODate(getToday());
+      if (presetDateCtx) {
+         const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
+         const anchorIso = getYear(trimmed) != null ? trimmed : toISODate(getToday());
 
-      const anchorCtx = await buildDateSearchContext(anchorIso, { includeTemp: false });
+         const anchorCtx = await buildDateSearchContext(anchorIso, { includeTemp: false });
+
+         return {
+            preset: presetKey,
+            ...presetDateCtx,
+            year: anchorCtx.year,
+         };
+      }
 
       return {
          preset: presetKey,
-         ...presetDateCtx,
-         year: anchorCtx.year,
+         ...(await buildDateSearchContext(dateStr)),
       };
    }
-
-   return {
-      preset: presetKey,
-      ...(await buildDateSearchContext(dateStr)),
-   };
 }

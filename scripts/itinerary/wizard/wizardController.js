@@ -15,8 +15,8 @@ import { SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS } from '../panel/sectionConfigs
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
-import { buildWizardDraft } from './wizardDraft.js';
-import { shouldBlockEmptyFinish } from './wizardFinalizeDecisions.js';
+import { WizardDraft } from './wizardDraft.js';
+import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 import {
    buildSelectionStepHandlers,
@@ -24,11 +24,7 @@ import {
    WIZARD_DEFAULT_START_STEP,
    WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY,
 } from './wizardStepConfigs.js';
-import {
-   isWizardDateStep,
-   resolveDateStepDraftUpdate,
-   shouldSyncSelectionStepDraft,
-} from './wizardStepDraftSync.js';
+import { WizardStepDraftSync } from './wizardStepDraftSync.js';
 
 async function loadDefaultSelectionStepConfigs() {
    const { buildWizardSelectionStepConfigs } = await import(
@@ -124,8 +120,8 @@ export async function openItineraryWizard({
 
       if (
          !wizard.hasUnsavedChanges()
-         && !shouldBlockEmptyFinish(
-            buildWizardDraft(wizardState),
+         && !WizardFinalizeDecisions.shouldBlockEmptyFinish(
+            WizardDraft.buildWizardDraft(wizardState),
             wizard.allowEmptyFinish(options.allowEmpty)
          )
       ) {
@@ -137,7 +133,7 @@ export async function openItineraryWizard({
       }
 
       const result = await finalizeWizard(
-         buildWizardDraft(wizardState),
+         WizardDraft.buildWizardDraft(wizardState),
          mountEl,
          {
             allowEmpty: wizard.allowEmptyFinish(options.allowEmpty),
@@ -170,7 +166,7 @@ export async function openItineraryWizard({
    }
 
    function syncDateStepDraft() {
-      const nextDate = resolveDateStepDraftUpdate({
+      const nextDate = WizardStepDraftSync.resolveDateStepDraftUpdate({
          currentDate: wizardSteps.date?.getDate?.(),
          wizardDate: wizardState.date,
       });
@@ -186,7 +182,7 @@ export async function openItineraryWizard({
       const activeConfig = WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY[stepKey];
       const activeController = wizardSteps[stepKey];
 
-      if (!shouldSyncSelectionStepDraft({
+      if (!WizardStepDraftSync.shouldSyncSelectionStepDraft({
          stepConfig: activeConfig,
          stepController: activeController,
       })) {
@@ -201,7 +197,7 @@ export async function openItineraryWizard({
    }
 
    async function syncActiveStepDraft() {
-      if (isWizardDateStep(activeStepKey)) {
+      if (WizardStepDraftSync.isWizardDateStep(activeStepKey)) {
          syncDateStepDraft();
          return;
       }
@@ -210,7 +206,7 @@ export async function openItineraryWizard({
    }
 
    async function handleClose() {
-      if (isWizardDateStep(activeStepKey)) {
+      if (WizardStepDraftSync.isWizardDateStep(activeStepKey)) {
          // Only sync the picker when a visit date was already committed
          // (Next/Finish). Syncing the default earliest date into an empty
          // draft would look like an unsaved change on open → close.

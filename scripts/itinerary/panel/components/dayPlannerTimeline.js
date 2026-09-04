@@ -11,10 +11,7 @@ import {
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
-import {
-   applyRegionColorsToElement,
-   resolveRegionColorSlugForScheduledItem,
-} from '../../../shared/regionColors.js';
+import { RegionColors } from '../../../shared/regionColors.js';
 
 export function timelineSlotRowHeightFraction(slotSpanMinutes) {
    const span = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
@@ -106,9 +103,9 @@ function makeScheduledItemBlock(
    }
 
    itemRow.classList.add('itinerary-day-event-card');
-   applyRegionColorsToElement(
+   RegionColors.applyRegionColorsToElement(
       itemRow,
-      resolveRegionColorSlugForScheduledItem(item)
+      RegionColors.resolveRegionColorSlugForScheduledItem(item)
    );
    attachScheduledEventCardMenu(itemRow, menuOptions);
    block.appendChild(itemRow);

@@ -1,95 +1,88 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   applyRegionColorsToElement,
-   REGION_COLOR_SLUGS,
-   resolveRegionColorSlug,
-   resolveRegionColorSlugForExhibit,
-   resolveRegionColorSlugForScheduledItem,
-   resolveRegionNameForExhibit,
-} from '../../scripts/shared/regionColors.js';
-import { makeScheduledPill } from '../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
+import { RegionColors } from '../../../scripts/shared/regionColors.js';
+import { makeScheduledPill } from '../../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
 import {
    createNode,
    installPanelRowsTestHooks,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../helpers/panelRowsTestSetup.mjs';
 
 installPanelRowsTestHooks();
 
-test('resolveRegionNameForExhibit maps exhibits to their regions', () => {
-   assert.equal(resolveRegionNameForExhibit('Africa Savanna'), 'Africa');
+test('Test_ResolveRegionNameForExhibit_TestKnownExhibits_ExpectRegions', () => {
+   assert.equal(RegionColors.resolveRegionNameForExhibit('Africa Savanna'), 'Africa');
    assert.equal(
-      resolveRegionNameForExhibit('Americas Outdoor Mayan Temple Ruins'),
+      RegionColors.resolveRegionNameForExhibit('Americas Outdoor Mayan Temple Ruins'),
       'Americas'
    );
-   assert.equal(resolveRegionNameForExhibit('Kids Zoo'), 'Discovery Zone');
-   assert.equal(resolveRegionNameForExhibit('Unknown Exhibit'), '');
+   assert.equal(RegionColors.resolveRegionNameForExhibit('Kids Zoo'), 'Discovery Zone');
+   assert.equal(RegionColors.resolveRegionNameForExhibit('Unknown Exhibit'), '');
 });
 
-test('resolveRegionColorSlug maps regions to shared token slugs', () => {
-   assert.equal(resolveRegionColorSlug('Africa'), 'africa');
+test('Test_ResolveRegionColorSlug_TestRegions_ExpectSlugs', () => {
+   assert.equal(RegionColors.resolveRegionColorSlug('Africa'), 'africa');
    assert.equal(
-      resolveRegionColorSlugForExhibit('Canadian Domain'),
-      REGION_COLOR_SLUGS['Canadian Domain']
+      RegionColors.resolveRegionColorSlugForExhibit('Canadian Domain'),
+      RegionColors.REGION_COLOR_SLUGS['Canadian Domain']
    );
    assert.equal(
-      resolveRegionColorSlug('Front Courtyard'),
-      REGION_COLOR_SLUGS['Front Courtyard']
+      RegionColors.resolveRegionColorSlug('Front Courtyard'),
+      RegionColors.REGION_COLOR_SLUGS['Front Courtyard']
    );
    assert.equal(
-      resolveRegionColorSlug('Wildlife Science Campus'),
+      RegionColors.resolveRegionColorSlug('Wildlife Science Campus'),
       'wildlife-science-campus'
    );
 });
 
-test('resolveRegionColorSlugForScheduledItem uses region, exhibit, then talk location', () => {
+test('Test_ResolveRegionColorSlugForScheduledItem_TestFallbacks_ExpectSlug', () => {
    assert.equal(
-      resolveRegionColorSlugForScheduledItem({
+      RegionColors.resolveRegionColorSlugForScheduledItem({
          species: 'African Lion',
          exhibit: 'Africa Savanna',
       }),
       'africa'
    );
    assert.equal(
-      resolveRegionColorSlugForScheduledItem({
+      RegionColors.resolveRegionColorSlugForScheduledItem({
          name: 'Zoomobile',
          region: 'Front Courtyard',
       }),
       'front-courtyard'
    );
    assert.equal(
-      resolveRegionColorSlugForScheduledItem({
+      RegionColors.resolveRegionColorSlugForScheduledItem({
          name: 'Greenhouse',
          region: 'Wildlife Science Campus',
       }),
       'wildlife-science-campus'
    );
    assert.equal(
-      resolveRegionColorSlugForScheduledItem({
+      RegionColors.resolveRegionColorSlugForScheduledItem({
          name: 'Komodo Dragon',
          location: 'Australasia Pavilion',
       }),
       'australasia'
    );
    assert.equal(
-      resolveRegionColorSlugForScheduledItem({
+      RegionColors.resolveRegionColorSlugForScheduledItem({
          name: 'African Lion',
       }),
       ''
    );
 });
 
-test('applyRegionColorsToElement sets region class and data attribute', () => {
+test('Test_ApplyRegionColorsToElement_TestSlug_ExpectClassAndData', () => {
    const pill = createNode('div');
 
-   assert.equal(applyRegionColorsToElement(pill, 'americas'), true);
+   assert.equal(RegionColors.applyRegionColorsToElement(pill, 'americas'), true);
    assert.equal(pill.getAttribute('data-region-slug'), 'americas');
    assert.ok(pill.classList.contains('itinerary-day-scheduled-pill--region-colored'));
    assert.ok(pill.classList.contains('itinerary-day-scheduled-pill--region-americas'));
 });
 
-test('makeScheduledPill colors animal pills by exhibit region', () => {
+test('Test_MakeScheduledPill_TestAnimalExhibit_ExpectRegionColored', () => {
    const pill = makeScheduledPill('African Lion', 30, {
       item: {
          species: 'African Lion',
@@ -103,7 +96,7 @@ test('makeScheduledPill colors animal pills by exhibit region', () => {
    assert.equal(pill.getAttribute('data-region-slug'), 'africa');
 });
 
-test('makeScheduledPill leaves non-animal pills uncolored by region', () => {
+test('Test_MakeScheduledPill_TestNonAnimal_ExpectUncolored', () => {
    const pill = makeScheduledPill('Lunch', 40, {
       item: {
          event_type: 'lunch',

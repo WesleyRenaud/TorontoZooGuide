@@ -16,7 +16,16 @@
       "tests/scripts/likelihood/likelihoodPresentation.test.mjs",
       "tests/scripts/api/animalsApi.test.mjs",
       "tests/scripts/api/searchApi.test.mjs",
-      "tests/scripts/api/itineraryApi.test.mjs"
+      "tests/scripts/api/itineraryApi.test.mjs",
+      "tests/scripts/search/searchRows.test.mjs",
+      "tests/scripts/itinerary/animalIdentity.test.mjs",
+      "tests/scripts/itinerary/panel/scheduleItemEventLabels.test.mjs",
+      "tests/scripts/shared/regionColors.test.mjs",
+      "tests/scripts/map/dateContext.test.mjs",
+      "tests/scripts/itinerary/itinerarySearchContext.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardFinalizeDecisions.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardDraft.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardStepDraftSync.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

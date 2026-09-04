@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { setStoredItineraryDate } from '../../scripts/itinerary/draftStorage.js';
-import { getItineraryDateSearchContext } from '../../scripts/itinerary/itinerarySearchContext.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { mockJsonResponse } from './helpers/fetchMock.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { setStoredItineraryDate } from '../../../scripts/itinerary/draftStorage.js';
+import { ItinerarySearchContext } from '../../../scripts/itinerary/itinerarySearchContext.js';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+import { mockJsonResponse } from '../helpers/fetchMock.mjs';
+import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 
 installDomTestHooks({
    before: () => {
@@ -17,10 +17,10 @@ installDomTestHooks({
    },
 });
 
-test('getItineraryDateSearchContext uses the stored draft date', async () => {
+test('Test_GetItineraryDateSearchContext_TestStoredDate_ExpectContext', async () => {
    setStoredItineraryDate('2026-06-18');
 
-   const context = await getItineraryDateSearchContext({ includeTemp: false });
+   const context = await ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false });
 
    assert.equal(context.date, '2026-06-18');
    assert.equal(context.month, 'JUN');
@@ -28,7 +28,7 @@ test('getItineraryDateSearchContext uses the stored draft date', async () => {
    assert.equal(context.year, 2026);
 });
 
-test('getItineraryDateSearchContext falls back to the effective visit date when none is stored', async () => {
+test('Test_GetItineraryDateSearchContext_TestNoStoredDate_ExpectEffectiveDate', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-zoo-hours') {
          return mockJsonResponse({
@@ -42,7 +42,7 @@ test('getItineraryDateSearchContext falls back to the effective visit date when 
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const context = await getItineraryDateSearchContext({ includeTemp: false });
+   const context = await ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false });
 
    assert.ok(context.date);
    assert.ok(context.month);

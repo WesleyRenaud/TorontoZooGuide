@@ -1,16 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildAnimalIdentityComparisonKey,
-   buildAnimalIdentityStorageKey,
-   normalizeAnimalForSave,
-   normalizeAnimalIdentityFields,
-} from '../../scripts/itinerary/animalIdentity.js';
+import { AnimalIdentity } from '../../../scripts/itinerary/animalIdentity.js';
 
-test('normalizeAnimalIdentityFields trims species, exhibit, and enclosure name', () => {
+test('Test_NormalizeAnimalIdentityFields_TestWhitespace_ExpectTrimmed', () => {
    assert.deepEqual(
-      normalizeAnimalIdentityFields({
+      AnimalIdentity.normalizeAnimalIdentityFields({
          species: '  African Lion  ',
          exhibit: ' Africa Savanna ',
          enclosure_name: '  Giraffe House  ',
@@ -22,7 +17,7 @@ test('normalizeAnimalIdentityFields trims species, exhibit, and enclosure name',
       }
    );
    assert.deepEqual(
-      normalizeAnimalIdentityFields({
+      AnimalIdentity.normalizeAnimalIdentityFields({
          species: 'African Penguin',
          exhibit: 'Africa Savanna',
          enclosure_name: '   ',
@@ -35,9 +30,9 @@ test('normalizeAnimalIdentityFields trims species, exhibit, and enclosure name',
    );
 });
 
-test('buildAnimalIdentityComparisonKey lowercases identity fields for sorting', () => {
+test('Test_BuildAnimalIdentityComparisonKey_TestFields_ExpectLowercaseKey', () => {
    assert.equal(
-      buildAnimalIdentityComparisonKey({
+      AnimalIdentity.buildAnimalIdentityComparisonKey({
          species: ' Masai Giraffe ',
          exhibit: 'Africa Savanna',
          enclosure_name: 'Giraffe House',
@@ -46,9 +41,9 @@ test('buildAnimalIdentityComparisonKey lowercases identity fields for sorting', 
    );
 });
 
-test('buildAnimalIdentityStorageKey builds lowercase draft removal keys', () => {
+test('Test_BuildAnimalIdentityStorageKey_TestFields_ExpectLowercaseKey', () => {
    assert.equal(
-      buildAnimalIdentityStorageKey({
+      AnimalIdentity.buildAnimalIdentityStorageKey({
          species: 'African Penguin',
          exhibit: 'Africa Savanna',
          enclosure_name: 'Outdoor',
@@ -56,7 +51,7 @@ test('buildAnimalIdentityStorageKey builds lowercase draft removal keys', () => 
       'african penguin||africa savanna||outdoor'
    );
    assert.equal(
-      buildAnimalIdentityStorageKey({
+      AnimalIdentity.buildAnimalIdentityStorageKey({
          species: 'African Lion',
          exhibit: 'Africa Savanna',
       }),
@@ -64,9 +59,9 @@ test('buildAnimalIdentityStorageKey builds lowercase draft removal keys', () => 
    );
 });
 
-test('normalizeAnimalForSave drops invalid rows and omits blank enclosure names', () => {
+test('Test_NormalizeAnimalForSave_TestInvalidAndBlank_ExpectFiltered', () => {
    assert.deepEqual(
-      normalizeAnimalForSave({
+      AnimalIdentity.normalizeAnimalForSave({
          species: 'Masai Giraffe',
          exhibit: 'Africa Savanna',
          enclosure_name: 'Outdoor',
@@ -77,9 +72,9 @@ test('normalizeAnimalForSave drops invalid rows and omits blank enclosure names'
          enclosure_name: 'Outdoor',
       }
    );
-   assert.equal(normalizeAnimalForSave({ species: '  ', exhibit: 'Africa Savanna' }), null);
+   assert.equal(AnimalIdentity.normalizeAnimalForSave({ species: '  ', exhibit: 'Africa Savanna' }), null);
    assert.deepEqual(
-      normalizeAnimalForSave({
+      AnimalIdentity.normalizeAnimalForSave({
          species: 'African Lion',
          exhibit: 'Africa Savanna',
       }),

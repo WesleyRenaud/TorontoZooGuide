@@ -1,7 +1,7 @@
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../itinerary/visitDateEarliest.js';
 import { initMapControls } from '../map/controls.js';
-import { buildMapDateContext } from '../map/dateContext.js';
+import { DateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 import { initTransportationRouteControls } from '../map/transportationRouteControls.js';
@@ -60,7 +60,7 @@ function createMapDateContextGetter({
    return async () => {
       const preset = mapPreset?.value || '';
       const dateStr = mapDateInput?.value?.trim?.() || '';
-      return await buildMapDateContext(preset, dateStr);
+      return await DateContext.buildMapDateContext(preset, dateStr);
    };
 }
 

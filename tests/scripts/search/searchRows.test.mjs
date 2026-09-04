@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { flattenSearchRows } from '../../scripts/search/searchRows.js';
+import { SearchRows } from '../../../scripts/search/searchRows.js';
 
-test('flattens normalized search groups into typed result rows', () => {
-   const rows = flattenSearchRows({
+test('Test_FlattenSearchRows_TestNormalizedGroups_ExpectTypedRows', () => {
+   const rows = SearchRows.flattenSearchRows({
       animals: [{ species: 'African Lion' }],
       gift_shops: [{ name: 'Zootique' }],
       attractions: [{ name: 'Conservation Carousel' }],
@@ -22,7 +22,7 @@ test('flattens normalized search groups into typed result rows', () => {
    ]);
 });
 
-test('ignores missing or malformed search groups', () => {
-   assert.deepEqual(flattenSearchRows(null), []);
-   assert.deepEqual(flattenSearchRows({ attractions: 'Conservation Carousel' }), []);
+test('Test_FlattenSearchRows_TestMissingGroups_ExpectEmpty', () => {
+   assert.deepEqual(SearchRows.flattenSearchRows(null), []);
+   assert.deepEqual(SearchRows.flattenSearchRows({ attractions: 'Conservation Carousel' }), []);
 });

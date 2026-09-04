@@ -13,7 +13,7 @@ import {
    renderIncludeOffDisplayToggle,
 } from './animalSelector/view.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { restoreRemovedAnimalKey } from './regionSelector/regionStorage.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -79,7 +79,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       storageKey: STORAGE_KEY,
       migrateSelected: migrateStoredAnimals,
 
-      getContext: getItineraryDateSearchContext,
+      getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
       buildSearchPayload: query => buildAnimalSearchPayload(query, includeOffDisplayAnimals),
 
