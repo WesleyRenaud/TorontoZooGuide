@@ -3,7 +3,7 @@ import {
    isTransportationScheduled,
 } from '../itinerary/selectors/transportationSelector/model.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
-import { normalizeTypedRows } from './sourceHelpers.js';
+import { SourceHelpers } from './sourceHelpers.js';
 
 function uniqStrings(values) {
    return Array.from(
@@ -62,9 +62,9 @@ function transportationNamesWithStations(transportationStations) {
 }
 
 function isFullyUnscheduledTransportationName(
-      name,
-      transportations,
-      scheduledTransportationNames
+   name,
+   transportations,
+   scheduledTransportationNames
 ) {
    if (scheduledTransportationNames.has(name)) {
       return false;
@@ -82,8 +82,8 @@ function isFullyUnscheduledTransportationName(
 }
 
 function buildFullyUnscheduledTransportationRows(
-      transportations,
-      transportationStations
+   transportations,
+   transportationStations
 ) {
    const scheduledTransportationNames = transportationNamesWithStations(
       transportationStations
@@ -110,87 +110,89 @@ function buildFullyUnscheduledTransportationRows(
       rows.push(transportation);
    });
 
-   return normalizeTypedRows(rows, 'transportation');
+   return SourceHelpers.normalizeTypedRows(rows, 'transportation');
 }
 
-export function buildItineraryRows(itinerary) {
-   const transportationStations = itinerary?.transportationStations;
+export class LayerRequest {
+   static buildItineraryRows(itinerary) {
+      const transportationStations = itinerary?.transportationStations;
 
-   return [
-      ...normalizeTypedRows(itinerary?.animals, 'animal'),
-      ...normalizeTypedRows(itinerary?.attractions, 'attraction'),
-      ...buildFullyUnscheduledTransportationRows(
-         itinerary?.transportations,
-         transportationStations
-      ),
-      ...normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
-      ...normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
-      ...normalizeTypedRows(
-         transportationStations,
-         MapItemType.TRANSPORTATION_STATION
-      ),
-   ];
-}
-
-export function resolveItineraryTransportationRouteMarkers(itinerary) {
-   const transportation = itinerary?.transportations?.find((row) => (
-      row.route && row.route_marker_sequences.length > 0
-   ));
-
-   if (!transportation) {
-      return null;
+      return [
+         ...SourceHelpers.normalizeTypedRows(itinerary?.animals, 'animal'),
+         ...SourceHelpers.normalizeTypedRows(itinerary?.attractions, 'attraction'),
+         ...buildFullyUnscheduledTransportationRows(
+            itinerary?.transportations,
+            transportationStations
+         ),
+         ...SourceHelpers.normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
+         ...SourceHelpers.normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
+         ...SourceHelpers.normalizeTypedRows(
+            transportationStations,
+            MapItemType.TRANSPORTATION_STATION
+         ),
+      ];
    }
 
-   return {
-      route: transportation.route,
-      markerSequences: transportation.route_marker_sequences,
-   };
-}
+   static resolveItineraryTransportationRouteMarkers(itinerary) {
+      const transportation = itinerary?.transportations?.find((row) => (
+         row.route && row.route_marker_sequences.length > 0
+      ));
 
-export function buildSelectedTypes(selectedTypes, focusType, transportationRoute) {
-   const normalizedTypes = uniqStrings(selectedTypes);
-   const routeActive = transportationRoute !== 'none';
-   const focusIsTransportationStation = focusType === 'transportationStation';
+      if (!transportation) {
+         return null;
+      }
 
-   if (
-      focusType &&
-      !normalizedTypes.includes(focusType) &&
-      !(routeActive && focusIsTransportationStation && normalizedTypes.includes('transportationRoute'))
-   ) {
-      return uniqStrings([focusType, ...normalizedTypes]);
+      return {
+         route: transportation.route,
+         markerSequences: transportation.route_marker_sequences,
+      };
    }
 
-   return normalizedTypes;
-}
+   static buildSelectedTypes(selectedTypes, focusType, transportationRoute) {
+      const normalizedTypes = uniqStrings(selectedTypes);
+      const routeActive = transportationRoute !== 'none';
+      const focusIsTransportationStation = focusType === 'transportationStation';
 
-export function buildLayerRequest({
-   dateCtx,
-   selectedTypes,
-   transportationRoute,
-   focusRow,
-   focusType,
-   includeOffDisplayAnimals,
-   includeClosedRestaurants,
-   includeClosedRestrooms,
-   includeClosedGiftShops,
-   includeClosedAttractions,
-}) {
-   const includes = buildFocusIncludes(focusType, focusRow);
+      if (
+         focusType &&
+         !normalizedTypes.includes(focusType) &&
+         !(routeActive && focusIsTransportationStation && normalizedTypes.includes('transportationRoute'))
+      ) {
+         return uniqStrings([focusType, ...normalizedTypes]);
+      }
 
-   return {
-      selectedTypes: buildSelectedTypes(selectedTypes, focusType, transportationRoute),
-      ctx: {
-         month: dateCtx.month,
-         day: dateCtx.day,
-         dayOfWeek: dateCtx.dayOfWeek ?? 1,
-         temp: dateCtx.temp ?? null,
-         includeOffDisplayAnimals,
-         includeClosedRestaurants,
-         includeClosedRestrooms,
-         includeClosedGiftShops,
-         includeClosedAttractions,
-         transportationRoute,
-         ...includes,
-      },
-   };
+      return normalizedTypes;
+   }
+
+   static buildLayerRequest({
+      dateCtx,
+      selectedTypes,
+      transportationRoute,
+      focusRow,
+      focusType,
+      includeOffDisplayAnimals,
+      includeClosedRestaurants,
+      includeClosedRestrooms,
+      includeClosedGiftShops,
+      includeClosedAttractions,
+   }) {
+      const includes = buildFocusIncludes(focusType, focusRow);
+
+      return {
+         selectedTypes: LayerRequest.buildSelectedTypes(selectedTypes, focusType, transportationRoute),
+         ctx: {
+            month: dateCtx.month,
+            day: dateCtx.day,
+            dayOfWeek: dateCtx.dayOfWeek ?? 1,
+            temp: dateCtx.temp ?? null,
+            includeOffDisplayAnimals,
+            includeClosedRestaurants,
+            includeClosedRestrooms,
+            includeClosedGiftShops,
+            includeClosedAttractions,
+            transportationRoute,
+            ...includes,
+         },
+      };
+   }
 }

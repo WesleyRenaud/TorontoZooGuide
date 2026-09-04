@@ -1,12 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   createDynamicTypedSource,
-   createStaticTypedSource,
-   normalizeTypedRows,
-   setSourceRows,
-} from '../../scripts/map/sourceHelpers.js';
+import { SourceHelpers } from '../../../scripts/map/sourceHelpers.js';
 
 function createStore() {
    return {
@@ -15,31 +10,31 @@ function createStore() {
    };
 }
 
-test('normalizes typed rows without accepting malformed collections', () => {
-   assert.deepEqual(normalizeTypedRows([
+test('Test_NormalizeTypedRows_TestValidRows_ExpectTypedRows', () => {
+   assert.deepEqual(SourceHelpers.normalizeTypedRows([
       { species: 'African Lion' },
       { name: 'Conservation Carousel' },
    ], 'itineraryItem'), [
       { species: 'African Lion', type: 'itineraryItem' },
       { name: 'Conservation Carousel', type: 'itineraryItem' },
    ]);
-   assert.deepEqual(normalizeTypedRows(null, 'animal'), []);
+   assert.deepEqual(SourceHelpers.normalizeTypedRows(null, 'animal'), []);
 });
 
-test('setSourceRows stores only array rows', () => {
+test('Test_SetSourceRows_TestArrayRows_ExpectStored', () => {
    const store = createStore();
 
-   assert.deepEqual(setSourceRows(store, 'animal', [{ species: 'African Lion' }]), [
+   assert.deepEqual(SourceHelpers.setSourceRows(store, 'animal', [{ species: 'African Lion' }]), [
       { species: 'African Lion' },
    ]);
    assert.deepEqual(store.byType.animal, [{ species: 'African Lion' }]);
-   assert.deepEqual(setSourceRows(store, 'giftShop', 'Zootique'), []);
+   assert.deepEqual(SourceHelpers.setSourceRows(store, 'giftShop', 'Zootique'), []);
 });
 
-test('dynamic typed sources refetch each time', async () => {
+test('Test_CreateDynamicTypedSource_TestRepeatedFetch_ExpectRefetchEachTime', async () => {
    const store = createStore();
    let calls = 0;
-   const source = createDynamicTypedSource(store, 'attraction', async () => {
+   const source = SourceHelpers.createDynamicTypedSource(store, 'attraction', async () => {
       calls += 1;
       return [{ name: `Conservation Carousel ${calls}` }];
    });
@@ -53,10 +48,10 @@ test('dynamic typed sources refetch each time', async () => {
    ]);
 });
 
-test('static typed sources cache successful fetches', async () => {
+test('Test_CreateStaticTypedSource_TestSuccessfulFetch_ExpectCached', async () => {
    const store = createStore();
    let calls = 0;
-   const source = createStaticTypedSource(store, 'giftShop', async () => {
+   const source = SourceHelpers.createStaticTypedSource(store, 'giftShop', async () => {
       calls += 1;
       return [{ name: 'Zootique' }];
    });
@@ -67,7 +62,7 @@ test('static typed sources cache successful fetches', async () => {
    assert.equal(calls, 1);
 });
 
-test('static typed sources dedupe in-flight fetches and reset after failures', async () => {
+test('Test_CreateStaticTypedSource_TestInFlightFailure_ExpectDedupeThenReset', async () => {
    const store = createStore();
    let calls = 0;
    let rejectFirstCall;
@@ -75,7 +70,7 @@ test('static typed sources dedupe in-flight fetches and reset after failures', a
       rejectFirstCall = reject;
    });
 
-   const source = createStaticTypedSource(store, 'wildEncounter', async () => {
+   const source = SourceHelpers.createStaticTypedSource(store, 'wildEncounter', async () => {
       calls += 1;
 
       if (calls === 1) {

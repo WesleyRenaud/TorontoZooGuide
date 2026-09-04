@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildItineraryPathD,
-} from '../../scripts/map/itineraryPathGeometry.js';
+import { ItineraryPathGeometry } from '../../scripts/map/itineraryPathGeometry.js';
 import {
    clearItineraryPathOverlay,
    renderItineraryPathOverlay,
@@ -73,7 +71,7 @@ test.describe('itinerary path overlay', () => {
       assert.equal(path?.getAttribute('fill'), 'none');
       assert.equal(
          path?.getAttribute('d'),
-         buildItineraryPathD([
+         ItineraryPathGeometry.buildItineraryPathD([
             { x: 2515.5, y: 2434.9 },
             { x: 2515.5, y: 2434.9 },
             { x: 2600, y: 2500 },

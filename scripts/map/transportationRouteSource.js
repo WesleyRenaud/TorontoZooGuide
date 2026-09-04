@@ -1,7 +1,4 @@
-import {
-   normalizeTypedRows,
-   setSourceRows,
-} from './sourceHelpers.js';
+import { SourceHelpers } from './sourceHelpers.js';
 
 function createNoCacheSource(fetchRows) {
    return {
@@ -19,12 +16,12 @@ function buildDatePayload(ctx, extra = {}) {
 }
 
 function clearTransportationRouteRows(store) {
-   setSourceRows(store, 'transportationStation', []);
-   setSourceRows(store, 'transportationRoute', []);
+   SourceHelpers.setSourceRows(store, 'transportationStation', []);
+   SourceHelpers.setSourceRows(store, 'transportationRoute', []);
 }
 
 function normalizeTransportationStations(transportationStations) {
-   return normalizeTypedRows(transportationStations, 'transportationStation');
+   return SourceHelpers.normalizeTypedRows(transportationStations, 'transportationStation');
 }
 
 export function createTransportationRouteSource(
@@ -54,8 +51,8 @@ export function createTransportationRouteSource(
       showRouteLayer?.(route);
 
       const stations = normalizeTransportationStations(transportationStations);
-      setSourceRows(store, 'transportationStation', stations);
-      setSourceRows(store, 'transportationRoute', stations);
+      SourceHelpers.setSourceRows(store, 'transportationStation', stations);
+      SourceHelpers.setSourceRows(store, 'transportationRoute', stations);
 
       return stations;
    });

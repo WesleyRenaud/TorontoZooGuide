@@ -50,7 +50,10 @@
       "tests/scripts/animals/animalDisplayLines.test.mjs",
       "tests/scripts/itinerary/panel/rowActionProps.test.mjs",
       "tests/scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.test.mjs",
-      "tests/scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.test.mjs"
+      "tests/scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.test.mjs",
+      "tests/scripts/map/itineraryPathGeometry.test.mjs",
+      "tests/scripts/map/sourceHelpers.test.mjs",
+      "tests/scripts/map/layerRequest.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"
