@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { initTimePicker } from './consoleDatePickers.js';
-import { initFlatpickr } from './flatpickr.js';
+import { ConsoleDatePickers } from './consoleDatePickers.js';
+import { Flatpickr } from './flatpickr.js';
 import { TimePickerEnterCommit } from './timePickerEnterCommit.js';
 
 function resetPickerSelection(instance) {
@@ -89,7 +89,7 @@ export class MultiTimePicker {
          onCommitTime = null,
          onRemoveLastTime = null,
       } = {},
-      initFlatpickrFn = initFlatpickr
+      initFlatpickrFn = Flatpickr.initFlatpickr
    ) {
       if (!inputEl) {
          return null;
@@ -100,7 +100,7 @@ export class MultiTimePicker {
          onCommitTime,
       });
 
-      const picker = initTimePicker(inputEl, {
+      const picker = ConsoleDatePickers.initTimePicker(inputEl, {
          onEnterCommit(time, instance) {
             controller.commitTime(time, instance);
             instance?.close?.();

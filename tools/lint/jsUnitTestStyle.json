@@ -78,7 +78,11 @@
       "tests/scripts/itinerary/panel/components/scheduleItemButton.test.mjs",
       "tests/scripts/itinerary/panel/dayPlannerScheduledItems.test.mjs",
       "tests/scripts/itinerary/panel/panelRowBuilders.test.mjs",
-      "tests/scripts/datePickers/multiTimePicker.test.mjs"
+      "tests/scripts/datePickers/multiTimePicker.test.mjs",
+      "tests/scripts/datePickers/consoleDatePickers.test.mjs",
+      "tests/scripts/itinerary/panel/components/itineraryPillMenu.test.mjs",
+      "tests/scripts/itinerary/panel/components/openTimelinePill.test.mjs",
+      "tests/scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

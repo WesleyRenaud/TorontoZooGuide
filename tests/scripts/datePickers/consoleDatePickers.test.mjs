@@ -1,12 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   initDateRangePickers,
-   initScheduleDateTimePickers,
-   initTimePicker,
-} from '../../scripts/datePickers/consoleDatePickers.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { ConsoleDatePickers } from '../../../scripts/datePickers/consoleDatePickers.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
 
 function createMockPickerInstance(inputEl, overrides = {}) {
    return {
@@ -65,11 +61,11 @@ function dispatchKeydown(target, key) {
    });
 }
 
-test('initTimePicker wires console time picker defaults', () => {
+test('Test_InitTimePicker_TestDefaults_ExpectConsoleOptions', () => {
    const inputEl = createDomNode('input');
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
-   initTimePicker(inputEl, {}, initFlatpickrFn);
+   ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
    assert.equal(calls.length, 1);
    assert.equal(calls[0].options.enableTime, true);
@@ -77,10 +73,10 @@ test('initTimePicker wires console time picker defaults', () => {
    assert.equal(calls[0].options.dateFormat, 'h:i K');
 });
 
-test('initTimePicker populates the field from the open picker on Enter', () => {
+test('Test_InitTimePicker_TestEnterFromPicker_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = createFlatpickrSpy();
-   const picker = initTimePicker(inputEl, {}, initFlatpickrFn);
+   const picker = ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
    dispatchKeydown(inputEl, 'Enter');
 
@@ -88,10 +84,10 @@ test('initTimePicker populates the field from the open picker on Enter', () => {
    assert.equal(picker.isOpen, false);
 });
 
-test('initTimePicker populates the field from calendar Enter when the input is empty', () => {
+test('Test_InitTimePicker_TestCalendarEnterEmpty_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = createFlatpickrSpy();
-   const picker = initTimePicker(inputEl, {}, initFlatpickrFn);
+   const picker = ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
    dispatchKeydown(picker.calendarContainer, 'Enter');
 
@@ -99,25 +95,25 @@ test('initTimePicker populates the field from calendar Enter when the input is e
    assert.equal(picker.isOpen, false);
 });
 
-test('initTimePicker keeps typed input on Enter', () => {
+test('Test_InitTimePicker_TestEnterTyped_ExpectKept', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = createFlatpickrSpy();
 
-   initTimePicker(inputEl, {}, initFlatpickrFn);
+   ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
    inputEl.value = '2:30 PM';
    dispatchKeydown(inputEl, 'Enter');
 
    assert.equal(inputEl.value, '2:30 PM');
 });
 
-test('initDateRangePickers binds end-date minDate to the start input', () => {
+test('Test_InitDateRangePickers_TestStartChange_ExpectEndMinDate', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
    startDateEl.value = '2026-06-15';
 
-   const { endPicker } = initDateRangePickers(startDateEl, endDateEl, {
+   const { endPicker } = ConsoleDatePickers.initDateRangePickers(startDateEl, endDateEl, {
       minDate: '2026-06-01',
       initFlatpickrFn,
    });
@@ -133,14 +129,14 @@ test('initDateRangePickers binds end-date minDate to the start input', () => {
    assert.equal(endPicker.minDate, '2026-06-20');
 });
 
-test('initScheduleDateTimePickers initializes all four pickers', () => {
+test('Test_InitScheduleDateTimePickers_TestFourInputs_ExpectInitialized', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
    const dailyStartTimeEl = createDomNode('input');
    const dailyEndTimeEl = createDomNode('input');
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
-   const pickers = initScheduleDateTimePickers(
+   const pickers = ConsoleDatePickers.initScheduleDateTimePickers(
       startDateEl,
       endDateEl,
       dailyStartTimeEl,

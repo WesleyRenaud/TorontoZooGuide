@@ -14,36 +14,6 @@ function buildPillMenuButtonDots() {
    return dots;
 }
 
-export function buildPillMenuNodes(menuAriaLabel, menuItems = []) {
-   const menu = el('div', 'itinerary-day-open-pill-menu');
-   const menuButton = document.createElement('button');
-
-   menuButton.type = 'button';
-   menuButton.className = 'itinerary-day-open-pill-menu-btn';
-   menuButton.setAttribute('aria-label', menuAriaLabel);
-   menuButton.setAttribute('aria-haspopup', 'menu');
-   menuButton.setAttribute('aria-expanded', 'false');
-   menuButton.appendChild(buildPillMenuButtonDots());
-
-   const menuPanel = el('div', 'itinerary-day-open-pill-menu-panel');
-   menuPanel.setAttribute('role', 'menu');
-   menuPanel.hidden = true;
-
-   menuItems.forEach(({ label }) => {
-      const actionButton = document.createElement('button');
-      actionButton.type = 'button';
-      actionButton.className = 'itinerary-day-open-pill-menu-item';
-      actionButton.setAttribute('role', 'menuitem');
-      actionButton.textContent = label;
-      menuPanel.appendChild(actionButton);
-   });
-
-   menu.appendChild(menuButton);
-   menu.appendChild(menuPanel);
-
-   return { menu, menuButton, menuPanel };
-}
-
 function clearMenuPanel(menuPanel) {
    while (menuPanel.children.length > 0) {
       menuPanel.removeChild(menuPanel.children[0]);
@@ -81,69 +51,101 @@ function bindMenuPanelActions(menuPanel, menuItems, closeMenu) {
    });
 }
 
-export function bindPillMenu(
-   pill,
-   {
-      menuButton,
-      menuPanel,
-      menuItems = [],
-      getMenuItems = null,
-      menuOpenClass = 'itinerary-day-open-pill--menu-open',
-   }
-) {
-   const resolveMenuItems = () => (
-      typeof getMenuItems === 'function'
-         ? getMenuItems()
-         : menuItems
-   );
+export class ItineraryPillMenu {
+   static buildPillMenuNodes(menuAriaLabel, menuItems = []) {
+      const menu = el('div', 'itinerary-day-open-pill-menu');
+      const menuButton = document.createElement('button');
 
-   function setMenuOpen(isOpen) {
-      pill.classList.toggle(menuOpenClass, isOpen);
-      resolvePillStrip(pill)?.classList.toggle('itinerary-day-pill-strip--menu-open', isOpen);
-   }
-
-   function closeMenu() {
-      menuPanel.hidden = true;
+      menuButton.type = 'button';
+      menuButton.className = 'itinerary-day-open-pill-menu-btn';
+      menuButton.setAttribute('aria-label', menuAriaLabel);
+      menuButton.setAttribute('aria-haspopup', 'menu');
       menuButton.setAttribute('aria-expanded', 'false');
-      setMenuOpen(false);
+      menuButton.appendChild(buildPillMenuButtonDots());
+
+      const menuPanel = el('div', 'itinerary-day-open-pill-menu-panel');
+      menuPanel.setAttribute('role', 'menu');
+      menuPanel.hidden = true;
+
+      menuItems.forEach(({ label }) => {
+         const actionButton = document.createElement('button');
+         actionButton.type = 'button';
+         actionButton.className = 'itinerary-day-open-pill-menu-item';
+         actionButton.setAttribute('role', 'menuitem');
+         actionButton.textContent = label;
+         menuPanel.appendChild(actionButton);
+      });
+
+      menu.appendChild(menuButton);
+      menu.appendChild(menuPanel);
+
+      return { menu, menuButton, menuPanel };
    }
 
-   function openMenu() {
-      const activeMenuItems = resolveMenuItems();
+   static bindPillMenu(
+      pill,
+      {
+         menuButton,
+         menuPanel,
+         menuItems = [],
+         getMenuItems = null,
+         menuOpenClass = 'itinerary-day-open-pill--menu-open',
+      }
+   ) {
+      const resolveMenuItems = () => (
+         typeof getMenuItems === 'function'
+            ? getMenuItems()
+            : menuItems
+      );
 
-      renderMenuPanel(menuPanel, activeMenuItems);
-      bindMenuPanelActions(menuPanel, activeMenuItems, closeMenu);
-      menuPanel.hidden = false;
-      menuButton.setAttribute('aria-expanded', 'true');
-      setMenuOpen(true);
-   }
-
-   menuButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-
-      if (menuPanel.hidden) {
-         openMenu();
-         return;
+      function setMenuOpen(isOpen) {
+         pill.classList.toggle(menuOpenClass, isOpen);
+         resolvePillStrip(pill)?.classList.toggle('itinerary-day-pill-strip--menu-open', isOpen);
       }
 
-      closeMenu();
-   });
+      function closeMenu() {
+         menuPanel.hidden = true;
+         menuButton.setAttribute('aria-expanded', 'false');
+         setMenuOpen(false);
+      }
 
-   menuPanel.addEventListener('click', (event) => {
-      event.stopPropagation();
-   });
+      function openMenu() {
+         const activeMenuItems = resolveMenuItems();
 
-   bindMenuPanelActions(menuPanel, resolveMenuItems(), closeMenu);
+         renderMenuPanel(menuPanel, activeMenuItems);
+         bindMenuPanelActions(menuPanel, activeMenuItems, closeMenu);
+         menuPanel.hidden = false;
+         menuButton.setAttribute('aria-expanded', 'true');
+         setMenuOpen(true);
+      }
 
-   const handleDocumentClick = (event) => {
-      if (!pill.contains(event.target)) {
+      menuButton.addEventListener('click', (event) => {
+         event.stopPropagation();
+
+         if (menuPanel.hidden) {
+            openMenu();
+            return;
+         }
+
          closeMenu();
-      }
-   };
+      });
 
-   document.addEventListener('click', handleDocumentClick);
-   pill.__tzgCleanup = () => {
-      closeMenu();
-      document.removeEventListener('click', handleDocumentClick);
-   };
+      menuPanel.addEventListener('click', (event) => {
+         event.stopPropagation();
+      });
+
+      bindMenuPanelActions(menuPanel, resolveMenuItems(), closeMenu);
+
+      const handleDocumentClick = (event) => {
+         if (!pill.contains(event.target)) {
+            closeMenu();
+         }
+      };
+
+      document.addEventListener('click', handleDocumentClick);
+      pill.__tzgCleanup = () => {
+         closeMenu();
+         document.removeEventListener('click', handleDocumentClick);
+      };
+   }
 }

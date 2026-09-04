@@ -1,4 +1,4 @@
-import { initTimePicker } from '../../../datePickers/consoleDatePickers.js';
+import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 
@@ -90,7 +90,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
    syncDurationFieldState();
    syncFixedDurationFieldPresentation();
 
-   initTimePicker(timeInput, {
+   ConsoleDatePickers.initTimePicker(timeInput, {
       allowInput: false,
       onChange: commitPickerTime,
       onClose: commitPickerTime,

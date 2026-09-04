@@ -1,9 +1,6 @@
 import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlacement.js';
 import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
-import {
-   makeBoundaryMarker,
-   makeOpenPill,
-} from './openTimelinePill.js';
+import { OpenTimelinePill } from './openTimelinePill.js';
 import { makeScheduledPill } from './scheduledTimelinePill.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 
@@ -16,73 +13,6 @@ function applyPointPillStripPlacement(pillStrip, placement = '') {
 }
 
 function insertPointPillInStrip(strip, pill) {
-   strip.appendChild(pill);
-}
-
-export function appendTimelinePill(
-   gridLine,
-   label,
-   offsetFraction = 0,
-   pillOptions = {}
-) {
-   if (!label) {
-      return;
-   }
-
-   const pill = pillOptions.visitBoundaryPlacement
-      ? makeBoundaryMarker(label, pillOptions)
-      : makeOpenPill(label, pillOptions);
-
-   if (!pill) {
-      return;
-   }
-
-   const strip = DayPlannerTimelinePillPlacement.getOrCreatePointPillStrip(gridLine, offsetFraction);
-
-   applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
-   insertPointPillInStrip(strip, pill);
-}
-
-export function appendScheduledDurationPill(
-   gridLine,
-   {
-      label,
-      offsetFraction = 0,
-      durationMinutes,
-      displayDurationMinutes = durationMinutes,
-      slotSpanMinutes = TIMELINE_SLOT_MINUTES,
-      startTime,
-      endTime,
-      groupItems = [],
-      menuItems = [],
-      menuAriaLabel = '',
-      onLabelClick = null,
-      item = null,
-   }
-) {
-   const pill = makeScheduledPill(label, durationMinutes, {
-      startTime,
-      endTime,
-      groupItems,
-      menuItems,
-      menuAriaLabel,
-      onLabelClick,
-      item,
-      slotSpanMinutes,
-      displayDurationMinutes,
-   });
-
-   if (!pill) {
-      return;
-   }
-
-   const strip = DayPlannerTimelinePillPlacement.createScheduledPillStrip(
-      gridLine,
-      offsetFraction,
-      displayDurationMinutes,
-      slotSpanMinutes
-   );
-
    strip.appendChild(pill);
 }
 
@@ -125,25 +55,97 @@ function resolveTimePillOptions(
    return {};
 }
 
-export function appendItineraryTimeMarkers(
-   gridLine,
-   markersByAnchorSlot,
-   slotStart,
-   timeHandlers = {},
-   strings = {},
-   visitBoundaryEventTypes = {}
-) {
-   (markersByAnchorSlot.get(slotStart) ?? []).forEach((marker) => {
-      appendTimelinePill(
+export class DayPlannerTimelinePillAppend {
+   static appendTimelinePill(
+      gridLine,
+      label,
+      offsetFraction = 0,
+      pillOptions = {}
+   ) {
+      if (!label) {
+         return;
+      }
+
+      const pill = pillOptions.visitBoundaryPlacement
+         ? OpenTimelinePill.makeBoundaryMarker(label, pillOptions)
+         : OpenTimelinePill.makeOpenPill(label, pillOptions);
+
+      if (!pill) {
+         return;
+      }
+
+      const strip = DayPlannerTimelinePillPlacement.getOrCreatePointPillStrip(
          gridLine,
-         marker.label,
-         marker.offsetFraction,
-         resolveTimePillOptions(
-            marker,
-            timeHandlers,
-            strings,
-            visitBoundaryEventTypes
-         )
+         offsetFraction
       );
-   });
+
+      applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
+      insertPointPillInStrip(strip, pill);
+   }
+
+   static appendScheduledDurationPill(
+      gridLine,
+      {
+         label,
+         offsetFraction = 0,
+         durationMinutes,
+         displayDurationMinutes = durationMinutes,
+         slotSpanMinutes = TIMELINE_SLOT_MINUTES,
+         startTime,
+         endTime,
+         groupItems = [],
+         menuItems = [],
+         menuAriaLabel = '',
+         onLabelClick = null,
+         item = null,
+      }
+   ) {
+      const pill = makeScheduledPill(label, durationMinutes, {
+         startTime,
+         endTime,
+         groupItems,
+         menuItems,
+         menuAriaLabel,
+         onLabelClick,
+         item,
+         slotSpanMinutes,
+         displayDurationMinutes,
+      });
+
+      if (!pill) {
+         return;
+      }
+
+      const strip = DayPlannerTimelinePillPlacement.createScheduledPillStrip(
+         gridLine,
+         offsetFraction,
+         displayDurationMinutes,
+         slotSpanMinutes
+      );
+
+      strip.appendChild(pill);
+   }
+
+   static appendItineraryTimeMarkers(
+      gridLine,
+      markersByAnchorSlot,
+      slotStart,
+      timeHandlers = {},
+      strings = {},
+      visitBoundaryEventTypes = {}
+   ) {
+      (markersByAnchorSlot.get(slotStart) ?? []).forEach((marker) => {
+         DayPlannerTimelinePillAppend.appendTimelinePill(
+            gridLine,
+            marker.label,
+            marker.offsetFraction,
+            resolveTimePillOptions(
+               marker,
+               timeHandlers,
+               strings,
+               visitBoundaryEventTypes
+            )
+         );
+      });
+   }
 }

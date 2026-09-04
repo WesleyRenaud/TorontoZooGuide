@@ -1,4 +1,5 @@
-import { initFlatpickr } from './flatpickr.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { Flatpickr } from './flatpickr.js';
 import { TimePickerEnterCommit } from './timePickerEnterCommit.js';
 
 const DATE_PICKER_OPTIONS = {
@@ -6,62 +7,11 @@ const DATE_PICKER_OPTIONS = {
    dateFormat: 'Y-m-d',
 };
 
-export const CONSOLE_TIME_PICKER_OPTIONS = {
-   enableTime: true,
-   noCalendar: true,
-   dateFormat: 'h:i K',
-   time_24hr: false,
-};
-
-function initDatePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
+function initDatePicker(inputEl, options = {}, initFlatpickrFn = Flatpickr.initFlatpickr) {
    return initFlatpickrFn(inputEl, {
       ...DATE_PICKER_OPTIONS,
       ...options,
    });
-}
-
-export function initTimePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
-   if (!inputEl) {
-      return null;
-   }
-
-   const {
-      onEnterCommit = (time, instance) => TimePickerEnterCommit.commitTimeToInput(time, instance, inputEl),
-      onReady,
-      ...flatpickrOptions
-   } = options;
-
-   function wireEnterCommit(instance) {
-      TimePickerEnterCommit.wireTimePickerEnterCommit(inputEl, instance, onEnterCommit);
-   }
-
-   const picker = initFlatpickrFn(inputEl, {
-      ...CONSOLE_TIME_PICKER_OPTIONS,
-      ...flatpickrOptions,
-      onReady(selectedDates, dateStr, instance) {
-         wireEnterCommit(instance);
-         onReady?.(selectedDates, dateStr, instance);
-      },
-   });
-
-   wireEnterCommit(picker);
-
-   return picker;
-}
-
-export function applyScheduleTimePickerBounds(picker, bounds = null) {
-   if (!picker) {
-      return;
-   }
-
-   if (!bounds?.openTime || !bounds?.closeTime) {
-      picker.set('minTime', null);
-      picker.set('maxTime', null);
-      return;
-   }
-
-   picker.set('minTime', bounds.openTime);
-   picker.set('maxTime', bounds.closeTime);
 }
 
 function bindEndDateMinDate(
@@ -76,7 +26,7 @@ function bindEndDateMinDate(
    }
 
    function syncMinDate() {
-      const startValue = startDateEl.value?.trim() ?? '';
+      const startValue = ValueNormalizer.asTrimmedString(startDateEl.value);
 
       endDatePicker.set('minDate', startValue || emptyMinDate);
    }
@@ -85,97 +35,162 @@ function bindEndDateMinDate(
    syncMinDate();
 }
 
-export function initDateRangePickers(
-   startDateEl,
-   endDateEl,
-   {
-      minDate = 'today',
-      initFlatpickrFn = initFlatpickr,
-   } = {}
-) {
-   const startPicker = initDatePicker(startDateEl, {
-      minDate,
-   }, initFlatpickrFn);
-
-   const endPicker = initDatePicker(endDateEl, {
-      minDate,
-   }, initFlatpickrFn);
-
-   bindEndDateMinDate(startDateEl, endPicker, {
-      emptyMinDate: minDate,
-   });
-
-   return {
-      startPicker,
-      endPicker,
+export class ConsoleDatePickers {
+   static CONSOLE_TIME_PICKER_OPTIONS = {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: 'h:i K',
+      time_24hr: false,
    };
-}
 
-export function initScheduleDateTimePickers(
-   startDateEl,
-   endDateEl,
-   dailyStartTimeEl,
-   dailyEndTimeEl,
-   {
-      initFlatpickrFn = initFlatpickr,
-   } = {}
-) {
-   const startDatePicker = initDatePicker(startDateEl, {}, initFlatpickrFn);
+   static initTimePicker(inputEl, options = {}, initFlatpickrFn = Flatpickr.initFlatpickr) {
+      if (!inputEl) {
+         return null;
+      }
 
-   const endDatePicker = initDatePicker(endDateEl, {}, initFlatpickrFn);
+      const {
+         onEnterCommit = (time, instance) => TimePickerEnterCommit.commitTimeToInput(
+            time,
+            instance,
+            inputEl
+         ),
+         onReady,
+         ...flatpickrOptions
+      } = options;
 
-   const dailyStartTimePicker = initTimePicker(dailyStartTimeEl, {}, initFlatpickrFn);
+      function wireEnterCommit(instance) {
+         TimePickerEnterCommit.wireTimePickerEnterCommit(inputEl, instance, onEnterCommit);
+      }
 
-   const dailyEndTimePicker = initTimePicker(dailyEndTimeEl, {}, initFlatpickrFn);
+      const picker = initFlatpickrFn(inputEl, {
+         ...ConsoleDatePickers.CONSOLE_TIME_PICKER_OPTIONS,
+         ...flatpickrOptions,
+         onReady(selectedDates, dateStr, instance) {
+            wireEnterCommit(instance);
+            onReady?.(selectedDates, dateStr, instance);
+         },
+      });
 
-   bindEndDateMinDate(startDateEl, endDatePicker);
+      wireEnterCommit(picker);
 
-   return {
-      startDatePicker,
-      endDatePicker,
-      dailyStartTimePicker,
-      dailyEndTimePicker,
-   };
-}
+      return picker;
+   }
 
-export function initAttractionHoursSchedulePickers({
-   startDateEl,
-   endDateEl,
-   weekdayStartTimeEl,
-   weekdayEndTimeEl,
-   weekendHolidayStartTimeEl,
-   weekendHolidayEndTimeEl,
-} = {}, {
-   initFlatpickrFn = initFlatpickr,
-} = {}) {
-   const { startPicker, endPicker } = initDateRangePickers(
+   static applyScheduleTimePickerBounds(picker, bounds = null) {
+      if (!picker) {
+         return;
+      }
+
+      if (!bounds?.openTime || !bounds?.closeTime) {
+         picker.set('minTime', null);
+         picker.set('maxTime', null);
+         return;
+      }
+
+      picker.set('minTime', bounds.openTime);
+      picker.set('maxTime', bounds.closeTime);
+   }
+
+   static initDateRangePickers(
       startDateEl,
       endDateEl,
-      { initFlatpickrFn }
-   );
+      {
+         minDate = 'today',
+         initFlatpickrFn = Flatpickr.initFlatpickr,
+      } = {}
+   ) {
+      const startPicker = initDatePicker(startDateEl, {
+         minDate,
+      }, initFlatpickrFn);
 
-   return {
-      startPicker,
-      endPicker,
-      weekdayStartTimePicker: initTimePicker(
-         weekdayStartTimeEl,
+      const endPicker = initDatePicker(endDateEl, {
+         minDate,
+      }, initFlatpickrFn);
+
+      bindEndDateMinDate(startDateEl, endPicker, {
+         emptyMinDate: minDate,
+      });
+
+      return {
+         startPicker,
+         endPicker,
+      };
+   }
+
+   static initScheduleDateTimePickers(
+      startDateEl,
+      endDateEl,
+      dailyStartTimeEl,
+      dailyEndTimeEl,
+      {
+         initFlatpickrFn = Flatpickr.initFlatpickr,
+      } = {}
+   ) {
+      const startDatePicker = initDatePicker(startDateEl, {}, initFlatpickrFn);
+
+      const endDatePicker = initDatePicker(endDateEl, {}, initFlatpickrFn);
+
+      const dailyStartTimePicker = ConsoleDatePickers.initTimePicker(
+         dailyStartTimeEl,
          {},
          initFlatpickrFn
-      ),
-      weekdayEndTimePicker: initTimePicker(
-         weekdayEndTimeEl,
+      );
+
+      const dailyEndTimePicker = ConsoleDatePickers.initTimePicker(
+         dailyEndTimeEl,
          {},
          initFlatpickrFn
-      ),
-      weekendHolidayStartTimePicker: initTimePicker(
-         weekendHolidayStartTimeEl,
-         {},
-         initFlatpickrFn
-      ),
-      weekendHolidayEndTimePicker: initTimePicker(
-         weekendHolidayEndTimeEl,
-         {},
-         initFlatpickrFn
-      ),
-   };
+      );
+
+      bindEndDateMinDate(startDateEl, endDatePicker);
+
+      return {
+         startDatePicker,
+         endDatePicker,
+         dailyStartTimePicker,
+         dailyEndTimePicker,
+      };
+   }
+
+   static initAttractionHoursSchedulePickers({
+      startDateEl,
+      endDateEl,
+      weekdayStartTimeEl,
+      weekdayEndTimeEl,
+      weekendHolidayStartTimeEl,
+      weekendHolidayEndTimeEl,
+   } = {}, {
+      initFlatpickrFn = Flatpickr.initFlatpickr,
+   } = {}) {
+      const { startPicker, endPicker } = ConsoleDatePickers.initDateRangePickers(
+         startDateEl,
+         endDateEl,
+         { initFlatpickrFn }
+      );
+
+      return {
+         startPicker,
+         endPicker,
+         weekdayStartTimePicker: ConsoleDatePickers.initTimePicker(
+            weekdayStartTimeEl,
+            {},
+            initFlatpickrFn
+         ),
+         weekdayEndTimePicker: ConsoleDatePickers.initTimePicker(
+            weekdayEndTimeEl,
+            {},
+            initFlatpickrFn
+         ),
+         weekendHolidayStartTimePicker: ConsoleDatePickers.initTimePicker(
+            weekendHolidayStartTimeEl,
+            {},
+            initFlatpickrFn
+         ),
+         weekendHolidayEndTimePicker: ConsoleDatePickers.initTimePicker(
+            weekendHolidayEndTimeEl,
+            {},
+            initFlatpickrFn
+         ),
+      };
+   }
 }

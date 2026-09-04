@@ -1,8 +1,5 @@
 import { DayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
-import {
-   appendDayPlannerActionFeedbackBanner,
-   appendDayPlannerActionFeedbackSlot,
-} from './dayPlannerActionFeedbackBanner.js';
+import { DayPlannerActionFeedbackBanner } from './dayPlannerActionFeedbackBanner.js';
 import { makeDayPlannerControls } from './dayPlannerControls.js';
 import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
 import {
@@ -17,7 +14,7 @@ import {
    makeUnavailableMessage,
 } from './dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
-import { appendItineraryTimeMarkers } from './dayPlannerTimelinePillAppend.js';
+import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
@@ -142,10 +139,10 @@ function appendScheduleActionButtons(
    if (buttons.length > 0) {
       container.appendChild(ScheduleItemButton.makeScheduleActionsBar(buttons));
 
-      const feedbackSlot = appendDayPlannerActionFeedbackSlot(container);
+      const feedbackSlot = DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackSlot(container);
 
       if (feedback) {
-         appendDayPlannerActionFeedbackBanner(feedbackSlot, feedback);
+         DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackBanner(feedbackSlot, feedback);
       }
    }
 }
@@ -295,7 +292,7 @@ export function makeDayPlannerPreview(
          appendTimelineBoundaryLabel(timeCell, pillLabel);
       }
 
-      appendItineraryTimeMarkers(
+      DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
          gridLine,
          markersByAnchorSlot,
          slotStart,

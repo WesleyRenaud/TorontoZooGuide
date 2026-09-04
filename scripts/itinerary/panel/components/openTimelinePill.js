@@ -3,126 +3,132 @@ import {
    createSpeciesLinkTitleElement,
 } from '../../../animals/createSpeciesLinkTitle.js';
 import { el } from '../dom.js';
-import {
-   bindPillMenu,
-   buildPillMenuNodes,
-} from './itineraryPillMenu.js';
+import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
 
-export function createPillLabelNode(
-   label,
-   className,
-   onLabelClick = null,
-   item = null
-) {
-   if (item?.species) {
-      return createAnimalTitleLinkElement({
-         species: AnimalSelectorModel.getAnimalSpecies(item),
-         enclosureName: AnimalSelectorModel.getAnimalEnclosureName(item),
+export class OpenTimelinePill {
+   static createPillLabelNode(
+      label,
+      className,
+      onLabelClick = null,
+      item = null
+   ) {
+      if (item?.species) {
+         return createAnimalTitleLinkElement({
+            species: AnimalSelectorModel.getAnimalSpecies(item),
+            enclosureName: AnimalSelectorModel.getAnimalEnclosureName(item),
+            className,
+            tagName: 'span',
+            onClick: onLabelClick,
+         });
+      }
+
+      return createSpeciesLinkTitleElement({
+         text: label,
          className,
          tagName: 'span',
          onClick: onLabelClick,
       });
    }
 
-   return createSpeciesLinkTitleElement({
-      text: label,
-      className,
-      tagName: 'span',
-      onClick: onLabelClick,
-   });
-}
+   static makeOpenPill(
+      label,
+      { onRemove = null, menuAriaLabel = '', removeLabel = '', onLabelClick = null } = {}
+   ) {
+      if (!label) {
+         return null;
+      }
 
-export function makeOpenPill(
-   label,
-   { onRemove = null, menuAriaLabel = '', removeLabel = '', onLabelClick = null } = {}
-) {
-   if (!label) {
-      return null;
-   }
+      if (typeof onRemove !== 'function') {
+         const pill = el('span', 'itinerary-day-open-pill');
+         pill.appendChild(
+            OpenTimelinePill.createPillLabelNode(
+               label,
+               'itinerary-day-open-pill-label',
+               onLabelClick
+            )
+         );
+         return pill;
+      }
 
-   if (typeof onRemove !== 'function') {
-      const pill = el('span', 'itinerary-day-open-pill');
-      pill.appendChild(
-         createPillLabelNode(label, 'itinerary-day-open-pill-label', onLabelClick)
+      const pill = el('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');
+      const labelNode = OpenTimelinePill.createPillLabelNode(
+         label,
+         'itinerary-day-open-pill-label',
+         onLabelClick
       );
+      const menuItems = [{ label: removeLabel, onAction: onRemove }];
+      const { menu, menuButton, menuPanel } = ItineraryPillMenu.buildPillMenuNodes(
+         menuAriaLabel,
+         menuItems
+      );
+
+      pill.appendChild(labelNode);
+      pill.appendChild(menu);
+      ItineraryPillMenu.bindPillMenu(pill, { menuButton, menuPanel, menuItems });
+
       return pill;
    }
 
-   const pill = el('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');
-   const labelNode = createPillLabelNode(
+   static makeBoundaryMarker(
       label,
-      'itinerary-day-open-pill-label',
-      onLabelClick
-   );
-   const menuItems = [{ label: removeLabel, onAction: onRemove }];
-   const { menu, menuButton, menuPanel } = buildPillMenuNodes(menuAriaLabel, menuItems);
+      {
+         onRemove = null,
+         menuAriaLabel = '',
+         removeLabel = '',
+         visitBoundaryPlacement = '',
+      } = {}
+   ) {
+      if (!label) {
+         return null;
+      }
 
-   pill.appendChild(labelNode);
-   pill.appendChild(menu);
-   bindPillMenu(pill, { menuButton, menuPanel, menuItems });
+      const marker = el('span', 'itinerary-day-boundary-marker');
+      const markerKind = visitBoundaryPlacement === 'starts-at-anchor'
+         ? 'departure'
+         : 'arrival';
 
-   return pill;
-}
+      marker.setAttribute('aria-label', label);
+      marker.setAttribute('data-boundary-marker-kind', markerKind);
 
-export function makeBoundaryMarker(
-   label,
-   {
-      onRemove = null,
-      menuAriaLabel = '',
-      removeLabel = '',
-      visitBoundaryPlacement = '',
-   } = {}
-) {
-   if (!label) {
-      return null;
-   }
+      if (typeof onRemove === 'function') {
+         const menuItems = [{ label: removeLabel, onAction: onRemove }];
+         const menuButton = document.createElement('button');
+         const menuPanel = el('div', 'itinerary-day-open-pill-menu-panel');
 
-   const marker = el('span', 'itinerary-day-boundary-marker');
-   const markerKind = visitBoundaryPlacement === 'starts-at-anchor'
-      ? 'departure'
-      : 'arrival';
+         menuButton.type = 'button';
+         menuButton.className = 'itinerary-day-boundary-marker-btn';
+         menuButton.setAttribute('aria-label', menuAriaLabel || label);
+         menuButton.setAttribute('aria-haspopup', 'menu');
+         menuButton.setAttribute('aria-expanded', 'false');
 
-   marker.setAttribute('aria-label', label);
-   marker.setAttribute('data-boundary-marker-kind', markerKind);
+         menuPanel.setAttribute('role', 'menu');
+         menuPanel.hidden = true;
 
-   if (typeof onRemove === 'function') {
-      const menuItems = [{ label: removeLabel, onAction: onRemove }];
-      const menuButton = document.createElement('button');
-      const menuPanel = el('div', 'itinerary-day-open-pill-menu-panel');
+         menuItems.forEach(({ label: itemLabel }) => {
+            const actionButton = document.createElement('button');
 
-      menuButton.type = 'button';
-      menuButton.className = 'itinerary-day-boundary-marker-btn';
-      menuButton.setAttribute('aria-label', menuAriaLabel || label);
-      menuButton.setAttribute('aria-haspopup', 'menu');
-      menuButton.setAttribute('aria-expanded', 'false');
+            actionButton.type = 'button';
+            actionButton.className = 'itinerary-day-open-pill-menu-item';
+            actionButton.setAttribute('role', 'menuitem');
+            actionButton.textContent = itemLabel;
+            menuPanel.appendChild(actionButton);
+         });
 
-      menuPanel.setAttribute('role', 'menu');
-      menuPanel.hidden = true;
+         marker.classList.add('itinerary-day-boundary-marker--with-menu');
+         marker.appendChild(menuButton);
+         marker.appendChild(menuPanel);
+         ItineraryPillMenu.bindPillMenu(marker, {
+            menuButton,
+            menuPanel,
+            menuItems,
+            menuOpenClass: 'itinerary-day-boundary-marker--menu-open',
+         });
+         return marker;
+      }
 
-      menuItems.forEach(({ label: itemLabel }) => {
-         const actionButton = document.createElement('button');
+      marker.appendChild(el('span', 'itinerary-day-boundary-marker-icon'));
 
-         actionButton.type = 'button';
-         actionButton.className = 'itinerary-day-open-pill-menu-item';
-         actionButton.setAttribute('role', 'menuitem');
-         actionButton.textContent = itemLabel;
-         menuPanel.appendChild(actionButton);
-      });
-
-      marker.classList.add('itinerary-day-boundary-marker--with-menu');
-      marker.appendChild(menuButton);
-      marker.appendChild(menuPanel);
-      bindPillMenu(marker, {
-         menuButton,
-         menuPanel,
-         menuItems,
-         menuOpenClass: 'itinerary-day-boundary-marker--menu-open',
-      });
       return marker;
    }
-
-   marker.appendChild(el('span', 'itinerary-day-boundary-marker-icon'));
-
-   return marker;
 }

@@ -1,9 +1,6 @@
 import { el } from '../dom.js';
-import {
-   bindPillMenu,
-   buildPillMenuNodes,
-} from './itineraryPillMenu.js';
-import { createPillLabelNode } from './openTimelinePill.js';
+import { ItineraryPillMenu } from './itineraryPillMenu.js';
+import { OpenTimelinePill } from './openTimelinePill.js';
 import { ScheduledPillPresentation } from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { RegionColors } from '../../../shared/regionColors.js';
@@ -55,7 +52,7 @@ function replaceGroupedScheduledPillLabel(
       onLabelClick = null,
    } = {}
 ) {
-   const labelNode = createPillLabelNode(
+   const labelNode = OpenTimelinePill.createPillLabelNode(
       label,
       'itinerary-day-scheduled-pill-label itinerary-day-scheduled-pill-label-name',
       onLabelClick,
@@ -116,7 +113,7 @@ function buildGroupedScheduledPill(
    );
    const labelMount = el('div', 'itinerary-day-scheduled-pill-label-mount');
    const menuNodes = hasMenuItems
-      ? buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
+      ? ItineraryPillMenu.buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
       : null;
 
    if (ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
@@ -175,7 +172,7 @@ function buildGroupedScheduledPill(
    syncActiveItem();
 
    if (menuNodes) {
-      bindPillMenu(pill, {
+      ItineraryPillMenu.bindPillMenu(pill, {
          menuButton: menuNodes.menuButton,
          menuPanel: menuNodes.menuPanel,
          getMenuItems: () => getActiveItem()?.menuItems ?? [],
@@ -200,13 +197,13 @@ function buildScheduledPillWithMenu(
 ) {
    const pill = el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu');
    const header = el('div', 'itinerary-day-scheduled-pill-header');
-   const labelNode = createPillLabelNode(
+   const labelNode = OpenTimelinePill.createPillLabelNode(
       label,
       'itinerary-day-scheduled-pill-label',
       onLabelClick,
       item
    );
-   const { menu, menuButton, menuPanel } = buildPillMenuNodes(
+   const { menu, menuButton, menuPanel } = ItineraryPillMenu.buildPillMenuNodes(
       menuAriaLabel,
       menuItems
    );
@@ -218,7 +215,7 @@ function buildScheduledPillWithMenu(
    header.appendChild(labelNode);
    header.appendChild(menu);
    pill.appendChild(header);
-   bindPillMenu(pill, {
+   ItineraryPillMenu.bindPillMenu(pill, {
       menuButton,
       menuPanel,
       menuItems,
@@ -241,7 +238,7 @@ function buildScheduledPillWithoutMenu(
    if (!ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
       const pill = el('span', 'itinerary-day-scheduled-pill');
       pill.appendChild(
-         createPillLabelNode(
+         OpenTimelinePill.createPillLabelNode(
             label,
             'itinerary-day-scheduled-pill-label',
             onLabelClick,
@@ -255,7 +252,7 @@ function buildScheduledPillWithoutMenu(
    const header = el('div', 'itinerary-day-scheduled-pill-header');
 
    header.appendChild(
-      createPillLabelNode(
+      OpenTimelinePill.createPillLabelNode(
          label,
          'itinerary-day-scheduled-pill-label',
          onLabelClick,

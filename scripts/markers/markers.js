@@ -1,8 +1,5 @@
 import { enableMarkerCoordinateEditing } from './coordinateEditing.js';
-import {
-   bindMarkerInteractions,
-   createMarkerElement,
-} from './markerElement.js';
+import { MarkerElement } from './markerElement.js';
 import { MarkerGroups } from './markerGroups.js';
 
 const MARKER_SELECTOR = '.marker';
@@ -26,11 +23,11 @@ export function createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEd
    }
 
    function createMarkerGroupElement(group) {
-      const markerEl = createMarkerElement(group);
+      const markerEl = MarkerElement.createMarkerElement(group);
 
       markerElsByCoord.set(group.key, markerEl);
 
-      bindMarkerInteractions({
+      MarkerElement.bindMarkerInteractions({
          markerEl,
          group,
          mapInner,

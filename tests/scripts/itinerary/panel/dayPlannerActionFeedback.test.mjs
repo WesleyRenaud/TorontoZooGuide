@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { DayPlannerActionFeedback } from '../../../../scripts/itinerary/panel/dayPlannerActionFeedback.js';
-import { appendDayPlannerActionFeedbackBanner } from '../../../../scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js';
+import { DayPlannerActionFeedbackBanner } from '../../../../scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js';
 import { makeDayPlannerPreview } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -32,7 +32,7 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       const slot = document.createElement('div');
       slot.className = 'itinerary-day-action-feedback-slot';
 
-      appendDayPlannerActionFeedbackBanner(slot, {
+      DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackBanner(slot, {
          variant: 'success',
          message: 'All items unscheduled',
       }, {
@@ -51,7 +51,7 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       const slot = document.createElement('div');
       slot.className = 'itinerary-day-action-feedback-slot';
 
-      appendDayPlannerActionFeedbackBanner(slot, {
+      DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackBanner(slot, {
          variant: 'error',
          message: 'There were no items to unschedule.',
       }, {
