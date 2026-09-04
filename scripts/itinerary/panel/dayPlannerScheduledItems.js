@@ -1,10 +1,6 @@
-import { getAnimalViewingWalkNodeId } from './components/scheduledPillViewingWalkNode.js';
+import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingWalkNode.js';
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
-import {
-   computeMarkerOffsetFraction,
-   findTimelineAnchorSlot,
-   findTimelineSlotEndMinutes,
-} from './dayPlannerTimelineMarkers.js';
+import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
 import { hasItineraryScheduleTimes } from './rowActionProps.js';
 import {
    buildAnimalRows,
@@ -128,7 +124,7 @@ function buildScheduledAnimalRows(animals = []) {
       const endMinutes = parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(item);
       const label = getScheduledItemLabel(item);
-      const viewingWalkNodeId = getAnimalViewingWalkNodeId(item);
+      const viewingWalkNodeId = ScheduledPillViewingWalkNode.getAnimalViewingWalkNodeId(item);
 
       return {
          index,
@@ -213,7 +209,7 @@ function mergeScheduledItemsByAnchorSlot(
    const sortedSlotStarts = [...slotStarts].sort((left, right) => left - right);
 
    return scheduledItems.reduce((itemsByAnchorMap, scheduledItem) => {
-      const anchorSlot = findTimelineAnchorSlot(
+      const anchorSlot = DayPlannerTimelineMarkers.findTimelineAnchorSlot(
          scheduledItem.startMinutes,
          sortedSlotStarts
       );
@@ -222,12 +218,12 @@ function mergeScheduledItemsByAnchorSlot(
          return itemsByAnchorMap;
       }
 
-      const slotEndMinutes = findTimelineSlotEndMinutes(
+      const slotEndMinutes = DayPlannerTimelineMarkers.findTimelineSlotEndMinutes(
          anchorSlot,
          sortedSlotStarts,
          closeMinutes
       );
-      const offsetFraction = computeMarkerOffsetFraction(
+      const offsetFraction = DayPlannerTimelineMarkers.computeMarkerOffsetFraction(
          scheduledItem.startMinutes,
          anchorSlot,
          slotEndMinutes

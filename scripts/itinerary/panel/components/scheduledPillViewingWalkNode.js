@@ -1,14 +1,17 @@
-export function normalizeViewingWalkNodeId(value) {
-   return String(value ?? '').trim();
-}
+export class ScheduledPillViewingWalkNode {
+   static normalizeViewingWalkNodeId(value) {
+      return String(value ?? '').trim();
+   }
 
-export function getAnimalViewingWalkNodeId(animal = {}) {
-   return normalizeViewingWalkNodeId(animal.viewing_walk_node_id);
-}
+   static getAnimalViewingWalkNodeId(animal = {}) {
+      return ScheduledPillViewingWalkNode.normalizeViewingWalkNodeId(animal.viewing_walk_node_id);
+   }
 
-export function getScheduledItemViewingWalkNodeId(scheduledItem = {}) {
-   return normalizeViewingWalkNodeId(
-      scheduledItem.viewingWalkNodeId
-      ?? scheduledItem.item?.viewing_walk_node_id
-   );
+   static getScheduledItemViewingWalkNodeId(scheduledItem = {}) {
+      return ScheduledPillViewingWalkNode.normalizeViewingWalkNodeId(
+         scheduledItem.viewingWalkNodeId
+         ?? scheduledItem.item?.viewing_walk_node_id
+      );
+   }
+
 }

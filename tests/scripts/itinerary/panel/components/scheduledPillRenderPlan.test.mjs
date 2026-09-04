@@ -1,16 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
+import { makeScheduledItem } from '../../../helpers/scheduledPillTestSetup.mjs';
 import {
-   getScheduledPillMinDisplayMinutes,
    MAX_TIMELINE_PILL_COLUMNS,
    MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-} from '../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
-import { planScheduledPillRenderGroupsByAnchor } from '../../scripts/itinerary/panel/components/scheduledPillRenderPlan.js';
+   ScheduledPillOverlap,
+} from '../../../../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
+import { ScheduledPillRenderPlan } from '../../../../../scripts/itinerary/panel/components/scheduledPillRenderPlan.js';
 
-test('planScheduledPillRenderGroupsByAnchor keeps sequential visits in column zero', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsSequentialVisitsInColumnZero_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Babirusa', 570, 30, 570),
       makeScheduledItem('Greater One-Horned Rhinoceros', 600, 30, 600),
       makeScheduledItem('Indian Peafowl', 630, 30, 630),
@@ -26,8 +26,8 @@ test('planScheduledPillRenderGroupsByAnchor keeps sequential visits in column ze
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor clusters short visits in the same slot', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestClustersShortVisitsInTheSameSlot_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Babirusa', 570, 2, 570),
       makeScheduledItem('Cheetah', 572, 2, 570),
    ]);
@@ -40,8 +40,8 @@ test('planScheduledPillRenderGroupsByAnchor clusters short visits in the same sl
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor groups animals at the same viewing stop', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGroupsAnimalsAtTheSameViewingStop_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('African Penguin', 600, 30, 600, 'v-0652'),
       makeScheduledItem('White-Breasted Cormorant', 630, 30, 600, 'v-0652'),
    ]);
@@ -50,8 +50,8 @@ test('planScheduledPillRenderGroupsByAnchor groups animals at the same viewing s
    assert.equal(groupsByAnchor.get(600)?.[0]?.label, 'African Penguin + 1');
 });
 
-test('planScheduledPillRenderGroupsByAnchor groups same viewing stop across anchor slots', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGroupsSameViewingStopAcrossAnchorSlots_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Slender-Tailed Meerkat', 600, 3, 600, 'v-0255'),
       makeScheduledItem('South African Crested Porcupine', 603, 2, 600, 'v-0255'),
       makeScheduledItem('Speckled Mousebird', 605, 3, 600, 'v-0255'),
@@ -67,8 +67,8 @@ test('planScheduledPillRenderGroupsByAnchor groups same viewing stop across anch
    assert.equal(groupsByAnchor.get(630), undefined);
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps different viewing stops separate', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsDifferentViewingStopsSeparate_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Western Lowland Gorilla', 600, 30, 600, 'v-0247'),
       makeScheduledItem('Western Lowland Gorilla', 630, 30, 630, 'v-0229'),
    ]);
@@ -85,8 +85,8 @@ test('planScheduledPillRenderGroupsByAnchor keeps different viewing stops separa
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visible', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsConsecutiveTimeBucketsVisible_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Eurasian Eagle Owl', 990, 2, 990),
       makeScheduledItem('Great Horned Owl', 992, 2, 990),
       makeScheduledItem('Guinea Pig', 994, 1, 990),
@@ -113,9 +113,9 @@ test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visib
    ]);
 });
 
-test('planScheduledPillRenderGroupsByAnchor leaves no gap between consecutive layout units', () => {
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestLeavesNoGapBetweenConsecutiveLayoutUnits_ExpectOk', () => {
    const slotSpanMinutes = 30;
-   const groups = planScheduledPillRenderGroupsByAnchor([
+   const groups = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Clouded Leopard', 570, 30, 570),
       makeScheduledItem('Black Carp', 600, 4, 600),
       makeScheduledItem('Crocodile Lizard', 604, 4, 600),
@@ -137,8 +137,8 @@ test('planScheduledPillRenderGroupsByAnchor leaves no gap between consecutive la
    }
 });
 
-test('planScheduledPillRenderGroupsByAnchor merges gapped under-min clusters into the next group', () => {
-   const groups = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestMergesGappedUnderMinClustersIntoTheNextGroup_ExpectOk', () => {
+   const groups = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Black Carp', 600, 1, 600),
       makeScheduledItem('Black-Breasted Leaf Turtle', 601, 1, 600),
       makeScheduledItem('Burmese Star Tortoise', 603, 1, 600),
@@ -151,8 +151,8 @@ test('planScheduledPillRenderGroupsByAnchor merges gapped under-min clusters int
    assert.equal(groups[0]?.displayDurationMinutes, 6);
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps real gaps after short groups', () => {
-   const groups = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsRealGapsAfterShortGroups_ExpectOk', () => {
+   const groups = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Indian Peafowl', 600, 1, 600),
       makeScheduledItem('Luzon Bleeding-Heart Dove', 625, 2, 600),
    ]).get(600) ?? [];
@@ -166,13 +166,13 @@ test('planScheduledPillRenderGroupsByAnchor keeps real gaps after short groups',
       ]
    );
    assert.equal(groups[0]?.durationMinutes, 1);
-   assert.equal(groups[0]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+   assert.equal(groups[0]?.displayDurationMinutes, ScheduledPillOverlap.getScheduledPillMinDisplayMinutes());
    assert.equal(groups[1]?.durationMinutes, 2);
-   assert.equal(groups[1]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+   assert.equal(groups[1]?.displayDurationMinutes, ScheduledPillOverlap.getScheduledPillMinDisplayMinutes());
 });
 
-test('planScheduledPillRenderGroupsByAnchor uses start times for pill positions', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestUsesStartTimesForPillPositions_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Two-Toed Sloth', 570, 30, 570),
       ...Array.from({ length: 9 }, (_, index) => (
          makeScheduledItem(
@@ -199,8 +199,8 @@ test('planScheduledPillRenderGroupsByAnchor uses start times for pill positions'
    });
 });
 
-test('planScheduledPillRenderGroupsByAnchor places each slot at its natural start offset', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestPlacesEachSlotAtItsNaturalStartOffset_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Babirusa', 570, 30, 570),
       makeScheduledItem('Cheetah', 571, 30, 570),
       makeScheduledItem('Red Panda', 600, 2, 600),
@@ -211,8 +211,8 @@ test('planScheduledPillRenderGroupsByAnchor places each slot at its natural star
    assert.equal(nextSlotGroups[0]?.offsetFraction ?? 0, 0);
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps full-length overlapping visits separate', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsFullLengthOverlappingVisitsSeparate_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Babirusa', 570, 30, 570),
       makeScheduledItem('Cheetah', 576, 30, 570),
    ]);
@@ -228,9 +228,9 @@ test('planScheduledPillRenderGroupsByAnchor keeps full-length overlapping visits
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor merges a lone tail orphan into the previous cluster', () => {
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestMergesALoneTailOrphanIntoThePreviousCluster_ExpectOk', () => {
    const withSlotEnd = (item, slotEndMinutes) => ({ ...item, slotEndMinutes });
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       withSlotEnd(makeScheduledItem('Black-Handed Spider Monkey', 1005, 10, 990), 1020),
       withSlotEnd(makeScheduledItem('Red-Legged Seriema', 1015, 2, 990), 1020),
    ]);
@@ -242,8 +242,8 @@ test('planScheduledPillRenderGroupsByAnchor merges a lone tail orphan into the p
    assert.equal(groups[0]?.displayDurationMinutes, 12);
 });
 
-test('planScheduledPillRenderGroupsByAnchor renders isolated short visits at minimum height', () => {
-   const groups = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestRendersIsolatedShortVisitsAtMinimumHeight_ExpectOk', () => {
+   const groups = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Greater One-Horned Rhinoceros', 930, 30, 930),
       makeScheduledItem('Black-Throated Laughingthrush', 960, 2, 960),
       makeScheduledItem('Red Panda', 990, 30, 990),
@@ -257,12 +257,12 @@ test('planScheduledPillRenderGroupsByAnchor renders isolated short visits at min
    assert.equal(groups[0]?.durationMinutes, 2);
    assert.equal(
       groups[0]?.displayDurationMinutes,
-      getScheduledPillMinDisplayMinutes()
+      ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps scheduled pills at full width', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor(
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsScheduledPillsAtFullWidth_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor(
       [
          makeScheduledItem('Red-Legged Seriema', 1015, 2, 990),
       ],
@@ -277,8 +277,8 @@ test('planScheduledPillRenderGroupsByAnchor keeps scheduled pills at full width'
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor merges overlapping visits into carousel groups', () => {
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestMergesOverlappingVisitsIntoCarouselGroups_ExpectOk', () => {
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Snow Leopard', 971, 8, 960),
       makeScheduledItem('Steller Sea Eagle', 979, 3, 960),
       makeScheduledItem('West Caucasian Tur', 982, 3, 960),
@@ -302,7 +302,7 @@ test('planScheduledPillRenderGroupsByAnchor merges overlapping visits into carou
    assert.equal(groups[3]?.items.length, 3);
 });
 
-test('planScheduledPillRenderGroupsByAnchor gives each full-length visit its own pill', () => {
+test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGivesEachFullLengthVisitItsOwnPill_ExpectOk', () => {
    const scheduledItems = [
       'Babirusa',
       'Cheetah',
@@ -313,7 +313,7 @@ test('planScheduledPillRenderGroupsByAnchor gives each full-length visit its own
    ].map((label, labelIndex) => (
       makeScheduledItem(label, 570 + labelIndex, 30, 570)
    ));
-   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor(scheduledItems);
+   const groupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor(scheduledItems);
    const groups = groupsByAnchor.get(570) ?? [];
 
    assert.equal(groups.length, 6);

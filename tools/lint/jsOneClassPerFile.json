@@ -47,7 +47,15 @@
       "scripts/itinerary/itineraryValidationResult.js",
       "scripts/itinerary/itineraryValidation.js",
       "scripts/itinerary/wizard/scheduleConflictCompatibility.js",
-      "scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js"
+      "scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js",
+      "scripts/itinerary/panel/components/scheduledPillViewingWalkNode.js",
+      "scripts/itinerary/panel/components/scheduledPillOverlap.js",
+      "scripts/itinerary/panel/dayPlannerTimelinePlacement.js",
+      "scripts/itinerary/panel/dayPlannerTimelineMarkers.js",
+      "scripts/itinerary/panel/components/scheduledPillLayoutUnits.js",
+      "scripts/itinerary/panel/components/scheduledPillRenderPlan.js",
+      "scripts/itinerary/panel/dayPlannerTimelineMetrics.js",
+      "scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

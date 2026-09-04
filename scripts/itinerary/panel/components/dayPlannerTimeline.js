@@ -241,6 +241,5 @@ export function appendScheduledItems(
 }
 
 export {
-   computeSpanHorizontalOffsetIndex,
-   computeTimelineHorizontalOffsetIndex,
+   DayPlannerTimelinePillPlacement,
 } from './dayPlannerTimelinePillPlacement.js';

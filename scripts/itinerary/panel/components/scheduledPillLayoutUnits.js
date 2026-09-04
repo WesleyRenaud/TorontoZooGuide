@@ -1,33 +1,11 @@
-import { computeMarkerOffsetFraction } from '../dayPlannerTimelineMarkers.js';
-import {
-   compareScheduledItemLabels,
-   formatScheduledPillGroupLabel,
-   getScheduledItemEndMinutes,
-   getScheduledPillMinDisplayMinutes,
-   sortScheduledItemsForGroupDisplay,
-} from './scheduledPillOverlap.js';
-import { getScheduledItemViewingWalkNodeId } from './scheduledPillViewingWalkNode.js';
+import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
+import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
+import { ScheduledPillViewingWalkNode } from './scheduledPillViewingWalkNode.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
-export function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
-   const startDelta = leftItem.startMinutes - rightItem.startMinutes;
-
-   if (startDelta !== 0) {
-      return startDelta;
-   }
-
-   return compareScheduledItemLabels(leftItem, rightItem);
-}
-
-export function getLayoutUnitItems(scheduledItem = {}) {
-   return scheduledItem.clusterItems
-      ?? scheduledItem.summaryItems
-      ?? [scheduledItem];
-}
-
 function getScheduledItemDurationMinutes(scheduledItem = {}) {
-   const endMinutes = getScheduledItemEndMinutes(scheduledItem);
+   const endMinutes = ScheduledPillOverlap.getScheduledItemEndMinutes(scheduledItem);
    const startMinutes = Number(scheduledItem.startMinutes);
 
    if (Number.isFinite(endMinutes) && Number.isFinite(startMinutes)) {
@@ -43,7 +21,7 @@ function getClusterWallSpanMinutes(items = []) {
    }
 
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
+   const endMinutes = Math.max(...items.map(ScheduledPillOverlap.getScheduledItemEndMinutes));
 
    return endMinutes - startMinutes;
 }
@@ -53,14 +31,14 @@ function isCarouselMergeableItem(scheduledItem = {}) {
 }
 
 function canMergeCarouselLayoutUnits(leftUnit = {}, rightUnit = {}) {
-   return [...getLayoutUnitItems(leftUnit), ...getLayoutUnitItems(rightUnit)]
+   return [...ScheduledPillLayoutUnits.getLayoutUnitItems(leftUnit), ...ScheduledPillLayoutUnits.getLayoutUnitItems(rightUnit)]
       .every(isCarouselMergeableItem);
 }
 
 function mergeLayoutUnits(leftUnit = {}, rightUnit = {}) {
-   const items = sortScheduledItemsForGroupDisplay([
-      ...getLayoutUnitItems(leftUnit),
-      ...getLayoutUnitItems(rightUnit),
+   const items = ScheduledPillOverlap.sortScheduledItemsForGroupDisplay([
+      ...ScheduledPillLayoutUnits.getLayoutUnitItems(leftUnit),
+      ...ScheduledPillLayoutUnits.getLayoutUnitItems(rightUnit),
    ]);
 
    if (items.length === 1) {
@@ -72,18 +50,18 @@ function mergeLayoutUnits(leftUnit = {}, rightUnit = {}) {
 
 function getLayoutUnitStartMinutes(layoutUnit = {}) {
    return Math.min(
-      ...getLayoutUnitItems(layoutUnit).map((item) => item.startMinutes)
+      ...ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit).map((item) => item.startMinutes)
    );
 }
 
 function getLayoutUnitEndMinutes(layoutUnit = {}) {
    return Math.max(
-      ...getLayoutUnitItems(layoutUnit).map(getScheduledItemEndMinutes)
+      ...ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit).map(ScheduledPillOverlap.getScheduledItemEndMinutes)
    );
 }
 
 function getLayoutUnitWallSpanMinutes(layoutUnit = {}) {
-   return getClusterWallSpanMinutes(getLayoutUnitItems(layoutUnit));
+   return getClusterWallSpanMinutes(ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit));
 }
 
 function areConsecutiveLayoutUnits(leftUnit = {}, rightUnit = {}) {
@@ -92,7 +70,7 @@ function areConsecutiveLayoutUnits(leftUnit = {}, rightUnit = {}) {
 
 function isUnderMinDisplayLayoutUnit(
    layoutUnit = {},
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    return getLayoutUnitWallSpanMinutes(layoutUnit) < minDisplayMinutes;
 }
@@ -100,7 +78,7 @@ function isUnderMinDisplayLayoutUnit(
 function underMinLayoutUnitsNeedMerge(
    leftUnit = {},
    rightUnit = {},
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    const leftStartMinutes = getLayoutUnitStartMinutes(leftUnit);
    const leftEndMinutes = getLayoutUnitEndMinutes(leftUnit);
@@ -127,7 +105,7 @@ function underMinLayoutUnitsNeedMerge(
 
 function mergeConsecutiveUnderMinDisplayLayoutUnits(
    layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    let mergedUnits = [...layoutUnits];
    let changed = true;
@@ -164,7 +142,7 @@ function mergeConsecutiveUnderMinDisplayLayoutUnits(
 
 function mergeUnderMinDisplayLayoutUnits(
    layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    const nextUnits = [];
    let index = 0;
@@ -214,7 +192,7 @@ function mergeUnderMinDisplayLayoutUnits(
 
 function absorbHeadOrphanLayoutUnits(
    layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    if (layoutUnits.length < 2) {
       return layoutUnits;
@@ -239,9 +217,9 @@ function absorbHeadOrphanLayoutUnits(
 
 function isTailOrphanLayoutUnit(
    layoutUnit = {},
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
-   const items = getLayoutUnitItems(layoutUnit);
+   const items = ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit);
    const wallSpanMinutes = getClusterWallSpanMinutes(items);
 
    if (wallSpanMinutes >= minDisplayMinutes) {
@@ -262,7 +240,7 @@ function isTailOrphanLayoutUnit(
 
 function absorbTailOrphanLayoutUnits(
    layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+   minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
 ) {
    if (layoutUnits.length < 2) {
       return layoutUnits;
@@ -286,39 +264,6 @@ function absorbTailOrphanLayoutUnits(
    ];
 }
 
-export function normalizeLayoutUnitsForDisplay(
-   layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
-) {
-   let normalizedUnits = [...layoutUnits];
-   let changed = true;
-
-   while (changed) {
-      const previousUnits = normalizedUnits;
-
-      normalizedUnits = mergeConsecutiveUnderMinDisplayLayoutUnits(
-         absorbTailOrphanLayoutUnits(
-            absorbHeadOrphanLayoutUnits(normalizedUnits, minDisplayMinutes),
-            minDisplayMinutes
-         ),
-         minDisplayMinutes
-      );
-      const underMinMergeResult = mergeUnderMinDisplayLayoutUnits(
-         normalizedUnits,
-         minDisplayMinutes
-      );
-
-      normalizedUnits = underMinMergeResult.layoutUnits;
-      changed = normalizedUnits.length !== previousUnits.length
-         || normalizedUnits.some((layoutUnit, index) => (
-            layoutUnit !== previousUnits[index]
-         ))
-         || underMinMergeResult.changed;
-   }
-
-   return normalizedUnits;
-}
-
 function getEarliestScheduledItemByStartTime(items = []) {
    if (!items.length) {
       return null;
@@ -336,47 +281,13 @@ function getEarliestScheduledItemByStartTime(items = []) {
 }
 
 function getLayoutUnitAnchorItem(layoutUnit = {}) {
-   return getEarliestScheduledItemByStartTime(getLayoutUnitItems(layoutUnit));
-}
-
-export function getLayoutUnitSlotContext(layoutUnit = {}) {
-   const anchorItem = getLayoutUnitAnchorItem(layoutUnit);
-   const anchorSlotMinutes = layoutUnit.anchorSlotMinutes
-      ?? anchorItem?.anchorSlotMinutes;
-   const slotEndMinutes = layoutUnit.slotEndMinutes
-      ?? anchorItem?.slotEndMinutes
-      ?? (
-         Number.isFinite(anchorSlotMinutes)
-            ? anchorSlotMinutes + TIMELINE_SLOT_MINUTES
-            : TIMELINE_SLOT_MINUTES
-      );
-   const slotSpanMinutes = slotEndMinutes - anchorSlotMinutes;
-
-   return {
-      anchorSlotMinutes,
-      slotEndMinutes,
-      slotSpanMinutes: Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
-         ? slotSpanMinutes
-         : TIMELINE_SLOT_MINUTES,
-   };
-}
-
-export function getLayoutUnitScheduleOffsetFraction(layoutUnit = {}) {
-   const items = getLayoutUnitItems(layoutUnit);
-   const { anchorSlotMinutes, slotEndMinutes } = getLayoutUnitSlotContext(layoutUnit);
-   const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-
-   return computeMarkerOffsetFraction(
-      startMinutes,
-      anchorSlotMinutes,
-      slotEndMinutes
-   );
+   return getEarliestScheduledItemByStartTime(ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit));
 }
 
 function buildClusterLayoutItem(items = []) {
-   const displayItems = sortScheduledItemsForGroupDisplay(items);
+   const displayItems = ScheduledPillOverlap.sortScheduledItemsForGroupDisplay(items);
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
+   const endMinutes = Math.max(...items.map(ScheduledPillOverlap.getScheduledItemEndMinutes));
    const anchorItem = getEarliestScheduledItemByStartTime(items);
    const layoutUnit = {
       clusterItems: displayItems,
@@ -385,17 +296,17 @@ function buildClusterLayoutItem(items = []) {
       maximumDuration: endMinutes - startMinutes,
       anchorSlotMinutes: anchorItem?.anchorSlotMinutes,
       slotEndMinutes: anchorItem?.slotEndMinutes,
-      label: formatScheduledPillGroupLabel(displayItems),
+      label: ScheduledPillOverlap.formatScheduledPillGroupLabel(displayItems),
    };
 
    return {
       ...layoutUnit,
-      offsetFraction: getLayoutUnitScheduleOffsetFraction(layoutUnit),
+      offsetFraction: ScheduledPillLayoutUnits.getLayoutUnitScheduleOffsetFraction(layoutUnit),
    };
 }
 
 function areConsecutiveScheduledItems(previousItem = {}, nextItem = {}) {
-   return getScheduledItemEndMinutes(previousItem) === nextItem.startMinutes;
+   return ScheduledPillOverlap.getScheduledItemEndMinutes(previousItem) === nextItem.startMinutes;
 }
 
 function isAnimalScheduledItem(scheduledItem = {}) {
@@ -418,20 +329,20 @@ function canGroupScheduledItemsByViewingWalkNode(previousItem = {}, nextItem = {
       return false;
    }
 
-   const previousItems = getLayoutUnitItems(previousItem);
+   const previousItems = ScheduledPillLayoutUnits.getLayoutUnitItems(previousItem);
 
    if (!previousItems.every(isAnimalScheduledItem)) {
       return false;
    }
 
-   const nextNodeId = getScheduledItemViewingWalkNodeId(nextItem);
+   const nextNodeId = ScheduledPillViewingWalkNode.getScheduledItemViewingWalkNodeId(nextItem);
 
    if (!nextNodeId) {
       return false;
    }
 
    if (!previousItems.every((item) => (
-      getScheduledItemViewingWalkNodeId(item) === nextNodeId
+      ScheduledPillViewingWalkNode.getScheduledItemViewingWalkNodeId(item) === nextNodeId
    ))) {
       return false;
    }
@@ -448,105 +359,199 @@ function flushViewingWalkNodeClusterItems(clusterItems = [], clusters = []) {
    }
 }
 
-export function clusterScheduledAnimalItemsByViewingWalkNode(scheduledItems = []) {
-   const sortedItems = [...scheduledItems].sort(compareScheduledItemsForLayout);
-   const clusters = [];
-   let clusterItems = [];
+export class ScheduledPillLayoutUnits {
+   static compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
+      const startDelta = leftItem.startMinutes - rightItem.startMinutes;
 
-   sortedItems.forEach((scheduledItem) => {
-      const previousItem = clusterItems[clusterItems.length - 1];
-
-      if (
-         previousItem
-         && canGroupScheduledItemsByViewingWalkNode(previousItem, scheduledItem)
-      ) {
-         clusterItems.push(scheduledItem);
-         return;
+      if (startDelta !== 0) {
+         return startDelta;
       }
 
-      flushViewingWalkNodeClusterItems(clusterItems, clusters);
+      return ScheduledPillOverlap.compareScheduledItemLabels(leftItem, rightItem);
+   }
 
-      const lastCluster = clusters[clusters.length - 1];
 
-      if (
-         lastCluster
-         && canGroupScheduledItemsByViewingWalkNode(lastCluster, scheduledItem)
-      ) {
-         clusters.pop();
-         clusterItems = [
-            ...getLayoutUnitItems(lastCluster),
-            scheduledItem,
-         ];
-         return;
+   static getLayoutUnitItems(scheduledItem = {}) {
+      return scheduledItem.clusterItems
+         ?? scheduledItem.summaryItems
+         ?? [scheduledItem];
+   }
+
+
+   static normalizeLayoutUnitsForDisplay(
+      layoutUnits = [],
+      minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
+   ) {
+      let normalizedUnits = [...layoutUnits];
+      let changed = true;
+
+      while (changed) {
+         const previousUnits = normalizedUnits;
+
+         normalizedUnits = mergeConsecutiveUnderMinDisplayLayoutUnits(
+            absorbTailOrphanLayoutUnits(
+               absorbHeadOrphanLayoutUnits(normalizedUnits, minDisplayMinutes),
+               minDisplayMinutes
+            ),
+            minDisplayMinutes
+         );
+         const underMinMergeResult = mergeUnderMinDisplayLayoutUnits(
+            normalizedUnits,
+            minDisplayMinutes
+         );
+
+         normalizedUnits = underMinMergeResult.layoutUnits;
+         changed = normalizedUnits.length !== previousUnits.length
+            || normalizedUnits.some((layoutUnit, index) => (
+               layoutUnit !== previousUnits[index]
+            ))
+            || underMinMergeResult.changed;
       }
 
-      clusterItems = [scheduledItem];
-   });
+      return normalizedUnits;
+   }
 
-   flushViewingWalkNodeClusterItems(clusterItems, clusters);
 
-   return clusters;
-}
+   static getLayoutUnitSlotContext(layoutUnit = {}) {
+      const anchorItem = getLayoutUnitAnchorItem(layoutUnit);
+      const anchorSlotMinutes = layoutUnit.anchorSlotMinutes
+         ?? anchorItem?.anchorSlotMinutes;
+      const slotEndMinutes = layoutUnit.slotEndMinutes
+         ?? anchorItem?.slotEndMinutes
+         ?? (
+            Number.isFinite(anchorSlotMinutes)
+               ? anchorSlotMinutes + TIMELINE_SLOT_MINUTES
+               : TIMELINE_SLOT_MINUTES
+         );
+      const slotSpanMinutes = slotEndMinutes - anchorSlotMinutes;
 
-export function clusterShortScheduledItemsForDisplay(
-   scheduledItems = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
-) {
-   const sortedItems = [...scheduledItems].sort(compareScheduledItemsForLayout);
-   const clusters = [];
-   let index = 0;
+      return {
+         anchorSlotMinutes,
+         slotEndMinutes,
+         slotSpanMinutes: Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
+            ? slotSpanMinutes
+            : TIMELINE_SLOT_MINUTES,
+      };
+   }
 
-   while (index < sortedItems.length) {
-      const item = sortedItems[index];
-      const itemDurationMinutes = getScheduledItemDurationMinutes(item);
 
-      if (itemDurationMinutes >= minDisplayMinutes) {
-         clusters.push(item);
-         index += 1;
-         continue;
-      }
+   static getLayoutUnitScheduleOffsetFraction(layoutUnit = {}) {
+      const items = ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit);
+      const { anchorSlotMinutes, slotEndMinutes } = ScheduledPillLayoutUnits.getLayoutUnitSlotContext(layoutUnit);
+      const startMinutes = Math.min(...items.map((item) => item.startMinutes));
 
-      const clusterItems = [item];
-      index += 1;
-
-      while (
-         index < sortedItems.length
-         && getClusterWallSpanMinutes(clusterItems) < minDisplayMinutes
-      ) {
-         const nextItem = sortedItems[index];
-
-         if (!areConsecutiveScheduledItems(
-            clusterItems[clusterItems.length - 1],
-            nextItem
-         )) {
-            break;
-         }
-
-         clusterItems.push(nextItem);
-         index += 1;
-      }
-
-      clusters.push(
-         clusterItems.length === 1
-            ? clusterItems[0]
-            : buildClusterLayoutItem(clusterItems)
+      return DayPlannerTimelineMarkers.computeMarkerOffsetFraction(
+         startMinutes,
+         anchorSlotMinutes,
+         slotEndMinutes
       );
    }
 
-   return clusters;
-}
 
-/** @deprecated Use clusterShortScheduledItemsForDisplay */
-export function clusterScheduledItemsByDuration(
-   scheduledItems = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes(),
-   _windowStartMinutes = 0
-) {
-   return clusterShortScheduledItemsForDisplay(
-      scheduledItems,
-      minDisplayMinutes
-   );
-}
+   static clusterScheduledAnimalItemsByViewingWalkNode(scheduledItems = []) {
+      const sortedItems = [...scheduledItems].sort(ScheduledPillLayoutUnits.compareScheduledItemsForLayout);
+      const clusters = [];
+      let clusterItems = [];
 
-/** @deprecated Use clusterShortScheduledItemsForDisplay */
-export const clusterScheduledItemsByStartTimeProximity = clusterScheduledItemsByDuration;
+      sortedItems.forEach((scheduledItem) => {
+         const previousItem = clusterItems[clusterItems.length - 1];
+
+         if (
+            previousItem
+            && canGroupScheduledItemsByViewingWalkNode(previousItem, scheduledItem)
+         ) {
+            clusterItems.push(scheduledItem);
+            return;
+         }
+
+         flushViewingWalkNodeClusterItems(clusterItems, clusters);
+
+         const lastCluster = clusters[clusters.length - 1];
+
+         if (
+            lastCluster
+            && canGroupScheduledItemsByViewingWalkNode(lastCluster, scheduledItem)
+         ) {
+            clusters.pop();
+            clusterItems = [
+               ...ScheduledPillLayoutUnits.getLayoutUnitItems(lastCluster),
+               scheduledItem,
+            ];
+            return;
+         }
+
+         clusterItems = [scheduledItem];
+      });
+
+      flushViewingWalkNodeClusterItems(clusterItems, clusters);
+
+      return clusters;
+   }
+
+
+   static clusterShortScheduledItemsForDisplay(
+      scheduledItems = [],
+      minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes()
+   ) {
+      const sortedItems = [...scheduledItems].sort(ScheduledPillLayoutUnits.compareScheduledItemsForLayout);
+      const clusters = [];
+      let index = 0;
+
+      while (index < sortedItems.length) {
+         const item = sortedItems[index];
+         const itemDurationMinutes = getScheduledItemDurationMinutes(item);
+
+         if (itemDurationMinutes >= minDisplayMinutes) {
+            clusters.push(item);
+            index += 1;
+            continue;
+         }
+
+         const clusterItems = [item];
+         index += 1;
+
+         while (
+            index < sortedItems.length
+            && getClusterWallSpanMinutes(clusterItems) < minDisplayMinutes
+         ) {
+            const nextItem = sortedItems[index];
+
+            if (!areConsecutiveScheduledItems(
+               clusterItems[clusterItems.length - 1],
+               nextItem
+            )) {
+               break;
+            }
+
+            clusterItems.push(nextItem);
+            index += 1;
+         }
+
+         clusters.push(
+            clusterItems.length === 1
+               ? clusterItems[0]
+               : buildClusterLayoutItem(clusterItems)
+         );
+      }
+
+      return clusters;
+   }
+
+
+   static clusterScheduledItemsByDuration(
+      scheduledItems = [],
+      minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes(),
+      _windowStartMinutes = 0
+   ) {
+      return ScheduledPillLayoutUnits.clusterShortScheduledItemsForDisplay(
+         scheduledItems,
+         minDisplayMinutes
+      );
+   }
+
+
+   /** @deprecated */
+   static clusterScheduledItemsByStartTimeProximity(...args) {
+      return ScheduledPillLayoutUnits.clusterScheduledItemsByDuration(...args);
+   }
+}

@@ -19,15 +19,8 @@ import {
    resolveDepartureTimeValidationError,
 } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import { timelineSlotRowHeightFraction } from '../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
-import {
-   buildMarkersByAnchorSlot,
-   computeMarkerOffsetFraction,
-   findTimelineAnchorSlot,
-} from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
-import {
-   computeStripHorizontalOffsetIndex,
-   computeTimelineHorizontalOffsetIndex,
-} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
+import { DayPlannerTimelineMarkers } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
+import { DayPlannerTimelinePillPlacement } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
 import {
    formatClockTime,
    formatISODateFull,
@@ -276,7 +269,7 @@ test.describe('itinerary panel format and schedule', () => {
    
    test('timeline markers anchor to the preceding half-hour slot', () => {
       const slotStarts = buildHalfHourSlotStarts(570, 1140);
-      const markersByAnchor = buildMarkersByAnchorSlot(
+      const markersByAnchor = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
          [
             {
                startMinutes: parseClockTimeMinutes('11:35'),
@@ -288,35 +281,35 @@ test.describe('itinerary panel format and schedule', () => {
          1140
       );
    
-      assert.equal(findTimelineAnchorSlot(parseClockTimeMinutes('11:35'), slotStarts), 690);
-      assert.equal(computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
+      assert.equal(DayPlannerTimelineMarkers.findTimelineAnchorSlot(parseClockTimeMinutes('11:35'), slotStarts), 690);
+      assert.equal(DayPlannerTimelineMarkers.computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
       assert.deepEqual(markersByAnchor.get(690), [{
          label: 'Arrival',
          offsetFraction: 1 / 6,
          kind: 'arrival',
       }]);
    });
-   test('computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
+   test('DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
       const pointPillVerticalSpanFraction = (
          TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
       );
    
       assert.equal(
-         computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
+         DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
          0
       );
-      assert.equal(computeStripHorizontalOffsetIndex([
+      assert.equal(DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([
          { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
       ], 0.67, pointPillVerticalSpanFraction), 1);
-      assert.equal(computeStripHorizontalOffsetIndex([
+      assert.equal(DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([
          { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
          { offsetFraction: 0.67, horizontalOffsetIndex: 1 },
       ], 0.6, pointPillVerticalSpanFraction), 2);
    });
    
-   test('computeTimelineHorizontalOffsetIndex shifts later overlapping placements', () => {
-      assert.equal(computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
-      assert.equal(computeTimelineHorizontalOffsetIndex([
+   test('DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex shifts later overlapping placements', () => {
+      assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
+      assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([
          { offsetFraction: 0.5, durationFraction: 0.5, horizontalOffsetIndex: 0 },
       ], 0.67, 0.5), 1);
    });
