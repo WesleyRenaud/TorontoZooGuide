@@ -4,7 +4,7 @@ import { DraftStorage } from '../../draftStorage.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelection.js';
 import { RegionStorage } from './regionStorage.js';
-import { buildDateSearchContext } from '../../../search/searchContext.js';
+import { SearchContext } from '../../../search/searchContext.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { StorageKeys } from '../../storageKeys.js';
 import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
@@ -13,7 +13,7 @@ async function resolveAnimalsByExhibitQueryContext() {
    let context = await ItinerarySearchContext.getItineraryDateSearchContext();
 
    if (!context.month || context.day == null) {
-      context = await buildDateSearchContext(VisitDateRules.toISODate(VisitDateRules.getToday()));
+      context = await SearchContext.buildDateSearchContext(VisitDateRules.toISODate(VisitDateRules.getToday()));
    }
 
    return context;

@@ -1,10 +1,10 @@
-import { initFocusFromQuery } from '../focus/focusFromQuery.js';
+import { FocusFromQuery } from '../focus/focusFromQuery.js';
 import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
 import { initMapControls } from '../map/controls.js';
 import { DateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
-import { initTransportationRouteControls } from '../map/transportationRouteControls.js';
+import { TransportationRouteControls } from '../map/transportationRouteControls.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
@@ -145,7 +145,7 @@ function initMapPageControls({
 }
 
 function initMapDeepLinkFocus(updater) {
-   initFocusFromQuery({
+   FocusFromQuery.initFocusFromQuery({
       onFocus: (rowOrSpec) => {
          updater.focusFromDeepLink(rowOrSpec);
       },
@@ -162,7 +162,7 @@ export async function initMapPage() {
    if (!hasRequiredMapPageElements(elements)) return;
 
    await loadInlineZooMap();
-   await initTransportationRouteControls(elements.transportationRoutesEl);
+   await TransportationRouteControls.initTransportationRouteControls(elements.transportationRoutesEl);
 
    let explore = null;
    let search = null;

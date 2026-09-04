@@ -1,5 +1,3 @@
-export const ACTIVE_CONSOLE_PANEL_QUERY_PARAM = 'panel';
-
 function getDefaultLocation() {
    return globalThis.location ?? null;
 }
@@ -19,10 +17,10 @@ function updateConsolePanelUrl(panelId, {
    const url = new URL(location.href);
 
    if (panelId) {
-      url.searchParams.set(ACTIVE_CONSOLE_PANEL_QUERY_PARAM, panelId);
+      url.searchParams.set(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM, panelId);
    }
    else {
-      url.searchParams.delete(ACTIVE_CONSOLE_PANEL_QUERY_PARAM);
+      url.searchParams.delete(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM);
    }
 
    history.replaceState(null, '', url);
@@ -34,21 +32,8 @@ function getPanelIdFromUrl(location = getDefaultLocation()) {
    }
 
    return new URL(location.href).searchParams.get(
-      ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+      PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM
    ) ?? '';
-}
-
-export function clearConsoleMenuButtonSelection(doc = document) {
-   doc
-      .querySelectorAll('.console-operations-menu-btn')
-      .forEach(button => {
-         button.classList.remove('active');
-         button.removeAttribute('aria-current');
-      });
-}
-
-export function clearConsolePanelUrlParam(options = {}) {
-   updateConsolePanelUrl('', options);
 }
 
 function findMenuButtonForPanel(doc, panelId) {
@@ -56,55 +41,73 @@ function findMenuButtonForPanel(doc, panelId) {
       .find(button => button.dataset.panelTarget === panelId);
 }
 
-export function createConsolePanelNavigator(
-      doc = document,
-      urlOptions = {}) {
-   function activatePanel(panelEl) {
-      doc
-         .querySelectorAll('.console-operations-panel')
-         .forEach(panel => panel.classList.remove('active'));
+export class PanelNavigator {
+   static ACTIVE_CONSOLE_PANEL_QUERY_PARAM = 'panel';
 
-      panelEl?.classList.add('active');
-      updateConsolePanelUrl(panelEl?.id, urlOptions);
-
+   static clearConsoleMenuButtonSelection(doc = document) {
       doc
          .querySelectorAll('.console-operations-menu-btn')
          .forEach(button => {
-            const isActive = button.dataset.panelTarget === panelEl?.id;
-
-            button.classList.toggle('active', isActive);
-
-            if (isActive) {
-               button.setAttribute('aria-current', 'page');
-            }
-            else {
-               button.removeAttribute('aria-current');
-            }
+            button.classList.remove('active');
+            button.removeAttribute('aria-current');
          });
    }
 
-   function hidePanels() {
-      doc
-         .querySelectorAll('.console-operations-panel')
-         .forEach(panel => panel.classList.remove('active'));
-
-      clearConsoleMenuButtonSelection(doc);
-
-      clearConsolePanelUrlParam(urlOptions);
+   static clearConsolePanelUrlParam(options = {}) {
+      updateConsolePanelUrl('', options);
    }
 
-   function restorePanelFromUrl() {
-      const panelId = getPanelIdFromUrl(urlOptions.location);
-      const button = findMenuButtonForPanel(doc, panelId);
+   static createConsolePanelNavigator(
+      doc = document,
+      urlOptions = {}
+   ) {
+      function activatePanel(panelEl) {
+         doc
+            .querySelectorAll('.console-operations-panel')
+            .forEach(panel => panel.classList.remove('active'));
 
-      if (button) {
-         button.click();
+         panelEl?.classList.add('active');
+         updateConsolePanelUrl(panelEl?.id, urlOptions);
+
+         doc
+            .querySelectorAll('.console-operations-menu-btn')
+            .forEach(button => {
+               const isActive = button.dataset.panelTarget === panelEl?.id;
+
+               button.classList.toggle('active', isActive);
+
+               if (isActive) {
+                  button.setAttribute('aria-current', 'page');
+               }
+               else {
+                  button.removeAttribute('aria-current');
+               }
+            });
       }
-   }
 
-   return {
-      activatePanel,
-      hidePanels,
-      restorePanelFromUrl,
-   };
+      function hidePanels() {
+         doc
+            .querySelectorAll('.console-operations-panel')
+            .forEach(panel => panel.classList.remove('active'));
+
+         PanelNavigator.clearConsoleMenuButtonSelection(doc);
+
+         PanelNavigator.clearConsolePanelUrlParam(urlOptions);
+      }
+
+      function restorePanelFromUrl() {
+         const panelId = getPanelIdFromUrl(urlOptions.location);
+         const button = findMenuButtonForPanel(doc, panelId);
+
+         if (button) {
+            button.click();
+         }
+      }
+
+      return {
+         activatePanel,
+         hidePanels,
+         restorePanelFromUrl,
+      };
+   }
 }

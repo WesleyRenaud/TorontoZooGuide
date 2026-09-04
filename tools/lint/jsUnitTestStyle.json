@@ -88,7 +88,12 @@
       "tests/scripts/itinerary/selectors/dateSelectorPickerBinding.test.mjs",
       "tests/scripts/itinerary/panel/components/itineraryPanelViews.test.mjs",
       "tests/scripts/itinerary/selectors/base/selectionState.test.mjs",
-      "tests/scripts/itinerary/selectors/selectorSearchRunner.test.mjs"
+      "tests/scripts/itinerary/selectors/selectorSearchRunner.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduleItemTimeFields.test.mjs",
+      "tests/scripts/itinerary/panel/scheduleItemResults.test.mjs",
+      "tests/scripts/consoleOperations/forms/scheduleTimesCheckboxField.test.mjs",
+      "tests/scripts/consoleOperations/shell/panelNavigator.test.mjs",
+      "tests/scripts/map/transportationRouteControls.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

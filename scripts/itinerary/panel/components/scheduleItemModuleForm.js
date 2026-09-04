@@ -1,5 +1,5 @@
 import { el } from '../dom.js';
-import { makeScheduleItemTimeFields } from './scheduleItemTimeFields.js';
+import { ScheduleItemTimeFields } from './scheduleItemTimeFields.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../../selectors/attractionSelector/attractionSelectorModel.js';
@@ -151,7 +151,7 @@ export function buildScheduleItemModuleBody(strings, eventTypes = []) {
 
    const resultsEl = el('div', 'itin-results schedule-item-results');
    resultsEl.setAttribute('aria-live', 'polite');
-   const scheduleTimeFields = makeScheduleItemTimeFields(strings);
+   const scheduleTimeFields = ScheduleItemTimeFields.makeScheduleItemTimeFields(strings);
 
    body.append(
       typeField.field,

@@ -65,18 +65,23 @@ function createTransportationRouteSection(transportation) {
    return section;
 }
 
-export function renderTransportationRouteControls(container, transportations) {
-   if (!container) {
-      return;
+export class TransportationRouteControls {
+   static renderTransportationRouteControls(container, transportations) {
+      if (!container) {
+         return;
+      }
+
+      container.replaceChildren(
+         ...transportations.map(createTransportationRouteSection),
+      );
    }
 
-   container.replaceChildren(
-      ...transportations.map(createTransportationRouteSection),
-   );
-}
-
-export async function initTransportationRouteControls(container) {
-   const transportations = await MapApi.getTransportationRoutes();
-   renderTransportationRouteControls(container, transportations);
-   return transportations;
+   static async initTransportationRouteControls(container) {
+      const transportations = await MapApi.getTransportationRoutes();
+      TransportationRouteControls.renderTransportationRouteControls(
+         container,
+         transportations
+      );
+      return transportations;
+   }
 }

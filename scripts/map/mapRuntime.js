@@ -8,7 +8,7 @@ import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
 import { createFocusController } from '../focus/focusController.js';
 import { openGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { initLabelVisibilityToggle } from './labelVisibility.js';
-import { createHoverTooltip } from '../markers/hoverTooltip.js';
+import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { createPanzoom } from './panzoom.js';
@@ -123,7 +123,7 @@ export function createMapRuntime({
    const panzoom = createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
    const store = createMapStore();
    const sources = createDataSources(store);
-   const hover = createHoverTooltip(hoverTooltipEl);
+   const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
    const speciesOverlay = initSpeciesOverlay();
 
    const tooltip = createMapTooltip({

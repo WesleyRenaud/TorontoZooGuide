@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   ACTIVE_CONSOLE_PANEL_QUERY_PARAM,
-   clearConsolePanelUrlParam,
-   createConsolePanelNavigator,
-} from '../../scripts/consoleOperations/shell/panelNavigator.js';
+import { PanelNavigator } from '../../../../scripts/consoleOperations/shell/panelNavigator.js';
 
 function createClassList() {
    const classes = new Set();
@@ -87,7 +83,7 @@ function createUrlState(href = 'https://example.test/console-operations.html') {
    };
 }
 
-test('console panel navigator writes activated panel to the url and restores by clicking its menu button', () => {
+test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => {
    const urlState = createUrlState();
    const restaurantPanel = createPanel('restaurantOpeningSchedulePanel');
    const giftShopPanel = createPanel('giftShopOpeningSchedulePanel');
@@ -98,14 +94,14 @@ test('console panel navigator writes activated panel to the url and restores by 
       buttons: [restaurantButton, giftShopButton],
    });
 
-   const navigator = createConsolePanelNavigator(doc, urlState);
+   const navigator = PanelNavigator.createConsolePanelNavigator(doc, urlState);
 
    navigator.activatePanel(giftShopPanel);
 
    const url = new URL(urlState.location.href);
 
    assert.equal(
-      url.searchParams.get(ACTIVE_CONSOLE_PANEL_QUERY_PARAM),
+      url.searchParams.get(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM),
       'giftShopOpeningSchedulePanel'
    );
    assert.equal(giftShopPanel.classList.contains('active'), true);
@@ -119,7 +115,7 @@ test('console panel navigator writes activated panel to the url and restores by 
    assert.equal(restaurantButton.clickCount, 0);
 });
 
-test('console panel navigator removes panel url param when panels are hidden', () => {
+test('Test_CreateConsolePanelNavigator_TestHide_ExpectUrlCleared', () => {
    const urlState = createUrlState();
    const panel = createPanel('giftShopOpeningSchedulePanel');
    const button = createButton('giftShopOpeningSchedulePanel');
@@ -127,14 +123,14 @@ test('console panel navigator removes panel url param when panels are hidden', (
       panels: [panel],
       buttons: [button],
    });
-   const navigator = createConsolePanelNavigator(doc, urlState);
+   const navigator = PanelNavigator.createConsolePanelNavigator(doc, urlState);
 
    navigator.activatePanel(panel);
    navigator.hidePanels();
 
    assert.equal(
       new URL(urlState.location.href).searchParams.has(
-         ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+         PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM
       ),
       false
    );
@@ -142,16 +138,16 @@ test('console panel navigator removes panel url param when panels are hidden', (
    assert.equal(button.classList.contains('active'), false);
 });
 
-test('clearConsolePanelUrlParam removes active console panel url parameter', () => {
+test('Test_ClearConsolePanelUrlParam_TestClear_ExpectRemoved', () => {
    const urlState = createUrlState(
       'https://example.test/console-operations.html?panel=giftShopOpeningSchedulePanel'
    );
 
-   clearConsolePanelUrlParam(urlState);
+   PanelNavigator.clearConsolePanelUrlParam(urlState);
 
    assert.equal(
       new URL(urlState.location.href).searchParams.has(
-         ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+         PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM
       ),
       false
    );

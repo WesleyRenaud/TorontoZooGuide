@@ -1,17 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { renderTransportationRouteControls } from '../../scripts/map/transportationRouteControls.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { TransportationRouteControls } from '../../../scripts/map/transportationRouteControls.js';
+import { APP_STRINGS } from '../../../scripts/strings.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('renderTransportationRouteControls builds title, current, and route radios', () => {
+test('Test_RenderTransportationRouteControls_TestRoutes_ExpectRadios', () => {
    const container = createDomNode('div');
 
-   renderTransportationRouteControls(container, [
+   TransportationRouteControls.renderTransportationRouteControls(container, [
       {
          name: 'Zoomobile',
          routes: ['summer', 'winter'],

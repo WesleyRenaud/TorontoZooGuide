@@ -1,4 +1,4 @@
-import { buildDateSearchContext } from '../search/searchContext.js';
+import { SearchContext } from '../search/searchContext.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 const PRESET_DATE_CONTEXTS = {
@@ -27,7 +27,7 @@ export class DateContext {
          const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
          const anchorIso = VisitDateRules.getYear(trimmed) != null ? trimmed : VisitDateRules.toISODate(VisitDateRules.getToday());
 
-         const anchorCtx = await buildDateSearchContext(anchorIso, { includeTemp: false });
+         const anchorCtx = await SearchContext.buildDateSearchContext(anchorIso, { includeTemp: false });
 
          return {
             preset: presetKey,
@@ -38,7 +38,7 @@ export class DateContext {
 
       return {
          preset: presetKey,
-         ...(await buildDateSearchContext(dateStr)),
+         ...(await SearchContext.buildDateSearchContext(dateStr)),
       };
    }
 }

@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
+import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import {
    getFieldValue,
    hideConsolePanel,
@@ -28,7 +28,7 @@ export function createCancelWildEncounterOccurrenceController({
 
 
    function getSelectedTimes() {
-      return getSelectedScheduleTimes(timesEl);
+      return ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl);
    }
 
    function resetOccurrenceFields() {

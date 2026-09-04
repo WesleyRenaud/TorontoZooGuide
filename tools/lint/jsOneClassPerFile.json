@@ -139,7 +139,15 @@
       "scripts/itinerary/panel/components/itineraryPanelViews.js",
       "scripts/itinerary/panel/itineraryPanelViewState.js",
       "scripts/itinerary/selectors/base/selectionState.js",
-      "scripts/itinerary/selectors/selectorSearchRunner.js"
+      "scripts/itinerary/selectors/selectorSearchRunner.js",
+      "scripts/markers/hoverTooltip.js",
+      "scripts/focus/focusFromQuery.js",
+      "scripts/search/searchContext.js",
+      "scripts/itinerary/panel/components/scheduleItemTimeFields.js",
+      "scripts/itinerary/panel/scheduleItemResults.js",
+      "scripts/consoleOperations/forms/scheduleTimesCheckboxField.js",
+      "scripts/consoleOperations/shell/panelNavigator.js",
+      "scripts/map/transportationRouteControls.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

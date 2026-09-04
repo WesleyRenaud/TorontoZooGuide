@@ -4,7 +4,7 @@ import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
 import { ScheduleItemModuleSelection } from './scheduleItemModuleSelection.js';
-import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
+import { ScheduleItemResults } from '../scheduleItemResults.js';
 import { ScheduleItemSearch } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
@@ -43,7 +43,7 @@ export function createScheduleItemModuleController({
       getSearchContext = ItinerarySearchContext.getItineraryDateSearchContext,
       scheduleSelectedItem = scheduleSelectedItineraryItem,
       showNotice = showScheduleItemNotice,
-      renderSearchResults = renderScheduleItemSearchResults,
+      renderSearchResults = ScheduleItemResults.renderScheduleItemSearchResults,
       itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,
       requiresNotOnItineraryConfirmation = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation,
       resolveErrorMessage = ItineraryErrorTypes.resolveItineraryErrorMessage,
