@@ -5,7 +5,7 @@ import {
 import { createDatePickerBinding } from './dateSelectorPickerBinding.js';
 import { buildDateSelectorView } from './dateSelectorView.js';
 import { APP_STRINGS } from '../../strings.js';
-import { getToday } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export function createItineraryDateSelectorController({
    mountEl,
@@ -22,7 +22,7 @@ export function createItineraryDateSelectorController({
    const {
       buildView = buildDateSelectorView,
       createPicker = createDatePickerBinding,
-      getTodayFn = getToday,
+      getTodayFn = VisitDateRules.getToday,
    } = deps;
 
    let elements = null;

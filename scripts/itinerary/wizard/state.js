@@ -1,5 +1,5 @@
 import { Summary } from './diff/summary.js';
-import { writeStoredItineraryDraft } from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import { ItineraryShape } from '../itineraryShape.js';
 
 function createPendingValidationState() {
@@ -17,7 +17,7 @@ function buildWizardDraftSnapshot(state = {}) {
 }
 
 function writeDraftState(draft) {
-   writeStoredItineraryDraft(draft);
+   DraftStorage.writeStoredItineraryDraft(draft);
 }
 
 function assignWizardDraft(state, draft) {

@@ -1,7 +1,4 @@
-import {
-   loadArray,
-   saveArray,
-} from '../../draftStorage.js';
+import { DraftStorage } from '../../draftStorage.js';
 
 function identity(items) {
    return items;
@@ -12,11 +9,11 @@ function cloneSelectedItems(items) {
 }
 
 function loadSelectedItems(storageKey, migrateSelected = identity) {
-   return migrateSelected(loadArray(storageKey));
+   return migrateSelected(DraftStorage.loadArray(storageKey));
 }
 
 function persistSelectedItems(storageKey, selectedItems) {
-   saveArray(storageKey, selectedItems);
+   DraftStorage.saveArray(storageKey, selectedItems);
 }
 
 function getSelectedIndexById(selectedItems, id) {

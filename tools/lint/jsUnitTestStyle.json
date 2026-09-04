@@ -69,7 +69,9 @@
       "tests/scripts/datePickers/readOpenPickerTime.test.mjs",
       "tests/scripts/itinerary/panel/scheduleItemSearch.test.mjs",
       "tests/scripts/itinerary/panel/format.test.mjs",
-      "tests/scripts/itinerary/itineraryShape.test.mjs"
+      "tests/scripts/itinerary/itineraryShape.test.mjs",
+      "tests/scripts/visitDates/visitDateRules.test.mjs",
+      "tests/scripts/itinerary/draftStorage.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

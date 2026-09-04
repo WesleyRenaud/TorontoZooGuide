@@ -1,4 +1,4 @@
-import { getStoredItineraryDate } from './draftStorage.js';
+import { DraftStorage } from './draftStorage.js';
 import { buildDateSearchContext } from '../search/searchContext.js';
 import { VisitDateEarliest } from './visitDateEarliest.js';
 
@@ -7,7 +7,7 @@ async function resolveItinerarySearchDate(dateOverride = '') {
       return dateOverride;
    }
 
-   const stored = getStoredItineraryDate()?.trim?.();
+   const stored = DraftStorage.getStoredItineraryDate()?.trim?.();
 
    if (stored) {
       return stored;

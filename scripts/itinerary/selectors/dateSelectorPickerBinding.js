@@ -1,10 +1,6 @@
 import { formatVisitDateLong } from './dateSelectionModel.js';
 import { initVisitDateFlatpickr } from '../../visitDates/visitDateFlatpickr.js';
-import {
-   addLocalCalendarDays,
-   DEFAULT_DAYS_AHEAD,
-   getToday,
-} from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export function createDatePickerBinding({
    inputEl,
@@ -13,13 +9,13 @@ export function createDatePickerBinding({
    syncInputValue,
    earliestDateFloor = null,
    initFlatpickr = initVisitDateFlatpickr,
-   getTodayFn = getToday,
+   getTodayFn = VisitDateRules.getToday,
    getMaxDateFn = null,
-   daysAhead = DEFAULT_DAYS_AHEAD,
+   daysAhead = VisitDateRules.DEFAULT_DAYS_AHEAD,
 } = {}) {
    const floor = earliestDateFloor ?? getTodayFn();
    const resolveMaxDate = getMaxDateFn
-      ?? ((ahead) => addLocalCalendarDays(getTodayFn(), ahead));
+      ?? ((ahead) => VisitDateRules.addLocalCalendarDays(getTodayFn(), ahead));
    let flatpickrInstance = null;
 
    function applyPickerDate(date, instance) {

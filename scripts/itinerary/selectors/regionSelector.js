@@ -1,5 +1,5 @@
 import { ItinerarySelectorApi } from '../../api/itinerarySelectorApi.js';
-import { loadArray } from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelector/regionSelection.js';
 import { buildRegionSelectorShell } from './regionSelector/shell.js';
@@ -204,7 +204,7 @@ export function createItineraryRegionSelectorController({
 
       if (RegionSelection.selectedExhibitsNeedAnimalRebuild(
          state.getSelectedExhibitNamesSet(),
-         loadArray(StorageKeys.ANIMALS_KEY)
+         DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
       )) {
          return false;
       }

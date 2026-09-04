@@ -2,7 +2,7 @@ import { saveItinerary } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { createItineraryDateSelectorController } from '../selectors/dateSelector.js';
 import { APP_STRINGS } from '../../strings.js';
-import { toISODate } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export function recoverPastItineraryDate({
    mountEl,
@@ -16,7 +16,7 @@ export function recoverPastItineraryDate({
       createDateController = createItineraryDateSelectorController,
       saveItineraryFn = saveItinerary,
       normalizeDraft = ItineraryShape.normalizeItineraryDraft,
-      toIso = toISODate,
+      toIso = VisitDateRules.toISODate,
    } = deps;
 
    if (!mountEl || !itinerary) {

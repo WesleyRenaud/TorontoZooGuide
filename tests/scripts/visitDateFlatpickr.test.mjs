@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { initVisitDateFlatpickr } from '../../scripts/visitDates/visitDateFlatpickr.js';
-import { toISODate } from '../../scripts/visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../scripts/visitDates/visitDateRules.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -88,6 +88,6 @@ test.describe('initVisitDateFlatpickr', () => {
          },
       });
 
-      assert.equal(toISODate(flatpickrOptions[0].maxDate), '2026-06-17');
+      assert.equal(VisitDateRules.toISODate(flatpickrOptions[0].maxDate), '2026-06-17');
    });
 });

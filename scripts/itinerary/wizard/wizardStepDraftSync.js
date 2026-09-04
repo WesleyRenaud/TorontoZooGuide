@@ -1,4 +1,4 @@
-import { toISODate } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 
 export class WizardStepDraftSync {
@@ -10,7 +10,7 @@ export class WizardStepDraftSync {
          return null;
       }
 
-      const date = toISODate(currentDate);
+      const date = VisitDateRules.toISODate(currentDate);
 
       if (!date || wizardDate === date) {
          return null;

@@ -8,7 +8,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
-import { resolveOptionalStartDate } from '../../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
 
 export function createCreateEventController({
    showButtonEl,
@@ -32,7 +32,7 @@ export function createCreateEventController({
          location: getFieldValue(locationEl),
          description: getFieldValue(descriptionEl),
          link: getFieldValue(linkEl),
-         startDate: resolveOptionalStartDate(getFieldValue(startDateEl)),
+         startDate: VisitDateRules.resolveOptionalStartDate(getFieldValue(startDateEl)),
          endDate: getFieldValue(endDateEl),
       };
    }

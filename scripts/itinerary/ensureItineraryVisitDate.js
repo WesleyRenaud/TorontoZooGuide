@@ -1,5 +1,5 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import { setStoredItineraryDate } from './draftStorage.js';
+import { DraftStorage } from './draftStorage.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
@@ -12,7 +12,7 @@ export class EnsureItineraryVisitDate {
       const { date: serverDate } = await ItineraryApi.getItineraryDateRequest();
 
       if (serverDate) {
-         setStoredItineraryDate(serverDate);
+         DraftStorage.setStoredItineraryDate(serverDate);
 
          if (itinerary?.date === serverDate) {
             return itinerary;
@@ -38,7 +38,7 @@ export class EnsureItineraryVisitDate {
          throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType));
       }
 
-      setStoredItineraryDate(date);
+      DraftStorage.setStoredItineraryDate(date);
 
       const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 
