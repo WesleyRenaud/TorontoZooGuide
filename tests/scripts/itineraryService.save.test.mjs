@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { saveItinerary } from '../../scripts/itinerary/itineraryServiceSave.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
 
@@ -104,7 +104,7 @@ test('saveItinerary confirms before saving a guardians talk without a matching a
       suppressed_error_types: [],
    };
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: itineraryConfig.itinerary_error_types,
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
@@ -188,7 +188,7 @@ test('saveItinerary confirms before saving an attraction without a matching anim
       suppressed_error_types: [],
    };
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: itineraryConfig.itinerary_error_types,
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
@@ -491,7 +491,7 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
       suppressed_error_types: [],
    };
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: itineraryConfig.itinerary_error_types,
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
@@ -612,7 +612,7 @@ test('saveItinerary does not diff unselected schedule conflicts as removals', as
       suppressed_error_types: [],
    };
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: itineraryConfig.itinerary_error_types,
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
@@ -726,7 +726,7 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
       suppressed_error_types: [],
    };
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: itineraryConfig.itinerary_error_types,
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });

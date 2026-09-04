@@ -1,4 +1,4 @@
-import { hasBulkScheduleItineraryNotEnoughTimeIssue } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
+import { BulkScheduleItineraryNotEnoughTimeConfirmation } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
@@ -12,7 +12,7 @@ import {
    hasMultipleItineraryBuildWarnings,
    showItineraryBuildWarningsConfirmation,
 } from './itineraryBuildWarningsConfirmation.js';
-import { requiresFixedTimeItemLongWaitConfirmation } from '../itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
    buildItineraryPanelScheduleHandlers,
@@ -55,10 +55,10 @@ function appendDayPlannerViewWithHours(
       openModule = openScheduleItemModule,
       bulkSchedule = bulkScheduleItinerary,
       unscheduleAll = unscheduleAllItineraryItems,
-      hasNotEnoughTimeIssue = hasBulkScheduleItineraryNotEnoughTimeIssue,
+      hasNotEnoughTimeIssue = BulkScheduleItineraryNotEnoughTimeConfirmation.hasBulkScheduleItineraryNotEnoughTimeIssue,
       hasMultipleBuildWarnings = hasMultipleItineraryBuildWarnings,
       showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
-      requiresLongWaitConfirmation = requiresFixedTimeItemLongWaitConfirmation,
+      requiresLongWaitConfirmation = ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation,
       showLongWaitConfirmation = showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,

@@ -2,40 +2,42 @@ let itineraryTransportationStationRoles = null;
 let itineraryTransportationStationOnboardingRoles = Object.freeze([]);
 let itineraryTransportationStationOffboardingRoles = Object.freeze([]);
 
-export function updateItineraryTransportationStationRolesFromConfig(
-   itineraryConfig = {}
-) {
-   const roles = itineraryConfig?.transportationStationRoles;
+export class ItineraryTransportationStationRoles {
+   static updateItineraryTransportationStationRolesFromConfig(
+      itineraryConfig = {}
+   ) {
+      const roles = itineraryConfig?.transportationStationRoles;
 
-   if (roles && typeof roles === 'object') {
-      itineraryTransportationStationRoles = Object.freeze({ ...roles });
+      if (roles && typeof roles === 'object') {
+         itineraryTransportationStationRoles = Object.freeze({ ...roles });
+      }
+
+      const onboardingRoles = itineraryConfig?.transportationStationOnboardingRoles;
+
+      if (Array.isArray(onboardingRoles) && onboardingRoles.length > 0) {
+         itineraryTransportationStationOnboardingRoles = Object.freeze([
+            ...onboardingRoles,
+         ]);
+      }
+
+      const offboardingRoles = itineraryConfig?.transportationStationOffboardingRoles;
+
+      if (Array.isArray(offboardingRoles) && offboardingRoles.length > 0) {
+         itineraryTransportationStationOffboardingRoles = Object.freeze([
+            ...offboardingRoles,
+         ]);
+      }
    }
 
-   const onboardingRoles = itineraryConfig?.transportationStationOnboardingRoles;
-
-   if (Array.isArray(onboardingRoles) && onboardingRoles.length > 0) {
-      itineraryTransportationStationOnboardingRoles = Object.freeze([
-         ...onboardingRoles,
-      ]);
+   static getItineraryTransportationStationRoles() {
+      return itineraryTransportationStationRoles;
    }
 
-   const offboardingRoles = itineraryConfig?.transportationStationOffboardingRoles;
-
-   if (Array.isArray(offboardingRoles) && offboardingRoles.length > 0) {
-      itineraryTransportationStationOffboardingRoles = Object.freeze([
-         ...offboardingRoles,
-      ]);
+   static getItineraryTransportationStationOnboardingRoles() {
+      return itineraryTransportationStationOnboardingRoles;
    }
-}
 
-export function getItineraryTransportationStationRoles() {
-   return itineraryTransportationStationRoles;
-}
-
-export function getItineraryTransportationStationOnboardingRoles() {
-   return itineraryTransportationStationOnboardingRoles;
-}
-
-export function getItineraryTransportationStationOffboardingRoles() {
-   return itineraryTransportationStationOffboardingRoles;
+   static getItineraryTransportationStationOffboardingRoles() {
+      return itineraryTransportationStationOffboardingRoles;
+   }
 }

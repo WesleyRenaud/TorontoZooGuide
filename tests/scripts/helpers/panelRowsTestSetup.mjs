@@ -1,6 +1,6 @@
 import { afterEach, beforeEach } from 'node:test';
 
-import { updateItineraryAdjustmentTypesFromConfig } from '../../../scripts/itinerary/itineraryAdjustmentTypes.js';
+import { ItineraryAdjustmentTypes } from '../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import {
    TIMELINE_POINT_PILL_HEIGHT_PX,
    TIMELINE_SLOT_HEIGHT_PX,
@@ -319,7 +319,7 @@ export function installPanelRowsTestHooks() {
          },
       };
       installTestWindow();
-      updateItineraryAdjustmentTypesFromConfig({
+      ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
          adjustmentTypes: {
             ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
             DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',

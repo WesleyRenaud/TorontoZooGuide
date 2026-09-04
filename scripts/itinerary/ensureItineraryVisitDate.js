@@ -1,9 +1,6 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
-import {
-   isItinerarySuccess,
-   resolveItineraryErrorMessage,
-} from './itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
@@ -40,8 +37,8 @@ export class EnsureItineraryVisitDate {
          temp,
       });
 
-      if (!isItinerarySuccess(result.errorType)) {
-         throw new Error(resolveItineraryErrorMessage(result.errorType));
+      if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+         throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType));
       }
 
       setStoredItineraryDate(date);

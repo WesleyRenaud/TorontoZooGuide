@@ -1,10 +1,12 @@
-export function createItineraryConfirmationCancelledResult(result = {}) {
-   return {
-      ...result,
-      cancelled: true,
-   };
-}
+export class ItineraryConfirmationResult {
+   static createItineraryConfirmationCancelledResult(result = {}) {
+      return {
+         ...result,
+         cancelled: true,
+      };
+   }
 
-export function isItineraryConfirmationCancelled(result) {
-   return Boolean(result?.cancelled);
+   static isItineraryConfirmationCancelled(result) {
+      return Boolean(result?.cancelled);
+   }
 }

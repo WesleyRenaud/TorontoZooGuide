@@ -1,17 +1,8 @@
 import { ApiClient } from './apiClient.js';
-import {
-   normalizeItineraryAdjustmentType,
-   updateItineraryAdjustmentTypesFromConfig,
-} from '../itinerary/itineraryAdjustmentTypes.js';
-import {
-   normalizeItineraryErrorTypeFromResponse,
-   updateItineraryErrorTypesFromConfig,
-} from '../itinerary/itineraryErrorTypes.js';
-import {
-   EMPTY_ITINERARY_PATH,
-   normalizeItineraryPath,
-} from '../itinerary/itineraryPathModel.js';
-import { updateItineraryTransportationStationRolesFromConfig } from '../itinerary/itineraryTransportationStationRoles.js';
+import { ItineraryAdjustmentTypes } from '../itinerary/itineraryAdjustmentTypes.js';
+import { ItineraryErrorTypes } from '../itinerary/itineraryErrorTypes.js';
+import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
+import { ItineraryTransportationStationRoles } from '../itinerary/itineraryTransportationStationRoles.js';
 import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
@@ -195,9 +186,9 @@ function normalizeItineraryConfig(config) {
          .map((entry) => entry.status);
    }
 
-   updateItineraryErrorTypesFromConfig(normalizedConfig);
-   updateItineraryAdjustmentTypesFromConfig(normalizedConfig);
-   updateItineraryTransportationStationRolesFromConfig(normalizedConfig);
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig(normalizedConfig);
+   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig(normalizedConfig);
+   ItineraryTransportationStationRoles.updateItineraryTransportationStationRolesFromConfig(normalizedConfig);
 
    return normalizedConfig;
 }
@@ -217,7 +208,7 @@ function normalizeItineraryAdjustment(adjustment) {
    const source = ValueNormalizer.asObject(adjustment);
 
    return {
-      type: normalizeItineraryAdjustmentType(source.type),
+      type: ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType(source.type),
       field: ValueNormalizer.asTrimmedString(source.field),
       previousValue: ValueNormalizer.asTrimmedString(source.previous_value ?? source.previousValue),
       value: ValueNormalizer.asTrimmedString(source.value),
@@ -232,7 +223,7 @@ function normalizeItineraryResult(source = {}, { includeItinerary = true } = {})
       normalizeItineraryConfig(response.itinerary_config);
    }
 
-   const status = normalizeItineraryErrorTypeFromResponse(response);
+   const status = ItineraryErrorTypes.normalizeItineraryErrorTypeFromResponse(response);
    const reasons = ValueNormalizer.asArray(response.reasons).map(
       normalizeItineraryReason
    );
@@ -252,14 +243,14 @@ function normalizeItineraryResult(source = {}, { includeItinerary = true } = {})
    };
 
    if (response.itinerary_path !== undefined) {
-      result.itineraryPath = normalizeItineraryPath(response.itinerary_path);
+      result.itineraryPath = ItineraryPathModel.normalizeItineraryPath(response.itinerary_path);
    }
 
    if (includeItinerary && response.itinerary !== undefined) {
       result.itinerary = normalizeItineraryModel(response.itinerary);
 
       if (result.itineraryPath === undefined) {
-         result.itineraryPath = EMPTY_ITINERARY_PATH;
+         result.itineraryPath = ItineraryPathModel.EMPTY_ITINERARY_PATH;
       }
    }
 

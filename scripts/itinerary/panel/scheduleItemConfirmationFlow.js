@@ -9,17 +9,8 @@ import {
    hasMultipleItineraryBuildWarnings,
    showItineraryBuildWarningsConfirmation,
 } from './itineraryBuildWarningsConfirmation.js';
-import { createItineraryConfirmationCancelledResult } from '../itineraryConfirmationResult.js';
-import {
-   getItineraryErrorTypes,
-   isItinerarySuccess,
-   requiresAttractionOutsideOperatingHoursConfirmation,
-   requiresFixedTimeItemLongWaitConfirmation,
-   requiresGuardiansTalkUnscheduleConfirmation,
-   requiresGuardiansTalkWithoutAnimalConfirmation,
-   requiresScheduleItemNotOnItineraryConfirmation,
-   requiresWildEncounterUnscheduleConfirmation,
-} from '../itineraryErrorTypes.js';
+import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
+import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { dispatchScheduleItineraryItemResult } from '../itineraryService.js';
 import { PersistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
@@ -27,7 +18,7 @@ import { showWildEncounterUnscheduleConfirmation } from './wildEncounterUnschedu
 
 export function createScheduleItemSaveFailedResult() {
    return {
-      errorType: getItineraryErrorTypes()?.SAVE_FAILED,
+      errorType: ItineraryErrorTypes.getItineraryErrorTypes()?.SAVE_FAILED,
    };
 }
 
@@ -76,7 +67,7 @@ function requestScheduleItemConfirmation({
             }
          },
          onCancel: () => {
-            resolve(createItineraryConfirmationCancelledResult(initialResult));
+            resolve(ItineraryConfirmationResult.createItineraryConfirmationCancelledResult(initialResult));
          },
       });
    });
@@ -88,12 +79,12 @@ export async function scheduleItineraryItemWithConfirmation(
 ) {
    const initialResult = await ItineraryApi.scheduleItineraryItemRequest(request, confirmationOptions);
 
-   if (isItinerarySuccess(initialResult.errorType)) {
+   if (ItineraryErrorTypes.isItinerarySuccess(initialResult.errorType)) {
       dispatchScheduleItineraryItemResult(initialResult);
       return initialResult;
    }
 
-   if (requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showScheduleItemNotOnItineraryConfirmation,
          initialResult,
@@ -105,7 +96,7 @@ export async function scheduleItineraryItemWithConfirmation(
          beforeConfirm: async ({ doNotShowAgain = false } = {}) => {
             if (doNotShowAgain) {
                await PersistItineraryWarningSuppression.persistItineraryWarningSuppression(
-                  getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
+                  ItineraryErrorTypes.getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
                );
             }
          },
@@ -113,7 +104,7 @@ export async function scheduleItineraryItemWithConfirmation(
       });
    }
 
-   if (requiresAttractionOutsideOperatingHoursConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showAttractionOutsideOperatingHoursConfirmation,
          initialResult,
@@ -142,7 +133,7 @@ export async function scheduleItineraryItemWithConfirmation(
       });
    }
 
-   if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showGuardiansTalkUnscheduleConfirmation,
          initialResult,
@@ -158,7 +149,7 @@ export async function scheduleItineraryItemWithConfirmation(
       });
    }
 
-   if (requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showGuardiansTalkWithoutAnimalConfirmation,
          initialResult,
@@ -174,7 +165,7 @@ export async function scheduleItineraryItemWithConfirmation(
       });
    }
 
-   if (requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showFixedTimeItemLongWaitConfirmation,
          initialResult,
@@ -190,7 +181,7 @@ export async function scheduleItineraryItemWithConfirmation(
       });
    }
 
-   if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
          showConfirmation: showWildEncounterUnscheduleConfirmation,
          initialResult,

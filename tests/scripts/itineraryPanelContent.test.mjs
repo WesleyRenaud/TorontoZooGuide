@@ -8,7 +8,7 @@ import {
    destroyRenderedPanelChildren,
 } from '../../scripts/itinerary/panel/itineraryPanelContent.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
@@ -148,7 +148,7 @@ test.describe('itineraryPanelContent', () => {
    });
 
    test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });
@@ -183,7 +183,7 @@ test.describe('itineraryPanelContent', () => {
    });
 
    test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });
@@ -333,7 +333,7 @@ test.describe('itineraryPanelContent', () => {
    });
 
    test('buildEmptyItineraryPanelContent rebuilds without long-wait confirmation for existing items', async () => {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });
@@ -372,7 +372,7 @@ test.describe('itineraryPanelContent', () => {
    });
 
    test('buildItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });
@@ -503,7 +503,7 @@ test.describe('itineraryPanelContent', () => {
    });
 
    test('buildItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });

@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { normalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
+import { NormalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
 
 export const normalizeNumber = ValueNormalizer.normalizeNumber;
@@ -205,7 +205,7 @@ export function normalizeTalk(value) {
       end_time: normalizeText(source.end_time),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
-      linked_animals: normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
+      linked_animals: NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
    };
 }
 

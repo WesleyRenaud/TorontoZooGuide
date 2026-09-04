@@ -1,7 +1,7 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
 import { showScheduleItemModule } from './components/showScheduleItemModule.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
-import { isItinerarySuccess } from '../itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
    dispatchItineraryUpdated,
@@ -14,7 +14,7 @@ async function notifyItineraryUpdated({
    dispatchUpdated = dispatchItineraryUpdated,
    loadItinerary = getItinerary,
 } = {}) {
-   if (!isItinerarySuccess(result?.errorType)) {
+   if (!ItineraryErrorTypes.isItinerarySuccess(result?.errorType)) {
       return false;
    }
 

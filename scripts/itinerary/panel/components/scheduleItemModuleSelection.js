@@ -5,10 +5,7 @@ import {
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
-import {
-   isScheduleItemSearchEnabled,
-   isScheduleItemTypeUnset,
-} from '../scheduleItemTypes.js';
+import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { getAnimalTitleLine } from '../../selectors/animalSelector/model.js';
 import { getAttractionTitle } from '../../selectors/attractionSelector/model.js';
 import { getGuardiansTalkName } from '../../selectors/guardiansTalkSelector/model.js';
@@ -23,11 +20,11 @@ export function canScheduleModuleSelection({
 } = {}) {
    const effectiveSelection = resolveEffectiveScheduleItemSelection(selection, selectedRow);
 
-   if (isScheduleItemTypeUnset(effectiveSelection)) {
+   if (ScheduleItemTypes.isScheduleItemTypeUnset(effectiveSelection)) {
       return false;
    }
 
-   if (isScheduleItemSearchEnabled(effectiveSelection, eventTypes)) {
+   if (ScheduleItemTypes.isScheduleItemSearchEnabled(effectiveSelection, eventTypes)) {
       return Boolean(selectedRow);
    }
 

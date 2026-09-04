@@ -1,5 +1,5 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import { isItinerarySuccess } from './itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 
 export class PersistItineraryWarningSuppression {
    static async persistItineraryWarningSuppression(
@@ -8,7 +8,7 @@ export class PersistItineraryWarningSuppression {
    ) {
       const {
          suppressWarning = ItineraryApi.suppressItineraryWarningRequest,
-         isSuccess = isItinerarySuccess,
+         isSuccess = ItineraryErrorTypes.isItinerarySuccess,
       } = deps;
 
       if (!warningType) {

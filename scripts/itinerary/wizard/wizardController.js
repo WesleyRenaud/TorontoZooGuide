@@ -5,7 +5,7 @@ import {
 import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
-import { isItineraryConfirmationCancelled } from '../itineraryConfirmationResult.js';
+import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import {
    getItinerary,
    isItineraryEmpty,
@@ -141,7 +141,7 @@ export async function openItineraryWizard({
          }
       );
 
-      if (isItineraryConfirmationCancelled(result)) {
+      if (ItineraryConfirmationResult.isItineraryConfirmationCancelled(result)) {
          const nextSelections = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
             wizardState,
             result.issues

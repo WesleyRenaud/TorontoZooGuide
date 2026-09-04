@@ -5,7 +5,7 @@ import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
 } from '../../scripts/itinerary/itineraryServiceTime.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
@@ -13,7 +13,7 @@ installItineraryServiceTestHooks();
 test('setItineraryArrivalTime confirms early admission warning before retrying', async () => {
    const requests = [];
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
@@ -116,7 +116,7 @@ test('setItineraryArrivalTime confirms early admission warning before retrying',
 test('setItineraryDepartureTime confirms short visit warning before retrying', async () => {
    const requests = [];
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
@@ -212,7 +212,7 @@ test('setItineraryDepartureTime confirms short visit warning before retrying', a
 });
 
 test('setItineraryArrivalTime rejects when the visitor cancels confirmation', async () => {
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
@@ -282,7 +282,7 @@ test('setItineraryArrivalTime rejects when the visitor cancels confirmation', as
 });
 
 test('setItineraryArrivalTime throws for non-confirmation errors', async () => {
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          TIME_OUT_OF_BOUNDS: 'timeOutOfBounds',
@@ -388,7 +388,7 @@ test('setItineraryArrivalTime returns the raw API result when no itinerary paylo
 test('setItineraryArrivalTime persists warning suppression when do not show again is checked', async () => {
    const requests = [];
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
@@ -492,7 +492,7 @@ test('setItineraryArrivalTime persists warning suppression when do not show agai
 test('setItineraryArrivalTime rejects when the confirmed retry fails', async () => {
    let arrivalRequestCount = 0;
 
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
          TIME_OUT_OF_BOUNDS: 'timeOutOfBounds',

@@ -6,14 +6,14 @@ import {
    hasFixedTimeItemLongWaitIssue,
    showFixedTimeItemLongWaitConfirmation,
 } from '../../scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
-updateItineraryErrorTypesFromConfig({
+ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
    errorTypes: MOCK_ERROR_TYPES,
    suppressedErrorTypes: [],
 });

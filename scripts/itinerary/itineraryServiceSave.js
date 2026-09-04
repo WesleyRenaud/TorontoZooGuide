@@ -1,15 +1,6 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import { createItineraryConfirmationCancelledResult } from './itineraryConfirmationResult.js';
-import {
-   isItinerarySuccess,
-   requiresAttractionWithoutAnimalConfirmation,
-   requiresFixedTimeItemLongWaitConfirmation,
-   requiresGuardiansTalkUnscheduleConfirmation,
-   requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
-   requiresGuardiansTalkWithoutAnimalConfirmation,
-   requiresWildEncounterUnscheduleConfirmation,
-   resolveItineraryErrorMessage,
-} from './itineraryErrorTypes.js';
+import { ItineraryConfirmationResult } from './itineraryConfirmationResult.js';
+import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
@@ -66,7 +57,7 @@ function requestSetItineraryConfirmation({
             resolve(confirmedResult);
          },
          onCancel: () => {
-            resolve(createItineraryConfirmationCancelledResult({
+            resolve(ItineraryConfirmationResult.createItineraryConfirmationCancelledResult({
                issues: initialResult.issues,
             }));
          },
@@ -79,11 +70,11 @@ async function requestSetItineraryWithConfirmations(
 ) {
    const initialResult = await ItineraryApi.setItineraryRequest(payload);
 
-   if (isItinerarySuccess(initialResult.errorType)) {
+   if (ItineraryErrorTypes.isItinerarySuccess(initialResult.errorType)) {
       return createConfirmedSetItineraryResult(initialResult, diffBaseline);
    }
 
-   if (requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showScheduleTimeConflictConfirmation,
          initialResult,
@@ -129,7 +120,7 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showGuardiansTalkUnscheduleConfirmation,
          initialResult,
@@ -142,7 +133,7 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showGuardiansTalkWithoutAnimalConfirmation,
          initialResult,
@@ -155,7 +146,7 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresAttractionWithoutAnimalConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showAttractionWithoutAnimalConfirmation,
          initialResult,
@@ -168,7 +159,7 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showFixedTimeItemLongWaitConfirmation,
          initialResult,
@@ -181,7 +172,7 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
+   if (ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
          showConfirmation: showWildEncounterUnscheduleConfirmation,
          initialResult,
@@ -220,8 +211,8 @@ export async function saveItinerary(
 
    const { result, diffBaseline } = confirmationResult;
 
-   if (!isItinerarySuccess(result.errorType)) {
-      throw new Error(resolveItineraryErrorMessage(result.errorType));
+   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+      throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType));
    }
 
    const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);

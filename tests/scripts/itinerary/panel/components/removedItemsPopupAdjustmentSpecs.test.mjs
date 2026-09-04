@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { updateItineraryAdjustmentTypesFromConfig } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
+import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { RemovedItemsPopupAdjustmentSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.js';
 import { APP_STRINGS } from '../../../../../scripts/strings.js';
 
@@ -11,7 +11,7 @@ const ADJUSTMENT_TYPES = {
 };
 
 test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_ExpectOk', () => {
-   updateItineraryAdjustmentTypesFromConfig({
+   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 
@@ -32,7 +32,7 @@ test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_Exp
 });
 
 test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_ExpectOk', () => {
-   updateItineraryAdjustmentTypesFromConfig({
+   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 
@@ -53,7 +53,7 @@ test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_E
 });
 
 test('Test_BuildAdjustmentRowSpec_TestIgnoresUnknownOrIncompleteAdjustments_ExpectOk', () => {
-   updateItineraryAdjustmentTypesFromConfig({
+   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
       adjustmentTypes: ADJUSTMENT_TYPES,
    });
 

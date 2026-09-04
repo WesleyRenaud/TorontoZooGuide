@@ -1,5 +1,5 @@
 import { normalizeItineraryItems } from '../itineraryShape.js';
-import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
+import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
@@ -73,7 +73,7 @@ export function getScheduleItemRowKind(row) {
 }
 
 export function resolveEffectiveScheduleItemSelection(selection, selectedRow) {
-   if (!isScheduleItemTypeUnset(selection)) {
+   if (!ScheduleItemTypes.isScheduleItemTypeUnset(selection)) {
       return selection;
    }
 
@@ -199,7 +199,7 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
       };
    }
 
-   if (isScheduleItemTypeUnset(moduleType)) {
+   if (ScheduleItemTypes.isScheduleItemTypeUnset(moduleType)) {
       return {
          query: normalizedQuery,
          includeAnimals: true,
@@ -384,7 +384,7 @@ export function extractScheduleItemSearchRows(moduleType, response = {}) {
       );
    }
 
-   if (isScheduleItemTypeUnset(moduleType)) {
+   if (ScheduleItemTypes.isScheduleItemTypeUnset(moduleType)) {
       return [
          ...tagAnimalRows(
             Array.isArray(response.animals) ? response.animals : []

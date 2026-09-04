@@ -7,13 +7,13 @@ import {
    hasMultipleItineraryBuildWarnings,
    showItineraryBuildWarningsConfirmation,
 } from '../../scripts/itinerary/panel/itineraryBuildWarningsConfirmation.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
-updateItineraryErrorTypesFromConfig({
+ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
    errorTypes: MOCK_ERROR_TYPES,
    suppressedErrorTypes: [],
 });
@@ -343,7 +343,7 @@ test('buildItineraryBuildWarningSections skips empty warning modules', () => {
 });
 
 test('buildItineraryBuildWarningSections skips long wait when error type is unset', () => {
-   updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          ...MOCK_ERROR_TYPES,
          FIXED_TIME_ITEM_LONG_WAIT: '',
@@ -364,7 +364,7 @@ test('buildItineraryBuildWarningSections skips long wait when error type is unse
       );
    }
    finally {
-      updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
       });

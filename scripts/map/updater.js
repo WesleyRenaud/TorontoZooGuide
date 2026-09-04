@@ -5,7 +5,7 @@ import {
    resolveDeepLinkFocus,
    scheduleFocusRequest,
 } from './focusRequest.js';
-import { resolveItineraryPath } from '../itinerary/itineraryPathModel.js';
+import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
 import {
    clearItineraryPathOverlay,
    renderItineraryPathOverlay,
@@ -135,7 +135,7 @@ export function createMapUpdater({
          syncItineraryTransportationRoute(itinerary);
          markers.render(LayerRequest.buildItineraryRows(itinerary));
          renderItineraryPathOverlay(
-            resolveItineraryPath(options, itinerary)
+            ItineraryPathModel.resolveItineraryPath(options, itinerary)
          );
          focusIfRequested(options);
          return true;

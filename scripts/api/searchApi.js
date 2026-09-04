@@ -1,5 +1,5 @@
 import { ApiClient } from './apiClient.js';
-import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
+import { NormalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
 function normalizeAttractionRow(row) {
@@ -27,7 +27,7 @@ function normalizeGuardiansTalkRow(row) {
       name: ValueNormalizer.asTrimmedString(source.name),
       location: ValueNormalizer.asTrimmedString(source.location),
       start_time: ValueNormalizer.asTrimmedString(source.start_time),
-      linked_animals: normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
+      linked_animals: NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
    };
 }
 

@@ -1,56 +1,56 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { resolveItineraryErrorMessage } from '../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installScheduleItemActionsTestHooks } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
-test('resolveItineraryErrorMessage maps noAvailableSlot', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps noAvailableSlot', () => {
    assert.match(
-      resolveItineraryErrorMessage('noAvailableSlot'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('noAvailableSlot'),
       /No open time slot/
    );
 });
 
-test('resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
    assert.match(
-      resolveItineraryErrorMessage('requestedTimeNotAvailable'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('requestedTimeNotAvailable'),
       /That time is not available/
    );
 });
 
-test('resolveItineraryErrorMessage maps itemAlreadyScheduled', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps itemAlreadyScheduled', () => {
    assert.match(
-      resolveItineraryErrorMessage('itemAlreadyScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('itemAlreadyScheduled'),
       /already scheduled/i
    );
 });
 
-test('resolveItineraryErrorMessage maps bulkScheduleItineraryAlreadyScheduled', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps bulkScheduleItineraryAlreadyScheduled', () => {
    assert.match(
-      resolveItineraryErrorMessage('bulkScheduleItineraryAlreadyScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('bulkScheduleItineraryAlreadyScheduled'),
       /no items to schedule/i
    );
 });
 
-test('resolveItineraryErrorMessage maps unscheduleAllNothingScheduled', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps unscheduleAllNothingScheduled', () => {
    assert.match(
-      resolveItineraryErrorMessage('unscheduleAllNothingScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('unscheduleAllNothingScheduled'),
       /no items to unschedule/i
    );
 });
 
-test('resolveItineraryErrorMessage maps activityNotOnDaySchedule', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps activityNotOnDaySchedule', () => {
    assert.match(
-      resolveItineraryErrorMessage('activityNotOnDaySchedule'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('activityNotOnDaySchedule'),
       /not scheduled on your visit day/i
    );
 });
 
-test('resolveItineraryErrorMessage maps scheduleWindowUnavailable', () => {
+test('ItineraryErrorTypes.resolveItineraryErrorMessage maps scheduleWindowUnavailable', () => {
    assert.match(
-      resolveItineraryErrorMessage('scheduleWindowUnavailable'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage('scheduleWindowUnavailable'),
       /Operating hours are unavailable/i
    );
 });

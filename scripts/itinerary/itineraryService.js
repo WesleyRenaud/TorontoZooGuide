@@ -1,9 +1,6 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
-import {
-   isItinerarySuccess,
-   resolveItineraryErrorMessage,
-} from './itineraryErrorTypes.js';
+import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { hasSavedItineraryContent } from './itineraryShape.js';
@@ -83,10 +80,10 @@ export async function bulkScheduleItinerary({
       confirmingFixedTimeItemLongWait,
    });
 
-   if (!isItinerarySuccess(result.errorType)) {
+   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
       return {
          errorType: result.errorType,
-         message: resolveItineraryErrorMessage(result.errorType),
+         message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
          issues: result.issues ?? [],
       };
    }
@@ -105,10 +102,10 @@ export async function unscheduleAllItineraryItems() {
    const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
    const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
 
-   if (!isItinerarySuccess(result.errorType)) {
+   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
       return {
          errorType: result.errorType,
-         message: resolveItineraryErrorMessage(result.errorType),
+         message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
       };
    }
 
