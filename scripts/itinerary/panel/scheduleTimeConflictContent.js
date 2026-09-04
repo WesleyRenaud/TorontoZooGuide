@@ -2,10 +2,7 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { el } from './dom.js';
 import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-import {
-   applyConflictSelectionButtonState,
-   getConflictSelectionButtonState,
-} from './scheduleTimeConflictButtonState.js';
+import { ScheduleTimeConflictButtonState } from './scheduleTimeConflictButtonState.js';
 import {
    createSelectorRowContent,
    createSelectorTextColumn,
@@ -19,9 +16,9 @@ export const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
 
 function refreshConflictSelectionButtons(buttonEntries, selection) {
    buttonEntries.forEach(({ button, item }) => {
-      applyConflictSelectionButtonState(
+      ScheduleTimeConflictButtonState.applyConflictSelectionButtonState(
          button,
-         getConflictSelectionButtonState(selection, item)
+         ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, item)
       );
    });
 }

@@ -8,7 +8,7 @@ import {
    isItineraryEmpty,
 } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import { SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS } from '../panel/sectionConfigs.js';
+import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
@@ -139,7 +139,7 @@ export async function openItineraryWizard({
             result.issues
          );
 
-         SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS.forEach((selectionKey) => {
+         SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS.forEach((selectionKey) => {
             updateSelection(selectionKey, nextSelections[selectionKey]);
          });
          showStep(activeStepKey);

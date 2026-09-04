@@ -9,7 +9,7 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../../scripts/itinerary/panel/rows.js';
-import { buildSectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
+import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -267,7 +267,7 @@ test.describe('itinerary panel row builders', () => {
    });
    
    test('animal section count matches deduplicated rendered rows', () => {
-      const [animalSection] = buildSectionConfigs({
+      const [animalSection] = SectionConfigs.buildSectionConfigs({
          animals: [
             {
                species: 'African Lion',
@@ -291,7 +291,7 @@ test.describe('itinerary panel row builders', () => {
    });
 
    test('attraction section includes transportation added as an attraction', () => {
-      const [attractionSection] = buildSectionConfigs({
+      const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [{ name: 'Conservation Carousel' }],
          transportations: [
             {
@@ -322,7 +322,7 @@ test.describe('itinerary panel row builders', () => {
    test('transportation section lists pure transportations without schedule actions', () => {
       const scheduleCalls = [];
       const removeCalls = [];
-      const [transportationSection] = buildSectionConfigs({
+      const [transportationSection] = SectionConfigs.buildSectionConfigs({
          transportations: [
             {
                name: 'Zoomobile',
@@ -371,7 +371,7 @@ test.describe('itinerary panel row builders', () => {
    });
 
    test('attraction section shows main-station round trip for unscheduled transportation attractions', () => {
-      const [attractionSection] = buildSectionConfigs({
+      const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [],
          transportations: [
             {
@@ -392,7 +392,7 @@ test.describe('itinerary panel row builders', () => {
    });
 
    test('transportation station line marks round trips when first and last match', () => {
-      const [attractionSection] = buildSectionConfigs({
+      const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [],
          transportations: [
             {

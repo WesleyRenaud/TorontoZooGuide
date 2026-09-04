@@ -27,12 +27,7 @@ import {
    runScheduleItemButtonAction,
 } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
-import {
-   buildSectionConfigs,
-   SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
-   SCHEDULED_DAY_PLANNER_SECTION_KEYS,
-   UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
-} from '../sectionConfigs.js';
+import { SectionConfigs } from '../sectionConfigs.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
@@ -60,11 +55,11 @@ function makeItemsListSection(
       onUnscheduleItem = null,
       onScheduleItem = null,
       onRemoveItem = null,
-      sectionKeys = SCHEDULED_DAY_PLANNER_SECTION_KEYS,
+      sectionKeys = SectionConfigs.SCHEDULED_DAY_PLANNER_SECTION_KEYS,
       splitTransportationSequences = false,
    } = {}
 ) {
-   const sectionConfigs = buildSectionConfigs(itinerary, {
+   const sectionConfigs = SectionConfigs.buildSectionConfigs(itinerary, {
       keys: sectionKeys,
       onUnscheduleItem,
       onScheduleItem,
@@ -334,7 +329,7 @@ export function makeDayPlannerPreview(
       buildScheduledItinerary(itinerary, scheduledRowsContext),
       strings.scheduledTitle,
       {
-         editButtonSectionKeys: SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
+         editButtonSectionKeys: SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
          onUnscheduleItem: scheduleHandlers.onUnscheduleItineraryItem,
          onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
          splitTransportationSequences: true,
@@ -346,7 +341,7 @@ export function makeDayPlannerPreview(
       {
          onScheduleItem: scheduleHandlers.onScheduleItineraryItem,
          onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
-         sectionKeys: UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
+         sectionKeys: SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
       }
    );
 
