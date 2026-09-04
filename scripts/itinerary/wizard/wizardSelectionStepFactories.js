@@ -4,7 +4,7 @@ import { createItineraryGuardiansTalkSelectorController } from '../selectors/gua
 import { createItineraryRegionSelectorController } from '../selectors/regionSelector.js';
 import { createItineraryTransportationSelectorController } from '../selectors/transportationSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../selectors/wildEncounterSelector.js';
-import { WIZARD_SELECTION_STEP_DEFINITIONS } from './wizardStepConfigs.js';
+import { WizardStepConfigs } from './wizardStepConfigs.js';
 
 const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
    transportations: createItineraryTransportationSelectorController,
@@ -16,7 +16,7 @@ const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
 });
 
 export function buildWizardSelectionStepConfigs(
-   definitions = WIZARD_SELECTION_STEP_DEFINITIONS,
+   definitions = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS,
    factoriesByStepKey = WIZARD_SELECTION_STEP_FACTORIES
 ) {
    return definitions.map((definition) => ({

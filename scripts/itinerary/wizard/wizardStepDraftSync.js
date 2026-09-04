@@ -1,5 +1,5 @@
 import { toISODate } from '../../visitDates/visitDateRules.js';
-import { WIZARD_DEFAULT_START_STEP } from './wizardStepConfigs.js';
+import { WizardStepConfigs } from './wizardStepConfigs.js';
 
 export class WizardStepDraftSync {
    static resolveDateStepDraftUpdate({
@@ -34,7 +34,7 @@ export class WizardStepDraftSync {
       return true;
    }
 
-   static isWizardDateStep(stepKey, defaultStep = WIZARD_DEFAULT_START_STEP) {
+   static isWizardDateStep(stepKey, defaultStep = WizardStepConfigs.WIZARD_DEFAULT_START_STEP) {
       return stepKey === defaultStep;
    }
 }

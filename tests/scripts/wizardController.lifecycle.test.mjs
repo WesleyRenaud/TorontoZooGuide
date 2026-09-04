@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { openItineraryWizard } from '../../scripts/itinerary/wizard/wizardController.js';
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
-import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -121,7 +121,7 @@ test.describe('openItineraryWizard lifecycle', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
 
       localStorage.setItem(
-         SELECTED_EXHIBITS_KEY,
+         StorageKeys.SELECTED_EXHIBITS_KEY,
          JSON.stringify(['Africa Savanna'])
       );
 
@@ -145,7 +145,7 @@ test.describe('openItineraryWizard lifecycle', () => {
          },
       });
 
-      assert.equal(localStorage.getItem(SELECTED_EXHIBITS_KEY), null);
+      assert.equal(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY), null);
    });
 
    test('prompts to save when closing with unsaved changes', async () => {

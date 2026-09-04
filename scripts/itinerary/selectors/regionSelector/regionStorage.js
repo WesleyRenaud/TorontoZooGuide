@@ -3,13 +3,7 @@ import {
    loadArray,
    saveArray,
 } from '../../draftStorage.js';
-import { REMOVED_ANIMALS_KEY } from '../../storageKeys.js';
-
-export {
-   REMOVED_ANIMALS_KEY,
-   SELECTED_EXHIBITS_KEY,
-   SELECTED_REGIONS_KEY,
-} from '../../storageKeys.js';
+import { StorageKeys } from '../../storageKeys.js';
 
 export function loadSelectedNames(storageKey) {
    return loadArray(storageKey)
@@ -32,7 +26,7 @@ function normalizeStoredAnimalKey(key) {
 
 export function loadRemovedAnimalKeys() {
    return new Set(
-      loadArray(REMOVED_ANIMALS_KEY)
+      loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
          .map(normalizeStoredAnimalKey)
          .filter(Boolean)
    );
@@ -47,7 +41,7 @@ export function addRemovedAnimalKey(key) {
 
    const removedKeys = loadRemovedAnimalKeys();
    removedKeys.add(normalizedKey);
-   saveArray(REMOVED_ANIMALS_KEY, [...removedKeys]);
+   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
 }
 
 export function restoreRemovedAnimalKey(key) {
@@ -58,11 +52,11 @@ export function restoreRemovedAnimalKey(key) {
       return;
    }
 
-   saveArray(REMOVED_ANIMALS_KEY, [...removedKeys]);
+   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
 }
 
 export function clearRemovedAnimalKeys() {
-   saveArray(REMOVED_ANIMALS_KEY, []);
+   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, []);
 }
 
 export function clearRemovedAnimalKeysForExhibit(exhibitName) {
@@ -82,5 +76,5 @@ export function clearRemovedAnimalKeysForExhibit(exhibitName) {
       return;
    }
 
-   saveArray(REMOVED_ANIMALS_KEY, nextKeys);
+   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, nextKeys);
 }

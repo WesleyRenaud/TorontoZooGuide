@@ -3,13 +3,7 @@ import { ItineraryConfirmationResult } from '../../itineraryConfirmationResult.j
 import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
-import {
-   canScheduleModuleSelection,
-   filterVisibleScheduleModuleRows,
-   resolveScheduleModuleSearchLabel,
-   resolveScheduleModuleSearchRowRenderer,
-   shouldClearSelectedScheduleRow,
-} from './scheduleItemModuleSelection.js';
+import { ScheduleItemModuleSelection } from './scheduleItemModuleSelection.js';
 import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
 import {
    buildScheduleItemSearchPayload,
@@ -78,7 +72,7 @@ export function createScheduleItemModuleController({
    }
 
    function canScheduleSelection() {
-      return canScheduleModuleSelection({
+      return ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: getSelection(),
          selectedRow,
          eventTypes,
@@ -172,7 +166,7 @@ export function createScheduleItemModuleController({
          emptyText: strings.emptyResults,
          getId: getScheduleItemRowId,
          selectedRowId,
-         renderRowLeft: (row) => resolveScheduleModuleSearchRowRenderer({
+         renderRowLeft: (row) => ScheduleItemModuleSelection.resolveScheduleModuleSearchRowRenderer({
             row,
             renderAnimalRowLeft,
             renderAttractionRowLeft,
@@ -206,13 +200,13 @@ export function createScheduleItemModuleController({
 
    function displaySearchResults(rows = []) {
       latestSearchRows = rows;
-      const visibleRows = filterVisibleScheduleModuleRows({
+      const visibleRows = ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
          rows,
          itinerary,
          onlyItineraryItemsEnabled: isOnlyItineraryItemsEnabled(),
       });
 
-      if (shouldClearSelectedScheduleRow({ selectedRowId, visibleRows })) {
+      if (ScheduleItemModuleSelection.shouldClearSelectedScheduleRow({ selectedRowId, visibleRows })) {
          clearSelectedRow();
       }
 
@@ -236,7 +230,7 @@ export function createScheduleItemModuleController({
       }
 
       if (searchInput) {
-         searchInput.value = resolveScheduleModuleSearchLabel(preselectedRow);
+         searchInput.value = ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(preselectedRow);
       }
 
       displaySearchResults([preselectedRow]);

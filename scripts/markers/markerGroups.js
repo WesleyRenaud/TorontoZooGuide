@@ -1,4 +1,4 @@
-import { coordKey } from '../map/coordKey.js';
+import { CoordKey } from '../map/coordKey.js';
 
 export function groupMarkersByCoordinate(items) {
    const markerMap = new Map();
@@ -11,7 +11,7 @@ export function groupMarkersByCoordinate(items) {
          return;
       }
 
-      const key = coordKey(x, y);
+      const key = CoordKey.coordKey(x, y);
 
       if (!key) {
          return;

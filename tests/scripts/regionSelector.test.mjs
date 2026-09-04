@@ -6,7 +6,7 @@ import {
    shouldSkipRegionSelectionSync,
 } from '../../scripts/itinerary/selectors/regionSelector.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
-import { ANIMALS_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import {
    createDomNode,
    installDocument,
@@ -64,11 +64,11 @@ test('shouldSkipRegionSelectionSync ignores matching fingerprint after UI toggle
 
 test('region selector skips animal rebuild when exhibit selection is unchanged', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -95,11 +95,11 @@ test('region selector skips animal rebuild when exhibit selection is unchanged',
 
 test('region selector rebuilds animals after re-selecting an exhibit in the UI', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -200,11 +200,11 @@ test('region selector routes close and prev actions', async () => {
 
 test('region selector prev rebuilds animals after toggling an exhibit', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -252,11 +252,11 @@ test('region selector prev rebuilds animals after toggling an exhibit', async ()
 
 test('region selector finish skips rebuild when stored animals match selected exhibits', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -287,11 +287,11 @@ test('region selector finish skips rebuild when stored animals match selected ex
 
 test('region selector finish rebuilds animals when catalog grew for selected exhibits', async () => {
    localStorage.setItem(
-      ANIMALS_KEY,
+      StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
@@ -360,7 +360,7 @@ test('region selector finish rebuilds animals when exhibits are selected without
 
 test('region selector toggles regions and ignores empty regions', async () => {
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([])
    );
 
@@ -386,7 +386,7 @@ test('region selector toggles regions and ignores empty regions', async () => {
 
 test('region selector finish commits animals when selection changed', async () => {
    localStorage.setItem(
-      SELECTED_EXHIBITS_KEY,
+      StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([])
    );
 

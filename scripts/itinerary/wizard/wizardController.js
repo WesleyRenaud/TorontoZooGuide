@@ -18,12 +18,7 @@ import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
-import {
-   buildSelectionStepHandlers,
-   resolveWizardStartStep,
-   WIZARD_DEFAULT_START_STEP,
-   WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY,
-} from './wizardStepConfigs.js';
+import { WizardStepConfigs } from './wizardStepConfigs.js';
 import { WizardStepDraftSync } from './wizardStepDraftSync.js';
 
 async function loadDefaultSelectionStepConfigs() {
@@ -44,7 +39,7 @@ function closeWizard(mountEl) {
 
 export async function openItineraryWizard({
    mountEl,
-   startAt = WIZARD_DEFAULT_START_STEP,
+   startAt = WizardStepConfigs.WIZARD_DEFAULT_START_STEP,
    deps = {},
 } = {}) {
    const {
@@ -80,7 +75,7 @@ export async function openItineraryWizard({
    const { state: wizardState } = wizard;
 
    const wizardSteps = {};
-   let activeStepKey = WIZARD_DEFAULT_START_STEP;
+   let activeStepKey = WizardStepConfigs.WIZARD_DEFAULT_START_STEP;
 
    function showStep(stepKey) {
       activeStepKey = stepKey;
@@ -179,7 +174,7 @@ export async function openItineraryWizard({
    }
 
    async function syncSelectionStepDraft(stepKey) {
-      const activeConfig = WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY[stepKey];
+      const activeConfig = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY[stepKey];
       const activeController = wizardSteps[stepKey];
 
       if (!WizardStepDraftSync.shouldSyncSelectionStepDraft({
@@ -249,7 +244,7 @@ export async function openItineraryWizard({
                showStep(config.prevStepKey);
             }
             : undefined,
-         ...buildSelectionStepHandlers({
+         ...WizardStepConfigs.buildSelectionStepHandlers({
             selectionKey: config.selectionKey,
             preserveOnInvalid: config.preserveOnInvalid,
             updateSelection,
@@ -281,5 +276,5 @@ export async function openItineraryWizard({
       onFinish: handleDateFinish,
    });
 
-   return showStep(resolveWizardStartStep(startAt));
+   return showStep(WizardStepConfigs.resolveWizardStartStep(startAt));
 }

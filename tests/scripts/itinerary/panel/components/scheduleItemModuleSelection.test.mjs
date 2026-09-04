@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   canScheduleModuleSelection,
-   filterVisibleScheduleModuleRows,
-   resolveScheduleModuleSearchLabel,
-   shouldClearSelectedScheduleRow,
-} from '../../scripts/itinerary/panel/components/scheduleItemModuleSelection.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { ScheduleItemModuleSelection } from '../../../../../scripts/itinerary/panel/components/scheduleItemModuleSelection.js';
+import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
 
 const EVENT_TYPES = ['lunch', 'break'];
 
@@ -46,9 +41,9 @@ const ZOOMOBILE_AS_ATTRACTION_ROW = {
    scheduleItemKind: 'attractions',
 };
 
-test('canScheduleModuleSelection requires a row for searchable kinds', () => {
+test('Test_CanScheduleModuleSelection_TestSearchableKinds_ExpectRowRequired', () => {
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: ScheduleItemKind.ANIMAL.itemType,
          selectedRow: null,
          eventTypes: EVENT_TYPES,
@@ -56,7 +51,7 @@ test('canScheduleModuleSelection requires a row for searchable kinds', () => {
       false
    );
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: ScheduleItemKind.ANIMAL.itemType,
          selectedRow: ANIMAL_ROW,
          eventTypes: EVENT_TYPES,
@@ -65,9 +60,9 @@ test('canScheduleModuleSelection requires a row for searchable kinds', () => {
    );
 });
 
-test('canScheduleModuleSelection allows a preselected transportation attraction', () => {
+test('Test_CanScheduleModuleSelection_TestTransportationAttraction_ExpectAllowed', () => {
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: ScheduleItemKind.ATTRACTION.itemType,
          selectedRow: ZOOMOBILE_AS_ATTRACTION_ROW,
          eventTypes: EVENT_TYPES,
@@ -75,7 +70,7 @@ test('canScheduleModuleSelection allows a preselected transportation attraction'
       true
    );
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: ScheduleItemKind.TRANSPORTATION.itemType,
          selectedRow: TRANSPORTATION_ROW,
          eventTypes: EVENT_TYPES,
@@ -84,9 +79,9 @@ test('canScheduleModuleSelection allows a preselected transportation attraction'
    );
 });
 
-test('canScheduleModuleSelection allows event types without a selected row', () => {
+test('Test_CanScheduleModuleSelection_TestEventTypes_ExpectNoRowRequired', () => {
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: 'lunch',
          selectedRow: null,
          eventTypes: EVENT_TYPES,
@@ -94,7 +89,7 @@ test('canScheduleModuleSelection allows event types without a selected row', () 
       true
    );
    assert.equal(
-      canScheduleModuleSelection({
+      ScheduleItemModuleSelection.canScheduleModuleSelection({
          selection: '',
          selectedRow: null,
          eventTypes: EVENT_TYPES,
@@ -103,11 +98,11 @@ test('canScheduleModuleSelection allows event types without a selected row', () 
    );
 });
 
-test('filterVisibleScheduleModuleRows keeps itinerary rows when the filter is enabled', () => {
+test('Test_FilterVisibleScheduleModuleRows_TestItineraryFilter_ExpectKeepsItineraryRows', () => {
    const rows = [ANIMAL_ROW, ATTRACTION_ROW];
 
    assert.deepEqual(
-      filterVisibleScheduleModuleRows({
+      ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
          rows,
          itinerary: {
             animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -118,7 +113,7 @@ test('filterVisibleScheduleModuleRows keeps itinerary rows when the filter is en
       [ANIMAL_ROW]
    );
    assert.deepEqual(
-      filterVisibleScheduleModuleRows({
+      ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
          rows,
          onlyItineraryItemsEnabled: false,
       }),
@@ -126,7 +121,7 @@ test('filterVisibleScheduleModuleRows keeps itinerary rows when the filter is en
    );
 });
 
-test('filterVisibleScheduleModuleRows hides scheduled talks and encounters', () => {
+test('Test_FilterVisibleScheduleModuleRows_TestScheduledTalks_ExpectHidden', () => {
    const rows = [ANIMAL_ROW, GUARDIANS_TALK_ROW, WILD_ENCOUNTER_ROW];
    const itinerary = {
       animals: [],
@@ -135,7 +130,7 @@ test('filterVisibleScheduleModuleRows hides scheduled talks and encounters', () 
    };
 
    assert.deepEqual(
-      filterVisibleScheduleModuleRows({
+      ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
          rows,
          itinerary,
          onlyItineraryItemsEnabled: false,
@@ -144,11 +139,11 @@ test('filterVisibleScheduleModuleRows hides scheduled talks and encounters', () 
    );
 });
 
-test('filterVisibleScheduleModuleRows never shows talks or encounters with the itinerary filter', () => {
+test('Test_FilterVisibleScheduleModuleRows_TestItineraryFilterTalks_ExpectNeverShown', () => {
    const rows = [ANIMAL_ROW, GUARDIANS_TALK_ROW, WILD_ENCOUNTER_ROW];
 
    assert.deepEqual(
-      filterVisibleScheduleModuleRows({
+      ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
          rows,
          itinerary: {
             animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -161,16 +156,16 @@ test('filterVisibleScheduleModuleRows never shows talks or encounters with the i
    );
 });
 
-test('shouldClearSelectedScheduleRow detects filtered-out selections', () => {
+test('Test_ShouldClearSelectedScheduleRow_TestFilteredOut_ExpectCleared', () => {
    assert.equal(
-      shouldClearSelectedScheduleRow({
+      ScheduleItemModuleSelection.shouldClearSelectedScheduleRow({
          selectedRowId: 'Tiger||Savanna',
          visibleRows: [ATTRACTION_ROW],
       }),
       true
    );
    assert.equal(
-      shouldClearSelectedScheduleRow({
+      ScheduleItemModuleSelection.shouldClearSelectedScheduleRow({
          selectedRowId: 'Tiger||Savanna',
          visibleRows: [ANIMAL_ROW],
       }),
@@ -178,9 +173,15 @@ test('shouldClearSelectedScheduleRow detects filtered-out selections', () => {
    );
 });
 
-test('resolveScheduleModuleSearchLabel uses species or attraction titles', () => {
-   assert.equal(resolveScheduleModuleSearchLabel(ANIMAL_ROW), 'Tiger');
-   assert.equal(resolveScheduleModuleSearchLabel(ATTRACTION_ROW), 'Carousel');
-   assert.equal(resolveScheduleModuleSearchLabel(ZOOMOBILE_AS_ATTRACTION_ROW), 'Zoomobile');
-   assert.equal(resolveScheduleModuleSearchLabel(TRANSPORTATION_ROW), 'Zoomobile');
+test('Test_ResolveScheduleModuleSearchLabel_TestKinds_ExpectTitles', () => {
+   assert.equal(ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(ANIMAL_ROW), 'Tiger');
+   assert.equal(ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(ATTRACTION_ROW), 'Carousel');
+   assert.equal(
+      ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(ZOOMOBILE_AS_ATTRACTION_ROW),
+      'Zoomobile'
+   );
+   assert.equal(
+      ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(TRANSPORTATION_ROW),
+      'Zoomobile'
+   );
 });

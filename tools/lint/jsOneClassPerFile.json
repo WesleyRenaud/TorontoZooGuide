@@ -85,7 +85,13 @@
       "scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.js",
       "scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js",
       "scripts/itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js",
-      "scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js"
+      "scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js",
+      "scripts/map/coordKey.js",
+      "scripts/itinerary/storageKeys.js",
+      "scripts/itinerary/wizard/wizardStepConfigs.js",
+      "scripts/itinerary/panel/itineraryPanelViewUrl.js",
+      "scripts/itinerary/selectors/regionSelector/regionSelection.js",
+      "scripts/itinerary/panel/components/scheduleItemModuleSelection.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

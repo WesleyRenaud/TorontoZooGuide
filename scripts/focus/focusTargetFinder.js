@@ -1,4 +1,4 @@
-import { coordKey } from '../map/coordKey.js';
+import { CoordKey } from '../map/coordKey.js';
 import { TYPE_REGISTRY } from '../tooltips/tooltipRenderers.js';
 
 function itemLikelihood(item) {
@@ -37,7 +37,7 @@ export function createFocusMatch(row, type) {
 }
 
 export function findMarkerByCoordinates({ x, y, getMarkerByCoord }) {
-   const key = coordKey(x, y);
+   const key = CoordKey.coordKey(x, y);
 
    if (!key) {
       return null;
