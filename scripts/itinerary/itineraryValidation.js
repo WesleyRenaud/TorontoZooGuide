@@ -1,13 +1,7 @@
 import { LikelihoodValues } from '../likelihood/likelihoodValues.js';
 import { normalizeNonNegativeNumber } from './panel/format.js';
-import { buildSpeciesExhibitKey } from './speciesExhibitKey.js';
-import {
-   hasAddedItems,
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-} from './wizard/itineraryDiff.js';
+import { SpeciesExhibitKey } from './speciesExhibitKey.js';
+import { Summary } from './wizard/diff/summary.js';
 
 function maxStoredLikelihood(...values) {
    const likelihoods = values
@@ -27,7 +21,7 @@ function aggregateAnimalsForVisibilityComparison(animals = []) {
    const aggregatedBySpeciesExhibit = new Map();
 
    animals.forEach((animal) => {
-      const key = buildSpeciesExhibitKey(animal);
+      const key = SpeciesExhibitKey.buildSpeciesExhibitKey(animal);
 
       if (!key) {
          return;
@@ -145,65 +139,67 @@ function buildRemovedScheduledItems(items = []) {
    return items.filter((item) => item.is_deleted === true);
 }
 
-export function buildItineraryValidationState(
-   itinerary = {},
-   {
-      animalVisibilityChangeThreshold,
-      itineraryAnimalMinLikelihood,
-   } = {}
-) {
-   const visibilityChangeThreshold = normalizeNonNegativeNumber(
-      animalVisibilityChangeThreshold
-   );
-   const animalMinLikelihood = normalizeNonNegativeNumber(
-      itineraryAnimalMinLikelihood
-   );
-   const visibilityAnimals = aggregateAnimalsForVisibilityComparison(
-      itinerary.animals
-   );
-   const removed = {
-      animals: buildRemovedAnimals(visibilityAnimals, animalMinLikelihood),
-      attractions: buildRemovedAttractions(
-         itinerary.attractions,
-         animalMinLikelihood
-      ),
-      guardiansTalks: buildRemovedScheduledItems(itinerary.guardiansTalks),
-      wildEncounters: buildRemovedScheduledItems(itinerary.wildEncounters),
-   };
-   const added = {
-      animals: buildAddedAnimals(itinerary.animals),
-   };
-   const reducedVisibility = {
-      animals: buildReducedVisibilityAnimals(
-         visibilityAnimals,
-         visibilityChangeThreshold,
-         animalMinLikelihood
-      ),
-   };
-   const improvedVisibility = {
-      animals: buildImprovedVisibilityAnimals(
-         visibilityAnimals,
-         visibilityChangeThreshold
-      ),
-   };
-   const unscheduled = {
-      animals: [],
-      attractions: [],
-   };
+export class ItineraryValidation {
+   static buildItineraryValidationState(
+      itinerary = {},
+      {
+         animalVisibilityChangeThreshold,
+         itineraryAnimalMinLikelihood,
+      } = {}
+   ) {
+      const visibilityChangeThreshold = normalizeNonNegativeNumber(
+         animalVisibilityChangeThreshold
+      );
+      const animalMinLikelihood = normalizeNonNegativeNumber(
+         itineraryAnimalMinLikelihood
+      );
+      const visibilityAnimals = aggregateAnimalsForVisibilityComparison(
+         itinerary.animals
+      );
+      const removed = {
+         animals: buildRemovedAnimals(visibilityAnimals, animalMinLikelihood),
+         attractions: buildRemovedAttractions(
+            itinerary.attractions,
+            animalMinLikelihood
+         ),
+         guardiansTalks: buildRemovedScheduledItems(itinerary.guardiansTalks),
+         wildEncounters: buildRemovedScheduledItems(itinerary.wildEncounters),
+      };
+      const added = {
+         animals: buildAddedAnimals(itinerary.animals),
+      };
+      const reducedVisibility = {
+         animals: buildReducedVisibilityAnimals(
+            visibilityAnimals,
+            visibilityChangeThreshold,
+            animalMinLikelihood
+         ),
+      };
+      const improvedVisibility = {
+         animals: buildImprovedVisibilityAnimals(
+            visibilityAnimals,
+            visibilityChangeThreshold
+         ),
+      };
+      const unscheduled = {
+         animals: [],
+         attractions: [],
+      };
 
-   return {
-      removed,
-      unscheduled,
-      added,
-      reducedVisibility,
-      improvedVisibility,
-      adjustments: [],
-      hasChanges: (
-         hasAddedItems(added)
-         || hasRemovedItems(removed)
-         || hasUnscheduledItems(unscheduled)
-         || hasReducedVisibility(reducedVisibility)
-         || hasImprovedVisibility(improvedVisibility)
-      ),
-   };
+      return {
+         removed,
+         unscheduled,
+         added,
+         reducedVisibility,
+         improvedVisibility,
+         adjustments: [],
+         hasChanges: (
+            Summary.hasAddedItems(added)
+            || Summary.hasRemovedItems(removed)
+            || Summary.hasUnscheduledItems(unscheduled)
+            || Summary.hasReducedVisibility(reducedVisibility)
+            || Summary.hasImprovedVisibility(improvedVisibility)
+         ),
+      };
+   }
 }

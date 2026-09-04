@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { filterDraftExcludingWarningFixedTimeItems } from '../../scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js';
+import { FilterDraftExcludingWarningFixedTimeItems } from '../../../../scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js';
 
-test('filterDraftExcludingWarningFixedTimeItems removes matching talks and encounters', () => {
-   const filtered = filterDraftExcludingWarningFixedTimeItems(
+test('Test_FilterDraftExcludingWarningFixedTimeItems_TestMatchingItems_ExpectRemoved', () => {
+   const filtered = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
       {
          guardiansTalks: [
             { name: 'Amur Tiger', start_time: '11:00 AM' },
@@ -37,8 +37,8 @@ test('filterDraftExcludingWarningFixedTimeItems removes matching talks and encou
    assert.deepEqual(filtered.wildEncounters, []);
 });
 
-test('filterDraftExcludingWarningFixedTimeItems matches when only end times differ', () => {
-   const filtered = filterDraftExcludingWarningFixedTimeItems(
+test('Test_FilterDraftExcludingWarningFixedTimeItems_TestEndTimeOnly_ExpectMatched', () => {
+   const filtered = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
       {
          guardiansTalks: [
             {

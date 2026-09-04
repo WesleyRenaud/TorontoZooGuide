@@ -1,16 +1,6 @@
 import { AnimalIdentity } from './animalIdentity.js';
 import { EnclosureType } from '../shared/enums/enclosureType.js';
 
-export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
-   const { species, exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
-
-   if (!species || (requireExhibit && !exhibit)) {
-      return '';
-   }
-
-   return `${species}|${exhibit}`;
-}
-
 function buildViewingSpotSuffix(animal = {}) {
    const { enclosure_name: enclosureName } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
@@ -23,55 +13,67 @@ function buildViewingSpotSuffix(animal = {}) {
    return enclosureType ? enclosureType.toLowerCase() : '';
 }
 
-export function buildAnimalViewingSpotKey(animal = {}, { requireExhibit = true } = {}) {
-   const baseKey = buildSpeciesExhibitKey(animal, { requireExhibit });
+export class SpeciesExhibitKey {
+   static buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
+      const { species, exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
-   if (!baseKey) {
-      return '';
+      if (!species || (requireExhibit && !exhibit)) {
+         return '';
+      }
+
+      return `${species}|${exhibit}`;
    }
 
-   const viewingSpotSuffix = buildViewingSpotSuffix(animal);
+   static buildAnimalViewingSpotKey(animal = {}, { requireExhibit = true } = {}) {
+      const baseKey = SpeciesExhibitKey.buildSpeciesExhibitKey(animal, { requireExhibit });
 
-   return viewingSpotSuffix ? `${baseKey}|${viewingSpotSuffix}` : baseKey;
-}
-
-export function buildUniqueSpeciesExhibitEntries(
-   animals = [],
-   {
-      includeAnimal = () => true,
-      mergeAnimals = null,
-      requireExhibit = true,
-      buildKey = buildSpeciesExhibitKey,
-   } = {}
-) {
-   const entries = [];
-   const entriesByKey = new Map();
-
-   animals.forEach((animal, index) => {
-      if (!includeAnimal(animal, index)) {
-         return;
+      if (!baseKey) {
+         return '';
       }
 
-      const key = buildKey(animal, { requireExhibit });
+      const viewingSpotSuffix = buildViewingSpotSuffix(animal);
 
-      if (!key) {
-         return;
-      }
+      return viewingSpotSuffix ? `${baseKey}|${viewingSpotSuffix}` : baseKey;
+   }
 
-      const existing = entriesByKey.get(key);
+   static buildUniqueSpeciesExhibitEntries(
+      animals = [],
+      {
+         includeAnimal = () => true,
+         mergeAnimals = null,
+         requireExhibit = true,
+         buildKey = SpeciesExhibitKey.buildSpeciesExhibitKey,
+      } = {}
+   ) {
+      const entries = [];
+      const entriesByKey = new Map();
 
-      if (!existing) {
-         const entry = { item: animal, index };
+      animals.forEach((animal, index) => {
+         if (!includeAnimal(animal, index)) {
+            return;
+         }
 
-         entries.push(entry);
-         entriesByKey.set(key, entry);
-         return;
-      }
+         const key = buildKey(animal, { requireExhibit });
 
-      if (typeof mergeAnimals === 'function') {
-         existing.item = mergeAnimals(existing.item, animal);
-      }
-   });
+         if (!key) {
+            return;
+         }
 
-   return entries;
+         const existing = entriesByKey.get(key);
+
+         if (!existing) {
+            const entry = { item: animal, index };
+
+            entries.push(entry);
+            entriesByKey.set(key, entry);
+            return;
+         }
+
+         if (typeof mergeAnimals === 'function') {
+            existing.item = mergeAnimals(existing.item, animal);
+         }
+      });
+
+      return entries;
+   }
 }

@@ -37,7 +37,17 @@
       "scripts/itinerary/ensureItineraryVisitDate.js",
       "scripts/itinerary/selectors/selectorControllerConfig.js",
       "scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js",
-      "scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js"
+      "scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js",
+      "scripts/itinerary/speciesExhibitKey.js",
+      "scripts/itinerary/wizard/diff/itemKey.js",
+      "scripts/itinerary/wizard/diff/summary.js",
+      "scripts/itinerary/wizard/diff/removedItems.js",
+      "scripts/itinerary/wizard/diff/animalVisibility.js",
+      "scripts/itinerary/wizard/itineraryDiff.js",
+      "scripts/itinerary/itineraryValidationResult.js",
+      "scripts/itinerary/itineraryValidation.js",
+      "scripts/itinerary/wizard/scheduleConflictCompatibility.js",
+      "scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

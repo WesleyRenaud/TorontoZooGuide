@@ -3,8 +3,8 @@ import {
    hasRemovedItemsPopupContent,
 } from './removedItemsPopupContent.js';
 import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
-import { buildSpeciesExhibitKey } from '../../speciesExhibitKey.js';
-import { buildItemKey } from '../../wizard/diff/itemKey.js';
+import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
+import { ItemKey } from '../../wizard/diff/itemKey.js';
 
 function toggleKeptItem(keptItemsByKey, item, buildKey, normalizeItem) {
    const key = buildKey(item);
@@ -91,7 +91,7 @@ export function showRemovedItemsPopup({
          toggleKeptItem(
             keptAnimalsByKey,
             animal,
-            buildSpeciesExhibitKey,
+            SpeciesExhibitKey.buildSpeciesExhibitKey,
             (value) => ({
                species: String(value?.species ?? '').trim(),
                exhibit: String(value?.exhibit ?? '').trim(),
@@ -103,7 +103,7 @@ export function showRemovedItemsPopup({
          toggleKeptItem(
             keptAttractionsByKey,
             attraction,
-            (value) => buildItemKey(value, 'name'),
+            (value) => ItemKey.buildItemKey(value, 'name'),
             (value) => String(value?.name ?? '').trim()
          );
       },

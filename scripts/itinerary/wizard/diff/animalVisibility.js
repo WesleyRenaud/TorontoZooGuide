@@ -1,4 +1,4 @@
-import { buildItemKey } from './itemKey.js';
+import { ItemKey } from './itemKey.js';
 import { LikelihoodValues } from '../../../likelihood/likelihoodValues.js';
 
 function getAnimalLikelihood(animal) {
@@ -9,7 +9,7 @@ function buildAnimalsBySpecies(animals = []) {
    const bestBySpecies = new Map();
 
    animals.forEach((animal) => {
-      const speciesKey = buildItemKey(animal, 'species');
+      const speciesKey = ItemKey.buildItemKey(animal, 'species');
 
       if (!speciesKey) {
          return;
@@ -40,63 +40,65 @@ function buildAnimalsBySpecies(animals = []) {
 function buildRemovedSpeciesKeys(removedAnimals = []) {
    return new Set(
       removedAnimals
-         .map((animal) => buildItemKey(animal, 'species'))
+         .map((animal) => ItemKey.buildItemKey(animal, 'species'))
          .filter(Boolean)
    );
 }
 
-export function buildAnimalVisibilityChanges(
-   previousAnimals = [],
-   validatedAnimals = [],
-   removedAnimals = [],
-   minDelta = 0.2
-) {
-   const previousBySpecies = buildAnimalsBySpecies(previousAnimals);
-   const validatedBySpecies = buildAnimalsBySpecies(validatedAnimals);
-   const removedSpeciesKeys = buildRemovedSpeciesKeys(removedAnimals);
+export class AnimalVisibility {
+   static buildAnimalVisibilityChanges(
+      previousAnimals = [],
+      validatedAnimals = [],
+      removedAnimals = [],
+      minDelta = 0.2
+   ) {
+      const previousBySpecies = buildAnimalsBySpecies(previousAnimals);
+      const validatedBySpecies = buildAnimalsBySpecies(validatedAnimals);
+      const removedSpeciesKeys = buildRemovedSpeciesKeys(removedAnimals);
 
-   const reduced = [];
-   const improved = [];
+      const reduced = [];
+      const improved = [];
 
-   previousBySpecies.forEach((previousAnimal, speciesKey) => {
-      if (removedSpeciesKeys.has(speciesKey)) {
-         return;
-      }
+      previousBySpecies.forEach((previousAnimal, speciesKey) => {
+         if (removedSpeciesKeys.has(speciesKey)) {
+            return;
+         }
 
-      const validatedAnimal = validatedBySpecies.get(speciesKey);
+         const validatedAnimal = validatedBySpecies.get(speciesKey);
 
-      if (!validatedAnimal) {
-         return;
-      }
+         if (!validatedAnimal) {
+            return;
+         }
 
-      const likelihoodBefore = getAnimalLikelihood(previousAnimal);
-      const likelihoodAfter = getAnimalLikelihood(validatedAnimal);
+         const likelihoodBefore = getAnimalLikelihood(previousAnimal);
+         const likelihoodAfter = getAnimalLikelihood(validatedAnimal);
 
-      if (likelihoodBefore == null || likelihoodAfter == null) {
-         return;
-      }
+         if (likelihoodBefore == null || likelihoodAfter == null) {
+            return;
+         }
 
-      const delta = likelihoodAfter - likelihoodBefore;
+         const delta = likelihoodAfter - likelihoodBefore;
 
-      if (minDelta == null || Math.abs(delta) < minDelta) {
-         return;
-      }
+         if (minDelta == null || Math.abs(delta) < minDelta) {
+            return;
+         }
 
-      const changedAnimal = {
-         ...validatedAnimal,
-         likelihoodBefore,
-         likelihoodAfter,
+         const changedAnimal = {
+            ...validatedAnimal,
+            likelihoodBefore,
+            likelihoodAfter,
+         };
+
+         if (delta < 0) {
+            reduced.push(changedAnimal);
+         } else if (delta > 0) {
+            improved.push(changedAnimal);
+         }
+      });
+
+      return {
+         reduced,
+         improved,
       };
-
-      if (delta < 0) {
-         reduced.push(changedAnimal);
-      } else if (delta > 0) {
-         improved.push(changedAnimal);
-      }
-   });
-
-   return {
-      reduced,
-      improved,
-   };
+   }
 }

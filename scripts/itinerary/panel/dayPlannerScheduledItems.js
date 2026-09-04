@@ -27,10 +27,7 @@ import {
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-import {
-   buildAnimalViewingSpotKey,
-   buildUniqueSpeciesExhibitEntries,
-} from '../speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function getScheduledMaximumDuration(item) {
    const maximumDuration = Number(item?.maximum_duration);
@@ -119,11 +116,11 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
 }
 
 function buildScheduledAnimalRows(animals = []) {
-   return buildUniqueSpeciesExhibitEntries(animals, {
+   return SpeciesExhibitKey.buildUniqueSpeciesExhibitEntries(animals, {
       includeAnimal: (item) => (
          hasItineraryScheduleTimes(item) && !isCoveredByTalk(item)
       ),
-      buildKey: buildAnimalViewingSpotKey,
+      buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
       requireExhibit: false,
    }).map(({ item, index }) => {
       const [row] = buildAnimalRows([item]);

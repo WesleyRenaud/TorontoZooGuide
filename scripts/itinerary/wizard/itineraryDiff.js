@@ -1,17 +1,9 @@
-import { buildAnimalVisibilityChanges } from './diff/animalVisibility.js';
-import { buildItemKey } from './diff/itemKey.js';
-import { mergeRemovedItems } from './diff/removedItems.js';
-import {
-   hasAddedItems,
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-   isValidatedItineraryEmpty,
-} from './diff/summary.js';
+import { AnimalVisibility } from './diff/animalVisibility.js';
+import { ItemKey } from './diff/itemKey.js';
+import { RemovedItems } from './diff/removedItems.js';
 import { normalizeNonNegativeNumber } from '../panel/format.js';
 import { isTransportationAddedAsAttraction } from '../selectors/transportationSelector/model.js';
-import { buildSpeciesExhibitKey } from '../speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function validatedAttractionPresenceItems(validated) {
    return [
@@ -22,25 +14,25 @@ function validatedAttractionPresenceItems(validated) {
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
-      animals: mergeRemovedItems(
+      animals: RemovedItems.mergeRemovedItems(
          backendRemoved.animals,
          previous.animals,
          validated.animals,
          'species'
       ),
-      attractions: mergeRemovedItems(
+      attractions: RemovedItems.mergeRemovedItems(
          backendRemoved.attractions,
          previous.attractions,
          validatedAttractionPresenceItems(validated),
          'name'
       ),
-      guardiansTalks: mergeRemovedItems(
+      guardiansTalks: RemovedItems.mergeRemovedItems(
          backendRemoved.guardiansTalks,
          previous.guardiansTalks,
          validated.guardiansTalks,
          'name'
       ),
-      wildEncounters: mergeRemovedItems(
+      wildEncounters: RemovedItems.mergeRemovedItems(
          backendRemoved.wildEncounters,
          previous.wildEncounters,
          validated.wildEncounters,
@@ -50,7 +42,7 @@ function buildRemovedItems(previous, validated, backendRemoved = {}) {
 }
 
 function buildAnimalVisibilityDiff(previous, validated, removed, minDelta = null) {
-   return buildAnimalVisibilityChanges(
+   return AnimalVisibility.buildAnimalVisibilityChanges(
       previous.animals,
       validated.animals,
       removed.animals,
@@ -92,12 +84,12 @@ function buildUnscheduledItems(previous, validated) {
       animals: buildUnscheduledItemsByKey(
          previous.animals,
          validated.animals,
-         buildSpeciesExhibitKey
+         SpeciesExhibitKey.buildSpeciesExhibitKey
       ),
       attractions: buildUnscheduledItemsByKey(
          previous.attractions,
          validatedAttractionPresenceItems(validated),
-         (item) => buildItemKey(item, 'name')
+         (item) => ItemKey.buildItemKey(item, 'name')
       ),
    };
 }
@@ -124,59 +116,52 @@ function mergeRemovedItemLists(existing = [], incoming = [], buildKey) {
    return merged;
 }
 
-export function mergeRemovedValidationState(
+export class ItineraryDiff {
+   static mergeRemovedValidationState(
       existingRemoved = {},
       diffRemoved = {}) {
-   return {
-      animals: mergeRemovedItemLists(
-         existingRemoved.animals,
-         diffRemoved.animals,
-         buildSpeciesExhibitKey),
-      attractions: mergeRemovedItemLists(
-         existingRemoved.attractions,
-         diffRemoved.attractions,
-         (item) => buildItemKey(item, 'name')),
-      guardiansTalks: mergeRemovedItemLists(
-         existingRemoved.guardiansTalks,
-         diffRemoved.guardiansTalks,
-         (item) => buildItemKey(item, 'name')),
-      wildEncounters: mergeRemovedItemLists(
-         existingRemoved.wildEncounters,
-         diffRemoved.wildEncounters,
-         (item) => buildItemKey(item, 'name')),
-   };
+      return {
+         animals: mergeRemovedItemLists(
+            existingRemoved.animals,
+            diffRemoved.animals,
+            SpeciesExhibitKey.buildSpeciesExhibitKey),
+         attractions: mergeRemovedItemLists(
+            existingRemoved.attractions,
+            diffRemoved.attractions,
+            (item) => ItemKey.buildItemKey(item, 'name')),
+         guardiansTalks: mergeRemovedItemLists(
+            existingRemoved.guardiansTalks,
+            diffRemoved.guardiansTalks,
+            (item) => ItemKey.buildItemKey(item, 'name')),
+         wildEncounters: mergeRemovedItemLists(
+            existingRemoved.wildEncounters,
+            diffRemoved.wildEncounters,
+            (item) => ItemKey.buildItemKey(item, 'name')),
+      };
+   }
+
+   static buildItineraryDiff(
+      previous,
+      validated,
+      backendRemoved = {},
+      { animalVisibilityChangeThreshold } = {}
+   ) {
+      const removed = buildRemovedItems(previous, validated, backendRemoved);
+      const unscheduled = buildUnscheduledItems(previous, validated);
+      const minDelta = normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
+      const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed, (
+         minDelta == null ? undefined : minDelta / 100
+      ));
+
+      return {
+         removed,
+         unscheduled,
+         reducedVisibility: {
+            animals: visibilityChanges.reduced,
+         },
+         improvedVisibility: {
+            animals: visibilityChanges.improved,
+         },
+      };
+   }
 }
-
-export function buildItineraryDiff(
-   previous,
-   validated,
-   backendRemoved = {},
-   { animalVisibilityChangeThreshold } = {}
-) {
-   const removed = buildRemovedItems(previous, validated, backendRemoved);
-   const unscheduled = buildUnscheduledItems(previous, validated);
-   const minDelta = normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
-   const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed, (
-      minDelta == null ? undefined : minDelta / 100
-   ));
-
-   return {
-      removed,
-      unscheduled,
-      reducedVisibility: {
-         animals: visibilityChanges.reduced,
-      },
-      improvedVisibility: {
-         animals: visibilityChanges.improved,
-      },
-   };
-}
-
-export {
-   hasAddedItems,
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-   isValidatedItineraryEmpty,
-};

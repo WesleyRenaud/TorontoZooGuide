@@ -1,14 +1,8 @@
+import { Summary } from './diff/summary.js';
 import {
    cloneItineraryDraft,
    writeStoredItineraryDraft,
 } from '../draftStorage.js';
-import {
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-   isValidatedItineraryEmpty,
-} from './itineraryDiff.js';
 import {
    areItineraryDraftsSemanticallyEqual,
    hydrateWizardDraftFromSavedItinerary,
@@ -95,12 +89,12 @@ function applyPendingValidation(state, {
       });
    }
 
-   state.pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
-   state.pendingUnscheduledItems = hasUnscheduledItems(unscheduled) ? unscheduled : null;
-   state.pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
-   state.pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
+   state.pendingRemovedItems = Summary.hasRemovedItems(removed) ? removed : null;
+   state.pendingUnscheduledItems = Summary.hasUnscheduledItems(unscheduled) ? unscheduled : null;
+   state.pendingReducedVisibility = Summary.hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
+   state.pendingImprovedVisibility = Summary.hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
    state.pendingValidatedEmpty = validated != null
-      ? isValidatedItineraryEmpty(validated)
+      ? Summary.isValidatedItineraryEmpty(validated)
       : false;
 }
 

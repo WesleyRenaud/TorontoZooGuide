@@ -1,6 +1,6 @@
 import { APP_STRINGS } from '../../strings.js';
 import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
-import { hasAnyAdditionalSelectableConflictItems } from '../wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import {
    getSelectedConflictItems,
    hasUnresolvedWildEncounterConflictGroups,
@@ -59,7 +59,7 @@ export async function resolveScheduleTimeConflictSelection(
       return false;
    }
 
-   if (hasAnyAdditionalSelectableConflictItems(conflictGroups)) {
+   if (ScheduleConflictCompatibility.hasAnyAdditionalSelectableConflictItems(conflictGroups)) {
       confirmations.showProceedWithAdditional({
          onConfirm: async () => {
             await onResolved(selectedConflictItems);

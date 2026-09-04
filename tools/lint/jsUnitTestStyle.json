@@ -34,7 +34,12 @@
       "tests/scripts/itinerary/ensureItineraryVisitDate.test.mjs",
       "tests/scripts/itinerary/selectors/selectorControllerConfig.test.mjs",
       "tests/scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.test.mjs",
-      "tests/scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.test.mjs"
+      "tests/scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.test.mjs",
+      "tests/scripts/itinerary/speciesExhibitKey.test.mjs",
+      "tests/scripts/itinerary/wizard/itineraryDiff.test.mjs",
+      "tests/scripts/itinerary/itineraryValidation.test.mjs",
+      "tests/scripts/itinerary/wizard/scheduleConflictCompatibility.test.mjs",
+      "tests/scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

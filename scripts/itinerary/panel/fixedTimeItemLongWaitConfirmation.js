@@ -7,13 +7,10 @@ import {
 import { getItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { APP_STRINGS } from '../../strings.js';
-import {
-   isGuardiansTalkConflictItem,
-   isWildEncounterConflictItem,
-} from '../wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 
 function resolveItemTypeMeta(item) {
-   if (isGuardiansTalkConflictItem(item)) {
+   if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
       return {
          itemType: ItinerarySaveIssueItemType.guardiansTalk,
          typeLabel: APP_STRINGS.entityLabels.guardiansTalk,
@@ -21,7 +18,7 @@ function resolveItemTypeMeta(item) {
       };
    }
 
-   if (isWildEncounterConflictItem(item)) {
+   if (ScheduleConflictCompatibility.isWildEncounterConflictItem(item)) {
       return {
          itemType: ItinerarySaveIssueItemType.wildEncounter,
          typeLabel: APP_STRINGS.entityLabels.wildEncounter,

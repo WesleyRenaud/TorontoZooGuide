@@ -5,10 +5,7 @@ import {
    buildMetaLines,
 } from './rowPresentation.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
-import {
-   buildAnimalViewingSpotKey,
-   buildUniqueSpeciesExhibitEntries,
-} from '../speciesExhibitKey.js';
+import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function normalizeItems(items = [], normalizeItem) {
    return items.map((item) => normalizeItem(item));
@@ -29,8 +26,8 @@ function maxStoredLikelihood(...values) {
 }
 
 export function buildUniqueAnimals(animals = []) {
-   return buildUniqueSpeciesExhibitEntries(animals, {
-      buildKey: buildAnimalViewingSpotKey,
+   return SpeciesExhibitKey.buildUniqueSpeciesExhibitEntries(animals, {
+      buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
       mergeAnimals: (existing, animal) => ({
          ...existing,
          likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),

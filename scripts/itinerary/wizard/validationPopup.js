@@ -1,11 +1,5 @@
+import { Summary } from './diff/summary.js';
 import { showRemovedItemsPopup } from '../../itinerary/panel/components/removedItemsPopup.js';
-import {
-   hasAddedItems,
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-} from './itineraryDiff.js';
 import { acceptItinerary } from '../itineraryService.js';
 
 export function showWizardValidationPopupIfNeeded({
@@ -22,11 +16,11 @@ export function showWizardValidationPopupIfNeeded({
    const isEmptyItinerary = pendingValidation?.isEmptyItinerary ?? false;
 
    if (
-      !hasRemovedItems(removed) &&
-      !hasUnscheduledItems(unscheduled) &&
-      !hasAddedItems(added) &&
-      !hasReducedVisibility(reducedVisibility) &&
-      !hasImprovedVisibility(improvedVisibility) &&
+      !Summary.hasRemovedItems(removed) &&
+      !Summary.hasUnscheduledItems(unscheduled) &&
+      !Summary.hasAddedItems(added) &&
+      !Summary.hasReducedVisibility(reducedVisibility) &&
+      !Summary.hasImprovedVisibility(improvedVisibility) &&
       !adjustments?.length
    ) {
       return;

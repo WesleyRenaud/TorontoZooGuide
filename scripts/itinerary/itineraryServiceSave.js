@@ -17,7 +17,7 @@ import {
    normalizeItineraryDraft,
    toSetItineraryPayload,
 } from './itineraryShape.js';
-import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
+import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { showAttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
 import { showFixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
@@ -29,7 +29,7 @@ import {
 } from './panel/itineraryBuildWarningsConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
-import { buildItineraryDiff } from './wizard/itineraryDiff.js';
+import { ItineraryDiff } from './wizard/itineraryDiff.js';
 import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
 function createConfirmedSetItineraryResult(result, diffBaseline = null) {
@@ -225,7 +225,7 @@ export async function saveItinerary(
    }
 
    const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-   const saveDiff = buildItineraryDiff(
+   const saveDiff = ItineraryDiff.buildItineraryDiff(
       normalizeItineraryDraft(diffBaseline ?? itinerary),
       normalizedItinerary,
       {},
@@ -233,7 +233,7 @@ export async function saveItinerary(
    );
 
    normalizedItinerary.saveIssues = result.issues;
-   applyItineraryDiffToValidation(
+   ItineraryValidationResult.applyItineraryDiffToValidation(
       normalizedItinerary,
       saveDiff,
       { adjustments: result.adjustments ?? [] });

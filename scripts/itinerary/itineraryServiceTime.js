@@ -12,11 +12,11 @@ import {
    getItinerary,
 } from './itineraryService.js';
 import { normalizeItineraryDraft } from './itineraryShape.js';
-import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
+import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { PersistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
-import { buildItineraryDiff } from './wizard/itineraryDiff.js';
+import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 class ItineraryTimeChangeCancelledError extends Error {
    constructor() {
@@ -107,7 +107,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
    }
 
    const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-   const timeDiff = buildItineraryDiff(
+   const timeDiff = ItineraryDiff.buildItineraryDiff(
       normalizeItineraryDraft(previousItinerary),
       normalizedItinerary,
       {},
@@ -115,7 +115,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
    );
 
    normalizedItinerary.saveIssues = result.issues;
-   applyItineraryDiffToValidation(normalizedItinerary, timeDiff);
+   ItineraryValidationResult.applyItineraryDiffToValidation(normalizedItinerary, timeDiff);
 
    return normalizedItinerary;
 }
