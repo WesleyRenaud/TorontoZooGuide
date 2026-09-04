@@ -3,7 +3,7 @@ import {
    bindMarkerInteractions,
    createMarkerElement,
 } from './markerElement.js';
-import { groupMarkersByCoordinate } from './markerGroups.js';
+import { MarkerGroups } from './markerGroups.js';
 
 const MARKER_SELECTOR = '.marker';
 
@@ -45,7 +45,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEd
 
    function buildMarkerFragment(items) {
       const fragment = document.createDocumentFragment();
-      const markerMap = groupMarkersByCoordinate(items);
+      const markerMap = MarkerGroups.groupMarkersByCoordinate(items);
 
       markerMap.forEach((group) => {
          if (shouldRenderMarkerGroup(group)) {

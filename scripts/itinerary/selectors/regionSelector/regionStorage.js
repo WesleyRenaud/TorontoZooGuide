@@ -1,80 +1,83 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
+import { StoredSelection } from '../base/storedSelection.js';
 import {
    loadArray,
    saveArray,
 } from '../../draftStorage.js';
 import { StorageKeys } from '../../storageKeys.js';
 
-export function loadSelectedNames(storageKey) {
-   return loadArray(storageKey)
-      .map((name) => typeof name === 'string' ? name.trim() : '')
-      .filter(Boolean);
-}
-
-export function saveSelectedNames(storageKey, names) {
-   saveArray(
-      storageKey,
-      Array.from(names)
-         .map((name) => typeof name === 'string' ? name.trim() : '')
-         .filter(Boolean)
-   );
-}
-
 function normalizeStoredAnimalKey(key) {
-   return String(key ?? '').trim().toLowerCase();
+   return StoredSelection.normalizeStoredString(key).toLowerCase();
 }
 
-export function loadRemovedAnimalKeys() {
-   return new Set(
-      loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
-         .map(normalizeStoredAnimalKey)
-         .filter(Boolean)
-   );
-}
-
-export function addRemovedAnimalKey(key) {
-   const normalizedKey = normalizeStoredAnimalKey(key);
-
-   if (!normalizedKey) {
-      return;
+export class RegionStorage {
+   static loadSelectedNames(storageKey) {
+      return loadArray(storageKey)
+         .map((name) => StoredSelection.normalizeStoredString(name))
+         .filter(Boolean);
    }
 
-   const removedKeys = loadRemovedAnimalKeys();
-   removedKeys.add(normalizedKey);
-   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
-}
-
-export function restoreRemovedAnimalKey(key) {
-   const normalizedKey = normalizeStoredAnimalKey(key);
-   const removedKeys = loadRemovedAnimalKeys();
-
-   if (!removedKeys.delete(normalizedKey)) {
-      return;
+   static saveSelectedNames(storageKey, names) {
+      saveArray(
+         storageKey,
+         Array.from(names)
+            .map((name) => StoredSelection.normalizeStoredString(name))
+            .filter(Boolean)
+      );
    }
 
-   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
-}
-
-export function clearRemovedAnimalKeys() {
-   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, []);
-}
-
-export function clearRemovedAnimalKeysForExhibit(exhibitName) {
-   const normalizedExhibit = AnimalIdentity.normalizeAnimalIdentitySearchFields({
-      exhibit: exhibitName,
-   }).exhibit;
-
-   if (!normalizedExhibit) {
-      return;
+   static loadRemovedAnimalKeys() {
+      return new Set(
+         loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
+            .map(normalizeStoredAnimalKey)
+            .filter(Boolean)
+      );
    }
 
-   const exhibitSuffix = `||${normalizedExhibit}`;
-   const removedKeys = loadRemovedAnimalKeys();
-   const nextKeys = [...removedKeys].filter((key) => !key.endsWith(exhibitSuffix));
+   static addRemovedAnimalKey(key) {
+      const normalizedKey = normalizeStoredAnimalKey(key);
 
-   if (nextKeys.length === removedKeys.size) {
-      return;
+      if (!normalizedKey) {
+         return;
+      }
+
+      const removedKeys = RegionStorage.loadRemovedAnimalKeys();
+      removedKeys.add(normalizedKey);
+      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
    }
 
-   saveArray(StorageKeys.REMOVED_ANIMALS_KEY, nextKeys);
+   static restoreRemovedAnimalKey(key) {
+      const normalizedKey = normalizeStoredAnimalKey(key);
+      const removedKeys = RegionStorage.loadRemovedAnimalKeys();
+
+      if (!removedKeys.delete(normalizedKey)) {
+         return;
+      }
+
+      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
+   }
+
+   static clearRemovedAnimalKeys() {
+      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, []);
+   }
+
+   static clearRemovedAnimalKeysForExhibit(exhibitName) {
+      const normalizedExhibit = AnimalIdentity.normalizeAnimalIdentitySearchFields({
+         exhibit: exhibitName,
+      }).exhibit;
+
+      if (!normalizedExhibit) {
+         return;
+      }
+
+      const exhibitSuffix = `||${normalizedExhibit}`;
+      const removedKeys = RegionStorage.loadRemovedAnimalKeys();
+      const nextKeys = [...removedKeys].filter((key) => !key.endsWith(exhibitSuffix));
+
+      if (nextKeys.length === removedKeys.size) {
+         return;
+      }
+
+      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, nextKeys);
+   }
 }

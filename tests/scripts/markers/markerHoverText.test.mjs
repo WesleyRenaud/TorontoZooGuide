@@ -1,17 +1,20 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildHoverText } from '../../scripts/markers/markerHoverText.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { MarkerHoverText } from '../../../scripts/markers/markerHoverText.js';
+import { APP_STRINGS } from '../../../scripts/strings.js';
 
-test('buildHoverText returns empty text for missing or hidden marker types', () => {
-   assert.equal(buildHoverText(null), '');
-   assert.equal(buildHoverText([]), '');
-   assert.equal(buildHoverText([{ type: 'transportationRouteMarker', name: 'Route' }]), '');
-   assert.equal(buildHoverText([{ type: 'unknownType', name: 'Item' }]), '');
+test('Test_BuildHoverText_TestMissingOrHiddenTypes_ExpectEmpty', () => {
+   assert.equal(MarkerHoverText.buildHoverText(null), '');
+   assert.equal(MarkerHoverText.buildHoverText([]), '');
+   assert.equal(
+      MarkerHoverText.buildHoverText([{ type: 'transportationRouteMarker', name: 'Route' }]),
+      ''
+   );
+   assert.equal(MarkerHoverText.buildHoverText([{ type: 'unknownType', name: 'Item' }]), '');
 });
 
-test('buildHoverText formats counted hover text for map item types', () => {
+test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => {
    const cases = [
       {
          type: 'animal',
@@ -49,13 +52,13 @@ test('buildHoverText formats counted hover text for map item types', () => {
    ];
 
    for (const { items, expected } of cases) {
-      assert.equal(buildHoverText(items), expected);
+      assert.equal(MarkerHoverText.buildHoverText(items), expected);
    }
 });
 
-test('formats Meet the Guardians talk marker hover text', () => {
+test('Test_BuildHoverText_TestGuardiansTalkSingle_ExpectNamedHover', () => {
    assert.equal(
-      buildHoverText([
+      MarkerHoverText.buildHoverText([
          {
             type: 'guardiansTalk',
             name: 'Amur Tiger',
@@ -65,9 +68,9 @@ test('formats Meet the Guardians talk marker hover text', () => {
    );
 });
 
-test('formats counted Meet the Guardians talk marker hover text', () => {
+test('Test_BuildHoverText_TestGuardiansTalkCounted_ExpectPlusCount', () => {
    assert.equal(
-      buildHoverText([
+      MarkerHoverText.buildHoverText([
          {
             type: 'guardiansTalk',
             name: 'Amur Tiger',
@@ -80,14 +83,14 @@ test('formats counted Meet the Guardians talk marker hover text', () => {
       'Amur Tiger Meet The Guardians Talk + 1'
    );
    assert.equal(
-      buildHoverText([{ type: 'guardiansTalk' }]),
+      MarkerHoverText.buildHoverText([{ type: 'guardiansTalk' }]),
       APP_STRINGS.entityLabels.guardiansTalk
    );
 });
 
-test('formats wild encounter marker hover text', () => {
+test('Test_BuildHoverText_TestWildEncounterVariants_ExpectMeetingSpotText', () => {
    assert.equal(
-      buildHoverText([
+      MarkerHoverText.buildHoverText([
          {
             type: 'wildEncounter',
             name: 'African Rainforest',
@@ -96,11 +99,11 @@ test('formats wild encounter marker hover text', () => {
       'Wild Encounter • African Rainforest - Meeting Spot'
    );
    assert.equal(
-      buildHoverText([{ type: 'wildEncounter' }]),
+      MarkerHoverText.buildHoverText([{ type: 'wildEncounter' }]),
       APP_STRINGS.map.hover.wildEncounterMeetingSpot
    );
    assert.equal(
-      buildHoverText([
+      MarkerHoverText.buildHoverText([
          { type: 'wildEncounter', name: 'African Rainforest' },
          { type: 'wildEncounter', name: 'Indo-Malaya' },
       ]),

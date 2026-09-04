@@ -6,12 +6,7 @@ import {
 } from '../../draftStorage.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelection.js';
-import {
-   clearRemovedAnimalKeysForExhibit,
-   loadRemovedAnimalKeys,
-   loadSelectedNames,
-   saveSelectedNames,
-} from './regionStorage.js';
+import { RegionStorage } from './regionStorage.js';
 import { buildDateSearchContext } from '../../../search/searchContext.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { StorageKeys } from '../../storageKeys.js';
@@ -55,8 +50,8 @@ export function createRegionSelectorState() {
    }
 
    function persistSelectionState() {
-      saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
-      saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
+      RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
+      RegionStorage.saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
    }
 
    function syncAllRegionSelections() {
@@ -82,7 +77,7 @@ export function createRegionSelectorState() {
       selectedRegionNames.clear();
       bulkManagedExhibitNames.clear();
 
-      const storedExhibits = new Set(loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
+      const storedExhibits = new Set(RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
 
       regions.forEach((region) => {
          const exhibits = RegionSelection.getRegionExhibits(region);
@@ -115,7 +110,7 @@ export function createRegionSelectorState() {
       const draftAnimals = loadArray(StorageKeys.ANIMALS_KEY)
          .map(RegionSelection.normalizeSelectedAnimal)
          .filter(Boolean);
-      const removedKeys = loadRemovedAnimalKeys();
+      const removedKeys = RegionStorage.loadRemovedAnimalKeys();
       const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
       const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
          month,
@@ -172,7 +167,7 @@ export function createRegionSelectorState() {
          if (shouldSelect) {
             selectedExhibitNames.add(exhibitName);
             markExhibitBulkManaged(exhibitName);
-            clearRemovedAnimalKeysForExhibit(exhibitName);
+            RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
          }
          else {
             selectedExhibitNames.delete(exhibitName);
@@ -198,7 +193,7 @@ export function createRegionSelectorState() {
       else {
          selectedExhibitNames.add(exhibitName);
          markExhibitBulkManaged(exhibitName);
-         clearRemovedAnimalKeysForExhibit(exhibitName);
+         RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
       }
 
       RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
@@ -244,7 +239,7 @@ export function createRegionSelectorState() {
       });
       const selectedAnimals = RegionSelection.omitRemovedAnimals(
          fullAnimals.map(RegionSelection.makeSelectedAnimal).filter(Boolean),
-         loadRemovedAnimalKeys()
+         RegionStorage.loadRemovedAnimalKeys()
       );
 
       const selectedExhibitSet = new Set(

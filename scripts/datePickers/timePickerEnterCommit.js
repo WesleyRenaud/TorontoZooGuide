@@ -1,7 +1,7 @@
-import { readOpenPickerTime } from './readOpenPickerTime.js';
+import { ReadOpenPickerTime } from './readOpenPickerTime.js';
 
 export function resolveOpenTimePickerValue(inputEl, instance) {
-   return inputEl?.value?.trim() || readOpenPickerTime(instance) || '';
+   return inputEl?.value?.trim() || ReadOpenPickerTime.readOpenPickerTime(instance) || '';
 }
 
 export function commitTimeToInput(time, instance, inputEl) {

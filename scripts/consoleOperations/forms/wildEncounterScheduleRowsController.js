@@ -1,11 +1,7 @@
 import { initTimePicker } from '../../datePickers/consoleDatePickers.js';
 import { APP_STRINGS } from '../../strings.js';
 import { common } from '../../strings/common.js';
-import {
-   normalizeWildEncounterScheduleRow,
-   validateWildEncounterScheduleRows,
-   WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS,
-} from './wildEncounterScheduleRows.js';
+import { WildEncounterScheduleRows } from './wildEncounterScheduleRows.js';
 
 function createDayCheckbox({
    rowIndex,
@@ -50,7 +46,7 @@ function createScheduleRow({
    timeInputEl.setAttribute('aria-label', APP_STRINGS.labels.encounterTime);
    timeInputEl.autocomplete = 'off';
 
-   const normalizedRow = normalizeWildEncounterScheduleRow(initialRow);
+   const normalizedRow = WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(initialRow);
 
    if (normalizedRow.time) {
       timeInputEl.value = normalizedRow.time;
@@ -63,7 +59,7 @@ function createScheduleRow({
 
    const dayInputEls = {};
 
-   WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+   WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
       const { inputEl, optionLabelEl } = createDayCheckbox({
          rowIndex,
          dayKey,
@@ -118,11 +114,11 @@ export function createWildEncounterScheduleRowsController({
          time: rowController.timeInputEl.value,
       };
 
-      WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+      WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
          row[dayKey] = Boolean(rowController.dayInputEls[dayKey]?.checked);
       });
 
-      return normalizeWildEncounterScheduleRow(row);
+      return WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(row);
    }
 
    function render() {
@@ -171,7 +167,7 @@ export function createWildEncounterScheduleRowsController({
    }
 
    function validate() {
-      return validateWildEncounterScheduleRows(getRows());
+      return WildEncounterScheduleRows.validateWildEncounterScheduleRows(getRows());
    }
 
    function setRows(rows = []) {

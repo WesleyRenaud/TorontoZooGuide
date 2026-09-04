@@ -45,24 +45,26 @@ function readTimeFromPickerControls(instance, dateFormat) {
    return formatPickerDate(instance, date, dateFormat);
 }
 
-export function readOpenPickerTime(instance) {
-   if (!instance?.isOpen) {
-      return '';
+export class ReadOpenPickerTime {
+   static readOpenPickerTime(instance) {
+      if (!instance?.isOpen) {
+         return '';
+      }
+
+      const dateFormat = getPickerDateFormat(instance);
+
+      if (instance.selectedDates?.length) {
+         return formatPickerDate(instance, instance.selectedDates[0], dateFormat);
+      }
+
+      const controlTime = readTimeFromPickerControls(instance, dateFormat);
+
+      if (controlTime) {
+         return controlTime;
+      }
+
+      return instance.latestSelectedDateObj
+         ? formatPickerDate(instance, instance.latestSelectedDateObj, dateFormat)
+         : '';
    }
-
-   const dateFormat = getPickerDateFormat(instance);
-
-   if (instance.selectedDates?.length) {
-      return formatPickerDate(instance, instance.selectedDates[0], dateFormat);
-   }
-
-   const controlTime = readTimeFromPickerControls(instance, dateFormat);
-
-   if (controlTime) {
-      return controlTime;
-   }
-
-   return instance.latestSelectedDateObj
-      ? formatPickerDate(instance, instance.latestSelectedDateObj, dateFormat)
-      : '';
 }

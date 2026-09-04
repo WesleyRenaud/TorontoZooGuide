@@ -99,7 +99,13 @@
       "scripts/itinerary/panel/rowAlerts.js",
       "scripts/itinerary/panel/rowPresentation.js",
       "scripts/consoleOperations/forms/openingScheduleOverlap.js",
-      "scripts/consoleOperations/animals/autocomplete/speciesMatcher.js"
+      "scripts/consoleOperations/animals/autocomplete/speciesMatcher.js",
+      "scripts/itinerary/selectors/regionSelector/regionStorage.js",
+      "scripts/markers/markerHoverText.js",
+      "scripts/markers/markerGroups.js",
+      "scripts/consoleOperations/forms/wildEncounterScheduleRows.js",
+      "scripts/itinerary/panel/rowBuilders.js",
+      "scripts/datePickers/readOpenPickerTime.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

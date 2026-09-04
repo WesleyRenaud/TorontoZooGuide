@@ -100,17 +100,19 @@ const HOVER_FORMATTERS = Object.freeze({
    ),
 });
 
-export function buildHoverText(itemsAtPoint) {
-   if (!itemsAtPoint || itemsAtPoint.length === 0) {
-      return '';
+export class MarkerHoverText {
+   static buildHoverText(itemsAtPoint) {
+      if (!itemsAtPoint || itemsAtPoint.length === 0) {
+         return '';
+      }
+
+      const type = String(itemsAtPoint[0].type || '');
+      const formatter = HOVER_FORMATTERS[type];
+
+      if (HIDDEN_HOVER_TYPES.has(type) || !formatter) {
+         return '';
+      }
+
+      return formatter(itemsAtPoint);
    }
-
-   const type = String(itemsAtPoint[0].type || '');
-   const formatter = HOVER_FORMATTERS[type];
-
-   if (HIDDEN_HOVER_TYPES.has(type) || !formatter) {
-      return '';
-   }
-
-   return formatter(itemsAtPoint);
 }
