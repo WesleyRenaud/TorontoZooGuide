@@ -5,19 +5,7 @@ import {
    TIMELINE_POINT_PILL_HEIGHT_PX,
    TIMELINE_SLOT_HEIGHT_PX,
 } from '../../scripts/shared/constants.js';
-import {
-   areItineraryScheduleTimesOrdered,
-   buildArrivalTimeBounds,
-   buildDepartureTimeBounds,
-   buildHalfHourSlotStarts,
-   formatMinutesAsClockTime,
-   isArrivalTimeWithinBounds,
-   isDepartureTimeWithinBounds,
-   parseClockTimeMinutes,
-   resolveArrivalTimeValidationError,
-   resolveDayPlannerTimelineStartMinutes,
-   resolveDepartureTimeValidationError,
-} from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
+import { DayPlannerSchedule } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import { timelineSlotRowHeightFraction } from '../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
 import { DayPlannerTimelinePillPlacement } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
@@ -56,14 +44,14 @@ test.describe('itinerary panel format and schedule', () => {
       assert.equal(formatClockTime('09:30:30'), '9:30:30 AM');
       assert.equal(formatClockTime('19:00'), '7:00 PM');
       assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
-      assert.equal(parseClockTimeMinutes('09:30'), 570);
-      assert.equal(parseClockTimeMinutes('09:30:30'), 570.5);
-      assert.equal(parseClockTimeMinutes('10:00 AM'), 600);
-      assert.equal(parseClockTimeMinutes('10:00:30 AM'), 600.5);
-      assert.equal(parseClockTimeMinutes('1:30 PM'), 810);
-      assert.equal(parseClockTimeMinutes('bad-time'), null);
-      assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
-      assert.deepEqual(buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30'), 570);
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30:30'), 570.5);
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('10:00 AM'), 600);
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('10:00:30 AM'), 600.5);
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('1:30 PM'), 810);
+      assert.equal(DayPlannerSchedule.parseClockTimeMinutes('bad-time'), null);
+      assert.equal(DayPlannerSchedule.formatMinutesAsClockTime(1140), '7:00 PM');
+      assert.deepEqual(DayPlannerSchedule.buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          lastAdmissionTime: '18:00',
@@ -75,7 +63,7 @@ test.describe('itinerary panel format and schedule', () => {
          minClockTime: '9:00 AM',
          maxClockTime: '6:00 PM',
       });
-      assert.deepEqual(buildArrivalTimeBounds({
+      assert.deepEqual(DayPlannerSchedule.buildArrivalTimeBounds({
          openTime: '09:30',
          lastAdmissionTime: '17:00',
       }), {
@@ -86,18 +74,18 @@ test.describe('itinerary panel format and schedule', () => {
          minClockTime: '9:30 AM',
          maxClockTime: '5:00 PM',
       });
-      assert.equal(isArrivalTimeWithinBounds('9:00 AM', buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('9:00 AM', DayPlannerSchedule.buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          lastAdmissionTime: '18:00',
       })), true);
-      assert.equal(isArrivalTimeWithinBounds('8:45 AM', buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('8:45 AM', DayPlannerSchedule.buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          lastAdmissionTime: '18:00',
       })), false);
       assert.equal(
-         resolveDayPlannerTimelineStartMinutes(
+         DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(
             { openTime: '09:30', closeTime: '19:00' },
             {
                arrivalTime: '9:30 AM',
@@ -113,8 +101,8 @@ test.describe('itinerary panel format and schedule', () => {
          525
       );
       assert.deepEqual(
-         buildHalfHourSlotStarts(
-            resolveDayPlannerTimelineStartMinutes(
+         DayPlannerSchedule.buildHalfHourSlotStarts(
+            DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(
                { openTime: '09:30', closeTime: '19:00' },
                {
                   wildEncounters: [
@@ -130,21 +118,21 @@ test.describe('itinerary panel format and schedule', () => {
          ).slice(0, 3),
          [525, 540, 570]
       );
-      assert.equal(isArrivalTimeWithinBounds('6:00 PM', buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('6:00 PM', DayPlannerSchedule.buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          lastAdmissionTime: '18:00',
       })), true);
-      assert.equal(isArrivalTimeWithinBounds('6:15 PM', buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('6:15 PM', DayPlannerSchedule.buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          lastAdmissionTime: '18:00',
       })), false);
-      assert.equal(isArrivalTimeWithinBounds('', buildArrivalTimeBounds({
+      assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('', DayPlannerSchedule.buildArrivalTimeBounds({
          openTime: '09:30',
          lastAdmissionTime: '17:00',
       })), true);
-      assert.deepEqual(buildDepartureTimeBounds({
+      assert.deepEqual(DayPlannerSchedule.buildDepartureTimeBounds({
          openTime: '09:30',
          closeTime: '18:00',
       }), {
@@ -155,43 +143,43 @@ test.describe('itinerary panel format and schedule', () => {
          minClockTime: '9:30 AM',
          maxClockTime: '6:00 PM',
       });
-      assert.equal(isDepartureTimeWithinBounds('9:30 AM', buildDepartureTimeBounds({
+      assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('9:30 AM', DayPlannerSchedule.buildDepartureTimeBounds({
          openTime: '09:30',
          closeTime: '18:00',
       })), true);
-      assert.equal(isDepartureTimeWithinBounds('9:00 AM', buildDepartureTimeBounds({
+      assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('9:00 AM', DayPlannerSchedule.buildDepartureTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
          closeTime: '19:00',
       })), false);
-      assert.equal(isDepartureTimeWithinBounds('6:00 PM', buildDepartureTimeBounds({
+      assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('6:00 PM', DayPlannerSchedule.buildDepartureTimeBounds({
          openTime: '09:30',
          closeTime: '18:00',
       })), true);
-      assert.equal(isDepartureTimeWithinBounds('6:15 PM', buildDepartureTimeBounds({
+      assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('6:15 PM', DayPlannerSchedule.buildDepartureTimeBounds({
          openTime: '09:30',
          closeTime: '18:00',
       })), false);
-      assert.equal(isDepartureTimeWithinBounds('', buildDepartureTimeBounds({
+      assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('', DayPlannerSchedule.buildDepartureTimeBounds({
          openTime: '09:30',
          closeTime: '18:00',
       })), true);
-      assert.equal(areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
-      assert.equal(areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
-      assert.equal(areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
-      assert.equal(areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
-      assert.equal(resolveDepartureTimeValidationError(
+      assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
+      assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
+      assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
+      assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
+      assert.equal(DayPlannerSchedule.resolveDepartureTimeValidationError(
          '9:30 AM',
-         buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
+         DayPlannerSchedule.buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
          '9:30 AM',
          {
             departureTimeInvalid: 'hours',
             departureTimeAfterArrivalInvalid: 'order',
          }
       ), 'order');
-      assert.equal(resolveArrivalTimeValidationError(
+      assert.equal(DayPlannerSchedule.resolveArrivalTimeValidationError(
          '5:00 PM',
-         buildArrivalTimeBounds({
+         DayPlannerSchedule.buildArrivalTimeBounds({
             openTime: '09:30',
             lastAdmissionTime: '17:00',
          }),
@@ -201,7 +189,7 @@ test.describe('itinerary panel format and schedule', () => {
             timeOrderInvalid: 'order',
          }
       ), 'order');
-      assert.deepEqual(buildHalfHourSlotStarts(570, 720), [
+      assert.deepEqual(DayPlannerSchedule.buildHalfHourSlotStarts(570, 720), [
          570,
          600,
          630,
@@ -268,11 +256,11 @@ test.describe('itinerary panel format and schedule', () => {
    });
    
    test('timeline markers anchor to the preceding half-hour slot', () => {
-      const slotStarts = buildHalfHourSlotStarts(570, 1140);
+      const slotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(570, 1140);
       const markersByAnchor = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
          [
             {
-               startMinutes: parseClockTimeMinutes('11:35'),
+               startMinutes: DayPlannerSchedule.parseClockTimeMinutes('11:35'),
                label: 'Arrival',
                kind: TEST_ITINERARY_CONFIG.visitBoundaryEventTypes.arrival,
             },
@@ -281,7 +269,7 @@ test.describe('itinerary panel format and schedule', () => {
          1140
       );
    
-      assert.equal(DayPlannerTimelineMarkers.findTimelineAnchorSlot(parseClockTimeMinutes('11:35'), slotStarts), 690);
+      assert.equal(DayPlannerTimelineMarkers.findTimelineAnchorSlot(DayPlannerSchedule.parseClockTimeMinutes('11:35'), slotStarts), 690);
       assert.equal(DayPlannerTimelineMarkers.computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
       assert.deepEqual(markersByAnchor.get(690), [{
          label: 'Arrival',

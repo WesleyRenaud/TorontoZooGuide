@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { showScheduleItemModule } from '../../scripts/itinerary/panel/components/showScheduleItemModule.js';
-import { tagScheduleItemRow } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
+import { ScheduleItemSearch } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -52,7 +52,7 @@ test.describe('showScheduleItemModule', () => {
                added_as_attraction: true,
             }],
          },
-         preselectedRow: tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+         preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
             name: 'Zoomobile',
             added_as_attraction: true,
             route_duration_minutes: 75,
@@ -89,7 +89,7 @@ test.describe('showScheduleItemModule', () => {
                added_as_attraction: false,
             }],
          },
-         preselectedRow: tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+         preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
             name: 'Zoomobile',
             added_as_attraction: false,
             route_duration_minutes: 75,

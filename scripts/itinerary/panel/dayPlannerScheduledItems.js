@@ -1,5 +1,5 @@
 import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingWalkNode.js';
-import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
+import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
 import { RowActionProps } from './rowActionProps.js';
 import {
@@ -26,7 +26,7 @@ function getScheduledMaximumDuration(item) {
 
 function getDurationMinutesFromScheduleTimes(item) {
    return (
-      parseClockTimeMinutes(item.end_time) - parseClockTimeMinutes(item.start_time)
+      DayPlannerSchedule.parseClockTimeMinutes(item.end_time) - DayPlannerSchedule.parseClockTimeMinutes(item.start_time)
    );
 }
 
@@ -53,8 +53,8 @@ function getItineraryEventType(item) {
 function buildGenericEventScheduledRows(events = []) {
    return events.map((event, index) => {
       const eventType = getItineraryEventType(event);
-      const startMinutes = parseClockTimeMinutes(event.start_time);
-      const endMinutes = parseClockTimeMinutes(event.end_time);
+      const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(event.start_time);
+      const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(event.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(event);
       const label = ScheduleItemEventLabels.formatItineraryEventTypeLabel(eventType);
 
@@ -82,8 +82,8 @@ function buildGenericEventScheduledRows(events = []) {
 function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
    return items.map((item, index) => {
       const [row] = buildRows([item]);
-      const startMinutes = parseClockTimeMinutes(item.start_time);
-      const endMinutes = parseClockTimeMinutes(item.end_time);
+      const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
+      const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutes(item);
       const label = getScheduledItemLabel(item);
 
@@ -114,8 +114,8 @@ function buildScheduledAnimalRows(animals = []) {
       requireExhibit: false,
    }).map(({ item, index }) => {
       const [row] = buildAnimalRows([item]);
-      const startMinutes = parseClockTimeMinutes(item.start_time);
-      const endMinutes = parseClockTimeMinutes(item.end_time);
+      const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
+      const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(item);
       const label = getScheduledItemLabel(item);
       const viewingWalkNodeId = ScheduledPillViewingWalkNode.getAnimalViewingWalkNodeId(item);
@@ -143,8 +143,8 @@ function buildScheduledTransportationRows(transportations = []) {
    return transportations.flatMap((transportation, index) => (
       TransportationSequenceItems.buildTransportationSequenceItems(transportation).map((item) => {
          const [row] = buildTransportationRows([item]);
-         const startMinutes = parseClockTimeMinutes(item.start_time);
-         const endMinutes = parseClockTimeMinutes(item.end_time);
+         const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
+         const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
          const maximumDuration = getDurationMinutesFromScheduleTimes(item);
          const label = getScheduledItemLabel(item);
 

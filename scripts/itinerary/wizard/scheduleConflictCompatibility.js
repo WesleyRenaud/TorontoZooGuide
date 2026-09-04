@@ -1,4 +1,4 @@
-import { parseClockTimeMinutes } from '../panel/dayPlannerSchedule.js';
+import { DayPlannerSchedule } from '../panel/dayPlannerSchedule.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 
 function trimRangeAgainstBlocker(start, end, blockerStart, blockerEnd) {
@@ -26,12 +26,12 @@ function trimRangeAgainstBlocker(start, end, blockerStart, blockerEnd) {
 }
 
 function getTrimmedGuardiansTalkMinutes(talk, blockers = []) {
-   let start = parseClockTimeMinutes(talk.start_time);
-   let end = parseClockTimeMinutes(talk.end_time);
+   let start = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
+   let end = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
 
    for (const blocker of blockers) {
-      const blockerStart = parseClockTimeMinutes(blocker.start_time);
-      const blockerEnd = parseClockTimeMinutes(blocker.end_time);
+      const blockerStart = DayPlannerSchedule.parseClockTimeMinutes(blocker.start_time);
+      const blockerEnd = DayPlannerSchedule.parseClockTimeMinutes(blocker.end_time);
       const trimmedRange = trimRangeAgainstBlocker(
          start,
          end,
@@ -102,8 +102,8 @@ function guardiansTalkRequiresTrimOverride(talk, blockers = []) {
       return false;
    }
 
-   const originalStart = parseClockTimeMinutes(talk.start_time);
-   const originalEnd = parseClockTimeMinutes(talk.end_time);
+   const originalStart = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
+   const originalEnd = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
 
    return (
       trimmedRange.start !== originalStart
@@ -166,10 +166,10 @@ export class ScheduleConflictCompatibility {
    }
 
    static scheduleTimesOverlap(first, second) {
-      const firstStart = parseClockTimeMinutes(first.start_time);
-      const firstEnd = parseClockTimeMinutes(first.end_time);
-      const secondStart = parseClockTimeMinutes(second.start_time);
-      const secondEnd = parseClockTimeMinutes(second.end_time);
+      const firstStart = DayPlannerSchedule.parseClockTimeMinutes(first.start_time);
+      const firstEnd = DayPlannerSchedule.parseClockTimeMinutes(first.end_time);
+      const secondStart = DayPlannerSchedule.parseClockTimeMinutes(second.start_time);
+      const secondEnd = DayPlannerSchedule.parseClockTimeMinutes(second.end_time);
 
       return firstStart < secondEnd && secondStart < firstEnd;
    }

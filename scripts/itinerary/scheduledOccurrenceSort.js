@@ -1,4 +1,4 @@
-import { parseClockTimeMinutes } from './panel/dayPlannerSchedule.js';
+import { DayPlannerSchedule } from './panel/dayPlannerSchedule.js';
 
 export class ScheduledOccurrenceSort {
    static sortScheduledOccurrencesByStartTime(
@@ -10,8 +10,8 @@ export class ScheduledOccurrenceSort {
       }
 
       return rows.slice().sort((left, right) => {
-         const leftMinutes = parseClockTimeMinutes(getTimeOfDay(left));
-         const rightMinutes = parseClockTimeMinutes(getTimeOfDay(right));
+         const leftMinutes = DayPlannerSchedule.parseClockTimeMinutes(getTimeOfDay(left));
+         const rightMinutes = DayPlannerSchedule.parseClockTimeMinutes(getTimeOfDay(right));
 
          return (
             (leftMinutes ?? Number.MAX_SAFE_INTEGER)

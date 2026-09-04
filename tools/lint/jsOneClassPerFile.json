@@ -105,7 +105,9 @@
       "scripts/markers/markerGroups.js",
       "scripts/consoleOperations/forms/wildEncounterScheduleRows.js",
       "scripts/itinerary/panel/rowBuilders.js",
-      "scripts/datePickers/readOpenPickerTime.js"
+      "scripts/datePickers/readOpenPickerTime.js",
+      "scripts/itinerary/panel/dayPlannerSchedule.js",
+      "scripts/itinerary/panel/scheduleItemSearch.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

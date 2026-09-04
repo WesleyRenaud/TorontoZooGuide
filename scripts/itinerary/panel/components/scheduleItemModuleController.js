@@ -5,13 +5,7 @@ import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
 import { ScheduleItemModuleSelection } from './scheduleItemModuleSelection.js';
 import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
-import {
-   buildScheduleItemSearchPayload,
-   extractScheduleItemSearchRows,
-   getScheduleItemRowId,
-   getScheduleItemRowKind,
-   resolveEffectiveScheduleItemSelection,
-} from '../scheduleItemSearch.js';
+import { ScheduleItemSearch } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
@@ -93,7 +87,7 @@ export function createScheduleItemModuleController({
          return;
       }
 
-      const rowKind = getScheduleItemRowKind(selectedRow);
+      const rowKind = ScheduleItemSearch.getScheduleItemRowKind(selectedRow);
 
       if (ScheduleItemKind.isFixedTimeScheduleItemKind(rowKind)) {
          scheduleTimeFields.setFixedDurationScheduleMode?.({ lockDuration: false });
@@ -164,7 +158,7 @@ export function createScheduleItemModuleController({
          resultsEl,
          rows,
          emptyText: strings.emptyResults,
-         getId: getScheduleItemRowId,
+         getId: ScheduleItemSearch.getScheduleItemRowId,
          selectedRowId,
          renderRowLeft: (row) => ScheduleItemModuleSelection.resolveScheduleModuleSearchRowRenderer({
             row,
@@ -188,7 +182,7 @@ export function createScheduleItemModuleController({
                selectedRow = row;
 
                if (typeSelect && ScheduleItemTypes.isScheduleItemTypeUnset(getSelection())) {
-                  typeSelect.value = getScheduleItemRowKind(row);
+                  typeSelect.value = ScheduleItemSearch.getScheduleItemRowKind(row);
                }
             }
 
@@ -222,11 +216,11 @@ export function createScheduleItemModuleController({
          return;
       }
 
-      selectedRowId = getScheduleItemRowId(preselectedRow);
+      selectedRowId = ScheduleItemSearch.getScheduleItemRowId(preselectedRow);
       selectedRow = preselectedRow;
 
       if (typeSelect) {
-         typeSelect.value = getScheduleItemRowKind(preselectedRow);
+         typeSelect.value = ScheduleItemSearch.getScheduleItemRowKind(preselectedRow);
       }
 
       if (searchInput) {
@@ -259,11 +253,11 @@ export function createScheduleItemModuleController({
          const response = await searchItems(
             '/search',
             {
-               ...buildScheduleItemSearchPayload(selection, query),
+               ...ScheduleItemSearch.buildScheduleItemSearchPayload(selection, query),
                ...context,
             }
          );
-         const rows = extractScheduleItemSearchRows(selection, response);
+         const rows = ScheduleItemSearch.extractScheduleItemSearchRows(selection, response);
 
          if (requestId !== latestSearchRequestId) {
             return;
@@ -285,7 +279,7 @@ export function createScheduleItemModuleController({
          return;
       }
 
-      const selection = resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
+      const selection = ScheduleItemSearch.resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
       const scheduleOptions = scheduleTimeFields.getScheduleTimeOptions?.() ?? {};
 
       isSubmitting = true;

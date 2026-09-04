@@ -1,8 +1,5 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import {
-   formatMinutesAsClockTime,
-   parseClockTimeMinutes,
-} from './dayPlannerSchedule.js';
+import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -42,14 +39,14 @@ export class RowPresentation {
    }
 
    static buildApproximateStartTimeFieldLine(item) {
-      const startMinutes = parseClockTimeMinutes(item?.start_time);
+      const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item?.start_time);
 
       if (!Number.isFinite(startMinutes)) {
          return '';
       }
 
       const roundedMinutes = Math.round(startMinutes / 5) * 5;
-      return buildTimeFieldLine(`~${formatMinutesAsClockTime(roundedMinutes)}`);
+      return buildTimeFieldLine(`~${DayPlannerSchedule.formatMinutesAsClockTime(roundedMinutes)}`);
    }
 
    static buildMetaLines(lines = []) {
