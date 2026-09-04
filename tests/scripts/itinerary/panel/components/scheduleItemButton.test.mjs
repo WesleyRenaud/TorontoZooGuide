@@ -1,29 +1,25 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import {
-   makeScheduleItemButton,
-   runScheduleItemButtonAction,
-   setScheduleItemButtonBusy,
-} from '../../scripts/itinerary/panel/components/scheduleItemButton.js';
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
+import { ScheduleItemButton } from '../../../../../scripts/itinerary/panel/components/scheduleItemButton.js';
+import { makeDayPlannerPreview } from '../../../../../scripts/itinerary/panel/components/dayPlanner.js';
 import {
    installDocument,
    installTestWindow,
    teardownDocument,
-} from './helpers/domMock.mjs';
+} from '../../../helpers/domMock.mjs';
 
 afterEach(() => {
    teardownDocument();
    delete globalThis.window;
 });
 
-test('makeScheduleItemButton wires an optional click handler', () => {
+test('Test_MakeScheduleItemButton_TestOptionalClick_ExpectWired', () => {
    installTestWindow();
    installDocument();
 
    let clicked = false;
-   const button = makeScheduleItemButton({
+   const button = ScheduleItemButton.makeScheduleItemButton({
       label: 'Schedule an item',
       onClick: () => {
          clicked = true;
@@ -37,7 +33,7 @@ test('makeScheduleItemButton wires an optional click handler', () => {
    assert.equal(clicked, true);
 });
 
-test('makeDayPlannerPreview renders rebuild schedule button below schedule item button', () => {
+test('Test_MakeDayPlannerPreview_TestRebuildButton_ExpectBelowScheduleItem', () => {
    installTestWindow();
    installDocument();
 
@@ -76,7 +72,7 @@ test('makeDayPlannerPreview renders rebuild schedule button below schedule item 
    assert.ok(buttons[1].classList.contains('itinerary-day-schedule-item-btn--secondary'));
 });
 
-test('makeDayPlannerPreview renders unschedule button when items are scheduled', () => {
+test('Test_MakeDayPlannerPreview_TestScheduledItems_ExpectUnscheduleButton', () => {
    installTestWindow();
    installDocument();
 
@@ -127,7 +123,7 @@ test('makeDayPlannerPreview renders unschedule button when items are scheduled',
    assert.equal(unscheduleAllClicked, true);
 });
 
-test('makeDayPlannerPreview renders unschedule button for an empty itinerary', () => {
+test('Test_MakeDayPlannerPreview_TestEmptyItinerary_ExpectUnscheduleButton', () => {
    installTestWindow();
    installDocument();
 
@@ -159,23 +155,23 @@ test('makeDayPlannerPreview renders unschedule button for an empty itinerary', (
    assert.equal(unscheduleAllClicked, true);
 });
 
-test('setScheduleItemButtonBusy toggles label, disabled state, and busy styling', () => {
+test('Test_SetScheduleItemButtonBusy_TestToggle_ExpectLabelAndState', () => {
    installTestWindow();
    installDocument();
 
-   const button = makeScheduleItemButton({
+   const button = ScheduleItemButton.makeScheduleItemButton({
       label: 'Rebuild schedule',
       variant: 'secondary',
    });
 
-   setScheduleItemButtonBusy(button, true, 'Rebuilding…');
+   ScheduleItemButton.setScheduleItemButtonBusy(button, true, 'Rebuilding…');
 
    assert.equal(button.textContent, 'Rebuilding…');
    assert.equal(button.disabled, true);
    assert.equal(button.getAttribute('aria-busy'), 'true');
    assert.equal(button.classList.contains('is-busy'), true);
 
-   setScheduleItemButtonBusy(button, false);
+   ScheduleItemButton.setScheduleItemButtonBusy(button, false);
 
    assert.equal(button.textContent, 'Rebuild schedule');
    assert.equal(button.disabled, false);
@@ -183,17 +179,17 @@ test('setScheduleItemButtonBusy toggles label, disabled state, and busy styling'
    assert.equal(button.classList.contains('is-busy'), false);
 });
 
-test('runScheduleItemButtonAction keeps the button busy until the action finishes', async () => {
+test('Test_RunScheduleItemButtonAction_TestAwait_ExpectBusyUntilDone', async () => {
    installTestWindow();
    installDocument();
 
-   const button = makeScheduleItemButton({
+   const button = ScheduleItemButton.makeScheduleItemButton({
       label: 'Rebuild schedule',
       variant: 'secondary',
    });
    const states = [];
 
-   await runScheduleItemButtonAction(button, async () => {
+   await ScheduleItemButton.runScheduleItemButtonAction(button, async () => {
       states.push({
          textContent: button.textContent,
          disabled: button.disabled,

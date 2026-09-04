@@ -2,32 +2,31 @@ import {
    renderAnimalIcon,
    renderMarkerByType,
 } from './markerTypeRenderers.js';
-import {
-   applyCountMarker,
-   resetMarkerVisual,
-} from './markerVisualUtils.js';
+import { MarkerVisualUtils } from './markerVisualUtils.js';
 
-export function applyMarkerVisual(markerEl, itemsAtPoint) {
-   if (!markerEl) return;
+export class MarkerVisuals {
+   static applyMarkerVisual(markerEl, itemsAtPoint) {
+      if (!markerEl) return;
 
-   resetMarkerVisual(markerEl);
+      MarkerVisualUtils.resetMarkerVisual(markerEl);
 
-   const items = Array.isArray(itemsAtPoint) ? itemsAtPoint : [];
+      const items = Array.isArray(itemsAtPoint) ? itemsAtPoint : [];
 
-   if (items.length === 0) {
-      return;
+      if (items.length === 0) {
+         return;
+      }
+
+      if (renderMarkerByType(markerEl, items)) {
+         return;
+      }
+
+      MarkerVisualUtils.applyCountMarker(markerEl, items.length);
    }
 
-   if (renderMarkerByType(markerEl, items)) {
-      return;
+   static setMarkerToAnimalIcon(markerEl, animal) {
+      if (!markerEl || !animal) return;
+
+      MarkerVisualUtils.resetMarkerVisual(markerEl);
+      renderAnimalIcon(markerEl, animal);
    }
-
-   applyCountMarker(markerEl, items.length);
-}
-
-export function setMarkerToAnimalIcon(markerEl, animal) {
-   if (!markerEl || !animal) return;
-
-   resetMarkerVisual(markerEl);
-   renderAnimalIcon(markerEl, animal);
 }

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { initMultiTimePicker } from '../../scripts/datePickers/multiTimePicker.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { MultiTimePicker } from '../../../scripts/datePickers/multiTimePicker.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
 
 function createMockPickerInstance(inputEl, overrides = {}) {
    return {
@@ -51,12 +51,12 @@ function dispatchKeydown(inputEl, key) {
    });
 }
 
-test('initMultiTimePicker commits a selected time when the picker closes', async () => {
+test('Test_InitMultiTimePicker_TestPickerCloses_ExpectCommit', async () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onCommitTime: (time) => {
          committedTimes.push(time);
       },
@@ -75,20 +75,20 @@ test('initMultiTimePicker commits a selected time when the picker closes', async
    assert.equal(inputEl.value, '');
 });
 
-test('initMultiTimePicker does not commit on flatpickr change events', () => {
+test('Test_InitMultiTimePicker_TestChangeEvents_ExpectNoCommit', () => {
    const inputEl = createDomNode('input');
    const { calls, initFlatpickrFn } = createFlatpickrSpy();
 
-   initMultiTimePicker(inputEl, {}, initFlatpickrFn);
+   MultiTimePicker.initMultiTimePicker(inputEl, {}, initFlatpickrFn);
 
    assert.equal(calls[0].options.onChange, undefined);
 });
 
-test('initMultiTimePicker does not commit on blur while the picker stays open', async () => {
+test('Test_InitMultiTimePicker_TestBlurWhileOpen_ExpectNoCommit', async () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onCommitTime: (time) => {
          committedTimes.push(time);
       },
@@ -111,11 +111,11 @@ test('initMultiTimePicker does not commit on blur while the picker stays open', 
    assert.deepEqual(committedTimes, []);
 });
 
-test('initMultiTimePicker commits typed input on Enter', () => {
+test('Test_InitMultiTimePicker_TestEnterTyped_ExpectCommit', () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onCommitTime: (time) => {
          committedTimes.push(time);
       },
@@ -128,11 +128,11 @@ test('initMultiTimePicker commits typed input on Enter', () => {
    assert.equal(inputEl.value, '');
 });
 
-test('initMultiTimePicker commits the open picker default on Enter when the input is empty', () => {
+test('Test_InitMultiTimePicker_TestEnterEmpty_ExpectCommitDefault', () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onCommitTime: (time) => {
          committedTimes.push(time);
       },
@@ -153,11 +153,11 @@ test('initMultiTimePicker commits the open picker default on Enter when the inpu
    assert.equal(inputEl.value, '');
 });
 
-test('initMultiTimePicker removes the last time on Backspace when the input is empty', () => {
+test('Test_InitMultiTimePicker_TestBackspaceEmpty_ExpectRemoveLast', () => {
    const inputEl = createDomNode('input');
    let removed = false;
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onRemoveLastTime: () => {
          removed = true;
          return true;
@@ -169,11 +169,11 @@ test('initMultiTimePicker removes the last time on Backspace when the input is e
    assert.equal(removed, true);
 });
 
-test('initMultiTimePicker does not remove the last time when the input has text', () => {
+test('Test_InitMultiTimePicker_TestBackspaceWithText_ExpectNoRemove', () => {
    const inputEl = createDomNode('input');
    let removed = false;
 
-   initMultiTimePicker(inputEl, {
+   MultiTimePicker.initMultiTimePicker(inputEl, {
       onRemoveLastTime: () => {
          removed = true;
          return true;

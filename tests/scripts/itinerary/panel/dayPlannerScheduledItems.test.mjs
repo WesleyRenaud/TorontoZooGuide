@@ -1,18 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildScheduledItemRowsContext, buildScheduledItinerary } from '../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
-import {
-   resolveGroupedScheduledPillOptions,
-   resolveScheduledPillOptions,
-} from '../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { allTextFor } from './helpers/panelRowsTestSetup.mjs';
-import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { buildScheduledItemRowsContext, buildScheduledItinerary } from '../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
+import { DayPlannerScheduledPillOptions } from '../../../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
+import { makeScheduledItem } from '../../helpers/scheduledPillTestSetup.mjs';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
-test('resolveScheduledPillOptions hides unschedule for pure transportations', () => {
-   const options = resolveScheduledPillOptions(
+test('Test_ResolveScheduledPillOptions_TestPureTransportations_ExpectHideUnschedule', () => {
+   const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
          scheduleItemKey: 'Zoomobile||0',
@@ -38,8 +35,8 @@ test('resolveScheduledPillOptions hides unschedule for pure transportations', ()
    );
 });
 
-test('resolveScheduledPillOptions keeps unschedule for added-as-attraction transportations', () => {
-   const options = resolveScheduledPillOptions(
+test('Test_ResolveScheduledPillOptions_TestAddedAsAttraction_ExpectKeepUnschedule', () => {
+   const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
          scheduleItemKey: 'Zoomobile||1',
@@ -63,8 +60,8 @@ test('resolveScheduledPillOptions keeps unschedule for added-as-attraction trans
    );
 });
 
-test('resolveGroupedScheduledPillOptions merges menu actions for grouped pills', () => {
-   const options = resolveGroupedScheduledPillOptions(
+test('Test_ResolveGroupedScheduledPillOptions_TestGroupedPills_ExpectMergedMenus', () => {
+   const options = DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions(
       [
          makeScheduledItem('African Lion', 570),
          makeScheduledItem('Cheetah', 570),
@@ -79,7 +76,7 @@ test('resolveGroupedScheduledPillOptions merges menu actions for grouped pills',
    assert.equal(options.menuItems?.length, 4);
 });
 
-test('buildScheduledItemRowsContext places generic events on the timeline', () => {
+test('Test_BuildScheduledItemRowsContext_TestGenericEvents_ExpectOnTimeline', () => {
    const context = buildScheduledItemRowsContext(
       {
          animals: [],
@@ -107,10 +104,10 @@ test('buildScheduledItemRowsContext places generic events on the timeline', () =
    assert.equal(lunchItems[0].anchorSlotMinutes, 720);
 });
 
-test('resolveScheduledPillOptions offers only remove for generic events', () => {
+test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () => {
    const removeRequests = [];
 
-   const options = resolveScheduledPillOptions(
+   const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: ScheduleItemKind.EVENT.kind,
          scheduleItemEventType: 'lunch',
@@ -138,10 +135,10 @@ test('resolveScheduledPillOptions offers only remove for generic events', () => 
    }]);
 });
 
-test('resolveScheduledPillOptions adds remove for animals and guardians talks', () => {
+test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => {
    const removeRequests = [];
 
-   const animalOptions = resolveScheduledPillOptions(
+   const animalOptions = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: 'animals',
          scheduleItemKey: 'African Lion||Africa Savanna',
@@ -161,7 +158,7 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
       key: 'African Lion||Africa Savanna',
    }]);
 
-   const talkOptions = resolveScheduledPillOptions(
+   const talkOptions = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: 'guardians_talks',
          scheduleItemKey: 'Amur Tiger||1:30 PM||2:00 PM',
@@ -185,10 +182,10 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
    });
 });
 
-test.describe('buildScheduledItemRowsContext scheduled animals', () => {
+test.describe('Test_BuildScheduledItemRowsContext_TestScheduledAnimals', () => {
    installDomTestHooks();
 
-   test('keeps separate scheduled animals per viewing spot', () => {
+   test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct', () => {
       const context = buildScheduledItemRowsContext(
          {
             animals: [
@@ -229,7 +226,7 @@ test.describe('buildScheduledItemRowsContext scheduled animals', () => {
       assert.equal(context.scheduledAnimalIndexes.size, 2);
    });
 
-   test('omits covered-by-talk animals from timeline pills but keeps them scheduled', () => {
+   test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepScheduled', () => {
       const context = buildScheduledItemRowsContext(
          {
             animals: [
@@ -267,7 +264,7 @@ test.describe('buildScheduledItemRowsContext scheduled animals', () => {
    });
 });
 
-test('buildScheduledItinerary tolerates missing itinerary collections', () => {
+test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
    assert.deepEqual(buildScheduledItinerary({}), {
       animals: [],
       attractions: [],
@@ -277,10 +274,10 @@ test('buildScheduledItinerary tolerates missing itinerary collections', () => {
    });
 });
 
-test.describe('buildScheduledItemRowsContext transportation', () => {
+test.describe('Test_BuildScheduledItemRowsContext_TestTransportation', () => {
    installDomTestHooks();
 
-   test('renders transportation with station range', () => {
+   test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () => {
       const context = buildScheduledItemRowsContext(
          {
             animals: [],
@@ -330,7 +327,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
       );
    });
 
-   test('splits discontinuous Zoomobile rides into separate timeline pills', () => {
+   test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills', () => {
       const context = buildScheduledItemRowsContext(
          {
             animals: [],
@@ -411,7 +408,7 @@ test.describe('buildScheduledItemRowsContext transportation', () => {
    });
 });
 
-test('buildScheduledItemRowsContext omits deleted wild encounters from the timeline', () => {
+test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted', () => {
    const context = buildScheduledItemRowsContext(
       {
          animals: [],
@@ -437,7 +434,7 @@ test('buildScheduledItemRowsContext omits deleted wild encounters from the timel
    assert.equal(context.scheduledWildEncounterIndexes.size, 0);
 });
 
-test('buildScheduledItemRowsContext omits deleted guardians talks from the timeline', () => {
+test('Test_BuildScheduledItemRowsContext_TestDeletedGuardiansTalks_ExpectOmitted', () => {
    const context = buildScheduledItemRowsContext(
       {
          animals: [],

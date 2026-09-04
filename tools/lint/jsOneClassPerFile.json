@@ -115,7 +115,15 @@
       "scripts/itinerary/panel/sectionConfigs.js",
       "scripts/search/searchResultPresentation.js",
       "scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.js",
-      "scripts/itinerary/panel/scheduleTimeConflictButtonState.js"
+      "scripts/itinerary/panel/scheduleTimeConflictButtonState.js",
+      "scripts/markers/markerVisualUtils.js",
+      "scripts/markers/markerVisuals.js",
+      "scripts/datePickers/timePickerEnterCommit.js",
+      "scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js",
+      "scripts/itinerary/panel/scheduleTimeConflictResolution.js",
+      "scripts/itinerary/panel/components/scheduleItemButton.js",
+      "scripts/itinerary/panel/rows.js",
+      "scripts/datePickers/multiTimePicker.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

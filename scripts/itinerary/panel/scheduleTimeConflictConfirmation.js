@@ -1,6 +1,6 @@
 import { showItineraryNoticePopup } from './components/noticePopup.js';
 import { createSaveIssuesContent } from './scheduleTimeConflictContent.js';
-import { resolveScheduleTimeConflictSelection } from './scheduleTimeConflictResolution.js';
+import { ScheduleTimeConflictResolution } from './scheduleTimeConflictResolution.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 
@@ -34,7 +34,7 @@ export function showScheduleTimeConflictConfirmation({
          });
       },
       onConfirm: async ({ close } = {}) => {
-         const resolved = await resolveScheduleTimeConflictSelection(
+         const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
             conflictGroups,
             async (selectedConflictItems) => {
                await onConfirm?.(selectedConflictItems);
@@ -52,5 +52,5 @@ export function showScheduleTimeConflictConfirmation({
 }
 
 export async function confirmSaveIssuesConflictSelection(conflictGroups, onResolved) {
-   return resolveScheduleTimeConflictSelection(conflictGroups, onResolved);
+   return ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(conflictGroups, onResolved);
 }

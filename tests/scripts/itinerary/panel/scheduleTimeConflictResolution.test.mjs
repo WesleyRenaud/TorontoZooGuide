@@ -1,14 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import {
-   createScheduleTimeConflictResolutionConfirmations,
-   resolveScheduleTimeConflictSelection,
-} from '../../scripts/itinerary/panel/scheduleTimeConflictResolution.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { ScheduleTimeConflictResolution } from '../../../../scripts/itinerary/panel/scheduleTimeConflictResolution.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -55,11 +52,11 @@ function createConfirmationRecorder() {
    };
 }
 
-test('resolveScheduleTimeConflictSelection prompts when nothing is selected', async () => {
+test('Test_ResolveScheduleTimeConflictSelection_TestNothingSelected_ExpectPrompt', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
 
-   const resolved = await resolveScheduleTimeConflictSelection(
+   const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
       [{
          selection: ScheduleConflictCompatibility.createConflictSelection(),
          items: [firstEncounter, secondEncounter],
@@ -75,7 +72,7 @@ test('resolveScheduleTimeConflictSelection prompts when nothing is selected', as
    assert.deepEqual(resolvedCalls, []);
 });
 
-test('resolveScheduleTimeConflictSelection prompts when conflict groups stay unresolved', async () => {
+test('Test_ResolveScheduleTimeConflictSelection_TestUnresolvedGroups_ExpectPrompt', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
    const firstSelection = ScheduleConflictCompatibility.createConflictSelection();
@@ -83,7 +80,7 @@ test('resolveScheduleTimeConflictSelection prompts when conflict groups stay unr
 
    firstSelection.items.push(firstEncounter);
 
-   const resolved = await resolveScheduleTimeConflictSelection(
+   const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
       [
          {
             selection: firstSelection,
@@ -105,14 +102,14 @@ test('resolveScheduleTimeConflictSelection prompts when conflict groups stay unr
    assert.deepEqual(resolvedCalls, [['From Howls to Honks']]);
 });
 
-test('resolveScheduleTimeConflictSelection prompts when more compatible activities remain', async () => {
+test('Test_ResolveScheduleTimeConflictSelection_TestAdditionalActivities_ExpectPrompt', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    selection.items.push(firstEncounter);
 
-   const resolved = await resolveScheduleTimeConflictSelection(
+   const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
       [{
          selection,
          items: [firstEncounter, thirdEncounter],
@@ -128,14 +125,14 @@ test('resolveScheduleTimeConflictSelection prompts when more compatible activiti
    assert.deepEqual(resolvedCalls, [['From Howls to Honks']]);
 });
 
-test('resolveScheduleTimeConflictSelection resolves immediately when every group is settled', async () => {
+test('Test_ResolveScheduleTimeConflictSelection_TestAllSettled_ExpectResolved', async () => {
    const { calls, confirmations } = createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
    selection.items.push(firstEncounter, secondEncounter);
 
-   const resolved = await resolveScheduleTimeConflictSelection(
+   const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
       [{
          selection,
          items: [firstEncounter, secondEncounter],
@@ -154,7 +151,7 @@ test('resolveScheduleTimeConflictSelection resolves immediately when every group
    );
 });
 
-test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
+test.describe('Test_CreateScheduleTimeConflictResolutionConfirmations', () => {
    installDomTestHooks({
       after: () => {
          document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
@@ -162,8 +159,8 @@ test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
       },
    });
 
-   test('showProceedWithoutSelection uses a no-op confirm handler by default', () => {
-      const confirmations = createScheduleTimeConflictResolutionConfirmations();
+   test('Test_ShowProceedWithoutSelection_TestDefaultHandler_ExpectNoOp', () => {
+      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
 
       confirmations.showProceedWithoutSelection();
 
@@ -174,9 +171,9 @@ test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
       });
    });
 
-   test('showProceedWithoutSelection opens the proceed-anyway confirmation', () => {
+   test('Test_ShowProceedWithoutSelection_TestCustomHandler_ExpectConfirmation', () => {
       const confirmCalls = [];
-      const confirmations = createScheduleTimeConflictResolutionConfirmations();
+      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
 
       confirmations.showProceedWithoutSelection({
          onConfirm: () => {
@@ -201,9 +198,9 @@ test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
       assert.deepEqual(confirmCalls, ['confirmed']);
    });
 
-   test('showProceedWithUnresolved opens the unresolved-conflicts confirmation', () => {
+   test('Test_ShowProceedWithUnresolved_TestConfirm_ExpectConfirmation', () => {
       const confirmCalls = [];
-      const confirmations = createScheduleTimeConflictResolutionConfirmations();
+      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
 
       confirmations.showProceedWithUnresolved({
          onConfirm: () => {
@@ -227,9 +224,9 @@ test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
       assert.deepEqual(confirmCalls, ['confirmed']);
    });
 
-   test('showProceedWithAdditional opens the additional-activities confirmation', () => {
+   test('Test_ShowProceedWithAdditional_TestConfirm_ExpectConfirmation', () => {
       const confirmCalls = [];
-      const confirmations = createScheduleTimeConflictResolutionConfirmations();
+      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
 
       confirmations.showProceedWithAdditional({
          onConfirm: () => {

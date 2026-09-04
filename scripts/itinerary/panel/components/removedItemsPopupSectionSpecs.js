@@ -1,10 +1,5 @@
 import { RemovedItemsPopupContentRows } from './removedItemsPopupContentRows.js';
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-   buildGuardiansRows,
-   buildWildRows,
-} from '../rows.js';
+import { Rows } from '../rows.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
@@ -21,7 +16,7 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeUnscheduled.animals,
             title: strings.itinerary.dayPlanner.unscheduledTitle,
             subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
-            rowBuilder: buildAnimalRows,
+            rowBuilder: Rows.buildAnimalRows,
             stepKey: 'animals',
             showViewAlternatives: false,
          });
@@ -32,7 +27,7 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeUnscheduled.attractions,
             title: strings.map.filter.attractions,
             subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
-            rowBuilder: buildAttractionRows,
+            rowBuilder: Rows.buildAttractionRows,
             stepKey: 'attractions',
             showViewAlternatives: false,
          });
@@ -68,7 +63,7 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeAdded.animals ?? [],
             title: strings.itinerary.removedItems.animalsAddedTitle,
             subtitle: strings.itinerary.removedItems.animalsAddedSubtitle,
-            rowBuilder: buildAnimalRows,
+            rowBuilder: Rows.buildAnimalRows,
             stepKey: 'animals',
             showViewAlternatives: false,
          },
@@ -77,7 +72,7 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeRemoved.animals ?? [],
             title: strings.itinerary.removedItems.animalsRemovedTitle,
             subtitle: strings.itinerary.removedItems.animalsRemovedSubtitle,
-            rowBuilder: buildAnimalRows,
+            rowBuilder: Rows.buildAnimalRows,
             stepKey: 'animals',
             keepOverrideKey: 'animal',
          },
@@ -85,14 +80,14 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeReduced.animals ?? [],
             title: strings.itinerary.removedItems.reducedAnimalVisibilityTitle,
             subtitle: strings.itinerary.removedItems.reducedAnimalVisibilitySubtitle,
-            rowBuilder: buildAnimalRows,
+            rowBuilder: Rows.buildAnimalRows,
             stepKey: 'animals',
          },
          {
             items: safeImproved.animals ?? [],
             title: strings.itinerary.removedItems.improvedAnimalVisibilityTitle,
             subtitle: strings.itinerary.removedItems.improvedAnimalVisibilitySubtitle,
-            rowBuilder: buildAnimalRows,
+            rowBuilder: Rows.buildAnimalRows,
             stepKey: 'animals',
             showViewAlternatives: false,
          },
@@ -100,7 +95,7 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeRemoved.attractions ?? [],
             title: strings.map.filter.attractions,
             subtitle: strings.itinerary.removedItems.attractionsSubtitle,
-            rowBuilder: buildAttractionRows,
+            rowBuilder: Rows.buildAttractionRows,
             stepKey: 'attractions',
             keepOverrideKey: 'attraction',
          },
@@ -108,14 +103,14 @@ export class RemovedItemsPopupSectionSpecs {
             items: safeRemoved.guardiansTalks ?? [],
             title: strings.site.nav.meetTheGuardians,
             subtitle: strings.itinerary.removedItems.talksSubtitle,
-            rowBuilder: buildGuardiansRows,
+            rowBuilder: Rows.buildGuardiansRows,
             stepKey: 'guardiansTalks',
          },
          {
             items: safeRemoved.wildEncounters ?? [],
             title: strings.site.nav.wildEncounters,
             subtitle: strings.itinerary.removedItems.wildEncountersSubtitle,
-            rowBuilder: buildWildRows,
+            rowBuilder: Rows.buildWildRows,
             stepKey: 'wildEncounters',
          },
       ];

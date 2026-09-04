@@ -1,10 +1,7 @@
 import { createTooltipBannerSync } from './bannerSync.js';
 import { createTooltipCarouselView } from './carouselView.js';
 import { createTooltipGlobalListeners } from './globalListeners.js';
-import {
-   applyMarkerVisual,
-   setMarkerToAnimalIcon,
-} from '../markers/markerVisuals.js';
+import { MarkerVisuals } from '../markers/markerVisuals.js';
 import { positionTooltip } from './positionTooltip.js';
 import { getRendererForItem } from './tooltipRenderers.js';
 
@@ -101,7 +98,7 @@ export function createTooltipController({
          return;
       }
 
-      applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
+      MarkerVisuals.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
    }
 
    function addMarkerClickHandler(markerEl, items, clickable) {
@@ -190,7 +187,7 @@ export function createTooltipController({
          return;
       }
 
-      setMarkerToAnimalIcon(marker, item);
+      MarkerVisuals.setMarkerToAnimalIcon(marker, item);
    }
 
    function jumpTo(matchFn) {

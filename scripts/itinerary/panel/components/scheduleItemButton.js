@@ -3,70 +3,72 @@ import { APP_STRINGS } from '../../../strings.js';
 
 const { scheduleItem } = APP_STRINGS.itinerary;
 
-export function setScheduleItemButtonBusy(
-   button,
-   isBusy,
-   busyLabel = scheduleItem.schedulingBusy
-) {
-   if (!button.dataset.defaultLabel) {
-      button.dataset.defaultLabel = button.textContent;
+export class ScheduleItemButton {
+   static setScheduleItemButtonBusy(
+      button,
+      isBusy,
+      busyLabel = scheduleItem.schedulingBusy
+   ) {
+      if (!button.dataset.defaultLabel) {
+         button.dataset.defaultLabel = button.textContent;
+      }
+
+      button.disabled = isBusy;
+      button.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+      button.classList.toggle('is-busy', isBusy);
+      button.textContent = isBusy ? busyLabel : button.dataset.defaultLabel;
    }
 
-   button.disabled = isBusy;
-   button.setAttribute('aria-busy', isBusy ? 'true' : 'false');
-   button.classList.toggle('is-busy', isBusy);
-   button.textContent = isBusy ? busyLabel : button.dataset.defaultLabel;
-}
+   static async runScheduleItemButtonAction(
+      button,
+      action,
+      busyLabel = scheduleItem.schedulingBusy
+   ) {
+      if (button.disabled) {
+         return;
+      }
 
-export async function runScheduleItemButtonAction(
-   button,
-   action,
-   busyLabel = scheduleItem.schedulingBusy
-) {
-   if (button.disabled) {
-      return;
+      ScheduleItemButton.setScheduleItemButtonBusy(button, true, busyLabel);
+
+      try {
+         await action();
+      }
+      finally {
+         ScheduleItemButton.setScheduleItemButtonBusy(button, false);
+      }
    }
 
-   setScheduleItemButtonBusy(button, true, busyLabel);
+   static makeScheduleItemButton({
+      label = scheduleItem.title,
+      onClick = null,
+      variant = 'primary',
+   } = {}) {
+      const button = el('button', 'itinerary-day-schedule-item-btn', label);
+      button.type = 'button';
+      button.dataset.defaultLabel = label;
 
-   try {
-      await action();
-   }
-   finally {
-      setScheduleItemButtonBusy(button, false);
-   }
-}
+      if (variant === 'secondary') {
+         button.classList.add('itinerary-day-schedule-item-btn--secondary');
+      }
 
-export function makeScheduleItemButton({
-   label = scheduleItem.title,
-   onClick = null,
-   variant = 'primary',
-} = {}) {
-   const button = el('button', 'itinerary-day-schedule-item-btn', label);
-   button.type = 'button';
-   button.dataset.defaultLabel = label;
+      if (variant === 'destructive') {
+         button.classList.add('itinerary-day-schedule-item-btn--destructive');
+      }
 
-   if (variant === 'secondary') {
-      button.classList.add('itinerary-day-schedule-item-btn--secondary');
-   }
+      if (typeof onClick === 'function') {
+         button.addEventListener('click', onClick);
+      }
 
-   if (variant === 'destructive') {
-      button.classList.add('itinerary-day-schedule-item-btn--destructive');
+      return button;
    }
 
-   if (typeof onClick === 'function') {
-      button.addEventListener('click', onClick);
+   static makeScheduleActionsBar(buttons = []) {
+      const bar = el('div', 'itinerary-day-schedule-actions');
+
+      buttons.forEach((button) => {
+         bar.appendChild(button);
+      });
+
+      return bar;
    }
-
-   return button;
-}
-
-export function makeScheduleActionsBar(buttons = []) {
-   const bar = el('div', 'itinerary-day-schedule-actions');
-
-   buttons.forEach((button) => {
-      bar.appendChild(button);
-   });
-
-   return bar;
 }

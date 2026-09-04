@@ -1,6 +1,7 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { initTimePicker } from './consoleDatePickers.js';
 import { initFlatpickr } from './flatpickr.js';
-import { resolveOpenTimePickerValue } from './timePickerEnterCommit.js';
+import { TimePickerEnterCommit } from './timePickerEnterCommit.js';
 
 function resetPickerSelection(instance) {
    instance?.setDate?.([], false);
@@ -11,7 +12,7 @@ function createMultiTimeCommitController({
    onCommitTime,
 }) {
    function commitTime(time, instance) {
-      const normalizedTime = time?.trim() ?? '';
+      const normalizedTime = ValueNormalizer.asTrimmedString(time);
 
       if (!normalizedTime) {
          return false;
@@ -24,12 +25,18 @@ function createMultiTimeCommitController({
    }
 
    function commitResolvedTime(instance) {
-      return commitTime(resolveOpenTimePickerValue(inputEl, instance), instance);
+      return commitTime(
+         TimePickerEnterCommit.resolveOpenTimePickerValue(inputEl, instance),
+         instance
+      );
    }
 
    function commitAfterInputSettles(instance, pendingTime) {
       setTimeout(() => {
-         if (!inputEl.value.trim() && pendingTime.trim()) {
+         if (
+            !ValueNormalizer.asTrimmedString(inputEl.value)
+            && ValueNormalizer.asTrimmedString(pendingTime)
+         ) {
             commitTime(pendingTime, instance);
             return;
          }
@@ -51,7 +58,7 @@ function wireMultiTimeInputEvents(inputEl, picker, controller, {
    inputEl.addEventListener('keydown', (event) => {
       if (
          event.key === 'Backspace'
-         && !inputEl?.value?.trim()
+         && !ValueNormalizer.asTrimmedString(inputEl?.value)
          && onRemoveLastTime?.()
       ) {
          event.preventDefault();
@@ -66,7 +73,7 @@ function wireMultiTimeInputEvents(inputEl, picker, controller, {
             return;
          }
 
-         const pendingTime = inputEl?.value?.trim() ?? '';
+         const pendingTime = ValueNormalizer.asTrimmedString(inputEl?.value);
 
          if (pendingTime) {
             controller.commitAfterInputSettles(picker, pendingTime);
@@ -75,40 +82,42 @@ function wireMultiTimeInputEvents(inputEl, picker, controller, {
    });
 }
 
-export function initMultiTimePicker(
-   inputEl,
-   {
-      onCommitTime = null,
-      onRemoveLastTime = null,
-   } = {},
-   initFlatpickrFn = initFlatpickr
-) {
-   if (!inputEl) {
-      return null;
-   }
-
-   const controller = createMultiTimeCommitController({
+export class MultiTimePicker {
+   static initMultiTimePicker(
       inputEl,
-      onCommitTime,
-   });
+      {
+         onCommitTime = null,
+         onRemoveLastTime = null,
+      } = {},
+      initFlatpickrFn = initFlatpickr
+   ) {
+      if (!inputEl) {
+         return null;
+      }
 
-   const picker = initTimePicker(inputEl, {
-      onEnterCommit(time, instance) {
-         controller.commitTime(time, instance);
-         instance?.close?.();
-      },
-      onClose(_selectedDates, _dateStr, instance) {
-         const pendingTime = inputEl?.value?.trim() ?? '';
+      const controller = createMultiTimeCommitController({
+         inputEl,
+         onCommitTime,
+      });
 
-         if (pendingTime) {
-            controller.commitAfterInputSettles(instance, pendingTime);
-         }
-      },
-   }, initFlatpickrFn);
+      const picker = initTimePicker(inputEl, {
+         onEnterCommit(time, instance) {
+            controller.commitTime(time, instance);
+            instance?.close?.();
+         },
+         onClose(_selectedDates, _dateStr, instance) {
+            const pendingTime = ValueNormalizer.asTrimmedString(inputEl?.value);
 
-   wireMultiTimeInputEvents(inputEl, picker, controller, {
-      onRemoveLastTime,
-   });
+            if (pendingTime) {
+               controller.commitAfterInputSettles(instance, pendingTime);
+            }
+         },
+      }, initFlatpickrFn);
 
-   return picker;
+      wireMultiTimeInputEvents(inputEl, picker, controller, {
+         onRemoveLastTime,
+      });
+
+      return picker;
+   }
 }

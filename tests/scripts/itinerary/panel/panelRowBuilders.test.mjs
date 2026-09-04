@@ -1,15 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { showRemovedItemsPopup } from '../../scripts/itinerary/panel/components/removedItemsPopup.js';
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-   buildGuardiansRows,
-   buildWildRows,
-} from '../../scripts/itinerary/panel/rows.js';
-import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
+import { makeDayPlannerPreview } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { showRemovedItemsPopup } from '../../../../scripts/itinerary/panel/components/removedItemsPopup.js';
+import { Rows } from '../../../../scripts/itinerary/panel/rows.js';
+import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -22,14 +17,14 @@ import {
    textFor,
    timelinePillTexts,
    timelineScheduledPillTexts,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../../helpers/panelRowsTestSetup.mjs';
 
-test.describe('itinerary panel row builders', () => {
+test.describe('Test_Rows', () => {
    installPanelRowsTestHooks();
 
-   test('buildAnimalRows adds unschedule action when handler is provided', () => {
+   test('Test_BuildAnimalRows_TestUnscheduleHandler_ExpectAction', () => {
       const unscheduleCalls = [];
-      const [row] = buildAnimalRows([
+      const [row] = Rows.buildAnimalRows([
          {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
@@ -51,7 +46,7 @@ test.describe('itinerary panel row builders', () => {
       }]);
    });
    
-   test('unscheduled list rows show schedule and remove buttons for animals and attractions only', () => {
+   test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove', () => {
       const scheduleCalls = [];
       const removeCalls = [];
       const planner = makeDayPlannerPreview(
@@ -157,9 +152,9 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(removeCalls.length, 0);
    });
    
-   test('buildAnimalRows adds remove action when handler is provided', () => {
+   test('Test_BuildAnimalRows_TestRemoveHandler_ExpectAction', () => {
       const removeCalls = [];
-      const [row] = buildAnimalRows([
+      const [row] = Rows.buildAnimalRows([
          {
             species: 'Giant Panda',
             exhibit: 'Eurasia Wilds',
@@ -179,9 +174,9 @@ test.describe('itinerary panel row builders', () => {
       }]);
    });
    
-   test('buildAnimalRows adds schedule action when handler is provided', () => {
+   test('Test_BuildAnimalRows_TestScheduleHandler_ExpectAction', () => {
       const scheduleCalls = [];
-      const [row] = buildAnimalRows([
+      const [row] = Rows.buildAnimalRows([
          {
             species: 'Giant Panda',
             exhibit: 'Eurasia Wilds',
@@ -200,8 +195,8 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(scheduleCalls[0].row.species, 'Giant Panda');
       assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
    });
-   test('buildAnimalRows keeps separate viewing spots for the same species', () => {
-      const rows = buildAnimalRows([
+   test('Test_BuildAnimalRows_TestSameSpecies_ExpectSeparateViewingSpots', () => {
+      const rows = Rows.buildAnimalRows([
          {
             species: 'Western Lowland Gorilla',
             exhibit: 'African Rainforest Pavilion',
@@ -229,8 +224,8 @@ test.describe('itinerary panel row builders', () => {
       );
    });
 
-   test('buildAnimalRows deduplicates animal exhibit pairs and renders visibility alerts', () => {
-      const rows = buildAnimalRows([
+   test('Test_BuildAnimalRows_TestDuplicateExhibits_ExpectDedupedWithAlerts', () => {
+      const rows = Rows.buildAnimalRows([
          {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
@@ -266,7 +261,7 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Indo-Malaya Outdoor');
    });
    
-   test('animal section count matches deduplicated rendered rows', () => {
+   test('Test_AnimalSection_TestDeduplicatedRows_ExpectMatchingCount', () => {
       const [animalSection] = SectionConfigs.buildSectionConfigs({
          animals: [
             {
@@ -290,7 +285,7 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(animalSection.children.length, 2);
    });
 
-   test('attraction section includes transportation added as an attraction', () => {
+   test('Test_AttractionSection_TestAddedAsAttractionTransportation_ExpectIncluded', () => {
       const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [{ name: 'Conservation Carousel' }],
          transportations: [
@@ -319,7 +314,7 @@ test.describe('itinerary panel row builders', () => {
       );
    });
 
-   test('transportation section lists pure transportations without schedule actions', () => {
+   test('Test_TransportationSection_TestPureTransportations_ExpectNoScheduleActions', () => {
       const scheduleCalls = [];
       const removeCalls = [];
       const [transportationSection] = SectionConfigs.buildSectionConfigs({
@@ -370,7 +365,7 @@ test.describe('itinerary panel row builders', () => {
       }]);
    });
 
-   test('attraction section shows main-station round trip for unscheduled transportation attractions', () => {
+   test('Test_AttractionSection_TestUnscheduledRoundTrip_ExpectMainStationLine', () => {
       const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [],
          transportations: [
@@ -391,7 +386,7 @@ test.describe('itinerary panel row builders', () => {
       );
    });
 
-   test('transportation station line marks round trips when first and last match', () => {
+   test('Test_TransportationStationLine_TestRoundTrip_ExpectMarked', () => {
       const [attractionSection] = SectionConfigs.buildSectionConfigs({
          attractions: [],
          transportations: [
@@ -424,7 +419,7 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('removed items popup renders arrival time adjustments', () => {
+   test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
       const mount = document.createElement('div');
    
       showRemovedItemsPopup({
@@ -456,7 +451,7 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('removed items popup renders departure time adjustments', () => {
+   test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
       const mount = document.createElement('div');
    
       showRemovedItemsPopup({
@@ -488,7 +483,7 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('removed items popup renders unscheduled items', () => {
+   test('Test_RemovedItemsPopup_TestUnscheduledItems_ExpectRendered', () => {
       const mount = document.createElement('div');
    
       showRemovedItemsPopup({
@@ -520,8 +515,8 @@ test.describe('itinerary panel row builders', () => {
       assert.match(text, /Conservation Carousel/);
    });
    
-   test('animal rows omit scheduled start times', () => {
-      const [animalRow] = buildAnimalRows([
+   test('Test_AnimalRows_TestScheduledStartTimes_ExpectOmitted', () => {
+      const [animalRow] = Rows.buildAnimalRows([
          {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
@@ -529,7 +524,7 @@ test.describe('itinerary panel row builders', () => {
             end_time: '14:36',
          },
       ]);
-      const [attractionRow] = buildAttractionRows([
+      const [attractionRow] = Rows.buildAttractionRows([
          {
             name: 'Zoomobile',
             start_time: '2:23 PM',
@@ -548,8 +543,8 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('buildAttractionRows renders seeded attraction metadata and removal reason', () => {
-      const [row] = buildAttractionRows([
+   test('Test_BuildAttractionRows_TestSeededMetadata_ExpectRemovalReason', () => {
+      const [row] = Rows.buildAttractionRows([
          {
             name: 'Conservation Carousel',
             subtitle: 'Carousels are timeless and fun for all ages!',
@@ -576,8 +571,8 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
-      const [talkRow] = buildGuardiansRows([
+   test('Test_BuildGuardiansAndWildRows_TestScheduleMetadata_ExpectRendered', () => {
+      const [talkRow] = Rows.buildGuardiansRows([
          {
             name: 'Amur Tiger',
             location: 'Eurasia Wilds',
@@ -585,7 +580,7 @@ test.describe('itinerary panel row builders', () => {
             end_time: '14:00',
          },
       ]);
-      const [wildRow] = buildWildRows([
+      const [wildRow] = Rows.buildWildRows([
          {
             name: 'African Rainforest',
             meeting_spot: 'Wild Encounter - Africa Meeting Spot',
@@ -627,8 +622,8 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('buildWildRows links encounter title when url is present', () => {
-      const [wildRow] = buildWildRows([
+   test('Test_BuildWildRows_TestUrlPresent_ExpectLinkedTitle', () => {
+      const [wildRow] = Rows.buildWildRows([
          {
             name: 'African Rainforest',
             meeting_spot: 'Wild Encounter - Africa Meeting Spot',
@@ -651,8 +646,8 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(wildRow.querySelector('.itin-panel-link'), null);
    });
    
-   test('scheduled item row builders sort rows by start time', () => {
-      const animalRows = buildAnimalRows([
+   test('Test_ScheduledItemRowBuilders_TestStartTime_ExpectSorted', () => {
+      const animalRows = Rows.buildAnimalRows([
          {
             species: 'Late Animal',
             exhibit: 'Eurasia Wilds',
@@ -666,7 +661,7 @@ test.describe('itinerary panel row builders', () => {
             end_time: '10:30 AM',
          },
       ]);
-      const attractionRows = buildAttractionRows([
+      const attractionRows = Rows.buildAttractionRows([
          {
             name: 'Afternoon Attraction',
             start_time: '14:00',
@@ -678,7 +673,7 @@ test.describe('itinerary panel row builders', () => {
             end_time: '11:30',
          },
       ]);
-      const talkRows = buildGuardiansRows([
+      const talkRows = Rows.buildGuardiansRows([
          {
             name: 'Late Talk',
             location: 'Eurasia Wilds',
@@ -690,7 +685,7 @@ test.describe('itinerary panel row builders', () => {
             start_time: '10:00 AM',
          },
       ]);
-      const wildRows = buildWildRows([
+      const wildRows = Rows.buildWildRows([
          {
             name: 'Afternoon Encounter',
             meeting_spot: 'Wild Encounter - Africa Meeting Spot',
@@ -721,9 +716,9 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('buildAnimalRows omits schedule actions for already-scheduled animals', () => {
+   test('Test_BuildAnimalRows_TestAlreadyScheduled_ExpectOmitSchedule', () => {
       const scheduleCalls = [];
-      const [row] = buildAnimalRows([
+      const [row] = Rows.buildAnimalRows([
          {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
@@ -743,8 +738,8 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(scheduleCalls.length, 0);
    });
    
-   test('buildAnimalRows omits unschedule actions for unscheduled animals', () => {
-      const [row] = buildAnimalRows([
+   test('Test_BuildAnimalRows_TestUnscheduled_ExpectOmitUnschedule', () => {
+      const [row] = Rows.buildAnimalRows([
          {
             species: 'Giant Panda',
             exhibit: 'Eurasia Wilds',
@@ -758,8 +753,8 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(buttonLabels.includes('Unschedule'), false);
    });
    
-   test('buildAttractionRows omits row actions when the attraction id is blank', () => {
-      const [row] = buildAttractionRows([
+   test('Test_BuildAttractionRows_TestBlankId_ExpectOmitActions', () => {
+      const [row] = Rows.buildAttractionRows([
          {
             name: '   ',
             start_time: '1:00 PM',
@@ -773,9 +768,9 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
    });
    
-   test('buildGuardiansRows omits remove action when the talk name is blank', () => {
+   test('Test_BuildGuardiansRows_TestBlankName_ExpectOmitRemove', () => {
       const removeCalls = [];
-      const [row] = buildGuardiansRows([
+      const [row] = Rows.buildGuardiansRows([
          {
             name: '   ',
             location: 'Eurasia Wilds',
@@ -790,8 +785,8 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(removeCalls.length, 0);
    });
 
-   test('buildGuardiansRows links the talk name only when a linked animal is present', () => {
-      const [linkedRow, plainRow] = buildGuardiansRows([
+   test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectConditionalLink', () => {
+      const [linkedRow, plainRow] = Rows.buildGuardiansRows([
          {
             name: 'African Lion',
             location: 'Africa Savanna',
@@ -829,8 +824,8 @@ test.describe('itinerary panel row builders', () => {
       );
    });
    
-   test('buildAnimalRows omits image src when asset path segments are invalid', () => {
-      const [row] = buildAnimalRows([
+   test('Test_BuildAnimalRows_TestInvalidAssetPath_ExpectOmitImage', () => {
+      const [row] = Rows.buildAnimalRows([
          {
             species: '!!!',
             exhibit: 'Africa Savanna',
@@ -840,14 +835,14 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(imageSrcFor(row), '');
    });
    
-   test('buildAttractionRows links attraction title when infoLink is present', () => {
+   test('Test_BuildAttractionRows_TestInfoLink_ExpectLinkedTitle', () => {
       const opened = [];
 
       globalThis.window.open = (url) => {
          opened.push(url);
       };
 
-      const [row] = buildAttractionRows([
+      const [row] = Rows.buildAttractionRows([
          {
             name: 'Conservation Carousel',
             info_link: 'https://www.torontozoo.com/tickets/carousel',
