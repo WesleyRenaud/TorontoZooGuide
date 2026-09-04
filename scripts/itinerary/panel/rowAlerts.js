@@ -46,39 +46,41 @@ function buildAnimalVisibilityChange(animal) {
    };
 }
 
-export function buildAnimalAlert(animal) {
-   const removalLine = buildAnimalRemovalReasonLine(animal);
+export class RowAlerts {
+   static buildAnimalAlert(animal) {
+      const removalLine = buildAnimalRemovalReasonLine(animal);
 
-   if (removalLine) {
-      return {
-         line: removalLine,
-         tone: 'default',
-      };
+      if (removalLine) {
+         return {
+            line: removalLine,
+            tone: 'default',
+         };
+      }
+
+      return buildAnimalVisibilityChange(animal);
    }
 
-   return buildAnimalVisibilityChange(animal);
-}
+   static buildAttractionRemovalReasonLine(attraction) {
+      const reason = attraction.removalReason ?? '';
 
-export function buildAttractionRemovalReasonLine(attraction) {
-   const reason = attraction.removalReason ?? '';
+      if (!reason) return '';
 
-   if (!reason) return '';
+      return removedItems.notAvailableOnDate(reason);
+   }
 
-   return removedItems.notAvailableOnDate(reason);
-}
+   static buildGuardiansRemovalReasonLine(guardiansTalk) {
+      const reason = guardiansTalk.removalReason ?? '';
 
-export function buildGuardiansRemovalReasonLine(guardiansTalk) {
-   const reason = guardiansTalk.removalReason ?? '';
+      if (!reason) return '';
 
-   if (!reason) return '';
+      return removedItems.notAvailableOnDate(reason);
+   }
 
-   return removedItems.notAvailableOnDate(reason);
-}
+   static buildWildRemovalReasonLine(wildEncounter) {
+      const reason = wildEncounter.removalReason ?? '';
 
-export function buildWildRemovalReasonLine(wildEncounter) {
-   const reason = wildEncounter.removalReason ?? '';
+      if (!reason) return '';
 
-   if (!reason) return '';
-
-   return removedItems.notAvailableOnDate(reason);
+      return removedItems.notAvailableOnDate(reason);
+   }
 }

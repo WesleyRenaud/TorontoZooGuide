@@ -1,10 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { applyScheduleTimePickerBounds } from '../../../datePickers/consoleDatePickers.js';
-import {
-   OPENING_SCHEDULE_OVERLAP_RESOLUTION,
-   resultHasOpeningScheduleOverlap,
-} from '../../forms/openingScheduleOverlap.js';
+import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import {
    getFieldValue,
@@ -191,11 +188,11 @@ export function createAttractionHoursScheduleController({
    async function resolveOverlapConflict(payload) {
       const resolution = await showOpeningScheduleOverlapDialog();
 
-      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+      if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
          return replaceScheduleOverlaps(payload);
       }
 
-      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+      if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
          return trimScheduleOverlaps(payload);
       }
 
@@ -230,7 +227,7 @@ export function createAttractionHoursScheduleController({
             return;
          }
 
-         if (resultHasOpeningScheduleOverlap(result)) {
+         if (OpeningScheduleOverlap.resultHasOpeningScheduleOverlap(result)) {
             const resolved = await resolveOverlapConflict(values);
 
             if (resolved?.success) {

@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
-import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
+import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 
 export const normalizeNumber = ValueNormalizer.normalizeNumber;
 

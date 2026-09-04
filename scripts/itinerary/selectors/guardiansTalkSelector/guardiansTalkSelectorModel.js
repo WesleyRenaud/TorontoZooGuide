@@ -1,7 +1,7 @@
 import { StoredSelection } from '../base/storedSelection.js';
+import { GuardiansTalkScheduleItemKey } from './guardiansTalkScheduleItemKey.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { GuardiansTalkScheduleItemKey } from './scheduleItemKey.js';
+import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class GuardiansTalkSelectorModel {
@@ -58,7 +58,7 @@ export class GuardiansTalkSelectorModel {
    static getGuardiansTalkSubtitle(row) {
       return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: GuardiansTalkSelectorModel.getGuardiansTalkLocation(row),
-         timeRange: buildScheduledOccurrenceTimeRange(row),
+         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
       });
    }
 

@@ -3,28 +3,8 @@ import {
    formatMinutesAsClockTime,
    parseClockTimeMinutes,
 } from './dayPlannerSchedule.js';
-import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
-
-export function buildImageSrc(...pathParts) {
-   const normalizedParts = pathParts
-      .map((part) => AssetKeyNormalizer.normalize(part))
-      .filter(Boolean);
-
-   if (normalizedParts.length !== pathParts.length) {
-      return null;
-   }
-
-   return `images/details/${normalizedParts.join('/')}.png`;
-}
-
-export function buildFieldLine(label, value) {
-   if (!value) {
-      return '';
-   }
-
-   return `${label}: ${value}`;
-}
 
 function buildTimeFieldLine(value) {
    if (!value) {
@@ -34,42 +14,66 @@ function buildTimeFieldLine(value) {
    return `${APP_STRINGS.labels.time}: ${value}`;
 }
 
-export function buildScheduledTimeFieldLine(item) {
-   return buildTimeFieldLine(buildScheduledOccurrenceTimeRange(item));
-}
+export class RowPresentation {
+   static buildImageSrc(...pathParts) {
+      const normalizedParts = pathParts
+         .map((part) => AssetKeyNormalizer.normalize(part))
+         .filter(Boolean);
 
-export function buildApproximateStartTimeFieldLine(item) {
-   const startMinutes = parseClockTimeMinutes(item?.start_time);
+      if (normalizedParts.length !== pathParts.length) {
+         return null;
+      }
 
-   if (!Number.isFinite(startMinutes)) {
-      return '';
+      return `images/details/${normalizedParts.join('/')}.png`;
    }
 
-   const roundedMinutes = Math.round(startMinutes / 5) * 5;
-   return buildTimeFieldLine(`~${formatMinutesAsClockTime(roundedMinutes)}`);
-}
+   static buildFieldLine(label, value) {
+      if (!value) {
+         return '';
+      }
 
-export function buildMetaLines(lines = []) {
-   return lines.filter(Boolean);
-}
-
-export function buildLinkRowProps(link) {
-   if (!link) {
-      return {};
+      return `${label}: ${value}`;
    }
 
-   return {
-      linkText: APP_STRINGS.common.moreInfo,
-      onLinkClick: () => window.open(link, '_blank'),
-   };
-}
-
-export function buildTitleLinkRowProps(link) {
-   if (!link) {
-      return {};
+   static buildScheduledTimeFieldLine(item) {
+      return buildTimeFieldLine(
+         ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(item)
+      );
    }
 
-   return {
-      onNameClick: () => window.open(link, '_blank'),
-   };
+   static buildApproximateStartTimeFieldLine(item) {
+      const startMinutes = parseClockTimeMinutes(item?.start_time);
+
+      if (!Number.isFinite(startMinutes)) {
+         return '';
+      }
+
+      const roundedMinutes = Math.round(startMinutes / 5) * 5;
+      return buildTimeFieldLine(`~${formatMinutesAsClockTime(roundedMinutes)}`);
+   }
+
+   static buildMetaLines(lines = []) {
+      return lines.filter(Boolean);
+   }
+
+   static buildLinkRowProps(link) {
+      if (!link) {
+         return {};
+      }
+
+      return {
+         linkText: APP_STRINGS.common.moreInfo,
+         onLinkClick: () => window.open(link, '_blank'),
+      };
+   }
+
+   static buildTitleLinkRowProps(link) {
+      if (!link) {
+         return {};
+      }
+
+      return {
+         onNameClick: () => window.open(link, '_blank'),
+      };
+   }
 }

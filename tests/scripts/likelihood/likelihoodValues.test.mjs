@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
-import { buildAnimalAlert } from '../../../scripts/itinerary/panel/rowAlerts.js';
+import { RowAlerts } from '../../../scripts/itinerary/panel/rowAlerts.js';
 import { ItineraryValidation } from '../../../scripts/itinerary/itineraryValidation.js';
 
 test('Test_LikelihoodToPercent_TestIntegerApiValues_ExpectPercents', () => {
@@ -23,7 +23,7 @@ test('Test_LikelihoodToFraction_TestLowSavedValues_ExpectPercentSemantics', () =
 });
 
 test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
-   const alert = buildAnimalAlert({
+   const alert = RowAlerts.buildAnimalAlert({
       likelihoodBefore: 1,
       likelihoodAfter: 20,
    });

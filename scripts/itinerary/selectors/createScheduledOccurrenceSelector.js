@@ -3,7 +3,7 @@ import { createItinerarySelectorController } from './createSelectorController.js
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ScheduledOccurrencePresentation } from '../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function getOccurrenceName(row) {
@@ -207,7 +207,7 @@ export function createScheduledOccurrenceSelectorController({
       getTitle: (row) => getName(row) || defaultTitle,
       getSubtitle: (row) => ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: getPrimaryValue(row),
-         timeRange: buildScheduledOccurrenceTimeRange(row),
+         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
       }),
       getImageSrc: (row) => buildImageSrc(getName(row)),
       getInfoLink: () => null,

@@ -1,5 +1,5 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
-import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from '../../forms/openingScheduleOverlap.js';
+import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { populateRestaurantDropdown } from '../../options/dropdowns.js';
@@ -23,11 +23,11 @@ export function createRestaurantOpeningScheduleController({
       resolveOverlapConflict: async payload => {
          const resolution = await showOpeningScheduleOverlapDialog();
 
-         if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+         if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
             return ConsoleOperationsApi.replaceRestaurantOpeningScheduleOverlaps(payload);
          }
 
-         if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+         if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
             return ConsoleOperationsApi.trimRestaurantOpeningScheduleOverlaps(payload);
          }
 

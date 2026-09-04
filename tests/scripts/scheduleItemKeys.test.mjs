@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { getItineraryItemKey } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
-import { GuardiansTalkScheduleItemKey } from '../../scripts/itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
-import { TransportationScheduleItemKey } from '../../scripts/itinerary/selectors/transportationSelector/scheduleItemKey.js';
-import { WildEncounterScheduleItemKey } from '../../scripts/itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
+import { GuardiansTalkScheduleItemKey } from '../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
+import { TransportationScheduleItemKey } from '../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
+import { WildEncounterScheduleItemKey } from '../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 
 test('getItineraryItemKey resolves keys for itinerary item types', () => {
    assert.equal(

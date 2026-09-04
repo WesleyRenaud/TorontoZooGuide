@@ -1,8 +1,8 @@
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { WildEncounterScheduleItemKey } from './scheduleItemKey.js';
+import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../../strings.js';
+import { WildEncounterScheduleItemKey } from './wildEncounterScheduleItemKey.js';
 
 export class WildEncounterSelectorModel {
    static getWildEncounterName(row) {
@@ -62,7 +62,7 @@ export class WildEncounterSelectorModel {
    static getWildEncounterSubtitle(row) {
       return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: WildEncounterSelectorModel.getWildEncounterMeetingSpot(row),
-         timeRange: buildScheduledOccurrenceTimeRange(row),
+         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
       });
    }
 

@@ -1,9 +1,5 @@
 import { makeItemRow } from './components/itemRow.js';
-import {
-   buildImageSrc,
-   buildLinkRowProps,
-   buildMetaLines,
-} from './rowPresentation.js';
+import { RowPresentation } from './rowPresentation.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function normalizeItems(items = [], normalizeItem) {
@@ -88,10 +84,10 @@ export function buildNamedRows(
          return {
             name,
             nameSuffix: getNameSuffix(item),
-            imageSrc: buildImageSrc(imageDirectory, imageName),
-            metaLines: buildMetaLines(getMetaLines(item)),
+            imageSrc: RowPresentation.buildImageSrc(imageDirectory, imageName),
+            metaLines: RowPresentation.buildMetaLines(getMetaLines(item)),
             alertLine: getAlertLine(item),
-            ...buildLinkRowProps(getLink(item)),
+            ...RowPresentation.buildLinkRowProps(getLink(item)),
             ...(typeof extendRowProps === 'function' ? extendRowProps(item) : {}),
          };
       },
