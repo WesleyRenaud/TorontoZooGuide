@@ -3,14 +3,10 @@ import test from 'node:test';
 
 import { WeatherApi } from '../../../scripts/api/weatherApi.js';
 import { mockFetchJsonResponse } from '../helpers/fetchMock.mjs';
-import {
-   addLocalCalendarDays,
-   getToday,
-   toISODate,
-} from '../../../scripts/visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../../scripts/visitDates/visitDateRules.js';
 
 test('Test_FetchWeatherTempForDate_TestToday_ExpectCurrentTemp', async () => {
-   const today = toISODate(getToday());
+   const today = VisitDateRules.toISODate(VisitDateRules.getToday());
    const urls = [];
    const originalFetch = globalThis.fetch;
 
@@ -33,7 +29,7 @@ test('Test_FetchWeatherTempForDate_TestToday_ExpectCurrentTemp', async () => {
 });
 
 test('Test_FetchWeatherTempForDate_TestFutureDate_ExpectAveragedForecast', async () => {
-   const tomorrow = toISODate(addLocalCalendarDays(getToday(), 1));
+   const tomorrow = VisitDateRules.toISODate(VisitDateRules.addLocalCalendarDays(VisitDateRules.getToday(), 1));
    const urls = [];
    const originalFetch = globalThis.fetch;
 

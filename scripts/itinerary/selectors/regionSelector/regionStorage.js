@@ -1,9 +1,6 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { StoredSelection } from '../base/storedSelection.js';
-import {
-   loadArray,
-   saveArray,
-} from '../../draftStorage.js';
+import { DraftStorage } from '../../draftStorage.js';
 import { StorageKeys } from '../../storageKeys.js';
 
 function normalizeStoredAnimalKey(key) {
@@ -12,13 +9,13 @@ function normalizeStoredAnimalKey(key) {
 
 export class RegionStorage {
    static loadSelectedNames(storageKey) {
-      return loadArray(storageKey)
+      return DraftStorage.loadArray(storageKey)
          .map((name) => StoredSelection.normalizeStoredString(name))
          .filter(Boolean);
    }
 
    static saveSelectedNames(storageKey, names) {
-      saveArray(
+      DraftStorage.saveArray(
          storageKey,
          Array.from(names)
             .map((name) => StoredSelection.normalizeStoredString(name))
@@ -28,7 +25,7 @@ export class RegionStorage {
 
    static loadRemovedAnimalKeys() {
       return new Set(
-         loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
+         DraftStorage.loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
             .map(normalizeStoredAnimalKey)
             .filter(Boolean)
       );
@@ -43,7 +40,7 @@ export class RegionStorage {
 
       const removedKeys = RegionStorage.loadRemovedAnimalKeys();
       removedKeys.add(normalizedKey);
-      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
+      DraftStorage.saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
    }
 
    static restoreRemovedAnimalKey(key) {
@@ -54,11 +51,11 @@ export class RegionStorage {
          return;
       }
 
-      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
+      DraftStorage.saveArray(StorageKeys.REMOVED_ANIMALS_KEY, [...removedKeys]);
    }
 
    static clearRemovedAnimalKeys() {
-      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, []);
+      DraftStorage.saveArray(StorageKeys.REMOVED_ANIMALS_KEY, []);
    }
 
    static clearRemovedAnimalKeysForExhibit(exhibitName) {
@@ -78,6 +75,6 @@ export class RegionStorage {
          return;
       }
 
-      saveArray(StorageKeys.REMOVED_ANIMALS_KEY, nextKeys);
+      DraftStorage.saveArray(StorageKeys.REMOVED_ANIMALS_KEY, nextKeys);
    }
 }

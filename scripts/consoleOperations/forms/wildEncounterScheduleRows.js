@@ -1,5 +1,5 @@
 import { APP_STRINGS } from '../../strings.js';
-import { formatZooDisplayClockTime } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class WildEncounterScheduleRows {
    static WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS = [
@@ -14,7 +14,7 @@ export class WildEncounterScheduleRows {
 
    static normalizeWildEncounterScheduleRow(row = {}) {
       const normalized = {
-         time: formatZooDisplayClockTime(row.time?.trim?.() ?? row.time ?? '') ?? '',
+         time: VisitDateRules.formatZooDisplayClockTime(row.time?.trim?.() ?? row.time ?? '') ?? '',
       };
 
       WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((day) => {

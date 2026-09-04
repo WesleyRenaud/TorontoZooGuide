@@ -1,25 +1,19 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { ItinerarySelectorApi } from '../../../api/itinerarySelectorApi.js';
-import {
-   loadArray,
-   saveArray,
-} from '../../draftStorage.js';
+import { DraftStorage } from '../../draftStorage.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelection.js';
 import { RegionStorage } from './regionStorage.js';
 import { buildDateSearchContext } from '../../../search/searchContext.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { StorageKeys } from '../../storageKeys.js';
-import {
-   getToday,
-   toISODate,
-} from '../../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
 
 async function resolveAnimalsByExhibitQueryContext() {
    let context = await ItinerarySearchContext.getItineraryDateSearchContext();
 
    if (!context.month || context.day == null) {
-      context = await buildDateSearchContext(toISODate(getToday()));
+      context = await buildDateSearchContext(VisitDateRules.toISODate(VisitDateRules.getToday()));
    }
 
    return context;
@@ -107,7 +101,7 @@ export function createRegionSelectorState() {
       }
 
       const selectedExhibits = Array.from(selectedExhibitNames);
-      const draftAnimals = loadArray(StorageKeys.ANIMALS_KEY)
+      const draftAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
          .map(RegionSelection.normalizeSelectedAnimal)
          .filter(Boolean);
       const removedKeys = RegionStorage.loadRemovedAnimalKeys();
@@ -213,7 +207,7 @@ export function createRegionSelectorState() {
          return !isBulkManagedExhibit(exhibit);
       });
 
-      saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
+      DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
 
       return remainingAnimals;
    }
@@ -221,7 +215,7 @@ export function createRegionSelectorState() {
    async function buildUpdatedAnimalsFromSelection() {
       const selectedExhibits = Array.from(selectedExhibitNames);
 
-      const currentAnimals = loadArray(StorageKeys.ANIMALS_KEY)
+      const currentAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
          .map(RegionSelection.normalizeSelectedAnimal)
          .filter(Boolean);
 
@@ -268,7 +262,7 @@ export function createRegionSelectorState() {
       });
 
       const mergedAnimals = RegionSelection.mergeAnimals(preservedAnimals, selectedAnimals);
-      saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
+      DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
       selectedExhibitsNeedCatalogRebuild = false;
 
       return mergedAnimals;

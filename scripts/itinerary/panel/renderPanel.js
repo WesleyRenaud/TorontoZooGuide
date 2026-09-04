@@ -1,4 +1,4 @@
-import { clearItineraryDraftStorage } from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import {
    buildEmptyItineraryPanelContent,
    buildItineraryPanelContent,
@@ -17,7 +17,7 @@ let latestRenderToken = 0;
 export async function clearStoredItinerary(deps = {}) {
    const {
       clearSavedItinerary = clearItinerary,
-      clearDraftStorage = clearItineraryDraftStorage,
+      clearDraftStorage = DraftStorage.clearItineraryDraftStorage,
    } = deps;
 
    try {

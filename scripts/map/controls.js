@@ -1,5 +1,5 @@
 import { initVisitDateFlatpickr } from '../visitDates/visitDateFlatpickr.js';
-import { getToday } from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 function blurMapDateInput(mapDateInput) {
    mapDateInput?.blur();
@@ -65,7 +65,7 @@ function initMapDatePicker(mapDateInput, {
    onSpecificDayChange,
    earliestSelectableNoon,
 } = {}) {
-   const floor = earliestSelectableNoon ?? getToday();
+   const floor = earliestSelectableNoon ?? VisitDateRules.getToday();
 
    return initVisitDateFlatpickr(mapDateInput, {
       defaultDate: floor,

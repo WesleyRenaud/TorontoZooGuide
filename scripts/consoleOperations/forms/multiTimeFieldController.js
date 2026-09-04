@@ -1,6 +1,6 @@
 import { APP_STRINGS } from '../../strings.js';
 import { common } from '../../strings/common.js';
-import { formatZooDisplayClockTime } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export function createMultiTimeFieldController({
    listEl,
@@ -57,7 +57,7 @@ export function createMultiTimeFieldController({
    }
 
    function addTime(time) {
-      const normalizedTime = formatZooDisplayClockTime(time?.trim() ?? '');
+      const normalizedTime = VisitDateRules.formatZooDisplayClockTime(time?.trim() ?? '');
 
       if (!normalizedTime || times.includes(normalizedTime)) {
          return false;

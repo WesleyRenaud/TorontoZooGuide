@@ -7,7 +7,7 @@ import {
 import { recoverPastItineraryDate } from './recoverPastItineraryDate.js';
 import { showPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
-import { isVisitDateBeforeEarliestFloor } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 /**
  * When a saved itinerary's visit day is no longer selectable, offer to clear it or
@@ -23,7 +23,7 @@ export async function offerPastItineraryClearOrRecovery({
    const {
       hasContent = ItineraryShape.hasSavedItineraryContent,
       resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
-      isVisitDateBeforeFloor = isVisitDateBeforeEarliestFloor,
+      isVisitDateBeforeFloor = VisitDateRules.isVisitDateBeforeEarliestFloor,
       showChoicePrompt = showPastItineraryChoicePrompt,
       clearItinerary = clearPastItinerary,
       recoverItineraryDate = recoverPastItineraryDate,

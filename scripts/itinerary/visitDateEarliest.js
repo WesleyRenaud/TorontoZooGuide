@@ -2,14 +2,9 @@
  * Visit-day defaults shared by the map (specific-day picker), itinerary wizard (date floor),
  * and panel day planner (which ISO day to load zoo hours for when nothing is saved).
  */
-import { getStoredItineraryDate } from './draftStorage.js';
+import { DraftStorage } from './draftStorage.js';
 import { getZooHours } from './itineraryService.js';
-import {
-   addLocalCalendarDays,
-   getToday,
-   isLocalTimeAtOrPastZooClose,
-   toISODate,
-} from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 /**
  * First calendar day the visitor may pick as a visit date: normally today at local noon,
@@ -18,11 +13,11 @@ import {
 export class VisitDateEarliest {
    static async resolveEarliestSelectableVisitDateNoon(deps = {}) {
       const {
-         getTodayFn = getToday,
+         getTodayFn = VisitDateRules.getToday,
          getZooHoursFn = getZooHours,
-         isPastClose = isLocalTimeAtOrPastZooClose,
-         addDays = addLocalCalendarDays,
-         toIso = toISODate,
+         isPastClose = VisitDateRules.isLocalTimeAtOrPastZooClose,
+         addDays = VisitDateRules.addLocalCalendarDays,
+         toIso = VisitDateRules.toISODate,
       } = deps;
 
       const today = getTodayFn();
@@ -51,9 +46,9 @@ export class VisitDateEarliest {
       deps = {}
    ) {
       const {
-         getStoredDate = getStoredItineraryDate,
+         getStoredDate = DraftStorage.getStoredItineraryDate,
          resolveEarliest = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
-         toIso = toISODate,
+         toIso = VisitDateRules.toISODate,
       } = deps;
 
       const fromItin = typeof itinerary?.date === 'string' && itinerary.date.trim();

@@ -1,6 +1,6 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
 import { showScheduleItemModule } from './components/showScheduleItemModule.js';
-import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
@@ -52,7 +52,7 @@ export function buildItineraryPanelScheduleHandlers(
       openModule = openScheduleItemModule,
       unscheduleItem = ItineraryApi.unscheduleItineraryItemRequest,
       removeItem = ItineraryApi.removeItemFromItineraryRequest,
-      removeAnimalDraft = removeAnimalFromItineraryAnimalDraft,
+      removeAnimalDraft = DraftStorage.removeAnimalFromItineraryAnimalDraft,
       requiresRemoveConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation,
       showRemoveConfirmation = showRemoveItineraryItemConfirmation,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,

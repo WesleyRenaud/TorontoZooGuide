@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { EnsureItineraryVisitDate } from '../../../scripts/itinerary/ensureItineraryVisitDate.js';
-import { setStoredItineraryDate } from '../../../scripts/itinerary/draftStorage.js';
+import { DraftStorage } from '../../../scripts/itinerary/draftStorage.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
@@ -95,7 +95,7 @@ test('Test_EnsureItineraryVisitDate_TestNoSavedDate_ExpectPersisted', async () =
 });
 
 test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async () => {
-   setStoredItineraryDate('2026-06-18');
+   DraftStorage.setStoredItineraryDate('2026-06-18');
 
    const requests = [];
 

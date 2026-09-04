@@ -109,7 +109,9 @@
       "scripts/itinerary/panel/dayPlannerSchedule.js",
       "scripts/itinerary/panel/scheduleItemSearch.js",
       "scripts/itinerary/panel/format.js",
-      "scripts/itinerary/itineraryShape.js"
+      "scripts/itinerary/itineraryShape.js",
+      "scripts/visitDates/visitDateRules.js",
+      "scripts/itinerary/draftStorage.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

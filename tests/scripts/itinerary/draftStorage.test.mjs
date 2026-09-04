@@ -1,17 +1,9 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import {
-   clearItineraryDraftStorage,
-   isStoredItineraryStale,
-   loadStoredItineraryDraft,
-   removeAnimalFromItineraryAnimalDraft,
-   safeParseJSON,
-   syncItineraryAnimalDraftFromItinerary,
-   writeStoredItineraryDraft,
-} from '../../scripts/itinerary/draftStorage.js';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
+import { DraftStorage } from '../../../scripts/itinerary/draftStorage.js';
+import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
@@ -28,13 +20,13 @@ function toLocalISODate(date) {
    return `${year}-${month}-${day}`;
 }
 
-test('safeParseJSON returns a fallback for malformed stored values', () => {
-   assert.deepEqual(safeParseJSON('{"name":"Zootique"}', {}), { name: 'Zootique' });
-   assert.deepEqual(safeParseJSON('{bad json', []), []);
+test('Test_SafeParseJSON_TestMalformed_ExpectFallback', () => {
+   assert.deepEqual(DraftStorage.safeParseJSON('{"name":"Zootique"}', {}), { name: 'Zootique' });
+   assert.deepEqual(DraftStorage.safeParseJSON('{bad json', []), []);
 });
 
-test('writes and loads the stored itinerary draft', () => {
-   writeStoredItineraryDraft({
+test('Test_WriteAndLoadStoredItineraryDraft_TestRoundTrip_ExpectPersisted', () => {
+   DraftStorage.writeStoredItineraryDraft({
       date: '2026-06-15',
       animals: [{ species: 'African Lion' }],
       attractions: [{ name: 'Conservation Carousel' }],
@@ -44,7 +36,7 @@ test('writes and loads the stored itinerary draft', () => {
 
    assert.equal(localStorage.getItem(StorageKeys.DATE_KEY), '2026-06-15');
    assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)), [{ species: 'African Lion' }]);
-   assert.deepEqual(loadStoredItineraryDraft(), {
+   assert.deepEqual(DraftStorage.loadStoredItineraryDraft(), {
       date: '2026-06-15',
       arrivalTime: '',
       departureTime: '',
@@ -58,14 +50,14 @@ test('writes and loads the stored itinerary draft', () => {
    });
 });
 
-test('clears draft storage while optionally preserving selection storage', () => {
-   writeStoredItineraryDraft({
+test('Test_ClearItineraryDraftStorage_TestOptionalSelections_ExpectCleared', () => {
+   DraftStorage.writeStoredItineraryDraft({
       date: '2026-06-15',
       animals: [{ species: 'African Lion' }],
    });
    localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify(['Africa Savanna']));
 
-   clearItineraryDraftStorage({ includeSelections: false });
+   DraftStorage.clearItineraryDraftStorage({ includeSelections: false });
 
    assert.equal(localStorage.getItem(StorageKeys.DATE_KEY), null);
    assert.equal(localStorage.getItem(StorageKeys.ANIMALS_KEY), null);
@@ -76,20 +68,20 @@ test('clears draft storage while optionally preserving selection storage', () =>
    assert.equal(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY), '["Africa Savanna"]');
 });
 
-test('detects stale stored itinerary dates', () => {
+test('Test_IsStoredItineraryStale_TestPastDate_ExpectDetected', () => {
    const today = new Date();
    const yesterday = new Date(today);
    yesterday.setDate(today.getDate() - 1);
 
-   writeStoredItineraryDraft({ date: toLocalISODate(yesterday) });
-   assert.equal(isStoredItineraryStale(), true);
+   DraftStorage.writeStoredItineraryDraft({ date: toLocalISODate(yesterday) });
+   assert.equal(DraftStorage.isStoredItineraryStale(), true);
 
-   writeStoredItineraryDraft({ date: toLocalISODate(today) });
-   assert.equal(isStoredItineraryStale(), false);
+   DraftStorage.writeStoredItineraryDraft({ date: toLocalISODate(today) });
+   assert.equal(DraftStorage.isStoredItineraryStale(), false);
 });
 
-test('syncItineraryAnimalDraftFromItinerary mirrors animals without inventing exhibit selection', () => {
-   syncItineraryAnimalDraftFromItinerary({
+test('Test_SyncItineraryAnimalDraftFromItinerary_TestAnimalsOnly_ExpectNoInventedExhibits', () => {
+   DraftStorage.syncItineraryAnimalDraftFromItinerary({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'Amur Tiger', exhibit: 'Eurasia Wilds' },
@@ -102,13 +94,13 @@ test('syncItineraryAnimalDraftFromItinerary mirrors animals without inventing ex
    assert.equal(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY), null);
 });
 
-test('syncItineraryAnimalDraftFromItinerary preserves existing exhibit selection', () => {
+test('Test_SyncItineraryAnimalDraftFromItinerary_TestExistingExhibits_ExpectPreserved', () => {
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
    );
 
-   syncItineraryAnimalDraftFromItinerary({
+   DraftStorage.syncItineraryAnimalDraftFromItinerary({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'Cheetah', exhibit: 'Africa Savanna' },
@@ -121,7 +113,7 @@ test('syncItineraryAnimalDraftFromItinerary preserves existing exhibit selection
    );
 });
 
-test('removeAnimalFromItineraryAnimalDraft keeps exhibit selection while animals remain', () => {
+test('Test_RemoveAnimalFromItineraryAnimalDraft_TestRemainingAnimals_ExpectExhibitKept', () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -134,7 +126,7 @@ test('removeAnimalFromItineraryAnimalDraft keeps exhibit selection while animals
       JSON.stringify(['Africa Savanna'])
    );
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'Watusi Cattle||Africa Savanna'
    );
@@ -153,7 +145,7 @@ test('removeAnimalFromItineraryAnimalDraft keeps exhibit selection while animals
    );
 });
 
-test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty', () => {
+test('Test_RemoveAnimalFromItineraryAnimalDraft_TestLastAnimal_ExpectExhibitDropped', () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -165,7 +157,7 @@ test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty',
       JSON.stringify(['Africa Savanna'])
    );
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );
@@ -174,25 +166,25 @@ test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty',
    assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)), []);
 });
 
-test('removeAnimalFromItineraryAnimalDraft ignores non-animal item types', () => {
+test('Test_RemoveAnimalFromItineraryAnimalDraft_TestNonAnimal_ExpectIgnored', () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
    );
 
-   removeAnimalFromItineraryAnimalDraft('events', 'Lunch||');
-   removeAnimalFromItineraryAnimalDraft('animals', '');
+   DraftStorage.removeAnimalFromItineraryAnimalDraft('events', 'Lunch||');
+   DraftStorage.removeAnimalFromItineraryAnimalDraft('animals', '');
 
    assert.equal(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)).length, 1);
 });
 
-test('syncItineraryAnimalDraftFromItinerary clears removed animal keys', () => {
+test('Test_SyncItineraryAnimalDraftFromItinerary_TestRemovedKeys_ExpectCleared', () => {
    localStorage.setItem(
       StorageKeys.REMOVED_ANIMALS_KEY,
       JSON.stringify(['african penguin||africa savanna'])
    );
 
-   syncItineraryAnimalDraftFromItinerary({
+   DraftStorage.syncItineraryAnimalDraftFromItinerary({
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
    });
 

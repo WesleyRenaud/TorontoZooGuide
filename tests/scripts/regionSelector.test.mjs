@@ -5,7 +5,7 @@ import {
    createItineraryRegionSelectorController,
    shouldSkipRegionSelectionSync,
 } from '../../scripts/itinerary/selectors/regionSelector.js';
-import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
+import { DraftStorage } from '../../scripts/itinerary/draftStorage.js';
 import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
 import {
    createDomNode,
@@ -110,7 +110,7 @@ test('region selector rebuilds animals after re-selecting an exhibit in the UI',
       ],
    });
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );

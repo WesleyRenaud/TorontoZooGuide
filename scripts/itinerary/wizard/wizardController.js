@@ -1,7 +1,4 @@
-import {
-   clearItinerarySelectionStorage,
-   syncItineraryAnimalDraftFromItinerary,
-} from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
@@ -49,7 +46,7 @@ export async function openItineraryWizard({
       createDateStepController = createItineraryDateSelectorController,
       finalizeWizard = finalizeItineraryWizard,
       showConfirmPopup = showItineraryConfirmPopup,
-      syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
+      syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
       loadSelectionStepConfigs = loadDefaultSelectionStepConfigs,
       selectionStepConfigs = null,
    } = deps;
@@ -67,7 +64,7 @@ export async function openItineraryWizard({
       syncAnimalDraft(existing);
    }
    else if (!existing || isItineraryEmpty(existing)) {
-      clearItinerarySelectionStorage();
+      DraftStorage.clearItinerarySelectionStorage();
    }
 
    const earliestVisitNoon = await resolveEarliestVisitDate();

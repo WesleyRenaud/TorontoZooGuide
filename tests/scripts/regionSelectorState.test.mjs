@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { createRegionSelectorState } from '../../scripts/itinerary/selectors/regionSelector/state.js';
 import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
+import { DraftStorage } from '../../scripts/itinerary/draftStorage.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 import { createFetchMock } from './helpers/fetchMock.mjs';
 
@@ -103,7 +103,7 @@ test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete 
       }),
    });
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );
@@ -147,7 +147,7 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
       }),
    });
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'Watusi Cattle||Africa Savanna'
    );
@@ -235,7 +235,7 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
       }),
    });
 
-   removeAnimalFromItineraryAnimalDraft(
+   DraftStorage.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );

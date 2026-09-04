@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
-import { formatLocalDateRange } from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 function createEventTitleEl(event) {
    const titleEl = document.createElement('h4');
@@ -37,7 +37,7 @@ export function createEventCard(event, isActive = false) {
 
    const dateRangeEl = document.createElement('p');
    dateRangeEl.className = 'explore-event-date-range';
-   dateRangeEl.textContent = formatLocalDateRange(event.start_date, event.end_date);
+   dateRangeEl.textContent = VisitDateRules.formatLocalDateRange(event.start_date, event.end_date);
 
    const descriptionEl = document.createElement('p');
    descriptionEl.className = 'explore-update-description';

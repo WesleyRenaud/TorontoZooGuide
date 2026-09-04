@@ -2,10 +2,7 @@ import {
    OPEN_WEATHER_API_KEY,
    TORONTO_ZOO_COORDINATES,
 } from '../config/appConfig.js';
-import {
-   getToday,
-   toISODate,
-} from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 function weatherApiUrl(path) {
    return (
@@ -18,7 +15,7 @@ function weatherApiUrl(path) {
 }
 
 function isTodayDate(dateStr) {
-   return dateStr === toISODate(getToday());
+   return dateStr === VisitDateRules.toISODate(VisitDateRules.getToday());
 }
 
 function fetchCurrentTemp() {

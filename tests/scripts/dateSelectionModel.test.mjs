@@ -6,9 +6,7 @@ import {
    formatVisitDateLong,
    readSavedItineraryVisitDate,
 } from '../../scripts/itinerary/selectors/dateSelectionModel.js';
-import {
-   toISODate,
-} from '../../scripts/visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../scripts/visitDates/visitDateRules.js';
 
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
@@ -37,7 +35,7 @@ test('createDateSelectionModel rejects dates outside the allowed window', () => 
       getTodayFn: () => floor,
       daysAhead: 2,
       syncInputValue: (date) => {
-         syncedDates.push(toISODate(date));
+         syncedDates.push(VisitDateRules.toISODate(date));
       },
    });
 
@@ -58,7 +56,7 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
       getStoredDate: () => '2026-06-18',
    });
 
-   assert.equal(toISODate(model.getDisplayDate()), '2026-06-18');
+   assert.equal(VisitDateRules.toISODate(model.getDisplayDate()), '2026-06-18');
 
    const modelWithInitial = createDateSelectionModel({
       initialDate: makeNoonDate(2026, 5, 20),
@@ -67,7 +65,7 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
       getStoredDate: () => '2026-06-18',
    });
 
-   assert.equal(toISODate(modelWithInitial.getDisplayDate()), '2026-06-20');
+   assert.equal(VisitDateRules.toISODate(modelWithInitial.getDisplayDate()), '2026-06-20');
 
    const modelWithoutSaved = createDateSelectionModel({
       earliestDateFloor: floor,
@@ -75,7 +73,7 @@ test('createDateSelectionModel prefers initial, saved, and floor dates for displ
       getStoredDate: () => null,
    });
 
-   assert.equal(toISODate(modelWithoutSaved.getDisplayDate()), toISODate(floor));
+   assert.equal(VisitDateRules.toISODate(modelWithoutSaved.getDisplayDate()), VisitDateRules.toISODate(floor));
 });
 
 test('createDateSelectionModel persists the current date and returns payload data', () => {
@@ -107,5 +105,5 @@ test('createDateSelectionModel clamps saved display dates to the allowed range',
       getStoredDate: () => '2099-01-01',
    });
 
-   assert.equal(toISODate(model.getDisplayDate()), '2026-06-17');
+   assert.equal(VisitDateRules.toISODate(model.getDisplayDate()), '2026-06-17');
 });

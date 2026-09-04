@@ -1,9 +1,5 @@
 import { buildDateSearchContext } from '../search/searchContext.js';
-import {
-   getToday,
-   getYear,
-   toISODate,
-} from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 const PRESET_DATE_CONTEXTS = {
    summer: {
@@ -29,7 +25,7 @@ export class DateContext {
 
       if (presetDateCtx) {
          const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
-         const anchorIso = getYear(trimmed) != null ? trimmed : toISODate(getToday());
+         const anchorIso = VisitDateRules.getYear(trimmed) != null ? trimmed : VisitDateRules.toISODate(VisitDateRules.getToday());
 
          const anchorCtx = await buildDateSearchContext(anchorIso, { includeTemp: false });
 

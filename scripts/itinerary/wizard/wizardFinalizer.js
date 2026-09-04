@@ -1,4 +1,4 @@
-import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
+import { DraftStorage } from '../draftStorage.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
@@ -51,7 +51,7 @@ export async function finalizeItineraryWizard(
    const {
       normalizeDraft = ItineraryShape.normalizeItineraryDraft,
       saveItineraryFn = saveItinerary,
-      syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
+      syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
       showWizardPopup = showItineraryWizardPopup,
       showNoticePopup = showItineraryNoticePopup,
       showProceedConfirmation = showSaveIssuesProceedConfirmation,

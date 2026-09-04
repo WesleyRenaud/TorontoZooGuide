@@ -1,24 +1,18 @@
 import { initFlatpickr } from '../datePickers/flatpickr.js';
-import {
-   addLocalCalendarDays,
-   clampToAllowedVisitDate,
-   DEFAULT_DAYS_AHEAD,
-   getToday,
-   toISODate,
-} from './visitDateRules.js';
+import { VisitDateRules } from './visitDateRules.js';
 
 export function initVisitDateFlatpickr(
    inputEl,
    {
       defaultDate = null,
-      daysAhead = DEFAULT_DAYS_AHEAD,
+      daysAhead = VisitDateRules.DEFAULT_DAYS_AHEAD,
       earliestNoon = null,
       clickOpens = true,
       onChange = null,
       onReady = null,
       onClose = null,
       initFlatpickr: initFlatpickrFn = initFlatpickr,
-      getTodayFn = getToday,
+      getTodayFn = VisitDateRules.getToday,
       getMaxDateFn = null,
    } = {}
 ) {
@@ -28,9 +22,9 @@ export function initVisitDateFlatpickr(
 
    const floor = earliestNoon ?? getTodayFn();
    const resolveMaxDate = getMaxDateFn
-      ?? ((ahead) => addLocalCalendarDays(getTodayFn(), ahead));
+      ?? ((ahead) => VisitDateRules.addLocalCalendarDays(getTodayFn(), ahead));
 
-   const safeDefault = clampToAllowedVisitDate(
+   const safeDefault = VisitDateRules.clampToAllowedVisitDate(
       defaultDate || new Date(),
       daysAhead,
       floor,
@@ -47,19 +41,19 @@ export function initVisitDateFlatpickr(
       monthSelectorType: 'static',
       onReady: (selectedDates, dateStr, instance) => {
          const selected = selectedDates?.[0] || safeDefault;
-         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
+         const safeDate = VisitDateRules.clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
 
          instance.setDate(safeDate, false);
 
-         onReady?.(safeDate, toISODate(safeDate), instance, selectedDates, dateStr);
+         onReady?.(safeDate, VisitDateRules.toISODate(safeDate), instance, selectedDates, dateStr);
       },
       onChange: (selectedDates, dateStr, instance) => {
          const selected = selectedDates?.[0] || safeDefault;
-         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
+         const safeDate = VisitDateRules.clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
 
          instance.setDate(safeDate, false);
 
-         onChange?.(safeDate, toISODate(safeDate), instance, selectedDates, dateStr);
+         onChange?.(safeDate, VisitDateRules.toISODate(safeDate), instance, selectedDates, dateStr);
       },
       onClose: (selectedDates, dateStr, instance) => {
          inputEl.blur();

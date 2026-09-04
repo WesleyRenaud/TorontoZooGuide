@@ -4,7 +4,7 @@ import {
    clearConsolePanelUrlParam,
 } from '../shell/panelNavigator.js';
 import { APP_STRINGS } from '../../strings.js';
-import { resolveOptionalStartDate } from '../../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export function resetFieldValue(fieldEl) {
    if (!fieldEl) {
@@ -74,7 +74,7 @@ export function validateOptionalDateRange(startDate, endDate) {
       return null;
    }
 
-   const effectiveStart = resolveOptionalStartDate(startDate);
+   const effectiveStart = VisitDateRules.resolveOptionalStartDate(startDate);
    const startMs = new Date(effectiveStart).getTime();
    const endMs = new Date(endDate).getTime();
 

@@ -1,14 +1,10 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import { setStoredItineraryDate } from './draftStorage.js';
+import { DraftStorage } from './draftStorage.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { ItineraryShape } from './itineraryShape.js';
-import {
-   getDay,
-   getMonth,
-   getYear,
-} from '../visitDates/visitDateRules.js';
+import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 export const isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
 export const normalizeItinerary = ItineraryNormalizer.normalizeItinerary;
@@ -31,7 +27,7 @@ async function fetchSavedItineraryVisitDate() {
    const { date } = await ItineraryApi.getItineraryDateRequest();
 
    if (date) {
-      setStoredItineraryDate(date);
+      DraftStorage.setStoredItineraryDate(date);
    }
 
    return date;
@@ -49,9 +45,9 @@ export async function getZooHours(date) {
       return null;
    }
 
-   const month = getMonth(date);
-   const day = getDay(date);
-   const year = getYear(date);
+   const month = VisitDateRules.getMonth(date);
+   const day = VisitDateRules.getDay(date);
+   const year = VisitDateRules.getYear(date);
 
    if (month == null || day == null || year == null) {
       return null;
