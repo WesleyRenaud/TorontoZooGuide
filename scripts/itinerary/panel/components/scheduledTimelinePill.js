@@ -6,18 +6,15 @@ import {
 import { createPillLabelNode } from './openTimelinePill.js';
 import { isExtendedScheduledPill } from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import {
-   applyRegionColorsToElement,
-   resolveRegionColorSlugForScheduledItem,
-} from '../../../shared/regionColors.js';
+import { RegionColors } from '../../../shared/regionColors.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const { dayPlanner } = APP_STRINGS.itinerary;
 
 function applyScheduledPillRegionColors(pill, item = null) {
-   applyRegionColorsToElement(
+   RegionColors.applyRegionColorsToElement(
       pill,
-      resolveRegionColorSlugForScheduledItem(item)
+      RegionColors.resolveRegionColorSlugForScheduledItem(item)
    );
 }
 

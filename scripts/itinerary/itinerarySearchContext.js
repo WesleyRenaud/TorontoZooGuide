@@ -16,10 +16,12 @@ async function resolveItinerarySearchDate(dateOverride = '') {
    return resolveEffectiveItineraryHoursDateIso();
 }
 
-export async function getItineraryDateSearchContext({
-   includeTemp = true,
-   date: dateOverride = '',
-} = {}) {
-   const date = await resolveItinerarySearchDate(dateOverride);
-   return buildDateSearchContext(date, { includeTemp });
+export class ItinerarySearchContext {
+   static async getItineraryDateSearchContext({
+      includeTemp = true,
+      date: dateOverride = '',
+   } = {}) {
+      const date = await resolveItinerarySearchDate(dateOverride);
+      return buildDateSearchContext(date, { includeTemp });
+   }
 }

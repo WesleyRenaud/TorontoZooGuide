@@ -4,20 +4,7 @@
  */
 
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { normalizeAnimalIdentitySearchFields } from '../itinerary/animalIdentity.js';
-
-export const REGION_COLOR_SLUGS = Object.freeze({
-   Africa: 'africa',
-   'Indo-Malaya': 'indo-malaya',
-   'Canadian Domain': 'canadian-domain',
-   'Discovery Zone': 'discovery-zone',
-   Americas: 'americas',
-   'Tundra Trek': 'tundra-trek',
-   'Eurasia Wilds': 'eurasia-wilds',
-   Australasia: 'australasia',
-   'Front Courtyard': 'front-courtyard',
-   'Wildlife Science Campus': 'wildlife-science-campus',
-});
+import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 
 // Keep in sync with api/seed/data/exhibit.json.
 const EXHIBIT_REGION_BY_NAME = Object.freeze({
@@ -37,64 +24,81 @@ const EXHIBIT_REGION_BY_NAME = Object.freeze({
    'kids zoo': 'Discovery Zone',
 });
 
-export function resolveRegionNameForExhibit(exhibitName = '') {
-   const exhibitKey = normalizeAnimalIdentitySearchFields({
-      exhibit: exhibitName,
-   }).exhibit;
+export class RegionColors {
+   static REGION_COLOR_SLUGS = Object.freeze({
+      Africa: 'africa',
+      'Indo-Malaya': 'indo-malaya',
+      'Canadian Domain': 'canadian-domain',
+      'Discovery Zone': 'discovery-zone',
+      Americas: 'americas',
+      'Tundra Trek': 'tundra-trek',
+      'Eurasia Wilds': 'eurasia-wilds',
+      Australasia: 'australasia',
+      'Front Courtyard': 'front-courtyard',
+      'Wildlife Science Campus': 'wildlife-science-campus',
+   });
 
-   if (!exhibitKey) {
+   static resolveRegionNameForExhibit(exhibitName = '') {
+      const exhibitKey = AnimalIdentity.normalizeAnimalIdentitySearchFields({
+         exhibit: exhibitName,
+      }).exhibit;
+
+      if (!exhibitKey) {
+         return '';
+      }
+
+      return EXHIBIT_REGION_BY_NAME[exhibitKey] ?? '';
+   }
+
+   static resolveRegionColorSlug(regionName = '') {
+      const regionKey = ValueNormalizer.asTrimmedString(regionName);
+
+      if (!regionKey) {
+         return '';
+      }
+
+      return RegionColors.REGION_COLOR_SLUGS[regionKey] ?? '';
+   }
+
+   static resolveRegionColorSlugForExhibit(exhibitName = '') {
+      return RegionColors.resolveRegionColorSlug(
+         RegionColors.resolveRegionNameForExhibit(exhibitName)
+      );
+   }
+
+   static resolveRegionColorSlugForScheduledItem(item = null) {
+      const region = ValueNormalizer.asTrimmedString(item?.region);
+
+      if (region) {
+         return RegionColors.resolveRegionColorSlug(region);
+      }
+
+      const exhibit = ValueNormalizer.asTrimmedString(item?.exhibit);
+
+      if (exhibit) {
+         return RegionColors.resolveRegionColorSlugForExhibit(exhibit);
+      }
+
+      const location = ValueNormalizer.asTrimmedString(item?.location);
+
+      if (location) {
+         return RegionColors.resolveRegionColorSlugForExhibit(location);
+      }
+
       return '';
    }
 
-   return EXHIBIT_REGION_BY_NAME[exhibitKey] ?? '';
-}
+   static applyRegionColorsToElement(element, regionSlug = '') {
+      const slug = ValueNormalizer.asTrimmedString(regionSlug);
 
-export function resolveRegionColorSlug(regionName = '') {
-   const regionKey = ValueNormalizer.asTrimmedString(regionName);
+      if (!element || !slug) {
+         return false;
+      }
 
-   if (!regionKey) {
-      return '';
+      element.classList.add('itinerary-day-scheduled-pill--region-colored');
+      element.classList.add(`itinerary-day-scheduled-pill--region-${slug}`);
+      element.setAttribute('data-region-slug', slug);
+
+      return true;
    }
-
-   return REGION_COLOR_SLUGS[regionKey] ?? '';
-}
-
-export function resolveRegionColorSlugForExhibit(exhibitName = '') {
-   return resolveRegionColorSlug(resolveRegionNameForExhibit(exhibitName));
-}
-
-export function resolveRegionColorSlugForScheduledItem(item = null) {
-   const region = ValueNormalizer.asTrimmedString(item?.region);
-
-   if (region) {
-      return resolveRegionColorSlug(region);
-   }
-
-   const exhibit = ValueNormalizer.asTrimmedString(item?.exhibit);
-
-   if (exhibit) {
-      return resolveRegionColorSlugForExhibit(exhibit);
-   }
-
-   const location = ValueNormalizer.asTrimmedString(item?.location);
-
-   if (location) {
-      return resolveRegionColorSlugForExhibit(location);
-   }
-
-   return '';
-}
-
-export function applyRegionColorsToElement(element, regionSlug = '') {
-   const slug = ValueNormalizer.asTrimmedString(regionSlug);
-
-   if (!element || !slug) {
-      return false;
-   }
-
-   element.classList.add('itinerary-day-scheduled-pill--region-colored');
-   element.classList.add(`itinerary-day-scheduled-pill--region-${slug}`);
-   element.setAttribute('data-region-slug', slug);
-
-   return true;
 }

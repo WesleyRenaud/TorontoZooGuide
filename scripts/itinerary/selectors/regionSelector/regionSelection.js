@@ -1,8 +1,4 @@
-import {
-   buildAnimalIdentityStorageKey,
-   normalizeAnimalIdentityFields,
-   normalizeAnimalIdentitySearchFields,
-} from '../../animalIdentity.js';
+import { AnimalIdentity } from '../../animalIdentity.js';
 
 function normalizeRegionName(name = '') {
    return typeof name === 'string'
@@ -55,7 +51,7 @@ export function shouldHideDuplicateSingleExhibit(region) {
 
    if (exhibits.length !== 1) return false;
 
-   const exhibitName = normalizeAnimalIdentitySearchFields({
+   const exhibitName = AnimalIdentity.normalizeAnimalIdentitySearchFields({
       exhibit: exhibits[0] ?? '',
    }).exhibit;
    return Boolean(regionName) && regionName === exhibitName;
@@ -70,7 +66,7 @@ export function normalizeSelectedAnimal(animal) {
       species,
       exhibit,
       enclosure_name: enclosureName,
-   } = normalizeAnimalIdentityFields(animal);
+   } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
    const imageSrc = typeof animal.imageSrc === 'string'
       ? animal.imageSrc.trim()
       : '';
@@ -114,7 +110,7 @@ export function buildSelectedAnimalKey(animal) {
    const id = normalizedAnimal.id.trim().toLowerCase();
    if (id) return id;
 
-   return buildAnimalIdentityStorageKey(normalizedAnimal);
+   return AnimalIdentity.buildAnimalIdentityStorageKey(normalizedAnimal);
 }
 
 export function parseAnimalWireKey(key) {
@@ -123,7 +119,7 @@ export function parseAnimalWireKey(key) {
       species,
       exhibit,
       enclosure_name: enclosureName,
-   } = normalizeAnimalIdentityFields({
+   } = AnimalIdentity.normalizeAnimalIdentityFields({
       species: parts[0],
       exhibit: parts[1],
       enclosure_name: parts[2],

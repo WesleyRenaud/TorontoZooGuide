@@ -5,7 +5,7 @@ import {
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
-import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
+import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { hasSavedItineraryContent } from './itineraryShape.js';
 import {
    getDay,
@@ -42,7 +42,7 @@ async function fetchSavedItineraryVisitDate() {
 
 export async function getItinerary() {
    const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await getItineraryDateSearchContext({ date });
+   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
    const result = await ItineraryApi.getItineraryRequest(temp);
    return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 }
@@ -78,7 +78,7 @@ export async function bulkScheduleItinerary({
    confirmingFixedTimeItemLongWait = false,
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await getItineraryDateSearchContext({ date });
+   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
    const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
       confirmingFixedTimeItemLongWait,
    });
@@ -102,7 +102,7 @@ export async function bulkScheduleItinerary({
 
 export async function unscheduleAllItineraryItems() {
    const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await getItineraryDateSearchContext({ date });
+   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
    const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
 
    if (!isItinerarySuccess(result.errorType)) {
@@ -125,7 +125,7 @@ export async function acceptItinerary({
    attractionsToKeep = [],
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await getItineraryDateSearchContext({ date });
+   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
    const result = await ItineraryApi.acceptItineraryRequest(
       temp,
       { animalsToKeep, attractionsToKeep }

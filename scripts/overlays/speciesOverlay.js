@@ -1,6 +1,6 @@
 import { AnimalsApi } from '../api/animalsApi.js';
 import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
-import { normalizeAnimalIdentityFields } from '../itinerary/animalIdentity.js';
+import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 import { buildSpeciesContent } from './speciesOverlayContent.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -15,7 +15,7 @@ function resolveOverlayElements() {
 }
 
 function findLinkedAnimalIndex(linkedAnimals, animal) {
-   const { species, exhibit } = normalizeAnimalIdentityFields(animal);
+   const { species, exhibit } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
 
    return linkedAnimals.findIndex((linkedAnimal) => (
       linkedAnimal.species === species
@@ -196,7 +196,7 @@ export function initSpeciesOverlay() {
 }
 
 export function openAnimalSpeciesOverlay(animal, options = {}) {
-   const { species } = normalizeAnimalIdentityFields(animal);
+   const { species } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
 
    if (!species) {
       return;

@@ -1,30 +1,26 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   isWizardDateStep,
-   resolveDateStepDraftUpdate,
-   shouldSyncSelectionStepDraft,
-} from '../../scripts/itinerary/wizard/wizardStepDraftSync.js';
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
+import { WizardStepDraftSync } from '../../../../scripts/itinerary/wizard/wizardStepDraftSync.js';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
-test('resolveDateStepDraftUpdate returns null for invalid or unchanged dates', () => {
+test('Test_ResolveDateStepDraftUpdate_TestInvalidOrUnchanged_ExpectNullOrDate', () => {
    assert.equal(
-      resolveDateStepDraftUpdate({
+      WizardStepDraftSync.resolveDateStepDraftUpdate({
          currentDate: null,
          wizardDate: '2026-06-15',
       }),
       null
    );
    assert.equal(
-      resolveDateStepDraftUpdate({
+      WizardStepDraftSync.resolveDateStepDraftUpdate({
          currentDate: makeNoonDate(2026, 5, 15),
          wizardDate: '2026-06-15',
       }),
       null
    );
    assert.equal(
-      resolveDateStepDraftUpdate({
+      WizardStepDraftSync.resolveDateStepDraftUpdate({
          currentDate: makeNoonDate(2026, 5, 16),
          wizardDate: '2026-06-15',
       }),
@@ -32,16 +28,16 @@ test('resolveDateStepDraftUpdate returns null for invalid or unchanged dates', (
    );
 });
 
-test('shouldSyncSelectionStepDraft requires a controller snapshot and allows sync by default', () => {
+test('Test_ShouldSyncSelectionStepDraft_TestController_ExpectSyncRules', () => {
    assert.equal(
-      shouldSyncSelectionStepDraft({
+      WizardStepDraftSync.shouldSyncSelectionStepDraft({
          stepConfig: null,
          stepController: { getSelectionSnapshot: async () => [] },
       }),
       false
    );
    assert.equal(
-      shouldSyncSelectionStepDraft({
+      WizardStepDraftSync.shouldSyncSelectionStepDraft({
          stepConfig: { selectionKey: 'animals' },
          stepController: {
             getSelectionSnapshot: async () => [],
@@ -51,7 +47,7 @@ test('shouldSyncSelectionStepDraft requires a controller snapshot and allows syn
       false
    );
    assert.equal(
-      shouldSyncSelectionStepDraft({
+      WizardStepDraftSync.shouldSyncSelectionStepDraft({
          stepConfig: { selectionKey: 'animals' },
          stepController: {
             getSelectionSnapshot: async () => [],
@@ -62,7 +58,7 @@ test('shouldSyncSelectionStepDraft requires a controller snapshot and allows syn
    );
 });
 
-test('isWizardDateStep identifies the default wizard date step', () => {
-   assert.equal(isWizardDateStep('date'), true);
-   assert.equal(isWizardDateStep('animals'), false);
+test('Test_IsWizardDateStep_TestDefaultStep_ExpectIdentified', () => {
+   assert.equal(WizardStepDraftSync.isWizardDateStep('date'), true);
+   assert.equal(WizardStepDraftSync.isWizardDateStep('animals'), false);
 });

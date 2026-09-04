@@ -5,7 +5,7 @@ import {
    requiresScheduleItemNotOnItineraryConfirmation,
    resolveItineraryErrorMessage,
 } from '../../itineraryErrorTypes.js';
-import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
+import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
 import {
    canScheduleModuleSelection,
@@ -59,7 +59,7 @@ export function createScheduleItemModuleController({
 
    const {
       searchItineraryItems: searchItems = SearchApi.searchItineraryItems,
-      getSearchContext = getItineraryDateSearchContext,
+      getSearchContext = ItinerarySearchContext.getItineraryDateSearchContext,
       scheduleSelectedItem = scheduleSelectedItineraryItem,
       showNotice = showScheduleItemNotice,
       renderSearchResults = renderScheduleItemSearchResults,

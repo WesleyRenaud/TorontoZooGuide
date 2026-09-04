@@ -1,4 +1,4 @@
-import { normalizeAnimalIdentityFields } from '../../animalIdentity.js';
+import { AnimalIdentity } from '../../animalIdentity.js';
 import { formatSpeciesEnclosureLine } from '../../../animals/animalDisplayLines.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import {
@@ -12,15 +12,15 @@ import { EnclosureType } from '../../../shared/enums/enclosureType.js';
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
 export function getAnimalSpecies(row) {
-   return normalizeAnimalIdentityFields(row).species;
+   return AnimalIdentity.normalizeAnimalIdentityFields(row).species;
 }
 
 export function getAnimalExhibit(row) {
-   return normalizeAnimalIdentityFields(row).exhibit;
+   return AnimalIdentity.normalizeAnimalIdentityFields(row).exhibit;
 }
 
 export function getAnimalStoredEnclosureName(row) {
-   return normalizeAnimalIdentityFields(row).enclosure_name;
+   return AnimalIdentity.normalizeAnimalIdentityFields(row).enclosure_name;
 }
 
 export function getAnimalEnclosureName(row) {
@@ -124,7 +124,7 @@ function createStoredAnimalFromString(item) {
 function createStoredAnimalFromObject(item) {
    const species = normalizeLegacyStoredSpecies(item);
    const exhibit = normalizeLegacyStoredExhibit(item);
-   const enclosureName = normalizeAnimalIdentityFields(item).enclosure_name;
+   const enclosureName = AnimalIdentity.normalizeAnimalIdentityFields(item).enclosure_name;
    const defaultId = enclosureName
       ? `${species}||${exhibit}||${enclosureName}`
       : `${species}||${exhibit}`;

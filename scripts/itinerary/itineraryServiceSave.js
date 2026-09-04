@@ -11,7 +11,7 @@ import {
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
-import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
+import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
 import {
    normalizeItineraryDraft,
@@ -208,7 +208,7 @@ export async function saveItinerary(
    const basePayload = {
       ...savePayload,
       selectedExhibits,
-      temp: (await getItineraryDateSearchContext({ date: savePayload.date })).temp,
+      temp: (await ItinerarySearchContext.getItineraryDateSearchContext({ date: savePayload.date })).temp,
       overridingConflictingGuardiansTalks,
    };
 

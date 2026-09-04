@@ -10,13 +10,15 @@ const SEARCH_GROUPS = [
    ['wild_encounters', 'wildEncounter'],
 ];
 
-export function flattenSearchRows(response) {
-   return SEARCH_GROUPS.flatMap(([key, type]) => {
-      const rows = Array.isArray(response?.[key]) ? response[key] : [];
+export class SearchRows {
+   static flattenSearchRows(response) {
+      return SEARCH_GROUPS.flatMap(([key, type]) => {
+         const rows = Array.isArray(response?.[key]) ? response[key] : [];
 
-      return rows.map((row) => ({
-         ...row,
-         type,
-      }));
-   });
+         return rows.map((row) => ({
+            ...row,
+            type,
+         }));
+      });
+   }
 }

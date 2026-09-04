@@ -4,7 +4,7 @@ import {
    normalizeStoredString,
 } from './base/storedSelection.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import {
    buildOccurrenceDetailImageSrc,
    buildOccurrenceSubtitle,
@@ -199,7 +199,7 @@ export function createScheduledOccurrenceSelectorController({
       storageKey,
       migrateSelected,
 
-      getContext: getItineraryDateSearchContext,
+      getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
       buildSearchPayload: (query) => ({
          query,

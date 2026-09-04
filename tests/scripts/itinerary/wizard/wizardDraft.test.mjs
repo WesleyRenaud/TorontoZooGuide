@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildWizardDraft } from '../../scripts/itinerary/wizard/wizardDraft.js';
+import { WizardDraft } from '../../../../scripts/itinerary/wizard/wizardDraft.js';
 
-test('buildWizardDraft preserves itinerary times when changing date', () => {
+test('Test_BuildWizardDraft_TestDateChange_ExpectTimesPreserved', () => {
    assert.deepEqual(
-      buildWizardDraft(
+      WizardDraft.buildWizardDraft(
          {
             date: '2026-06-13',
             arrivalTime: '09:15',
@@ -35,9 +35,9 @@ test('buildWizardDraft preserves itinerary times when changing date', () => {
    );
 });
 
-test('buildWizardDraft preserves transportations from wizard state', () => {
+test('Test_BuildWizardDraft_TestTransportations_ExpectPreserved', () => {
    assert.deepEqual(
-      buildWizardDraft({
+      WizardDraft.buildWizardDraft({
          date: '2026-08-17',
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
          attractions: [],

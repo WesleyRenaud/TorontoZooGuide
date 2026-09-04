@@ -19,7 +19,16 @@
       "scripts/api/mapApi.js",
       "scripts/api/itineraryApi.js",
       "scripts/api/itinerarySelectorApi.js",
-      "scripts/api/consoleOperationsApi.js"
+      "scripts/api/consoleOperationsApi.js",
+      "scripts/search/searchRows.js",
+      "scripts/itinerary/animalIdentity.js",
+      "scripts/itinerary/panel/scheduleItemEventLabels.js",
+      "scripts/shared/regionColors.js",
+      "scripts/map/dateContext.js",
+      "scripts/itinerary/itinerarySearchContext.js",
+      "scripts/itinerary/wizard/wizardFinalizeDecisions.js",
+      "scripts/itinerary/wizard/wizardDraft.js",
+      "scripts/itinerary/wizard/wizardStepDraftSync.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

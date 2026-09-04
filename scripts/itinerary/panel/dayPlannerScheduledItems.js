@@ -13,7 +13,7 @@ import {
    buildTransportationRows,
    buildWildRows,
 } from './rows.js';
-import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
+import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
 import {
    getAnimalId,
    getAnimalTitleLine,
@@ -69,7 +69,7 @@ function buildGenericEventScheduledRows(events = []) {
       const startMinutes = parseClockTimeMinutes(event.start_time);
       const endMinutes = parseClockTimeMinutes(event.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(event);
-      const label = formatItineraryEventTypeLabel(eventType);
+      const label = ScheduleItemEventLabels.formatItineraryEventTypeLabel(eventType);
 
       return {
          index,
