@@ -15,7 +15,7 @@ import { normalizeItineraryDraft } from './itineraryShape.js';
 import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
 import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
-import { persistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
+import { PersistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
 import { buildItineraryDiff } from './wizard/itineraryDiff.js';
 
 class ItineraryTimeChangeCancelledError extends Error {
@@ -37,7 +37,7 @@ function requestConfirmedItineraryTimeChange({
          onConfirm: async ({ doNotShowAgain = false } = {}) => {
             try {
                if (doNotShowAgain) {
-                  await persistItineraryWarningSuppression(suppressionType);
+                  await PersistItineraryWarningSuppression.persistItineraryWarningSuppression(suppressionType);
                }
 
                const confirmedResult = await requestFn(

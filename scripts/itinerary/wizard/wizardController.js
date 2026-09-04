@@ -14,7 +14,7 @@ import { ITINERARY_ITEM_KEYS } from '../itineraryShape.js';
 import { SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS } from '../panel/sectionConfigs.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
-import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
+import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
@@ -49,7 +49,7 @@ export async function openItineraryWizard({
 } = {}) {
    const {
       loadItinerary = getItinerary,
-      resolveEarliestVisitDate = resolveEarliestSelectableVisitDateNoon,
+      resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
       createWizardState = createItineraryWizardState,
       createDateStepController = createItineraryDateSelectorController,
       finalizeWizard = finalizeItineraryWizard,

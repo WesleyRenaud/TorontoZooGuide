@@ -3,11 +3,7 @@ import {
    renderSelectorResults,
 } from './base/resultRenderer.js';
 import { createSelectorSelectionState } from './base/selectionState.js';
-import {
-   buildSelectionFingerprint,
-   defaultMigrateSelected,
-   validateSelectorConfig,
-} from './selectorControllerConfig.js';
+import { SelectorControllerConfig } from './selectorControllerConfig.js';
 import { createSelectorElements } from './selectorControllerElements.js';
 import { createSelectorSearchRunner } from './selectorSearchRunner.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -22,7 +18,7 @@ export function createItinerarySelectorController({
    hideNextButton = false,
 
    storageKey,
-   migrateSelected = defaultMigrateSelected,
+   migrateSelected = SelectorControllerConfig.defaultMigrateSelected,
 
    searchEndpoint = '/search',
    buildSearchPayload = query => ({ query }),
@@ -57,7 +53,7 @@ export function createItinerarySelectorController({
       createSearchRunner = createSelectorSearchRunner,
    } = deps;
 
-   validateSelectorConfig({
+   SelectorControllerConfig.validateSelectorConfig({
       storageKey,
       getId,
       extractRows,
@@ -115,7 +111,7 @@ export function createItinerarySelectorController({
    let selectionFingerprintAtShow = '';
 
    function shouldSkipClosingSelectionSync() {
-      return buildSelectionFingerprint(selectionState.getSelectedSnapshot())
+      return SelectorControllerConfig.buildSelectionFingerprint(selectionState.getSelectedSnapshot())
          === selectionFingerprintAtShow;
    }
 
@@ -198,7 +194,7 @@ export function createItinerarySelectorController({
 
       ensureBuilt();
       selectionState.reload();
-      selectionFingerprintAtShow = buildSelectionFingerprint(
+      selectionFingerprintAtShow = SelectorControllerConfig.buildSelectionFingerprint(
          selectionState.getSelectedSnapshot()
       );
       mountRoot();

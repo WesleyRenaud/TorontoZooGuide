@@ -8,11 +8,13 @@ function collectionHasScheduledItems(items) {
       && items.some(itemHasScheduleTimes);
 }
 
-export function hasScheduledItineraryItems(itinerary = {}) {
-   return collectionHasScheduledItems(itinerary.animals)
-      || collectionHasScheduledItems(itinerary.attractions)
-      || collectionHasScheduledItems(itinerary.guardiansTalks)
-      || collectionHasScheduledItems(itinerary.wildEncounters)
-      || collectionHasScheduledItems(itinerary.transportations)
-      || collectionHasScheduledItems(itinerary.events);
+export class DayPlannerPlanActions {
+   static hasScheduledItineraryItems(itinerary = {}) {
+      return collectionHasScheduledItems(itinerary.animals)
+         || collectionHasScheduledItems(itinerary.attractions)
+         || collectionHasScheduledItems(itinerary.guardiansTalks)
+         || collectionHasScheduledItems(itinerary.wildEncounters)
+         || collectionHasScheduledItems(itinerary.transportations)
+         || collectionHasScheduledItems(itinerary.events);
+   }
 }

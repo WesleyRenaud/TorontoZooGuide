@@ -1,5 +1,5 @@
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
-import { resolveEarliestSelectableVisitDateNoon } from '../itinerary/visitDateEarliest.js';
+import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
 import { initMapControls } from '../map/controls.js';
 import { DateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
@@ -192,7 +192,7 @@ export async function initMapPage() {
       updater,
    });
 
-   const earliestVisitNoon = await resolveEarliestSelectableVisitDateNoon();
+   const earliestVisitNoon = await VisitDateEarliest.resolveEarliestSelectableVisitDateNoon();
 
    initMapPageControls({
       elements,

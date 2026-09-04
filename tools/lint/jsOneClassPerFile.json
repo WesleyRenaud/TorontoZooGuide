@@ -28,7 +28,16 @@
       "scripts/itinerary/itinerarySearchContext.js",
       "scripts/itinerary/wizard/wizardFinalizeDecisions.js",
       "scripts/itinerary/wizard/wizardDraft.js",
-      "scripts/itinerary/wizard/wizardStepDraftSync.js"
+      "scripts/itinerary/wizard/wizardStepDraftSync.js",
+      "scripts/itinerary/panel/scheduledPillPresentation.js",
+      "scripts/itinerary/panel/dayPlannerActionFeedback.js",
+      "scripts/itinerary/panel/dayPlannerPlanActions.js",
+      "scripts/itinerary/persistItineraryWarningSuppression.js",
+      "scripts/itinerary/visitDateEarliest.js",
+      "scripts/itinerary/ensureItineraryVisitDate.js",
+      "scripts/itinerary/selectors/selectorControllerConfig.js",
+      "scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js",
+      "scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequences.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

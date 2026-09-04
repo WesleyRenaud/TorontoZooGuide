@@ -21,7 +21,7 @@ import {
    requiresWildEncounterUnscheduleConfirmation,
 } from '../itineraryErrorTypes.js';
 import { dispatchScheduleItineraryItemResult } from '../itineraryService.js';
-import { persistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
+import { PersistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
@@ -104,7 +104,7 @@ export async function scheduleItineraryItemWithConfirmation(
          }),
          beforeConfirm: async ({ doNotShowAgain = false } = {}) => {
             if (doNotShowAgain) {
-               await persistItineraryWarningSuppression(
+               await PersistItineraryWarningSuppression.persistItineraryWarningSuppression(
                   getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
                );
             }

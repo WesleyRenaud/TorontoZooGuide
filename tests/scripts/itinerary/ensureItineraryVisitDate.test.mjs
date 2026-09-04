@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ensureItineraryVisitDate } from '../../scripts/itinerary/ensureItineraryVisitDate.js';
-import { setStoredItineraryDate } from '../../scripts/itinerary/draftStorage.js';
-import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { mockJsonResponse } from './helpers/fetchMock.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { EnsureItineraryVisitDate } from '../../../scripts/itinerary/ensureItineraryVisitDate.js';
+import { setStoredItineraryDate } from '../../../scripts/itinerary/draftStorage.js';
+import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+import { mockJsonResponse } from '../helpers/fetchMock.mjs';
+import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 
 installDomTestHooks({
    before: () => {
@@ -22,7 +22,7 @@ installDomTestHooks({
    },
 });
 
-test('ensureItineraryVisitDate returns the itinerary when the server already has a date', async () => {
+test('Test_EnsureItineraryVisitDate_TestServerDate_ExpectSameItinerary', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -37,12 +37,12 @@ test('ensureItineraryVisitDate returns the itinerary when the server already has
       attractions: [],
    };
 
-   const result = await ensureItineraryVisitDate(itinerary);
+   const result = await EnsureItineraryVisitDate.ensureItineraryVisitDate(itinerary);
 
    assert.equal(result, itinerary);
 });
 
-test('ensureItineraryVisitDate persists the effective visit date when none is saved', async () => {
+test('Test_EnsureItineraryVisitDate_TestNoSavedDate_ExpectPersisted', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -84,7 +84,7 @@ test('ensureItineraryVisitDate persists the effective visit date when none is sa
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await ensureItineraryVisitDate({ animals: [], attractions: [] });
+   const result = await EnsureItineraryVisitDate.ensureItineraryVisitDate({ animals: [], attractions: [] });
 
    assert.ok(result.date);
    assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);
@@ -94,7 +94,7 @@ test('ensureItineraryVisitDate persists the effective visit date when none is sa
    );
 });
 
-test('ensureItineraryVisitDate persists when only the draft date is set locally', async () => {
+test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async () => {
    setStoredItineraryDate('2026-06-18');
 
    const requests = [];
@@ -135,7 +135,7 @@ test('ensureItineraryVisitDate persists when only the draft date is set locally'
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await ensureItineraryVisitDate({ animals: [], attractions: [] });
+   const result = await EnsureItineraryVisitDate.ensureItineraryVisitDate({ animals: [], attractions: [] });
 
    assert.ok(result.date);
    assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);

@@ -4,7 +4,7 @@ import {
    buildPillMenuNodes,
 } from './itineraryPillMenu.js';
 import { createPillLabelNode } from './openTimelinePill.js';
-import { isExtendedScheduledPill } from '../scheduledPillPresentation.js';
+import { ScheduledPillPresentation } from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -119,7 +119,7 @@ function buildGroupedScheduledPill(
       ? buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
       : null;
 
-   if (isExtendedScheduledPill(durationMinutes)) {
+   if (ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
       pill.classList.add('itinerary-day-scheduled-pill--extended');
    }
 
@@ -211,7 +211,7 @@ function buildScheduledPillWithMenu(
       menuItems
    );
 
-   if (isExtendedScheduledPill(durationMinutes)) {
+   if (ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
       pill.classList.add('itinerary-day-scheduled-pill--extended');
    }
 
@@ -238,7 +238,7 @@ function buildScheduledPillWithoutMenu(
       item = null,
    }
 ) {
-   if (!isExtendedScheduledPill(durationMinutes)) {
+   if (!ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
       const pill = el('span', 'itinerary-day-scheduled-pill');
       pill.appendChild(
          createPillLabelNode(

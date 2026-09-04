@@ -1,38 +1,34 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import {
-   consumePendingDayPlannerActionFeedback,
-   resetPendingDayPlannerActionFeedback,
-   setPendingDayPlannerActionFeedback,
-} from '../../scripts/itinerary/panel/dayPlannerActionFeedback.js';
-import { appendDayPlannerActionFeedbackBanner } from '../../scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js';
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { DayPlannerActionFeedback } from '../../../../scripts/itinerary/panel/dayPlannerActionFeedback.js';
+import { appendDayPlannerActionFeedbackBanner } from '../../../../scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js';
+import { makeDayPlannerPreview } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('dayPlannerActionFeedback', () => {
    afterEach(() => {
-      resetPendingDayPlannerActionFeedback();
+      DayPlannerActionFeedback.resetPendingDayPlannerActionFeedback();
    });
 
-   test('setPendingDayPlannerActionFeedback is consumed once', () => {
-      setPendingDayPlannerActionFeedback({
+   test('Test_SetPendingDayPlannerActionFeedback_TestConsume_ExpectOnce', () => {
+      DayPlannerActionFeedback.setPendingDayPlannerActionFeedback({
          variant: 'success',
          message: 'All items unscheduled',
       });
 
-      assert.deepEqual(consumePendingDayPlannerActionFeedback(), {
+      assert.deepEqual(DayPlannerActionFeedback.consumePendingDayPlannerActionFeedback(), {
          variant: 'success',
          message: 'All items unscheduled',
       });
-      assert.equal(consumePendingDayPlannerActionFeedback(), null);
+      assert.equal(DayPlannerActionFeedback.consumePendingDayPlannerActionFeedback(), null);
    });
 });
 
 test.describe('dayPlannerActionFeedbackBanner', () => {
    installDomTestHooks();
 
-   test('appendDayPlannerActionFeedbackBanner renders a success status banner', () => {
+   test('Test_AppendDayPlannerActionFeedbackBanner_TestSuccess_ExpectStatusBanner', () => {
       const slot = document.createElement('div');
       slot.className = 'itinerary-day-action-feedback-slot';
 
@@ -51,7 +47,7 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       assert.equal(banner.getAttribute('role'), 'status');
    });
 
-   test('appendDayPlannerActionFeedbackBanner renders an error status banner', () => {
+   test('Test_AppendDayPlannerActionFeedbackBanner_TestError_ExpectStatusBanner', () => {
       const slot = document.createElement('div');
       slot.className = 'itinerary-day-action-feedback-slot';
 
@@ -70,8 +66,8 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       assert.equal(banner.getAttribute('role'), 'status');
    });
 
-   test('makeDayPlannerPreview renders pending action feedback below schedule buttons', () => {
-      setPendingDayPlannerActionFeedback({
+   test('Test_MakeDayPlannerPreview_TestPendingFeedback_ExpectBelowButtons', () => {
+      DayPlannerActionFeedback.setPendingDayPlannerActionFeedback({
          variant: 'success',
          message: 'All items unscheduled',
       });
@@ -112,10 +108,10 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       assert.ok(feedbackSlot.contains(banner));
       assert.equal(scheduleActions?.querySelector('.itinerary-day-schedule-actions'), buttonBar);
       assert.equal(scheduleActions?.querySelector('.itinerary-day-action-feedback-slot'), feedbackSlot);
-      assert.equal(consumePendingDayPlannerActionFeedback(), null);
+      assert.equal(DayPlannerActionFeedback.consumePendingDayPlannerActionFeedback(), null);
    });
 
-   test('makeDayPlannerPreview reserves feedback slot below schedule buttons', () => {
+   test('Test_MakeDayPlannerPreview_TestNoFeedback_ExpectReservedSlot', () => {
       const planner = makeDayPlannerPreview(
          { date: '2026-06-20' },
          {

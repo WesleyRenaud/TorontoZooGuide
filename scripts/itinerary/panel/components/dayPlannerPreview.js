@@ -1,4 +1,4 @@
-import { consumePendingDayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
+import { DayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
 import {
    appendDayPlannerActionFeedbackBanner,
    appendDayPlannerActionFeedbackSlot,
@@ -112,7 +112,7 @@ function appendScheduleActionButtons(
    } = {}
 ) {
    const buttons = [];
-   const feedback = consumePendingDayPlannerActionFeedback();
+   const feedback = DayPlannerActionFeedback.consumePendingDayPlannerActionFeedback();
 
    if (typeof onScheduleItemClick === 'function') {
       buttons.push(

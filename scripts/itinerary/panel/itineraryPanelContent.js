@@ -5,7 +5,7 @@ import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { makeSection } from './components/section.js';
-import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
+import { DayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
 import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import {
    buildConfirmedOptionsFromBuildWarnings,
@@ -60,7 +60,7 @@ function appendDayPlannerViewWithHours(
       showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
       requiresLongWaitConfirmation = requiresFixedTimeItemLongWaitConfirmation,
       showLongWaitConfirmation = showFixedTimeItemLongWaitConfirmation,
-      setActionFeedback = setPendingDayPlannerActionFeedback,
+      setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       makeDayPlanner = makeDayPlannerPreview,
