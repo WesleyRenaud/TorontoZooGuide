@@ -5,7 +5,7 @@ import { OffDisplayBanner } from '../banners/offDisplayBanner.js';
 import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
 import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
-import { createFocusController } from '../focus/focusController.js';
+import { FocusController } from '../focus/focusController.js';
 import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { LabelVisibility } from './labelVisibility.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
@@ -75,7 +75,7 @@ function createMapFocus({
    tooltip,
    viewportEl,
 } = {}) {
-   return createFocusController({
+   return FocusController.createFocusController({
       panzoom,
       getMarkerByCoord: (key) => markers.getMarkerByCoord(key),
       getViewportEl: () => viewportEl,

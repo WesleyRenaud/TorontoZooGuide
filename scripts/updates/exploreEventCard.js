@@ -30,19 +30,21 @@ function createEventTitleEl(event) {
    return titleEl;
 }
 
-export function createEventCard(event, isActive = false) {
-   const cardEl = document.createElement('article');
-   cardEl.className = 'explore-update-card explore-event-card';
-   cardEl.hidden = !isActive;
+export class ExploreEventCard {
+   static createEventCard(event, isActive = false) {
+      const cardEl = document.createElement('article');
+      cardEl.className = 'explore-update-card explore-event-card';
+      cardEl.hidden = !isActive;
 
-   const dateRangeEl = document.createElement('p');
-   dateRangeEl.className = 'explore-event-date-range';
-   dateRangeEl.textContent = VisitDateRules.formatLocalDateRange(event.start_date, event.end_date);
+      const dateRangeEl = document.createElement('p');
+      dateRangeEl.className = 'explore-event-date-range';
+      dateRangeEl.textContent = VisitDateRules.formatLocalDateRange(event.start_date, event.end_date);
 
-   const descriptionEl = document.createElement('p');
-   descriptionEl.className = 'explore-update-description';
-   descriptionEl.textContent = event.description || '';
+      const descriptionEl = document.createElement('p');
+      descriptionEl.className = 'explore-update-description';
+      descriptionEl.textContent = event.description || '';
 
-   cardEl.append(createEventTitleEl(event), dateRangeEl, descriptionEl);
-   return cardEl;
+      cardEl.append(createEventTitleEl(event), dateRangeEl, descriptionEl);
+      return cardEl;
+   }
 }

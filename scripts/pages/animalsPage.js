@@ -1,10 +1,10 @@
-import { createAnimalsRouter } from '../animals/router.js';
+import { Router } from '../animals/router.js';
 
 export function initAnimalsPage() {
    const listEl = document.querySelector('.list');
    if (!listEl) return;
 
-   const router = createAnimalsRouter({ listEl });
+   const router = Router.createAnimalsRouter({ listEl });
    router.start();
 }
 

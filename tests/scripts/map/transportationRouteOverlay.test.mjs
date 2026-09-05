@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   hideTransportationRouteLayers,
-   showTransportationRouteLayer,
-   showTransportationRouteMarkers,
-} from '../../scripts/map/transportationRouteOverlay.js';
+import { TransportationRouteOverlay } from '../../../scripts/map/transportationRouteOverlay.js';
 
 function createCircle(id, { cx = 0, cy = 0 } = {}) {
    const attributes = new Map([
@@ -84,7 +80,7 @@ function createSvgRoot({ summerGroup, winterGroup, summerCircles, winterCircles 
    };
 }
 
-test('showTransportationRouteMarkers shows only selected circles in the route group', () => {
+test('Test_ShowTransportationRouteMarkers_TestSelectedCircles_ExpectVisibleOnly', () => {
    const summerCircles = [
       createCircle('zm-s-005', { cx: 10, cy: 10 }),
       createCircle('zm-s-006', { cx: 200, cy: 10 }),
@@ -141,7 +137,7 @@ test('showTransportationRouteMarkers shows only selected circles in the route gr
       },
    };
 
-   showTransportationRouteMarkers('summer', [['zm-s-005', 'zm-s-006']]);
+   TransportationRouteOverlay.showTransportationRouteMarkers('summer', [['zm-s-005', 'zm-s-006']]);
 
    assert.equal(summerGroup.style.values.get('display'), '');
    assert.equal(winterGroup.style.values.get('display'), 'none');
@@ -155,7 +151,7 @@ test('showTransportationRouteMarkers shows only selected circles in the route gr
    assert.ok(arrowsLayer);
    assert.ok(arrowsLayer.childNodes.length > 0);
 
-   showTransportationRouteLayer('summer');
+   TransportationRouteOverlay.showTransportationRouteLayer('summer');
 
    assert.equal(summerGroup.style.values.get('display'), '');
    assert.equal(summerCircles[0].style.values.has('display'), false);
@@ -165,7 +161,7 @@ test('showTransportationRouteMarkers shows only selected circles in the route gr
       false
    );
 
-   hideTransportationRouteLayers();
+   TransportationRouteOverlay.hideTransportationRouteLayers();
 
    assert.equal(summerGroup.style.values.get('display'), 'none');
    assert.equal(winterGroup.style.values.get('display'), 'none');
@@ -173,7 +169,7 @@ test('showTransportationRouteMarkers shows only selected circles in the route gr
    delete globalThis.document;
 });
 
-test('showTransportationRouteMarkers places arrows on every other marker', () => {
+test('Test_ShowTransportationRouteMarkers_TestMarkerPairs_ExpectArrows', () => {
    const summerCircles = [
       createCircle('zm-s-005', { cx: 10, cy: 10 }),
       createCircle('zm-s-006', { cx: 100, cy: 10 }),
@@ -228,7 +224,7 @@ test('showTransportationRouteMarkers places arrows on every other marker', () =>
       },
    };
 
-   showTransportationRouteMarkers('summer', [
+   TransportationRouteOverlay.showTransportationRouteMarkers('summer', [
       ['zm-s-005', 'zm-s-006', 'zm-s-007', 'zm-s-008'],
       ['zm-s-185', 'zm-s-186'],
    ]);

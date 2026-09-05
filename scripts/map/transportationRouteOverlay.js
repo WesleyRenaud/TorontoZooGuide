@@ -110,53 +110,55 @@ function appendRouteArrows(svgRoot, routeGroup, markerSequences) {
    }
 }
 
-export function hideTransportationRouteLayers() {
-   const svgRoot = getSvgRoot();
+export class TransportationRouteOverlay {
+   static hideTransportationRouteLayers() {
+      const svgRoot = getSvgRoot();
 
-   clearRouteMarkerFilters(svgRoot);
-   removeRouteArrowsLayer(svgRoot);
-   setLayerVisibility(svgRoot, '#zoomobile-route-summer', false);
-   setLayerVisibility(svgRoot, '#zoomobile-route-winter', false);
-}
-
-export function showTransportationRouteLayer(route) {
-   const svgRoot = getSvgRoot();
-
-   hideTransportationRouteLayers();
-
-   if (!route) {
-      return;
+      clearRouteMarkerFilters(svgRoot);
+      removeRouteArrowsLayer(svgRoot);
+      setLayerVisibility(svgRoot, '#zoomobile-route-summer', false);
+      setLayerVisibility(svgRoot, '#zoomobile-route-winter', false);
    }
 
-   setLayerVisibility(svgRoot, `#zoomobile-route-${route}`, true);
-}
+   static showTransportationRouteLayer(route) {
+      const svgRoot = getSvgRoot();
 
-export function showTransportationRouteMarkers(route, markerSequences) {
-   const svgRoot = getSvgRoot();
+      TransportationRouteOverlay.hideTransportationRouteLayers();
 
-   hideTransportationRouteLayers();
+      if (!route) {
+         return;
+      }
 
-   const markerIds = markerSequences.flat();
-
-   if (!route || markerIds.length === 0) {
-      return;
+      setLayerVisibility(svgRoot, `#zoomobile-route-${route}`, true);
    }
 
-   const groupSelector = `#zoomobile-route-${route}`;
-   const group = svgRoot?.querySelector(groupSelector);
+   static showTransportationRouteMarkers(route, markerSequences) {
+      const svgRoot = getSvgRoot();
 
-   if (!group) {
-      return;
+      TransportationRouteOverlay.hideTransportationRouteLayers();
+
+      const markerIds = markerSequences.flat();
+
+      if (!route || markerIds.length === 0) {
+         return;
+      }
+
+      const groupSelector = `#zoomobile-route-${route}`;
+      const group = svgRoot?.querySelector(groupSelector);
+
+      if (!group) {
+         return;
+      }
+
+      const visibleMarkerIds = new Set(markerIds);
+
+      setLayerVisibility(svgRoot, groupSelector, true);
+      group.querySelectorAll('circle[id]').forEach((circle) => {
+         circle.style.setProperty(
+            'display',
+            visibleMarkerIds.has(circle.id) ? '' : 'none'
+         );
+      });
+      appendRouteArrows(svgRoot, group, markerSequences);
    }
-
-   const visibleMarkerIds = new Set(markerIds);
-
-   setLayerVisibility(svgRoot, groupSelector, true);
-   group.querySelectorAll('circle[id]').forEach((circle) => {
-      circle.style.setProperty(
-         'display',
-         visibleMarkerIds.has(circle.id) ? '' : 'none'
-      );
-   });
-   appendRouteArrows(svgRoot, group, markerSequences);
 }

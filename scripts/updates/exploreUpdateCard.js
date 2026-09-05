@@ -9,23 +9,25 @@ function createUpdateTypeEl(update) {
    return typeEl;
 }
 
-export function createUpdateCard(update, isActive = false) {
-   const cardEl = document.createElement('article');
-   cardEl.className = 'explore-update-card';
-   cardEl.hidden = !isActive;
+export class ExploreUpdateCard {
+   static createUpdateCard(update, isActive = false) {
+      const cardEl = document.createElement('article');
+      cardEl.className = 'explore-update-card';
+      cardEl.hidden = !isActive;
 
-   const metaEl = document.createElement('div');
-   metaEl.className = 'explore-update-meta';
-   metaEl.appendChild(createUpdateTypeEl(update));
+      const metaEl = document.createElement('div');
+      metaEl.className = 'explore-update-meta';
+      metaEl.appendChild(createUpdateTypeEl(update));
 
-   const titleEl = document.createElement('h4');
-   titleEl.className = 'explore-update-title';
-   titleEl.textContent = update.title || APP_STRINGS.labels.update;
+      const titleEl = document.createElement('h4');
+      titleEl.className = 'explore-update-title';
+      titleEl.textContent = update.title || APP_STRINGS.labels.update;
 
-   const descriptionEl = document.createElement('p');
-   descriptionEl.className = 'explore-update-description';
-   descriptionEl.textContent = update.description || '';
+      const descriptionEl = document.createElement('p');
+      descriptionEl.className = 'explore-update-description';
+      descriptionEl.textContent = update.description || '';
 
-   cardEl.append(metaEl, titleEl, descriptionEl);
-   return cardEl;
+      cardEl.append(metaEl, titleEl, descriptionEl);
+      return cardEl;
+   }
 }

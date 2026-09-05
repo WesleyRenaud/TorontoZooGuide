@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildSpeciesContent } from '../../scripts/overlays/speciesOverlayContent.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { SpeciesOverlayContent } from '../../../scripts/overlays/speciesOverlayContent.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 function allText(node) {
    return [
@@ -28,11 +28,11 @@ function findByClass(root, className) {
    return null;
 }
 
-test.describe('buildSpeciesContent', () => {
+test.describe('SpeciesOverlayContent.buildSpeciesContent', () => {
    installDomTestHooks();
 
-   test('renders species image, names, exhibit, and populated detail sections', () => {
-      const fragment = buildSpeciesContent({
+   test('Test_BuildSpeciesContent_TestPopulatedAnimal_ExpectSections', () => {
+      const fragment = SpeciesOverlayContent.buildSpeciesContent({
          species: 'African Lion',
          latin_name: 'Panthera leo',
          exhibit: 'Africa Savanna',
@@ -53,8 +53,8 @@ test.describe('buildSpeciesContent', () => {
       assert.match(allText(fragment), /Large cat with a mane/);
    });
 
-   test('omits blank latin names and empty detail sections', () => {
-      const fragment = buildSpeciesContent({
+   test('Test_BuildSpeciesContent_TestBlankFields_ExpectOmitted', () => {
+      const fragment = SpeciesOverlayContent.buildSpeciesContent({
          species: 'African Penguin',
          latin_name: '   ',
          exhibit: 'Africa Savanna',

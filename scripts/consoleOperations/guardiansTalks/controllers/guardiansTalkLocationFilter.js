@@ -6,90 +6,92 @@ import {
 } from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
 
-export function createGuardiansTalkLocationFilterController({
-   locationEl,
-   talkNameEl,
-} = {}) {
+export class GuardiansTalkLocationFilter {
+   static createGuardiansTalkLocationFilterController({
+      locationEl,
+      talkNameEl,
+   } = {}) {
 
-   function getLocationName(location) {
-      return typeof location === 'string'
-         ? location.trim()
-         : String(location?.location ?? location?.name ?? '').trim();
-   }
-
-   function populateLocationDropdown(locations) {
-      const locationNames = (locations ?? [])
-         .map(getLocationName)
-         .filter(Boolean)
-         .sort((a, b) => a.localeCompare(b));
-
-      populateValueDropdown(
-         locationEl,
-         locationNames,
-         APP_STRINGS.placeholders.location
-      );
-   }
-
-   function clearTalkDropdown() {
-      if (talkNameEl?.tagName === 'SELECT') {
-         populateGuardiansTalkDropdown(talkNameEl, []);
-      }
-      else if (talkNameEl) {
-         talkNameEl.value = '';
-      }
-   }
-
-   async function refreshLocations() {
-      if (locationEl?.tagName !== 'SELECT') {
-         return;
+      function getLocationName(location) {
+         return typeof location === 'string'
+            ? location.trim()
+            : String(location?.location ?? location?.name ?? '').trim();
       }
 
-      try {
-         const result = await ConsoleOperationsApi.getGuardiansTalkLocations();
-         const guardiansTalkLocations = result?.guardians_talk_locations ?? [];
-         populateLocationDropdown(guardiansTalkLocations);
-      }
-      catch(err) {
-      }
-   }
+      function populateLocationDropdown(locations) {
+         const locationNames = (locations ?? [])
+            .map(getLocationName)
+            .filter(Boolean)
+            .sort((a, b) => a.localeCompare(b));
 
-   async function refreshTalks() {
-      const location = getFieldValue(locationEl);
-
-      clearTalkDropdown();
-
-      if (!location) {
-         return;
+         populateValueDropdown(
+            locationEl,
+            locationNames,
+            APP_STRINGS.placeholders.location
+         );
       }
 
-      try {
-         const result = await ConsoleOperationsApi.getGuardiansTalkNamesAtLocation({
-            location
-         });
-
-         const guardiansTalks = result?.guardians_talks ?? [];
-
+      function clearTalkDropdown() {
          if (talkNameEl?.tagName === 'SELECT') {
-            populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
+            populateGuardiansTalkDropdown(talkNameEl, []);
+         }
+         else if (talkNameEl) {
+            talkNameEl.value = '';
          }
       }
-      catch(err) {
+
+      async function refreshLocations() {
+         if (locationEl?.tagName !== 'SELECT') {
+            return;
+         }
+
+         try {
+            const result = await ConsoleOperationsApi.getGuardiansTalkLocations();
+            const guardiansTalkLocations = result?.guardians_talk_locations ?? [];
+            populateLocationDropdown(guardiansTalkLocations);
+         }
+         catch(err) {
+         }
       }
-   }
 
-   locationEl?.addEventListener('change', () => {
-      if (talkNameEl) {
-         talkNameEl.value = '';
-      }
+      async function refreshTalks() {
+         const location = getFieldValue(locationEl);
 
-      refreshTalks();
-   });
-
-   return {
-      refreshLocations,
-      refresh: refreshTalks,
-      clear() {
          clearTalkDropdown();
+
+         if (!location) {
+            return;
+         }
+
+         try {
+            const result = await ConsoleOperationsApi.getGuardiansTalkNamesAtLocation({
+               location
+            });
+
+            const guardiansTalks = result?.guardians_talks ?? [];
+
+            if (talkNameEl?.tagName === 'SELECT') {
+               populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
+            }
+         }
+         catch(err) {
+         }
       }
-   };
+
+      locationEl?.addEventListener('change', () => {
+         if (talkNameEl) {
+            talkNameEl.value = '';
+         }
+
+         refreshTalks();
+      });
+
+      return {
+         refreshLocations,
+         refresh: refreshTalks,
+         clear() {
+            clearTalkDropdown();
+         }
+      };
+   }
 }

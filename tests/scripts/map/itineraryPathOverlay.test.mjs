@@ -1,15 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItineraryPathGeometry } from '../../scripts/map/itineraryPathGeometry.js';
-import {
-   clearItineraryPathOverlay,
-   renderItineraryPathOverlay,
-} from '../../scripts/map/itineraryPathOverlay.js';
-import { ZooMapConstants } from '../../scripts/shared/zooMapConstants.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { querySelectorInNode } from './helpers/domSelectorMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ItineraryPathGeometry } from '../../../scripts/map/itineraryPathGeometry.js';
+import { ItineraryPathOverlay } from '../../../scripts/map/itineraryPathOverlay.js';
+import { ZooMapConstants } from '../../../scripts/shared/zooMapConstants.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { querySelectorInNode } from '../helpers/domSelectorMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 function installItineraryMapDom() {
    const svgRoot = createDomNode('svg');
@@ -53,8 +50,8 @@ test.describe('itinerary path overlay', () => {
       },
    });
 
-   test('renders an exact path layer inside the zoo map svg', () => {
-      renderItineraryPathOverlay({
+   test('Test_RenderItineraryPathOverlay_TestExactPath_ExpectLayerInSvg', () => {
+      ItineraryPathOverlay.renderItineraryPathOverlay({
          legs: [],
          points: [
             { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
@@ -79,8 +76,8 @@ test.describe('itinerary path overlay', () => {
       );
    });
 
-   test('places arrows along the route path', () => {
-      renderItineraryPathOverlay({
+   test('Test_RenderItineraryPathOverlay_TestRoute_ExpectArrows', () => {
+      ItineraryPathOverlay.renderItineraryPathOverlay({
          legs: [],
          points: [
             { nodeId: 'v-0001', xPx: 100, yPx: 200 },
@@ -94,8 +91,8 @@ test.describe('itinerary path overlay', () => {
       assert.equal(arrows.length, 6);
    });
 
-   test('clears the overlay when fewer than two points are available', () => {
-      renderItineraryPathOverlay({
+   test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () => {
+      ItineraryPathOverlay.renderItineraryPathOverlay({
          legs: [],
          points: [{ xPx: 100, yPx: 200 }],
       });
@@ -105,7 +102,7 @@ test.describe('itinerary path overlay', () => {
          null
       );
 
-      renderItineraryPathOverlay({
+      ItineraryPathOverlay.renderItineraryPathOverlay({
          legs: [],
          points: [
             { xPx: 100, yPx: 200 },
@@ -113,7 +110,7 @@ test.describe('itinerary path overlay', () => {
          ],
       });
 
-      clearItineraryPathOverlay();
+      ItineraryPathOverlay.clearItineraryPathOverlay();
 
       assert.equal(
          document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),

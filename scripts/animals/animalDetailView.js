@@ -122,20 +122,22 @@ function buildAnimalDetailContent(animal, { exhibitName } = {}) {
    return fragment;
 }
 
-export function createAnimalDetailView({ listEl }) {
-   function clear() {
-      listEl.replaceChildren();
-      listEl.scrollTop = 0;
+export class AnimalDetailView {
+   static createAnimalDetailView({ listEl }) {
+      function clear() {
+         listEl.replaceChildren();
+         listEl.scrollTop = 0;
+      }
+
+      function render(animalInfo, { exhibitName, onBack }) {
+         clear();
+
+         if (!animalInfo) return;
+
+         listEl.appendChild(buildBackButton(onBack));
+         listEl.appendChild(buildAnimalDetailContent(animalInfo, { exhibitName }));
+      }
+
+      return { render };
    }
-
-   function render(animalInfo, { exhibitName, onBack }) {
-      clear();
-
-      if (!animalInfo) return;
-
-      listEl.appendChild(buildBackButton(onBack));
-      listEl.appendChild(buildAnimalDetailContent(animalInfo, { exhibitName }));
-   }
-
-   return { render };
 }

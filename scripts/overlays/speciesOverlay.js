@@ -1,7 +1,7 @@
 import { AnimalsApi } from '../api/animalsApi.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
-import { buildSpeciesContent } from './speciesOverlayContent.js';
+import { SpeciesOverlayContent } from './speciesOverlayContent.js';
 import { APP_STRINGS } from '../strings.js';
 
 function resolveOverlayElements() {
@@ -76,7 +76,7 @@ function createOverlayHeader({ linkedAnimals, index, onNavigate }) {
 function createOverlayScrollContent(animal) {
    const scroll = document.createElement('div');
    scroll.className = 'species-overlay-scroll';
-   scroll.appendChild(buildSpeciesContent(animal));
+   scroll.appendChild(SpeciesOverlayContent.buildSpeciesContent(animal));
    return scroll;
 }
 

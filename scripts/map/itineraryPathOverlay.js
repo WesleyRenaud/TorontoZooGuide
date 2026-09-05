@@ -108,24 +108,26 @@ function removeItineraryPathLayer(svgRoot) {
    svgRoot.querySelector(`#${ITINERARY_PATH_LAYER_ID}`)?.remove();
 }
 
-export function clearItineraryPathOverlay() {
-   removeItineraryPathLayer(getSvgRoot());
-}
-
-export function renderItineraryPathOverlay(itineraryPath) {
-   const svgRoot = getSvgRoot();
-
-   clearItineraryPathOverlay();
-
-   if (!svgRoot) {
-      return;
+export class ItineraryPathOverlay {
+   static clearItineraryPathOverlay() {
+      removeItineraryPathLayer(getSvgRoot());
    }
 
-   const pathD = buildPathD(itineraryPath);
+   static renderItineraryPathOverlay(itineraryPath) {
+      const svgRoot = getSvgRoot();
 
-   if (!pathD) {
-      return;
+      ItineraryPathOverlay.clearItineraryPathOverlay();
+
+      if (!svgRoot) {
+         return;
+      }
+
+      const pathD = buildPathD(itineraryPath);
+
+      if (!pathD) {
+         return;
+      }
+
+      svgRoot.appendChild(createPathLayer(pathD));
    }
-
-   svgRoot.appendChild(createPathLayer(pathD));
 }

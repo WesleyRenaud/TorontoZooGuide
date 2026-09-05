@@ -2,9 +2,9 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from './itineraryService.js';
-import { clearItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
+import { ItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
-import { hideTransportationRouteLayers } from '../map/transportationRouteOverlay.js';
+import { TransportationRouteOverlay } from '../map/transportationRouteOverlay.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
    getIncludeOffDisplay: () => false,
@@ -50,8 +50,8 @@ function createItineraryMapRuntime() {
 
 export function clearItineraryMapDisplay(runtime) {
    runtime?.markers?.render([]);
-   clearItineraryPathOverlay();
-   hideTransportationRouteLayers();
+   ItineraryPathOverlay.clearItineraryPathOverlay();
+   TransportationRouteOverlay.hideTransportationRouteLayers();
 }
 
 function getItineraryMapDate(itinerary) {

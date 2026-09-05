@@ -1,17 +1,11 @@
-import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
+import { ClosedExhibitOverlay } from './closedExhibitOverlay.js';
 import { DateContext } from './dateContext.js';
 import { FocusRequest } from './focusRequest.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
-import {
-   clearItineraryPathOverlay,
-   renderItineraryPathOverlay,
-} from './itineraryPathOverlay.js';
+import { ItineraryPathOverlay } from './itineraryPathOverlay.js';
 import { LayerRequest } from './layerRequest.js';
 import { SourceHelpers } from './sourceHelpers.js';
-import {
-   hideTransportationRouteLayers,
-   showTransportationRouteMarkers,
-} from './transportationRouteOverlay.js';
+import { TransportationRouteOverlay } from './transportationRouteOverlay.js';
 
 function buildUniqueTypes(types = []) {
    return Array.from(new Set(types));
@@ -46,8 +40,8 @@ export function createMapUpdater({
 
    function clearRenderedMarkers() {
       markers.render([]);
-      clearItineraryPathOverlay();
-      hideTransportationRouteLayers();
+      ItineraryPathOverlay.clearItineraryPathOverlay();
+      TransportationRouteOverlay.hideTransportationRouteLayers();
    }
 
    function resolvePendingUpdateOptions(options) {
@@ -116,11 +110,11 @@ export function createMapUpdater({
       const routeMarkers = LayerRequest.resolveItineraryTransportationRouteMarkers(itinerary);
 
       if (!routeMarkers) {
-         hideTransportationRouteLayers();
+         TransportationRouteOverlay.hideTransportationRouteLayers();
          return;
       }
 
-      showTransportationRouteMarkers(
+      TransportationRouteOverlay.showTransportationRouteMarkers(
          routeMarkers.route,
          routeMarkers.markerSequences
       );
@@ -130,7 +124,7 @@ export function createMapUpdater({
       try {
          syncItineraryTransportationRoute(itinerary);
          markers.render(LayerRequest.buildItineraryRows(itinerary));
-         renderItineraryPathOverlay(
+         ItineraryPathOverlay.renderItineraryPathOverlay(
             ItineraryPathModel.resolveItineraryPath(options, itinerary)
          );
          focusIfRequested(options);
@@ -181,8 +175,8 @@ export function createMapUpdater({
          selectedTypes,
       } = buildRequestedLayers(dateCtx, options);
 
-      await syncClosedExhibitOverlays(sources, ctx);
-      clearItineraryPathOverlay();
+      await ClosedExhibitOverlay.syncClosedExhibitOverlays(sources, ctx);
+      ItineraryPathOverlay.clearItineraryPathOverlay();
 
       if (selectedTypes.length === 0) {
          clearRenderedMarkers();
