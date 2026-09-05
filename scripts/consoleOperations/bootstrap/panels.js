@@ -8,34 +8,34 @@ import { createAttractionClosedPanel } from '../attractions/panels/attractionClo
 import { createAttractionClosureOverridePanel } from '../attractions/panels/attractionClosureOverridePanel.js';
 import { createAttractionHoursSchedulePanel } from '../attractions/panels/attractionHoursSchedulePanel.js';
 import { createAttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
-import { createDrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
-import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
-import { createCreateEventPanel } from '../events/panels/createEventPanel.js';
+import { DrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
+import { DrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
+import { CreateEventPanel } from '../events/panels/createEventPanel.js';
 import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
-import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
-import { createGiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
-import { createGiftShopOpeningSchedulePanel } from '../giftShops/panels/giftShopOpeningSchedulePanel.js';
-import { createAddGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/addGuardiansTalkOccurrencePanel.js';
-import { createCancelGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
-import { createEndGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
-import { createGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/guardiansTalkSchedulePanel.js';
-import { createRestaurantClosedPanel } from '../restaurants/panels/restaurantClosedPanel.js';
-import { createRestaurantClosureOverridePanel } from '../restaurants/panels/restaurantClosureOverridePanel.js';
-import { createRestaurantOpeningSchedulePanel } from '../restaurants/panels/restaurantOpeningSchedulePanel.js';
-import { createRemoveRestroomAlertPanel } from '../restrooms/panels/removeRestroomAlertPanel.js';
-import { createRestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
-import { createRestroomClosedPanel } from '../restrooms/panels/restroomClosedPanel.js';
-import { createRestroomOpenPanel } from '../restrooms/panels/restroomOpenPanel.js';
-import { createTransportationRoutePanel } from '../transportation/panels/transportationRoutePanel.js';
-import { createTransportationStationClosedPanel } from '../transportation/panels/transportationStationClosedPanel.js';
-import { createTransportationStationOpenPanel } from '../transportation/panels/transportationStationOpenPanel.js';
-import { createCreateUpdatePanel } from '../updates/panels/createUpdatePanel.js';
-import { createEditUpdatePanel } from '../updates/panels/editUpdatePanel.js';
-import { createEndUpdatePanel } from '../updates/panels/endUpdatePanel.js';
-import { createCancelWildEncounterOccurrencePanel } from '../wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
-import { createEndWildEncounterSchedulePanel } from '../wildEncounters/panels/endWildEncounterSchedulePanel.js';
-import { createWildEncounterSchedulePanel } from '../wildEncounters/panels/wildEncounterSchedulePanel.js';
+import { GiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
+import { GiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
+import { GiftShopOpeningSchedulePanel } from '../giftShops/panels/giftShopOpeningSchedulePanel.js';
+import { AddGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/addGuardiansTalkOccurrencePanel.js';
+import { CancelGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
+import { EndGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
+import { GuardiansTalkSchedulePanel } from '../guardiansTalks/panels/guardiansTalkSchedulePanel.js';
+import { RestaurantClosedPanel } from '../restaurants/panels/restaurantClosedPanel.js';
+import { RestaurantClosureOverridePanel } from '../restaurants/panels/restaurantClosureOverridePanel.js';
+import { RestaurantOpeningSchedulePanel } from '../restaurants/panels/restaurantOpeningSchedulePanel.js';
+import { RemoveRestroomAlertPanel } from '../restrooms/panels/removeRestroomAlertPanel.js';
+import { RestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
+import { RestroomClosedPanel } from '../restrooms/panels/restroomClosedPanel.js';
+import { RestroomOpenPanel } from '../restrooms/panels/restroomOpenPanel.js';
+import { TransportationRoutePanel } from '../transportation/panels/transportationRoutePanel.js';
+import { TransportationStationClosedPanel } from '../transportation/panels/transportationStationClosedPanel.js';
+import { TransportationStationOpenPanel } from '../transportation/panels/transportationStationOpenPanel.js';
+import { CreateUpdatePanel } from '../updates/panels/createUpdatePanel.js';
+import { EditUpdatePanel } from '../updates/panels/editUpdatePanel.js';
+import { EndUpdatePanel } from '../updates/panels/endUpdatePanel.js';
+import { CancelWildEncounterOccurrencePanel } from '../wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
+import { EndWildEncounterSchedulePanel } from '../wildEncounters/panels/endWildEncounterSchedulePanel.js';
+import { WildEncounterSchedulePanel } from '../wildEncounters/panels/wildEncounterSchedulePanel.js';
 
 const PANEL_CREATORS = {
    animals: [
@@ -51,20 +51,20 @@ const PANEL_CREATORS = {
       createExhibitOpenPanel,
    ],
    restaurants: [
-      createRestaurantClosedPanel,
-      createRestaurantClosureOverridePanel,
-      createRestaurantOpeningSchedulePanel,
+      RestaurantClosedPanel.createRestaurantClosedPanel,
+      RestaurantClosureOverridePanel.createRestaurantClosureOverridePanel,
+      RestaurantOpeningSchedulePanel.createRestaurantOpeningSchedulePanel,
    ],
    restrooms: [
-      createRestroomClosedPanel,
-      createRestroomOpenPanel,
-      createRestroomAlertPanel,
-      createRemoveRestroomAlertPanel,
+      RestroomClosedPanel.createRestroomClosedPanel,
+      RestroomOpenPanel.createRestroomOpenPanel,
+      RestroomAlertPanel.createRestroomAlertPanel,
+      RemoveRestroomAlertPanel.createRemoveRestroomAlertPanel,
    ],
    giftShops: [
-      createGiftShopClosedPanel,
-      createGiftShopClosureOverridePanel,
-      createGiftShopOpeningSchedulePanel,
+      GiftShopClosedPanel.createGiftShopClosedPanel,
+      GiftShopClosureOverridePanel.createGiftShopClosureOverridePanel,
+      GiftShopOpeningSchedulePanel.createGiftShopOpeningSchedulePanel,
    ],
    attractions: [
       createAttractionClosedPanel,
@@ -73,32 +73,32 @@ const PANEL_CREATORS = {
       createAttractionHoursSchedulePanel,
    ],
    transportation: [
-      createTransportationStationClosedPanel,
-      createTransportationStationOpenPanel,
-      createTransportationRoutePanel,
+      TransportationStationClosedPanel.createTransportationStationClosedPanel,
+      TransportationStationOpenPanel.createTransportationStationOpenPanel,
+      TransportationRoutePanel.createTransportationRoutePanel,
    ],
    guardiansTalks: [
-      createGuardiansTalkSchedulePanel,
-      createEndGuardiansTalkSchedulePanel,
-      createAddGuardiansTalkOccurrencePanel,
-      createCancelGuardiansTalkOccurrencePanel,
+      GuardiansTalkSchedulePanel.createGuardiansTalkSchedulePanel,
+      EndGuardiansTalkSchedulePanel.createEndGuardiansTalkSchedulePanel,
+      AddGuardiansTalkOccurrencePanel.createAddGuardiansTalkOccurrencePanel,
+      CancelGuardiansTalkOccurrencePanel.createCancelGuardiansTalkOccurrencePanel,
    ],
    wildEncounters: [
-      createWildEncounterSchedulePanel,
-      createEndWildEncounterSchedulePanel,
-      createCancelWildEncounterOccurrencePanel,
+      WildEncounterSchedulePanel.createWildEncounterSchedulePanel,
+      EndWildEncounterSchedulePanel.createEndWildEncounterSchedulePanel,
+      CancelWildEncounterOccurrencePanel.createCancelWildEncounterOccurrencePanel,
    ],
    drinkingFountains: [
-      createDrinkingFountainsClosedPanel,
-      createDrinkingFountainsOpenPanel,
+      DrinkingFountainsClosedPanel.createDrinkingFountainsClosedPanel,
+      DrinkingFountainsOpenPanel.createDrinkingFountainsOpenPanel,
    ],
    events: [
-      createCreateEventPanel,
+      CreateEventPanel.createCreateEventPanel,
    ],
    updates: [
-      createCreateUpdatePanel,
-      createEndUpdatePanel,
-      createEditUpdatePanel,
+      CreateUpdatePanel.createCreateUpdatePanel,
+      EndUpdatePanel.createEndUpdatePanel,
+      EditUpdatePanel.createEditUpdatePanel,
    ],
 };
 
