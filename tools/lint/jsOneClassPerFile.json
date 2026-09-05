@@ -147,7 +147,19 @@
       "scripts/itinerary/panel/scheduleItemResults.js",
       "scripts/consoleOperations/forms/scheduleTimesCheckboxField.js",
       "scripts/consoleOperations/shell/panelNavigator.js",
-      "scripts/map/transportationRouteControls.js"
+      "scripts/map/transportationRouteControls.js",
+      "scripts/banners/messageBanner.js",
+      "scripts/banners/attractionClosedBanner.js",
+      "scripts/banners/drinkingFountainClosedBanner.js",
+      "scripts/banners/giftShopClosedBanner.js",
+      "scripts/banners/restaurantClosedBanner.js",
+      "scripts/banners/restroomMessageBanner.js",
+      "scripts/banners/offDisplayBanner.js",
+      "scripts/map/labelVisibility.js",
+      "scripts/tooltips/positionTooltip.js",
+      "scripts/tooltips/tooltipRenderers.js",
+      "scripts/itinerary/panel/components/buildOnly.js",
+      "scripts/search/exploreFilter.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

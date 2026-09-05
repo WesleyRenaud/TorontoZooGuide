@@ -5,7 +5,7 @@ import { DateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
-import { initExploreTypeFilter } from '../search/exploreFilter.js';
+import { ExploreFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
 
@@ -90,7 +90,7 @@ function initMapExploreFilter({
    getSearch,
    animalSearchResultsEl,
 } = {}) {
-   return initExploreTypeFilter({
+   return ExploreFilter.initExploreTypeFilter({
       onChange: () => {
          updater.refetchWithCurrentControls(null);
          getSearch()?.refresh?.();

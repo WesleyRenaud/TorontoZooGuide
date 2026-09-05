@@ -1,7 +1,9 @@
-import { createSingleMessageBanner } from './messageBanner.js';
+import { MessageBanner } from './messageBanner.js';
 
-export function createAttractionClosedBanner() {
-   return createSingleMessageBanner(
-      attraction => attraction?.closed_message
-   );
+export class AttractionClosedBanner {
+   static createAttractionClosedBanner() {
+      return MessageBanner.createSingleMessageBanner(
+         attraction => attraction?.closed_message
+      );
+   }
 }

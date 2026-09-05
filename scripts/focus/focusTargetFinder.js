@@ -1,5 +1,5 @@
 import { CoordKey } from '../map/coordKey.js';
-import { TYPE_REGISTRY } from '../tooltips/tooltipRenderers.js';
+import { TooltipRenderers } from '../tooltips/tooltipRenderers.js';
 
 function itemLikelihood(item) {
    const value = Number(item?.likelihood);
@@ -24,7 +24,9 @@ function distToViewportCenter(markerEl, viewportEl) {
 
 export function createFocusMatch(row, type) {
    const typeKey = String(type || row?.type || '');
-   const renderer = TYPE_REGISTRY?.[typeKey] ?? TYPE_REGISTRY?.animal ?? null;
+   const renderer = TooltipRenderers.TYPE_REGISTRY?.[typeKey]
+      ?? TooltipRenderers.TYPE_REGISTRY?.animal
+      ?? null;
 
    const matchFn = renderer?.isMatch
       ? (item) => renderer.isMatch(item, row)

@@ -1,6 +1,6 @@
 import { BulkScheduleItineraryNotEnoughTimeConfirmation } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
-import { renderBuildOnly } from './components/buildOnly.js';
+import { BuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
@@ -290,7 +290,7 @@ export function buildEmptyItineraryPanelContent(
 ) {
    const {
       makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
-      renderEmptyState = renderBuildOnly,
+      renderEmptyState = BuildOnly.renderBuildOnly,
    } = deps;
 
    const {
