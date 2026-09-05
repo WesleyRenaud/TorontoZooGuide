@@ -1,4 +1,4 @@
-import { buildRegionRows } from './regionRenderer.js';
+import { RegionRenderer } from './regionRenderer.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function createEmptyState(message) {
@@ -23,7 +23,7 @@ export function renderRegionSelectionView(resultsEl, regions, selectedExhibitNam
    const fragment = document.createDocumentFragment();
 
    regions.forEach((region) => {
-      buildRegionRows(region, selectedExhibitNames).forEach((row) => {
+      RegionRenderer.buildRegionRows(region, selectedExhibitNames).forEach((row) => {
          fragment.appendChild(row);
       });
    });
