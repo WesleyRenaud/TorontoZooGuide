@@ -1,56 +1,59 @@
-import { showItineraryNoticePopup } from './components/noticePopup.js';
-import { createSaveIssuesContent } from './scheduleTimeConflictContent.js';
+import { NoticePopup } from './components/noticePopup.js';
+import { ScheduleTimeConflictContent } from './scheduleTimeConflictContent.js';
 import { ScheduleTimeConflictResolution } from './scheduleTimeConflictResolution.js';
 import { APP_STRINGS } from '../../strings.js';
 import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 
-export { createSaveIssuesContent } from './scheduleTimeConflictContent.js';
-export { WILD_ENCOUNTER_TIME_CONFLICT } from './scheduleTimeConflictContent.js';
+export const WILD_ENCOUNTER_TIME_CONFLICT = ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT;
+export const createSaveIssuesContent = ScheduleTimeConflictContent.createSaveIssuesContent;
 
-export function showScheduleTimeConflictConfirmation({
-   issues = [],
-   onConfirm,
-   onCancel,
-} = {}) {
-   const {
-      content,
-      conflictGroups,
-   } = createSaveIssuesContent(issues);
+export class ScheduleTimeConflictConfirmation {
+   static showScheduleTimeConflictConfirmation({
+      issues = [],
+      onConfirm,
+      onCancel,
+   } = {}) {
+      const {
+         content,
+         conflictGroups,
+      } = ScheduleTimeConflictContent.createSaveIssuesContent(issues);
 
-   showItineraryNoticePopup({
-      title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
-      bodyContent: content,
-      buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
-      showCloseButton: true,
-      onClose: ({ close } = {}) => {
-         SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
-            title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
-            message: APP_STRINGS.itinerary.confirmation
-               .proceedWithoutConflictSelectionMessage,
-            onConfirm: () => {
-               onCancel?.();
-               close();
-            },
-         });
-      },
-      onConfirm: async ({ close } = {}) => {
-         const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
-            conflictGroups,
-            async (selectedConflictItems) => {
-               await onConfirm?.(selectedConflictItems);
-               close();
+      NoticePopup.showItineraryNoticePopup({
+         title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
+         bodyContent: content,
+         buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
+         showCloseButton: true,
+         onClose: ({ close } = {}) => {
+            SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
+               title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
+               message: APP_STRINGS.itinerary.confirmation
+                  .proceedWithoutConflictSelectionMessage,
+               onConfirm: () => {
+                  onCancel?.();
+                  close();
+               },
+            });
+         },
+         onConfirm: async ({ close } = {}) => {
+            const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
+               conflictGroups,
+               async (selectedConflictItems) => {
+                  await onConfirm?.(selectedConflictItems);
+                  close();
+               }
+            );
+
+            if (!resolved) {
+               return false;
             }
-         );
 
-         if (!resolved) {
-            return false;
-         }
+            return true;
+         },
+      });
 
-         return true;
-      },
-   });
-}
+   }
 
-export async function confirmSaveIssuesConflictSelection(conflictGroups, onResolved) {
-   return ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(conflictGroups, onResolved);
+   static async confirmSaveIssuesConflictSelection(conflictGroups, onResolved) {
+      return ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(conflictGroups, onResolved);
+   }
 }

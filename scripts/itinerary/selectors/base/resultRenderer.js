@@ -20,152 +20,6 @@ function createSelectorInfoLink(infoLink) {
    return linkEl;
 }
 
-export function createSelectorThumb({
-   imageSrc = null,
-   imageAlt = '',
-} = {}) {
-   const thumbWrap = document.createElement('div');
-   thumbWrap.className = 'itin-animal-thumb';
-
-   if (!imageSrc) {
-      thumbWrap.classList.add('is-placeholder');
-      return thumbWrap;
-   }
-
-   const img = document.createElement('img');
-   img.className = 'itin-animal-thumb-img';
-   img.loading = 'lazy';
-   img.alt = imageAlt;
-   img.src = imageSrc;
-
-   img.addEventListener('error', () => {
-      thumbWrap.classList.add('is-placeholder');
-      img.remove();
-   });
-
-   thumbWrap.appendChild(img);
-
-   return thumbWrap;
-}
-
-export function createSelectorTextColumn({
-   title = APP_STRINGS.entityLabels.item,
-   titleSuffix = '',
-   subtitle = '',
-   infoLink = null,
-   titleNode = null,
-   titleParts = null,
-   subtitleNode = null,
-   onTitleClick = null,
-} = {}) {
-   const left = document.createElement('div');
-   left.className = 'animal-result-left';
-
-   if (titleNode) {
-      left.appendChild(titleNode);
-   }
-   else if (titleParts) {
-      left.appendChild(CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
-         species: titleParts.species,
-         enclosureName: titleParts.enclosureName,
-         className: 'animal-result-species',
-         onClick: onTitleClick,
-      }));
-   }
-   else {
-      left.appendChild(CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
-         text: title,
-         suffix: titleSuffix,
-         className: 'animal-result-species',
-         onClick: onTitleClick,
-      }));
-   }
-
-   if (subtitleNode) {
-      left.appendChild(subtitleNode);
-   }
-   else if (subtitle) {
-      const subtitleEl = document.createElement('div');
-      subtitleEl.className = 'animal-result-exhibit';
-      subtitleEl.textContent = subtitle;
-      left.appendChild(subtitleEl);
-   }
-
-   const infoLinkEl = createSelectorInfoLink(infoLink);
-
-   if (infoLinkEl) {
-      left.appendChild(infoLinkEl);
-   }
-
-   return left;
-}
-
-export function createSelectorRowContent({
-   imageSrc = null,
-   imageAlt = '',
-   textColumnEl,
-} = {}) {
-   const content = document.createElement('div');
-   content.className = 'itin-animal-content';
-
-   content.append(
-      createSelectorThumb({
-         imageSrc,
-         imageAlt,
-      }),
-      textColumnEl
-   );
-
-   return content;
-}
-
-export function createDefaultSelectorRowLeftRenderer({
-   getTitle,
-   getTitleParts = null,
-   getTitleSuffix = null,
-   getSubtitle,
-   getImageSrc,
-   getInfoLink,
-   onTitleClick = null,
-   shouldEnableTitleClick = null,
-} = {}) {
-   return function renderDefaultRowLeft(row) {
-      const titleParts = typeof getTitleParts === 'function'
-         ? getTitleParts(row)
-         : null;
-      const title = getTitle(row) || APP_STRINGS.entityLabels.item;
-      const titleSuffix = typeof getTitleSuffix === 'function'
-         ? getTitleSuffix(row)
-         : '';
-      const subtitle = getSubtitle(row);
-      const imageSrc = getImageSrc(row);
-      const infoLink = getInfoLink(row);
-      const titleClickEnabled = (
-         typeof onTitleClick === 'function'
-         && (
-            typeof shouldEnableTitleClick !== 'function'
-            || shouldEnableTitleClick(row)
-         )
-      );
-      const titleForAlt = `${title}${titleSuffix}`;
-
-      return createSelectorRowContent({
-         imageSrc,
-         imageAlt: titleForAlt ? APP_STRINGS.itinerary.itemImage(titleForAlt) : '',
-         textColumnEl: createSelectorTextColumn({
-            title,
-            titleSuffix,
-            titleParts,
-            subtitle,
-            infoLink,
-            onTitleClick: titleClickEnabled
-               ? () => onTitleClick(row)
-               : null,
-         }),
-      });
-   };
-}
-
 function createEmptyState(emptyText) {
    const empty = document.createElement('div');
    empty.className = 'itin-empty';
@@ -288,33 +142,185 @@ function createResultRowsFragment({
    return fragment;
 }
 
-export function renderSelectorResults({
-   resultsEl,
-   rows,
-   emptyText,
-   getId,
-   isSelected,
-   renderRowLeft,
-   onToggle,
-   onBeforeToggleAdd = null,
-} = {}) {
-   if (!resultsEl) {
-      return;
+export class ResultRenderer {
+   static createSelectorThumb({
+      imageSrc = null,
+      imageAlt = '',
+   } = {}) {
+      const thumbWrap = document.createElement('div');
+      thumbWrap.className = 'itin-animal-thumb';
+
+      if (!imageSrc) {
+         thumbWrap.classList.add('is-placeholder');
+         return thumbWrap;
+      }
+
+      const img = document.createElement('img');
+      img.className = 'itin-animal-thumb-img';
+      img.loading = 'lazy';
+      img.alt = imageAlt;
+      img.src = imageSrc;
+
+      img.addEventListener('error', () => {
+         thumbWrap.classList.add('is-placeholder');
+         img.remove();
+      });
+
+      thumbWrap.appendChild(img);
+
+      return thumbWrap;
+
    }
 
-   if (!hasRows(rows)) {
-      resultsEl.replaceChildren(createEmptyState(emptyText));
-      return;
+   static createSelectorTextColumn({
+      title = APP_STRINGS.entityLabels.item,
+      titleSuffix = '',
+      subtitle = '',
+      infoLink = null,
+      titleNode = null,
+      titleParts = null,
+      subtitleNode = null,
+      onTitleClick = null,
+   } = {}) {
+      const left = document.createElement('div');
+      left.className = 'animal-result-left';
+
+      if (titleNode) {
+         left.appendChild(titleNode);
+      }
+      else if (titleParts) {
+         left.appendChild(CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
+            species: titleParts.species,
+            enclosureName: titleParts.enclosureName,
+            className: 'animal-result-species',
+            onClick: onTitleClick,
+         }));
+      }
+      else {
+         left.appendChild(CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
+            text: title,
+            suffix: titleSuffix,
+            className: 'animal-result-species',
+            onClick: onTitleClick,
+         }));
+      }
+
+      if (subtitleNode) {
+         left.appendChild(subtitleNode);
+      }
+      else if (subtitle) {
+         const subtitleEl = document.createElement('div');
+         subtitleEl.className = 'animal-result-exhibit';
+         subtitleEl.textContent = subtitle;
+         left.appendChild(subtitleEl);
+      }
+
+      const infoLinkEl = createSelectorInfoLink(infoLink);
+
+      if (infoLinkEl) {
+         left.appendChild(infoLinkEl);
+      }
+
+      return left;
+
    }
 
-   resultsEl.replaceChildren(
-      createResultRowsFragment({
-         rows,
-         getId,
-         isSelected,
-         renderRowLeft,
-         onToggle,
-         onBeforeToggleAdd,
-      })
-   );
+   static createSelectorRowContent({
+      imageSrc = null,
+      imageAlt = '',
+      textColumnEl,
+   } = {}) {
+      const content = document.createElement('div');
+      content.className = 'itin-animal-content';
+
+      content.append(
+         ResultRenderer.createSelectorThumb({
+            imageSrc,
+            imageAlt,
+         }),
+         textColumnEl
+      );
+
+      return content;
+
+   }
+
+   static createDefaultSelectorRowLeftRenderer({
+      getTitle,
+      getTitleParts = null,
+      getTitleSuffix = null,
+      getSubtitle,
+      getImageSrc,
+      getInfoLink,
+      onTitleClick = null,
+      shouldEnableTitleClick = null,
+   } = {}) {
+      return function renderDefaultRowLeft(row) {
+         const titleParts = typeof getTitleParts === 'function'
+            ? getTitleParts(row)
+            : null;
+         const title = getTitle(row) || APP_STRINGS.entityLabels.item;
+         const titleSuffix = typeof getTitleSuffix === 'function'
+            ? getTitleSuffix(row)
+            : '';
+         const subtitle = getSubtitle(row);
+         const imageSrc = getImageSrc(row);
+         const infoLink = getInfoLink(row);
+         const titleClickEnabled = (
+            typeof onTitleClick === 'function'
+            && (
+               typeof shouldEnableTitleClick !== 'function'
+               || shouldEnableTitleClick(row)
+            )
+         );
+         const titleForAlt = `${title}${titleSuffix}`;
+
+         return ResultRenderer.createSelectorRowContent({
+            imageSrc,
+            imageAlt: titleForAlt ? APP_STRINGS.itinerary.itemImage(titleForAlt) : '',
+            textColumnEl: ResultRenderer.createSelectorTextColumn({
+               title,
+               titleSuffix,
+               titleParts,
+               subtitle,
+               infoLink,
+               onTitleClick: titleClickEnabled
+                  ? () => onTitleClick(row)
+                  : null,
+            }),
+         });
+      };
+
+   }
+
+   static renderSelectorResults({
+      resultsEl,
+      rows,
+      emptyText,
+      getId,
+      isSelected,
+      renderRowLeft,
+      onToggle,
+      onBeforeToggleAdd = null,
+   } = {}) {
+      if (!resultsEl) {
+         return;
+      }
+
+      if (!hasRows(rows)) {
+         resultsEl.replaceChildren(createEmptyState(emptyText));
+         return;
+      }
+
+      resultsEl.replaceChildren(
+         createResultRowsFragment({
+            rows,
+            getId,
+            isSelected,
+            renderRowLeft,
+            onToggle,
+            onBeforeToggleAdd,
+         })
+      );
+   }
 }

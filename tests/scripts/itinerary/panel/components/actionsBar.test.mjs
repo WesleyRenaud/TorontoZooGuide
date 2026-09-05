@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeActionsBar } from '../../scripts/itinerary/panel/components/actionsBar.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ActionsBar } from '../../../../../scripts/itinerary/panel/components/actionsBar.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('makeActionsBar', () => {
    installDomTestHooks({
@@ -13,7 +13,7 @@ test.describe('makeActionsBar', () => {
       },
    });
 
-   test('dispatches edit itinerary when the edit button is clicked', () => {
+   test('Test_Dispatches_TestDispatchesEditItineraryWhenTheEditButtonIs_ExpectOk', () => {
       const dispatched = [];
 
       globalThis.window.dispatchEvent = (event) => {
@@ -21,7 +21,7 @@ test.describe('makeActionsBar', () => {
          return true;
       };
 
-      const actionsBar = makeActionsBar();
+      const actionsBar = ActionsBar.makeActionsBar();
       const editButton = actionsBar.querySelector('.itin-panel-edit-btn');
 
       editButton?.click();
@@ -33,9 +33,9 @@ test.describe('makeActionsBar', () => {
       );
    });
 
-   test('shows a clear confirmation popup and runs onAfterClear on confirm', async () => {
+   test('Test_Shows_TestShowsAClearConfirmationPopupAndRunsOnAfterClear_ExpectOk', async () => {
       const cleared = [];
-      const actionsBar = makeActionsBar({
+      const actionsBar = ActionsBar.makeActionsBar({
          onAfterClear: async () => {
             cleared.push('cleared');
          },

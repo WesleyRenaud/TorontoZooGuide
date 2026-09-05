@@ -1,5 +1,5 @@
-import { showItineraryConfirmPopup } from './components/confirmPopup.js';
-import { getItineraryOverlayMountEl } from './components/popup.js';
+import { ConfirmPopup } from './components/confirmPopup.js';
+import { Popup } from './components/popup.js';
 import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -41,7 +41,7 @@ export class WildEncounterUnscheduleConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = getItineraryOverlayMountEl() ?? document.body,
+      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const strings = APP_STRINGS.itinerary.confirmation;
       const encounter = WildEncounterUnscheduleConfirmation.getPrimaryWildEncounterFromUnscheduleIssues(issues);
@@ -58,7 +58,7 @@ export class WildEncounterUnscheduleConfirmation {
          )
          : strings.wildEncounterRescheduleMessageWithoutTime(encounterName);
 
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title: strings.wildEncounterRescheduleTitle,
          message,
          confirmText: strings.updatePlanConfirm,

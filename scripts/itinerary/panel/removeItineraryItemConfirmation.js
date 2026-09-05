@@ -1,5 +1,5 @@
-import { showItineraryConfirmPopup } from './components/confirmPopup.js';
-import { getItineraryPanelMountEl } from './components/popup.js';
+import { ConfirmPopup } from './components/confirmPopup.js';
+import { Popup } from './components/popup.js';
 import { TransportationScheduleItemKey } from '../selectors/transportationSelector/transportationScheduleItemKey.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -36,12 +36,12 @@ export class RemoveItineraryItemConfirmation {
    } = {}) {
       const strings = APP_STRINGS.itinerary.confirmation;
 
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title: strings.removeItemTitle,
          message: removeConfirmationMessage(itemType, key),
          confirmText: APP_STRINGS.itinerary.dayPlanner.remove,
          cancelText: APP_STRINGS.itinerary.actions.cancel,
-         mountEl: getItineraryPanelMountEl() ?? document.body,
+         mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,
          onCancel,
       });

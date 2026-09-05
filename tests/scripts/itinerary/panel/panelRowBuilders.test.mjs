@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeDayPlannerPreview } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
-import { showRemovedItemsPopup } from '../../../../scripts/itinerary/panel/components/removedItemsPopup.js';
+import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { RemovedItemsPopup } from '../../../../scripts/itinerary/panel/components/removedItemsPopup.js';
 import { Rows } from '../../../../scripts/itinerary/panel/rows.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import {
@@ -49,7 +49,7 @@ test.describe('Test_Rows', () => {
    test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove', () => {
       const scheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -422,7 +422,7 @@ test.describe('Test_Rows', () => {
    test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
       const mount = document.createElement('div');
    
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          adjustments: [
             {
@@ -454,7 +454,7 @@ test.describe('Test_Rows', () => {
    test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
       const mount = document.createElement('div');
    
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          adjustments: [
             {
@@ -486,7 +486,7 @@ test.describe('Test_Rows', () => {
    test('Test_RemovedItemsPopup_TestUnscheduledItems_ExpectRendered', () => {
       const mount = document.createElement('div');
    
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          unscheduled: {
             animals: [

@@ -1,9 +1,6 @@
 import { EnsureItineraryVisitDate } from '../ensureItineraryVisitDate.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
-import {
-   createScheduleItemSaveFailedResult,
-   scheduleItineraryItemWithConfirmation,
-} from './scheduleItemConfirmationFlow.js';
+import { ScheduleItemConfirmationFlow } from './scheduleItemConfirmationFlow.js';
 import { ScheduleItemSearch } from './scheduleItemSearch.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
@@ -84,15 +81,15 @@ export async function scheduleSelectedItineraryItem(
    );
 
    if (!request) {
-      return createScheduleItemSaveFailedResult();
+      return ScheduleItemConfirmationFlow.createScheduleItemSaveFailedResult();
    }
 
    try {
       await EnsureItineraryVisitDate.ensureItineraryVisitDate(itinerary);
    }
    catch {
-      return createScheduleItemSaveFailedResult();
+      return ScheduleItemConfirmationFlow.createScheduleItemSaveFailedResult();
    }
 
-   return scheduleItineraryItemWithConfirmation(request);
+   return ScheduleItemConfirmationFlow.scheduleItineraryItemWithConfirmation(request);
 }

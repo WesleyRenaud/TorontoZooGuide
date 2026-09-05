@@ -1,6 +1,6 @@
 import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
 import { el } from '../dom.js';
-import { makeItineraryTimeInput } from './itineraryTimeInput.js';
+import { ItineraryTimeInput } from './itineraryTimeInput.js';
 
 export class DayPlannerControls {
    static makeDayPlannerControls(
@@ -19,7 +19,7 @@ export class DayPlannerControls {
 
       controls.appendChild(el('span', 'itinerary-day-module-date', date));
       controls.appendChild(
-         makeItineraryTimeInput({
+         ItineraryTimeInput.makeItineraryTimeInput({
             label: strings.arrivalInputLabel,
             value: itinerary.arrivalTime,
             onChange: onArrivalTimeChange,
@@ -40,7 +40,7 @@ export class DayPlannerControls {
          })
       );
       controls.appendChild(
-         makeItineraryTimeInput({
+         ItineraryTimeInput.makeItineraryTimeInput({
             label: strings.departureInputLabel,
             value: itinerary.departureTime,
             onChange: onDepartureTimeChange,

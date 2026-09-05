@@ -1,14 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import {
-   buildConflictItemImageSrc,
-   createSaveIssuesContent,
-   WILD_ENCOUNTER_TIME_CONFLICT,
-} from '../../scripts/itinerary/panel/scheduleTimeConflictContent.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { ScheduleTimeConflictContent } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContent.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -34,23 +30,23 @@ const guardiansTalk = {
    location: 'Africa Savanna',
 };
 
-test('buildConflictItemImageSrc maps wild encounters and guardians talks to detail images', () => {
+test('Test_BuildConflictItemImageSrc_TestBuildConflictItemImageSrcMapsWildEncountersAndGuardiansTalksTo_ExpectOk', () => {
    assert.equal(
-      buildConflictItemImageSrc(firstEncounter),
+      ScheduleTimeConflictContent.buildConflictItemImageSrc(firstEncounter),
       'images/details/wild-encounters/from-howls-to-honks.png'
    );
    assert.equal(
-      buildConflictItemImageSrc(guardiansTalk),
+      ScheduleTimeConflictContent.buildConflictItemImageSrc(guardiansTalk),
       'images/details/guardians-talks/african-lion.png'
    );
-   assert.equal(buildConflictItemImageSrc({ name: '' }), null);
+   assert.equal(ScheduleTimeConflictContent.buildConflictItemImageSrc({ name: '' }), null);
 });
 
 test.describe('scheduleTimeConflictContent', () => {
    installDomTestHooks();
 
-   test('createSaveIssuesContent ignores non-wild-encounter issues', () => {
-      const { content, conflictGroups } = createSaveIssuesContent([
+   test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentIgnoresNonWildEncounterIssues_ExpectOk', () => {
+      const { content, conflictGroups } = ScheduleTimeConflictContent.createSaveIssuesContent([
          { type: 'otherIssue', items: [firstEncounter] },
       ]);
 
@@ -59,10 +55,10 @@ test.describe('scheduleTimeConflictContent', () => {
       assert.deepEqual(conflictGroups, []);
    });
 
-   test('createSaveIssuesContent renders conflict rows and selection groups', () => {
-      const { content, conflictGroups } = createSaveIssuesContent([
+   test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentRendersConflictRowsAndSelectionGroups_ExpectOk', () => {
+      const { content, conflictGroups } = ScheduleTimeConflictContent.createSaveIssuesContent([
          {
-            type: WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [secondEncounter, firstEncounter],
          },
       ]);
@@ -93,10 +89,10 @@ test.describe('scheduleTimeConflictContent', () => {
       );
    });
 
-   test('createSaveIssuesContent toggles add buttons into selected remove buttons', () => {
-      const { content } = createSaveIssuesContent([
+   test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentTogglesAddButtonsIntoSelectedRemoveButtons_ExpectOk', () => {
+      const { content } = ScheduleTimeConflictContent.createSaveIssuesContent([
          {
-            type: WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
          },
       ]);

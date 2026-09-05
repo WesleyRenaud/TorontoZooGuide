@@ -1,26 +1,23 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   bindRegionSelectionEvents,
-   renderRegionSelectionView,
-} from '../../scripts/itinerary/selectors/regionSelector/view.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { dispatchResultsClick } from './helpers/regionSelectorDom.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { View } from '../../../../../scripts/itinerary/selectors/regionSelector/view.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
+import { dispatchResultsClick } from '../../../helpers/regionSelectorDom.mjs';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('region selector view', () => {
    installDomTestHooks();
 
-   test('renderRegionSelectionView no-ops when resultsEl is missing', () => {
-      renderRegionSelectionView(null, [{ name: 'Africa', exhibits: ['Africa Savanna'] }], []);
+   test('Test_RenderRegionSelectionView_TestRenderRegionSelectionViewNoOpsWhenResultsElIsMissing_ExpectOk', () => {
+      View.renderRegionSelectionView(null, [{ name: 'Africa', exhibits: ['Africa Savanna'] }], []);
    });
 
-   test('renderRegionSelectionView shows the empty state when no regions are available', () => {
+   test('Test_RenderRegionSelectionView_TestRenderRegionSelectionViewShowsTheEmptyStateWhenNoRegions_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'itin-results');
 
-      renderRegionSelectionView(resultsEl, [], []);
+      View.renderRegionSelectionView(resultsEl, [], []);
 
       assert.equal(resultsEl.children.length, 1);
       assert.equal(resultsEl.children[0].className, 'itin-empty');
@@ -30,10 +27,10 @@ test.describe('region selector view', () => {
       );
    });
 
-   test('renderRegionSelectionView renders region and exhibit choice rows', () => {
+   test('Test_RenderRegionSelectionView_TestRenderRegionSelectionViewRendersRegionAndExhibitChoiceRows_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'itin-results');
 
-      renderRegionSelectionView(
+      View.renderRegionSelectionView(
          resultsEl,
          [{ name: 'Africa', exhibits: ['Africa Savanna', 'Indoor Rainforest'] }],
          new Set(['Africa Savanna'])
@@ -48,12 +45,12 @@ test.describe('region selector view', () => {
       assert.equal(buttons[1].dataset.exhibit, 'Africa Savanna');
    });
 
-   test('bindRegionSelectionEvents routes region and exhibit toggle clicks', () => {
+   test('Test_BindRegionSelectionEvents_TestBindRegionSelectionEventsRoutesRegionAndExhibitToggleClicks_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'itin-results');
       const regionCalls = [];
       const exhibitCalls = [];
 
-      bindRegionSelectionEvents(resultsEl, {
+      View.bindRegionSelectionEvents(resultsEl, {
          onToggleRegion: (regionName) => {
             regionCalls.push(regionName);
          },
@@ -62,7 +59,7 @@ test.describe('region selector view', () => {
          },
       });
 
-      renderRegionSelectionView(
+      View.renderRegionSelectionView(
          resultsEl,
          [{ name: 'Africa', exhibits: ['Africa Savanna'] }],
          new Set()
@@ -80,19 +77,19 @@ test.describe('region selector view', () => {
       }]);
    });
 
-   test('bindRegionSelectionEvents no-ops when resultsEl is missing', () => {
-      bindRegionSelectionEvents(null, {
+   test('Test_BindRegionSelectionEvents_TestBindRegionSelectionEventsNoOpsWhenResultsElIsMissing_ExpectOk', () => {
+      View.bindRegionSelectionEvents(null, {
          onToggleRegion: () => {
             assert.fail('should not register listeners');
          },
       });
    });
 
-   test('bindRegionSelectionEvents ignores clicks outside actionable buttons', () => {
+   test('Test_BindRegionSelectionEvents_TestBindRegionSelectionEventsIgnoresClicksOutsideActionableButtons_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'itin-results');
       const regionCalls = [];
 
-      bindRegionSelectionEvents(resultsEl, {
+      View.bindRegionSelectionEvents(resultsEl, {
          onToggleRegion: (regionName) => {
             regionCalls.push(regionName);
          },

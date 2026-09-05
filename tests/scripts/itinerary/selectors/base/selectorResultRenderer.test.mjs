@@ -1,25 +1,20 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   createDefaultSelectorRowLeftRenderer,
-   createSelectorTextColumn,
-   createSelectorThumb,
-   renderSelectorResults,
-} from '../../scripts/itinerary/selectors/base/resultRenderer.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { ResultRenderer } from '../../../../../scripts/itinerary/selectors/base/resultRenderer.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 test.describe('selector result renderer', () => {
    installDomTestHooks();
 
-   test('createSelectorThumb renders placeholder and image error fallback', () => {
-      const placeholder = createSelectorThumb();
+   test('Test_CreateSelectorThumb_TestCreateSelectorThumbRendersPlaceholderAndImageErrorFallback_ExpectOk', () => {
+      const placeholder = ResultRenderer.createSelectorThumb();
       assert.equal(placeholder.className, 'itin-animal-thumb is-placeholder');
       assert.equal(placeholder.children.length, 0);
 
-      const thumb = createSelectorThumb({
+      const thumb = ResultRenderer.createSelectorThumb({
          imageSrc: '../images/details/animals/lion.png',
          imageAlt: 'African Lion',
       });
@@ -33,8 +28,8 @@ test.describe('selector result renderer', () => {
       assert.equal(thumb.classList.contains('is-placeholder'), true);
    });
 
-   test('createSelectorTextColumn renders subtitle and info link', () => {
-      const column = createSelectorTextColumn({
+   test('Test_CreateSelectorTextColumn_TestCreateSelectorTextColumnRendersSubtitleAndInfoLink_ExpectOk', () => {
+      const column = ResultRenderer.createSelectorTextColumn({
          title: 'Conservation Carousel',
          subtitle: 'Free With Admission',
          infoLink: 'https://example.com/carousel',
@@ -54,12 +49,12 @@ test.describe('selector result renderer', () => {
       );
    });
 
-   test('renderSelectorResults renders rows and toggles selection state', () => {
+   test('Test_RenderSelectorResults_TestRenderSelectorResultsRendersRowsAndTogglesSelectionState_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'animal-results');
       const toggled = [];
       const selectedIds = new Set();
 
-      renderSelectorResults({
+      ResultRenderer.renderSelectorResults({
          resultsEl,
          rows: [
             { id: 'lion', name: 'African Lion' },
@@ -68,7 +63,7 @@ test.describe('selector result renderer', () => {
          emptyText: 'No animals found',
          getId: (row) => row.id,
          isSelected: (id) => selectedIds.has(id),
-         renderRowLeft: createDefaultSelectorRowLeftRenderer({
+         renderRowLeft: ResultRenderer.createDefaultSelectorRowLeftRenderer({
             getTitle: (row) => row.name,
             getSubtitle: () => '',
             getImageSrc: () => null,
@@ -99,17 +94,17 @@ test.describe('selector result renderer', () => {
       assert.equal(firstButton?.classList.contains('is-added'), true);
    });
 
-   test('renderSelectorResults uses onBeforeToggleAdd before adding a row', () => {
+   test('Test_RenderSelectorResults_TestRenderSelectorResultsUsesOnBeforeToggleAddBeforeAddingARow_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'animal-results');
       const proceedCalls = [];
 
-      renderSelectorResults({
+      ResultRenderer.renderSelectorResults({
          resultsEl,
          rows: [{ id: 'lion', name: 'African Lion' }],
          emptyText: 'No animals found',
          getId: (row) => row.id,
          isSelected: () => false,
-         renderRowLeft: createDefaultSelectorRowLeftRenderer({
+         renderRowLeft: ResultRenderer.createDefaultSelectorRowLeftRenderer({
             getTitle: (row) => row.name,
             getSubtitle: () => '',
             getImageSrc: () => null,
@@ -131,10 +126,10 @@ test.describe('selector result renderer', () => {
       assert.deepEqual(proceedCalls, ['confirmed', 'toggled']);
    });
 
-   test('renderSelectorResults renders empty state when there are no rows', () => {
+   test('Test_RenderSelectorResults_TestRenderSelectorResultsRendersEmptyStateWhenThereAreNo_ExpectOk', () => {
       const resultsEl = createDomNode('div', 'animal-results');
 
-      renderSelectorResults({
+      ResultRenderer.renderSelectorResults({
          resultsEl,
          rows: [],
          emptyText: 'No animals found',

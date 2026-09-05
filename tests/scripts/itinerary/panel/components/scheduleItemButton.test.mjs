@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { ScheduleItemButton } from '../../../../../scripts/itinerary/panel/components/scheduleItemButton.js';
-import { makeDayPlannerPreview } from '../../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { DayPlanner } from '../../../../../scripts/itinerary/panel/components/dayPlanner.js';
 import {
    installDocument,
    installTestWindow,
@@ -38,7 +38,7 @@ test('Test_MakeDayPlannerPreview_TestRebuildButton_ExpectBelowScheduleItem', () 
    installDocument();
 
    let rebuildScheduleClicked = false;
-   const planner = makeDayPlannerPreview(
+   const planner = DayPlanner.makeDayPlannerPreview(
       { date: '2026-06-20' },
       {
          animals: [],
@@ -78,7 +78,7 @@ test('Test_MakeDayPlannerPreview_TestScheduledItems_ExpectUnscheduleButton', () 
 
    let unscheduleAllClicked = false;
    let rebuildScheduleClicked = false;
-   const planner = makeDayPlannerPreview(
+   const planner = DayPlanner.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -128,7 +128,7 @@ test('Test_MakeDayPlannerPreview_TestEmptyItinerary_ExpectUnscheduleButton', () 
    installDocument();
 
    let unscheduleAllClicked = false;
-   const planner = makeDayPlannerPreview(
+   const planner = DayPlanner.makeDayPlannerPreview(
       { date: '2026-06-20' },
       {
          animals: [],

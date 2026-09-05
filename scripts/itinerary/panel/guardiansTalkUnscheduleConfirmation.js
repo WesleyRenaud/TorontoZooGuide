@@ -1,5 +1,5 @@
-import { showItineraryConfirmPopup } from './components/confirmPopup.js';
-import { getItineraryOverlayMountEl } from './components/popup.js';
+import { ConfirmPopup } from './components/confirmPopup.js';
+import { Popup } from './components/popup.js';
 import { Format } from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -41,7 +41,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = getItineraryOverlayMountEl() ?? document.body,
+      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const strings = APP_STRINGS.itinerary.confirmation;
       const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
@@ -58,7 +58,7 @@ export class GuardiansTalkUnscheduleConfirmation {
          )
          : strings.guardiansTalkRescheduleMessageWithoutTime(talkName);
 
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title: strings.guardiansTalkRescheduleTitle,
          message,
          confirmText: strings.updatePlanConfirm,

@@ -1,11 +1,11 @@
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export class ScheduleOverrideSelectionConfirmation {
    static showScheduleOverrideSelectionConfirmation({
       onConfirm,
    } = {}) {
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title: APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionTitle,
          message: APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
          confirmText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,

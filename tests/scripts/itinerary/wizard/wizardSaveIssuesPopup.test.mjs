@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showWizardSaveIssuesPopup } from '../../scripts/itinerary/wizard/wizardSaveIssuesPopup.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { WizardSaveIssuesPopup } from '../../../../scripts/itinerary/wizard/wizardSaveIssuesPopup.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
 
 const savedItinerary = {
    date: '2026-06-15',
@@ -23,10 +23,10 @@ const selectedEncounter = {
    end_time: '13:45',
 };
 
-test('showWizardSaveIssuesPopup no-ops when there are no save issues', () => {
+test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupNoOpsWhenThereAreNoSave_ExpectOk', () => {
    const noticeCalls = [];
 
-   showWizardSaveIssuesPopup(
+   WizardSaveIssuesPopup.showWizardSaveIssuesPopup(
       { date: '2026-06-15', saveIssues: [] },
       {
          showNoticePopup: (config) => {
@@ -39,12 +39,12 @@ test('showWizardSaveIssuesPopup no-ops when there are no save issues', () => {
    assert.equal(noticeCalls.length, 0);
 });
 
-test('showWizardSaveIssuesPopup confirms close through proceed confirmation', () => {
+test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupConfirmsCloseThroughProceedConfirmation_ExpectOk', () => {
    let noticeConfig = null;
    let proceedConfig = null;
    const closeCalls = [];
 
-   showWizardSaveIssuesPopup(savedItinerary, {
+   WizardSaveIssuesPopup.showWizardSaveIssuesPopup(savedItinerary, {
       createSaveIssues: () => ({
          content: {},
          conflictGroups: [],
@@ -78,10 +78,10 @@ test('showWizardSaveIssuesPopup confirms close through proceed confirmation', ()
    assert.deepEqual(closeCalls, ['closed']);
 });
 
-test('showWizardSaveIssuesPopup returns false when conflict selection is unresolved', async () => {
+test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupReturnsFalseWhenConflictSelectionIsUnresolved_ExpectOk', async () => {
    let noticeConfig = null;
 
-   showWizardSaveIssuesPopup(savedItinerary, {
+   WizardSaveIssuesPopup.showWizardSaveIssuesPopup(savedItinerary, {
       createSaveIssues: () => ({
          content: {},
          conflictGroups: [{ items: [selectedEncounter] }],
@@ -101,7 +101,7 @@ test('showWizardSaveIssuesPopup returns false when conflict selection is unresol
    assert.equal(result, false);
 });
 
-test('showWizardSaveIssuesPopup saves resolved conflicts and closes on confirm', async () => {
+test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupSavesResolvedConflictsAndClosesOnConfirm_ExpectOk', async () => {
    let noticeConfig = null;
    const saveCalls = [];
    const closeCalls = [];
@@ -110,7 +110,7 @@ test('showWizardSaveIssuesPopup saves resolved conflicts and closes on confirm',
       wildEncounters: [selectedEncounter],
    };
 
-   showWizardSaveIssuesPopup(savedItinerary, {
+   WizardSaveIssuesPopup.showWizardSaveIssuesPopup(savedItinerary, {
       createSaveIssues: () => ({
          content: {},
          conflictGroups: [{ items: [selectedEncounter] }],

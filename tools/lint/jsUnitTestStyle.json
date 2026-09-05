@@ -113,7 +113,26 @@
       "tests/scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.test.mjs",
       "tests/scripts/itinerary/wizard/saveIssuesProceedConfirmation.test.mjs",
       "tests/scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.test.mjs",
-      "tests/scripts/itinerary/wizard/wizardPopup.test.mjs"
+      "tests/scripts/itinerary/wizard/wizardPopup.test.mjs",
+      "tests/scripts/itinerary/panel/components/actionsBar.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledTimelinePill.test.mjs",
+      "tests/scripts/itinerary/panel/components/showScheduleItemModule.test.mjs",
+      "tests/scripts/itinerary/panel/components/removedItemsPopup.test.mjs",
+      "tests/scripts/itinerary/panel/components/removedItemsPopupContent.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduleItemModuleController.test.mjs",
+      "tests/scripts/itinerary/panel/panelDayPlannerMarkers.test.mjs",
+      "tests/scripts/itinerary/panel/panelDayPlannerScheduled.test.mjs",
+      "tests/scripts/itinerary/panel/panelDayPlannerUnscheduled.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerTimelineEventCardRegionColors.test.mjs",
+      "tests/scripts/itinerary/panel/itineraryBuildWarningsConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/scheduleTimeConflictConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/scheduleTimeConflictContent.test.mjs",
+      "tests/scripts/itinerary/selectors/base/selectorResultRenderer.test.mjs",
+      "tests/scripts/itinerary/selectors/selectorControllerElements.test.mjs",
+      "tests/scripts/itinerary/selectors/regionSelector/regionSelectorState.test.mjs",
+      "tests/scripts/itinerary/selectors/regionSelector/regionSelectorView.test.mjs",
+      "tests/scripts/overlays/speciesOverlay.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardSaveIssuesPopup.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

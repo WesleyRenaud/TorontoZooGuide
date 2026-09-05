@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showRemovedItemsPopup } from '../../scripts/itinerary/panel/components/removedItemsPopup.js';
-import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { RemovedItemsPopup } from '../../../../../scripts/itinerary/panel/components/removedItemsPopup.js';
+import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhibitKey.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 const removedAnimal = {
    species: 'African Lion',
@@ -26,14 +26,14 @@ function clickOverlay(overlay) {
 test.describe('showRemovedItemsPopup', () => {
    installDomTestHooks();
 
-   test('returns early without a mount element or popup content', () => {
+   test('Test_Returns_TestReturnsEarlyWithoutAMountElementOrPopup_ExpectOk', () => {
       const mount = createDomNode('div');
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: null,
          removed: { animals: [removedAnimal] },
       });
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: { animals: [] },
       });
@@ -41,11 +41,11 @@ test.describe('showRemovedItemsPopup', () => {
       assert.equal(mount.children.length, 0);
    });
 
-   test('accept passes kept animals and attractions to onAccept', () => {
+   test('Test_Accept_TestAcceptPassesKeptAnimalsAndAttractionsToOnAccept_ExpectOk', () => {
       const mount = createDomNode('div');
       const accepted = [];
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: {
             animals: [removedAnimal],
@@ -72,11 +72,11 @@ test.describe('showRemovedItemsPopup', () => {
       }]);
    });
 
-   test('dismisses through the close button and overlay click', () => {
+   test('Test_Dismisses_TestDismissesThroughTheCloseButtonAndOverlayClick_ExpectOk', () => {
       const mount = createDomNode('div');
       const dismissCalls = [];
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: { animals: [removedAnimal] },
          onDismiss: () => {
@@ -89,7 +89,7 @@ test.describe('showRemovedItemsPopup', () => {
       assert.deepEqual(dismissCalls, ['dismissed']);
       assert.equal(mount.children.length, 0);
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: { animals: [removedAnimal] },
          onDismiss: () => {
@@ -105,11 +105,11 @@ test.describe('showRemovedItemsPopup', () => {
       assert.equal(mount.children.length, 0);
    });
 
-   test('toggle keep off removes items from the accept payload', () => {
+   test('Test_Toggle_TestToggleKeepOffRemovesItemsFromTheAccept_ExpectOk', () => {
       const mount = createDomNode('div');
       const accepted = [];
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: { animals: [removedAnimal] },
          onAccept: (payload) => {
@@ -133,11 +133,11 @@ test.describe('showRemovedItemsPopup', () => {
       );
    });
 
-   test('view alternatives removes the popup before navigating', () => {
+   test('Test_View_TestViewAlternativesRemovesThePopupBeforeNavigating_ExpectOk', () => {
       const mount = createDomNode('div');
       const viewedSteps = [];
 
-      showRemovedItemsPopup({
+      RemovedItemsPopup.showRemovedItemsPopup({
          mountEl: mount,
          removed: {
             guardiansTalks: [{

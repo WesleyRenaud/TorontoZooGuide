@@ -8,55 +8,58 @@ function createEmptyState(message) {
    return emptyEl;
 }
 
-export function renderRegionSelectionView(resultsEl, regions, selectedExhibitNames) {
-   if (!resultsEl) {
-      return;
-   }
+export class View {
+   static renderRegionSelectionView(resultsEl, regions, selectedExhibitNames) {
+      if (!resultsEl) {
+         return;
+      }
 
-   if (regions.length === 0) {
-      resultsEl.replaceChildren(
-         createEmptyState(APP_STRINGS.itinerary.emptyText.regions)
-      );
-      return;
-   }
+      if (regions.length === 0) {
+         resultsEl.replaceChildren(
+            createEmptyState(APP_STRINGS.itinerary.emptyText.regions)
+         );
+         return;
+      }
 
-   const fragment = document.createDocumentFragment();
+      const fragment = document.createDocumentFragment();
 
-   regions.forEach((region) => {
-      RegionRenderer.buildRegionRows(region, selectedExhibitNames).forEach((row) => {
-         fragment.appendChild(row);
+      regions.forEach((region) => {
+         RegionRenderer.buildRegionRows(region, selectedExhibitNames).forEach((row) => {
+            fragment.appendChild(row);
+         });
       });
-   });
 
-   resultsEl.replaceChildren(fragment);
-}
+      resultsEl.replaceChildren(fragment);
 
-export function bindRegionSelectionEvents(resultsEl, {
-   onToggleRegion,
-   onToggleExhibit,
-} = {}) {
-   if (!resultsEl) {
-      return;
    }
 
-   resultsEl.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-action]');
-
-      if (!button || !resultsEl.contains(button)) {
+   static bindRegionSelectionEvents(resultsEl, {
+      onToggleRegion,
+      onToggleExhibit,
+   } = {}) {
+      if (!resultsEl) {
          return;
       }
 
-      const action = button.dataset.action;
-      const regionName = button.dataset.region || '';
-      const exhibitName = button.dataset.exhibit || '';
+      resultsEl.addEventListener('click', (event) => {
+         const button = event.target.closest('[data-action]');
 
-      if (action === 'toggle-region') {
-         onToggleRegion?.(regionName);
-         return;
-      }
+         if (!button || !resultsEl.contains(button)) {
+            return;
+         }
 
-      if (action === 'toggle-exhibit') {
-         onToggleExhibit?.(regionName, exhibitName);
-      }
-   });
+         const action = button.dataset.action;
+         const regionName = button.dataset.region || '';
+         const exhibitName = button.dataset.exhibit || '';
+
+         if (action === 'toggle-region') {
+            onToggleRegion?.(regionName);
+            return;
+         }
+
+         if (action === 'toggle-exhibit') {
+            onToggleExhibit?.(regionName, exhibitName);
+         }
+      });
+   }
 }

@@ -1,4 +1,4 @@
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export class ShowPastItineraryChoicePrompt {
@@ -12,7 +12,7 @@ export class ShowPastItineraryChoicePrompt {
          return;
       }
 
-      const { showConfirmPopup = showItineraryConfirmPopup } = deps;
+      const { showConfirmPopup = ConfirmPopup.showItineraryConfirmPopup } = deps;
 
       showConfirmPopup({
          mountEl,

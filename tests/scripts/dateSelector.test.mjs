@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { createItineraryDateSelectorController } from '../../scripts/itinerary/selectors/dateSelector.js';
-import { buildDateSelectorView } from '../../scripts/itinerary/selectors/dateSelectorView.js';
+import { DateSelectorView } from '../../scripts/itinerary/selectors/dateSelectorView.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -29,8 +29,8 @@ test.describe('dateSelector', () => {
       },
    });
 
-   test('buildDateSelectorView renders the visit-date selector shell', () => {
-      const view = buildDateSelectorView();
+   test('DateSelectorView.buildDateSelectorView renders the visit-date selector shell', () => {
+      const view = DateSelectorView.buildDateSelectorView();
 
       assert.equal(view.root.className, 'itin-overlay');
       assert.equal(

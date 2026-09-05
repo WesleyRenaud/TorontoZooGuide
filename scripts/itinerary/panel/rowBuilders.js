@@ -1,4 +1,4 @@
-import { makeItemRow } from './components/itemRow.js';
+import { ItemRow } from './components/itemRow.js';
 import { RowPresentation } from './rowPresentation.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
@@ -56,7 +56,7 @@ export class RowBuilders {
          normalizeItems(items, normalizeItem)
       );
 
-      return preparedItems.map((item) => makeItemRow(buildRowProps(item)));
+      return preparedItems.map((item) => ItemRow.makeItemRow(buildRowProps(item)));
    }
 
    static buildNamedRows(

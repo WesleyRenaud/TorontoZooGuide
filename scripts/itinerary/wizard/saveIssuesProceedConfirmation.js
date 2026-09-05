@@ -1,4 +1,4 @@
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export class SaveIssuesProceedConfirmation {
@@ -7,7 +7,7 @@ export class SaveIssuesProceedConfirmation {
       message,
       onConfirm,
    } = {}) {
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title,
          message,
          confirmText: APP_STRINGS.itinerary.confirmation.proceedAnyway,

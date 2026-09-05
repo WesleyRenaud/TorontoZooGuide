@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeScheduledPill } from '../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ScheduledTimelinePill } from '../../../../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('makeScheduledPill adds extended layout for longer visits', () => {
-   const pill = makeScheduledPill('Lunch', 40, {
+test('Test_MakeScheduledPill_TestMakeScheduledPillAddsExtendedLayoutForLongerVisits_ExpectOk', () => {
+   const pill = ScheduledTimelinePill.makeScheduledPill('Lunch', 40, {
       startTime: '12:00',
       endTime: '12:40',
       menuItems: [
@@ -22,8 +22,8 @@ test('makeScheduledPill adds extended layout for longer visits', () => {
    assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
 });
 
-test('makeScheduledPill does not show time range for grouped pills', () => {
-   const pill = makeScheduledPill('White-Handed Gibbon + 29', 36, {
+test('Test_MakeScheduledPill_TestMakeScheduledPillDoesNotShowTimeRangeForGrouped_ExpectOk', () => {
+   const pill = ScheduledTimelinePill.makeScheduledPill('White-Handed Gibbon + 29', 36, {
       startTime: '10:31:30',
       endTime: '10:36:30',
       groupItems: [
@@ -44,8 +44,8 @@ test('makeScheduledPill does not show time range for grouped pills', () => {
    assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
 });
 
-test('makeScheduledPill keeps compact layout for short visits', () => {
-   const pill = makeScheduledPill('African Lion', 15, {
+test('Test_MakeScheduledPill_TestMakeScheduledPillKeepsCompactLayoutForShortVisits_ExpectOk', () => {
+   const pill = ScheduledTimelinePill.makeScheduledPill('African Lion', 15, {
       startTime: '1:00 PM',
       endTime: '1:15 PM',
       menuItems: [{ label: 'Unschedule', onAction: () => {} }],

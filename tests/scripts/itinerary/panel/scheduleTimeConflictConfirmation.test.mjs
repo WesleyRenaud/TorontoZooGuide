@@ -1,15 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   confirmSaveIssuesConflictSelection,
-   showScheduleTimeConflictConfirmation,
-   WILD_ENCOUNTER_TIME_CONFLICT,
-} from '../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
-import { ScheduleConflictCompatibility } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ScheduleTimeConflictConfirmation, WILD_ENCOUNTER_TIME_CONFLICT } from '../../../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
+import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -44,8 +40,8 @@ test.describe('scheduleTimeConflictConfirmation', () => {
       },
    });
 
-   test('showScheduleTimeConflictConfirmation renders the save issues notice popup', () => {
-      showScheduleTimeConflictConfirmation({
+   test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConfirmationRendersTheSaveIssuesNoticePopup_ExpectOk', () => {
+      ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
             type: WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
@@ -68,10 +64,10 @@ test.describe('scheduleTimeConflictConfirmation', () => {
       assert.ok(popup.querySelector('.itin-save-issues'));
    });
 
-   test('showScheduleTimeConflictConfirmation confirms close through proceed confirmation', () => {
+   test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConfirmationConfirmsCloseThroughProceedConfirmation_ExpectOk', () => {
       const cancelCalls = [];
 
-      showScheduleTimeConflictConfirmation({
+      ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
             type: WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
@@ -99,10 +95,10 @@ test.describe('scheduleTimeConflictConfirmation', () => {
       assert.equal(document.querySelector('.tzg-notice'), null);
    });
 
-   test('showScheduleTimeConflictConfirmation resolves selected conflicts on confirm', async () => {
+   test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConfirmationResolvesSelectedConflictsOnConfirm_ExpectOk', async () => {
       const confirmedItems = [];
 
-      showScheduleTimeConflictConfirmation({
+      ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
             type: WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
@@ -130,14 +126,14 @@ test.describe('scheduleTimeConflictConfirmation', () => {
       assert.equal(document.querySelector('.tzg-notice'), null);
    });
 
-   test('confirmSaveIssuesConflictSelection delegates to the resolution helper', async () => {
+   test('Test_ConfirmSaveIssuesConflictSelection_TestConfirmSaveIssuesConflictSelectionDelegatesToTheResolutionHelper_ExpectOk', async () => {
       const selection = ScheduleConflictCompatibility.createConflictSelection();
 
       selection.items.push(firstEncounter, secondEncounter);
 
       const resolvedItems = [];
 
-      const resolved = await confirmSaveIssuesConflictSelection(
+      const resolved = await ScheduleTimeConflictConfirmation.confirmSaveIssuesConflictSelection(
          [{
             selection,
             items: [firstEncounter, secondEncounter],

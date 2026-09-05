@@ -1,4 +1,4 @@
-import { makeItemRow } from './itemRow.js';
+import { ItemRow } from './itemRow.js';
 import { RemovedItemsPopupAdjustmentSpecs } from './removedItemsPopupAdjustmentSpecs.js';
 
 export class RemovedItemsPopupContentRows {
@@ -10,7 +10,7 @@ export class RemovedItemsPopupContentRows {
             return null;
          }
 
-         return makeItemRow(rowSpec);
+         return ItemRow.makeItemRow(rowSpec);
       });
    }
 }

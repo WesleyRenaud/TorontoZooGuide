@@ -1,13 +1,13 @@
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 
 const STORAGE_KEY = 'tzg.itineraryTransportations';
 
 function promptForAddAsTransportationSelection(row, proceed) {
-   showItineraryConfirmPopup({
+   ConfirmPopup.showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.addAsTransportationTitle,
       message: TransportationSelectorModel.buildAddAsTransportationMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.confirm,

@@ -1,9 +1,6 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
 import { WarningIcon } from '../../../assets/warningIcon.js';
-import {
-   createSelectorRowContent,
-   createSelectorTextColumn,
-} from '../base/resultRenderer.js';
+import { ResultRenderer } from '../base/resultRenderer.js';
 import {
    buildAnimalImageSrc,
    getAnimalEnclosureName,
@@ -28,60 +25,63 @@ function createLikelihoodWarning(level) {
    return warning;
 }
 
-export function renderAnimalSelectorRowLeft(row) {
-   const species = getAnimalSpecies(row);
-   const subtitle = getAnimalSubtitle(row);
-   const imageSrc = buildAnimalImageSrc(row);
+export class View {
+   static renderAnimalSelectorRowLeft(row) {
+      const species = getAnimalSpecies(row);
+      const subtitle = getAnimalSubtitle(row);
+      const imageSrc = buildAnimalImageSrc(row);
 
-   const titleWrap = document.createElement('div');
-   titleWrap.className = 'itin-animal-title-wrap';
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'itin-animal-title-wrap';
 
-   const titleEl = CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
-      species,
-      enclosureName: getAnimalEnclosureName(row),
-      className: 'animal-result-species',
-   });
+      const titleEl = CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
+         species,
+         enclosureName: getAnimalEnclosureName(row),
+         className: 'animal-result-species',
+      });
 
-   titleWrap.appendChild(titleEl);
+      titleWrap.appendChild(titleEl);
 
-   const warning = createLikelihoodWarning(getAnimalLikelihoodLevel(row));
+      const warning = createLikelihoodWarning(getAnimalLikelihoodLevel(row));
 
-   if (warning) {
-      titleWrap.appendChild(warning);
+      if (warning) {
+         titleWrap.appendChild(warning);
+      }
+
+      return ResultRenderer.createSelectorRowContent({
+         imageSrc,
+         imageAlt: APP_STRINGS.itinerary.itemPhoto(species),
+         textColumnEl: ResultRenderer.createSelectorTextColumn({
+            subtitle,
+            titleNode: titleWrap,
+         }),
+      });
+
    }
 
-   return createSelectorRowContent({
-      imageSrc,
-      imageAlt: APP_STRINGS.itinerary.itemPhoto(species),
-      textColumnEl: createSelectorTextColumn({
-         subtitle,
-         titleNode: titleWrap,
-      }),
-   });
-}
+   static renderIncludeOffDisplayToggle({ bodyEl, rerunSearch, onChange }) {
+      const toggleWrap = document.createElement('div');
+      toggleWrap.className = 'itin-selector-toggle-wrap';
 
-export function renderIncludeOffDisplayToggle({ bodyEl, rerunSearch, onChange }) {
-   const toggleWrap = document.createElement('div');
-   toggleWrap.className = 'itin-selector-toggle-wrap';
+      const label = document.createElement('label');
+      label.className = 'toggle-row itin-selector-toggle-row';
 
-   const label = document.createElement('label');
-   label.className = 'toggle-row itin-selector-toggle-row';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = false;
 
-   const checkbox = document.createElement('input');
-   checkbox.type = 'checkbox';
-   checkbox.checked = false;
+      const text = document.createElement('span');
+      text.textContent = APP_STRINGS.itinerary.selectors.includeOffDisplayAnimals;
 
-   const text = document.createElement('span');
-   text.textContent = APP_STRINGS.itinerary.selectors.includeOffDisplayAnimals;
+      checkbox.addEventListener('change', () => {
+         onChange?.(checkbox.checked);
+         rerunSearch?.();
+      });
 
-   checkbox.addEventListener('change', () => {
-      onChange?.(checkbox.checked);
-      rerunSearch?.();
-   });
+      label.appendChild(checkbox);
+      label.appendChild(text);
+      toggleWrap.appendChild(label);
 
-   label.appendChild(checkbox);
-   label.appendChild(text);
-   toggleWrap.appendChild(label);
-
-   bodyEl.insertBefore(toggleWrap, bodyEl.querySelector('.itin-search-input'));
+      bodyEl.insertBefore(toggleWrap, bodyEl.querySelector('.itin-search-input'));
+   }
 }

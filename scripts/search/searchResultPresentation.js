@@ -1,7 +1,7 @@
 import { DetailImageSrc } from '../assets/detailImageSrc.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
-import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
+import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
 import { GuardiansTalkSelectorModel } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { WildEncounterSelectorModel } from '../itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
@@ -108,7 +108,7 @@ export class SearchResultPresentation {
    } = {}) {
       const getImageName = presentation.getImageName ?? presentation.getTitle;
 
-      return createDefaultSelectorRowLeftRenderer({
+      return ResultRenderer.createDefaultSelectorRowLeftRenderer({
          getTitle: presentation.getTitle,
          getTitleSuffix: presentation.getTitleSuffix,
          getSubtitle: presentation.getSubtitle,

@@ -150,47 +150,49 @@ function buildSectionRows(
    });
 }
 
-export function buildRemovedItemsPopupSections({
-   added,
-   removed,
-   unscheduled,
-   reducedVisibility,
-   improvedVisibility,
-   adjustments,
-   onViewAlternatives,
-   removePopupOnly,
-   onToggleKeepAnimal,
-   isKeepAnimalSelected,
-   onToggleKeepAttraction,
-   isKeepAttractionSelected,
-} = {}) {
-   const keepOverrideHandlers = {
-      onToggleKeepAnimal,
-      isKeepAnimalSelected,
-      onToggleKeepAttraction,
-      isKeepAttractionSelected,
-   };
-
-   return RemovedItemsPopupSectionSpecs.getRemovedItemsPopupSectionSpecs({
+export class RemovedItemsPopupContent {
+   static buildRemovedItemsPopupSections({
       added,
       removed,
       unscheduled,
       reducedVisibility,
       improvedVisibility,
       adjustments,
-   })
-      .map((section) => makeSection(
-         section.title,
-         section.subtitle,
-         buildSectionRows(
-            section.items,
-            section.rowBuilder,
-            section.stepKey,
-            onViewAlternatives,
-            removePopupOnly,
-            section.showViewAlternatives ?? true,
-            RemovedItemsPopupSectionSpecs.resolveKeepOverride(section, keepOverrideHandlers)
-         )
-      ))
-      .filter(Boolean);
+      onViewAlternatives,
+      removePopupOnly,
+      onToggleKeepAnimal,
+      isKeepAnimalSelected,
+      onToggleKeepAttraction,
+      isKeepAttractionSelected,
+   } = {}) {
+      const keepOverrideHandlers = {
+         onToggleKeepAnimal,
+         isKeepAnimalSelected,
+         onToggleKeepAttraction,
+         isKeepAttractionSelected,
+      };
+
+      return RemovedItemsPopupSectionSpecs.getRemovedItemsPopupSectionSpecs({
+         added,
+         removed,
+         unscheduled,
+         reducedVisibility,
+         improvedVisibility,
+         adjustments,
+      })
+         .map((section) => makeSection(
+            section.title,
+            section.subtitle,
+            buildSectionRows(
+               section.items,
+               section.rowBuilder,
+               section.stepKey,
+               onViewAlternatives,
+               removePopupOnly,
+               section.showViewAlternatives ?? true,
+               RemovedItemsPopupSectionSpecs.resolveKeepOverride(section, keepOverrideHandlers)
+            )
+         ))
+         .filter(Boolean);
+   }
 }

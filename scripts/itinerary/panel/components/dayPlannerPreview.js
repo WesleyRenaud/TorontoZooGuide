@@ -2,24 +2,15 @@ import { DayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
 import { DayPlannerActionFeedbackBanner } from './dayPlannerActionFeedbackBanner.js';
 import { DayPlannerControls } from './dayPlannerControls.js';
 import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
-import {
-   buildScheduledItemRowsContext,
-   buildScheduledItinerary,
-   buildUnscheduledItinerary,
-} from '../dayPlannerScheduledItems.js';
-import {
-   appendScheduledItems,
-   appendTimelineBoundaryLabel,
-   makeTimelineRow,
-   makeUnavailableMessage,
-} from './dayPlannerTimeline.js';
+import { DayPlannerScheduledItems } from '../dayPlannerScheduledItems.js';
+import { DayPlannerTimeline } from './dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import { ScheduleItemButton } from './scheduleItemButton.js';
-import { makeSection } from './section.js';
+import { Section } from './section.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 import { Constants } from '../../../shared/constants.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -69,7 +60,7 @@ function makeItemsListSection(
 
    wrapper.appendChild(title);
    sectionConfigs.forEach((sectionConfig) => {
-      wrapper.appendChild(makeSection({
+      wrapper.appendChild(Section.makeSection({
          ...sectionConfig,
          showEditButton: resolveSectionShowEditButton(sectionConfig.key, {
             showEditButton,
@@ -176,175 +167,177 @@ function buildTimelineSlotStarts(halfHourSlotStarts, closeMinutes) {
    return slotStarts;
 }
 
-export function makeDayPlannerPreview(
-   zooHours = null,
-   itinerary = {},
-   timeHandlers = {},
-   {
+export class DayPlannerPreview {
+   static makeDayPlannerPreview(
+      zooHours = null,
+      itinerary = {},
+      timeHandlers = {},
+      {
       onScheduleItemClick = null,
       onRebuildScheduleClick = null,
       onUnscheduleAllItemsClick = null,
       scheduleHandlers = {},
-   } = {}
-) {
-   const strings = {
-      ...APP_STRINGS.itinerary.dayPlanner,
-      timeOrderInvalid: APP_STRINGS.itinerary.errors.timeOrderInvalid,
-      departureLabel: labels.departure,
-   };
-   const hours = zooHours && typeof zooHours === 'object'
-      ? zooHours
-      : {};
-   const root = el('div', 'itinerary-day-planner-content');
-   const section = el('section', 'itinerary-day-module');
-   const header = el('div', 'itinerary-day-module-header');
-   const headerAside = el('div', 'itinerary-day-module-header-aside');
-   const scheduleActions = el('div', 'itinerary-day-module-schedule-actions');
-   const titleWrap = el('div');
-   const title = el('h3', '', strings.title);
-   const date = Format.formatISODateFull(hours.date, strings.date);
-   const timeline = el('div', 'itinerary-day-timeline');
+      } = {}
+   ) {
+      const strings = {
+         ...APP_STRINGS.itinerary.dayPlanner,
+         timeOrderInvalid: APP_STRINGS.itinerary.errors.timeOrderInvalid,
+         departureLabel: labels.departure,
+      };
+      const hours = zooHours && typeof zooHours === 'object'
+         ? zooHours
+         : {};
+      const root = el('div', 'itinerary-day-planner-content');
+      const section = el('section', 'itinerary-day-module');
+      const header = el('div', 'itinerary-day-module-header');
+      const headerAside = el('div', 'itinerary-day-module-header-aside');
+      const scheduleActions = el('div', 'itinerary-day-module-schedule-actions');
+      const titleWrap = el('div');
+      const title = el('h3', '', strings.title);
+      const date = Format.formatISODateFull(hours.date, strings.date);
+      const timeline = el('div', 'itinerary-day-timeline');
 
-   section.setAttribute('aria-label', strings.aria);
-   timeline.setAttribute('aria-hidden', 'true');
+      section.setAttribute('aria-label', strings.aria);
+      timeline.setAttribute('aria-hidden', 'true');
 
-   titleWrap.appendChild(title);
-   header.appendChild(titleWrap);
-   headerAside.appendChild(
-      DayPlannerControls.makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
-   );
-   header.appendChild(headerAside);
+      titleWrap.appendChild(title);
+      header.appendChild(titleWrap);
+      headerAside.appendChild(
+         DayPlannerControls.makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
+      );
+      header.appendChild(headerAside);
 
-   const earlyAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.earlyAdmissionTime);
-   const openMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.openTime);
-   const lastAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.lastAdmissionTime);
-   const closeMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.closeTime);
-   const timelineStartMinutes = DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
-   const halfHourSlotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
-   const itineraryTimeMarkers = DayPlannerTimelineMarkers.buildItineraryTimeMarkers(itinerary, strings);
-   const timelineSlotStarts = buildTimelineSlotStarts(
-      halfHourSlotStarts,
-      closeMinutes
-   );
-   const markersByAnchorSlot = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
-      itineraryTimeMarkers,
-      timelineSlotStarts,
-      closeMinutes
-   );
-   const scheduledRowsContext = buildScheduledItemRowsContext(
-      itinerary,
-      timelineSlotStarts,
-      closeMinutes
-   );
-   const scheduledPillRenderGroupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor(
-      [...scheduledRowsContext.itemsByStart.values()].flat(),
-      buildTimelinePointPillMarkers({
+      const earlyAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.earlyAdmissionTime);
+      const openMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.openTime);
+      const lastAdmissionMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.lastAdmissionTime);
+      const closeMinutes = DayPlannerSchedule.parseClockTimeMinutes(hours.closeTime);
+      const timelineStartMinutes = DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
+      const halfHourSlotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
+      const itineraryTimeMarkers = DayPlannerTimelineMarkers.buildItineraryTimeMarkers(itinerary, strings);
+      const timelineSlotStarts = buildTimelineSlotStarts(
+         halfHourSlotStarts,
+         closeMinutes
+      );
+      const markersByAnchorSlot = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
+         itineraryTimeMarkers,
+         timelineSlotStarts,
+         closeMinutes
+      );
+      const scheduledRowsContext = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+         itinerary,
+         timelineSlotStarts,
+         closeMinutes
+      );
+      const scheduledPillRenderGroupsByAnchor = ScheduledPillRenderPlan.planScheduledPillRenderGroupsByAnchor(
+         [...scheduledRowsContext.itemsByStart.values()].flat(),
+         buildTimelinePointPillMarkers({
+            earlyAdmissionMinutes,
+            openMinutes,
+            lastAdmissionMinutes,
+            closeMinutes,
+            itineraryTimeMarkers,
+         })
+      );
+
+      const scheduleActionOptions = {
+         onScheduleItemClick,
+         onRebuildScheduleClick,
+         onUnscheduleAllItemsClick,
+         strings,
+      };
+
+      if (timelineSlotStarts.length === 0) {
+         section.appendChild(header);
+         appendScheduleActionButtons(scheduleActions, scheduleActionOptions);
+
+         if (scheduleActions.children.length > 0) {
+            section.appendChild(scheduleActions);
+         }
+
+         section.appendChild(DayPlannerTimeline.makeUnavailableMessage(strings.hoursUnavailable));
+         root.appendChild(section);
+         return root;
+      }
+
+      const pillContext = {
          earlyAdmissionMinutes,
          openMinutes,
          lastAdmissionMinutes,
          closeMinutes,
-         itineraryTimeMarkers,
-      })
-   );
+      };
 
-   const scheduleActionOptions = {
-      onScheduleItemClick,
-      onRebuildScheduleClick,
-      onUnscheduleAllItemsClick,
-      strings,
-   };
+      timelineSlotStarts.forEach((slotStart, slotIndex) => {
+         const nextSlotStart = timelineSlotStarts[slotIndex + 1];
+         const slotSpanMinutes = Number.isFinite(nextSlotStart)
+            ? nextSlotStart - slotStart
+            : Constants.TIMELINE_SLOT_MINUTES;
+         const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
+         const [timeCell, gridLine] = DayPlannerTimeline.makeTimelineRow(
+            DayPlannerSchedule.formatMinutesAsClockTime(slotStart),
+            slotSpanMinutes
+         );
 
-   if (timelineSlotStarts.length === 0) {
-      section.appendChild(header);
+         timeline.appendChild(timeCell);
+         timeline.appendChild(gridLine);
+
+         if (pillLabel) {
+            DayPlannerTimeline.appendTimelineBoundaryLabel(timeCell, pillLabel);
+         }
+
+         DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
+            gridLine,
+            markersByAnchorSlot,
+            slotStart,
+            timeHandlers,
+            strings,
+            itinerary.itineraryConfig?.visitBoundaryEventTypes
+         );
+         DayPlannerTimeline.appendScheduledItems(
+            gridLine,
+            scheduledPillRenderGroupsByAnchor.get(slotStart),
+            scheduleHandlers,
+            strings
+         );
+      });
+
       appendScheduleActionButtons(scheduleActions, scheduleActionOptions);
+      section.appendChild(header);
 
       if (scheduleActions.children.length > 0) {
          section.appendChild(scheduleActions);
       }
 
-      section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
+      section.appendChild(timeline);
       root.appendChild(section);
+
+      const scheduledSection = makeItemsListSection(
+         DayPlannerScheduledItems.buildScheduledItinerary(itinerary, scheduledRowsContext),
+         strings.scheduledTitle,
+         {
+            editButtonSectionKeys: SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
+            onUnscheduleItem: scheduleHandlers.onUnscheduleItineraryItem,
+            onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
+            splitTransportationSequences: true,
+         }
+      );
+      const unscheduledSection = makeItemsListSection(
+         DayPlannerScheduledItems.buildUnscheduledItinerary(itinerary, scheduledRowsContext),
+         strings.unscheduledTitle,
+         {
+            onScheduleItem: scheduleHandlers.onScheduleItineraryItem,
+            onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
+            sectionKeys: SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
+         }
+      );
+
+      if (scheduledSection) {
+         root.appendChild(scheduledSection);
+      }
+
+      if (unscheduledSection) {
+         root.appendChild(unscheduledSection);
+      }
+
       return root;
    }
-
-   const pillContext = {
-      earlyAdmissionMinutes,
-      openMinutes,
-      lastAdmissionMinutes,
-      closeMinutes,
-   };
-
-   timelineSlotStarts.forEach((slotStart, slotIndex) => {
-      const nextSlotStart = timelineSlotStarts[slotIndex + 1];
-      const slotSpanMinutes = Number.isFinite(nextSlotStart)
-         ? nextSlotStart - slotStart
-         : Constants.TIMELINE_SLOT_MINUTES;
-      const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
-      const [timeCell, gridLine] = makeTimelineRow(
-         DayPlannerSchedule.formatMinutesAsClockTime(slotStart),
-         slotSpanMinutes
-      );
-
-      timeline.appendChild(timeCell);
-      timeline.appendChild(gridLine);
-
-      if (pillLabel) {
-         appendTimelineBoundaryLabel(timeCell, pillLabel);
-      }
-
-      DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
-         gridLine,
-         markersByAnchorSlot,
-         slotStart,
-         timeHandlers,
-         strings,
-         itinerary.itineraryConfig?.visitBoundaryEventTypes
-      );
-      appendScheduledItems(
-         gridLine,
-         scheduledPillRenderGroupsByAnchor.get(slotStart),
-         scheduleHandlers,
-         strings
-      );
-   });
-
-   appendScheduleActionButtons(scheduleActions, scheduleActionOptions);
-   section.appendChild(header);
-
-   if (scheduleActions.children.length > 0) {
-      section.appendChild(scheduleActions);
-   }
-
-   section.appendChild(timeline);
-   root.appendChild(section);
-
-   const scheduledSection = makeItemsListSection(
-      buildScheduledItinerary(itinerary, scheduledRowsContext),
-      strings.scheduledTitle,
-      {
-         editButtonSectionKeys: SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
-         onUnscheduleItem: scheduleHandlers.onUnscheduleItineraryItem,
-         onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
-         splitTransportationSequences: true,
-      }
-   );
-   const unscheduledSection = makeItemsListSection(
-      buildUnscheduledItinerary(itinerary, scheduledRowsContext),
-      strings.unscheduledTitle,
-      {
-         onScheduleItem: scheduleHandlers.onScheduleItineraryItem,
-         onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
-         sectionKeys: SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
-      }
-   );
-
-   if (scheduledSection) {
-      root.appendChild(scheduledSection);
-   }
-
-   if (unscheduledSection) {
-      root.appendChild(unscheduledSection);
-   }
-
-   return root;
 }

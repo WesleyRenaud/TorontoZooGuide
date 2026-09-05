@@ -2,12 +2,9 @@ import { ItinerarySelectorApi } from '../../api/itinerarySelectorApi.js';
 import { DraftStorage } from '../draftStorage.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelector/regionSelection.js';
-import { buildRegionSelectorShell } from './regionSelector/shell.js';
-import { createRegionSelectorState } from './regionSelector/state.js';
-import {
-   bindRegionSelectionEvents,
-   renderRegionSelectionView,
-} from './regionSelector/view.js';
+import { Shell } from './regionSelector/shell.js';
+import { State } from './regionSelector/state.js';
+import { View } from './regionSelector/view.js';
 import { StorageKeys } from '../storageKeys.js';
 
 export function shouldSkipRegionSelectionSync({
@@ -23,7 +20,7 @@ export function shouldSkipRegionSelectionSync({
 }
 
 function createRegionSelectorElements() {
-   const shell = buildRegionSelectorShell();
+   const shell = Shell.buildRegionSelectorShell();
 
    return {
       rootEl: shell.root,
@@ -43,7 +40,7 @@ export function createItineraryRegionSelectorController({
    onClose,
 } = {}) {
    let elements = null;
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    let exhibitFingerprintAtShow = '';
    let selectionChangedSinceShow = false;
 
@@ -64,7 +61,7 @@ export function createItineraryRegionSelectorController({
          return;
       }
 
-      renderRegionSelectionView(
+      View.renderRegionSelectionView(
          elements.resultsEl,
          state.getRegions(),
          state.getSelectedExhibitNamesSet()
@@ -112,7 +109,7 @@ export function createItineraryRegionSelectorController({
    }
 
    function bindEvents() {
-      bindRegionSelectionEvents(elements?.resultsEl, {
+      View.bindRegionSelectionEvents(elements?.resultsEl, {
          onToggleRegion: handleRegionToggle,
          onToggleExhibit: handleExhibitToggle,
       });

@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { createSelectorElements } from '../../scripts/itinerary/selectors/selectorControllerElements.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { SelectorControllerElements } from '../../../../scripts/itinerary/selectors/selectorControllerElements.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('createSelectorElements', () => {
    installDomTestHooks();
 
-   test('builds the selector shell and maps element references', () => {
-      const elements = createSelectorElements({
+   test('Test_Builds_TestBuildsTheSelectorShellAndMapsElementReferences_ExpectOk', () => {
+      const elements = SelectorControllerElements.createSelectorElements({
          topTitle: 'Top title',
          h1: 'Heading',
          subtitle: 'Subtitle',
@@ -44,8 +44,8 @@ test.describe('createSelectorElements', () => {
       );
    });
 
-   test('omits the next button when hideNextButton is true', () => {
-      const elements = createSelectorElements({
+   test('Test_Omits_TestOmitsTheNextButtonWhenHideNextButtonIsTrue_ExpectOk', () => {
+      const elements = SelectorControllerElements.createSelectorElements({
          topTitle: 'Top title',
          h1: 'Heading',
          subtitle: 'Subtitle',

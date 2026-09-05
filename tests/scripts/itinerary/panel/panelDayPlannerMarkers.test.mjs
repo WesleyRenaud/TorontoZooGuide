@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
-import { Rows } from '../../scripts/itinerary/panel/rows.js';
+import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
+import { Rows } from '../../../../scripts/itinerary/panel/rows.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -17,14 +17,14 @@ import {
    textFor,
    timelinePillTexts,
    timelineScheduledPillTexts,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../../helpers/panelRowsTestSetup.mjs';
 
 
 test.describe('itinerary day planner preview markers', () => {
    installPanelRowsTestHooks();
 
-   test('day planner starts at early admission when available', () => {
-      const planner = makeDayPlannerPreview({
+   test('Test_Day_TestDayPlannerStartsAtEarlyAdmissionWhenAvailable_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview({
          date: '2026-06-20',
          earlyAdmissionTime: '09:00',
          openTime: '09:30',
@@ -40,9 +40,9 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('arrival marker remove menu clears arrival time through handler', () => {
+   test('Test_Arrival_TestArrivalMarkerRemoveMenuClearsArrivalTimeThrough_ExpectOk', () => {
       const arrivalRemovals = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -75,10 +75,10 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner header clear buttons remove arrival and departure times', async () => {
+   test('Test_Day_TestDayPlannerHeaderClearButtonsRemoveArrivalAnd_ExpectOk', async () => {
       const arrivalChanges = [];
       const departureChanges = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -116,8 +116,8 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner header disables clear buttons when times are unset', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerHeaderDisablesClearButtonsWhenTimes_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -140,7 +140,7 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner departure input rejects invalid picker value on outside click', async () => {
+   test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', async () => {
       const departureChanges = [];
       const pickerInstances = [];
    
@@ -170,7 +170,7 @@ test.describe('itinerary day planner preview markers', () => {
          return instance;
       };
    
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -204,9 +204,9 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('departure marker remove menu clears departure time through handler', () => {
+   test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_ExpectOk', () => {
       const departureRemovals = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-15',
             openTime: '09:30',
@@ -234,8 +234,8 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner keeps scheduled items visible when they start at arrival time', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -271,8 +271,8 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner stacks departure marker and close pills at the same time', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-15',
             openTime: '09:30',
@@ -302,8 +302,8 @@ test.describe('itinerary day planner preview markers', () => {
    });
    
 
-   test('day planner positions off-slot arrival and departure between half-hour lines', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerPositionsOffSlotArrivalAndDeparture_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',

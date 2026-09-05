@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
-import { Rows } from '../../scripts/itinerary/panel/rows.js';
+import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
+import { Rows } from '../../../../scripts/itinerary/panel/rows.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -17,15 +17,15 @@ import {
    textFor,
    timelinePillTexts,
    timelineScheduledPillTexts,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../../helpers/panelRowsTestSetup.mjs';
 
 
 test.describe('itinerary day planner preview scheduled', () => {
    installPanelRowsTestHooks();
 
-   test('scheduled generic event pill renders on the timeline with remove menu', () => {
+   test('Test_Scheduled_TestScheduledGenericEventPillRendersOnTheTimeline_ExpectOk', () => {
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -74,10 +74,10 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('scheduled guardians talk renders as timeline event card with remove menu only', () => {
+   test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -136,10 +136,10 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
-   test('scheduled wild encounter renders as timeline event card with remove menu only', () => {
+   test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -193,10 +193,10 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
-   test('scheduled attraction renders as timeline event card with unschedule and remove', () => {
+   test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -266,10 +266,10 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
-   test('scheduled transportation renders as timeline event card with stations', () => {
+   test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -349,8 +349,8 @@ test.describe('itinerary day planner preview scheduled', () => {
       }]);
    });
 
-   test('scheduled pure transportation timeline menu omits unschedule', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Scheduled_TestScheduledPureTransportationTimelineMenuOmitsUnschedule_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -408,8 +408,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
 
 
-   test('pre-open wild encounter keeps its start slot before zoo open', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Pre_TestPreOpenWildEncounterKeepsItsStartSlot_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-07-06',
             openTime: '09:30',
@@ -444,10 +444,10 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('scheduled animal pill menu offers unschedule and remove', () => {
+   test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -504,10 +504,10 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('scheduled list rows show unschedule and remove buttons for animals and attractions only', () => {
+   test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectOk', () => {
       const unscheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -598,8 +598,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner stacks zoo hours and arrival markers at the same time', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerStacksZooHoursAndArrivalMarkers_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -625,8 +625,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner renders scheduled guardians talks and wild encounters', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -726,8 +726,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner positions off-slot scheduled items between half-hour lines', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerPositionsOffSlotScheduledItemsBetween_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -758,8 +758,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner renders scheduled duration as a larger pill', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -804,8 +804,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner keeps short scheduled visits readable', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerKeepsShortScheduledVisitsReadable_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -840,8 +840,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner merges overlapping scheduled pills into carousel groups', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerMergesOverlappingScheduledPillsIntoCarousel_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -876,8 +876,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('day planner keeps scheduled pills within the timeline grid width', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerKeepsScheduledPillsWithinTheTimeline_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',

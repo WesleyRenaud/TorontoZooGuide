@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildScheduledItemRowsContext, buildScheduledItinerary } from '../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
+import { DayPlannerScheduledItems } from '../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
 import { DayPlannerScheduledPillOptions } from '../../../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
@@ -77,7 +77,7 @@ test('Test_ResolveGroupedScheduledPillOptions_TestGroupedPills_ExpectMergedMenus
 });
 
 test('Test_BuildScheduledItemRowsContext_TestGenericEvents_ExpectOnTimeline', () => {
-   const context = buildScheduledItemRowsContext(
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
          animals: [],
          attractions: [],
@@ -186,7 +186,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestScheduledAnimals', () => {
    installDomTestHooks();
 
    test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct', () => {
-      const context = buildScheduledItemRowsContext(
+      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
          {
             animals: [
                {
@@ -227,7 +227,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestScheduledAnimals', () => {
    });
 
    test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepScheduled', () => {
-      const context = buildScheduledItemRowsContext(
+      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
          {
             animals: [
                {
@@ -265,7 +265,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestScheduledAnimals', () => {
 });
 
 test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
-   assert.deepEqual(buildScheduledItinerary({}), {
+   assert.deepEqual(DayPlannerScheduledItems.buildScheduledItinerary({}), {
       animals: [],
       attractions: [],
       transportations: [],
@@ -278,7 +278,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestTransportation', () => {
    installDomTestHooks();
 
    test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () => {
-      const context = buildScheduledItemRowsContext(
+      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
          {
             animals: [],
             attractions: [],
@@ -328,7 +328,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestTransportation', () => {
    });
 
    test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills', () => {
-      const context = buildScheduledItemRowsContext(
+      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
          {
             animals: [],
             attractions: [],
@@ -409,7 +409,7 @@ test.describe('Test_BuildScheduledItemRowsContext_TestTransportation', () => {
 });
 
 test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted', () => {
-   const context = buildScheduledItemRowsContext(
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
          animals: [],
          attractions: [],
@@ -435,7 +435,7 @@ test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted
 });
 
 test('Test_BuildScheduledItemRowsContext_TestDeletedGuardiansTalks_ExpectOmitted', () => {
-   const context = buildScheduledItemRowsContext(
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
          animals: [],
          attractions: [],

@@ -1,6 +1,6 @@
 import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
-import { showItineraryConfirmPopup } from './components/confirmPopup.js';
-import { getItineraryOverlayMountEl } from './components/popup.js';
+import { ConfirmPopup } from './components/confirmPopup.js';
+import { Popup } from './components/popup.js';
 import { el } from './dom.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { Format } from './format.js';
@@ -179,41 +179,6 @@ const BUILD_WARNING_SECTION_LIST_BUILDERS = Object.freeze([
    buildFixedTimeItemLongWaitSections,
 ]);
 
-export function getItineraryBuildWarningTypes(issues = []) {
-   const warningTypes = itineraryBuildWarningIssueTypes();
-   const presentTypes = new Set(
-      issues
-         .map(issueType)
-         .filter((type) => warningTypes.includes(type))
-   );
-
-   return warningTypes.filter((type) => presentTypes.has(type));
-}
-
-export function buildConfirmedOptionsFromBuildWarnings(issues = []) {
-   const confirmFlags = buildWarningConfirmFlags();
-
-   return getItineraryBuildWarningTypes(issues).reduce(
-      (flags, type) => ({
-         ...flags,
-         ...confirmFlags[type],
-      }),
-      {}
-   );
-}
-
-export function buildItineraryBuildWarningSections(issues = []) {
-   const strings = APP_STRINGS.itinerary.confirmation;
-
-   return BUILD_WARNING_SECTION_LIST_BUILDERS.flatMap((buildSections) => (
-      buildSections(issues, strings)
-   ));
-}
-
-export function hasMultipleItineraryBuildWarnings(issues = []) {
-   return buildItineraryBuildWarningSections(issues).length > 1;
-}
-
 function createBuildWarningsContent(sections) {
    const content = el('div', 'itin-build-warnings tzg-popup-confirm-body');
 
@@ -229,28 +194,69 @@ function createBuildWarningsContent(sections) {
    return content;
 }
 
-export function showItineraryBuildWarningsConfirmation({
-   issues = [],
-   onConfirm,
-   onCancel,
-   mountEl = getItineraryOverlayMountEl() ?? document.body,
-} = {}) {
-   const sections = buildItineraryBuildWarningSections(issues);
+export class ItineraryBuildWarningsConfirmation {
+   static getItineraryBuildWarningTypes(issues = []) {
+      const warningTypes = itineraryBuildWarningIssueTypes();
+      const presentTypes = new Set(
+         issues
+            .map(issueType)
+            .filter((type) => warningTypes.includes(type))
+      );
 
-   if (sections.length === 0) {
-      onCancel?.();
-      return;
+      return warningTypes.filter((type) => presentTypes.has(type));
+
    }
 
-   const strings = APP_STRINGS.itinerary.confirmation;
+   static buildConfirmedOptionsFromBuildWarnings(issues = []) {
+      const confirmFlags = buildWarningConfirmFlags();
 
-   showItineraryConfirmPopup({
-      title: strings.saveIssuesTitle,
-      bodyContent: createBuildWarningsContent(sections),
-      confirmText: strings.saveIssuesButton,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      mountEl,
+      return ItineraryBuildWarningsConfirmation.getItineraryBuildWarningTypes(issues).reduce(
+         (flags, type) => ({
+            ...flags,
+            ...confirmFlags[type],
+         }),
+         {}
+      );
+
+   }
+
+   static buildItineraryBuildWarningSections(issues = []) {
+      const strings = APP_STRINGS.itinerary.confirmation;
+
+      return BUILD_WARNING_SECTION_LIST_BUILDERS.flatMap((buildSections) => (
+         buildSections(issues, strings)
+      ));
+
+   }
+
+   static hasMultipleItineraryBuildWarnings(issues = []) {
+      return ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections(issues).length > 1;
+
+   }
+
+   static showItineraryBuildWarningsConfirmation({
+      issues = [],
       onConfirm,
       onCancel,
-   });
+      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+   } = {}) {
+      const sections = ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections(issues);
+
+      if (sections.length === 0) {
+         onCancel?.();
+         return;
+      }
+
+      const strings = APP_STRINGS.itinerary.confirmation;
+
+      ConfirmPopup.showItineraryConfirmPopup({
+         title: strings.saveIssuesTitle,
+         bodyContent: createBuildWarningsContent(sections),
+         confirmText: strings.saveIssuesButton,
+         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         mountEl,
+         onConfirm,
+         onCancel,
+      });
+   }
 }
