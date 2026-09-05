@@ -35,33 +35,35 @@ function normalizeClosedExhibitKeys(closedExhibits) {
       : [];
 }
 
-export function setClosedExhibitOverlaysVisible(closedExhibits) {
-   const overlays = getClosedExhibitOverlays();
-   const closedExhibitKeys = normalizeClosedExhibitKeys(closedExhibits);
+export class ClosedExhibitOverlay {
+   static setClosedExhibitOverlaysVisible(closedExhibits) {
+      const overlays = getClosedExhibitOverlays();
+      const closedExhibitKeys = normalizeClosedExhibitKeys(closedExhibits);
 
-   hideClosedExhibitOverlays(overlays);
+      hideClosedExhibitOverlays(overlays);
 
-   closedExhibitKeys.forEach((key) => {
-      showClosedExhibitOverlay(key);
-   });
-}
-
-export async function syncClosedExhibitOverlays(sources, ctx) {
-   const src = sources.closedExhibit;
-
-   if (!src?.fetch) {
-      setClosedExhibitOverlaysVisible([]);
-      return [];
+      closedExhibitKeys.forEach((key) => {
+         showClosedExhibitOverlay(key);
+      });
    }
 
-   try {
-      const rows = await src.fetch(ctx);
-      const closedExhibits = normalizeClosedExhibitKeys(rows);
+   static async syncClosedExhibitOverlays(sources, ctx) {
+      const src = sources.closedExhibit;
 
-      setClosedExhibitOverlaysVisible(closedExhibits);
-      return closedExhibits;
-   } catch {
-      setClosedExhibitOverlaysVisible([]);
-      return [];
+      if (!src?.fetch) {
+         ClosedExhibitOverlay.setClosedExhibitOverlaysVisible([]);
+         return [];
+      }
+
+      try {
+         const rows = await src.fetch(ctx);
+         const closedExhibits = normalizeClosedExhibitKeys(rows);
+
+         ClosedExhibitOverlay.setClosedExhibitOverlaysVisible(closedExhibits);
+         return closedExhibits;
+      } catch {
+         ClosedExhibitOverlay.setClosedExhibitOverlaysVisible([]);
+         return [];
+      }
    }
 }

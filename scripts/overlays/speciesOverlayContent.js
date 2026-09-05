@@ -51,30 +51,32 @@ function appendIfPresent(parent, child) {
    }
 }
 
-export function buildSpeciesContent(animal) {
-   const fragment = document.createDocumentFragment();
-   const species = readText(animal?.species);
-   const latinName = readText(animal?.latin_name);
-   const titleLine = AnimalDisplayLines.formatSpeciesEnclosureLine(species, AnimalSelectorModel.getAnimalEnclosureName(animal));
-   const exhibitLine = AnimalSelectorModel.getAnimalExhibit(animal);
+export class SpeciesOverlayContent {
+   static buildSpeciesContent(animal) {
+      const fragment = document.createDocumentFragment();
+      const species = readText(animal?.species);
+      const latinName = readText(animal?.latin_name);
+      const titleLine = AnimalDisplayLines.formatSpeciesEnclosureLine(species, AnimalSelectorModel.getAnimalEnclosureName(animal));
+      const exhibitLine = AnimalSelectorModel.getAnimalExhibit(animal);
 
-   fragment.appendChild(createSpeciesImage(animal));
-   fragment.appendChild(createTextElement('h2', 'animal-species-name', titleLine || species));
+      fragment.appendChild(createSpeciesImage(animal));
+      fragment.appendChild(createTextElement('h2', 'animal-species-name', titleLine || species));
 
-   if (latinName) {
-      fragment.appendChild(createTextElement('h6', 'latin-name', latinName));
+      if (latinName) {
+         fragment.appendChild(createTextElement('h6', 'latin-name', latinName));
+      }
+
+      if (exhibitLine) {
+         fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibitLine));
+      }
+
+      APP_STRINGS.animalsPage.detailSections.forEach(([title, key]) => {
+         appendIfPresent(
+            fragment,
+            createDetailSection(title, animal?.[key])
+         );
+      });
+
+      return fragment;
    }
-
-   if (exhibitLine) {
-      fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibitLine));
-   }
-
-   APP_STRINGS.animalsPage.detailSections.forEach(([title, key]) => {
-      appendIfPresent(
-         fragment,
-         createDetailSection(title, animal?.[key])
-      );
-   });
-
-   return fragment;
 }

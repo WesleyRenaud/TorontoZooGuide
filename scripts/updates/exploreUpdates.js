@@ -1,7 +1,7 @@
 import { MapApi } from '../api/mapApi.js';
-import { createEventCard } from './exploreEventCard.js';
+import { ExploreEventCard } from './exploreEventCard.js';
 import { ExploreTabs } from './exploreTabs.js';
-import { createUpdateCard } from './exploreUpdateCard.js';
+import { ExploreUpdateCard } from './exploreUpdateCard.js';
 import {
    clearExploreNav,
    getExploreHeaderEl,
@@ -75,11 +75,11 @@ export function createExploreUpdates({
 
       // Keep cards from both tabs in the grid so section height stays stable.
       listEl.replaceChildren(
-         ...updates.map((update, index) => createUpdateCard(
+         ...updates.map((update, index) => ExploreUpdateCard.createUpdateCard(
             update,
             activeTab === ExploreTabs.EXPLORE_TAB.UPDATES && index === currentIndex
          )),
-         ...events.map((event, index) => createEventCard(
+         ...events.map((event, index) => ExploreEventCard.createEventCard(
             event,
             activeTab === ExploreTabs.EXPLORE_TAB.EVENTS && index === currentIndex
          ))

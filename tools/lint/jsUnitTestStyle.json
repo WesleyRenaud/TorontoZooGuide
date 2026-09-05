@@ -95,7 +95,12 @@
       "tests/scripts/consoleOperations/shell/panelNavigator.test.mjs",
       "tests/scripts/map/transportationRouteControls.test.mjs",
       "tests/scripts/search/exploreFilter.test.mjs",
-      "tests/scripts/map/transportationRouteSource.test.mjs"
+      "tests/scripts/map/transportationRouteSource.test.mjs",
+      "tests/scripts/map/itineraryPathOverlay.test.mjs",
+      "tests/scripts/map/transportationRouteOverlay.test.mjs",
+      "tests/scripts/overlays/speciesOverlayContent.test.mjs",
+      "tests/scripts/consoleOperations/helpers/occurrenceFilterController.test.mjs",
+      "tests/scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

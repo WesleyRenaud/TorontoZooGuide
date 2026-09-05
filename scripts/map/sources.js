@@ -1,9 +1,6 @@
 import { MapApi } from '../api/mapApi.js';
 import { SourceHelpers } from './sourceHelpers.js';
-import {
-   hideTransportationRouteLayers,
-   showTransportationRouteLayer,
-} from './transportationRouteOverlay.js';
+import { TransportationRouteOverlay } from './transportationRouteOverlay.js';
 import { TransportationRouteSource } from './transportationRouteSource.js';
 
 function createNoCacheSource(fetchRows) {
@@ -105,8 +102,8 @@ export function createDataSources(store) {
 
       transportationRoute: TransportationRouteSource.createTransportationRouteSource(store, {
          fetchTransportationRoute: MapApi.getTransportationRoute,
-         hideRouteLayers: hideTransportationRouteLayers,
-         showRouteLayer: showTransportationRouteLayer,
+         hideRouteLayers: TransportationRouteOverlay.hideTransportationRouteLayers,
+         showRouteLayer: TransportationRouteOverlay.showTransportationRouteLayer,
       }),
 
       guardiansTalk: createTypedDynamicApiSource(

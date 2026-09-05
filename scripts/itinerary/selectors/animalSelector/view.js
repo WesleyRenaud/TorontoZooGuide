@@ -1,5 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import { createWarningIcon } from '../../../assets/warningIcon.js';
+import { WarningIcon } from '../../../assets/warningIcon.js';
 import {
    createSelectorRowContent,
    createSelectorTextColumn,
@@ -20,7 +20,7 @@ function createLikelihoodWarning(level) {
 
    const warning = document.createElement('span');
    warning.className = `itin-likelihood-warning ${level}`;
-   warning.appendChild(createWarningIcon());
+   warning.appendChild(WarningIcon.createWarningIcon());
    warning.title = level === 'low'
       ? APP_STRINGS.itinerary.selectors.lowVisibilityHint
       : APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay;

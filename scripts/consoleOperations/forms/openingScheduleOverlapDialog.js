@@ -1,4 +1,4 @@
-import { createWarningIcon } from '../../assets/warningIcon.js';
+import { WarningIcon } from '../../assets/warningIcon.js';
 import { mountDismissablePopup } from '../../itinerary/panel/components/popup.js';
 import { el } from '../../itinerary/panel/dom.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
@@ -11,7 +11,7 @@ function createDialogWarningIcon() {
       'span',
       'itin-likelihood-warning medium console-overlap-dialog-icon-wrap'
    );
-   const svg = createWarningIcon({
+   const svg = WarningIcon.createWarningIcon({
       className: 'itin-warning-icon console-overlap-dialog-icon',
       ariaHidden: true,
       focusable: 'false',

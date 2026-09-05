@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createScheduleTimesCheckboxField } from '../../scripts/consoleOperations/templates/fragments.js';
-import { ScheduleTimesCheckboxField } from '../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
-import { createWildEncounterScheduleTimesFilterController } from '../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { createScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperations/templates/fragments.js';
+import { ScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
+import { WildEncounterScheduleTimesFilter } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('wild encounter schedule times filter', () => {
    installDomTestHooks();
 
-   test('createWildEncounterScheduleTimesFilterController loads schedule times for the selected encounter', async () => {
+   test('Test_CreateWildEncounterScheduleTimesFilterController_TestSelectedEncounter_ExpectTimesLoaded', async () => {
       const wildEncounterEl = document.createElement('select');
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
@@ -18,7 +18,7 @@ test.describe('wild encounter schedule times filter', () => {
       const timesEl = fieldEl.querySelector('.console-operations-schedule-times-list');
       wildEncounterEl.value = 'African Rainforest';
 
-      const controller = createWildEncounterScheduleTimesFilterController({
+      const controller = WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
          wildEncounterEl,
          timesEl,
          loadScheduleTimes: async ({ wildEncounter }) => {
@@ -42,7 +42,7 @@ test.describe('wild encounter schedule times filter', () => {
       assert.equal(checkboxes[0].checked, false);
    });
 
-   test('createWildEncounterScheduleTimesFilterController auto-selects a single schedule time', async () => {
+   test('Test_CreateWildEncounterScheduleTimesFilterController_TestSingleTime_ExpectAutoSelect', async () => {
       const wildEncounterEl = document.createElement('select');
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
@@ -51,7 +51,7 @@ test.describe('wild encounter schedule times filter', () => {
       const timesEl = fieldEl.querySelector('.console-operations-schedule-times-list');
       wildEncounterEl.value = 'African Rainforest';
 
-      const controller = createWildEncounterScheduleTimesFilterController({
+      const controller = WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
          wildEncounterEl,
          timesEl,
          loadScheduleTimes: async () => [ '1:30 AM' ],

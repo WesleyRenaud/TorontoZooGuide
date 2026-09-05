@@ -1,13 +1,4 @@
-import {
-   getAnimalIconUrl,
-   getAttractionIconUrl,
-   getDrinkingFountainIconUrl,
-   getEventSiteIconUrl,
-   getGiftShopIconUrl,
-   getGuestServiceIconUrl,
-   getRestaurantIconUrl,
-   getRestroomIconUrl,
-} from '../assets/iconUrls.js';
+import { IconUrls } from '../assets/iconUrls.js';
 import { MarkerVisualUtils } from './markerVisualUtils.js';
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
@@ -135,7 +126,7 @@ function renderAnimalMarker(markerEl, items) {
    } else {
       MarkerVisualUtils.applyBackgroundImage(
          markerEl,
-         getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
+         IconUrls.getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
          colour
       );
    }
@@ -158,7 +149,7 @@ function renderRestroomMarker(markerEl, items) {
    } else {
       MarkerVisualUtils.applyBackgroundImage(
          markerEl,
-         getRestroomIconUrl(
+         IconUrls.getRestroomIconUrl(
             restroom?.is_closed ? CLOSED_RESTROOM_ICON_TOKEN : iconToken
          )
       );
@@ -195,7 +186,7 @@ function renderDrinkingFountainMarker(markerEl, items) {
 
    MarkerVisualUtils.applyBackgroundImage(
       markerEl,
-      getDrinkingFountainIconUrl(iconToken)
+      IconUrls.getDrinkingFountainIconUrl(iconToken)
    );
 }
 
@@ -216,7 +207,7 @@ function renderGuestServiceMarker(markerEl, items) {
 
    MarkerVisualUtils.applyBackgroundImage(
       markerEl,
-      getGuestServiceIconUrl(serviceType)
+      IconUrls.getGuestServiceIconUrl(serviceType)
    );
 }
 
@@ -232,13 +223,13 @@ function renderEventSiteMarker(markerEl, items) {
 
    MarkerVisualUtils.applyBackgroundImage(
       markerEl,
-      getEventSiteIconUrl(eventSite?.name)
+      IconUrls.getEventSiteIconUrl(eventSite?.name)
    );
 }
 
 const attractionMarkerRenderer = createLikelihoodIconMarkerRenderer({
    type: 'attraction',
-   getIconUrl: (attraction, iconToken) => getAttractionIconUrl(
+   getIconUrl: (attraction, iconToken) => IconUrls.getAttractionIconUrl(
       attraction?.name,
       iconToken
    ),
@@ -253,12 +244,12 @@ const MARKER_TYPE_RENDERERS = {
    pavilion: createGenericIconMarkerRenderer('pavilion'),
    restaurant: createLikelihoodIconMarkerRenderer({
       type: 'restaurant',
-      getIconUrl: (_, iconToken) => getRestaurantIconUrl(iconToken),
+      getIconUrl: (_, iconToken) => IconUrls.getRestaurantIconUrl(iconToken),
    }),
    restroom: renderRestroomMarker,
    giftShop: createLikelihoodIconMarkerRenderer({
       type: 'giftShop',
-      getIconUrl: (_, iconToken) => getGiftShopIconUrl(iconToken),
+      getIconUrl: (_, iconToken) => IconUrls.getGiftShopIconUrl(iconToken),
    }),
    attraction: attractionMarkerRenderer,
    transportation: attractionMarkerRenderer,

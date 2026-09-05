@@ -20,10 +20,10 @@ import { createGiftShopOpeningScheduleController } from '../giftShops/controller
 import { createAddGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/addGuardiansTalkOccurrence.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
 import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
-import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
-import { createGuardiansTalkOccurrenceFilterController } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
+import { GuardiansTalkLocationFilter } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
+import { GuardiansTalkOccurrenceFilter } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
-import { createGuardiansTalkScheduleTimesFilterController } from '../guardiansTalks/controllers/guardiansTalkScheduleTimesFilter.js';
+import { GuardiansTalkScheduleTimesFilter } from '../guardiansTalks/controllers/guardiansTalkScheduleTimesFilter.js';
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
 import { createRestaurantClosureOverrideController } from '../restaurants/controllers/restaurantClosureOverride.js';
 import { createRestaurantOpeningScheduleController } from '../restaurants/controllers/restaurantOpeningSchedule.js';
@@ -39,9 +39,9 @@ import { createEditUpdateController } from '../updates/controllers/editUpdate.js
 import { createEndUpdateController } from '../updates/controllers/endUpdate.js';
 import { createCancelWildEncounterOccurrenceController } from '../wildEncounters/controllers/cancelWildEncounterOccurrence.js';
 import { createEndWildEncounterScheduleController } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
-import { createWildEncounterOccurrenceFilterController } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
+import { WildEncounterOccurrenceFilter } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 import { createWildEncounterScheduleController } from '../wildEncounters/controllers/wildEncounterSchedule.js';
-import { createWildEncounterScheduleTimesFilterController } from '../wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
+import { WildEncounterScheduleTimesFilter } from '../wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 
 const ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
    'offDisplay',
@@ -280,46 +280,46 @@ function wireControllerBindings({
 export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters }) {
    return {
       guardiansTalkScheduleLocationFilterController:
-         createGuardiansTalkLocationFilterController({
+         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
             locationEl: guardiansTalks.schedule.locationEl,
             talkNameEl: guardiansTalks.schedule.talkNameEl,
          }),
       endGuardiansTalkScheduleLocationFilterController:
-         createGuardiansTalkLocationFilterController({
+         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
             locationEl: guardiansTalks.endSchedule.locationEl,
             talkNameEl: guardiansTalks.endSchedule.talkNameEl,
          }),
       addGuardiansTalkOccurrenceLocationFilterController:
-         createGuardiansTalkLocationFilterController({
+         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
             locationEl: guardiansTalks.addOccurrence.locationEl,
             talkNameEl: guardiansTalks.addOccurrence.talkNameEl,
          }),
       cancelGuardiansTalkOccurrenceLocationFilterController:
-         createGuardiansTalkLocationFilterController({
+         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
             locationEl: guardiansTalks.cancelOccurrence.locationEl,
             talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
          }),
       cancelGuardiansTalkOccurrenceFilterController:
-         createGuardiansTalkOccurrenceFilterController({
+         GuardiansTalkOccurrenceFilter.createGuardiansTalkOccurrenceFilterController({
             locationEl: guardiansTalks.cancelOccurrence.locationEl,
             talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
             dateEl: guardiansTalks.cancelOccurrence.dateEl,
             timesEl: guardiansTalks.cancelOccurrence.timesEl,
          }),
       guardiansTalkScheduleTimesFilterController:
-         createGuardiansTalkScheduleTimesFilterController({
+         GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
             locationEl: guardiansTalks.endSchedule.locationEl,
             talkNameEl: guardiansTalks.endSchedule.talkNameEl,
             timesEl: guardiansTalks.endSchedule.timesEl,
          }),
       wildEncounterOccurrenceFilterController:
-         createWildEncounterOccurrenceFilterController({
+         WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
             wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
             dateEl: wildEncounters.cancelOccurrence.dateEl,
             timesEl: wildEncounters.cancelOccurrence.timesEl,
          }),
       wildEncounterScheduleTimesFilterController:
-         createWildEncounterScheduleTimesFilterController({
+         WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
             wildEncounterEl: wildEncounters.endSchedule.wildEncounterEl,
             timesEl: wildEncounters.endSchedule.timesEl,
          }),
