@@ -1,15 +1,15 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import { createTooltipCard } from './cardFactory.js';
+import { CardFactory } from './cardFactory.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export const restaurantRenderer = {
-   key: 'restaurant',
+export class Restaurants {
+   static key = 'restaurant';
 
-   createCard(r, index) {
+   static createCard(r, index) {
       const name = r.name || APP_STRINGS.entityLabels.restaurant;
       const normalizedName = AssetKeyNormalizer.normalize(name);
 
-      return createTooltipCard({
+      return CardFactory.createTooltipCard({
          index,
          image: {
             src: `images/details/restaurants/${normalizedName}.png`,
@@ -33,5 +33,5 @@ export const restaurantRenderer = {
             }]
             : [],
       });
-   },
-};
+   }
+}

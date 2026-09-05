@@ -6,12 +6,12 @@ import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
 import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
 import { createFocusController } from '../focus/focusController.js';
-import { openGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
+import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { LabelVisibility } from './labelVisibility.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
-import { createPanzoom } from './panzoom.js';
+import { Panzoom } from './panzoom.js';
 import { createDataSources } from './sources.js';
 import { Store } from './store.js';
 import { createTooltipController } from '../tooltips/tooltipController.js';
@@ -46,7 +46,7 @@ function createAnimalCardClickHandler(speciesOverlay) {
       }
 
       if (itemType === 'guardiansTalk') {
-         void openGuardiansTalkLinkedAnimal(item);
+         void OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal(item);
       }
    };
 }
@@ -120,7 +120,7 @@ export function createMapRuntime({
       return null;
    }
 
-   const panzoom = createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
+   const panzoom = Panzoom.createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
    const store = Store.createMapStore();
    const sources = createDataSources(store);
    const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);

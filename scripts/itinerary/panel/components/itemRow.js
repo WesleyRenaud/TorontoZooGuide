@@ -1,7 +1,4 @@
-import {
-   createAnimalTitleLinkElement,
-   createSpeciesLinkTitleElement,
-} from '../../../animals/createSpeciesLinkTitle.js';
+import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
 import {
    el,
    safeImg,
@@ -15,7 +12,7 @@ function createItemNameElement({
    onNameClick,
 } = {}) {
    if (species !== undefined) {
-      return createAnimalTitleLinkElement({
+      return CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
          species,
          enclosureName,
          className: 'itin-panel-name',
@@ -23,7 +20,7 @@ function createItemNameElement({
       });
    }
 
-   return createSpeciesLinkTitleElement({
+   return CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
       text: name,
       suffix: nameSuffix,
       className: 'itin-panel-name',

@@ -29,61 +29,63 @@ function bindSpeciesLinkActivation(linkEl, onClick) {
    });
 }
 
-export function createSpeciesLinkTitleElement({
-   text,
-   suffix = '',
-   className = '',
-   tagName = 'div',
-   onClick = null,
-   dataset = {},
-} = {}) {
-   const titleEl = document.createElement(tagName);
+export class CreateSpeciesLinkTitle {
+   static createSpeciesLinkTitleElement({
+      text,
+      suffix = '',
+      className = '',
+      tagName = 'div',
+      onClick = null,
+      dataset = {},
+   } = {}) {
+      const titleEl = document.createElement(tagName);
 
-   if (className) {
-      titleEl.className = className;
-   }
-
-   const hasDataset = Object.values(dataset).some((value) => value != null);
-   const isLink = typeof onClick === 'function' || hasDataset;
-   const linkEl = document.createElement('span');
-   linkEl.textContent = text;
-
-   if (isLink) {
-      applyLinkDataset(linkEl, dataset);
-
-      if (typeof onClick === 'function') {
-         bindSpeciesLinkActivation(linkEl, onClick);
+      if (className) {
+         titleEl.className = className;
       }
-      else {
-         linkEl.classList.add('species-link');
-         linkEl.setAttribute('role', 'button');
-         linkEl.setAttribute('tabindex', '0');
+
+      const hasDataset = Object.values(dataset).some((value) => value != null);
+      const isLink = typeof onClick === 'function' || hasDataset;
+      const linkEl = document.createElement('span');
+      linkEl.textContent = text;
+
+      if (isLink) {
+         applyLinkDataset(linkEl, dataset);
+
+         if (typeof onClick === 'function') {
+            bindSpeciesLinkActivation(linkEl, onClick);
+         }
+         else {
+            linkEl.classList.add('species-link');
+            linkEl.setAttribute('role', 'button');
+            linkEl.setAttribute('tabindex', '0');
+         }
       }
+
+      titleEl.appendChild(linkEl);
+
+      if (suffix) {
+         titleEl.appendChild(document.createTextNode(suffix));
+      }
+
+      return titleEl;
    }
 
-   titleEl.appendChild(linkEl);
-
-   if (suffix) {
-      titleEl.appendChild(document.createTextNode(suffix));
+   static createAnimalTitleLinkElement({
+      species,
+      enclosureName = null,
+      className = '',
+      tagName = 'div',
+      onClick = null,
+      dataset = {},
+   } = {}) {
+      return CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
+         text: species,
+         suffix: AnimalDisplayLines.formatAnimalTitleSuffix(enclosureName),
+         className,
+         tagName,
+         onClick,
+         dataset,
+      });
    }
-
-   return titleEl;
-}
-
-export function createAnimalTitleLinkElement({
-   species,
-   enclosureName = null,
-   className = '',
-   tagName = 'div',
-   onClick = null,
-   dataset = {},
-} = {}) {
-   return createSpeciesLinkTitleElement({
-      text: species,
-      suffix: AnimalDisplayLines.formatAnimalTitleSuffix(enclosureName),
-      className,
-      tagName,
-      onClick,
-      dataset,
-   });
 }

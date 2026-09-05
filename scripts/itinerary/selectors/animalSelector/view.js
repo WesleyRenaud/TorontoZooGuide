@@ -1,4 +1,4 @@
-import { createAnimalTitleLinkElement } from '../../../animals/createSpeciesLinkTitle.js';
+import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
 import { createWarningIcon } from '../../../assets/warningIcon.js';
 import {
    createSelectorRowContent,
@@ -36,7 +36,7 @@ export function renderAnimalSelectorRowLeft(row) {
    const titleWrap = document.createElement('div');
    titleWrap.className = 'itin-animal-title-wrap';
 
-   const titleEl = createAnimalTitleLinkElement({
+   const titleEl = CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
       species,
       enclosureName: getAnimalEnclosureName(row),
       className: 'animal-result-species',

@@ -1,9 +1,5 @@
 import { FocusAnimator } from './focusAnimator.js';
-import {
-   createFocusMatch,
-   findBestMarkerByScan,
-   findMarkerByCoordinates,
-} from './focusTargetFinder.js';
+import { FocusTargetFinder } from './focusTargetFinder.js';
 
 export function createFocusController({
    panzoom,
@@ -42,7 +38,7 @@ export function createFocusController({
    }
 
    function resolveTargetByCoordinates(x, y) {
-      const marker = findMarkerByCoordinates({
+      const marker = FocusTargetFinder.findMarkerByCoordinates({
          x,
          y,
          getMarkerByCoord,
@@ -65,7 +61,7 @@ export function createFocusController({
          return null;
       }
 
-      return findBestMarkerByScan({
+      return FocusTargetFinder.findBestMarkerByScan({
          typeKey,
          matchFn,
          markers,
@@ -95,7 +91,7 @@ export function createFocusController({
          return;
       }
 
-      const { typeKey, matchFn } = createFocusMatch(row, type);
+      const { typeKey, matchFn } = FocusTargetFinder.createFocusMatch(row, type);
       const target = resolveFocusTarget(row, typeKey, matchFn, viewportEl);
 
       if (!target) {

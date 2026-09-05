@@ -1,7 +1,4 @@
-import {
-   createAnimalTitleLinkElement,
-   createSpeciesLinkTitleElement,
-} from '../../../animals/createSpeciesLinkTitle.js';
+import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
 import { el } from '../dom.js';
 import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
@@ -14,7 +11,7 @@ export class OpenTimelinePill {
       item = null
    ) {
       if (item?.species) {
-         return createAnimalTitleLinkElement({
+         return CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
             species: AnimalSelectorModel.getAnimalSpecies(item),
             enclosureName: AnimalSelectorModel.getAnimalEnclosureName(item),
             className,
@@ -23,7 +20,7 @@ export class OpenTimelinePill {
          });
       }
 
-      return createSpeciesLinkTitleElement({
+      return CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
          text: label,
          className,
          tagName: 'span',

@@ -77,40 +77,42 @@ function createTooltipLinkLine({
    return line;
 }
 
-export function createTooltipCard({
-   index,
-   image = null,
-   title,
-   details = [],
-   links = [],
-} = {}) {
-   const card = createTooltipCardShell(index);
+export class CardFactory {
+   static createTooltipCard({
+      index,
+      image = null,
+      title,
+      details = [],
+      links = [],
+   } = {}) {
+      const card = createTooltipCardShell(index);
 
-   if (image?.src) {
-      card.appendChild(createTooltipImageFrame(image));
-   }
+      if (image?.src) {
+         card.appendChild(createTooltipImageFrame(image));
+      }
 
-   if (title?.element) {
-      card.appendChild(title.element);
-   }
-   else if (title?.text) {
-      card.appendChild(
-         createTextElement(title.tagName || 'strong', title.text, {
-            className: title.className,
-            dataset: title.dataset,
-         })
-      );
-   }
+      if (title?.element) {
+         card.appendChild(title.element);
+      }
+      else if (title?.text) {
+         card.appendChild(
+            createTextElement(title.tagName || 'strong', title.text, {
+               className: title.className,
+               dataset: title.dataset,
+            })
+         );
+      }
 
-   details.filter(Boolean).forEach((detail) => {
-      card.appendChild(createTextElement('span', detail));
-   });
-
-   links
-      .filter((link) => link?.href && link?.text)
-      .forEach((link) => {
-         card.appendChild(createTooltipLinkLine(link));
+      details.filter(Boolean).forEach((detail) => {
+         card.appendChild(createTextElement('span', detail));
       });
 
-   return card;
+      links
+         .filter((link) => link?.href && link?.text)
+         .forEach((link) => {
+            card.appendChild(createTooltipLinkLine(link));
+         });
+
+      return card;
+   }
 }

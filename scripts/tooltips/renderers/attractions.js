@@ -1,18 +1,18 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import { createTooltipCard } from './cardFactory.js';
+import { CardFactory } from './cardFactory.js';
 import { AttractionSelectorModel } from '../../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { StoredSelection } from '../../itinerary/selectors/base/storedSelection.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export const attractionRenderer = {
-   key: 'attraction',
+export class Attractions {
+   static key = 'attraction';
 
-   createCard(a, index) {
+   static createCard(a, index) {
       const name = a.name || APP_STRINGS.entityLabels.attraction;
       const normalizedName = AssetKeyNormalizer.normalize(name);
       const infoLink = StoredSelection.normalizeStoredLink(a.info_link);
 
-      return createTooltipCard({
+      return CardFactory.createTooltipCard({
          index,
          image: {
             src: `images/details/attractions/${normalizedName}.png`,
@@ -35,5 +35,5 @@ export const attractionRenderer = {
             a.description ? APP_STRINGS.tooltips.description(a.description) : '',
          ],
       });
-   },
-};
+   }
+}

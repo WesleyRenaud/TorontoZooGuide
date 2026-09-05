@@ -1,8 +1,5 @@
 import { Format } from './format.js';
-import {
-   getGuardiansTalkLinkedAnimal,
-   openGuardiansTalkLinkedAnimal,
-} from '../../guardians/openGuardiansTalkLinkedAnimal.js';
+import { OpenGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import { RowActionProps } from './rowActionProps.js';
 import { RowAlerts } from './rowAlerts.js';
@@ -140,10 +137,10 @@ export class Rows {
          getLink: (talk) => talk.link,
          extendRowProps: (talk) => ({
             ...(
-               getGuardiansTalkLinkedAnimal(talk)
+               OpenGuardiansTalkLinkedAnimal.getGuardiansTalkLinkedAnimal(talk)
                   ? {
                      onNameClick: () => {
-                        void openGuardiansTalkLinkedAnimal(talk);
+                        void OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal(talk);
                      },
                   }
                   : {}

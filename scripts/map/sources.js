@@ -4,7 +4,7 @@ import {
    hideTransportationRouteLayers,
    showTransportationRouteLayer,
 } from './transportationRouteOverlay.js';
-import { createTransportationRouteSource } from './transportationRouteSource.js';
+import { TransportationRouteSource } from './transportationRouteSource.js';
 
 function createNoCacheSource(fetchRows) {
    return {
@@ -103,7 +103,7 @@ export function createDataSources(store) {
          })
       ),
 
-      transportationRoute: createTransportationRouteSource(store, {
+      transportationRoute: TransportationRouteSource.createTransportationRouteSource(store, {
          fetchTransportationRoute: MapApi.getTransportationRoute,
          hideRouteLayers: hideTransportationRouteLayers,
          showRouteLayer: showTransportationRouteLayer,
