@@ -1,11 +1,8 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import {
-   getFieldValue,
-   resetFormFields,
-} from '../../helpers/controllerUtils.js';
-import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { Dropdowns } from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class EndGuardiansTalkSchedule {
@@ -30,7 +27,7 @@ export class EndGuardiansTalkSchedule {
          }
 
          if (talkNameEl?.tagName === 'SELECT') {
-            populateGuardiansTalkDropdown(talkNameEl, []);
+            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';
@@ -74,13 +71,13 @@ export class EndGuardiansTalkSchedule {
          ...controllerOptions,
          endDateEl,
          resetSelection: () => {
-            resetFormFields([locationEl]);
+            ControllerUtils.resetFormFields([locationEl]);
             resetTalkDropdown();
             scheduleTimesFilterController?.clear?.();
          },
          getSelectionValues: () => ({
-            talk: getFieldValue(talkNameEl),
-            location: getFieldValue(locationEl),
+            talk: ControllerUtils.getFieldValue(talkNameEl),
+            location: ControllerUtils.getFieldValue(locationEl),
             times: getSelectedTimes(),
          }),
          validateSelection,

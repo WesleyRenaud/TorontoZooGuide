@@ -1,4 +1,4 @@
-import { enableMarkerCoordinateEditing } from './coordinateEditing.js';
+import { CoordinateEditing } from './coordinateEditing.js';
 import { MarkerElement } from './markerElement.js';
 import { MarkerGroups } from './markerGroups.js';
 
@@ -35,7 +35,7 @@ export class Markers {
             tooltip,
             hover,
             enableCoordinateEditing,
-            enableMarkerCoordinateEditing,
+            enableMarkerCoordinateEditing: CoordinateEditing.enableMarkerCoordinateEditing,
          });
 
          return markerEl;

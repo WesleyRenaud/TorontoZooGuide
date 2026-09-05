@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { createAttractionHoursScheduleController } from '../../scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.js';
-import { ConsoleDatePickers } from '../../scripts/datePickers/consoleDatePickers.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { AttractionHoursSchedule } from '../../../../../scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.js';
+import { ConsoleDatePickers } from '../../../../../scripts/datePickers/consoleDatePickers.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 const WEEKDAY_BOUNDS = {
    openTime: '9:30 AM',
@@ -55,7 +55,7 @@ function createStatusEl() {
 }
 
 function createController(overrides = {}) {
-   return createAttractionHoursScheduleController({
+   return AttractionHoursSchedule.createAttractionHoursScheduleController({
       attractionEl: createField('Conservation Carousel'),
       startDateEl: createField(),
       endDateEl: createField(),
@@ -74,7 +74,7 @@ function createController(overrides = {}) {
    });
 }
 
-test('attraction hours form requires all four times', () => {
+test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValidationError', () => {
    const controller = createController({
       weekdayStartTimeEl: { value: '' },
    });
@@ -85,7 +85,7 @@ test('attraction hours form requires all four times', () => {
    );
 });
 
-test('attraction hours form requires an attraction', () => {
+test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectValidationError', () => {
    const controller = createController({
       attractionEl: { value: '' },
    });
@@ -98,7 +98,7 @@ test('attraction hours form requires an attraction', () => {
    );
 });
 
-test('attraction hours form requires weekday start before end', () => {
+test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValidationError', () => {
    const controller = createController({
       weekdayStartTimeEl: { value: '4:00 PM' },
       weekdayEndTimeEl: { value: '10:00 AM' },
@@ -110,7 +110,7 @@ test('attraction hours form requires weekday start before end', () => {
    );
 });
 
-test('attraction hours form requires weekend start before end', () => {
+test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValidationError', () => {
    const controller = createController({
       weekendHolidayStartTimeEl: { value: '5:00 PM' },
       weekendHolidayEndTimeEl: { value: '10:00 AM' },
@@ -122,13 +122,13 @@ test('attraction hours form requires weekend start before end', () => {
    );
 });
 
-test('attraction hours form accepts a complete valid payload', () => {
+test('Test_CreateAttractionHoursScheduleController_TestValidPayload_ExpectAccepted', () => {
    const controller = createController();
 
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
-test('attraction hours form does not client-validate zoo hours bounds', () => {
+test('Test_CreateAttractionHoursScheduleController_TestOutOfBoundsTimes_ExpectNoClientValidation', () => {
    const controller = createController({
       weekdayStartTimeEl: createField('8:00 AM'),
       weekdayEndTimeEl: createField('8:00 PM'),
@@ -139,7 +139,7 @@ test('attraction hours form does not client-validate zoo hours bounds', () => {
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
-test('attraction hours form rejects end date before start date', () => {
+test('Test_CreateAttractionHoursScheduleController_TestEndBeforeStart_ExpectValidationError', () => {
    const controller = createController({
       startDateEl: createField('2026-06-20'),
       endDateEl: createField('2026-06-15'),
@@ -151,7 +151,7 @@ test('attraction hours form rejects end date before start date', () => {
    );
 });
 
-test('attraction hours show applies zoo hours bounds to time pickers', async () => {
+test('Test_CreateAttractionHoursScheduleController_TestShow_ExpectPickerBounds', async () => {
    const applied = [];
    const weekdayStartTimePicker = {
       set(property, value) {
@@ -183,7 +183,7 @@ test('attraction hours show applies zoo hours bounds to time pickers', async () 
    );
 });
 
-test('attraction hours refreshes picker bounds when the schedule end date changes', async () => {
+test('Test_CreateAttractionHoursScheduleController_TestEndDateChange_ExpectBoundsRefresh', async () => {
    const endDateEl = { value: '', listeners: {} };
    endDateEl.addEventListener = (eventName, handler) => {
       endDateEl.listeners[eventName] = handler;
@@ -218,7 +218,7 @@ test('attraction hours refreshes picker bounds when the schedule end date change
    assert.deepEqual(boundCloses, [ '6:00 PM', '4:30 PM' ]);
 });
 
-test('attraction hours submit sends current field values to the backend', async () => {
+test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendPayload', async () => {
    const savedPayloads = [];
    const statusEl = createStatusEl();
    const controller = createController({
@@ -254,7 +254,7 @@ test('attraction hours submit sends current field values to the backend', async 
    ]);
 });
 
-test('attraction hours submit surfaces backend zoo hours errors', async () => {
+test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError', async () => {
    const statusEl = createStatusEl();
    const controller = createController({
       statusEl,
@@ -272,7 +272,7 @@ test('attraction hours submit surfaces backend zoo hours errors', async () => {
    );
 });
 
-test('ConsoleDatePickers.applyScheduleTimePickerBounds sets and clears picker limits', () => {
+test('Test_ApplyScheduleTimePickerBounds_TestSetAndClear_ExpectLimits', () => {
    const values = {};
    const picker = {
       set(property, value) {
@@ -294,7 +294,7 @@ test('ConsoleDatePickers.applyScheduleTimePickerBounds sets and clears picker li
    assert.equal(values.maxTime, null);
 });
 
-test('ConsoleDatePickers.initAttractionHoursSchedulePickers initializes date and time pickers', () => {
+test('Test_InitAttractionHoursSchedulePickers_TestInit_ExpectPickers', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
    const weekdayStartTimeEl = createDomNode('input');

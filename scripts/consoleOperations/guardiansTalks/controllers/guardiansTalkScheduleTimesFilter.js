@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 
 export class GuardiansTalkScheduleTimesFilter {
    static createGuardiansTalkScheduleTimesFilterController({
@@ -22,7 +22,7 @@ export class GuardiansTalkScheduleTimesFilter {
       }
 
       function hasSelection() {
-         return Boolean(getFieldValue(talkNameEl) && getFieldValue(locationEl));
+         return Boolean(ControllerUtils.getFieldValue(talkNameEl) && ControllerUtils.getFieldValue(locationEl));
       }
 
       function renderTimesList(times = []) {
@@ -45,8 +45,8 @@ export class GuardiansTalkScheduleTimesFilter {
          try {
             const scheduleTimes = hasSelection()
                ? await loadScheduleTimes?.({
-                  talk: getFieldValue(talkNameEl),
-                  location: getFieldValue(locationEl),
+                  talk: ControllerUtils.getFieldValue(talkNameEl),
+                  location: ControllerUtils.getFieldValue(locationEl),
                }) ?? []
                : [];
 

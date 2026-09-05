@@ -1,18 +1,9 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
-import {
-   getSelectedUpdateData,
-   loadActiveUpdates,
-   populateUpdateDropdown,
-} from './updateOptions.js';
+import { UpdateOptions } from './updateOptions.js';
 
 export class EditUpdate {
    static createEditUpdateController({
@@ -31,7 +22,7 @@ export class EditUpdate {
 
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       function setFieldValue(fieldEl, value) {
@@ -43,7 +34,7 @@ export class EditUpdate {
       }
 
       function populateFieldsFromSelectedUpdate() {
-         const selectedUpdate = getSelectedUpdateData(updateEl);
+         const selectedUpdate = UpdateOptions.getSelectedUpdateData(updateEl);
 
          setFieldValue(descriptionEl, selectedUpdate.description);
          setFieldValue(typeEl, selectedUpdate.type);
@@ -51,11 +42,11 @@ export class EditUpdate {
       }
 
       async function show() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
-            loadOptions: loadActiveUpdates,
-            populateOptions: populateUpdateDropdown,
+            loadOptions: UpdateOptions.loadActiveUpdates,
+            populateOptions: UpdateOptions.populateUpdateDropdown,
             targetEl: updateEl,
             resetForm,
             activatePanel,
@@ -65,7 +56,7 @@ export class EditUpdate {
       }
 
       function hide() {
-         hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
+         ControllerUtils.hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
       }
 
       function validateForm({
@@ -87,13 +78,13 @@ export class EditUpdate {
       }
 
       async function onSubmitClick() {
-         const selectedUpdate = getSelectedUpdateData(updateEl);
+         const selectedUpdate = UpdateOptions.getSelectedUpdateData(updateEl);
          const values = {
             title: selectedUpdate.title,
             startDate: selectedUpdate.startDate,
-            description: getFieldValue(descriptionEl),
-            type: getFieldValue(typeEl),
-            endDate: getFieldValue(endDateEl) || null,
+            description: ControllerUtils.getFieldValue(descriptionEl),
+            type: ControllerUtils.getFieldValue(typeEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl) || null,
          };
          const validationError = validateForm(values);
 

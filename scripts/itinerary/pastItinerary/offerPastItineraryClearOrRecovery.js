@@ -1,7 +1,7 @@
 import { ClearPastItinerary } from './clearPastItinerary.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { PromptSession } from './promptSession.js';
-import { recoverPastItineraryDate } from './recoverPastItineraryDate.js';
+import { RecoverPastItineraryDate } from './recoverPastItineraryDate.js';
 import { showPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
@@ -10,70 +10,72 @@ import { VisitDateRules } from '../../visitDates/visitDateRules.js';
  * When a saved itinerary's visit day is no longer selectable, offer to clear it or
  * pick a new date. Returns true when the choice or recovery UI is shown.
  */
-export async function offerPastItineraryClearOrRecovery({
-   itinerary,
-   mountEl,
-   onCleared,
-   onRecovered,
-   deps = {},
-} = {}) {
-   const {
-      hasContent = ItineraryShape.hasSavedItineraryContent,
-      resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
-      isVisitDateBeforeFloor = VisitDateRules.isVisitDateBeforeEarliestFloor,
-      showChoicePrompt = showPastItineraryChoicePrompt,
-      clearItinerary = ClearPastItinerary.clearPastItinerary,
-      recoverItineraryDate = recoverPastItineraryDate,
-      isPromptOpen = PromptSession.isPastItineraryPromptOpen,
-      setPromptOpen = PromptSession.setPastItineraryPromptOpen,
-   } = deps;
+export class OfferPastItineraryClearOrRecovery {
+   static async offerPastItineraryClearOrRecovery({
+      itinerary,
+      mountEl,
+      onCleared,
+      onRecovered,
+      deps = {},
+   } = {}) {
+      const {
+         hasContent = ItineraryShape.hasSavedItineraryContent,
+         resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
+         isVisitDateBeforeFloor = VisitDateRules.isVisitDateBeforeEarliestFloor,
+         showChoicePrompt = showPastItineraryChoicePrompt,
+         clearItinerary = ClearPastItinerary.clearPastItinerary,
+         recoverItineraryDate = RecoverPastItineraryDate.recoverPastItineraryDate,
+         isPromptOpen = PromptSession.isPastItineraryPromptOpen,
+         setPromptOpen = PromptSession.setPastItineraryPromptOpen,
+      } = deps;
 
-   if (!mountEl) {
-      return false;
-   }
+      if (!mountEl) {
+         return false;
+      }
 
-   if (isPromptOpen()) {
+      if (isPromptOpen()) {
+         return true;
+      }
+
+      if (!itinerary || !hasContent(itinerary)) {
+         return false;
+      }
+
+      const earliestSelectableDate = await resolveEarliestVisitDate(deps);
+
+      if (!isVisitDateBeforeFloor(itinerary.date, earliestSelectableDate)) {
+         return false;
+      }
+
+      setPromptOpen(true);
+
+      const showChoice = () => {
+         showChoicePrompt({
+            mountEl,
+            onClear: () => {
+               setPromptOpen(false);
+               void clearItinerary(deps).then(() => {
+                  onCleared?.();
+               });
+            },
+            onRecover: () => {
+               recoverItineraryDate({
+                  mountEl,
+                  itinerary,
+                  earliestSelectableDate,
+                  onComplete: (savedItinerary) => {
+                     setPromptOpen(false);
+                     onRecovered?.(savedItinerary);
+                  },
+                  onCancel: showChoice,
+                  deps,
+               });
+            },
+            deps,
+         });
+      };
+
+      showChoice();
       return true;
    }
-
-   if (!itinerary || !hasContent(itinerary)) {
-      return false;
-   }
-
-   const earliestSelectableDate = await resolveEarliestVisitDate(deps);
-
-   if (!isVisitDateBeforeFloor(itinerary.date, earliestSelectableDate)) {
-      return false;
-   }
-
-   setPromptOpen(true);
-
-   const showChoice = () => {
-      showChoicePrompt({
-         mountEl,
-         onClear: () => {
-            setPromptOpen(false);
-            void clearItinerary(deps).then(() => {
-               onCleared?.();
-            });
-         },
-         onRecover: () => {
-            recoverItineraryDate({
-               mountEl,
-               itinerary,
-               earliestSelectableDate,
-               onComplete: (savedItinerary) => {
-                  setPromptOpen(false);
-                  onRecovered?.(savedItinerary);
-               },
-               onCancel: showChoice,
-               deps,
-            });
-         },
-         deps,
-      });
-   };
-
-   showChoice();
-   return true;
 }

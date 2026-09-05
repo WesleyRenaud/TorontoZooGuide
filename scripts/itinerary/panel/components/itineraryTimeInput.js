@@ -2,7 +2,7 @@ import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
 import { Format } from '../format.js';
 import { common } from '../../../strings/common.js';
-import { createValidationBubbleController } from '../../../validationBubble.js';
+import { ValidationBubble } from '../../../validationBubble.js';
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
    return Format.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
@@ -23,7 +23,7 @@ export function makeItineraryTimeInput({
    const form = el('form', 'itinerary-day-time-form');
    const inputWrap = el('div', 'itinerary-day-time-input-wrap');
    const input = el('input', 'itinerary-day-time-input');
-   const validationBubble = createValidationBubbleController({
+   const validationBubble = ValidationBubble.createValidationBubbleController({
       anchorEl: inputWrap,
    });
    let committedValue = value ? Format.formatClockTime(value) : '';

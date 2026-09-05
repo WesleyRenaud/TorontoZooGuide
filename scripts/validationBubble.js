@@ -58,64 +58,66 @@ function positionValidationBubble(bubbleEl, anchorEl) {
    );
 }
 
-export function createValidationBubbleController({
-   anchorEl,
-   classNames = {},
-   iconText = '!',
-} = {}) {
-   const classes = resolveClassNames(classNames);
-   let bubbleEl = null;
-   let repositionHandler = null;
+export class ValidationBubble {
+   static createValidationBubbleController({
+      anchorEl,
+      classNames = {},
+      iconText = '!',
+   } = {}) {
+      const classes = resolveClassNames(classNames);
+      let bubbleEl = null;
+      let repositionHandler = null;
 
-   function unbindRepositionListeners() {
-      if (!repositionHandler) {
-         return;
-      }
-
-      window.removeEventListener('scroll', repositionHandler, true);
-      window.removeEventListener('resize', repositionHandler);
-      repositionHandler = null;
-   }
-
-   function bindRepositionListeners() {
-      unbindRepositionListeners();
-      repositionHandler = () => {
-         if (bubbleEl && anchorEl) {
-            positionValidationBubble(bubbleEl, anchorEl);
+      function unbindRepositionListeners() {
+         if (!repositionHandler) {
+            return;
          }
-      };
 
-      window.addEventListener('scroll', repositionHandler, true);
-      window.addEventListener('resize', repositionHandler);
-   }
-
-   function dismiss() {
-      unbindRepositionListeners();
-      bubbleEl?.remove();
-      bubbleEl = null;
-   }
-
-   function show(message) {
-      if (!anchorEl || !message) {
-         return;
+         window.removeEventListener('scroll', repositionHandler, true);
+         window.removeEventListener('resize', repositionHandler);
+         repositionHandler = null;
       }
 
-      dismiss();
+      function bindRepositionListeners() {
+         unbindRepositionListeners();
+         repositionHandler = () => {
+            if (bubbleEl && anchorEl) {
+               positionValidationBubble(bubbleEl, anchorEl);
+            }
+         };
 
-      bubbleEl = el('div', classes.bubble);
-      bubbleEl.setAttribute('role', 'alert');
+         window.addEventListener('scroll', repositionHandler, true);
+         window.addEventListener('resize', repositionHandler);
+      }
 
-      const icon = el('span', classes.icon, iconText);
-      icon.setAttribute('aria-hidden', 'true');
-      bubbleEl.appendChild(icon);
-      bubbleEl.appendChild(el('span', classes.text, message));
-      document.body.appendChild(bubbleEl);
-      positionValidationBubble(bubbleEl, anchorEl);
-      bindRepositionListeners();
+      function dismiss() {
+         unbindRepositionListeners();
+         bubbleEl?.remove();
+         bubbleEl = null;
+      }
+
+      function show(message) {
+         if (!anchorEl || !message) {
+            return;
+         }
+
+         dismiss();
+
+         bubbleEl = el('div', classes.bubble);
+         bubbleEl.setAttribute('role', 'alert');
+
+         const icon = el('span', classes.icon, iconText);
+         icon.setAttribute('aria-hidden', 'true');
+         bubbleEl.appendChild(icon);
+         bubbleEl.appendChild(el('span', classes.text, message));
+         document.body.appendChild(bubbleEl);
+         positionValidationBubble(bubbleEl, anchorEl);
+         bindRepositionListeners();
+      }
+
+      return {
+         dismiss,
+         show,
+      };
    }
-
-   return {
-      dismiss,
-      show,
-   };
 }

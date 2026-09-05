@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
-import { populateGiftShopDropdown } from '../../options/dropdowns.js';
-import { loadGiftShops } from '../../options/loaders.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class GiftShopClosureOverride {
@@ -12,8 +12,8 @@ export class GiftShopClosureOverride {
       return EntityClosedFormController.createEntityClosedFormController({
          ...controllerOptions,
          entityEl: giftShopEl,
-         loadOptions: loadGiftShops,
-         populateOptions: populateGiftShopDropdown,
+         loadOptions: Loaders.loadGiftShops,
+         populateOptions: Dropdowns.populateGiftShopDropdown,
          submitClosedStatus: ({ entity, startDate, endDate, message }) => (
             ConsoleOperationsApi.setGiftShopClosureOverride({
                giftShop: entity,

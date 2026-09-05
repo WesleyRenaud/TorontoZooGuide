@@ -1,11 +1,5 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../helpers/controllerUtils.js';
+import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -35,10 +29,10 @@ export class EntityClosedFormController {
 
       function getFormValues() {
          return {
-            entity: getFieldValue(entityEl),
-            startDate: getFieldValue(startDateEl),
-            endDate: getFieldValue(endDateEl),
-            message: getFieldValue(messageEl),
+            entity: ControllerUtils.getFieldValue(entityEl),
+            startDate: ControllerUtils.getFieldValue(startDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
+            message: ControllerUtils.getFieldValue(messageEl),
          };
       }
 
@@ -51,11 +45,11 @@ export class EntityClosedFormController {
             return null;
          }
 
-         return validateOptionalDateRange(startDate, endDate);
+         return ControllerUtils.validateOptionalDateRange(startDate, endDate);
       }
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       function show() {
@@ -64,7 +58,7 @@ export class EntityClosedFormController {
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,
@@ -82,7 +76,7 @@ export class EntityClosedFormController {
       }
 
       async function onShowClick() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
             loadOptions,

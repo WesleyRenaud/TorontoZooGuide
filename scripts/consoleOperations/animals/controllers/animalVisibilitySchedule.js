@@ -1,15 +1,8 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   bindResetValueOnChange,
-   getFieldValue,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
-import { loadExhibits } from '../../options/loaders.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -42,13 +35,13 @@ export class AnimalVisibilitySchedule {
 
       function getFormValues() {
          return {
-            species: getFieldValue(speciesEl),
-            exhibit: getFieldValue(exhibitEl),
-            startDate: getFieldValue(startDateEl),
-            endDate: getFieldValue(endDateEl),
-            dailyStartTime: getFieldValue(dailyStartTimeEl),
-            dailyEndTime: getFieldValue(dailyEndTimeEl),
-            message: getFieldValue(messageEl),
+            species: ControllerUtils.getFieldValue(speciesEl),
+            exhibit: ControllerUtils.getFieldValue(exhibitEl),
+            startDate: ControllerUtils.getFieldValue(startDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
+            dailyStartTime: ControllerUtils.getFieldValue(dailyStartTimeEl),
+            dailyEndTime: ControllerUtils.getFieldValue(dailyEndTimeEl),
+            message: ControllerUtils.getFieldValue(messageEl),
          };
       }
 
@@ -72,15 +65,15 @@ export class AnimalVisibilitySchedule {
             return APP_STRINGS.validation.dailyViewingTimes;
          }
 
-         return validateOptionalDateRange(startDate, endDate);
+         return ControllerUtils.validateOptionalDateRange(startDate, endDate);
       }
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,
@@ -118,11 +111,11 @@ export class AnimalVisibilitySchedule {
       }
 
       async function show() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
-            loadOptions: loadExhibits,
-            populateOptions: populateExhibitDropdown,
+            loadOptions: Loaders.loadExhibits,
+            populateOptions: Dropdowns.populateExhibitDropdown,
             targetEl: exhibitEl,
             resetForm,
             activatePanel,
@@ -158,7 +151,7 @@ export class AnimalVisibilitySchedule {
          }
       }
 
-      bindResetValueOnChange(exhibitEl, speciesEl);
+      ControllerUtils.bindResetValueOnChange(exhibitEl, speciesEl);
 
       showButtonEl?.addEventListener('click', show);
       cancelButtonEl?.addEventListener('click', hide);

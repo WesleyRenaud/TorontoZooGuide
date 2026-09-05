@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityOpenFormController } from '../../forms/entityOpenFormController.js';
-import { populateRestroomDropdown } from '../../options/dropdowns.js';
-import { loadRestrooms } from '../../options/loaders.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class RestroomOpen {
@@ -12,8 +12,8 @@ export class RestroomOpen {
       return EntityOpenFormController.createEntityOpenFormController({
          ...controllerOptions,
          entityEl: restroomEl,
-         loadOptions: loadRestrooms,
-         populateOptions: populateRestroomDropdown,
+         loadOptions: Loaders.loadRestrooms,
+         populateOptions: Dropdowns.populateRestroomDropdown,
          submitOpenStatus: ({ entity, startDate, endDate }) => ConsoleOperationsApi.setRestroomOpen({
             restroom: entity,
             startDate: startDate || null,

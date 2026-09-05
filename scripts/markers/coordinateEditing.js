@@ -131,55 +131,57 @@ function finishDragging({
    stopMarkerEvent(event);
 }
 
-export function enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner) {
-   const state = createDragState();
+export class CoordinateEditing {
+   static enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner) {
+      const state = createDragState();
 
-   applyMarkerEditingStyles(markerEl);
+      applyMarkerEditingStyles(markerEl);
 
-   markerEl.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0) {
-         return;
-      }
+      markerEl.addEventListener('pointerdown', (event) => {
+         if (event.button !== 0) {
+            return;
+         }
 
-      beginDragging(markerEl, state, event);
-   });
-
-   markerEl.addEventListener('pointermove', (event) => {
-      if (!isActivePointer(state, event)) {
-         return;
-      }
-
-      const nextPosition = updateMarkerPosition(markerEl, mapInner, event);
-
-      if (!nextPosition) {
-         return;
-      }
-
-      state.didDrag = true;
-      stopMarkerEvent(event);
-   });
-
-   markerEl.addEventListener('pointerup', (event) => {
-      finishDragging({
-         markerEl,
-         mapInner,
-         itemsAtPoint,
-         state,
-         event,
+         beginDragging(markerEl, state, event);
       });
-   });
 
-   markerEl.addEventListener('pointercancel', (event) => {
-      finishDragging({
-         markerEl,
-         mapInner,
-         itemsAtPoint,
-         state,
-         event,
+      markerEl.addEventListener('pointermove', (event) => {
+         if (!isActivePointer(state, event)) {
+            return;
+         }
+
+         const nextPosition = updateMarkerPosition(markerEl, mapInner, event);
+
+         if (!nextPosition) {
+            return;
+         }
+
+         state.didDrag = true;
+         stopMarkerEvent(event);
       });
-   });
 
-   markerEl.addEventListener('click', (event) => {
-      stopMarkerEvent(event);
-   });
+      markerEl.addEventListener('pointerup', (event) => {
+         finishDragging({
+            markerEl,
+            mapInner,
+            itemsAtPoint,
+            state,
+            event,
+         });
+      });
+
+      markerEl.addEventListener('pointercancel', (event) => {
+         finishDragging({
+            markerEl,
+            mapInner,
+            itemsAtPoint,
+            state,
+            event,
+         });
+      });
+
+      markerEl.addEventListener('click', (event) => {
+         stopMarkerEvent(event);
+      });
+   }
 }

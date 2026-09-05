@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
-import { loadExhibits } from '../../options/loaders.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class ExhibitClosed {
@@ -12,8 +12,8 @@ export class ExhibitClosed {
       return EntityClosedFormController.createEntityClosedFormController({
          ...controllerOptions,
          entityEl: exhibitEl,
-         loadOptions: loadExhibits,
-         populateOptions: populateExhibitDropdown,
+         loadOptions: Loaders.loadExhibits,
+         populateOptions: Dropdowns.populateExhibitDropdown,
          submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setExhibitClosed({
             exhibit: entity,
             startDate: startDate || null,

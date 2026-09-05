@@ -3,7 +3,7 @@ import { ItineraryRenderer } from '../itinerary/itineraryRenderer.js';
 import { getItinerary } from '../itinerary/itineraryService.js';
 import { ItineraryShape } from '../itinerary/itineraryShape.js';
 import { getItineraryOverlayMountEl } from '../itinerary/panel/components/popup.js';
-import { offerPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
+import { OfferPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
 import { Summary } from '../itinerary/wizard/diff/summary.js';
 import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
 import { WheelBlocker } from '../itinerary/wizard/wheelBlocker.js';
@@ -71,7 +71,7 @@ async function refreshItineraryPageContent(
    const itinerary = providedItinerary ?? await getItinerary();
 
    if (!skipStaleCheck) {
-      const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+      const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
          mountEl,
          itinerary,
          onCleared: () => {

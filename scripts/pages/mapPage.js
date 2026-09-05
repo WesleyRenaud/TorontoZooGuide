@@ -6,7 +6,7 @@ import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
-import { initSearch } from '../search/search.js';
+import { Search } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
 
 function getMapPageElements() {
@@ -106,7 +106,7 @@ function initMapSearch({
    explore,
    updater,
 } = {}) {
-   return initSearch({
+   return Search.initSearch({
       inputEl: elements.animalSearchInput,
       resultsEl: elements.animalSearchResultsEl,
       getIncludeFlags: () => ({

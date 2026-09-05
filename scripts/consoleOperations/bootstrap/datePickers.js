@@ -93,23 +93,25 @@ function initDateTimePickerBinding(refs, {
    );
 }
 
-export function wireConsoleOperationDatePickers(refs) {
-   DATE_PICKER_BINDINGS.dateRanges.forEach(path => {
-      initDateRangePickerBinding(refs, path);
-   });
+export class DatePickers {
+   static wireConsoleOperationDatePickers(refs) {
+      DATE_PICKER_BINDINGS.dateRanges.forEach(path => {
+         initDateRangePickerBinding(refs, path);
+      });
 
-   DATE_PICKER_BINDINGS.singleDates.forEach(path => {
-      initSingleDatePickerBinding(refs, path);
-   });
+      DATE_PICKER_BINDINGS.singleDates.forEach(path => {
+         initSingleDatePickerBinding(refs, path);
+      });
 
-   DATE_PICKER_BINDINGS.dateTimes.forEach(binding => {
-      initDateTimePickerBinding(refs, binding);
-   });
+      DATE_PICKER_BINDINGS.dateTimes.forEach(binding => {
+         initDateTimePickerBinding(refs, binding);
+      });
 
-   if (refs.attractions?.hoursSchedule) {
-      Object.assign(
-         refs.attractions.hoursSchedule,
-         ConsoleDatePickers.initAttractionHoursSchedulePickers(refs.attractions.hoursSchedule)
-      );
+      if (refs.attractions?.hoursSchedule) {
+         Object.assign(
+            refs.attractions.hoursSchedule,
+            ConsoleDatePickers.initAttractionHoursSchedulePickers(refs.attractions.hoursSchedule)
+         );
+      }
    }
 }

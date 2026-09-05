@@ -1,16 +1,9 @@
 import { AnimalViewingScopeControl } from './animalViewingScopeControl.js';
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   bindResetValueOnChange,
-   getFieldValue,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
-import { loadExhibits } from '../../options/loaders.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -35,12 +28,12 @@ export class AnimalOffDisplay {
 
       function getFormValues() {
          return {
-            species: getFieldValue(speciesEl),
-            exhibit: getFieldValue(exhibitEl),
-            viewingScope: getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
-            startDate: getFieldValue(startDateEl),
-            endDate: getFieldValue(endDateEl),
-            message: getFieldValue(messageEl),
+            species: ControllerUtils.getFieldValue(speciesEl),
+            exhibit: ControllerUtils.getFieldValue(exhibitEl),
+            viewingScope: ControllerUtils.getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
+            startDate: ControllerUtils.getFieldValue(startDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
+            message: ControllerUtils.getFieldValue(messageEl),
          };
       }
 
@@ -58,16 +51,16 @@ export class AnimalOffDisplay {
             return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.exhibit);
          }
 
-         return validateOptionalDateRange(startDate, endDate);
+         return ControllerUtils.validateOptionalDateRange(startDate, endDate);
       }
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
          viewingScopeControl.reset();
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,
@@ -103,11 +96,11 @@ export class AnimalOffDisplay {
       }
 
       async function show() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
-            loadOptions: loadExhibits,
-            populateOptions: populateExhibitDropdown,
+            loadOptions: Loaders.loadExhibits,
+            populateOptions: Dropdowns.populateExhibitDropdown,
             targetEl: exhibitEl,
             resetForm,
             activatePanel,
@@ -150,7 +143,7 @@ export class AnimalOffDisplay {
          viewingScopeEl,
       });
 
-      bindResetValueOnChange(exhibitEl, speciesEl);
+      ControllerUtils.bindResetValueOnChange(exhibitEl, speciesEl);
 
       showButtonEl?.addEventListener('click', show);
       cancelButtonEl?.addEventListener('click', hide);

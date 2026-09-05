@@ -102,7 +102,9 @@
       "tests/scripts/consoleOperations/helpers/occurrenceFilterController.test.mjs",
       "tests/scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.test.mjs",
       "tests/scripts/consoleOperations/forms/multiTimeFieldController.test.mjs",
-      "tests/scripts/consoleOperations/animals/controllers/animalViewingScopeControl.test.mjs"
+      "tests/scripts/consoleOperations/animals/controllers/animalViewingScopeControl.test.mjs",
+      "tests/scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.test.mjs",
+      "tests/scripts/itinerary/pastItinerary/staleItinerary.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

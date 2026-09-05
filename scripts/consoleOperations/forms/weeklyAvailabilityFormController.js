@@ -1,12 +1,5 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hasCheckedField,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../helpers/controllerUtils.js';
+import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -55,7 +48,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function resetDays() {
-         resetFormFields([
+         ControllerUtils.resetFormFields([
             mondayEl,
             tuesdayEl,
             wednesdayEl,
@@ -129,7 +122,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function resetForm() {
-         resetFormFields([entityEl, startDateEl, endDateEl, messageEl]);
+         ControllerUtils.resetFormFields([entityEl, startDateEl, endDateEl, messageEl]);
 
          if (presetEl) {
             presetEl.value = 'everyDay';
@@ -145,7 +138,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,
@@ -153,7 +146,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function hasAtLeastOneOpenDay() {
-         return hasCheckedField([
+         return ControllerUtils.hasCheckedField([
             mondayEl,
             tuesdayEl,
             wednesdayEl,
@@ -166,7 +159,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       async function onShowClick() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
             loadOptions,
@@ -211,10 +204,10 @@ export class WeeklyAvailabilityFormController {
 
 
       async function onSubmitClick() {
-         const entity = getFieldValue(entityEl);
-         const startDate = getFieldValue(startDateEl);
-         const endDate = getFieldValue(endDateEl);
-         const message = getFieldValue(messageEl);
+         const entity = ControllerUtils.getFieldValue(entityEl);
+         const startDate = ControllerUtils.getFieldValue(startDateEl);
+         const endDate = ControllerUtils.getFieldValue(endDateEl);
+         const message = ControllerUtils.getFieldValue(messageEl);
 
          Status.setStatus(statusEl, '');
 
@@ -228,7 +221,7 @@ export class WeeklyAvailabilityFormController {
             return;
          }
 
-         const dateError = validateOptionalDateRange(startDate, endDate);
+         const dateError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
 
          if (dateError) {
             Status.setStatus(statusEl, dateError, 'is-error');

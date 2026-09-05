@@ -1,18 +1,9 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
-import {
-   getSelectedUpdateIdentity,
-   loadActiveUpdates,
-   populateUpdateDropdown,
-} from './updateOptions.js';
+import { UpdateOptions } from './updateOptions.js';
 
 export class EndUpdate {
    static createEndUpdateController({
@@ -29,15 +20,15 @@ export class EndUpdate {
 
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       async function show() {
-         await loadOptionsAndShowPanel({
+         await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
             setStatus: Status.setStatus,
-            loadOptions: loadActiveUpdates,
-            populateOptions: populateUpdateDropdown,
+            loadOptions: UpdateOptions.loadActiveUpdates,
+            populateOptions: UpdateOptions.populateUpdateDropdown,
             targetEl: updateEl,
             resetForm,
             activatePanel,
@@ -47,7 +38,7 @@ export class EndUpdate {
       }
 
       function hide() {
-         hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
+         ControllerUtils.hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
       }
 
       function validateForm({ title, startDate }) {
@@ -58,7 +49,7 @@ export class EndUpdate {
       async function onSubmitClick() {
          const values = {
             ...getSelectedUpdateIdentity(updateEl),
-            endDate: getFieldValue(endDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
          };
          const validationError = validateForm(values);
 

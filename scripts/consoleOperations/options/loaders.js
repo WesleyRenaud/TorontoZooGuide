@@ -31,74 +31,76 @@ async function loadCachedOptions({
    return cachedOptionSets[cacheKey];
 }
 
-export async function loadSpecies() {
-   return loadCachedOptions({
-      cacheKey: 'species',
-      fetchOptions: ConsoleOperationsApi.getSpeciesOptions,
-      resultKey: 'species',
-   });
-}
+export class Loaders {
+   static async loadSpecies() {
+      return loadCachedOptions({
+         cacheKey: 'species',
+         fetchOptions: ConsoleOperationsApi.getSpeciesOptions,
+         resultKey: 'species',
+      });
+   }
 
-export async function loadExhibits() {
-   return loadCachedOptions({
-      cacheKey: 'exhibits',
-      fetchOptions: ConsoleOperationsApi.getExhibitOptions,
-      resultKey: 'exhibits',
-   });
-}
+   static async loadExhibits() {
+      return loadCachedOptions({
+         cacheKey: 'exhibits',
+         fetchOptions: ConsoleOperationsApi.getExhibitOptions,
+         resultKey: 'exhibits',
+      });
+   }
 
-export async function loadRestaurants() {
-   return loadCachedOptions({
-      cacheKey: 'restaurants',
-      fetchOptions: ConsoleOperationsApi.getRestaurantNameOptions,
-      resultKey: 'restaurants',
-   });
-}
+   static async loadRestaurants() {
+      return loadCachedOptions({
+         cacheKey: 'restaurants',
+         fetchOptions: ConsoleOperationsApi.getRestaurantNameOptions,
+         resultKey: 'restaurants',
+      });
+   }
 
-export async function loadRestrooms() {
-   return loadCachedOptions({
-      cacheKey: 'restrooms',
-      fetchOptions: ConsoleOperationsApi.getRestroomNameOptions,
-      resultKey: 'restrooms',
-   });
-}
+   static async loadRestrooms() {
+      return loadCachedOptions({
+         cacheKey: 'restrooms',
+         fetchOptions: ConsoleOperationsApi.getRestroomNameOptions,
+         resultKey: 'restrooms',
+      });
+   }
 
-export async function loadGiftShops() {
-   return loadCachedOptions({
-      cacheKey: 'giftShops',
-      fetchOptions: ConsoleOperationsApi.getGiftShopNameOptions,
-      resultKey: 'gift_shops',
-   });
-}
+   static async loadGiftShops() {
+      return loadCachedOptions({
+         cacheKey: 'giftShops',
+         fetchOptions: ConsoleOperationsApi.getGiftShopNameOptions,
+         resultKey: 'gift_shops',
+      });
+   }
 
-export async function loadAttractions() {
-   return loadCachedOptions({
-      cacheKey: 'attractions',
-      fetchOptions: ConsoleOperationsApi.getAttractionNameOptions,
-      resultKey: 'attractions',
-   });
-}
+   static async loadAttractions() {
+      return loadCachedOptions({
+         cacheKey: 'attractions',
+         fetchOptions: ConsoleOperationsApi.getAttractionNameOptions,
+         resultKey: 'attractions',
+      });
+   }
 
-export async function loadTransportationStations() {
-   return loadCachedOptions({
-      cacheKey: 'transportationStations',
-      fetchOptions: ConsoleOperationsApi.getTransportationStationNameOptions,
-      resultKey: 'transportation_stations',
-   });
-}
+   static async loadTransportationStations() {
+      return loadCachedOptions({
+         cacheKey: 'transportationStations',
+         fetchOptions: ConsoleOperationsApi.getTransportationStationNameOptions,
+         resultKey: 'transportation_stations',
+      });
+   }
 
-export async function loadGuardiansTalks() {
-   return loadCachedOptions({
-      cacheKey: 'guardiansTalks',
-      fetchOptions: ConsoleOperationsApi.getGuardiansTalkNameOptions,
-      resultKey: 'guardians_talks',
-   });
-}
+   static async loadGuardiansTalks() {
+      return loadCachedOptions({
+         cacheKey: 'guardiansTalks',
+         fetchOptions: ConsoleOperationsApi.getGuardiansTalkNameOptions,
+         resultKey: 'guardians_talks',
+      });
+   }
 
-export async function loadWildEncounters() {
-   return loadCachedOptions({
-      cacheKey: 'wildEncounters',
-      fetchOptions: ConsoleOperationsApi.getWildEncounterNameOptions,
-      resultKey: 'wild_encounters',
-   });
+   static async loadWildEncounters() {
+      return loadCachedOptions({
+         cacheKey: 'wildEncounters',
+         fetchOptions: ConsoleOperationsApi.getWildEncounterNameOptions,
+         resultKey: 'wild_encounters',
+      });
+   }
 }

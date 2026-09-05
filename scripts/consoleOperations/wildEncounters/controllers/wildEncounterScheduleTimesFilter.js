@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 
 export class WildEncounterScheduleTimesFilter {
    static createWildEncounterScheduleTimesFilterController({
@@ -20,7 +20,7 @@ export class WildEncounterScheduleTimesFilter {
       }
 
       function renderTimesList(times = []) {
-         const wildEncounter = getFieldValue(wildEncounterEl);
+         const wildEncounter = ControllerUtils.getFieldValue(wildEncounterEl);
 
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
@@ -38,7 +38,7 @@ export class WildEncounterScheduleTimesFilter {
       }
 
       async function refresh() {
-         const wildEncounter = getFieldValue(wildEncounterEl);
+         const wildEncounter = ControllerUtils.getFieldValue(wildEncounterEl);
 
          try {
             const scheduleTimes = wildEncounter
