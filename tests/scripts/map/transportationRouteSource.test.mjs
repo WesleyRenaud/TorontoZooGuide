@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createTransportationRouteSource } from '../../scripts/map/transportationRouteSource.js';
+import { TransportationRouteSource } from '../../../scripts/map/transportationRouteSource.js';
 
 function createStore() {
    return {
@@ -13,10 +13,10 @@ function createStore() {
    };
 }
 
-test('zoomobile route source stores station markers under the selected route layer', async () => {
+test('Test_CreateTransportationRouteSource_TestSelectedRoute_ExpectStationsStored', async () => {
    const store = createStore();
    const shownRoutes = [];
-   const source = createTransportationRouteSource(store, {
+   const source = TransportationRouteSource.createTransportationRouteSource(store, {
       fetchTransportationRoute: async (payload) => {
          assert.deepEqual(payload, {
             month: 'JUN',
@@ -51,12 +51,12 @@ test('zoomobile route source stores station markers under the selected route lay
    assert.deepEqual(shownRoutes, ['summer']);
 });
 
-test('zoomobile route source clears station markers when no route is selected', async () => {
+test('Test_CreateTransportationRouteSource_TestNoRoute_ExpectStationsCleared', async () => {
    const store = createStore();
    store.byType.transportationStation = [{ name: 'Main Station', type: 'transportationStation' }];
    store.byType.transportationRoute = [{ name: 'Main Station', type: 'transportationStation' }];
 
-   const source = createTransportationRouteSource(store, {
+   const source = TransportationRouteSource.createTransportationRouteSource(store, {
       fetchTransportationRoute: async () => {
          throw new Error('Route should not be fetched');
       },

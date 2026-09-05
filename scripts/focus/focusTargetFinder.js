@@ -22,75 +22,77 @@ function distToViewportCenter(markerEl, viewportEl) {
    return Math.hypot(dx, dy);
 }
 
-export function createFocusMatch(row, type) {
-   const typeKey = String(type || row?.type || '');
-   const renderer = TooltipRenderers.TYPE_REGISTRY?.[typeKey]
-      ?? TooltipRenderers.TYPE_REGISTRY?.animal
-      ?? null;
+export class FocusTargetFinder {
+   static createFocusMatch(row, type) {
+      const typeKey = String(type || row?.type || '');
+      const renderer = TooltipRenderers.TYPE_REGISTRY?.[typeKey]
+         ?? TooltipRenderers.TYPE_REGISTRY?.animal
+         ?? null;
 
-   const matchFn = renderer?.isMatch
-      ? (item) => renderer.isMatch(item, row)
-      : () => true;
+      const matchFn = renderer?.isMatch
+         ? (item) => renderer.isMatch(item, row)
+         : () => true;
 
-   return {
-      typeKey,
-      matchFn,
-   };
-}
-
-export function findMarkerByCoordinates({ x, y, getMarkerByCoord }) {
-   const key = CoordKey.coordKey(x, y);
-
-   if (!key) {
-      return null;
+      return {
+         typeKey,
+         matchFn,
+      };
    }
 
-   return getMarkerByCoord(key) || null;
-}
+   static findMarkerByCoordinates({ x, y, getMarkerByCoord }) {
+      const key = CoordKey.coordKey(x, y);
 
-export function findBestMarkerByScan({
-   typeKey,
-   matchFn,
-   markers,
-   viewportEl,
-}) {
-   let best = null;
-
-   for (const marker of markers) {
-      const items = marker.__items || [];
-
-      if (!items.length) {
-         continue;
+      if (!key) {
+         return null;
       }
 
-      const matches = items.filter((item) => (
-         String(item?.type || '') === typeKey &&
-         matchFn(item)
-      ));
+      return getMarkerByCoord(key) || null;
+   }
 
-      if (!matches.length) {
-         continue;
-      }
+   static findBestMarkerByScan({
+      typeKey,
+      matchFn,
+      markers,
+      viewportEl,
+   }) {
+      let best = null;
 
-      const distance = distToViewportCenter(marker, viewportEl);
+      for (const marker of markers) {
+         const items = marker.__items || [];
 
-      let bestScoreHere = -Infinity;
+         if (!items.length) {
+            continue;
+         }
 
-      for (const item of matches) {
-         const score = (itemLikelihood(item) * 1000) - distance;
-         if (score > bestScoreHere) {
-            bestScoreHere = score;
+         const matches = items.filter((item) => (
+            String(item?.type || '') === typeKey &&
+            matchFn(item)
+         ));
+
+         if (!matches.length) {
+            continue;
+         }
+
+         const distance = distToViewportCenter(marker, viewportEl);
+
+         let bestScoreHere = -Infinity;
+
+         for (const item of matches) {
+            const score = (itemLikelihood(item) * 1000) - distance;
+            if (score > bestScoreHere) {
+               bestScoreHere = score;
+            }
+         }
+
+         if (!best || bestScoreHere > best.score) {
+            best = {
+               marker,
+               items,
+               score: bestScoreHere,
+            };
          }
       }
 
-      if (!best || bestScoreHere > best.score) {
-         best = {
-            marker,
-            items,
-            score: bestScoreHere,
-         };
-      }
+      return best;
    }
-
-   return best;
 }

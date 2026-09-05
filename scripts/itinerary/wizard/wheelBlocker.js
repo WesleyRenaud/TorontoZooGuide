@@ -15,27 +15,29 @@ function findScrollableAncestor(startEl, stopEl) {
    return null;
 }
 
-export function blockMapWheelWhileWizardOpen(mountEl) {
-   if (!mountEl) return;
+export class WheelBlocker {
+   static blockMapWheelWhileWizardOpen(mountEl) {
+      if (!mountEl) return;
 
-   mountEl.addEventListener(
-      'wheel',
-      (e) => {
-         const overlay = mountEl.querySelector('.itin-overlay');
-         if (!overlay) return;
+      mountEl.addEventListener(
+         'wheel',
+         (e) => {
+            const overlay = mountEl.querySelector('.itin-overlay');
+            if (!overlay) return;
 
-         if (!overlay.contains(e.target)) return;
+            if (!overlay.contains(e.target)) return;
 
-         const scroller = findScrollableAncestor(e.target, overlay);
+            const scroller = findScrollableAncestor(e.target, overlay);
 
-         if (scroller) {
+            if (scroller) {
+               e.stopPropagation();
+               return;
+            }
+
+            e.preventDefault();
             e.stopPropagation();
-            return;
-         }
-
-         e.preventDefault();
-         e.stopPropagation();
-      },
-      { capture: true, passive: false }
-   );
+         },
+         { capture: true, passive: false }
+      );
+   }
 }

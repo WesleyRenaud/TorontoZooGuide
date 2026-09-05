@@ -44,24 +44,26 @@ async function mountInlineSvg(mount) {
    return getMountedSvg(mount);
 }
 
-export async function loadInlineZooMap() {
-   const mount = getZooMapMount();
+export class LoadInlineZooMap {
+   static async loadInlineZooMap() {
+      const mount = getZooMapMount();
 
-   if (!mount) {
-      return null;
+      if (!mount) {
+         return null;
+      }
+
+      const existingSvg = getMountedSvg(mount);
+
+      if (existingSvg) {
+         return configureInlineSvg(existingSvg);
+      }
+
+      const svg = await mountInlineSvg(mount);
+
+      if (!svg) {
+         return null;
+      }
+
+      return configureInlineSvg(svg);
    }
-
-   const existingSvg = getMountedSvg(mount);
-
-   if (existingSvg) {
-      return configureInlineSvg(existingSvg);
-   }
-
-   const svg = await mountInlineSvg(mount);
-
-   if (!svg) {
-      return null;
-   }
-
-   return configureInlineSvg(svg);
 }

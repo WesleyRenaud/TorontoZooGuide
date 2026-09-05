@@ -1,19 +1,19 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import { createTooltipCard } from './cardFactory.js';
+import { CardFactory } from './cardFactory.js';
 import { StoredSelection } from '../../itinerary/selectors/base/storedSelection.js';
 import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export const wildEncounterRenderer = {
-   key: 'wildEncounter',
+export class WildEncounters {
+   static key = 'wildEncounter';
 
-   createCard(w, index) {
+   static createCard(w, index) {
       const name = w.name || APP_STRINGS.entityLabels.wildEncounter;
       const normalizedName = AssetKeyNormalizer.normalize(name);
       const link = StoredSelection.normalizeStoredLink(w.link);
       const times = MapOccurrenceTimesFormatter.format(w);
 
-      return createTooltipCard({
+      return CardFactory.createTooltipCard({
          index,
          image: {
             src: `images/details/wild-encounters/${normalizedName}.png`,
@@ -33,5 +33,5 @@ export const wildEncounterRenderer = {
             times ? APP_STRINGS.tooltips.times(times) : '',
          ],
       });
-   },
-};
+   }
+}

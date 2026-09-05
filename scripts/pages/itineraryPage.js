@@ -6,9 +6,9 @@ import { getItineraryOverlayMountEl } from '../itinerary/panel/components/popup.
 import { offerPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
 import { Summary } from '../itinerary/wizard/diff/summary.js';
 import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
-import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
+import { WheelBlocker } from '../itinerary/wizard/wheelBlocker.js';
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
-import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 
 const DEFAULT_WIZARD_STEP = 'date';
@@ -137,7 +137,7 @@ async function initEmbeddedItineraryMap() {
    }
 
    try {
-      await loadInlineZooMap();
+      await LoadInlineZooMap.loadInlineZooMap();
       initItineraryMap();
    } catch (err) {
       console.warn('initItineraryMap() failed:', err);
@@ -162,7 +162,7 @@ export function initItineraryPage() {
    );
    const openWizard = createWizardOpener(mountEl);
 
-   blockMapWheelWhileWizardOpen(mountEl);
+   WheelBlocker.blockMapWheelWhileWizardOpen(mountEl);
    bindWizardEvents(openWizard);
    bindPanelRefreshEvents(refreshPanel);
 

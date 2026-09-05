@@ -2,7 +2,7 @@ import { FocusFromQuery } from '../focus/focusFromQuery.js';
 import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
 import { initMapControls } from '../map/controls.js';
 import { DateContext } from '../map/dateContext.js';
-import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
@@ -161,7 +161,7 @@ export async function initMapPage() {
 
    if (!hasRequiredMapPageElements(elements)) return;
 
-   await loadInlineZooMap();
+   await LoadInlineZooMap.loadInlineZooMap();
    await TransportationRouteControls.initTransportationRouteControls(elements.transportationRoutesEl);
 
    let explore = null;

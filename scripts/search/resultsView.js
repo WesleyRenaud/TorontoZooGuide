@@ -1,7 +1,4 @@
-import {
-   getGuardiansTalkLinkedAnimal,
-   openGuardiansTalkLinkedAnimal,
-} from '../guardians/openGuardiansTalkLinkedAnimal.js';
+import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
@@ -55,8 +52,8 @@ const ROW_LEFT_RENDERERS = {
    guardiansTalk: SearchResultPresentation.createSearchImageRowRenderer({
       presentation: SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
       imageDirectory: 'guardians-talks',
-      onTitleClick: openGuardiansTalkLinkedAnimal,
-      shouldEnableTitleClick: (row) => Boolean(getGuardiansTalkLinkedAnimal(row)),
+      onTitleClick: OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal,
+      shouldEnableTitleClick: (row) => Boolean(OpenGuardiansTalkLinkedAnimal.getGuardiansTalkLinkedAnimal(row)),
    }),
    ...SearchResultPresentation.createSearchImageRowRenderers([
       { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: SearchResultPresentation.getRestaurantMenuLink },

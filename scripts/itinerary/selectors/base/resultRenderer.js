@@ -1,7 +1,4 @@
-import {
-   createAnimalTitleLinkElement,
-   createSpeciesLinkTitleElement,
-} from '../../../animals/createSpeciesLinkTitle.js';
+import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function createSelectorInfoLink(infoLink) {
@@ -68,7 +65,7 @@ export function createSelectorTextColumn({
       left.appendChild(titleNode);
    }
    else if (titleParts) {
-      left.appendChild(createAnimalTitleLinkElement({
+      left.appendChild(CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
          species: titleParts.species,
          enclosureName: titleParts.enclosureName,
          className: 'animal-result-species',
@@ -76,7 +73,7 @@ export function createSelectorTextColumn({
       }));
    }
    else {
-      left.appendChild(createSpeciesLinkTitleElement({
+      left.appendChild(CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
          text: title,
          suffix: titleSuffix,
          className: 'animal-result-species',

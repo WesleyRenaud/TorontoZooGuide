@@ -35,20 +35,22 @@ function createSvgLabelVisibilityHandler(mapInner, panzoom) {
    };
 }
 
-export function createPanzoom(mapInner, { contain }) {
-   const panzoom = Panzoom(mapInner, {
-      ...PANZOOM_SCALE_RANGE,
-      contain,
-   });
+export class Panzoom {
+   static createPanzoom(mapInner, { contain }) {
+      const panzoom = globalThis.Panzoom(mapInner, {
+         ...PANZOOM_SCALE_RANGE,
+         contain,
+      });
 
-   mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
-   const updateSvgLabelVisibility = createSvgLabelVisibilityHandler(
-      mapInner,
-      panzoom
-   );
+      mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+      const updateSvgLabelVisibility = createSvgLabelVisibilityHandler(
+         mapInner,
+         panzoom
+      );
 
-   mapInner.addEventListener('panzoomchange', updateSvgLabelVisibility);
-   updateSvgLabelVisibility();
+      mapInner.addEventListener('panzoomchange', updateSvgLabelVisibility);
+      updateSvgLabelVisibility();
 
-   return panzoom;
+      return panzoom;
+   }
 }

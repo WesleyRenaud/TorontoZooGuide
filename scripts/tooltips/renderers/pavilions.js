@@ -1,15 +1,15 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import { createTooltipCard } from './cardFactory.js';
+import { CardFactory } from './cardFactory.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export const pavilionRenderer = {
-   key: 'pavilion',
+export class Pavilions {
+   static key = 'pavilion';
 
-   createCard(p, index) {
+   static createCard(p, index) {
       const name = p.name || APP_STRINGS.entityLabels.pavilion;
       const normalizedName = AssetKeyNormalizer.normalize(name);
 
-      return createTooltipCard({
+      return CardFactory.createTooltipCard({
          index,
          image: {
             src: `images/details/pavilions/${normalizedName}.png`,
@@ -22,5 +22,5 @@ export const pavilionRenderer = {
             p.description ? APP_STRINGS.tooltips.description(p.description) : '',
          ],
       });
-   },
-};
+   }
+}

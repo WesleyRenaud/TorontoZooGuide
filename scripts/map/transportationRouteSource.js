@@ -24,36 +24,38 @@ function normalizeTransportationStations(transportationStations) {
    return SourceHelpers.normalizeTypedRows(transportationStations, 'transportationStation');
 }
 
-export function createTransportationRouteSource(
-   store,
-   {
-      fetchTransportationRoute,
-      hideRouteLayers,
-      showRouteLayer,
-   } = {}
-) {
-   return createNoCacheSource(async (ctx) => {
-      hideRouteLayers?.();
+export class TransportationRouteSource {
+   static createTransportationRouteSource(
+      store,
+      {
+         fetchTransportationRoute,
+         hideRouteLayers,
+         showRouteLayer,
+      } = {}
+   ) {
+      return createNoCacheSource(async (ctx) => {
+         hideRouteLayers?.();
 
-      if (ctx.transportationRoute === 'none') {
-         clearTransportationRouteRows(store);
-         return [];
-      }
+         if (ctx.transportationRoute === 'none') {
+            clearTransportationRouteRows(store);
+            return [];
+         }
 
-      const {
-         route,
-         transportationStations,
-      } = await fetchTransportationRoute(buildDatePayload(ctx, {
-         transportationRoute: ctx.transportationRoute,
-         transportationStationsToInclude: ctx.transportationStationsToInclude,
-      }));
+         const {
+            route,
+            transportationStations,
+         } = await fetchTransportationRoute(buildDatePayload(ctx, {
+            transportationRoute: ctx.transportationRoute,
+            transportationStationsToInclude: ctx.transportationStationsToInclude,
+         }));
 
-      showRouteLayer?.(route);
+         showRouteLayer?.(route);
 
-      const stations = normalizeTransportationStations(transportationStations);
-      SourceHelpers.setSourceRows(store, 'transportationStation', stations);
-      SourceHelpers.setSourceRows(store, 'transportationRoute', stations);
+         const stations = normalizeTransportationStations(transportationStations);
+         SourceHelpers.setSourceRows(store, 'transportationStation', stations);
+         SourceHelpers.setSourceRows(store, 'transportationRoute', stations);
 
-      return stations;
-   });
+         return stations;
+      });
+   }
 }
