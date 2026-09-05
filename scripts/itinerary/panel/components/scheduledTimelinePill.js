@@ -264,10 +264,11 @@ function buildScheduledPillWithoutMenu(
    return pill;
 }
 
-export function makeScheduledPill(
-   label,
-   durationMinutes,
-   {
+export class ScheduledTimelinePill {
+   static makeScheduledPill(
+      label,
+      durationMinutes,
+      {
       startTime,
       endTime,
       groupItems = [],
@@ -277,40 +278,41 @@ export function makeScheduledPill(
       item = null,
       slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES,
       displayDurationMinutes = durationMinutes,
-   } = {}
-) {
-   if (!label || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
-      return null;
-   }
+      } = {}
+   ) {
+      if (!label || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+         return null;
+      }
 
-   let pill;
+      let pill;
 
-   if (groupItems.length > 1) {
-      pill = buildGroupedScheduledPill(groupItems, durationMinutes, {
-         menuAriaLabel,
-      });
-   }
-   else if (menuItems.length > 0) {
-      pill = buildScheduledPillWithMenu(label, durationMinutes, {
-         startTime,
-         endTime,
-         menuItems,
-         menuAriaLabel,
-         onLabelClick,
-         item,
-      });
-   }
-   else {
-      pill = buildScheduledPillWithoutMenu(label, durationMinutes, {
-         startTime,
-         endTime,
-         onLabelClick,
-         item,
-      });
-   }
+      if (groupItems.length > 1) {
+         pill = buildGroupedScheduledPill(groupItems, durationMinutes, {
+            menuAriaLabel,
+         });
+      }
+      else if (menuItems.length > 0) {
+         pill = buildScheduledPillWithMenu(label, durationMinutes, {
+            startTime,
+            endTime,
+            menuItems,
+            menuAriaLabel,
+            onLabelClick,
+            item,
+         });
+      }
+      else {
+         pill = buildScheduledPillWithoutMenu(label, durationMinutes, {
+            startTime,
+            endTime,
+            onLabelClick,
+            item,
+         });
+      }
 
-   applyScheduledPillDuration(pill, displayDurationMinutes, slotSpanMinutes);
-   applyScheduledPillRegionColors(pill, item);
+      applyScheduledPillDuration(pill, displayDurationMinutes, slotSpanMinutes);
+      applyScheduledPillRegionColors(pill, item);
 
-   return pill;
+      return pill;
+   }
 }

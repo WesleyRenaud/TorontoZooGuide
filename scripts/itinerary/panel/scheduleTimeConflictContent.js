@@ -3,16 +3,11 @@ import { el } from './dom.js';
 import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { ScheduleTimeConflictButtonState } from './scheduleTimeConflictButtonState.js';
-import {
-   createSelectorRowContent,
-   createSelectorTextColumn,
-} from '../selectors/base/resultRenderer.js';
+import { ResultRenderer } from '../selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { ScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
-
-export const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
 
 function refreshConflictSelectionButtons(buttonEntries, selection) {
    buttonEntries.forEach(({ button, item }) => {
@@ -42,20 +37,6 @@ function handleConflictItemButtonClick(selection, item, buttonEntries) {
 
    ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
    refreshConflictSelectionButtons(buttonEntries, selection);
-}
-
-export function buildConflictItemImageSrc(item) {
-   const file = AssetKeyNormalizer.normalize(item?.name || '');
-
-   if (!file) {
-      return null;
-   }
-
-   const directory = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
-      ? 'guardians-talks'
-      : 'wild-encounters';
-
-   return `images/details/${directory}/${file}.png`;
 }
 
 function createWildEncounterSelectButton({
@@ -110,10 +91,10 @@ function createWildEncounterConflictRow({
    buttonEntries,
 } = {}) {
    const row = el('div', 'animal-result itin-save-issue-conflict-row');
-   const content = createSelectorRowContent({
-      imageSrc: buildConflictItemImageSrc(item),
+   const content = ResultRenderer.createSelectorRowContent({
+      imageSrc: ScheduleTimeConflictContent.buildConflictItemImageSrc(item),
       imageAlt: APP_STRINGS.itinerary.itemImage(item.name),
-      textColumnEl: createSelectorTextColumn({
+      textColumnEl: ResultRenderer.createSelectorTextColumn({
          title: item.name,
          subtitleNode: createScheduleConflictSubtitle(item),
          infoLink: item.link,
@@ -197,26 +178,45 @@ function createWildEncounterConflictSection(issues) {
    };
 }
 
-export function createSaveIssuesContent(issues) {
-   const content = el('div', 'itin-save-issues');
-   const wildEncounterConflictIssues = issues.filter(
-      issue => issue?.type === WILD_ENCOUNTER_TIME_CONFLICT
-   );
-   let conflictGroups = [];
+export class ScheduleTimeConflictContent {
+   static WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
 
-   if (wildEncounterConflictIssues.length) {
-      const sectionResult = createWildEncounterConflictSection(
-         WildEncounterConflictResolution.sortWildEncounterConflictIssuesByStartTime(
-            wildEncounterConflictIssues
-         )
-      );
+   static buildConflictItemImageSrc(item) {
+      const file = AssetKeyNormalizer.normalize(item?.name || '');
 
-      content.appendChild(sectionResult.section);
-      conflictGroups = sectionResult.conflictGroups;
+      if (!file) {
+         return null;
+      }
+
+      const directory = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
+         ? 'guardians-talks'
+         : 'wild-encounters';
+
+      return `images/details/${directory}/${file}.png`;
+
    }
 
-   return {
-      content,
-      conflictGroups,
-   };
+   static createSaveIssuesContent(issues) {
+      const content = el('div', 'itin-save-issues');
+      const wildEncounterConflictIssues = issues.filter(
+         issue => issue?.type === ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT
+      );
+      let conflictGroups = [];
+
+      if (wildEncounterConflictIssues.length) {
+         const sectionResult = createWildEncounterConflictSection(
+            WildEncounterConflictResolution.sortWildEncounterConflictIssuesByStartTime(
+               wildEncounterConflictIssues
+            )
+         );
+
+         content.appendChild(sectionResult.section);
+         conflictGroups = sectionResult.conflictGroups;
+      }
+
+      return {
+         content,
+         conflictGroups,
+      };
+   }
 }

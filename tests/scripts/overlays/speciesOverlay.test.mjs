@@ -1,13 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   initSpeciesOverlay,
-   openAnimalSpeciesOverlay,
-} from '../../scripts/overlays/speciesOverlay.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createFetchMock } from './helpers/fetchMock.mjs';
+import { SpeciesOverlay } from '../../../scripts/overlays/speciesOverlay.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+import { createFetchMock } from '../helpers/fetchMock.mjs';
 
 function installSpeciesOverlayDom() {
    const overlay = createDomNode('div', 'species-overlay hidden');
@@ -57,20 +54,20 @@ test.describe('species overlay', () => {
       },
    });
 
-   test('openAnimalSpeciesOverlay ignores animals without a species name', () => {
+   test('Test_OpenAnimalSpeciesOverlay_TestOpenAnimalSpeciesOverlayIgnoresAnimalsWithoutASpeciesName_ExpectOk', () => {
       const overlay = document.getElementById('speciesOverlay');
       const content = overlay?.querySelector('.species-overlay-content');
 
-      openAnimalSpeciesOverlay({ species: '   ' });
+      SpeciesOverlay.openAnimalSpeciesOverlay({ species: '   ' });
 
       assert.equal(overlay?.classList.contains('hidden'), true);
       assert.equal(content?.children.length, 0);
    });
 
-   test('initSpeciesOverlay opens content, closes from backdrop click, and reuses controller', () => {
+   test('Test_InitSpeciesOverlay_TestInitSpeciesOverlayOpensContentClosesFromBackdropClickAnd_ExpectOk', () => {
       const overlay = document.getElementById('speciesOverlay');
       const content = overlay?.querySelector('.species-overlay-content');
-      const first = initSpeciesOverlay();
+      const first = SpeciesOverlay.initSpeciesOverlay();
 
       first.openFromAnimal({
          species: 'African Lion',
@@ -89,14 +86,14 @@ test.describe('species overlay', () => {
 
       overlay?.listeners.click?.({ target: overlay });
       assert.equal(overlay?.classList.contains('hidden'), true);
-      assert.equal(initSpeciesOverlay(), first);
+      assert.equal(SpeciesOverlay.initSpeciesOverlay(), first);
    });
 
-   test('openAnimalSpeciesOverlay shows linked-animal nav only for multiple links', () => {
+   test('Test_OpenAnimalSpeciesOverlay_TestOpenAnimalSpeciesOverlayShowsLinkedAnimalNavOnlyForMultiple_ExpectOk', () => {
       const content = document.getElementById('speciesOverlay')
          ?.querySelector('.species-overlay-content');
 
-      openAnimalSpeciesOverlay(
+      SpeciesOverlay.openAnimalSpeciesOverlay(
          {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
@@ -110,7 +107,7 @@ test.describe('species overlay', () => {
 
       assert.equal(content?.querySelector('.species-overlay-nav'), null);
 
-      openAnimalSpeciesOverlay(
+      SpeciesOverlay.openAnimalSpeciesOverlay(
          {
             species: 'Golden Lion Tamarin',
             exhibit: 'Americas Pavilion',
@@ -133,7 +130,7 @@ test.describe('species overlay', () => {
       assert.ok(content?.querySelector('.species-overlay-nav-next'));
    });
 
-   test('species overlay next arrow fetches and swaps to the next linked animal', async () => {
+   test('Test_Species_TestSpeciesOverlayNextArrowFetchesAndSwapsTo_ExpectOk', async () => {
       const content = document.getElementById('speciesOverlay')
          ?.querySelector('.species-overlay-content');
       const requests = [];
@@ -159,7 +156,7 @@ test.describe('species overlay', () => {
          },
       });
 
-      openAnimalSpeciesOverlay(
+      SpeciesOverlay.openAnimalSpeciesOverlay(
          {
             species: 'Golden Lion Tamarin',
             exhibit: 'Americas Pavilion',

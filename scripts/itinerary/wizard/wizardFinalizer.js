@@ -2,14 +2,14 @@ import { DraftStorage } from '../draftStorage.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
+import { NoticePopup } from '../panel/components/noticePopup.js';
 import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
 import { StorageKeys } from '../storageKeys.js';
 import { APP_STRINGS } from '../../strings.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { WizardPopup } from './wizardPopup.js';
-import { showWizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
+import { WizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
    title: APP_STRINGS.itinerary.noItemsSelected.title,
@@ -53,9 +53,9 @@ export async function finalizeItineraryWizard(
       saveItineraryFn = saveItinerary,
       syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
       showWizardPopup = WizardPopup.showItineraryWizardPopup,
-      showNoticePopup = showItineraryNoticePopup,
+      showNoticePopup = NoticePopup.showItineraryNoticePopup,
       showProceedConfirmation = SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation,
-      showSaveIssuesPopup = showWizardSaveIssuesPopup,
+      showSaveIssuesPopup = WizardSaveIssuesPopup.showWizardSaveIssuesPopup,
       shouldBlockEmpty = WizardFinalizeDecisions.shouldBlockEmptyFinish,
       shouldShowSaveIssues = WizardFinalizeDecisions.shouldShowSaveIssuesPopup,
    } = deps;

@@ -1,5 +1,5 @@
-import { showItineraryConfirmPopup } from './components/confirmPopup.js';
-import { getItineraryOverlayMountEl } from './components/popup.js';
+import { ConfirmPopup } from './components/confirmPopup.js';
+import { Popup } from './components/popup.js';
 import { Format } from './format.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
@@ -95,7 +95,7 @@ export class FixedTimeItemLongWaitConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = getItineraryOverlayMountEl() ?? document.body,
+      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const strings = APP_STRINGS.itinerary.confirmation;
       const items = FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues);
@@ -107,7 +107,7 @@ export class FixedTimeItemLongWaitConfirmation {
 
       const [item] = items;
 
-      showItineraryConfirmPopup({
+      ConfirmPopup.showItineraryConfirmPopup({
          title: strings.fixedTimeItemLongWaitTitle(item.typeLabel),
          message: longWaitConfirmMessage(item, strings),
          confirmText: strings.saveIssuesButton,

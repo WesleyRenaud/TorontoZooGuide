@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { appendScheduledItems } from '../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { DayPlannerTimeline } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 function makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
@@ -22,11 +22,11 @@ function makeEventCardRow(className = 'itin-panel-item') {
 test.describe('dayPlannerTimeline event card region colours', () => {
    installDomTestHooks();
 
-   test('colors talk event cards from location exhibit', () => {
+   test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
       const { gridLine } = makeTimelineGridLine();
       const row = makeEventCardRow();
 
-      appendScheduledItems(gridLine, [{
+      DayPlannerTimeline.appendScheduledItems(gridLine, [{
          items: [{
             row,
             maximumDuration: 30,
@@ -47,11 +47,11 @@ test.describe('dayPlannerTimeline event card region colours', () => {
       assert.equal(card.getAttribute('data-region-slug'), 'australasia');
    });
 
-   test('colors attraction event cards from region', () => {
+   test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
       const { gridLine } = makeTimelineGridLine();
       const row = makeEventCardRow();
 
-      appendScheduledItems(gridLine, [{
+      DayPlannerTimeline.appendScheduledItems(gridLine, [{
          items: [{
             row,
             maximumDuration: 15,
@@ -71,11 +71,11 @@ test.describe('dayPlannerTimeline event card region colours', () => {
       assert.equal(card.getAttribute('data-region-slug'), 'front-courtyard');
    });
 
-   test('colors wild encounter event cards from region', () => {
+   test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
       const { gridLine } = makeTimelineGridLine();
       const row = makeEventCardRow();
 
-      appendScheduledItems(gridLine, [{
+      DayPlannerTimeline.appendScheduledItems(gridLine, [{
          items: [{
             row,
             maximumDuration: 30,

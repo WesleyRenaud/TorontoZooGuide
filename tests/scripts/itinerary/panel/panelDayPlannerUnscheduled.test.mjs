@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
-import { SectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
-import { Rows } from '../../scripts/itinerary/panel/rows.js';
+import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
+import { Rows } from '../../../../scripts/itinerary/panel/rows.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -17,14 +17,14 @@ import {
    textFor,
    timelinePillTexts,
    timelineScheduledPillTexts,
-} from './helpers/panelRowsTestSetup.mjs';
+} from '../../helpers/panelRowsTestSetup.mjs';
 
 
 test.describe('itinerary day planner preview unscheduled', () => {
    installPanelRowsTestHooks();
 
-   test('day planner omits guardians talks and wild encounters from unscheduled items', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerOmitsGuardiansTalksAndWildEncounters_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -56,10 +56,10 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
    });
 
-   test('day planner shows unscheduled transportation without a schedule button', () => {
+   test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_ExpectOk', () => {
       const scheduleCalls = [];
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -112,9 +112,9 @@ test.describe('itinerary day planner preview unscheduled', () => {
       }]);
    });
 
-   test('day planner renders bulk-evaluated transit transportation in scheduled items', () => {
+   test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectOk', () => {
       const removeCalls = [];
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -172,8 +172,8 @@ test.describe('itinerary day planner preview unscheduled', () => {
       }]);
    });
 
-   test('day planner renders bulk-evaluated transit transportation with leg sequence in scheduled items', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationWith_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -235,8 +235,8 @@ test.describe('itinerary day planner preview unscheduled', () => {
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
    });
 
-   test('day planner renders each scheduled transportation sequence in scheduled items', () => {
-      const planner = makeDayPlannerPreview(
+   test('Test_Day_TestDayPlannerRendersEachScheduledTransportationSequenceIn_ExpectOk', () => {
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',

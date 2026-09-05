@@ -1,6 +1,6 @@
 import { AnimalsApi } from '../api/animalsApi.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from './normalizeGuardiansTalkLinkedAnimals.js';
-import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
+import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 
 export class OpenGuardiansTalkLinkedAnimal {
    static getGuardiansTalkLinkedAnimal(talk = {}) {
@@ -22,7 +22,7 @@ export class OpenGuardiansTalkLinkedAnimal {
       const animal = await AnimalsApi.getAnimalInformation(linked);
 
       if (animal) {
-         openAnimalSpeciesOverlay(animal, { linkedAnimals });
+         SpeciesOverlay.openAnimalSpeciesOverlay(animal, { linkedAnimals });
       }
    }
 }

@@ -1,16 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildRemovedItemsPopupSections,
-} from '../../scripts/itinerary/panel/components/removedItemsPopupContent.js';
-import { RemovedItemsPopupSectionSpecs } from '../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
-import { ItineraryAdjustmentTypes } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
-import { SpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { RemovedItemsPopupContent } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupContent.js';
+import { RemovedItemsPopupSectionSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
+import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
+import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhibitKey.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-test('RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent reports removed animals', () => {
+test('Test_RemovedItemsPopupSectionSpecs_TestRemovedItemsPopupSectionSpecsHasRemovedItemsPopupContentReportsRemovedAnimals_ExpectOk', () => {
    assert.equal(
       RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
          removed: {
@@ -33,8 +31,8 @@ test.describe('removedItemsPopupContent', () => {
       },
    });
 
-   test('buildRemovedItemsPopupSections renders adjustment and unscheduled sections', () => {
-      const sections = buildRemovedItemsPopupSections({
+   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsRendersAdjustmentAndUnscheduledSections_ExpectOk', () => {
+      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
          adjustments: [{
             type: 'arrivalTimeAdjusted',
             previousValue: '09:00',
@@ -61,9 +59,9 @@ test.describe('removedItemsPopupContent', () => {
       assert.ok(sections[1]?.querySelector('.itin-panel-item'));
    });
 
-   test('buildRemovedItemsPopupSections adds keep buttons for removed animals', () => {
+   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsAddsKeepButtonsForRemovedAnimals_ExpectOk', () => {
       const keptKeys = new Set();
-      const sections = buildRemovedItemsPopupSections({
+      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
          removed: {
             animals: [{
                species: 'African Lion',
@@ -93,10 +91,10 @@ test.describe('removedItemsPopupContent', () => {
       assert.equal(keepButton?.classList.contains('is-selected'), true);
    });
 
-   test('buildRemovedItemsPopupSections wires view-alternatives actions', () => {
+   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsWiresViewAlternativesActions_ExpectOk', () => {
       const viewedSteps = [];
 
-      const sections = buildRemovedItemsPopupSections({
+      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
          removed: {
             guardiansTalks: [{
                name: 'African Lion',

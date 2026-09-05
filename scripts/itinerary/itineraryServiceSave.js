@@ -10,12 +10,8 @@ import { AttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAn
 import { FixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
 import { GuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
-import {
-   buildConfirmedOptionsFromBuildWarnings,
-   hasMultipleItineraryBuildWarnings,
-   showItineraryBuildWarningsConfirmation,
-} from './panel/itineraryBuildWarningsConfirmation.js';
-import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
+import { ItineraryBuildWarningsConfirmation } from './panel/itineraryBuildWarningsConfirmation.js';
+import { ScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { WildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 import { WildEncounterConflictResolution } from './wizard/wildEncounterConflictResolution.js';
@@ -73,7 +69,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showScheduleTimeConflictConfirmation,
+         showConfirmation: ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation,
          initialResult,
          payload,
          diffBaseline,
@@ -104,9 +100,9 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (hasMultipleItineraryBuildWarnings(initialResult.issues)) {
+   if (ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings(initialResult.issues)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showItineraryBuildWarningsConfirmation,
+         showConfirmation: ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation,
          initialResult,
          payload,
          diffBaseline,

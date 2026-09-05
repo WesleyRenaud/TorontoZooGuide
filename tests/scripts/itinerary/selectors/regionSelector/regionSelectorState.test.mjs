@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { createRegionSelectorState } from '../../scripts/itinerary/selectors/regionSelector/state.js';
-import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import { DraftStorage } from '../../scripts/itinerary/draftStorage.js';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-import { createFetchMock } from './helpers/fetchMock.mjs';
+import { State } from '../../../../../scripts/itinerary/selectors/regionSelector/state.js';
+import { StorageKeys } from '../../../../../scripts/itinerary/storageKeys.js';
+import { DraftStorage } from '../../../../../scripts/itinerary/draftStorage.js';
+import { createLocalStorageMock } from '../../../helpers/localStorageMock.mjs';
+import { createFetchMock } from '../../../helpers/fetchMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
@@ -16,7 +16,7 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('getAnimalsByExhibit receives month and day from stored visit date', async () => {
+test('Test_GetAnimalsByExhibit_TestGetAnimalsByExhibitReceivesMonthAndDayFromStoredVisit_ExpectOk', async () => {
    localStorage.setItem(StorageKeys.DATE_KEY, '2026-08-12');
 
    globalThis.fetch = createFetchMock({
@@ -31,14 +31,14 @@ test('getAnimalsByExhibit receives month and day from stored visit date', async 
       },
    });
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'R1', exhibits: ['E1'] }]);
    assert.equal(state.toggleRegion('R1'), true);
 
    await state.buildUpdatedAnimalsFromSelection();
 });
 
-test('getAnimalsByExhibit falls back to today when no visit date is stored', async () => {
+test('Test_GetAnimalsByExhibit_TestGetAnimalsByExhibitFallsBackToTodayWhenNoVisit_ExpectOk', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-animals-by-exhibit');
       const body = JSON.parse(options.body);
@@ -55,14 +55,14 @@ test('getAnimalsByExhibit falls back to today when no visit date is stored', asy
       };
    };
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'R1', exhibits: ['E1'] }]);
    assert.equal(state.toggleRegion('R1'), true);
 
    await state.buildUpdatedAnimalsFromSelection();
 });
 
-test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete exhibit deselect', async () => {
+test('Test_BuildUpdatedAnimalsFromSelection_TestBuildUpdatedAnimalsFromSelectionKeepsRemainingAnimalsAfterIncompleteExhibitDeselect_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -108,7 +108,7 @@ test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete 
       'African Penguin||Africa Savanna'
    );
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
 
@@ -123,7 +123,7 @@ test('buildUpdatedAnimalsFromSelection keeps remaining animals after incomplete 
    assert.deepEqual(species, ['African Lion']);
 });
 
-test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', async () => {
+test('Test_HydrateSelectionsFromStorage_TestHydrateSelectionsFromStorageDeselectsExhibitsMissingCatalogAnimals_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -152,7 +152,7 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
       'Watusi Cattle||Africa Savanna'
    );
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
 
@@ -163,7 +163,7 @@ test('hydrateSelectionsFromStorage deselects exhibits missing catalog animals', 
    );
 });
 
-test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new date', async () => {
+test('Test_HydrateSelectionsFromStorage_TestHydrateSelectionsFromStorageKeepsExhibitsWhenCatalogGrowsForA_ExpectOk', async () => {
    localStorage.setItem(StorageKeys.DATE_KEY, '2026-10-17');
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
@@ -188,7 +188,7 @@ test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new d
       }),
    });
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
 
@@ -211,7 +211,7 @@ test('hydrateSelectionsFromStorage keeps exhibits when catalog grows for a new d
    assert.equal(state.selectedExhibitsNeedCatalogRebuild(), false);
 });
 
-test('re-selecting an exhibit re-hydrates previously removed animals', async () => {
+test('Test_Re_TestReSelectingAnExhibitReHydratesPreviouslyRemoved_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -240,7 +240,7 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
       'African Penguin||Africa Savanna'
    );
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
 
@@ -253,7 +253,7 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
    assert.deepEqual(species, ['African Lion', 'African Penguin']);
 });
 
-test('deselecting a bulk exhibit removes its animals from the draft', async () => {
+test('Test_Deselecting_TestDeselectingABulkExhibitRemovesItsAnimalsFrom_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -273,7 +273,7 @@ test('deselecting a bulk exhibit removes its animals from the draft', async () =
       text: async () => JSON.stringify({ animals: [] }),
    });
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
    await state.hydrateSelectionsFromStorage();
    assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
@@ -284,7 +284,7 @@ test('deselecting a bulk exhibit removes its animals from the draft', async () =
    assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)), []);
 });
 
-test('deselecting a bulk exhibit keeps manually added animals from other exhibits', async () => {
+test('Test_Deselecting_TestDeselectingABulkExhibitKeepsManuallyAddedAnimals_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([
@@ -308,7 +308,7 @@ test('deselecting a bulk exhibit keeps manually added animals from other exhibit
       }),
    });
 
-   const state = createRegionSelectorState();
+   const state = State.createRegionSelectorState();
    state.setRegions([
       { name: 'Africa', exhibits: ['Africa Savanna'] },
       { name: 'Indo-Malaya', exhibits: ['Indo-Malaya'] },

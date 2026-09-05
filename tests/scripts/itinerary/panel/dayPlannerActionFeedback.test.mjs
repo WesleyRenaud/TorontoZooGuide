@@ -3,7 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import { DayPlannerActionFeedback } from '../../../../scripts/itinerary/panel/dayPlannerActionFeedback.js';
 import { DayPlannerActionFeedbackBanner } from '../../../../scripts/itinerary/panel/components/dayPlannerActionFeedbackBanner.js';
-import { makeDayPlannerPreview } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('dayPlannerActionFeedback', () => {
@@ -72,7 +72,7 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
          message: 'All items unscheduled',
       });
 
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          {
             date: '2026-06-20',
             openTime: '09:30',
@@ -112,7 +112,7 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
    });
 
    test('Test_MakeDayPlannerPreview_TestNoFeedback_ExpectReservedSlot', () => {
-      const planner = makeDayPlannerPreview(
+      const planner = DayPlanner.makeDayPlannerPreview(
          { date: '2026-06-20' },
          {
             animals: [],

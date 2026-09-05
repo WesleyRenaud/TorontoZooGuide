@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
-import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
+import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { Dropdowns } from '../../options/dropdowns.js';
@@ -182,7 +182,7 @@ export class AttractionHoursSchedule {
       }
 
       async function resolveOverlapConflict(payload) {
-         const resolution = await showOpeningScheduleOverlapDialog();
+         const resolution = await OpeningScheduleOverlapDialog.showOpeningScheduleOverlapDialog();
 
          if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
             return replaceScheduleOverlaps(payload);

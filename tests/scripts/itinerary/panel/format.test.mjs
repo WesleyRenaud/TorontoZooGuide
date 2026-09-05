@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { Constants } from '../../../../scripts/shared/constants.js';
 import { DayPlannerSchedule } from '../../../../scripts/itinerary/panel/dayPlannerSchedule.js';
-import { timelineSlotRowHeightFraction } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
+import { DayPlannerTimeline } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
 import { DayPlannerTimelinePillPlacement } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
 import { Format } from '../../../../scripts/itinerary/panel/format.js';
@@ -185,11 +185,11 @@ test.describe('itinerary panel format and schedule', () => {
          660,
          690,
       ]);
-      assert.equal(timelineSlotRowHeightFraction(2), 2 / 30);
-      assert.equal(timelineSlotRowHeightFraction(15), 0.5);
-      assert.equal(timelineSlotRowHeightFraction(30), 1);
-      assert.equal(timelineSlotRowHeightFraction(0), 1);
-      assert.equal(timelineSlotRowHeightFraction(null), 1);
+      assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(2), 2 / 30);
+      assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(15), 0.5);
+      assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(30), 1);
+      assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(0), 1);
+      assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(null), 1);
       assert.deepEqual(Format.normalizeAnimal({
          species: '  African Lion  ',
          exhibit: '  Africa Savanna  ',

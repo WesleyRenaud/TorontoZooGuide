@@ -1,11 +1,8 @@
 import { AnimalSelectorModel } from './animalSelector/animalSelectorModel.js';
-import {
-   renderAnimalSelectorRowLeft,
-   renderIncludeOffDisplayToggle,
-} from './animalSelector/view.js';
+import { View } from './animalSelector/view.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { RegionStorage } from './regionSelector/regionStorage.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -40,7 +37,7 @@ function shouldConfirmOffDisplayAnimal({
 }
 
 function promptForOffDisplayAnimalSelection(row, proceed) {
-   showItineraryConfirmPopup({
+   ConfirmPopup.showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay,
       message: AnimalSelectorModel.buildOffDisplayWarningMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.add,
@@ -50,7 +47,7 @@ function promptForOffDisplayAnimalSelection(row, proceed) {
 }
 
 function renderOffDisplayAnimalControls({ bodyEl, rerunSearch, onChange }) {
-   renderIncludeOffDisplayToggle({
+   View.renderIncludeOffDisplayToggle({
       bodyEl,
       rerunSearch,
       onChange,
@@ -88,7 +85,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       subtitle: APP_STRINGS.itinerary.selectors.animalSubtitle,
       emptyText: APP_STRINGS.itinerary.emptyText.animals,
 
-      renderRowLeft: renderAnimalSelectorRowLeft,
+      renderRowLeft: View.renderAnimalSelectorRowLeft,
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
          const completeToggle = () => {

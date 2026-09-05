@@ -1,9 +1,9 @@
 import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
-import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
+import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
-import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
+import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { SearchResultPresentation } from './searchResultPresentation.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -24,7 +24,7 @@ function openAttractionInfoLink(row) {
 }
 
 const ROW_LEFT_RENDERERS = {
-   animal: createDefaultSelectorRowLeftRenderer({
+   animal: ResultRenderer.createDefaultSelectorRowLeftRenderer({
       getTitle: AnimalSelectorModel.getAnimalTitleLine,
       getTitleParts: (row) => ({
          species: AnimalSelectorModel.getAnimalSpecies(row),
@@ -33,9 +33,9 @@ const ROW_LEFT_RENDERERS = {
       getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
       getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
       getInfoLink: () => null,
-      onTitleClick: openAnimalSpeciesOverlay,
+      onTitleClick: SpeciesOverlay.openAnimalSpeciesOverlay,
    }),
-   attraction: createDefaultSelectorRowLeftRenderer({
+   attraction: ResultRenderer.createDefaultSelectorRowLeftRenderer({
       getTitle: AttractionSelectorModel.getAttractionTitle,
       getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
       getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,

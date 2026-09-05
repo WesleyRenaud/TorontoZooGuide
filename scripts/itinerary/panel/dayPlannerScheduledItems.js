@@ -230,142 +230,146 @@ function mergeScheduledItemsByAnchorSlot(
    }, new Map());
 }
 
-export function buildScheduledItemRowsContext(
-   {
+export class DayPlannerScheduledItems {
+   static buildScheduledItemRowsContext(
+      {
       animals = [],
       attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
       transportations = [],
       events = [],
-   } = {},
-   slotStarts = [],
-   closeMinutes = null
-) {
-   const guardiansTalkRows = buildScheduledItemRows(
-      guardiansTalks.filter(isActiveScheduledOccurrence),
-      Rows.buildGuardiansRows,
-      getScheduledMaximumDuration
-   ).map((scheduledItem) => ({
-      ...scheduledItem,
-      scheduleItemKind: 'guardians_talks',
-      scheduleItemKey: GuardiansTalkSelectorModel.getGuardiansTalkId(scheduledItem.item),
-   }));
-   const wildEncounterRows = buildScheduledItemRows(
-      wildEncounters.filter(isActiveScheduledOccurrence),
-      Rows.buildWildRows,
-      getScheduledMaximumDuration
-   ).map((scheduledItem) => ({
-      ...scheduledItem,
-      scheduleItemKind: 'wild_encounters',
-      scheduleItemKey: WildEncounterSelectorModel.getWildEncounterId(scheduledItem.item),
-   }));
-   const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
-      ...scheduledItem,
-      scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
-      scheduleItemKey: AnimalSelectorModel.getAnimalId(scheduledItem.item),
-   }));
-   const attractionRows = buildScheduledItemRows(
-      attractions,
-      Rows.buildAttractionRows,
-      getDurationMinutesFromScheduleTimes
-   ).map((scheduledItem) => ({
-      ...scheduledItem,
-      scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
-      scheduleItemKey: AttractionSelectorModel.getAttractionId(scheduledItem.item),
-   }));
-   const transportationRows = buildScheduledTransportationRows(
-      transportations
-   ).map((scheduledItem) => ({
-      ...scheduledItem,
-      scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
-      scheduleItemKey: TransportationSelectorModel.getTransportationScheduleItemKey(scheduledItem.item),
-   }));
-   const genericEventRows = buildGenericEventScheduledRows(events);
-   const scheduledItems = [
-      ...guardiansTalkRows,
-      ...wildEncounterRows,
-      ...animalRows,
-      ...attractionRows,
-      ...transportationRows,
-      ...genericEventRows,
-   ];
-
-   return {
-      itemsByStart: mergeScheduledItemsByAnchorSlot(
-         scheduledItems,
-         slotStarts,
-         closeMinutes
-      ),
-      scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
-      scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
-      scheduledTransportationIndexes: buildItineraryScheduledTransportationIndexes(
+      } = {},
+      slotStarts = [],
+      closeMinutes = null
+   ) {
+      const guardiansTalkRows = buildScheduledItemRows(
+         guardiansTalks.filter(isActiveScheduledOccurrence),
+         Rows.buildGuardiansRows,
+         getScheduledMaximumDuration
+      ).map((scheduledItem) => ({
+         ...scheduledItem,
+         scheduleItemKind: 'guardians_talks',
+         scheduleItemKey: GuardiansTalkSelectorModel.getGuardiansTalkId(scheduledItem.item),
+      }));
+      const wildEncounterRows = buildScheduledItemRows(
+         wildEncounters.filter(isActiveScheduledOccurrence),
+         Rows.buildWildRows,
+         getScheduledMaximumDuration
+      ).map((scheduledItem) => ({
+         ...scheduledItem,
+         scheduleItemKind: 'wild_encounters',
+         scheduleItemKey: WildEncounterSelectorModel.getWildEncounterId(scheduledItem.item),
+      }));
+      const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
+         ...scheduledItem,
+         scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
+         scheduleItemKey: AnimalSelectorModel.getAnimalId(scheduledItem.item),
+      }));
+      const attractionRows = buildScheduledItemRows(
+         attractions,
+         Rows.buildAttractionRows,
+         getDurationMinutesFromScheduleTimes
+      ).map((scheduledItem) => ({
+         ...scheduledItem,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+         scheduleItemKey: AttractionSelectorModel.getAttractionId(scheduledItem.item),
+      }));
+      const transportationRows = buildScheduledTransportationRows(
          transportations
-      ),
-      scheduledGuardiansTalkIndexes: new Set(
-         guardiansTalkRows.map((scheduledItem) => scheduledItem.index)
-      ),
-      scheduledWildEncounterIndexes: new Set(
-         wildEncounterRows.map((scheduledItem) => scheduledItem.index)
-      ),
-   };
-}
+      ).map((scheduledItem) => ({
+         ...scheduledItem,
+         scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
+         scheduleItemKey: TransportationSelectorModel.getTransportationScheduleItemKey(scheduledItem.item),
+      }));
+      const genericEventRows = buildGenericEventScheduledRows(events);
+      const scheduledItems = [
+         ...guardiansTalkRows,
+         ...wildEncounterRows,
+         ...animalRows,
+         ...attractionRows,
+         ...transportationRows,
+         ...genericEventRows,
+      ];
 
-export function buildScheduledItinerary(
-   itinerary = {},
-   {
+      return {
+         itemsByStart: mergeScheduledItemsByAnchorSlot(
+            scheduledItems,
+            slotStarts,
+            closeMinutes
+         ),
+         scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
+         scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
+         scheduledTransportationIndexes: buildItineraryScheduledTransportationIndexes(
+            transportations
+         ),
+         scheduledGuardiansTalkIndexes: new Set(
+            guardiansTalkRows.map((scheduledItem) => scheduledItem.index)
+         ),
+         scheduledWildEncounterIndexes: new Set(
+            wildEncounterRows.map((scheduledItem) => scheduledItem.index)
+         ),
+      };
+
+   }
+
+   static buildScheduledItinerary(
+      itinerary = {},
+      {
       scheduledAnimalIndexes = new Set(),
       scheduledAttractionIndexes = new Set(),
       scheduledTransportationIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
-   } = {}
-) {
-   return {
-      animals: (itinerary.animals ?? []).filter((_, index) => (
-         scheduledAnimalIndexes.has(index)
-      )),
-      attractions: (itinerary.attractions ?? []).filter((_, index) => (
-         scheduledAttractionIndexes.has(index)
-      )),
-      transportations: (itinerary.transportations ?? []).filter((_, index) => (
-         scheduledTransportationIndexes.has(index)
-      )),
-      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
-         scheduledGuardiansTalkIndexes.has(index)
-      )),
-      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
-         scheduledWildEncounterIndexes.has(index)
-      )),
-   };
-}
+      } = {}
+   ) {
+      return {
+         animals: (itinerary.animals ?? []).filter((_, index) => (
+            scheduledAnimalIndexes.has(index)
+         )),
+         attractions: (itinerary.attractions ?? []).filter((_, index) => (
+            scheduledAttractionIndexes.has(index)
+         )),
+         transportations: (itinerary.transportations ?? []).filter((_, index) => (
+            scheduledTransportationIndexes.has(index)
+         )),
+         guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
+            scheduledGuardiansTalkIndexes.has(index)
+         )),
+         wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
+            scheduledWildEncounterIndexes.has(index)
+         )),
+      };
 
-export function buildUnscheduledItinerary(
-   itinerary = {},
-   {
+   }
+
+   static buildUnscheduledItinerary(
+      itinerary = {},
+      {
       scheduledAnimalIndexes = new Set(),
       scheduledAttractionIndexes = new Set(),
       scheduledTransportationIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
-   } = {}
-) {
-   return {
-      ...itinerary,
-      animals: (itinerary.animals ?? []).filter((_, index) => (
-         !scheduledAnimalIndexes.has(index)
-      )),
-      attractions: (itinerary.attractions ?? []).filter((_, index) => (
-         !scheduledAttractionIndexes.has(index)
-      )),
-      transportations: (itinerary.transportations ?? []).filter((_, index) => (
-         !scheduledTransportationIndexes.has(index)
-      )),
-      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
-         !scheduledGuardiansTalkIndexes.has(index)
-      )),
-      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
-         !scheduledWildEncounterIndexes.has(index)
-      )),
-   };
+      } = {}
+   ) {
+      return {
+         ...itinerary,
+         animals: (itinerary.animals ?? []).filter((_, index) => (
+            !scheduledAnimalIndexes.has(index)
+         )),
+         attractions: (itinerary.attractions ?? []).filter((_, index) => (
+            !scheduledAttractionIndexes.has(index)
+         )),
+         transportations: (itinerary.transportations ?? []).filter((_, index) => (
+            !scheduledTransportationIndexes.has(index)
+         )),
+         guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
+            !scheduledGuardiansTalkIndexes.has(index)
+         )),
+         wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
+            !scheduledWildEncounterIndexes.has(index)
+         )),
+      };
+   }
 }

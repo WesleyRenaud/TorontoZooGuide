@@ -82,125 +82,128 @@ function createOverlayScrollContent(animal) {
 
 let speciesOverlayController = null;
 
-export function initSpeciesOverlay() {
-   if (speciesOverlayController) {
-      return speciesOverlayController;
-   }
-
-   let boundOverlay = null;
-   let boundCloseButton = null;
-   const state = {
-      linkedAnimals: [],
-      index: 0,
-      isNavigating: false,
-      navigationToken: 0,
-   };
-
-   function close() {
-      resolveOverlayElements().overlay?.classList.add('hidden');
-   }
-
-   function bindShell({ overlay, closeButton }) {
-      if (boundOverlay !== overlay) {
-         boundOverlay = overlay;
-         overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-               close();
-            }
-         });
+export class SpeciesOverlay {
+   static initSpeciesOverlay() {
+      if (speciesOverlayController) {
+         return speciesOverlayController;
       }
 
-      if (!closeButton || boundCloseButton === closeButton) {
-         return;
+      let boundOverlay = null;
+      let boundCloseButton = null;
+      const state = {
+         linkedAnimals: [],
+         index: 0,
+         isNavigating: false,
+         navigationToken: 0,
+      };
+
+      function close() {
+         resolveOverlayElements().overlay?.classList.add('hidden');
       }
 
-      boundCloseButton = closeButton;
-      closeButton.type = 'button';
-      closeButton.setAttribute('aria-label', APP_STRINGS.common.close);
-      closeButton.textContent = APP_STRINGS.common.closeSymbol;
-      closeButton.addEventListener('click', (event) => {
-         event.stopPropagation();
-         close();
-      });
-   }
+      function bindShell({ overlay, closeButton }) {
+         if (boundOverlay !== overlay) {
+            boundOverlay = overlay;
+            overlay.addEventListener('click', (event) => {
+               if (event.target === overlay) {
+                  close();
+               }
+            });
+         }
 
-   function render(animal) {
-      const { overlay, content, closeButton } = resolveOverlayElements();
-
-      if (!overlay || !content || !animal) {
-         return;
-      }
-
-      bindShell({ overlay, closeButton });
-      content.replaceChildren(
-         createOverlayHeader({
-            linkedAnimals: state.linkedAnimals,
-            index: state.index,
-            onNavigate: (delta) => {
-               void navigate(delta);
-            },
-         }),
-         createOverlayScrollContent(animal)
-      );
-      overlay.classList.remove('hidden');
-   }
-
-   async function navigate(delta) {
-      if (state.isNavigating || state.linkedAnimals.length < 2) {
-         return;
-      }
-
-      const nextIndex = (
-         state.index + delta + state.linkedAnimals.length
-      ) % state.linkedAnimals.length;
-      const token = ++state.navigationToken;
-
-      state.isNavigating = true;
-
-      try {
-         const animal = await AnimalsApi.getAnimalInformation(
-            state.linkedAnimals[nextIndex]
-         );
-
-         if (token !== state.navigationToken || !animal) {
+         if (!closeButton || boundCloseButton === closeButton) {
             return;
          }
 
-         state.index = nextIndex;
-         render(animal);
+         boundCloseButton = closeButton;
+         closeButton.type = 'button';
+         closeButton.setAttribute('aria-label', APP_STRINGS.common.close);
+         closeButton.textContent = APP_STRINGS.common.closeSymbol;
+         closeButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            close();
+         });
       }
-      finally {
-         if (token === state.navigationToken) {
-            state.isNavigating = false;
+
+      function render(animal) {
+         const { overlay, content, closeButton } = resolveOverlayElements();
+
+         if (!overlay || !content || !animal) {
+            return;
+         }
+
+         bindShell({ overlay, closeButton });
+         content.replaceChildren(
+            createOverlayHeader({
+               linkedAnimals: state.linkedAnimals,
+               index: state.index,
+               onNavigate: (delta) => {
+                  void navigate(delta);
+               },
+            }),
+            createOverlayScrollContent(animal)
+         );
+         overlay.classList.remove('hidden');
+      }
+
+      async function navigate(delta) {
+         if (state.isNavigating || state.linkedAnimals.length < 2) {
+            return;
+         }
+
+         const nextIndex = (
+            state.index + delta + state.linkedAnimals.length
+         ) % state.linkedAnimals.length;
+         const token = ++state.navigationToken;
+
+         state.isNavigating = true;
+
+         try {
+            const animal = await AnimalsApi.getAnimalInformation(
+               state.linkedAnimals[nextIndex]
+            );
+
+            if (token !== state.navigationToken || !animal) {
+               return;
+            }
+
+            state.index = nextIndex;
+            render(animal);
+         }
+         finally {
+            if (token === state.navigationToken) {
+               state.isNavigating = false;
+            }
          }
       }
+
+      function openFromAnimal(animal, options = {}) {
+         if (!animal) {
+            return;
+         }
+
+         state.linkedAnimals = NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(
+            options.linkedAnimals
+         );
+         const matchedIndex = findLinkedAnimalIndex(state.linkedAnimals, animal);
+         state.index = matchedIndex >= 0 ? matchedIndex : 0;
+         state.isNavigating = false;
+         state.navigationToken += 1;
+         render(animal);
+      }
+
+      speciesOverlayController = { openFromAnimal, close };
+      return speciesOverlayController;
+
    }
 
-   function openFromAnimal(animal, options = {}) {
-      if (!animal) {
+   static openAnimalSpeciesOverlay(animal, options = {}) {
+      const { species } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
+
+      if (!species) {
          return;
       }
 
-      state.linkedAnimals = NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(
-         options.linkedAnimals
-      );
-      const matchedIndex = findLinkedAnimalIndex(state.linkedAnimals, animal);
-      state.index = matchedIndex >= 0 ? matchedIndex : 0;
-      state.isNavigating = false;
-      state.navigationToken += 1;
-      render(animal);
+      SpeciesOverlay.initSpeciesOverlay().openFromAnimal(animal, options);
    }
-
-   speciesOverlayController = { openFromAnimal, close };
-   return speciesOverlayController;
-}
-
-export function openAnimalSpeciesOverlay(animal, options = {}) {
-   const { species } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
-
-   if (!species) {
-      return;
-   }
-
-   initSpeciesOverlay().openFromAnimal(animal, options);
 }

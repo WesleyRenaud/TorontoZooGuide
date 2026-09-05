@@ -19,267 +19,269 @@ async function resolveAnimalsByExhibitQueryContext() {
    return context;
 }
 
-export function createRegionSelectorState() {
-   let regions = [];
+export class State {
+   static createRegionSelectorState() {
+      let regions = [];
 
-   const selectedRegionNames = new Set();
-   const selectedExhibitNames = new Set();
-   const bulkManagedExhibitNames = new Set();
-   let selectedExhibitsNeedCatalogRebuild = false;
+      const selectedRegionNames = new Set();
+      const selectedExhibitNames = new Set();
+      const bulkManagedExhibitNames = new Set();
+      let selectedExhibitsNeedCatalogRebuild = false;
 
-   function markExhibitBulkManaged(exhibitName) {
-      const { exhibit: normalizedExhibitName } = AnimalIdentity.normalizeAnimalIdentitySearchFields({
-         exhibit: exhibitName,
-      });
+      function markExhibitBulkManaged(exhibitName) {
+         const { exhibit: normalizedExhibitName } = AnimalIdentity.normalizeAnimalIdentitySearchFields({
+            exhibit: exhibitName,
+         });
 
-      if (normalizedExhibitName) {
-         bulkManagedExhibitNames.add(normalizedExhibitName);
+         if (normalizedExhibitName) {
+            bulkManagedExhibitNames.add(normalizedExhibitName);
+         }
       }
-   }
 
-   function isBulkManagedExhibit(exhibitName) {
-      return bulkManagedExhibitNames.has(
-         AnimalIdentity.normalizeAnimalIdentitySearchFields({ exhibit: exhibitName }).exhibit
-      );
-   }
+      function isBulkManagedExhibit(exhibitName) {
+         return bulkManagedExhibitNames.has(
+            AnimalIdentity.normalizeAnimalIdentitySearchFields({ exhibit: exhibitName }).exhibit
+         );
+      }
 
-   function persistSelectionState() {
-      RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
-      RegionStorage.saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
-   }
+      function persistSelectionState() {
+         RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
+         RegionStorage.saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
+      }
 
-   function syncAllRegionSelections() {
-      selectedRegionNames.clear();
+      function syncAllRegionSelections() {
+         selectedRegionNames.clear();
 
-      regions.forEach((region) => {
-         RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
-      });
-   }
+         regions.forEach((region) => {
+            RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+         });
+      }
 
-   function findRegion(regionName) {
-      return regions.find((region) => region.name === regionName) ?? null;
-   }
+      function findRegion(regionName) {
+         return regions.find((region) => region.name === regionName) ?? null;
+      }
 
-   function setRegions(nextRegions = []) {
-      regions = RegionSelection.normalizeRegions(nextRegions);
+      function setRegions(nextRegions = []) {
+         regions = RegionSelection.normalizeRegions(nextRegions);
 
-      return regions.slice();
-   }
+         return regions.slice();
+      }
 
-   async function hydrateSelectionsFromStorage() {
-      selectedExhibitNames.clear();
-      selectedRegionNames.clear();
-      bulkManagedExhibitNames.clear();
+      async function hydrateSelectionsFromStorage() {
+         selectedExhibitNames.clear();
+         selectedRegionNames.clear();
+         bulkManagedExhibitNames.clear();
 
-      const storedExhibits = new Set(RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
+         const storedExhibits = new Set(RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
 
-      regions.forEach((region) => {
+         regions.forEach((region) => {
+            const exhibits = RegionSelection.getRegionExhibits(region);
+
+            exhibits.forEach((exhibitName) => {
+               if (storedExhibits.has(exhibitName)) {
+                  selectedExhibitNames.add(exhibitName);
+               }
+            });
+         });
+
+         await pruneIncompleteSelectedExhibits();
+
+         selectedExhibitNames.forEach((exhibitName) => {
+            markExhibitBulkManaged(exhibitName);
+         });
+
+         syncAllRegionSelections();
+         persistSelectionState();
+      }
+
+      async function pruneIncompleteSelectedExhibits() {
+         selectedExhibitsNeedCatalogRebuild = false;
+
+         if (!selectedExhibitNames.size) {
+            return;
+         }
+
+         const selectedExhibits = Array.from(selectedExhibitNames);
+         const draftAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
+            .map(RegionSelection.normalizeSelectedAnimal)
+            .filter(Boolean);
+         const removedKeys = RegionStorage.loadRemovedAnimalKeys();
+         const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+         const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
+            month,
+            day,
+            temp,
+            forItinerary: true,
+         });
+
+         for (const exhibitName of selectedExhibits) {
+            const exhibitKey = AnimalIdentity.normalizeAnimalIdentitySearchFields({
+               exhibit: exhibitName,
+            }).exhibit;
+            const catalogForExhibit = catalogAnimals.filter((animal) => (
+               AnimalIdentity.normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
+            ));
+
+            if (RegionSelection.draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
+               continue;
+            }
+
+            const catalogHasRemovedAnimal = catalogForExhibit.some((animal) => {
+               const animalKey = RegionSelection.buildSelectedAnimalKey(animal);
+
+               return animalKey && removedKeys.has(animalKey);
+            });
+
+            if (catalogHasRemovedAnimal) {
+               // User removed animals from a bulk-selected exhibit.
+               selectedExhibitNames.delete(exhibitName);
+               continue;
+            }
+
+            // Catalog grew (e.g. visit date changed) while the exhibit stayed
+            // selected — keep the toggle and rebuild animals before leaving.
+            selectedExhibitsNeedCatalogRebuild = true;
+         }
+      }
+
+      function toggleRegion(regionName) {
+         const region = findRegion(regionName);
+         if (!region) {
+            return false;
+         }
+
          const exhibits = RegionSelection.getRegionExhibits(region);
 
+         if (!exhibits.length) {
+            return false;
+         }
+
+         const shouldSelect = !RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
+
          exhibits.forEach((exhibitName) => {
-            if (storedExhibits.has(exhibitName)) {
+            if (shouldSelect) {
                selectedExhibitNames.add(exhibitName);
+               markExhibitBulkManaged(exhibitName);
+               RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
+            }
+            else {
+               selectedExhibitNames.delete(exhibitName);
             }
          });
-      });
 
-      await pruneIncompleteSelectedExhibits();
+         RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+         persistSelectionState();
 
-      selectedExhibitNames.forEach((exhibitName) => {
-         markExhibitBulkManaged(exhibitName);
-      });
-
-      syncAllRegionSelections();
-      persistSelectionState();
-   }
-
-   async function pruneIncompleteSelectedExhibits() {
-      selectedExhibitsNeedCatalogRebuild = false;
-
-      if (!selectedExhibitNames.size) {
-         return;
+         return true;
       }
 
-      const selectedExhibits = Array.from(selectedExhibitNames);
-      const draftAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
-         .map(RegionSelection.normalizeSelectedAnimal)
-         .filter(Boolean);
-      const removedKeys = RegionStorage.loadRemovedAnimalKeys();
-      const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
-      const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
-         month,
-         day,
-         temp,
-         forItinerary: true,
-      });
+      function toggleExhibit(regionName, exhibitName) {
+         const region = findRegion(regionName);
 
-      for (const exhibitName of selectedExhibits) {
-         const exhibitKey = AnimalIdentity.normalizeAnimalIdentitySearchFields({
-            exhibit: exhibitName,
-         }).exhibit;
-         const catalogForExhibit = catalogAnimals.filter((animal) => (
-            AnimalIdentity.normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
-         ));
-
-         if (RegionSelection.draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
-            continue;
+         if (!region || !exhibitName) {
+            return false;
          }
 
-         const catalogHasRemovedAnimal = catalogForExhibit.some((animal) => {
-            const animalKey = RegionSelection.buildSelectedAnimalKey(animal);
-
-            return animalKey && removedKeys.has(animalKey);
-         });
-
-         if (catalogHasRemovedAnimal) {
-            // User removed animals from a bulk-selected exhibit.
+         if (selectedExhibitNames.has(exhibitName)) {
             selectedExhibitNames.delete(exhibitName);
-            continue;
          }
-
-         // Catalog grew (e.g. visit date changed) while the exhibit stayed
-         // selected — keep the toggle and rebuild animals before leaving.
-         selectedExhibitsNeedCatalogRebuild = true;
-      }
-   }
-
-   function toggleRegion(regionName) {
-      const region = findRegion(regionName);
-      if (!region) {
-         return false;
-      }
-
-      const exhibits = RegionSelection.getRegionExhibits(region);
-
-      if (!exhibits.length) {
-         return false;
-      }
-
-      const shouldSelect = !RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
-
-      exhibits.forEach((exhibitName) => {
-         if (shouldSelect) {
+         else {
             selectedExhibitNames.add(exhibitName);
             markExhibitBulkManaged(exhibitName);
             RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
          }
-         else {
-            selectedExhibitNames.delete(exhibitName);
-         }
-      });
 
-      RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
-      persistSelectionState();
+         RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+         persistSelectionState();
 
-      return true;
-   }
-
-   function toggleExhibit(regionName, exhibitName) {
-      const region = findRegion(regionName);
-
-      if (!region || !exhibitName) {
-         return false;
+         return true;
       }
 
-      if (selectedExhibitNames.has(exhibitName)) {
-         selectedExhibitNames.delete(exhibitName);
-      }
-      else {
-         selectedExhibitNames.add(exhibitName);
-         markExhibitBulkManaged(exhibitName);
-         RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
-      }
+      function preserveAnimalsOutsideBulkManagedExhibits(currentAnimals = []) {
+         const remainingAnimals = currentAnimals.filter((animal) => {
+            const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
 
-      RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
-      persistSelectionState();
+            if (!exhibit) {
+               return true;
+            }
 
-      return true;
-   }
-
-   function preserveAnimalsOutsideBulkManagedExhibits(currentAnimals = []) {
-      const remainingAnimals = currentAnimals.filter((animal) => {
-         const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
-
-         if (!exhibit) {
-            return true;
-         }
-
-         return !isBulkManagedExhibit(exhibit);
-      });
-
-      DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
-
-      return remainingAnimals;
-   }
-
-   async function buildUpdatedAnimalsFromSelection() {
-      const selectedExhibits = Array.from(selectedExhibitNames);
-
-      const currentAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
-         .map(RegionSelection.normalizeSelectedAnimal)
-         .filter(Boolean);
-
-      if (!selectedExhibits.length) {
-         selectedExhibitsNeedCatalogRebuild = false;
-         return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
-      }
-
-      const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
-      const fullAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
-         month,
-         day,
-         temp,
-         forItinerary: true,
-      });
-      const selectedAnimals = RegionSelection.omitRemovedAnimals(
-         fullAnimals.map(RegionSelection.makeSelectedAnimal).filter(Boolean),
-         RegionStorage.loadRemovedAnimalKeys()
-      );
-
-      const selectedExhibitSet = new Set(
-         selectedExhibits.map(
-            (exhibitName) => AnimalIdentity.normalizeAnimalIdentitySearchFields({
-               exhibit: exhibitName,
-            }).exhibit
-         )
-      );
-      const rebuiltSpeciesExhibitKeys = new Set(
-         selectedAnimals.map((animal) => SpeciesExhibitKey.buildSpeciesExhibitKey(animal))
-      );
-
-      const preservedAnimals = currentAnimals.filter((animal) => {
-         const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
-
-         if (!exhibit) {
-            return true;
-         }
-
-         if (!selectedExhibitSet.has(exhibit)) {
             return !isBulkManagedExhibit(exhibit);
+         });
+
+         DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
+
+         return remainingAnimals;
+      }
+
+      async function buildUpdatedAnimalsFromSelection() {
+         const selectedExhibits = Array.from(selectedExhibitNames);
+
+         const currentAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
+            .map(RegionSelection.normalizeSelectedAnimal)
+            .filter(Boolean);
+
+         if (!selectedExhibits.length) {
+            selectedExhibitsNeedCatalogRebuild = false;
+            return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
          }
 
-         return !rebuiltSpeciesExhibitKeys.has(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
-      });
+         const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+         const fullAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
+            month,
+            day,
+            temp,
+            forItinerary: true,
+         });
+         const selectedAnimals = RegionSelection.omitRemovedAnimals(
+            fullAnimals.map(RegionSelection.makeSelectedAnimal).filter(Boolean),
+            RegionStorage.loadRemovedAnimalKeys()
+         );
 
-      const mergedAnimals = RegionSelection.mergeAnimals(preservedAnimals, selectedAnimals);
-      DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
-      selectedExhibitsNeedCatalogRebuild = false;
+         const selectedExhibitSet = new Set(
+            selectedExhibits.map(
+               (exhibitName) => AnimalIdentity.normalizeAnimalIdentitySearchFields({
+                  exhibit: exhibitName,
+               }).exhibit
+            )
+         );
+         const rebuiltSpeciesExhibitKeys = new Set(
+            selectedAnimals.map((animal) => SpeciesExhibitKey.buildSpeciesExhibitKey(animal))
+         );
 
-      return mergedAnimals;
+         const preservedAnimals = currentAnimals.filter((animal) => {
+            const { exhibit } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
+
+            if (!exhibit) {
+               return true;
+            }
+
+            if (!selectedExhibitSet.has(exhibit)) {
+               return !isBulkManagedExhibit(exhibit);
+            }
+
+            return !rebuiltSpeciesExhibitKeys.has(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
+         });
+
+         const mergedAnimals = RegionSelection.mergeAnimals(preservedAnimals, selectedAnimals);
+         DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
+         selectedExhibitsNeedCatalogRebuild = false;
+
+         return mergedAnimals;
+      }
+
+      function getRegions() {
+         return regions.slice();
+      }
+
+      return {
+         setRegions,
+         hydrateSelectionsFromStorage,
+         toggleRegion,
+         toggleExhibit,
+         buildUpdatedAnimalsFromSelection,
+         getRegions,
+         getSelectedExhibitNamesSet: () => selectedExhibitNames,
+         selectedExhibitsNeedCatalogRebuild: () => selectedExhibitsNeedCatalogRebuild,
+      };
    }
-
-   function getRegions() {
-      return regions.slice();
-   }
-
-   return {
-      setRegions,
-      hydrateSelectionsFromStorage,
-      toggleRegion,
-      toggleExhibit,
-      buildUpdatedAnimalsFromSelection,
-      getRegions,
-      getSelectedExhibitNamesSet: () => selectedExhibitNames,
-      selectedExhibitsNeedCatalogRebuild: () => selectedExhibitsNeedCatalogRebuild,
-   };
 }

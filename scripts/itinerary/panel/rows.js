@@ -1,6 +1,6 @@
 import { Format } from './format.js';
 import { OpenGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
-import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
+import { SpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import { RowActionProps } from './rowActionProps.js';
 import { RowAlerts } from './rowAlerts.js';
 import { RowBuilders } from './rowBuilders.js';
@@ -43,7 +43,7 @@ export class Rows {
                ]),
                alertLine: alert.line,
                alertTone: alert.tone,
-               onNameClick: () => openAnimalSpeciesOverlay(animal),
+               onNameClick: () => SpeciesOverlay.openAnimalSpeciesOverlay(animal),
                ...RowPresentation.buildLinkRowProps(animal.link),
                ...RowActionProps.buildRowScheduleActionProps(
                   ScheduleItemKind.ANIMAL.itemType,

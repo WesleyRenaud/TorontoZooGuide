@@ -1,14 +1,14 @@
 import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
-import { renderIncludeClosedAttractionsToggle } from './attractionSelector/view.js';
+import { View } from './attractionSelector/view.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
 
 function promptForClosedAttractionSelection(row, proceed) {
-   showItineraryConfirmPopup({
+   ConfirmPopup.showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.attractionMayBeClosed,
       message: AttractionSelectorModel.buildClosedAttractionMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.add,
@@ -18,7 +18,7 @@ function promptForClosedAttractionSelection(row, proceed) {
 }
 
 function promptForAlsoTransportationAttractionSelection(row, proceed) {
-   showItineraryConfirmPopup({
+   ConfirmPopup.showItineraryConfirmPopup({
       title: APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationTitle,
       message: AttractionSelectorModel.buildAlsoTransportationAttractionMessage(row),
       confirmText: APP_STRINGS.itinerary.actions.confirm,
@@ -104,7 +104,7 @@ export function createItineraryAttractionSelectorController({
 
       renderExtraControls: ({ bodyEl, rerunSearch }) => {
          includeClosedAttractions = false;
-         renderIncludeClosedAttractionsToggle({
+         View.renderIncludeClosedAttractionsToggle({
             bodyEl,
             rerunSearch,
             onChange: (checked) => {

@@ -1,6 +1,6 @@
 import { DraftStorage } from '../draftStorage.js';
 import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
-import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
+import { ConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import {
@@ -45,7 +45,7 @@ export async function openItineraryWizard({
       createWizardState = createItineraryWizardState,
       createDateStepController = createItineraryDateSelectorController,
       finalizeWizard = finalizeItineraryWizard,
-      showConfirmPopup = showItineraryConfirmPopup,
+      showConfirmPopup = ConfirmPopup.showItineraryConfirmPopup,
       syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
       loadSelectionStepConfigs = loadDefaultSelectionStepConfigs,
       selectionStepConfigs = null,

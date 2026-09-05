@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { showScheduleItemModule } from '../../scripts/itinerary/panel/components/showScheduleItemModule.js';
-import { ScheduleItemSearch } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ShowScheduleItemModule } from '../../../../../scripts/itinerary/panel/components/showScheduleItemModule.js';
+import { ScheduleItemSearch } from '../../../../../scripts/itinerary/panel/scheduleItemSearch.js';
+import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemModule', () => {
    installDomTestHooks({
@@ -15,8 +15,8 @@ test.describe('showScheduleItemModule', () => {
       },
    });
 
-   test('mounts the schedule popup with form fields', () => {
-      const popup = showScheduleItemModule({
+   test('Test_Mounts_TestMountsTheSchedulePopupWithFormFields_ExpectOk', () => {
+      const popup = ShowScheduleItemModule.showScheduleItemModule({
          eventTypes: ['lunch', 'break'],
       });
 
@@ -43,8 +43,8 @@ test.describe('showScheduleItemModule', () => {
       );
    });
 
-   test('preselects unscheduled Zoomobile as an attraction', () => {
-      showScheduleItemModule({
+   test('Test_Preselects_TestPreselectsUnscheduledZoomobileAsAnAttraction_ExpectOk', () => {
+      ShowScheduleItemModule.showScheduleItemModule({
          eventTypes: ['lunch'],
          itinerary: {
             transportations: [{
@@ -80,8 +80,8 @@ test.describe('showScheduleItemModule', () => {
       assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
    });
 
-   test('preselects transportation with station subtext', () => {
-      showScheduleItemModule({
+   test('Test_Preselects_TestPreselectsTransportationWithStationSubtext_ExpectOk', () => {
+      ShowScheduleItemModule.showScheduleItemModule({
          eventTypes: ['lunch'],
          itinerary: {
             transportations: [{

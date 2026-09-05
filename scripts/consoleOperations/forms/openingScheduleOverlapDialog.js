@@ -1,5 +1,5 @@
 import { WarningIcon } from '../../assets/warningIcon.js';
-import { mountDismissablePopup } from '../../itinerary/panel/components/popup.js';
+import { Popup } from '../../itinerary/panel/components/popup.js';
 import { el } from '../../itinerary/panel/dom.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -74,29 +74,31 @@ function createDialogLayout() {
    };
 }
 
-export function showOpeningScheduleOverlapDialog() {
-   document.querySelector(ROOT_SELECTOR)?.__tzgPopupCleanup?.();
+export class OpeningScheduleOverlapDialog {
+   static showOpeningScheduleOverlapDialog() {
+      document.querySelector(ROOT_SELECTOR)?.__tzgPopupCleanup?.();
 
-   return new Promise((resolve) => {
-      const { root, overlay, buttons } = createDialogLayout();
-      const { close, dismiss } = mountDismissablePopup({
-         mountEl: document.body,
-         root,
-         overlay,
-         initialFocusEl: buttons.cancel,
-         onDismiss: () => resolve(null),
+      return new Promise((resolve) => {
+         const { root, overlay, buttons } = createDialogLayout();
+         const { close, dismiss } = Popup.mountDismissablePopup({
+            mountEl: document.body,
+            root,
+            overlay,
+            initialFocusEl: buttons.cancel,
+            onDismiss: () => resolve(null),
+         });
+
+         buttons.cancel.addEventListener('click', dismiss);
+
+         buttons.replace.addEventListener('click', () => {
+            close();
+            resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE);
+         });
+
+         buttons.trim.addEventListener('click', () => {
+            close();
+            resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM);
+         });
       });
-
-      buttons.cancel.addEventListener('click', dismiss);
-
-      buttons.replace.addEventListener('click', () => {
-         close();
-         resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE);
-      });
-
-      buttons.trim.addEventListener('click', () => {
-         close();
-         resolve(OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM);
-      });
-   });
+   }
 }

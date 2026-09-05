@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
-import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
+import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { WeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
@@ -22,7 +22,7 @@ export class GiftShopOpeningSchedule {
          payloadKey: 'giftShop',
          resultName: result => result.gift_shop,
          resolveOverlapConflict: async payload => {
-            const resolution = await showOpeningScheduleOverlapDialog();
+            const resolution = await OpeningScheduleOverlapDialog.showOpeningScheduleOverlapDialog();
 
             if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
                return ConsoleOperationsApi.replaceGiftShopOpeningScheduleOverlaps(payload);

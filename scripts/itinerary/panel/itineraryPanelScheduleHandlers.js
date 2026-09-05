@@ -1,5 +1,5 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
-import { showScheduleItemModule } from './components/showScheduleItemModule.js';
+import { ShowScheduleItemModule } from './components/showScheduleItemModule.js';
 import { DraftStorage } from '../draftStorage.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
@@ -31,7 +31,7 @@ export function openScheduleItemModule(
    } = {},
    deps = {}
 ) {
-   const showModule = deps.showScheduleItemModule ?? showScheduleItemModule;
+   const showModule = deps.showScheduleItemModule ?? ShowScheduleItemModule.showScheduleItemModule;
 
    showModule({
       itinerary,

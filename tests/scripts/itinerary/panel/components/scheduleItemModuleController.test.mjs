@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { createScheduleItemModuleController } from '../../scripts/itinerary/panel/components/scheduleItemModuleController.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
+import { ScheduleItemModuleController } from '../../../../../scripts/itinerary/panel/components/scheduleItemModuleController.js';
+import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
+import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 const EVENT_TYPES = ['lunch', 'break'];
 const STRINGS = {
@@ -55,7 +55,7 @@ function createController({
    scheduleTimeFields = {},
    ...options
 } = {}) {
-   return createScheduleItemModuleController({
+   return ScheduleItemModuleController.createScheduleItemModuleController({
       eventTypes: EVENT_TYPES,
       strings: STRINGS,
       itinerary: {
@@ -82,7 +82,7 @@ afterEach(() => {
    searchRequests = [];
 });
 
-test('updateFieldVisibility disables search for event-type selections', () => {
+test('Test_UpdateFieldVisibility_TestUpdateFieldVisibilityDisablesSearchForEventTypeSelections_ExpectOk', () => {
    const refs = createRefs({ selection: 'lunch' });
    const controller = createController({ refs });
 
@@ -94,7 +94,7 @@ test('updateFieldVisibility disables search for event-type selections', () => {
    assert.equal(refs.scheduleButton.disabled, false);
 });
 
-test('updateFieldVisibility keeps the schedule button disabled until a row is selected', () => {
+test('Test_UpdateFieldVisibility_TestUpdateFieldVisibilityKeepsTheScheduleButtonDisabledUntilA_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
    const controller = createController({ refs });
 
@@ -106,7 +106,7 @@ test('updateFieldVisibility keeps the schedule button disabled until a row is se
    assert.equal(refs.scheduleButton.disabled, true);
 });
 
-test('initialize locks type, search, and itinerary filter for a preselected row', () => {
+test('Test_Initialize_TestInitializeLocksTypeSearchAndItineraryFilterFor_ExpectOk', () => {
    const refs = createRefs();
    const controller = createController({
       refs,
@@ -129,7 +129,7 @@ test('initialize locks type, search, and itinerary filter for a preselected row'
    assert.equal(refs.scheduleButton.disabled, false);
 });
 
-test('displaySearchResults filters rows to itinerary items when enabled', () => {
+test('Test_DisplaySearchResults_TestDisplaySearchResultsFiltersRowsToItineraryItemsWhenEnabled_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       onlyItineraryItems: true,
@@ -156,7 +156,7 @@ test('displaySearchResults filters rows to itinerary items when enabled', () => 
    assert.deepEqual(renderedRows, [[ANIMAL_ROW]]);
 });
 
-test('runSearch fetches rows and ignores stale responses', async () => {
+test('Test_RunSearch_TestRunSearchFetchesRowsAndIgnoresStaleResponses_ExpectOk', async () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'tiger',
@@ -205,7 +205,7 @@ test('runSearch fetches rows and ignores stale responses', async () => {
    assert.deepEqual(refs.resultsEl.latestRows, [ANIMAL_ROW]);
 });
 
-test('handleSchedule allows duration without a start time', async () => {
+test('Test_HandleSchedule_TestHandleScheduleAllowsDurationWithoutAStartTime_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    const scheduledOptions = [];
    const controller = createController({
@@ -239,7 +239,7 @@ test('handleSchedule allows duration without a start time', async () => {
    }]);
 });
 
-test('handleSchedule dismisses the popup after a successful schedule', async () => {
+test('Test_HandleSchedule_TestHandleScheduleDismissesThePopupAfterASuccessfulSchedule_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    let dismissed = false;
    let scheduled = false;
@@ -272,9 +272,9 @@ test('handleSchedule dismisses the popup after a successful schedule', async () 
    assert.equal(refs.scheduleButton.disabled, false);
 });
 
-test('applyPreselectedRow seeds the type, search input, and selected row', () => {
+test('Test_ApplyPreselectedRow_TestApplyPreselectedRowSeedsTheTypeSearchInputAndSelected_ExpectOk', () => {
    const refs = createRefs();
-   const controller = createScheduleItemModuleController({
+   const controller = ScheduleItemModuleController.createScheduleItemModuleController({
       eventTypes: EVENT_TYPES,
       strings: STRINGS,
       preselectedRow: ANIMAL_ROW,
@@ -297,7 +297,7 @@ test('applyPreselectedRow seeds the type, search input, and selected row', () =>
    assert.equal(refs.onlyItineraryItemsCheckbox.disabled, true);
 });
 
-test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => {
+test('Test_ApplyPreselectedRow_TestApplyPreselectedRowTreatsUnscheduledZoomobileAsAnAttraction_ExpectOk', () => {
    const refs = createRefs();
    const zoomobileRow = {
       name: 'Zoomobile',
@@ -305,7 +305,7 @@ test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => 
       route_duration_minutes: 75,
       scheduleItemKind: 'attractions',
    };
-   const controller = createScheduleItemModuleController({
+   const controller = ScheduleItemModuleController.createScheduleItemModuleController({
       eventTypes: EVENT_TYPES,
       strings: STRINGS,
       itinerary: {
@@ -337,14 +337,14 @@ test('applyPreselectedRow treats unscheduled Zoomobile as an attraction', () => 
    assert.equal(refs.scheduleButton.disabled, false);
 });
 
-test('applyPreselectedRow keeps transportation that was not added as an attraction', () => {
+test('Test_ApplyPreselectedRow_TestApplyPreselectedRowKeepsTransportationThatWasNotAddedAs_ExpectOk', () => {
    const refs = createRefs();
    const zoomobileRow = {
       name: 'Zoomobile',
       added_as_attraction: false,
       scheduleItemKind: 'transportations',
    };
-   const controller = createScheduleItemModuleController({
+   const controller = ScheduleItemModuleController.createScheduleItemModuleController({
       eventTypes: EVENT_TYPES,
       strings: STRINGS,
       itinerary: {
@@ -375,7 +375,7 @@ test('applyPreselectedRow keeps transportation that was not added as an attracti
    assert.equal(controller.canScheduleSelection(), true);
 });
 
-test('displaySearchResults selects a row and infers the module type from the row kind', () => {
+test('Test_DisplaySearchResults_TestDisplaySearchResultsSelectsARowAndInfersTheModule_ExpectOk', () => {
    const refs = createRefs({ selection: '' });
    let onSelectRow = null;
    const controller = createController({
@@ -397,7 +397,7 @@ test('displaySearchResults selects a row and infers the module type from the row
    assert.equal(refs.scheduleButton.disabled, false);
 });
 
-test('displaySearchResults clears the selection when the same row is chosen again', () => {
+test('Test_DisplaySearchResults_TestDisplaySearchResultsClearsTheSelectionWhenTheSameRow_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
    let onSelectRow = null;
    const controller = createController({
@@ -417,7 +417,7 @@ test('displaySearchResults clears the selection when the same row is chosen agai
    assert.equal(refs.scheduleButton.disabled, true);
 });
 
-test('updateFieldVisibility disables time fields for selected talks and encounters', () => {
+test('Test_UpdateFieldVisibility_TestUpdateFieldVisibilityDisablesTimeFieldsForSelectedTalksAnd_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.GUARDIANS_TALK.itemType });
    let fixedTimeMode = null;
    let onSelectRow = null;
@@ -455,7 +455,7 @@ test('updateFieldVisibility disables time fields for selected talks and encounte
    assert.deepEqual(fixedTimeMode, { lockTimes: false });
 });
 
-test('updateFieldVisibility locks transportation duration to the route total', () => {
+test('Test_UpdateFieldVisibility_TestUpdateFieldVisibilityLocksTransportationDurationToTheRouteTotal_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.TRANSPORTATION.itemType });
    let fixedDurationMode = null;
    let onSelectRow = null;
@@ -491,7 +491,7 @@ test('updateFieldVisibility locks transportation duration to the route total', (
    });
 });
 
-test('updateFieldVisibility locks duration for transportation added as an attraction', () => {
+test('Test_UpdateFieldVisibility_TestUpdateFieldVisibilityLocksDurationForTransportationAddedAsAn_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.ATTRACTION.itemType });
    let fixedDurationMode = null;
    let onSelectRow = null;
@@ -528,7 +528,7 @@ test('updateFieldVisibility locks duration for transportation added as an attrac
    });
 });
 
-test('handleTypeSelectChange clears the search input and resets time fields', () => {
+test('Test_HandleTypeSelectChange_TestHandleTypeSelectChangeClearsTheSearchInputAndResetsTime_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'tiger',
@@ -550,7 +550,7 @@ test('handleTypeSelectChange clears the search input and resets time fields', ()
    assert.equal(controller.canScheduleSelection(), false);
 });
 
-test('handleOnlyItineraryItemsChange re-filters cached search rows', () => {
+test('Test_HandleOnlyItineraryItemsChange_TestHandleOnlyItineraryItemsChangeReFiltersCachedSearchRows_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
    });
@@ -578,7 +578,7 @@ test('handleOnlyItineraryItemsChange re-filters cached search rows', () => {
    assert.deepEqual(renderedRows.at(-1), [ANIMAL_ROW]);
 });
 
-test('renderSearchResultsForRows clears results when search is disabled', () => {
+test('Test_RenderSearchResultsForRows_TestRenderSearchResultsForRowsClearsResultsWhenSearchIsDisabled_ExpectOk', () => {
    const refs = createRefs({ selection: 'lunch' });
    refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
    const controller = createController({ refs });
@@ -588,7 +588,7 @@ test('renderSearchResultsForRows clears results when search is disabled', () => 
    assert.equal(refs.resultsEl.children.length, 0);
 });
 
-test('runSearch clears results when search is disabled or the query is blank', async () => {
+test('Test_RunSearch_TestRunSearchClearsResultsWhenSearchIsDisabledOr_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch', searchValue: 'tiger' });
    refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
    const controller = createController({ refs });
@@ -604,7 +604,7 @@ test('runSearch clears results when search is disabled or the query is blank', a
    assert.equal(refs.resultsEl.children.length, 0);
 });
 
-test('runSearch swallows search failures and clears visible rows', async () => {
+test('Test_RunSearch_TestRunSearchSwallowsSearchFailuresAndClearsVisibleRows_ExpectOk', async () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'tiger',
@@ -628,7 +628,7 @@ test('runSearch swallows search failures and clears visible rows', async () => {
    assert.deepEqual(renderedRows, [[]]);
 });
 
-test('handleSchedule shows resolved error notices and generic failures', async () => {
+test('Test_HandleSchedule_TestHandleScheduleShowsResolvedErrorNoticesAndGenericFailures_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    const notices = [];
    const controller = createController({
@@ -671,7 +671,7 @@ test('handleSchedule shows resolved error notices and generic failures', async (
    assert.equal(notices.at(-1), APP_STRINGS.itinerary.errors.generic);
 });
 
-test('handleSchedule returns silently for not-on-itinerary confirmations', async () => {
+test('Test_HandleSchedule_TestHandleScheduleReturnsSilentlyForNotOnItineraryConfirmations_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    const notices = [];
    const controller = createController({
@@ -694,7 +694,7 @@ test('handleSchedule returns silently for not-on-itinerary confirmations', async
    assert.deepEqual(notices, []);
 });
 
-test('handleSchedule ignores duplicate submissions while one is in flight', async () => {
+test('Test_HandleSchedule_TestHandleScheduleIgnoresDuplicateSubmissionsWhileOneIsIn_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    let scheduleCalls = 0;
    let resolveSchedule = null;
@@ -725,7 +725,7 @@ test('handleSchedule ignores duplicate submissions while one is in flight', asyn
    assert.equal(scheduleCalls, 1);
 });
 
-test('clicking the preselected result does not clear the locked selection', () => {
+test('Test_Clicking_TestClickingThePreselectedResultDoesNotClearThe_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'Tiger',
@@ -747,7 +747,7 @@ test('clicking the preselected result does not clear the locked selection', () =
    assert.equal(controller.canScheduleSelection(), true);
 });
 
-test('handleSearchInput clears the selected row and triggers a search', () => {
+test('Test_HandleSearchInput_TestHandleSearchInputClearsTheSelectedRowAndTriggersA_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'tiger',
@@ -773,7 +773,7 @@ test('handleSearchInput clears the selected row and triggers a search', () => {
    assert.deepEqual(searchCalls, ['search']);
 });
 
-test('handleOnlyItineraryItemsChange runs a search when no rows are cached', async () => {
+test('Test_HandleOnlyItineraryItemsChange_TestHandleOnlyItineraryItemsChangeRunsASearchWhenNoRowsAre_ExpectOk', async () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
       searchValue: 'tiger',
@@ -797,7 +797,7 @@ test('handleOnlyItineraryItemsChange runs a search when no rows are cached', asy
    assert.equal(searchRequests.length, 1);
 });
 
-test('initialize without a preselected row clears search results', () => {
+test('Test_Initialize_TestInitializeWithoutAPreselectedRowClearsSearchResults_ExpectOk', () => {
    const refs = createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
    refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
    const controller = createController({ refs });
@@ -808,7 +808,7 @@ test('initialize without a preselected row clears search results', () => {
    assert.equal(refs.scheduleButton.disabled, true);
 });
 
-test('bindEvents wires schedule and search input handlers', async () => {
+test('Test_BindEvents_TestBindEventsWiresScheduleAndSearchInputHandlers_ExpectOk', async () => {
    const refs = createRefs({ selection: 'lunch' });
    let dismissed = false;
    const controller = createController({
@@ -846,7 +846,7 @@ test('bindEvents wires schedule and search input handlers', async () => {
    assert.equal(refs.searchInput.value, '');
 });
 
-test('displaySearchResults clears a selected row hidden by itinerary-only filtering', () => {
+test('Test_DisplaySearchResults_TestDisplaySearchResultsClearsASelectedRowHiddenByItinerary_ExpectOk', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,
    });

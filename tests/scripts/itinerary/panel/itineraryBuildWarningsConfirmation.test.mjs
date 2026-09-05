@@ -1,15 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildConfirmedOptionsFromBuildWarnings,
-   buildItineraryBuildWarningSections,
-   hasMultipleItineraryBuildWarnings,
-   showItineraryBuildWarningsConfirmation,
-} from '../../scripts/itinerary/panel/itineraryBuildWarningsConfirmation.js';
-import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
+import { ItineraryBuildWarningsConfirmation } from '../../../../scripts/itinerary/panel/itineraryBuildWarningsConfirmation.js';
+import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
@@ -35,22 +30,22 @@ const overlapAndWithoutAnimalIssues = [
    },
 ];
 
-test('hasMultipleItineraryBuildWarnings detects multiple warning types', () => {
+test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarningsDetectsMultipleWarningTypes_ExpectOk', () => {
    assert.equal(
-      hasMultipleItineraryBuildWarnings(overlapAndWithoutAnimalIssues),
+      ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings(overlapAndWithoutAnimalIssues),
       true
    );
    assert.equal(
-      hasMultipleItineraryBuildWarnings([
+      ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings([
          overlapAndWithoutAnimalIssues[0],
       ]),
       false
    );
 });
 
-test('hasMultipleItineraryBuildWarnings detects multiple long-wait items', () => {
+test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarningsDetectsMultipleLongWaitItems_ExpectOk', () => {
    assert.equal(
-      hasMultipleItineraryBuildWarnings([{
+      ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings([{
          type: 'fixedTimeItemLongWait',
          items: [
             {
@@ -68,7 +63,7 @@ test('hasMultipleItineraryBuildWarnings detects multiple long-wait items', () =>
       true
    );
    assert.equal(
-      hasMultipleItineraryBuildWarnings([{
+      ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings([{
          type: 'fixedTimeItemLongWait',
          items: [{
             name: 'Western Grey Kangaroo',
@@ -80,9 +75,9 @@ test('hasMultipleItineraryBuildWarnings detects multiple long-wait items', () =>
    );
 });
 
-test('hasMultipleItineraryBuildWarnings detects multiple without-animal talks', () => {
+test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarningsDetectsMultipleWithoutAnimalTalks_ExpectOk', () => {
    assert.equal(
-      hasMultipleItineraryBuildWarnings([{
+      ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings([{
          type: 'guardiansTalkWithoutAnimal',
          items: [
             {
@@ -99,9 +94,9 @@ test('hasMultipleItineraryBuildWarnings detects multiple without-animal talks', 
    );
 });
 
-test('buildConfirmedOptionsFromBuildWarnings sets all matching flags', () => {
+test('Test_BuildConfirmedOptionsFromBuildWarnings_TestBuildConfirmedOptionsFromBuildWarningsSetsAllMatchingFlags_ExpectOk', () => {
    assert.deepEqual(
-      buildConfirmedOptionsFromBuildWarnings(overlapAndWithoutAnimalIssues),
+      ItineraryBuildWarningsConfirmation.buildConfirmedOptionsFromBuildWarnings(overlapAndWithoutAnimalIssues),
       {
          confirmingGuardiansTalkUnschedule: true,
          confirmingGuardiansTalkWithoutAnimal: true,
@@ -109,8 +104,8 @@ test('buildConfirmedOptionsFromBuildWarnings sets all matching flags', () => {
    );
 });
 
-test('buildItineraryBuildWarningSections includes each warning message', () => {
-   const sections = buildItineraryBuildWarningSections(
+test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsIncludesEachWarningMessage_ExpectOk', () => {
+   const sections = ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections(
       overlapAndWithoutAnimalIssues
    );
 
@@ -123,8 +118,8 @@ test('buildItineraryBuildWarningSections includes each warning message', () => {
    assert.match(sections[1].message, /does not match an animal/);
 });
 
-test('buildItineraryBuildWarningSections covers encounter and no-time copy', () => {
-   const sections = buildItineraryBuildWarningSections([
+test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsCoversEncounterAndNoTimeCopy_ExpectOk', () => {
+   const sections = ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections([
       {
          type: 'wildEncounterWillUnscheduleItems',
          items: [{ name: 'Capybara' }],
@@ -176,10 +171,10 @@ test('buildItineraryBuildWarningSections covers encounter and no-time copy', () 
    assert.match(sections[5].message, /Capybara wild encounter is a long wait/);
 });
 
-test('showItineraryBuildWarningsConfirmation shows all warnings in one popup', () => {
+test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarningsConfirmationShowsAllWarningsInOnePopup_ExpectOk', () => {
    let confirmed = false;
 
-   showItineraryBuildWarningsConfirmation({
+   ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation({
       issues: overlapAndWithoutAnimalIssues,
       onConfirm: () => {
          confirmed = true;
@@ -211,10 +206,10 @@ test('showItineraryBuildWarningsConfirmation shows all warnings in one popup', (
    assert.equal(confirmed, true);
 });
 
-test('showItineraryBuildWarningsConfirmation lists multiple long-wait items', () => {
+test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarningsConfirmationListsMultipleLongWaitItems_ExpectOk', () => {
    let confirmed = false;
 
-   showItineraryBuildWarningsConfirmation({
+   ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation({
       issues: [{
          type: 'fixedTimeItemLongWait',
          items: [
@@ -261,8 +256,8 @@ test('showItineraryBuildWarningsConfirmation lists multiple long-wait items', ()
    assert.equal(confirmed, true);
 });
 
-test('showItineraryBuildWarningsConfirmation lists each without-animal talk', () => {
-   showItineraryBuildWarningsConfirmation({
+test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarningsConfirmationListsEachWithoutAnimalTalk_ExpectOk', () => {
+   ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation({
       issues: [
          {
             type: 'guardiansTalkWithoutAnimal',
@@ -312,8 +307,8 @@ test('showItineraryBuildWarningsConfirmation lists each without-animal talk', ()
    assert.match(messages[3], /African Lion guardians talk at 2:00 PM is a long wait/);
 });
 
-test('buildItineraryBuildWarningSections covers timed wild encounter overlap copy', () => {
-   const sections = buildItineraryBuildWarningSections([
+test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsCoversTimedWildEncounterOverlapCopy_ExpectOk', () => {
+   const sections = ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections([
       {
          type: 'wildEncounterWillUnscheduleItems',
          items: [{
@@ -330,9 +325,9 @@ test('buildItineraryBuildWarningSections covers timed wild encounter overlap cop
    );
 });
 
-test('buildItineraryBuildWarningSections skips empty warning modules', () => {
+test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsSkipsEmptyWarningModules_ExpectOk', () => {
    assert.deepEqual(
-      buildItineraryBuildWarningSections([
+      ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections([
          { type: 'guardiansTalkWillUnscheduleItems', items: [] },
          { type: 'wildEncounterWillUnscheduleItems', items: [] },
          { type: 'guardiansTalkWithoutAnimal', items: [] },
@@ -342,7 +337,7 @@ test('buildItineraryBuildWarningSections skips empty warning modules', () => {
    );
 });
 
-test('buildItineraryBuildWarningSections skips long wait when error type is unset', () => {
+test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsSkipsLongWaitWhenErrorTypeIs_ExpectOk', () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          ...MOCK_ERROR_TYPES,
@@ -353,7 +348,7 @@ test('buildItineraryBuildWarningSections skips long wait when error type is unse
 
    try {
       assert.deepEqual(
-         buildItineraryBuildWarningSections([{
+         ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections([{
             type: 'fixedTimeItemLongWait',
             items: [{
                name: 'Amur Tiger',
@@ -371,10 +366,10 @@ test('buildItineraryBuildWarningSections skips long wait when error type is unse
    }
 });
 
-test('showItineraryBuildWarningsConfirmation cancels when no sections', () => {
+test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarningsConfirmationCancelsWhenNoSections_ExpectOk', () => {
    let cancelled = false;
 
-   showItineraryBuildWarningsConfirmation({
+   ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation({
       issues: [],
       onConfirm: () => {
          throw new Error('should not confirm');

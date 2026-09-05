@@ -10,7 +10,7 @@ import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLin
 import { LabelVisibility } from './labelVisibility.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
-import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
+import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { Panzoom } from './panzoom.js';
 import { createDataSources } from './sources.js';
 import { Store } from './store.js';
@@ -124,7 +124,7 @@ export function createMapRuntime({
    const store = Store.createMapStore();
    const sources = createDataSources(store);
    const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
-   const speciesOverlay = initSpeciesOverlay();
+   const speciesOverlay = SpeciesOverlay.initSpeciesOverlay();
 
    const tooltip = createMapTooltip({
       tooltipEl,

@@ -1,7 +1,7 @@
 import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlacement.js';
 import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
 import { OpenTimelinePill } from './openTimelinePill.js';
-import { makeScheduledPill } from './scheduledTimelinePill.js';
+import { ScheduledTimelinePill } from './scheduledTimelinePill.js';
 import { Constants } from '../../../shared/constants.js';
 
 function applyPointPillStripPlacement(pillStrip, placement = '') {
@@ -100,7 +100,7 @@ export class DayPlannerTimelinePillAppend {
          item = null,
       }
    ) {
-      const pill = makeScheduledPill(label, durationMinutes, {
+      const pill = ScheduledTimelinePill.makeScheduledPill(label, durationMinutes, {
          startTime,
          endTime,
          groupItems,

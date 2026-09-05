@@ -17,75 +17,77 @@ function createButton({
    return button;
 }
 
-export function buildRegionSelectorShell() {
-   const root = document.createElement('div');
-   root.className = 'itin-overlay';
+export class Shell {
+   static buildRegionSelectorShell() {
+      const root = document.createElement('div');
+      root.className = 'itin-overlay';
 
-   const card = document.createElement('section');
-   card.className = 'itin-card itin-card-tall';
-   card.setAttribute('role', 'dialog');
-   card.setAttribute('aria-modal', 'true');
-   card.setAttribute('aria-label', APP_STRINGS.itinerary.aria.selectRegionsAndExhibits);
+      const card = document.createElement('section');
+      card.className = 'itin-card itin-card-tall';
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-label', APP_STRINGS.itinerary.aria.selectRegionsAndExhibits);
 
-   const topbar = document.createElement('div');
-   topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
+      const topbar = document.createElement('div');
+      topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
 
-   const topTitleEl = document.createElement('div');
-   topTitleEl.className = 'itin-top-title';
-   topTitleEl.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
+      const topTitleEl = document.createElement('div');
+      topTitleEl.className = 'itin-top-title';
+      topTitleEl.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
 
-   const closeButton = createButton({
-      className: 'itin-close',
-      text: APP_STRINGS.common.closeSymbol,
-      ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
-   });
+      const closeButton = createButton({
+         className: 'itin-close',
+         text: APP_STRINGS.common.closeSymbol,
+         ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
+      });
 
-   topbar.append(topTitleEl, closeButton);
+      topbar.append(topTitleEl, closeButton);
 
-   const bodyEl = document.createElement('div');
-   bodyEl.className = 'itin-card-body itin-card-body-tall';
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'itin-card-body itin-card-body-tall';
 
-   const heading = document.createElement('h1');
-   heading.className = 'itin-h1';
-   heading.textContent = APP_STRINGS.itinerary.selectors.titleRegions;
+      const heading = document.createElement('h1');
+      heading.className = 'itin-h1';
+      heading.textContent = APP_STRINGS.itinerary.selectors.titleRegions;
 
-   const resultsEl = document.createElement('div');
-   resultsEl.className = 'itin-region-results itin-results';
+      const resultsEl = document.createElement('div');
+      resultsEl.className = 'itin-region-results itin-results';
 
-   bodyEl.append(heading, resultsEl);
+      bodyEl.append(heading, resultsEl);
 
-   const actions = document.createElement('div');
-   actions.className = 'itin-card-actions-dual';
+      const actions = document.createElement('div');
+      actions.className = 'itin-card-actions-dual';
 
-   const prevButton = createButton({
-      className: 'itin-prev',
-      text: APP_STRINGS.animalsPage.back,
-   });
+      const prevButton = createButton({
+         className: 'itin-prev',
+         text: APP_STRINGS.animalsPage.back,
+      });
 
-   const actionsRight = document.createElement('div');
-   actionsRight.className = 'itin-actions-right';
+      const actionsRight = document.createElement('div');
+      actionsRight.className = 'itin-actions-right';
 
-   const nextButton = createButton({
-      className: 'itin-next',
-      text: APP_STRINGS.itinerary.actions.next,
-   });
+      const nextButton = createButton({
+         className: 'itin-next',
+         text: APP_STRINGS.itinerary.actions.next,
+      });
 
-   const finishButton = createButton({
-      className: 'itin-next itin-finish',
-      text: APP_STRINGS.itinerary.actions.finish,
-   });
+      const finishButton = createButton({
+         className: 'itin-next itin-finish',
+         text: APP_STRINGS.itinerary.actions.finish,
+      });
 
-   actionsRight.append(nextButton, finishButton);
-   actions.append(prevButton, actionsRight);
-   card.append(topbar, bodyEl, actions);
-   root.appendChild(card);
+      actionsRight.append(nextButton, finishButton);
+      actions.append(prevButton, actionsRight);
+      card.append(topbar, bodyEl, actions);
+      root.appendChild(card);
 
-   return {
-      root,
-      resultsEl,
-      prevButton,
-      nextButton,
-      finishButton,
-      closeButton,
-   };
+      return {
+         root,
+         resultsEl,
+         prevButton,
+         nextButton,
+         finishButton,
+         closeButton,
+      };
+   }
 }

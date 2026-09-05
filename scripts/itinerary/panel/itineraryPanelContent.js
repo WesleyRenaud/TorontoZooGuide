@@ -1,17 +1,13 @@
 import { BulkScheduleItineraryNotEnoughTimeConfirmation } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
-import { makeActionsBar } from './components/actionsBar.js';
+import { ActionsBar } from './components/actionsBar.js';
 import { BuildOnly } from './components/buildOnly.js';
 import { DateCard } from './components/dateCard.js';
-import { makeDayPlannerPreview } from './components/dayPlanner.js';
-import { getItineraryPanelMountEl } from './components/popup.js';
-import { makeSection } from './components/section.js';
+import { DayPlanner } from './components/dayPlanner.js';
+import { Popup } from './components/popup.js';
+import { Section } from './components/section.js';
 import { DayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
-import {
-   buildConfirmedOptionsFromBuildWarnings,
-   hasMultipleItineraryBuildWarnings,
-   showItineraryBuildWarningsConfirmation,
-} from './itineraryBuildWarningsConfirmation.js';
+import { ItineraryBuildWarningsConfirmation } from './itineraryBuildWarningsConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
 import {
@@ -56,14 +52,14 @@ function appendDayPlannerViewWithHours(
       bulkSchedule = bulkScheduleItinerary,
       unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = BulkScheduleItineraryNotEnoughTimeConfirmation.hasBulkScheduleItineraryNotEnoughTimeIssue,
-      hasMultipleBuildWarnings = hasMultipleItineraryBuildWarnings,
-      showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
+      hasMultipleBuildWarnings = ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings,
+      showBuildWarningsConfirmation = ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation,
       requiresLongWaitConfirmation = ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation,
       showLongWaitConfirmation = FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
-      makeDayPlanner = makeDayPlannerPreview,
+      makeDayPlanner = DayPlanner.makeDayPlannerPreview,
       genericErrorMessage = APP_STRINGS.itinerary.errors.generic,
    } = deps;
 
@@ -120,7 +116,7 @@ function appendDayPlannerViewWithHours(
                });
             };
 
-            const mountEl = getItineraryPanelMountEl() ?? document.body;
+            const mountEl = Popup.getItineraryPanelMountEl() ?? document.body;
             const confirmRebuildWithOptions = (confirmedOptions) => (
                async () => {
                   try {
@@ -146,7 +142,7 @@ function appendDayPlannerViewWithHours(
                      issues: result.issues,
                      mountEl,
                      onConfirm: confirmRebuildWithOptions(
-                        buildConfirmedOptionsFromBuildWarnings(result.issues)
+                        ItineraryBuildWarningsConfirmation.buildConfirmedOptionsFromBuildWarnings(result.issues)
                      ),
                   });
                   return;
@@ -213,10 +209,10 @@ export function buildItineraryPanelContent(
 ) {
    const {
       makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
-      makeActions = makeActionsBar,
+      makeActions = ActionsBar.makeActionsBar,
       createDateCard = DateCard.makeDateCard,
       buildSections = SectionConfigs.buildSectionConfigs,
-      createSection = makeSection,
+      createSection = Section.makeSection,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       onAfterClear = null,
       setArrivalTime = setItineraryArrivalTime,

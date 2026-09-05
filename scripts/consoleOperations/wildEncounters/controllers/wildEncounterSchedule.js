@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
-import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
+import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
@@ -55,7 +55,7 @@ export class WildEncounterSchedule {
             return result;
          }
 
-         const resolution = await showOpeningScheduleOverlapDialog();
+         const resolution = await OpeningScheduleOverlapDialog.showOpeningScheduleOverlapDialog();
 
          if (resolution === OpeningScheduleOverlap.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
             return ConsoleOperationsApi.replaceWildEncounterScheduleOverlaps(payload);

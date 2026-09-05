@@ -1,10 +1,7 @@
-import {
-   createDefaultSelectorRowLeftRenderer,
-   renderSelectorResults,
-} from './base/resultRenderer.js';
+import { ResultRenderer } from './base/resultRenderer.js';
 import { SelectionState } from './base/selectionState.js';
 import { SelectorControllerConfig } from './selectorControllerConfig.js';
-import { createSelectorElements } from './selectorControllerElements.js';
+import { SelectorControllerElements } from './selectorControllerElements.js';
 import { SelectorSearchRunner } from './selectorSearchRunner.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -49,7 +46,7 @@ export function createItinerarySelectorController({
    deps = {},
 } = {}) {
    const {
-      buildElements = createSelectorElements,
+      buildElements = SelectorControllerElements.createSelectorElements,
       createSearchRunner = SelectorSearchRunner.createSelectorSearchRunner,
    } = deps;
 
@@ -69,7 +66,7 @@ export function createItinerarySelectorController({
    });
 
    const resolvedRenderRowLeft = renderRowLeft
-      || createDefaultSelectorRowLeftRenderer({
+      || ResultRenderer.createDefaultSelectorRowLeftRenderer({
          getTitle,
          getSubtitle,
          getImageSrc,
@@ -87,7 +84,7 @@ export function createItinerarySelectorController({
          return;
       }
 
-      renderSelectorResults({
+      ResultRenderer.renderSelectorResults({
          resultsEl: elements.resultsEl,
          rows,
          emptyText,
