@@ -8,7 +8,7 @@ import {
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
-import { setStatus } from '../shell/status.js';
+import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function createWeeklyAvailabilityFormController({
@@ -139,7 +139,7 @@ export function createWeeklyAvailabilityFormController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       activatePanel?.(panelEl);
    }
 
@@ -147,7 +147,7 @@ export function createWeeklyAvailabilityFormController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -167,7 +167,7 @@ export function createWeeklyAvailabilityFormController({
    async function onShowClick() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions,
          populateOptions,
          targetEl: entityEl,
@@ -199,7 +199,7 @@ export function createWeeklyAvailabilityFormController({
    function handleSubmitSuccess(result, entity) {
       const name = resultName(result) || entity;
 
-      setStatus(
+      Status.setStatus(
          statusEl,
          APP_STRINGS.status.openingScheduleSaved(name),
          'is-success'
@@ -215,22 +215,22 @@ export function createWeeklyAvailabilityFormController({
       const endDate = getFieldValue(endDateEl);
       const message = getFieldValue(messageEl);
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       if (!entity) {
-         setStatus(statusEl, APP_STRINGS.validation.entityRequired(entityLabel), 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.validation.entityRequired(entityLabel), 'is-error');
          return;
       }
 
       if (!hasAtLeastOneOpenDay()) {
-         setStatus(statusEl, APP_STRINGS.validation.weeklyAvailability, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.validation.weeklyAvailability, 'is-error');
          return;
       }
 
       const dateError = validateOptionalDateRange(startDate, endDate);
 
       if (dateError) {
-         setStatus(statusEl, dateError, 'is-error');
+         Status.setStatus(statusEl, dateError, 'is-error');
          return;
       }
 
@@ -256,7 +256,7 @@ export function createWeeklyAvailabilityFormController({
                return;
             }
 
-            setStatus(
+            Status.setStatus(
                statusEl,
                resolvedResult.error || APP_STRINGS.common.genericFailed,
                'is-error'
@@ -264,10 +264,10 @@ export function createWeeklyAvailabilityFormController({
             return;
          }
 
-         setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+         Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

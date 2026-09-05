@@ -1,11 +1,14 @@
-export function getOptionItemName(item) {
-   return typeof item === 'string'
-      ? item
-      : item.name ?? '';
-}
+export class NamedItems {
+   static getOptionItemName(item) {
+      return typeof item === 'string'
+         ? item
+         : item.name ?? '';
+   }
 
-export function sortNamedOptions(items = []) {
-   return items
-      .slice()
-      .sort((a, b) => String(getOptionItemName(a)).localeCompare(String(getOptionItemName(b))));
+   static sortNamedOptions(items = []) {
+      return items
+         .slice()
+         .sort((a, b) => String(NamedItems.getOptionItemName(a))
+            .localeCompare(String(NamedItems.getOptionItemName(b))));
+   }
 }

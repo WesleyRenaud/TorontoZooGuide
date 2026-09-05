@@ -159,7 +159,21 @@
       "scripts/tooltips/positionTooltip.js",
       "scripts/tooltips/tooltipRenderers.js",
       "scripts/itinerary/panel/components/buildOnly.js",
-      "scripts/search/exploreFilter.js"
+      "scripts/search/exploreFilter.js",
+      "scripts/consoleOperations/shell/status.js",
+      "scripts/consoleOperations/options/namedItems.js",
+      "scripts/updates/exploreTabs.js",
+      "scripts/shared/zooMapConstants.js",
+      "scripts/shared/constants.js",
+      "scripts/map/store.js",
+      "scripts/map/focusRequest.js",
+      "scripts/focus/center.js",
+      "scripts/focus/focusAnimator.js",
+      "scripts/itinerary/pastItinerary/promptSession.js",
+      "scripts/itinerary/pastItinerary/clearPastItinerary.js",
+      "scripts/itinerary/itineraryRenderer.js",
+      "scripts/itinerary/panel/components/dateCard.js",
+      "scripts/tooltips/bannerSync.js"
    ],
    "exclude": [
       "scripts/mainMap.js",

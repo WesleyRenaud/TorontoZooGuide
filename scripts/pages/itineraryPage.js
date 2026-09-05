@@ -1,5 +1,5 @@
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
-import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
+import { ItineraryRenderer } from '../itinerary/itineraryRenderer.js';
 import { getItinerary } from '../itinerary/itineraryService.js';
 import { ItineraryShape } from '../itinerary/itineraryShape.js';
 import { getItineraryOverlayMountEl } from '../itinerary/panel/components/popup.js';
@@ -89,12 +89,12 @@ async function refreshItineraryPageContent(
       });
 
       if (pastDatePromptShown) {
-         await renderItineraryPanel();
+         await ItineraryRenderer.renderItineraryPanel();
          return;
       }
    }
 
-   await renderItineraryPanel();
+   await ItineraryRenderer.renderItineraryPanel();
 
    if (!itinerary || !ItineraryShape.hasSavedItineraryContent(itinerary)) {
       if (openBuilderWhenEmpty) {

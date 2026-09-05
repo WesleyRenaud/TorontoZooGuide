@@ -9,7 +9,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { loadRestrooms } from '../../options/loaders.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomAlertController({
@@ -60,7 +60,7 @@ export function createRestroomAlertController({
    async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions: loadRestrooms,
          populateOptions: populateRestroomDropdown,
          targetEl: restroomEl,
@@ -75,7 +75,7 @@ export function createRestroomAlertController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -94,7 +94,7 @@ export function createRestroomAlertController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          `${result.restroom} was given an alert.`,
          'is-success'
@@ -106,12 +106,12 @@ export function createRestroomAlertController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -122,11 +122,11 @@ export function createRestroomAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

@@ -1,29 +1,31 @@
-import { centerMarkerWithContain } from './center.js';
+import { Center } from './center.js';
 
 const FOCUS_ZOOM_LEVEL = 3;
 
-export function focusMarker({
-   panzoom,
-   marker,
-   viewportEl,
-   tooltip,
-   matchFn,
-   items,
-}) {
-   if (!panzoom || !marker || !viewportEl || !tooltip) {
-      return;
-   }
+export class FocusAnimator {
+   static focusMarker({
+      panzoom,
+      marker,
+      viewportEl,
+      tooltip,
+      matchFn,
+      items,
+   }) {
+      if (!panzoom || !marker || !viewportEl || !tooltip) {
+         return;
+      }
 
-   panzoom.zoom(FOCUS_ZOOM_LEVEL, { animate: false });
-
-   requestAnimationFrame(() => {
-      centerMarkerWithContain(panzoom, marker, viewportEl);
+      panzoom.zoom(FOCUS_ZOOM_LEVEL, { animate: false });
 
       requestAnimationFrame(() => {
-         centerMarkerWithContain(panzoom, marker, viewportEl);
+         Center.centerMarkerWithContain(panzoom, marker, viewportEl);
 
-         tooltip.open(marker, items || marker.__items || []);
-         tooltip.jumpTo(matchFn);
+         requestAnimationFrame(() => {
+            Center.centerMarkerWithContain(panzoom, marker, viewportEl);
+
+            tooltip.open(marker, items || marker.__items || []);
+            tooltip.jumpTo(matchFn);
+         });
       });
-   });
+   }
 }

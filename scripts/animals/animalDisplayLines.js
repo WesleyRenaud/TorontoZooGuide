@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { DETAIL_SEPARATOR } from '../shared/constants.js';
+import { Constants } from '../shared/constants.js';
 
 export class AnimalDisplayLines {
    static formatAnimalTitleSuffix(enclosureName) {
@@ -9,7 +9,7 @@ export class AnimalDisplayLines {
          return '';
       }
 
-      return `${DETAIL_SEPARATOR}${normalizedEnclosureName}`;
+      return `${Constants.DETAIL_SEPARATOR}${normalizedEnclosureName}`;
    }
 
    static formatSpeciesEnclosureLine(species, enclosureName) {
@@ -20,7 +20,7 @@ export class AnimalDisplayLines {
          return normalizedSpecies;
       }
 
-      return `${normalizedSpecies}${DETAIL_SEPARATOR}${normalizedEnclosureName}`;
+      return `${normalizedSpecies}${Constants.DETAIL_SEPARATOR}${normalizedEnclosureName}`;
    }
 
    static formatExhibitEnclosureTypeLine(exhibit, enclosureType) {
@@ -31,6 +31,6 @@ export class AnimalDisplayLines {
          return normalizedExhibit;
       }
 
-      return `${normalizedExhibit}${DETAIL_SEPARATOR}${normalizedEnclosureType}`;
+      return `${normalizedExhibit}${Constants.DETAIL_SEPARATOR}${normalizedEnclosureType}`;
    }
 }

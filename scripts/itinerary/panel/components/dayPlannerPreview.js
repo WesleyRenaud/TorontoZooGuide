@@ -21,7 +21,7 @@ import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import { ScheduleItemButton } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import { SectionConfigs } from '../sectionConfigs.js';
-import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
 
@@ -278,7 +278,7 @@ export function makeDayPlannerPreview(
       const nextSlotStart = timelineSlotStarts[slotIndex + 1];
       const slotSpanMinutes = Number.isFinite(nextSlotStart)
          ? nextSlotStart - slotStart
-         : TIMELINE_SLOT_MINUTES;
+         : Constants.TIMELINE_SLOT_MINUTES;
       const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
       const [timeCell, gridLine] = makeTimelineRow(
          DayPlannerSchedule.formatMinutesAsClockTime(slotStart),

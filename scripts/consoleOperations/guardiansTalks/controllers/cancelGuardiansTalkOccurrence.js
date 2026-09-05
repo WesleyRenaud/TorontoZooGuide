@@ -8,7 +8,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
 import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createCancelGuardiansTalkOccurrenceController({
@@ -67,7 +67,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       activatePanel?.(panelEl);
    }
 
@@ -75,7 +75,7 @@ export function createCancelGuardiansTalkOccurrenceController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -115,7 +115,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          `${result.talk} in ${result.location} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
          'is-success'
@@ -125,7 +125,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       try {
          resetForm();
@@ -133,7 +133,7 @@ export function createCancelGuardiansTalkOccurrenceController({
          show();
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
          show();
       }
    }
@@ -141,12 +141,12 @@ export function createCancelGuardiansTalkOccurrenceController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -157,12 +157,12 @@ export function createCancelGuardiansTalkOccurrenceController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
 
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

@@ -1,9 +1,6 @@
-import { clearPastItinerary } from './clearPastItinerary.js';
+import { ClearPastItinerary } from './clearPastItinerary.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import {
-   isPastItineraryPromptOpen,
-   setPastItineraryPromptOpen,
-} from './promptSession.js';
+import { PromptSession } from './promptSession.js';
 import { recoverPastItineraryDate } from './recoverPastItineraryDate.js';
 import { showPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
@@ -25,10 +22,10 @@ export async function offerPastItineraryClearOrRecovery({
       resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
       isVisitDateBeforeFloor = VisitDateRules.isVisitDateBeforeEarliestFloor,
       showChoicePrompt = showPastItineraryChoicePrompt,
-      clearItinerary = clearPastItinerary,
+      clearItinerary = ClearPastItinerary.clearPastItinerary,
       recoverItineraryDate = recoverPastItineraryDate,
-      isPromptOpen = isPastItineraryPromptOpen,
-      setPromptOpen = setPastItineraryPromptOpen,
+      isPromptOpen = PromptSession.isPastItineraryPromptOpen,
+      setPromptOpen = PromptSession.setPastItineraryPromptOpen,
    } = deps;
 
    if (!mountEl) {

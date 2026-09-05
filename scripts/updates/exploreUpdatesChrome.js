@@ -1,4 +1,4 @@
-import { EXPLORE_TAB } from './exploreTabs.js';
+import { ExploreTabs } from './exploreTabs.js';
 import { APP_STRINGS } from '../strings.js';
 
 export function getExploreSectionEl(listEl) {
@@ -20,7 +20,7 @@ export function getExploreTabEl(listEl, tab) {
       return null;
    }
 
-   return tab === EXPLORE_TAB.EVENTS
+   return tab === ExploreTabs.EXPLORE_TAB.EVENTS
       ? sectionEl.querySelector('#exploreEventsTab')
       : sectionEl.querySelector('#exploreUpdatesTab');
 }
@@ -69,7 +69,7 @@ export function renderExploreNav({
 
    const navEl = document.createElement('div');
    navEl.className = 'explore-update-nav';
-   const isEventsTab = activeTab === EXPLORE_TAB.EVENTS;
+   const isEventsTab = activeTab === ExploreTabs.EXPLORE_TAB.EVENTS;
 
    navEl.append(
       createArrowButton({
@@ -113,9 +113,9 @@ export function syncExploreTabs({
    updatesCount,
    eventsCount,
 } = {}) {
-   const updatesTabEl = getExploreTabEl(listEl, EXPLORE_TAB.UPDATES);
-   const eventsTabEl = getExploreTabEl(listEl, EXPLORE_TAB.EVENTS);
-   const isEventsTab = activeTab === EXPLORE_TAB.EVENTS;
+   const updatesTabEl = getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.UPDATES);
+   const eventsTabEl = getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.EVENTS);
+   const isEventsTab = activeTab === ExploreTabs.EXPLORE_TAB.EVENTS;
 
    updatesTabEl?.classList.toggle('is-active', !isEventsTab);
    eventsTabEl?.classList.toggle('is-active', isEventsTab);

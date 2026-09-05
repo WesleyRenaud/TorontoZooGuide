@@ -1,29 +1,18 @@
-import {
-   MAX_TIMELINE_PILL_COLUMNS,
-   MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-   TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
-   TIMELINE_POINT_PILL_HEIGHT_PX,
-   TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX,
-   TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES,
-   TIMELINE_SLOT_HEIGHT_PX,
-   TIMELINE_SLOT_MINUTES,
-} from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const { dayPlanner } = APP_STRINGS.itinerary;
 
-export {
-   MAX_TIMELINE_PILL_COLUMNS,
-   MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-};
+export const MAX_TIMELINE_PILL_COLUMNS = Constants.MAX_TIMELINE_PILL_COLUMNS;
+export const MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = Constants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;
 
 function minutesPerSlotFromHeightPx(heightPx) {
-   return (heightPx / TIMELINE_SLOT_HEIGHT_PX) * TIMELINE_SLOT_MINUTES;
+   return (heightPx / Constants.TIMELINE_SLOT_HEIGHT_PX) * Constants.TIMELINE_SLOT_MINUTES;
 }
 
 export class ScheduledPillOverlap {
    static getScheduledPillMinDisplayMinutes() {
-      return TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES;
+      return Constants.TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES;
    }
 
 
@@ -62,11 +51,11 @@ export class ScheduledPillOverlap {
       const { startMinutes } = ScheduledPillOverlap.getScheduledItemTimeRange(scheduledItem);
       const scheduledDurationMinutes = Number(scheduledItem.maximumDuration);
       const visualStartMinutes = startMinutes - minutesPerSlotFromHeightPx(
-         TIMELINE_PILL_STRIP_TOP_OFFSET_PX
+         Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
       );
       const minimumHeightPx = scheduledItem.isPointPillBlocker
-         ? TIMELINE_POINT_PILL_HEIGHT_PX
-         : TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX;
+         ? Constants.TIMELINE_POINT_PILL_HEIGHT_PX
+         : Constants.TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX;
       const visualDurationMinutes = Math.max(
          minutesPerSlotFromHeightPx(minimumHeightPx),
          scheduledDurationMinutes
@@ -103,7 +92,7 @@ export class ScheduledPillOverlap {
       candidateItem = {},
       {
          minColumn = 0,
-         maxColumn = MAX_TIMELINE_PILL_COLUMNS - 1,
+         maxColumn = Constants.MAX_TIMELINE_PILL_COLUMNS - 1,
       } = {}
    ) {
       const blockedColumns = new Set();

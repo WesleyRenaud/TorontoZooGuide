@@ -1,10 +1,6 @@
 import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
 import { DateContext } from './dateContext.js';
-import {
-   normalizeSearchFocusRequest,
-   resolveDeepLinkFocus,
-   scheduleFocusRequest,
-} from './focusRequest.js';
+import { FocusRequest } from './focusRequest.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
 import {
    clearItineraryPathOverlay,
@@ -45,7 +41,7 @@ export function createMapUpdater({
    }
 
    function focusIfRequested(options) {
-      scheduleFocusRequest(focus, options?.focus || null);
+      FocusRequest.scheduleFocusRequest(focus, options?.focus || null);
    }
 
    function clearRenderedMarkers() {
@@ -229,7 +225,7 @@ export function createMapUpdater({
    }
 
    function focusFromSearchRow(payload) {
-      const focusRequest = normalizeSearchFocusRequest(payload);
+      const focusRequest = FocusRequest.normalizeSearchFocusRequest(payload);
 
       if (!focusRequest) {
          return;
@@ -239,14 +235,14 @@ export function createMapUpdater({
    }
 
    function focusFromDeepLink(payload) {
-      const resolved = resolveDeepLinkFocus(payload);
+      const resolved = FocusRequest.resolveDeepLinkFocus(payload);
 
       if (!resolved) {
          return;
       }
 
       if (resolved.mode === 'direct') {
-         scheduleFocusRequest(focus, resolved.focusRequest);
+         FocusRequest.scheduleFocusRequest(focus, resolved.focusRequest);
          return null;
       }
 

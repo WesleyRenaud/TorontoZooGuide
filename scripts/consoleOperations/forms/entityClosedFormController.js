@@ -6,7 +6,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
-import { setStatus } from '../shell/status.js';
+import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function createEntityClosedFormController({
@@ -58,7 +58,7 @@ export function createEntityClosedFormController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       activatePanel?.(panelEl);
    }
 
@@ -66,12 +66,12 @@ export function createEntityClosedFormController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          successMessage(result),
          'is-success'
@@ -83,7 +83,7 @@ export function createEntityClosedFormController({
    async function onShowClick() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions,
          populateOptions,
          targetEl: entityEl,
@@ -97,12 +97,12 @@ export function createEntityClosedFormController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -113,11 +113,11 @@ export function createEntityClosedFormController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 
