@@ -1,44 +1,44 @@
-import { createAnimalOffDisplayController } from '../animals/controllers/animalOffDisplay.js';
-import { createAnimalOnDisplayController } from '../animals/controllers/animalOnDisplay.js';
-import { createAnimalSpeciesAutocompleteController } from '../animals/controllers/animalSpeciesAutocomplete.js';
-import { createAnimalViewingAlertController } from '../animals/controllers/animalViewingAlert.js';
-import { createAnimalVisibilityScheduleController } from '../animals/controllers/animalVisibilitySchedule.js';
-import { createRemoveViewingAlertController } from '../animals/controllers/removeViewingAlert.js';
-import { createRemoveVisibilityScheduleController } from '../animals/controllers/removeVisibilitySchedule.js';
+import { AnimalOffDisplay } from '../animals/controllers/animalOffDisplay.js';
+import { AnimalOnDisplay } from '../animals/controllers/animalOnDisplay.js';
+import { AnimalSpeciesAutocomplete } from '../animals/controllers/animalSpeciesAutocomplete.js';
+import { AnimalViewingAlert } from '../animals/controllers/animalViewingAlert.js';
+import { AnimalVisibilitySchedule } from '../animals/controllers/animalVisibilitySchedule.js';
+import { RemoveViewingAlert } from '../animals/controllers/removeViewingAlert.js';
+import { RemoveVisibilitySchedule } from '../animals/controllers/removeVisibilitySchedule.js';
 import { AttractionClosed } from '../attractions/controllers/attractionClosed.js';
 import { AttractionClosureOverride } from '../attractions/controllers/attractionClosureOverride.js';
 import { createAttractionHoursScheduleController } from '../attractions/controllers/attractionHoursSchedule.js';
-import { createAttractionOpeningScheduleController } from '../attractions/controllers/attractionOpeningSchedule.js';
+import { AttractionOpeningSchedule } from '../attractions/controllers/attractionOpeningSchedule.js';
 import { DrinkingFountainsClosed } from '../drinkingFountains/controllers/drinkingFountainsClosed.js';
 import { DrinkingFountainsOpen } from '../drinkingFountains/controllers/drinkingFountainsOpen.js';
-import { createCreateEventController } from '../events/controllers/createEvent.js';
+import { CreateEvent } from '../events/controllers/createEvent.js';
 import { ExhibitClosed } from '../exhibits/controllers/exhibitClosed.js';
 import { ExhibitOpen } from '../exhibits/controllers/exhibitOpen.js';
 import { GiftShopClosed } from '../giftShops/controllers/giftShopClosed.js';
 import { GiftShopClosureOverride } from '../giftShops/controllers/giftShopClosureOverride.js';
-import { createGiftShopOpeningScheduleController } from '../giftShops/controllers/giftShopOpeningSchedule.js';
-import { createAddGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/addGuardiansTalkOccurrence.js';
+import { GiftShopOpeningSchedule } from '../giftShops/controllers/giftShopOpeningSchedule.js';
+import { AddGuardiansTalkOccurrence } from '../guardiansTalks/controllers/addGuardiansTalkOccurrence.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
-import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
+import { EndGuardiansTalkSchedule } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
 import { GuardiansTalkLocationFilter } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
 import { GuardiansTalkOccurrenceFilter } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
 import { GuardiansTalkScheduleTimesFilter } from '../guardiansTalks/controllers/guardiansTalkScheduleTimesFilter.js';
 import { RestaurantClosed } from '../restaurants/controllers/restaurantClosed.js';
 import { RestaurantClosureOverride } from '../restaurants/controllers/restaurantClosureOverride.js';
-import { createRestaurantOpeningScheduleController } from '../restaurants/controllers/restaurantOpeningSchedule.js';
-import { createRemoveRestroomAlertController } from '../restrooms/controllers/removeRestroomAlert.js';
-import { createRestroomAlertController } from '../restrooms/controllers/restroomAlert.js';
+import { RestaurantOpeningSchedule } from '../restaurants/controllers/restaurantOpeningSchedule.js';
+import { RemoveRestroomAlert } from '../restrooms/controllers/removeRestroomAlert.js';
+import { RestroomAlert } from '../restrooms/controllers/restroomAlert.js';
 import { RestroomClosed } from '../restrooms/controllers/restroomClosed.js';
 import { RestroomOpen } from '../restrooms/controllers/restroomOpen.js';
 import { createTransportationRouteController } from '../transportation/controllers/transportationRoute.js';
 import { TransportationStationClosed } from '../transportation/controllers/transportationStationClosed.js';
 import { TransportationStationOpen } from '../transportation/controllers/transportationStationOpen.js';
-import { createCreateUpdateController } from '../updates/controllers/createUpdate.js';
-import { createEditUpdateController } from '../updates/controllers/editUpdate.js';
-import { createEndUpdateController } from '../updates/controllers/endUpdate.js';
+import { CreateUpdate } from '../updates/controllers/createUpdate.js';
+import { EditUpdate } from '../updates/controllers/editUpdate.js';
+import { EndUpdate } from '../updates/controllers/endUpdate.js';
 import { createCancelWildEncounterOccurrenceController } from '../wildEncounters/controllers/cancelWildEncounterOccurrence.js';
-import { createEndWildEncounterScheduleController } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
+import { EndWildEncounterSchedule } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
 import { WildEncounterOccurrenceFilter } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 import { createWildEncounterScheduleController } from '../wildEncounters/controllers/wildEncounterSchedule.js';
 import { WildEncounterScheduleTimesFilter } from '../wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
@@ -54,27 +54,27 @@ const ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
 
 const CONTROLLER_BINDINGS = [
    {
-      createController: createAnimalOffDisplayController,
+      createController: AnimalOffDisplay.createAnimalOffDisplayController,
       getRefs: refs => refs.animals.offDisplay,
    },
    {
-      createController: createAnimalOnDisplayController,
+      createController: AnimalOnDisplay.createAnimalOnDisplayController,
       getRefs: refs => refs.animals.onDisplay,
    },
    {
-      createController: createAnimalVisibilityScheduleController,
+      createController: AnimalVisibilitySchedule.createAnimalVisibilityScheduleController,
       getRefs: refs => refs.animals.visibilitySchedule,
    },
    {
-      createController: createRemoveVisibilityScheduleController,
+      createController: RemoveVisibilitySchedule.createRemoveVisibilityScheduleController,
       getRefs: refs => refs.animals.removeVisibilitySchedule,
    },
    {
-      createController: createAnimalViewingAlertController,
+      createController: AnimalViewingAlert.createAnimalViewingAlertController,
       getRefs: refs => refs.animals.viewingAlert,
    },
    {
-      createController: createRemoveViewingAlertController,
+      createController: RemoveViewingAlert.createRemoveViewingAlertController,
       getRefs: refs => refs.animals.removeViewingAlert,
    },
    {
@@ -94,7 +94,7 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.restaurants.closureOverride,
    },
    {
-      createController: createRestaurantOpeningScheduleController,
+      createController: RestaurantOpeningSchedule.createRestaurantOpeningScheduleController,
       getRefs: refs => refs.restaurants.openingSchedule,
    },
    {
@@ -106,11 +106,11 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.restrooms.open,
    },
    {
-      createController: createRestroomAlertController,
+      createController: RestroomAlert.createRestroomAlertController,
       getRefs: refs => refs.restrooms.alert,
    },
    {
-      createController: createRemoveRestroomAlertController,
+      createController: RemoveRestroomAlert.createRemoveRestroomAlertController,
       getRefs: refs => refs.restrooms.removeAlert,
    },
    {
@@ -122,7 +122,7 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.giftShops.closureOverride,
    },
    {
-      createController: createGiftShopOpeningScheduleController,
+      createController: GiftShopOpeningSchedule.createGiftShopOpeningScheduleController,
       getRefs: refs => refs.giftShops.openingSchedule,
    },
    {
@@ -134,7 +134,7 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.attractions.closureOverride,
    },
    {
-      createController: createAttractionOpeningScheduleController,
+      createController: AttractionOpeningSchedule.createAttractionOpeningScheduleController,
       getRefs: refs => refs.attractions.openingSchedule,
    },
    {
@@ -161,7 +161,7 @@ const CONTROLLER_BINDINGS = [
       }),
    },
    {
-      createController: createEndGuardiansTalkScheduleController,
+      createController: EndGuardiansTalkSchedule.createEndGuardiansTalkScheduleController,
       getRefs: refs => refs.guardiansTalks.endSchedule,
       getExtraOptions: ({
          endGuardiansTalkScheduleLocationFilterController,
@@ -172,7 +172,7 @@ const CONTROLLER_BINDINGS = [
       }),
    },
    {
-      createController: createAddGuardiansTalkOccurrenceController,
+      createController: AddGuardiansTalkOccurrence.createAddGuardiansTalkOccurrenceController,
       getRefs: refs => refs.guardiansTalks.addOccurrence,
       getExtraOptions: ({
          addGuardiansTalkOccurrenceLocationFilterController,
@@ -196,7 +196,7 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.wildEncounters.schedule,
    },
    {
-      createController: createEndWildEncounterScheduleController,
+      createController: EndWildEncounterSchedule.createEndWildEncounterScheduleController,
       getRefs: refs => refs.wildEncounters.endSchedule,
       getExtraOptions: ({ wildEncounterScheduleTimesFilterController }) => ({
          scheduleTimesFilterController: wildEncounterScheduleTimesFilterController,
@@ -218,19 +218,19 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.drinkingFountains.open,
    },
    {
-      createController: createCreateEventController,
+      createController: CreateEvent.createCreateEventController,
       getRefs: refs => refs.events.create,
    },
    {
-      createController: createCreateUpdateController,
+      createController: CreateUpdate.createCreateUpdateController,
       getRefs: refs => refs.updates.create,
    },
    {
-      createController: createEndUpdateController,
+      createController: EndUpdate.createEndUpdateController,
       getRefs: refs => refs.updates.end,
    },
    {
-      createController: createEditUpdateController,
+      createController: EditUpdate.createEditUpdateController,
       getRefs: refs => refs.updates.edit,
    },
 ];
@@ -239,7 +239,7 @@ function initAnimalSpeciesAutocompletes(animals) {
    ANIMAL_SPECIES_AUTOCOMPLETE_KEYS.forEach(key => {
       const { speciesEl, speciesResultsEl, exhibitEl } = animals[key];
 
-      createAnimalSpeciesAutocompleteController({
+      AnimalSpeciesAutocomplete.createAnimalSpeciesAutocompleteController({
          inputEl: speciesEl,
          resultsEl: speciesResultsEl,
          exhibitEl,

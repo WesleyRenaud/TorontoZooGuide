@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { createAnimalViewingScopeControl } from '../../scripts/consoleOperations/animals/controllers/animalViewingScopeControl.js';
-import { AnimalViewingScope } from '../../scripts/shared/enums/animalViewingScope.js';
+import { AnimalViewingScopeControl } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeControl.js';
+import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 
 const originalFetch = globalThis.fetch;
 
@@ -34,7 +34,7 @@ afterEach(() => {
    globalThis.fetch = originalFetch;
 });
 
-test('animal viewing scope control enables the select when both indoor and outdoor viewing exist', async () => {
+test('Test_CreateAnimalViewingScopeControl_TestIndoorAndOutdoor_ExpectSelectEnabled', async () => {
    const speciesEl = createField('Southern White Rhinoceros');
    const exhibitEl = createField('Africa Savanna');
    const viewingScopeEl = createField('');
@@ -44,7 +44,7 @@ test('animal viewing scope control enables the select when both indoor and outdo
       AnimalViewingScope.OUTDOOR,
    ]);
 
-   createAnimalViewingScopeControl({
+   AnimalViewingScopeControl.createAnimalViewingScopeControl({
       speciesEl,
       exhibitEl,
       viewingScopeEl,
@@ -59,7 +59,7 @@ test('animal viewing scope control enables the select when both indoor and outdo
    assert.equal(viewingScopeEl.value, AnimalViewingScope.ALL);
 });
 
-test('animal viewing scope control locks the select to the only available viewing scope', async () => {
+test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async () => {
    const speciesEl = createField('African Lion');
    const exhibitEl = createField('Africa Savanna');
    const viewingScopeEl = createField('');
@@ -68,7 +68,7 @@ test('animal viewing scope control locks the select to the only available viewin
       AnimalViewingScope.OUTDOOR,
    ]);
 
-   createAnimalViewingScopeControl({
+   AnimalViewingScopeControl.createAnimalViewingScopeControl({
       speciesEl,
       exhibitEl,
       viewingScopeEl,
