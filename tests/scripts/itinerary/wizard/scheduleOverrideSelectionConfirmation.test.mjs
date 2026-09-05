@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showScheduleOverrideSelectionConfirmation } from '../../scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ScheduleOverrideSelectionConfirmation } from '../../../../scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
-test('schedule override selection confirmation copy is defined', () => {
+test('Test_ScheduleOverrideSelectionConfirmation_TestCopy_ExpectDefined', () => {
    assert.equal(
       APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionTitle,
       'Adjust Activity Times?'
@@ -28,10 +28,10 @@ test.describe('showScheduleOverrideSelectionConfirmation', () => {
       },
    });
 
-   test('showScheduleOverrideSelectionConfirmation uses schedule override confirm popup', () => {
+   test('Test_ShowScheduleOverrideSelectionConfirmation_TestOverride_ExpectConfirmPopup', () => {
       const confirmCalls = [];
 
-      showScheduleOverrideSelectionConfirmation({
+      ScheduleOverrideSelectionConfirmation.showScheduleOverrideSelectionConfirmation({
          onConfirm: () => {
             confirmCalls.push('confirmed');
          },

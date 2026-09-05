@@ -7,8 +7,8 @@ import {
 } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
-import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
-import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
+import { EarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
+import { ShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { PersistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
@@ -68,7 +68,7 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
 
    if (ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
       return requestConfirmedItineraryTimeChange({
-         showConfirmation: showEarlyAdmissionConfirmation,
+         showConfirmation: EarlyAdmissionConfirmation.showEarlyAdmissionConfirmation,
          requestFn,
          timeValue,
          suppressionType: (
@@ -85,7 +85,7 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
    }
 
    return requestConfirmedItineraryTimeChange({
-      showConfirmation: showShortVisitConfirmation,
+      showConfirmation: ShortVisitConfirmation.showShortVisitConfirmation,
       requestFn,
       timeValue,
       suppressionType: ItineraryErrorTypes.getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,

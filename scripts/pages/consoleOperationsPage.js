@@ -3,7 +3,7 @@ import {
    wireConsoleOperationControllers,
 } from '../consoleOperations/bootstrap/controllers.js';
 import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
-import { mountConsoleOperationPanels } from '../consoleOperations/bootstrap/panels.js';
+import { Panels } from '../consoleOperations/bootstrap/panels.js';
 import { collectConsoleOperationRefs } from '../consoleOperations/bootstrap/refs.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
@@ -21,7 +21,7 @@ function createConsoleOperationSpecialControllers(refs) {
 }
 
 function initConsoleOperationPanels(workspaceEl) {
-   mountConsoleOperationPanels(workspaceEl);
+   Panels.mountConsoleOperationPanels(workspaceEl);
 }
 
 function initConsoleOperationControllers(refs) {

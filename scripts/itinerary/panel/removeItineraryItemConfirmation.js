@@ -27,21 +27,23 @@ function removeConfirmationMessage(itemType, key) {
    return strings.removeItemMessage;
 }
 
-export function showRemoveItineraryItemConfirmation({
-   itemType = null,
-   key = null,
-   onConfirm,
-   onCancel,
-} = {}) {
-   const strings = APP_STRINGS.itinerary.confirmation;
-
-   showItineraryConfirmPopup({
-      title: strings.removeItemTitle,
-      message: removeConfirmationMessage(itemType, key),
-      confirmText: APP_STRINGS.itinerary.dayPlanner.remove,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      mountEl: getItineraryPanelMountEl() ?? document.body,
+export class RemoveItineraryItemConfirmation {
+   static showRemoveItineraryItemConfirmation({
+      itemType = null,
+      key = null,
       onConfirm,
       onCancel,
-   });
+   } = {}) {
+      const strings = APP_STRINGS.itinerary.confirmation;
+
+      showItineraryConfirmPopup({
+         title: strings.removeItemTitle,
+         message: removeConfirmationMessage(itemType, key),
+         confirmText: APP_STRINGS.itinerary.dayPlanner.remove,
+         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         mountEl: getItineraryPanelMountEl() ?? document.body,
+         onConfirm,
+         onCancel,
+      });
+   }
 }

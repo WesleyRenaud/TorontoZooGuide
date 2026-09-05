@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showSaveIssuesProceedConfirmation } from '../../scripts/itinerary/wizard/saveIssuesProceedConfirmation.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
+import { SaveIssuesProceedConfirmation } from '../../../../scripts/itinerary/wizard/saveIssuesProceedConfirmation.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
 test.describe('saveIssuesProceedConfirmation', () => {
    installDomTestHooks({
@@ -13,10 +13,10 @@ test.describe('saveIssuesProceedConfirmation', () => {
       },
    });
 
-   test('showSaveIssuesProceedConfirmation uses proceed-anyway confirm popup', () => {
+   test('Test_ShowSaveIssuesProceedConfirmation_TestProceed_ExpectConfirmPopup', () => {
       const confirmCalls = [];
 
-      showSaveIssuesProceedConfirmation({
+      SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
          title: 'Save issues title',
          message: 'Save issues message',
          onConfirm: () => {

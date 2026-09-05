@@ -5,97 +5,104 @@ import { APP_STRINGS } from '../../strings.js';
 
 const ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
 
-export function hasAttractionWithoutAnimalIssue(issues = []) {
-   return issues.some(
-      (issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE
-   );
-}
+export class AttractionWithoutAnimalConfirmation {
+   static hasAttractionWithoutAnimalIssue(issues = []) {
+      return issues.some(
+         (issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE
+      );
 
-export function getAttractionNamesFromWithoutAnimalIssues(issues = []) {
-   return getAttractionsFromWithoutAnimalIssues(issues)
-      .map((attraction) => attraction.attractionName);
-}
+   }
 
-export function getAttractionsFromWithoutAnimalIssues(issues = []) {
-   const attractionsByName = new Map();
+   static getAttractionNamesFromWithoutAnimalIssues(issues = []) {
+      return AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues)
+         .map((attraction) => attraction.attractionName);
 
-   issues
-      .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
-      .flatMap((issue) => issue.items ?? [])
-      .forEach((item) => {
-         const attractionName = Format.normalizeText(item?.name);
+   }
 
-         if (!attractionName) {
-            return;
-         }
+   static getAttractionsFromWithoutAnimalIssues(issues = []) {
+      const attractionsByName = new Map();
 
-         const attractionTime = Format.formatClockTime(item?.start_time);
+      issues
+         .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
+         .flatMap((issue) => issue.items ?? [])
+         .forEach((item) => {
+            const attractionName = Format.normalizeText(item?.name);
 
-         attractionsByName.set(
-            attractionName,
-            attractionTime
-               ? { attractionName, attractionTime }
-               : { attractionName }
-         );
-      });
+            if (!attractionName) {
+               return;
+            }
 
-   return [...attractionsByName.values()];
-}
+            const attractionTime = Format.formatClockTime(item?.start_time);
 
-export function getPrimaryAttractionFromWithoutAnimalIssues(issues = []) {
-   const [attraction] = getAttractionsFromWithoutAnimalIssues(issues);
+            attractionsByName.set(
+               attractionName,
+               attractionTime
+                  ? { attractionName, attractionTime }
+                  : { attractionName }
+            );
+         });
 
-   return attraction ?? null;
-}
+      return [...attractionsByName.values()];
 
-export function attractionWithoutAnimalMessage(
-   attraction,
-   {
+   }
+
+   static getPrimaryAttractionFromWithoutAnimalIssues(issues = []) {
+      const [attraction] = AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues);
+
+      return attraction ?? null;
+
+   }
+
+   static attractionWithoutAnimalMessage(
+      attraction,
+      {
       includeConfirmPrompt = false,
       strings = APP_STRINGS.itinerary.confirmation,
-   } = {}
-) {
-   const attractionName = Format.normalizeText(attraction.attractionName);
-   const body = attraction.attractionTime
-      ? strings.attractionWithoutAnimalBody(
-         attractionName,
-         attraction.attractionTime
-      )
-      : strings.attractionWithoutAnimalBodyWithoutTime(attractionName);
+      } = {}
+   ) {
+      const attractionName = Format.normalizeText(attraction.attractionName);
+      const body = attraction.attractionTime
+         ? strings.attractionWithoutAnimalBody(
+            attractionName,
+            attraction.attractionTime
+         )
+         : strings.attractionWithoutAnimalBodyWithoutTime(attractionName);
 
-   if (!includeConfirmPrompt) {
-      return body;
+      if (!includeConfirmPrompt) {
+         return body;
+      }
+
+      return `${body}${strings.attractionWithoutAnimalConfirmPrompt}`;
+
    }
 
-   return `${body}${strings.attractionWithoutAnimalConfirmPrompt}`;
-}
-
-export function showAttractionWithoutAnimalConfirmation({
-   issues = [],
-   onConfirm,
-   onCancel,
-   mountEl = getItineraryOverlayMountEl() ?? document.body,
-} = {}) {
-   const strings = APP_STRINGS.itinerary.confirmation;
-   const attractions = getAttractionsFromWithoutAnimalIssues(issues);
-
-   // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
-   if (attractions.length !== 1) {
-      return;
-   }
-
-   const [attraction] = attractions;
-
-   showItineraryConfirmPopup({
-      title: strings.attractionWithoutAnimalTitle,
-      message: attractionWithoutAnimalMessage(attraction, {
-         includeConfirmPrompt: true,
-         strings,
-      }),
-      confirmText: strings.saveIssuesButton,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      mountEl,
+   static showAttractionWithoutAnimalConfirmation({
+      issues = [],
       onConfirm,
       onCancel,
-   });
+      mountEl = getItineraryOverlayMountEl() ?? document.body,
+   } = {}) {
+      const strings = APP_STRINGS.itinerary.confirmation;
+      const attractions = AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues);
+
+      // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
+      if (attractions.length !== 1) {
+         return;
+      }
+
+      const [attraction] = attractions;
+
+      showItineraryConfirmPopup({
+         title: strings.attractionWithoutAnimalTitle,
+         message: AttractionWithoutAnimalConfirmation.attractionWithoutAnimalMessage(attraction, {
+            includeConfirmPrompt: true,
+            strings,
+         }),
+         confirmText: strings.saveIssuesButton,
+         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         mountEl,
+         onConfirm,
+         onCancel,
+      });
+   }
 }

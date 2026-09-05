@@ -6,7 +6,7 @@ import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { makeSection } from './components/section.js';
 import { DayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
-import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
+import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import {
    buildConfirmedOptionsFromBuildWarnings,
    hasMultipleItineraryBuildWarnings,
@@ -59,7 +59,7 @@ function appendDayPlannerViewWithHours(
       hasMultipleBuildWarnings = hasMultipleItineraryBuildWarnings,
       showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
       requiresLongWaitConfirmation = ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation,
-      showLongWaitConfirmation = showFixedTimeItemLongWaitConfirmation,
+      showLongWaitConfirmation = FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,

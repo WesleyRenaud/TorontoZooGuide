@@ -2,7 +2,7 @@ import { showItineraryNoticePopup } from './components/noticePopup.js';
 import { createSaveIssuesContent } from './scheduleTimeConflictContent.js';
 import { ScheduleTimeConflictResolution } from './scheduleTimeConflictResolution.js';
 import { APP_STRINGS } from '../../strings.js';
-import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
+import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 
 export { createSaveIssuesContent } from './scheduleTimeConflictContent.js';
 export { WILD_ENCOUNTER_TIME_CONFLICT } from './scheduleTimeConflictContent.js';
@@ -23,7 +23,7 @@ export function showScheduleTimeConflictConfirmation({
       buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
       showCloseButton: true,
       onClose: ({ close } = {}) => {
-         showSaveIssuesProceedConfirmation({
+         SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
             title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
             message: APP_STRINGS.itinerary.confirmation
                .proceedWithoutConflictSelectionMessage,

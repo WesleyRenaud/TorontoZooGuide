@@ -37,40 +37,10 @@ function isLongWaitIssue(issue) {
    return Boolean(issueType) && issue.type === issueType;
 }
 
-export function hasFixedTimeItemLongWaitIssue(issues = []) {
-   return issues.some(isLongWaitIssue);
-}
-
 function longWaitItems(issues = []) {
    return issues
       .filter(isLongWaitIssue)
       .flatMap((issue) => issue.items ?? []);
-}
-
-export function getFixedTimeItemsFromLongWaitIssues(issues = []) {
-   const issueType = fixedTimeItemLongWaitIssueType();
-
-   return longWaitItems(issues)
-      .map((item) => {
-         const itemName = Format.normalizeText(item?.name);
-
-         if (!itemName) {
-            return null;
-         }
-
-         const itemMeta = resolveItemTypeMeta(item);
-         const itemTime = Format.formatClockTime(item.start_time);
-
-         return {
-            issueType,
-            itemType: itemMeta.itemType,
-            typeLabel: itemMeta.typeLabel,
-            typePhrase: itemMeta.typePhrase,
-            itemName,
-            itemTime: itemTime || null,
-         };
-      })
-      .filter(Boolean);
 }
 
 function longWaitConfirmMessage(item, strings) {
@@ -88,29 +58,63 @@ function longWaitConfirmMessage(item, strings) {
       );
 }
 
-export function showFixedTimeItemLongWaitConfirmation({
-   issues = [],
-   onConfirm,
-   onCancel,
-   mountEl = getItineraryOverlayMountEl() ?? document.body,
-} = {}) {
-   const strings = APP_STRINGS.itinerary.confirmation;
-   const items = getFixedTimeItemsFromLongWaitIssues(issues);
+export class FixedTimeItemLongWaitConfirmation {
+   static hasFixedTimeItemLongWaitIssue(issues = []) {
+      return issues.some(isLongWaitIssue);
 
-   // Multi-item long waits use showItineraryBuildWarningsConfirmation.
-   if (items.length !== 1) {
-      return;
    }
 
-   const [item] = items;
+   static getFixedTimeItemsFromLongWaitIssues(issues = []) {
+      const issueType = fixedTimeItemLongWaitIssueType();
 
-   showItineraryConfirmPopup({
-      title: strings.fixedTimeItemLongWaitTitle(item.typeLabel),
-      message: longWaitConfirmMessage(item, strings),
-      confirmText: strings.saveIssuesButton,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      mountEl,
+      return longWaitItems(issues)
+         .map((item) => {
+            const itemName = Format.normalizeText(item?.name);
+
+            if (!itemName) {
+               return null;
+            }
+
+            const itemMeta = resolveItemTypeMeta(item);
+            const itemTime = Format.formatClockTime(item.start_time);
+
+            return {
+               issueType,
+               itemType: itemMeta.itemType,
+               typeLabel: itemMeta.typeLabel,
+               typePhrase: itemMeta.typePhrase,
+               itemName,
+               itemTime: itemTime || null,
+            };
+         })
+         .filter(Boolean);
+
+   }
+
+   static showFixedTimeItemLongWaitConfirmation({
+      issues = [],
       onConfirm,
       onCancel,
-   });
+      mountEl = getItineraryOverlayMountEl() ?? document.body,
+   } = {}) {
+      const strings = APP_STRINGS.itinerary.confirmation;
+      const items = FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues);
+
+      // Multi-item long waits use showItineraryBuildWarningsConfirmation.
+      if (items.length !== 1) {
+         return;
+      }
+
+      const [item] = items;
+
+      showItineraryConfirmPopup({
+         title: strings.fixedTimeItemLongWaitTitle(item.typeLabel),
+         message: longWaitConfirmMessage(item, strings),
+         confirmText: strings.saveIssuesButton,
+         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         mountEl,
+         onConfirm,
+         onCancel,
+      });
+   }
 }

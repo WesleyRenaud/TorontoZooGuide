@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showScheduleItemNotice } from '../../scripts/itinerary/panel/showScheduleItemNotice.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ShowScheduleItemNotice } from '../../../../scripts/itinerary/panel/showScheduleItemNotice.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemNotice', () => {
    installDomTestHooks({
@@ -13,8 +13,8 @@ test.describe('showScheduleItemNotice', () => {
       },
    });
 
-   test('shows a notice popup on the itinerary panel mount element', () => {
-      showScheduleItemNotice('Could not schedule item.');
+   test('Test_ShowScheduleItemNotice_TestPanelMount_ExpectNoticePopup', () => {
+      ShowScheduleItemNotice.showScheduleItemNotice('Could not schedule item.');
 
       const popup = document.querySelector('.tzg-notice');
       const title = popup?.querySelector('.itin-top-title');
@@ -33,10 +33,10 @@ test.describe('showScheduleItemNotice', () => {
       );
    });
 
-   test('falls back to document.body when no itinerary panel mount exists', () => {
+   test('Test_ShowScheduleItemNotice_TestNoMount_ExpectDocumentBody', () => {
       const noticeCalls = [];
 
-      showScheduleItemNotice('Missing mount.', {
+      ShowScheduleItemNotice.showScheduleItemNotice('Missing mount.', {
          getMountEl: () => null,
          showNoticePopup: (config) => {
             noticeCalls.push(config);

@@ -1,33 +1,29 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   getPrimaryAttractionFromWithoutAnimalIssues,
-   hasAttractionWithoutAnimalIssue,
-   showAttractionWithoutAnimalConfirmation,
-} from '../../scripts/itinerary/panel/attractionWithoutAnimalConfirmation.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { AttractionWithoutAnimalConfirmation } from '../../../../scripts/itinerary/panel/attractionWithoutAnimalConfirmation.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('hasAttractionWithoutAnimalIssue detects matching issue type', () => {
+test('Test_HasAttractionWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
    assert.equal(
-      hasAttractionWithoutAnimalIssue([
+      AttractionWithoutAnimalConfirmation.hasAttractionWithoutAnimalIssue([
          { type: 'attractionWithoutAnimal' },
       ]),
       true
    );
    assert.equal(
-      hasAttractionWithoutAnimalIssue([
+      AttractionWithoutAnimalConfirmation.hasAttractionWithoutAnimalIssue([
          { type: 'guardiansTalkWithoutAnimal' },
       ]),
       false
    );
 });
 
-test('getPrimaryAttractionFromWithoutAnimalIssues returns attraction without time', () => {
+test('Test_GetPrimaryAttractionFromWithoutAnimalIssues_TestAttraction_ExpectNoTime', () => {
    assert.deepEqual(
-      getPrimaryAttractionFromWithoutAnimalIssues([
+      AttractionWithoutAnimalConfirmation.getPrimaryAttractionFromWithoutAnimalIssues([
          {
             type: 'attractionWithoutAnimal',
             items: [{ name: 'Kangaroo Walk-Thru' }],
@@ -37,10 +33,10 @@ test('getPrimaryAttractionFromWithoutAnimalIssues returns attraction without tim
    );
 });
 
-test('showAttractionWithoutAnimalConfirmation uses message without time', () => {
+test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
    let confirmed = false;
 
-   showAttractionWithoutAnimalConfirmation({
+   AttractionWithoutAnimalConfirmation.showAttractionWithoutAnimalConfirmation({
       issues: [{
          type: 'attractionWithoutAnimal',
          items: [{ name: 'Kangaroo Walk-Thru' }],
@@ -62,8 +58,8 @@ test('showAttractionWithoutAnimalConfirmation uses message without time', () => 
    assert.equal(confirmed, true);
 });
 
-test('showAttractionWithoutAnimalConfirmation no-ops without attraction name', () => {
-   showAttractionWithoutAnimalConfirmation({
+test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
+   AttractionWithoutAnimalConfirmation.showAttractionWithoutAnimalConfirmation({
       issues: [{ type: 'attractionWithoutAnimal', items: [] }],
       onConfirm: () => {
          throw new Error('should not confirm');

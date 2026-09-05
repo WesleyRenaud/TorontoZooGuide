@@ -9,7 +9,7 @@ import {
 } from '../selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
-import { showScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
+import { ScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
 export const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
@@ -31,7 +31,7 @@ function handleConflictItemButtonClick(selection, item, buttonEntries) {
    }
 
    if (ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, item)) {
-      showScheduleOverrideSelectionConfirmation({
+      ScheduleOverrideSelectionConfirmation.showScheduleOverrideSelectionConfirmation({
          onConfirm: () => {
             ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
             refreshConflictSelectionButtons(buttonEntries, selection);

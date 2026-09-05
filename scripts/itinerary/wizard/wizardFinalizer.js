@@ -3,12 +3,12 @@ import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
-import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
+import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
 import { StorageKeys } from '../storageKeys.js';
 import { APP_STRINGS } from '../../strings.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
-import { showItineraryWizardPopup } from './wizardPopup.js';
+import { WizardPopup } from './wizardPopup.js';
 import { showWizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
@@ -25,7 +25,7 @@ function createFinalItineraryDraft(draft = {}, normalizeDraft = ItineraryShape.n
    return normalizeDraft(draft);
 }
 
-function showEmptySelectionPopup(mountEl, showWizardPopup = showItineraryWizardPopup) {
+function showEmptySelectionPopup(mountEl, showWizardPopup = WizardPopup.showItineraryWizardPopup) {
    showWizardPopup({
       mountEl,
       ...EMPTY_SELECTION_POPUP_CONFIG,
@@ -52,9 +52,9 @@ export async function finalizeItineraryWizard(
       normalizeDraft = ItineraryShape.normalizeItineraryDraft,
       saveItineraryFn = saveItinerary,
       syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
-      showWizardPopup = showItineraryWizardPopup,
+      showWizardPopup = WizardPopup.showItineraryWizardPopup,
       showNoticePopup = showItineraryNoticePopup,
-      showProceedConfirmation = showSaveIssuesProceedConfirmation,
+      showProceedConfirmation = SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation,
       showSaveIssuesPopup = showWizardSaveIssuesPopup,
       shouldBlockEmpty = WizardFinalizeDecisions.shouldBlockEmptyFinish,
       shouldShowSaveIssues = WizardFinalizeDecisions.shouldShowSaveIssuesPopup,

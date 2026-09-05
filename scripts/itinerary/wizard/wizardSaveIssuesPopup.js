@@ -3,7 +3,7 @@ import {
    confirmSaveIssuesConflictSelection,
    createSaveIssuesContent,
 } from '../panel/scheduleTimeConflictConfirmation.js';
-import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
+import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { APP_STRINGS } from '../../strings.js';
 import { WildEncounterConflictResolution } from './wildEncounterConflictResolution.js';
 
@@ -11,7 +11,7 @@ export function showWizardSaveIssuesPopup(
    savedItinerary,
    {
       showNoticePopup = showItineraryNoticePopup,
-      showProceedConfirmation = showSaveIssuesProceedConfirmation,
+      showProceedConfirmation = SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation,
       saveFinalItinerary,
       createSaveIssues = createSaveIssuesContent,
       confirmSaveIssues = confirmSaveIssuesConflictSelection,

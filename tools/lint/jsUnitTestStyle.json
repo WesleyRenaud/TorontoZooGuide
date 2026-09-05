@@ -104,7 +104,16 @@
       "tests/scripts/consoleOperations/forms/multiTimeFieldController.test.mjs",
       "tests/scripts/consoleOperations/animals/controllers/animalViewingScopeControl.test.mjs",
       "tests/scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.test.mjs",
-      "tests/scripts/itinerary/pastItinerary/staleItinerary.test.mjs"
+      "tests/scripts/itinerary/pastItinerary/staleItinerary.test.mjs",
+      "tests/scripts/itinerary/panel/shortVisitConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/removeItineraryItemConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/showScheduleItemNotice.test.mjs",
+      "tests/scripts/itinerary/panel/guardiansTalkWithoutAnimalConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/attractionWithoutAnimalConfirmation.test.mjs",
+      "tests/scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.test.mjs",
+      "tests/scripts/itinerary/wizard/saveIssuesProceedConfirmation.test.mjs",
+      "tests/scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardPopup.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

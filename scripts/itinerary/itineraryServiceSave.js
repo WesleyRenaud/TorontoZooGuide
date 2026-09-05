@@ -6,17 +6,17 @@ import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { dispatchItineraryUpdated } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
-import { showAttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
-import { showFixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
-import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
-import { showGuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
+import { AttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
+import { FixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
+import { GuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
+import { GuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
 import {
    buildConfirmedOptionsFromBuildWarnings,
    hasMultipleItineraryBuildWarnings,
    showItineraryBuildWarningsConfirmation,
 } from './panel/itineraryBuildWarningsConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
-import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
+import { WildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 import { WildEncounterConflictResolution } from './wizard/wildEncounterConflictResolution.js';
 
@@ -119,7 +119,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showGuardiansTalkUnscheduleConfirmation,
+         showConfirmation: GuardiansTalkUnscheduleConfirmation.showGuardiansTalkUnscheduleConfirmation,
          initialResult,
          payload,
          diffBaseline,
@@ -132,7 +132,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showGuardiansTalkWithoutAnimalConfirmation,
+         showConfirmation: GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation,
          initialResult,
          payload,
          diffBaseline,
@@ -145,7 +145,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showAttractionWithoutAnimalConfirmation,
+         showConfirmation: AttractionWithoutAnimalConfirmation.showAttractionWithoutAnimalConfirmation,
          initialResult,
          payload,
          diffBaseline,
@@ -158,7 +158,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showFixedTimeItemLongWaitConfirmation,
+         showConfirmation: FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
          initialResult,
          payload,
          diffBaseline,
@@ -171,7 +171,7 @@ async function requestSetItineraryWithConfirmations(
 
    if (ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showWildEncounterUnscheduleConfirmation,
+         showConfirmation: WildEncounterUnscheduleConfirmation.showWildEncounterUnscheduleConfirmation,
          initialResult,
          payload,
          diffBaseline,

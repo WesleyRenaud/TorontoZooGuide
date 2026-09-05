@@ -1,15 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   getFixedTimeItemsFromLongWaitIssues,
-   hasFixedTimeItemLongWaitIssue,
-   showFixedTimeItemLongWaitConfirmation,
-} from '../../scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.js';
-import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
+import { FixedTimeItemLongWaitConfirmation } from '../../../../scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.js';
+import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
@@ -27,22 +23,22 @@ const talkLongWaitIssue = {
    }],
 };
 
-test('hasFixedTimeItemLongWaitIssue detects matching issue type', () => {
+test('Test_HasFixedTimeItemLongWaitIssue_TestMatching_ExpectDetected', () => {
    assert.equal(
-      hasFixedTimeItemLongWaitIssue([talkLongWaitIssue]),
+      FixedTimeItemLongWaitConfirmation.hasFixedTimeItemLongWaitIssue([talkLongWaitIssue]),
       true
    );
    assert.equal(
-      hasFixedTimeItemLongWaitIssue([
+      FixedTimeItemLongWaitConfirmation.hasFixedTimeItemLongWaitIssue([
          { type: 'guardiansTalkWithoutAnimal' },
       ]),
       false
    );
 });
 
-test('getFixedTimeItemsFromLongWaitIssues returns all named items', () => {
+test('Test_GetFixedTimeItemsFromLongWaitIssues_TestNamedItems_ExpectAll', () => {
    assert.deepEqual(
-      getFixedTimeItemsFromLongWaitIssues([
+      FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues([
          {
             type: 'fixedTimeItemLongWait',
             items: [
@@ -83,9 +79,9 @@ test('getFixedTimeItemsFromLongWaitIssues returns all named items', () => {
    );
 });
 
-test('getFixedTimeItemsFromLongWaitIssues rejects unsupported item types', () => {
+test('Test_GetFixedTimeItemsFromLongWaitIssues_TestUnsupportedTypes_ExpectRejected', () => {
    assert.throws(
-      () => getFixedTimeItemsFromLongWaitIssues([{
+      () => FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues([{
          type: 'fixedTimeItemLongWait',
          items: [{
             name: 'Lunch',
@@ -96,10 +92,10 @@ test('getFixedTimeItemsFromLongWaitIssues rejects unsupported item types', () =>
    );
 });
 
-test('showFixedTimeItemLongWaitConfirmation shows a single item message', () => {
+test('Test_ShowFixedTimeItemLongWaitConfirmation_TestSingle_ExpectMessage', () => {
    let confirmed = false;
 
-   showFixedTimeItemLongWaitConfirmation({
+   FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation({
       issues: [talkLongWaitIssue],
       onConfirm: () => {
          confirmed = true;
@@ -120,8 +116,8 @@ test('showFixedTimeItemLongWaitConfirmation shows a single item message', () => 
    assert.equal(confirmed, true);
 });
 
-test('showFixedTimeItemLongWaitConfirmation no-ops for multiple items', () => {
-   showFixedTimeItemLongWaitConfirmation({
+test('Test_ShowFixedTimeItemLongWaitConfirmation_TestMultiple_ExpectNoOp', () => {
+   FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation({
       issues: [{
          type: 'fixedTimeItemLongWait',
          items: [
@@ -144,8 +140,8 @@ test('showFixedTimeItemLongWaitConfirmation no-ops for multiple items', () => {
    assert.equal(document.querySelector('.tzg-popup'), null);
 });
 
-test('showFixedTimeItemLongWaitConfirmation no-ops without named items', () => {
-   showFixedTimeItemLongWaitConfirmation({
+test('Test_ShowFixedTimeItemLongWaitConfirmation_TestUnnamed_ExpectNoOp', () => {
+   FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation({
       issues: [{
          type: 'fixedTimeItemLongWait',
          items: [{ name: '   ', item_type: 'guardiansTalk' }],

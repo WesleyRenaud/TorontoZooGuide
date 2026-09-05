@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showItineraryWizardPopup } from '../../scripts/itinerary/wizard/wizardPopup.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { WizardPopup } from '../../../../scripts/itinerary/wizard/wizardPopup.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('showItineraryWizardPopup', () => {
    installDomTestHooks({
@@ -13,17 +13,17 @@ test.describe('showItineraryWizardPopup', () => {
       },
    });
 
-   test('no-ops when mountEl is missing', () => {
-      showItineraryWizardPopup({
+   test('Test_ShowItineraryWizardPopup_TestMissingMount_ExpectNoOp', () => {
+      WizardPopup.showItineraryWizardPopup({
          mountEl: null,
          title: 'Missing mount',
       });
    });
 
-   test('renders a dismissable popup on the mount element', () => {
+   test('Test_ShowItineraryWizardPopup_TestMount_ExpectDismissablePopup', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
 
-      showItineraryWizardPopup({
+      WizardPopup.showItineraryWizardPopup({
          mountEl,
          title: 'Empty itinerary',
          message: 'Select at least one item.',
@@ -45,14 +45,14 @@ test.describe('showItineraryWizardPopup', () => {
       assert.equal(mountEl.querySelector('.tzg-popup'), null);
    });
 
-   test('replaces an existing popup before mounting a new one', () => {
+   test('Test_ShowItineraryWizardPopup_TestExisting_ExpectReplaced', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
 
-      showItineraryWizardPopup({
+      WizardPopup.showItineraryWizardPopup({
          mountEl,
          title: 'First popup',
       });
-      showItineraryWizardPopup({
+      WizardPopup.showItineraryWizardPopup({
          mountEl,
          title: 'Second popup',
       });
