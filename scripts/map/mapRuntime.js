@@ -1,13 +1,13 @@
-import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
-import { createDrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
-import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
-import { createOffDisplayBanner } from '../banners/offDisplayBanner.js';
-import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
-import { createRestroomMessageBanner } from '../banners/restroomMessageBanner.js';
+import { AttractionClosedBanner } from '../banners/attractionClosedBanner.js';
+import { DrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
+import { GiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
+import { OffDisplayBanner } from '../banners/offDisplayBanner.js';
+import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
+import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
 import { createFocusController } from '../focus/focusController.js';
 import { openGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
-import { initLabelVisibilityToggle } from './labelVisibility.js';
+import { LabelVisibility } from './labelVisibility.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
@@ -27,12 +27,12 @@ function hasRequiredRuntimeElements({
 
 function createMapBannerSet() {
    return {
-      offDisplayBanner: createOffDisplayBanner(),
-      restaurantClosedBanner: createRestaurantClosedBanner(),
-      restroomMessageBanner: createRestroomMessageBanner(),
-      giftShopClosedBanner: createGiftShopClosedBanner(),
-      attractionClosedBanner: createAttractionClosedBanner(),
-      drinkingFountainClosedBanner: createDrinkingFountainClosedBanner(),
+      offDisplayBanner: OffDisplayBanner.createOffDisplayBanner(),
+      restaurantClosedBanner: RestaurantClosedBanner.createRestaurantClosedBanner(),
+      restroomMessageBanner: RestroomMessageBanner.createRestroomMessageBanner(),
+      giftShopClosedBanner: GiftShopClosedBanner.createGiftShopClosedBanner(),
+      attractionClosedBanner: AttractionClosedBanner.createAttractionClosedBanner(),
+      drinkingFountainClosedBanner: DrinkingFountainClosedBanner.createDrinkingFountainClosedBanner(),
    };
 }
 
@@ -63,7 +63,7 @@ function createMapTooltip({
 }
 
 function initMapLabels(showMapLabelsCheckbox) {
-   initLabelVisibilityToggle({
+   LabelVisibility.initLabelVisibilityToggle({
       checkboxEl: showMapLabelsCheckbox,
       rootEl: document.body,
    });

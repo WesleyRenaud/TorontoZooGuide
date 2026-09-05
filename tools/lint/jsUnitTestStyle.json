@@ -93,7 +93,8 @@
       "tests/scripts/itinerary/panel/scheduleItemResults.test.mjs",
       "tests/scripts/consoleOperations/forms/scheduleTimesCheckboxField.test.mjs",
       "tests/scripts/consoleOperations/shell/panelNavigator.test.mjs",
-      "tests/scripts/map/transportationRouteControls.test.mjs"
+      "tests/scripts/map/transportationRouteControls.test.mjs",
+      "tests/scripts/search/exploreFilter.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

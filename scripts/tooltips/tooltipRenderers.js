@@ -7,19 +7,21 @@ import { restaurantRenderer } from './renderers/restaurants.js';
 import { transportationStationRenderer } from './renderers/transportationStations.js';
 import { wildEncounterRenderer } from './renderers/wildEncounters.js';
 
-export const TYPE_REGISTRY = {
-   animal: animalRenderer,
-   pavilion: pavilionRenderer,
-   restaurant: restaurantRenderer,
-   giftShop: giftShopRenderer,
-   attraction: attractionRenderer,
-   transportation: attractionRenderer,
-   transportationStation: transportationStationRenderer,
-   guardiansTalk: guardiansTalkRenderer,
-   wildEncounter: wildEncounterRenderer,
-};
+export class TooltipRenderers {
+   static TYPE_REGISTRY = {
+      animal: animalRenderer,
+      pavilion: pavilionRenderer,
+      restaurant: restaurantRenderer,
+      giftShop: giftShopRenderer,
+      attraction: attractionRenderer,
+      transportation: attractionRenderer,
+      transportationStation: transportationStationRenderer,
+      guardiansTalk: guardiansTalkRenderer,
+      wildEncounter: wildEncounterRenderer,
+   };
 
-export function getRendererForItem(item) {
-   const key = String(item?.type || '');
-   return TYPE_REGISTRY[key] || null;
+   static getRendererForItem(item) {
+      const key = String(item?.type || '');
+      return TooltipRenderers.TYPE_REGISTRY[key] || null;
+   }
 }

@@ -1,13 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildExploreSearchIncludeFlags,
-   initExploreTypeFilter,
-} from '../../scripts/search/exploreFilter.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { ExploreFilter } from '../../../scripts/search/exploreFilter.js';
+import { APP_STRINGS } from '../../../scripts/strings.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 function createCheckboxOption({ value, label, checked = false }) {
    const labelEl = createDomNode('label');
@@ -86,9 +83,12 @@ function createExploreTypeFilterDom({
    };
 }
 
-test('buildExploreSearchIncludeFlags maps selected explore types to search flags', () => {
+test('Test_BuildExploreSearchIncludeFlags_TestSelectedTypes_ExpectSearchFlags', () => {
    assert.deepEqual(
-      buildExploreSearchIncludeFlags(['animal', 'restaurant', 'wildEncounter'], 'none'),
+      ExploreFilter.buildExploreSearchIncludeFlags(
+         ['animal', 'restaurant', 'wildEncounter'],
+         'none'
+      ),
       {
          includeAnimals: true,
          includePavilions: false,
@@ -103,9 +103,9 @@ test('buildExploreSearchIncludeFlags maps selected explore types to search flags
    );
 });
 
-test('buildExploreSearchIncludeFlags includes zoomobile stations when a route is selected', () => {
+test('Test_BuildExploreSearchIncludeFlags_TestRouteSelected_ExpectStations', () => {
    assert.deepEqual(
-      buildExploreSearchIncludeFlags(['animal'], 'current'),
+      ExploreFilter.buildExploreSearchIncludeFlags(['animal'], 'current'),
       {
          includeAnimals: true,
          includePavilions: false,
@@ -124,8 +124,8 @@ test('buildExploreSearchIncludeFlags includes zoomobile stations when a route is
 test.describe('initExploreTypeFilter DOM integration', () => {
    installDomTestHooks();
 
-   test('initExploreTypeFilter returns fallback state when type filter is missing', () => {
-      const filter = initExploreTypeFilter({
+   test('Test_InitExploreTypeFilter_TestMissingFilter_ExpectFallback', () => {
+      const filter = ExploreFilter.initExploreTypeFilter({
          multiSelect: null,
       });
 
@@ -143,14 +143,14 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       });
    });
 
-   test('initExploreTypeFilter tracks checkbox selection and zoomobile route', () => {
+   test('Test_InitExploreTypeFilter_TestCheckboxAndRoute_ExpectSelection', () => {
       const changeCalls = [];
       const animalsUncheckedCalls = [];
       const { multiSelect, checkboxes, chipContainer } = createExploreTypeFilterDom({
          selected: ['animal'],
       });
 
-      const filter = initExploreTypeFilter({
+      const filter = ExploreFilter.initExploreTypeFilter({
          multiSelect,
          getTransportationRoute: () => 'current',
          onChange: () => {
@@ -198,7 +198,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       assert.equal(chipContainer.children[0].textContent, 'Restaurants');
    });
 
-   test('initExploreTypeFilter toggles dropdown open state and closes on outside click', () => {
+   test('Test_InitExploreTypeFilter_TestDropdownToggle_ExpectOpenClose', () => {
       const documentListeners = {};
       const originalAddEventListener = document.addEventListener;
 
@@ -211,7 +211,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
          selected: ['animal'],
       });
 
-      initExploreTypeFilter({
+      ExploreFilter.initExploreTypeFilter({
          multiSelect,
          getTransportationRoute: () => 'none',
       });

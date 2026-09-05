@@ -1,7 +1,9 @@
-import { createSingleMessageBanner } from './messageBanner.js';
+import { MessageBanner } from './messageBanner.js';
 
-export function createGiftShopClosedBanner() {
-   return createSingleMessageBanner(
-      giftShop => giftShop?.closed_message
-   );
+export class GiftShopClosedBanner {
+   static createGiftShopClosedBanner() {
+      return MessageBanner.createSingleMessageBanner(
+         giftShop => giftShop?.closed_message
+      );
+   }
 }

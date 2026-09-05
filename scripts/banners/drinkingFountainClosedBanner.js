@@ -1,7 +1,9 @@
-import { createSingleMessageBanner } from './messageBanner.js';
+import { MessageBanner } from './messageBanner.js';
 
-export function createDrinkingFountainClosedBanner() {
-   return createSingleMessageBanner(
-      drinkingFountain => drinkingFountain?.closed_message
-   );
+export class DrinkingFountainClosedBanner {
+   static createDrinkingFountainClosedBanner() {
+      return MessageBanner.createSingleMessageBanner(
+         drinkingFountain => drinkingFountain?.closed_message
+      );
+   }
 }

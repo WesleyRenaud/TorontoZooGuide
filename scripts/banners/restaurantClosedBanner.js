@@ -1,7 +1,9 @@
-import { createSingleMessageBanner } from './messageBanner.js';
+import { MessageBanner } from './messageBanner.js';
 
-export function createRestaurantClosedBanner() {
-   return createSingleMessageBanner(
-      restaurant => restaurant?.closed_message
-   );
+export class RestaurantClosedBanner {
+   static createRestaurantClosedBanner() {
+      return MessageBanner.createSingleMessageBanner(
+         restaurant => restaurant?.closed_message
+      );
+   }
 }

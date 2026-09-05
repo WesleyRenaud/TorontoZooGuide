@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { APP_STRINGS } from '../strings.js';
 
 const TYPE_FILTER_ID = 'typeFilter';
@@ -24,25 +25,13 @@ function hasTransportationRoute(transportationRoute) {
    return transportationRoute !== 'none';
 }
 
-export function buildExploreSearchIncludeFlags(selectedTypes, transportationRoute) {
-   const selectedTypeSet = new Set(selectedTypes);
-
-   return {
-      ...Object.fromEntries(
-         SEARCH_INCLUDE_FLAGS.map(([flag, type]) => [
-            flag,
-            selectedTypeSet.has(type),
-         ])
-      ),
-      includeTransportationStations: hasTransportationRoute(transportationRoute),
-      ...(hasTransportationRoute(transportationRoute) ? { transportationRoute } : {}),
-   };
-}
-
 function createFallbackExploreFilter() {
    return {
       getSelectedTypes: () => [...DEFAULT_SELECTED_TYPES],
-      buildSearchIncludeFlags: () => buildExploreSearchIncludeFlags(DEFAULT_SELECTED_TYPES, 'none'),
+      buildSearchIncludeFlags: () => ExploreFilter.buildExploreSearchIncludeFlags(
+         DEFAULT_SELECTED_TYPES,
+         'none'
+      ),
    };
 }
 
@@ -58,7 +47,8 @@ function getFilterRefs(multiSelect) {
 }
 
 function getCheckboxLabel(checkbox) {
-   return checkbox.closest('label')?.textContent?.trim() || checkbox.value;
+   return ValueNormalizer.asTrimmedString(checkbox.closest('label')?.textContent)
+      || checkbox.value;
 }
 
 function createNoSelectionChip() {
@@ -125,7 +115,7 @@ function createExploreFilterState({
 
    function buildSearchIncludeFlags() {
       const { selectedTypes, transportationRoute } = getCurrentSelection();
-      return buildExploreSearchIncludeFlags(selectedTypes, transportationRoute);
+      return ExploreFilter.buildExploreSearchIncludeFlags(selectedTypes, transportationRoute);
    }
 
    return { getSelectedTypes, buildSearchIncludeFlags };
@@ -170,47 +160,64 @@ function bindCheckboxEvents({
    });
 }
 
-export function initExploreTypeFilter({
-   onChange,
-   onAnimalsUnchecked,
-   multiSelect = document.getElementById(TYPE_FILTER_ID),
-   getTransportationRoute = getSelectedTransportationRoute,
-} = {}) {
-   if (!multiSelect) {
-      return createFallbackExploreFilter();
+export class ExploreFilter {
+   static buildExploreSearchIncludeFlags(selectedTypes, transportationRoute) {
+      const selectedTypeSet = new Set(selectedTypes);
+
+      return {
+         ...Object.fromEntries(
+            SEARCH_INCLUDE_FLAGS.map(([flag, type]) => [
+               flag,
+               selectedTypeSet.has(type),
+            ])
+         ),
+         includeTransportationStations: hasTransportationRoute(transportationRoute),
+         ...(hasTransportationRoute(transportationRoute) ? { transportationRoute } : {}),
+      };
    }
 
-   const {
-      button,
-      dropdown,
-      checkboxes,
-      chipContainer,
-   } = getFilterRefs(multiSelect);
-
-   const state = createExploreFilterState({
-      checkboxes,
-      getTransportationRoute,
-   });
-
-   const updateSelectedChips = () => {
-      renderSelectedChips(chipContainer, checkboxes);
-   };
-
-   bindDropdownEvents({
-      multiSelect,
-      button,
-      dropdown,
-   });
-
-   bindCheckboxEvents({
-      checkboxes,
-      getSelectedTypes: state.getSelectedTypes,
-      onAnimalsUnchecked,
+   static initExploreTypeFilter({
       onChange,
-      onSelectionChanged: updateSelectedChips,
-   });
+      onAnimalsUnchecked,
+      multiSelect = document.getElementById(TYPE_FILTER_ID),
+      getTransportationRoute = getSelectedTransportationRoute,
+   } = {}) {
+      if (!multiSelect) {
+         return createFallbackExploreFilter();
+      }
 
-   updateSelectedChips();
+      const {
+         button,
+         dropdown,
+         checkboxes,
+         chipContainer,
+      } = getFilterRefs(multiSelect);
 
-   return state;
+      const state = createExploreFilterState({
+         checkboxes,
+         getTransportationRoute,
+      });
+
+      const updateSelectedChips = () => {
+         renderSelectedChips(chipContainer, checkboxes);
+      };
+
+      bindDropdownEvents({
+         multiSelect,
+         button,
+         dropdown,
+      });
+
+      bindCheckboxEvents({
+         checkboxes,
+         getSelectedTypes: state.getSelectedTypes,
+         onAnimalsUnchecked,
+         onChange,
+         onSelectionChanged: updateSelectedChips,
+      });
+
+      updateSelectedChips();
+
+      return state;
+   }
 }

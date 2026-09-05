@@ -2,8 +2,8 @@ import { createTooltipBannerSync } from './bannerSync.js';
 import { createTooltipCarouselView } from './carouselView.js';
 import { createTooltipGlobalListeners } from './globalListeners.js';
 import { MarkerVisuals } from '../markers/markerVisuals.js';
-import { positionTooltip } from './positionTooltip.js';
-import { getRendererForItem } from './tooltipRenderers.js';
+import { PositionTooltip } from './positionTooltip.js';
+import { TooltipRenderers } from './tooltipRenderers.js';
 
 export function createTooltipController({
    tooltipEl,
@@ -58,7 +58,7 @@ export function createTooltipController({
 
    const carousel = createTooltipCarouselView({
       tooltipEl,
-      getRendererForItem,
+      getRendererForItem: TooltipRenderers.getRendererForItem,
       onIndexChange: (index) => {
          syncMarkerToIndex(index);
          banners.sync(getOpenItem(index));
@@ -157,7 +157,7 @@ export function createTooltipController({
       setTooltipVisibility(true);
       globalListeners.install();
       carousel.showFirst();
-      positionTooltip(tooltipEl, markerEl);
+      PositionTooltip.positionTooltip(tooltipEl, markerEl);
    }
 
    function close() {
@@ -201,7 +201,7 @@ export function createTooltipController({
          return;
       }
 
-      positionTooltip(tooltipEl, marker);
+      PositionTooltip.positionTooltip(tooltipEl, marker);
    }
 
    return {
