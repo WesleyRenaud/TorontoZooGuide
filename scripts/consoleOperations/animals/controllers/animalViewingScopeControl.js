@@ -16,67 +16,69 @@ function singleSpecificViewingScope(scopes = []) {
       : '';
 }
 
-export function createAnimalViewingScopeControl({
-   speciesEl,
-   exhibitEl,
-   viewingScopeEl,
-} = {}) {
-   function reset() {
-      if (!viewingScopeEl) {
-         return;
-      }
-
-      viewingScopeEl.value = '';
-      viewingScopeEl.disabled = true;
-   }
-
-   async function refresh() {
-      const species = getFieldValue(speciesEl);
-      const exhibit = getFieldValue(exhibitEl);
-
-      if (!species || !exhibit || !viewingScopeEl) {
-         reset();
-         return;
-      }
-
-      viewingScopeEl.disabled = true;
-
-      try {
-         const scopes = await AnimalsApi.getAnimalViewingScopes({
-            species,
-            exhibit,
-         });
-
-         const canChooseSpecificScope = animalHasIndoorAndOutdoorViewing(scopes);
-         viewingScopeEl.disabled = !canChooseSpecificScope;
-
-         if (canChooseSpecificScope) {
-            viewingScopeEl.value = AnimalViewingScope.ALL;
+export class AnimalViewingScopeControl {
+   static createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+   } = {}) {
+      function reset() {
+         if (!viewingScopeEl) {
             return;
          }
 
-         const availableScope = singleSpecificViewingScope(scopes);
+         viewingScopeEl.value = '';
+         viewingScopeEl.disabled = true;
+      }
 
-         if (availableScope) {
-            viewingScopeEl.value = availableScope;
+      async function refresh() {
+         const species = getFieldValue(speciesEl);
+         const exhibit = getFieldValue(exhibitEl);
+
+         if (!species || !exhibit || !viewingScopeEl) {
+            reset();
+            return;
          }
-         else {
+
+         viewingScopeEl.disabled = true;
+
+         try {
+            const scopes = await AnimalsApi.getAnimalViewingScopes({
+               species,
+               exhibit,
+            });
+
+            const canChooseSpecificScope = animalHasIndoorAndOutdoorViewing(scopes);
+            viewingScopeEl.disabled = !canChooseSpecificScope;
+
+            if (canChooseSpecificScope) {
+               viewingScopeEl.value = AnimalViewingScope.ALL;
+               return;
+            }
+
+            const availableScope = singleSpecificViewingScope(scopes);
+
+            if (availableScope) {
+               viewingScopeEl.value = availableScope;
+            }
+            else {
+               reset();
+            }
+         }
+         catch(err) {
             reset();
          }
       }
-      catch(err) {
-         reset();
-      }
+
+      speciesEl?.addEventListener('input', reset);
+      speciesEl?.addEventListener('change', refresh);
+      exhibitEl?.addEventListener('change', reset);
+
+      reset();
+
+      return {
+         reset,
+         refresh,
+      };
    }
-
-   speciesEl?.addEventListener('input', reset);
-   speciesEl?.addEventListener('change', refresh);
-   exhibitEl?.addEventListener('change', reset);
-
-   reset();
-
-   return {
-      reset,
-      refresh,
-   };
 }
