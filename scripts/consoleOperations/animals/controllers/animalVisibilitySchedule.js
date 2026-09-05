@@ -10,7 +10,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createAnimalVisibilityScheduleController({
@@ -82,7 +82,7 @@ export function createAnimalVisibilityScheduleController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -107,7 +107,7 @@ export function createAnimalVisibilityScheduleController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          `${result.species} in ${result.exhibit} viewing schedule updated.`,
          'is-success'
@@ -119,7 +119,7 @@ export function createAnimalVisibilityScheduleController({
    async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions: loadExhibits,
          populateOptions: populateExhibitDropdown,
          targetEl: exhibitEl,
@@ -133,12 +133,12 @@ export function createAnimalVisibilityScheduleController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -149,11 +149,11 @@ export function createAnimalVisibilityScheduleController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

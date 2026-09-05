@@ -1,8 +1,5 @@
 import { el } from '../dom.js';
-import {
-   DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
-   DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
-} from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 
 export class DayPlannerActionFeedbackBanner {
    static appendDayPlannerActionFeedbackSlot(container) {
@@ -24,8 +21,8 @@ export class DayPlannerActionFeedbackBanner {
          message = '',
       } = {},
       {
-         dismissMs = DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
-         fadeMs = DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
+         dismissMs = Constants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
+         fadeMs = Constants.DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
       } = {}
    ) {
       if (!slot || !message) {

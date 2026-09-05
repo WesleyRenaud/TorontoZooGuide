@@ -4,7 +4,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createDrinkingFountainsClosedController({
@@ -22,20 +22,20 @@ export function createDrinkingFountainsClosedController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       resetForm();
       activatePanel?.(panelEl);
    }
 
    async function onSubmitClick() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const startDate = startDateEl?.value.trim() || '';
       const endDate = endDateEl?.value.trim() || '';
       const validationError = validateOptionalDateRange(startDate, endDate);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -47,15 +47,15 @@ export function createDrinkingFountainsClosedController({
          });
 
          if (result.success) {
-            setStatus(statusEl, APP_STRINGS.status.drinkingFountainsClosed, 'is-success');
+            Status.setStatus(statusEl, APP_STRINGS.status.drinkingFountainsClosed, 'is-success');
             resetForm();
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

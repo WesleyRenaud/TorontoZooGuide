@@ -1,6 +1,6 @@
 import { DayPlannerTimelineMetrics } from '../dayPlannerTimelineMetrics.js';
 import { el } from '../dom.js';
-import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
 
@@ -75,14 +75,14 @@ function resolveStripPlacementBand(
    gridLine,
    offsetFraction = 0,
    durationMinutes = null,
-   slotSpanMinutes = TIMELINE_SLOT_MINUTES
+   slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
 ) {
    const pointBand = DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, offsetFraction);
 
    if (Number.isFinite(durationMinutes) && durationMinutes > 0) {
       const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
          ? slotSpanMinutes
-         : TIMELINE_SLOT_MINUTES;
+         : Constants.TIMELINE_SLOT_MINUTES;
 
       return {
          offsetFraction: pointBand.offsetFraction,
@@ -149,7 +149,7 @@ export class DayPlannerTimelinePillPlacement {
       gridLine,
       offsetFraction = 0,
       durationMinutes = 0,
-      slotSpanMinutes = TIMELINE_SLOT_MINUTES
+      slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
    ) {
       const placementBand = resolveStripPlacementBand(
          gridLine,

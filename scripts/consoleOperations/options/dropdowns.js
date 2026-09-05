@@ -1,7 +1,4 @@
-import {
-   getOptionItemName,
-   sortNamedOptions,
-} from './namedItems.js';
+import { NamedItems } from './namedItems.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function createPlaceholderOption(label) {
@@ -54,8 +51,8 @@ export function populateValueDropdown(selectEl, values, emptyOptionLabel) {
 function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
    populateDropdown(selectEl, items, {
       emptyOptionLabel,
-      getName: getOptionItemName,
-      sortItems: sortNamedOptions,
+      getName: NamedItems.getOptionItemName,
+      sortItems: NamedItems.sortNamedOptions,
    });
 }
 

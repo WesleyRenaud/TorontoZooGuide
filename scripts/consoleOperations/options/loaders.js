@@ -1,5 +1,5 @@
 import { ConsoleOperationsApi } from '../../api/consoleOperationsApi.js';
-import { sortNamedOptions } from './namedItems.js';
+import { NamedItems } from './namedItems.js';
 
 const cachedOptionSets = {
    species: null,
@@ -17,7 +17,7 @@ async function loadCachedOptions({
    cacheKey,
    fetchOptions,
    resultKey,
-   sortOptions = sortNamedOptions,
+   sortOptions = NamedItems.sortNamedOptions,
 } = {}) {
    if (cachedOptionSets[cacheKey]) {
       return cachedOptionSets[cacheKey];

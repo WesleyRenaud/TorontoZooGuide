@@ -11,7 +11,7 @@ import {
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createAnimalOnDisplayController({
@@ -57,7 +57,7 @@ export function createAnimalOnDisplayController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -70,7 +70,7 @@ export function createAnimalOnDisplayController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          APP_STRINGS.status.animalOnDisplay(result),
          'is-success'
@@ -82,7 +82,7 @@ export function createAnimalOnDisplayController({
    async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions: loadExhibits,
          populateOptions: populateExhibitDropdown,
          targetEl: exhibitEl,
@@ -96,12 +96,12 @@ export function createAnimalOnDisplayController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -112,7 +112,7 @@ export function createAnimalOnDisplayController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(
+            Status.setStatus(
                statusEl,
                ApiErrorMessageResolver.resolveConsoleMutationError(result),
                'is-error'
@@ -121,7 +121,7 @@ export function createAnimalOnDisplayController({
 
       }
       catch(err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

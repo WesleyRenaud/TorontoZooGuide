@@ -12,7 +12,7 @@ import {
 import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions as loadAttractionOptions } from '../../options/loaders.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function timePairIsOrdered(startTime, endTime) {
@@ -144,7 +144,7 @@ export function createAttractionHoursScheduleController({
       }
 
       applyTimeBounds(null);
-      setStatus(
+      Status.setStatus(
          statusEl,
          ApiErrorMessageResolver.resolveConsoleMutationError(
             boundsResult,
@@ -156,7 +156,7 @@ export function createAttractionHoursScheduleController({
    }
 
    async function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       try {
          const attractions = await loadAttractions();
@@ -166,7 +166,7 @@ export function createAttractionHoursScheduleController({
          activatePanel?.(panelEl);
       }
       catch {
-         setStatus(
+         Status.setStatus(
             statusEl,
             APP_STRINGS.loadErrors.entityOptions(
                APP_STRINGS.entityLabels.attractions
@@ -181,7 +181,7 @@ export function createAttractionHoursScheduleController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -200,7 +200,7 @@ export function createAttractionHoursScheduleController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          APP_STRINGS.status.attractionHoursScheduleSaved(result.attraction),
          'is-success'
@@ -213,11 +213,11 @@ export function createAttractionHoursScheduleController({
       const validationError = validateForm(values);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       try {
          const result = await saveSchedule(values);
@@ -239,7 +239,7 @@ export function createAttractionHoursScheduleController({
                return;
             }
 
-            setStatus(
+            Status.setStatus(
                statusEl,
                ApiErrorMessageResolver.resolveConsoleMutationError(resolved),
                'is-error'
@@ -247,14 +247,14 @@ export function createAttractionHoursScheduleController({
             return;
          }
 
-         setStatus(
+         Status.setStatus(
             statusEl,
             ApiErrorMessageResolver.resolveConsoleMutationError(result),
             'is-error'
          );
       }
       catch {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

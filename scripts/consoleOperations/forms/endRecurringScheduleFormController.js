@@ -4,7 +4,7 @@ import {
    hideConsolePanel,
    resetFormFields,
 } from '../helpers/controllerUtils.js';
-import { setStatus } from '../shell/status.js';
+import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function createEndRecurringScheduleFormController({
@@ -41,7 +41,7 @@ export function createEndRecurringScheduleFormController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       activatePanel?.(panelEl);
    }
 
@@ -49,7 +49,7 @@ export function createEndRecurringScheduleFormController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
@@ -58,7 +58,7 @@ export function createEndRecurringScheduleFormController({
    }
 
    function handleSubmitSuccess(result) {
-      setStatus(
+      Status.setStatus(
          statusEl,
          successMessage(result),
          'is-success'
@@ -68,7 +68,7 @@ export function createEndRecurringScheduleFormController({
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       try {
          resetForm();
@@ -76,7 +76,7 @@ export function createEndRecurringScheduleFormController({
          show();
       }
       catch (err) {
-         setStatus(statusEl, loadErrorMessage, 'is-error');
+         Status.setStatus(statusEl, loadErrorMessage, 'is-error');
          show();
       }
    }
@@ -84,12 +84,12 @@ export function createEndRecurringScheduleFormController({
    async function onSubmitClick() {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -100,11 +100,11 @@ export function createEndRecurringScheduleFormController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

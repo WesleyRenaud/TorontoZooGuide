@@ -6,7 +6,7 @@ import {
    clearItineraryPathOverlay,
    renderItineraryPathOverlay,
 } from '../../scripts/map/itineraryPathOverlay.js';
-import { ENTRANCE_WALK_NODE_ID } from '../../scripts/shared/zooMapConstants.js';
+import { ZooMapConstants } from '../../scripts/shared/zooMapConstants.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { querySelectorInNode } from './helpers/domSelectorMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -57,7 +57,7 @@ test.describe('itinerary path overlay', () => {
       renderItineraryPathOverlay({
          legs: [],
          points: [
-            { nodeId: ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
+            { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
             { nodeId: 'v-0012', xPx: 2515.5, yPx: 2434.9 },
             { nodeId: 'v-0011', xPx: 2600, yPx: 2500 },
          ],

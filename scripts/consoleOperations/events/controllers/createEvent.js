@@ -6,7 +6,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
 
@@ -50,23 +50,23 @@ export function createCreateEventController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       resetForm();
       activatePanel?.(panelEl);
    }
 
    function hide() {
-      hideConsolePanel({ panelEl, statusEl, setStatus });
+      hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
    }
 
    async function onSubmitClick() {
       const values = getFormValues();
       const validationError = validateForm(values);
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -74,7 +74,7 @@ export function createCreateEventController({
          const result = await ConsoleOperationsApi.createEvent(values);
 
          if (result.success) {
-            setStatus(
+            Status.setStatus(
                statusEl,
                APP_STRINGS.status.eventCreated(result),
                'is-success'
@@ -82,11 +82,11 @@ export function createCreateEventController({
             resetForm();
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

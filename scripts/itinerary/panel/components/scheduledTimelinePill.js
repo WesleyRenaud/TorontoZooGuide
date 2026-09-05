@@ -2,7 +2,7 @@ import { el } from '../dom.js';
 import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { OpenTimelinePill } from './openTimelinePill.js';
 import { ScheduledPillPresentation } from '../scheduledPillPresentation.js';
-import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -18,11 +18,11 @@ function applyScheduledPillRegionColors(pill, item = null) {
 function applyScheduledPillDuration(
    pill,
    durationMinutes,
-   slotSpanMinutes = TIMELINE_SLOT_MINUTES
+   slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
 ) {
    const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
       ? slotSpanMinutes
-      : TIMELINE_SLOT_MINUTES;
+      : Constants.TIMELINE_SLOT_MINUTES;
    const durationFraction = durationMinutes / slotSpan;
 
    pill.style.setProperty(
@@ -275,7 +275,7 @@ export function makeScheduledPill(
       menuAriaLabel = '',
       onLabelClick = null,
       item = null,
-      slotSpanMinutes = TIMELINE_SLOT_MINUTES,
+      slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES,
       displayDurationMinutes = durationMinutes,
    } = {}
 ) {

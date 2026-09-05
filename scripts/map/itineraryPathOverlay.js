@@ -1,10 +1,7 @@
 import { ItineraryPathArrows } from './itineraryPathArrows.js';
 import { ItineraryPathConstants } from './itineraryPathConstants.js';
 import { ItineraryPathGeometry } from './itineraryPathGeometry.js';
-import {
-   ZOO_MAP_HEIGHT_PX,
-   ZOO_MAP_WIDTH_PX,
-} from '../shared/zooMapConstants.js';
+import { ZooMapConstants } from '../shared/zooMapConstants.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ITINERARY_PATH_LAYER_ID = 'itinerary-path';
@@ -28,8 +25,8 @@ function pointToMapPx(point) {
 
    if (Number.isFinite(point.x) && Number.isFinite(point.y)) {
       return {
-         x: point.x / 100 * ZOO_MAP_WIDTH_PX,
-         y: point.y / 100 * ZOO_MAP_HEIGHT_PX,
+         x: point.x / 100 * ZooMapConstants.ZOO_MAP_WIDTH_PX,
+         y: point.y / 100 * ZooMapConstants.ZOO_MAP_HEIGHT_PX,
       };
    }
 

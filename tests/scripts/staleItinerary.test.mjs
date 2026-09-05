@@ -2,14 +2,14 @@ import assert from 'node:assert/strict';
 import { test, beforeEach } from 'node:test';
 
 import { offerPastItineraryClearOrRecovery } from '../../scripts/itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
-import { resetPastItineraryPromptSessionForTests } from '../../scripts/itinerary/pastItinerary/promptSession.js';
+import { PromptSession } from '../../scripts/itinerary/pastItinerary/promptSession.js';
 
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const tomorrow = makeNoonDate(2026, 5, 16);
 
 beforeEach(() => {
-   resetPastItineraryPromptSessionForTests();
+   PromptSession.resetPastItineraryPromptSessionForTests();
 });
 
 test('offerPastItineraryClearOrRecovery does nothing for empty itineraries', async () => {

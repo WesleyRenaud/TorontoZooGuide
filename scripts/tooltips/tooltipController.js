@@ -1,4 +1,4 @@
-import { createTooltipBannerSync } from './bannerSync.js';
+import { BannerSync } from './bannerSync.js';
 import { createTooltipCarouselView } from './carouselView.js';
 import { createTooltipGlobalListeners } from './globalListeners.js';
 import { MarkerVisuals } from '../markers/markerVisuals.js';
@@ -47,7 +47,7 @@ export function createTooltipController({
       openState = createEmptyOpenState();
    }
 
-   const banners = createTooltipBannerSync({
+   const banners = BannerSync.createTooltipBannerSync({
       offDisplayBanner,
       restaurantClosedBanner,
       restroomMessageBanner,

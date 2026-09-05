@@ -1,7 +1,7 @@
 import { BulkScheduleItineraryNotEnoughTimeConfirmation } from './bulkScheduleItineraryNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { BuildOnly } from './components/buildOnly.js';
-import { makeDateCard } from './components/dateCard.js';
+import { DateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { makeSection } from './components/section.js';
@@ -214,7 +214,7 @@ export function buildItineraryPanelContent(
    const {
       makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
       makeActions = makeActionsBar,
-      createDateCard = makeDateCard,
+      createDateCard = DateCard.makeDateCard,
       buildSections = SectionConfigs.buildSectionConfigs,
       createSection = makeSection,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,

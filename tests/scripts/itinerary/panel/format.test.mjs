@@ -1,10 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   TIMELINE_POINT_PILL_HEIGHT_PX,
-   TIMELINE_SLOT_HEIGHT_PX,
-} from '../../../../scripts/shared/constants.js';
+import { Constants } from '../../../../scripts/shared/constants.js';
 import { DayPlannerSchedule } from '../../../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import { timelineSlotRowHeightFraction } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
@@ -271,7 +268,7 @@ test.describe('itinerary panel format and schedule', () => {
    });
    test('Test_ComputeStripHorizontalOffsetIndex_TestOverlappingStrips_ExpectShifted', () => {
       const pointPillVerticalSpanFraction = (
-         TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+         Constants.TIMELINE_POINT_PILL_HEIGHT_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
       );
    
       assert.equal(

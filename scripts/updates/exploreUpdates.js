@@ -1,6 +1,6 @@
 import { MapApi } from '../api/mapApi.js';
 import { createEventCard } from './exploreEventCard.js';
-import { EXPLORE_TAB } from './exploreTabs.js';
+import { ExploreTabs } from './exploreTabs.js';
 import { createUpdateCard } from './exploreUpdateCard.js';
 import {
    clearExploreNav,
@@ -22,12 +22,12 @@ function buildDatePayload(dateCtx) {
 }
 
 function resolveActiveTab(activeTab, updates, events) {
-   if (activeTab === EXPLORE_TAB.UPDATES && !updates.length && events.length) {
-      return EXPLORE_TAB.EVENTS;
+   if (activeTab === ExploreTabs.EXPLORE_TAB.UPDATES && !updates.length && events.length) {
+      return ExploreTabs.EXPLORE_TAB.EVENTS;
    }
 
-   if (activeTab === EXPLORE_TAB.EVENTS && !events.length && updates.length) {
-      return EXPLORE_TAB.UPDATES;
+   if (activeTab === ExploreTabs.EXPLORE_TAB.EVENTS && !events.length && updates.length) {
+      return ExploreTabs.EXPLORE_TAB.UPDATES;
    }
 
    return activeTab;
@@ -42,12 +42,12 @@ export function createExploreUpdates({
 
    let updates = [];
    let events = [];
-   let activeTab = EXPLORE_TAB.UPDATES;
+   let activeTab = ExploreTabs.EXPLORE_TAB.UPDATES;
    let currentIndex = 0;
    let isCollapsed = false;
 
    function getActiveItems() {
-      return activeTab === EXPLORE_TAB.EVENTS ? events : updates;
+      return activeTab === ExploreTabs.EXPLORE_TAB.EVENTS ? events : updates;
    }
 
    function getSafeIndex(items) {
@@ -77,11 +77,11 @@ export function createExploreUpdates({
       listEl.replaceChildren(
          ...updates.map((update, index) => createUpdateCard(
             update,
-            activeTab === EXPLORE_TAB.UPDATES && index === currentIndex
+            activeTab === ExploreTabs.EXPLORE_TAB.UPDATES && index === currentIndex
          )),
          ...events.map((event, index) => createEventCard(
             event,
-            activeTab === EXPLORE_TAB.EVENTS && index === currentIndex
+            activeTab === ExploreTabs.EXPLORE_TAB.EVENTS && index === currentIndex
          ))
       );
       renderExploreNav({
@@ -119,7 +119,7 @@ export function createExploreUpdates({
    }
 
    function selectTab(tab) {
-      if (tab !== EXPLORE_TAB.UPDATES && tab !== EXPLORE_TAB.EVENTS) {
+      if (tab !== ExploreTabs.EXPLORE_TAB.UPDATES && tab !== ExploreTabs.EXPLORE_TAB.EVENTS) {
          return;
       }
 
@@ -127,11 +127,11 @@ export function createExploreUpdates({
          return;
       }
 
-      if (tab === EXPLORE_TAB.UPDATES && !updates.length) {
+      if (tab === ExploreTabs.EXPLORE_TAB.UPDATES && !updates.length) {
          return;
       }
 
-      if (tab === EXPLORE_TAB.EVENTS && !events.length) {
+      if (tab === ExploreTabs.EXPLORE_TAB.EVENTS && !events.length) {
          return;
       }
 
@@ -180,13 +180,13 @@ export function createExploreUpdates({
       nextEvents: [],
    });
    getExploreToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
-   getExploreTabEl(listEl, EXPLORE_TAB.UPDATES)?.addEventListener(
+   getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.UPDATES)?.addEventListener(
       'click',
-      () => selectTab(EXPLORE_TAB.UPDATES)
+      () => selectTab(ExploreTabs.EXPLORE_TAB.UPDATES)
    );
-   getExploreTabEl(listEl, EXPLORE_TAB.EVENTS)?.addEventListener(
+   getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.EVENTS)?.addEventListener(
       'click',
-      () => selectTab(EXPLORE_TAB.EVENTS)
+      () => selectTab(ExploreTabs.EXPLORE_TAB.EVENTS)
    );
 
    return { refresh };

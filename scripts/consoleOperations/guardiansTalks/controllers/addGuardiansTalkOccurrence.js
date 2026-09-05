@@ -5,7 +5,7 @@ import {
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createAddGuardiansTalkOccurrenceController({
@@ -57,7 +57,7 @@ export function createAddGuardiansTalkOccurrenceController({
    }
 
    function show() {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
       activatePanel?.(panelEl);
    }
 
@@ -65,12 +65,12 @@ export function createAddGuardiansTalkOccurrenceController({
       hideConsolePanel({
          panelEl,
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
       });
    }
 
    showButtonEl?.addEventListener('click', async () => {
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       try {
          resetForm();
@@ -78,7 +78,7 @@ export function createAddGuardiansTalkOccurrenceController({
          show();
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
          show();
       }
    });
@@ -88,12 +88,12 @@ export function createAddGuardiansTalkOccurrenceController({
    submitButtonEl?.addEventListener('click', async () => {
       const formValues = getFormValues();
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       const validationError = validateForm(formValues);
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -101,7 +101,7 @@ export function createAddGuardiansTalkOccurrenceController({
          const result = await ConsoleOperationsApi.addGuardiansTalkOccurrence(formValues);
 
          if (!result.success) {
-            setStatus(
+            Status.setStatus(
                statusEl,
                ApiErrorMessageResolver.resolveConsoleMutationError(result),
                'is-error'
@@ -109,7 +109,7 @@ export function createAddGuardiansTalkOccurrenceController({
             return;
          }
 
-         setStatus(
+         Status.setStatus(
             statusEl,
             `${result.talk} in ${result.location} on ${result.date} at ${result.times[0]} was added.`,
             'is-success'
@@ -117,7 +117,7 @@ export function createAddGuardiansTalkOccurrenceController({
          resetForm();
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    });
 

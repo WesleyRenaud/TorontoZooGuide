@@ -3,21 +3,21 @@ import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js'
 import { el } from '../dom.js';
 import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
-import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 
 export function timelineSlotRowHeightFraction(slotSpanMinutes) {
    const span = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
       ? slotSpanMinutes
-      : TIMELINE_SLOT_MINUTES;
+      : Constants.TIMELINE_SLOT_MINUTES;
 
-   return span / TIMELINE_SLOT_MINUTES;
+   return span / Constants.TIMELINE_SLOT_MINUTES;
 }
 
 export function makeTimelineRow(
    timeLabel,
-   slotSpanMinutes = TIMELINE_SLOT_MINUTES
+   slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
 ) {
    const timeCell = el('div', 'itinerary-day-time');
 
@@ -84,7 +84,7 @@ function makeScheduledItemBlock(
    item = null
 ) {
    const block = el('div', 'itinerary-day-event');
-   const slotSpan = maximumDuration / TIMELINE_SLOT_MINUTES;
+   const slotSpan = maximumDuration / Constants.TIMELINE_SLOT_MINUTES;
 
    block.style.setProperty('--itinerary-event-slot-span', String(slotSpan));
 

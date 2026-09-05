@@ -6,7 +6,7 @@ import {
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
-import { setStatus } from '../../shell/status.js';
+import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 import {
    getSelectedUpdateIdentity,
@@ -34,7 +34,7 @@ export function createEndUpdateController({
    async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
-         setStatus,
+         setStatus: Status.setStatus,
          loadOptions: loadActiveUpdates,
          populateOptions: populateUpdateDropdown,
          targetEl: updateEl,
@@ -46,7 +46,7 @@ export function createEndUpdateController({
    }
 
    function hide() {
-      hideConsolePanel({ panelEl, statusEl, setStatus });
+      hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
    }
 
    function validateForm({ title, startDate }) {
@@ -61,10 +61,10 @@ export function createEndUpdateController({
       };
       const validationError = validateForm(values);
 
-      setStatus(statusEl, '');
+      Status.setStatus(statusEl, '');
 
       if (validationError) {
-         setStatus(statusEl, validationError, 'is-error');
+         Status.setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
@@ -72,15 +72,15 @@ export function createEndUpdateController({
          const result = await ConsoleOperationsApi.endUpdate(values);
 
          if (result.success) {
-            setStatus(statusEl, APP_STRINGS.status.updateEnded, 'is-success');
+            Status.setStatus(statusEl, APP_STRINGS.status.updateEnded, 'is-success');
             resetForm();
          }
          else {
-            setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+         Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

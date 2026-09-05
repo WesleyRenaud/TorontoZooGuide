@@ -1,7 +1,7 @@
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
 import { ScheduledPillViewingWalkNode } from './scheduledPillViewingWalkNode.js';
-import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { Constants } from '../../../shared/constants.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function getScheduledItemDurationMinutes(scheduledItem = {}) {
@@ -420,8 +420,8 @@ export class ScheduledPillLayoutUnits {
          ?? anchorItem?.slotEndMinutes
          ?? (
             Number.isFinite(anchorSlotMinutes)
-               ? anchorSlotMinutes + TIMELINE_SLOT_MINUTES
-               : TIMELINE_SLOT_MINUTES
+               ? anchorSlotMinutes + Constants.TIMELINE_SLOT_MINUTES
+               : Constants.TIMELINE_SLOT_MINUTES
          );
       const slotSpanMinutes = slotEndMinutes - anchorSlotMinutes;
 
@@ -430,7 +430,7 @@ export class ScheduledPillLayoutUnits {
          slotEndMinutes,
          slotSpanMinutes: Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
             ? slotSpanMinutes
-            : TIMELINE_SLOT_MINUTES,
+            : Constants.TIMELINE_SLOT_MINUTES,
       };
    }
 

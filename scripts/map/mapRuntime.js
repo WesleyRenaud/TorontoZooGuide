@@ -13,7 +13,7 @@ import { Markers } from '../markers/markers.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { createPanzoom } from './panzoom.js';
 import { createDataSources } from './sources.js';
-import { createMapStore } from './store.js';
+import { Store } from './store.js';
 import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createMapUpdater } from './updater.js';
 
@@ -121,7 +121,7 @@ export function createMapRuntime({
    }
 
    const panzoom = createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
-   const store = createMapStore();
+   const store = Store.createMapStore();
    const sources = createDataSources(store);
    const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
    const speciesOverlay = initSpeciesOverlay();

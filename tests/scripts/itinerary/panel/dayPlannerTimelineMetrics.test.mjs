@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
-   TIMELINE_POINT_PILL_HEIGHT_PX,
-   TIMELINE_SLOT_HEIGHT_PX,
-} from '../../../../scripts/shared/constants.js';
+import { Constants } from '../../../../scripts/shared/constants.js';
 import { DayPlannerTimelinePlacement } from '../../../../scripts/itinerary/panel/dayPlannerTimelinePlacement.js';
 import { DayPlannerTimelineMetrics } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMetrics.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
@@ -66,32 +62,32 @@ test('Test_ParseStripTopOffsetFromProbeTop_TestConvertsNegativeProbeTopsToOffset
 
 test('Test_ComputePointPillStripPlacementBand_TestConvertsSlotOffsetsIntoFractions_ExpectOk', () => {
    const atAnchor = DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
-      slotHeight: TIMELINE_SLOT_HEIGHT_PX,
-      pillHeight: TIMELINE_POINT_PILL_HEIGHT_PX,
-      stripTopOffset: TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+      slotHeight: Constants.TIMELINE_SLOT_HEIGHT_PX,
+      pillHeight: Constants.TIMELINE_POINT_PILL_HEIGHT_PX,
+      stripTopOffset: Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
       offsetFraction: 0,
    });
 
    assert.equal(
       atAnchor.offsetFraction,
-      -TIMELINE_PILL_STRIP_TOP_OFFSET_PX / TIMELINE_SLOT_HEIGHT_PX
+      -Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
    );
    assert.equal(
       atAnchor.durationFraction,
-      TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+      Constants.TIMELINE_POINT_PILL_HEIGHT_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
    );
 
    const midway = DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
-      slotHeight: TIMELINE_SLOT_HEIGHT_PX,
-      pillHeight: TIMELINE_POINT_PILL_HEIGHT_PX,
-      stripTopOffset: TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+      slotHeight: Constants.TIMELINE_SLOT_HEIGHT_PX,
+      pillHeight: Constants.TIMELINE_POINT_PILL_HEIGHT_PX,
+      stripTopOffset: Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
       offsetFraction: 0.5,
    });
 
    assert.equal(
       midway.offsetFraction,
-      (0.5 * TIMELINE_SLOT_HEIGHT_PX - TIMELINE_PILL_STRIP_TOP_OFFSET_PX)
-         / TIMELINE_SLOT_HEIGHT_PX
+      (0.5 * Constants.TIMELINE_SLOT_HEIGHT_PX - Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX)
+         / Constants.TIMELINE_SLOT_HEIGHT_PX
    );
 });
 
@@ -99,8 +95,8 @@ test('Test_ComputePointPillStripPlacementBand_TestFallsBackWhenMeasurementsAreMi
    assert.deepEqual(
       DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
          slotHeight: null,
-         pillHeight: TIMELINE_POINT_PILL_HEIGHT_PX,
-         stripTopOffset: TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+         pillHeight: Constants.TIMELINE_POINT_PILL_HEIGHT_PX,
+         stripTopOffset: Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
          offsetFraction: 0.25,
       }),
       {
@@ -113,10 +109,10 @@ test('Test_ComputePointPillStripPlacementBand_TestFallsBackWhenMeasurementsAreMi
 test('Test_ComputePointPillVerticalSpanFraction_TestReturnsPillHeightRelativeToSlotHeight_ExpectOk', () => {
    assert.equal(
       DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(
-         TIMELINE_SLOT_HEIGHT_PX,
-         TIMELINE_POINT_PILL_HEIGHT_PX
+         Constants.TIMELINE_SLOT_HEIGHT_PX,
+         Constants.TIMELINE_POINT_PILL_HEIGHT_PX
       ),
-      TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+      Constants.TIMELINE_POINT_PILL_HEIGHT_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
    );
    assert.equal(DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(0, 10), null);
 });
@@ -127,16 +123,16 @@ test.describe('day planner timeline measurements', () => {
    test('Test_GetTimelineSlotHeightPx_TestReadsTheTimelineSlotHeightFromCSSVariables_ExpectOk', () => {
       const { gridLine } = makeTimelineGridLine();
 
-      assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine), TIMELINE_SLOT_HEIGHT_PX);
+      assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine), Constants.TIMELINE_SLOT_HEIGHT_PX);
    });
 
    test('Test_MeasurePointPillHeightPx_TestAndStripOffsetUseTimelineCSSVariables_ExpectOk', () => {
       const { gridLine } = makeTimelineGridLine();
 
-      assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine), TIMELINE_POINT_PILL_HEIGHT_PX);
+      assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine), Constants.TIMELINE_POINT_PILL_HEIGHT_PX);
       assert.equal(
          DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),
-         TIMELINE_PILL_STRIP_TOP_OFFSET_PX
+         Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
       );
    });
 
@@ -145,7 +141,7 @@ test.describe('day planner timeline measurements', () => {
 
       assert.equal(
          DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
-         TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+         Constants.TIMELINE_POINT_PILL_HEIGHT_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
       );
    });
 
@@ -155,9 +151,9 @@ test.describe('day planner timeline measurements', () => {
       assert.deepEqual(
          DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, 0),
          DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
-            slotHeight: TIMELINE_SLOT_HEIGHT_PX,
-            pillHeight: TIMELINE_POINT_PILL_HEIGHT_PX,
-            stripTopOffset: TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+            slotHeight: Constants.TIMELINE_SLOT_HEIGHT_PX,
+            pillHeight: Constants.TIMELINE_POINT_PILL_HEIGHT_PX,
+            stripTopOffset: Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
             offsetFraction: 0,
          })
       );
@@ -171,7 +167,7 @@ test.describe('day planner timeline measurements', () => {
 
       assert.equal(
          DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
-         TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+         Constants.TIMELINE_POINT_PILL_HEIGHT_PX / Constants.TIMELINE_SLOT_HEIGHT_PX
       );
    });
 });

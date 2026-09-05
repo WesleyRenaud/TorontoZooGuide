@@ -1,4 +1,4 @@
-import { focusMarker } from './focusAnimator.js';
+import { FocusAnimator } from './focusAnimator.js';
 import {
    createFocusMatch,
    findBestMarkerByScan,
@@ -31,7 +31,7 @@ export function createFocusController({
          return;
       }
 
-      focusMarker({
+      FocusAnimator.focusMarker({
          panzoom,
          marker: target.marker,
          viewportEl,
