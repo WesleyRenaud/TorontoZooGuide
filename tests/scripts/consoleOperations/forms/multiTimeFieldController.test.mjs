@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createMultiTimeFieldController } from '../../scripts/consoleOperations/forms/multiTimeFieldController.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { MultiTimeFieldController } from '../../../../scripts/consoleOperations/forms/multiTimeFieldController.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
@@ -18,9 +18,9 @@ function createMultiTimeFieldDom() {
    return { fieldEl, listEl, inputEl };
 }
 
-test('createMultiTimeFieldController renders saved times as chips', () => {
+test('Test_CreateMultiTimeFieldController_TestSavedTimes_ExpectChips', () => {
    const { fieldEl, listEl, inputEl } = createMultiTimeFieldDom();
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -36,10 +36,10 @@ test('createMultiTimeFieldController renders saved times as chips', () => {
    assert.deepEqual(controller.getTimes(), [ '1:00 PM', '2:30 PM' ]);
 });
 
-test('createMultiTimeFieldController displays chips in 12-hour format', () => {
+test('Test_CreateMultiTimeFieldController_TestTwelveHour_ExpectChipLabel', () => {
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -52,10 +52,10 @@ test('createMultiTimeFieldController displays chips in 12-hour format', () => {
    );
 });
 
-test('createMultiTimeFieldController treats equivalent 12-hour and 24-hour times as duplicates', () => {
+test('Test_CreateMultiTimeFieldController_TestDuplicateFormats_ExpectSingle', () => {
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -67,12 +67,12 @@ test('createMultiTimeFieldController treats equivalent 12-hour and 24-hour times
    assert.equal(listEl.children.length, 1);
 });
 
-test('createMultiTimeFieldController clears the input after committing a pending time', () => {
+test('Test_CreateMultiTimeFieldController_TestCommitPending_ExpectInputCleared', () => {
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
    inputEl.value = '3:00 PM';
 
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -83,10 +83,10 @@ test('createMultiTimeFieldController clears the input after committing a pending
    assert.equal(inputEl.value, '');
 });
 
-test('createMultiTimeFieldController ignores duplicate times', () => {
+test('Test_CreateMultiTimeFieldController_TestDuplicateTime_ExpectIgnored', () => {
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -98,10 +98,10 @@ test('createMultiTimeFieldController ignores duplicate times', () => {
    assert.equal(listEl.children.length, 1);
 });
 
-test('createMultiTimeFieldController removes a saved time', () => {
+test('Test_CreateMultiTimeFieldController_TestRemoveTime_ExpectRemoved', () => {
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });
@@ -114,9 +114,9 @@ test('createMultiTimeFieldController removes a saved time', () => {
    assert.equal(listEl.children.length, 1);
 });
 
-test('createMultiTimeFieldController removes the last saved time', () => {
+test('Test_CreateMultiTimeFieldController_TestRemoveLast_ExpectRemoved', () => {
    const { listEl, inputEl } = createMultiTimeFieldDom();
-   const controller = createMultiTimeFieldController({
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
    });

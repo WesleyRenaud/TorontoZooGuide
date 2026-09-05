@@ -2,16 +2,7 @@ import { MapApi } from '../api/mapApi.js';
 import { ExploreEventCard } from './exploreEventCard.js';
 import { ExploreTabs } from './exploreTabs.js';
 import { ExploreUpdateCard } from './exploreUpdateCard.js';
-import {
-   clearExploreNav,
-   getExploreHeaderEl,
-   getExploreTabEl,
-   getExploreToggleEl,
-   renderExploreNav,
-   setExploreSectionVisibility,
-   syncExploreCollapsedState,
-   syncExploreTabs,
-} from './exploreUpdatesChrome.js';
+import { ExploreUpdatesChrome } from './exploreUpdatesChrome.js';
 
 function buildDatePayload(dateCtx) {
    return {
@@ -57,15 +48,15 @@ export function createExploreUpdates({
    function renderCurrentItem() {
       if (!updates.length && !events.length) {
          listEl.replaceChildren();
-         setExploreSectionVisibility(listEl, false);
-         clearExploreNav(getExploreHeaderEl(listEl));
+         ExploreUpdatesChrome.setExploreSectionVisibility(listEl, false);
+         ExploreUpdatesChrome.clearExploreNav(ExploreUpdatesChrome.getExploreHeaderEl(listEl));
          return;
       }
 
       const items = getActiveItems();
 
-      setExploreSectionVisibility(listEl, true);
-      syncExploreTabs({
+      ExploreUpdatesChrome.setExploreSectionVisibility(listEl, true);
+      ExploreUpdatesChrome.syncExploreTabs({
          listEl,
          activeTab,
          updatesCount: updates.length,
@@ -84,13 +75,13 @@ export function createExploreUpdates({
             activeTab === ExploreTabs.EXPLORE_TAB.EVENTS && index === currentIndex
          ))
       );
-      renderExploreNav({
+      ExploreUpdatesChrome.renderExploreNav({
          listEl,
          itemCount: items.length,
          activeTab,
          onStep: step,
       });
-      syncExploreCollapsedState({
+      ExploreUpdatesChrome.syncExploreCollapsedState({
          listEl,
          isCollapsed,
       });
@@ -142,7 +133,7 @@ export function createExploreUpdates({
 
    function toggleCollapsed() {
       isCollapsed = !isCollapsed;
-      syncExploreCollapsedState({
+      ExploreUpdatesChrome.syncExploreCollapsedState({
          listEl,
          isCollapsed,
       });
@@ -170,8 +161,8 @@ export function createExploreUpdates({
       }
       catch (err) {
          listEl.replaceChildren();
-         setExploreSectionVisibility(listEl, false);
-         clearExploreNav(getExploreHeaderEl(listEl));
+         ExploreUpdatesChrome.setExploreSectionVisibility(listEl, false);
+         ExploreUpdatesChrome.clearExploreNav(ExploreUpdatesChrome.getExploreHeaderEl(listEl));
       }
    }
 
@@ -179,12 +170,12 @@ export function createExploreUpdates({
       nextUpdates: [],
       nextEvents: [],
    });
-   getExploreToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
-   getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.UPDATES)?.addEventListener(
+   ExploreUpdatesChrome.getExploreToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
+   ExploreUpdatesChrome.getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.UPDATES)?.addEventListener(
       'click',
       () => selectTab(ExploreTabs.EXPLORE_TAB.UPDATES)
    );
-   getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.EVENTS)?.addEventListener(
+   ExploreUpdatesChrome.getExploreTabEl(listEl, ExploreTabs.EXPLORE_TAB.EVENTS)?.addEventListener(
       'click',
       () => selectTab(ExploreTabs.EXPLORE_TAB.EVENTS)
    );

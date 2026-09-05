@@ -44,33 +44,35 @@ function createChoiceRow({
    return button;
 }
 
-export function buildRegionRows(region, selectedExhibitNames) {
-   const exhibits = RegionSelection.getRegionExhibits(region);
-   const regionName = RegionSelection.getRegionName(region);
-   const regionSelected = RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
+export class RegionRenderer {
+   static buildRegionRows(region, selectedExhibitNames) {
+      const exhibits = RegionSelection.getRegionExhibits(region);
+      const regionName = RegionSelection.getRegionName(region);
+      const regionSelected = RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
 
-   const rows = [
-      createChoiceRow({
-         label: regionName,
-         isSelected: regionSelected,
-         action: 'toggle-region',
-         regionName,
-      }),
-   ];
+      const rows = [
+         createChoiceRow({
+            label: regionName,
+            isSelected: regionSelected,
+            action: 'toggle-region',
+            regionName,
+         }),
+      ];
 
-   if (!RegionSelection.shouldHideDuplicateSingleExhibit(region)) {
-      exhibits.forEach((exhibitName) => {
-         rows.push(
-            createChoiceRow({
-               label: exhibitName,
-               isSelected: selectedExhibitNames.has(exhibitName),
-               action: 'toggle-exhibit',
-               regionName,
-               exhibitName,
-            })
-         );
-      });
+      if (!RegionSelection.shouldHideDuplicateSingleExhibit(region)) {
+         exhibits.forEach((exhibitName) => {
+            rows.push(
+               createChoiceRow({
+                  label: exhibitName,
+                  isSelected: selectedExhibitNames.has(exhibitName),
+                  action: 'toggle-exhibit',
+                  regionName,
+                  exhibitName,
+               })
+            );
+         });
+      }
+
+      return rows;
    }
-
-   return rows;
 }

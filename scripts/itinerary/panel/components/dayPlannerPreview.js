@@ -1,6 +1,6 @@
 import { DayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
 import { DayPlannerActionFeedbackBanner } from './dayPlannerActionFeedbackBanner.js';
-import { makeDayPlannerControls } from './dayPlannerControls.js';
+import { DayPlannerControls } from './dayPlannerControls.js';
 import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
 import {
    buildScheduledItemRowsContext,
@@ -211,7 +211,7 @@ export function makeDayPlannerPreview(
    titleWrap.appendChild(title);
    header.appendChild(titleWrap);
    headerAside.appendChild(
-      makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
+      DayPlannerControls.makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
    );
    header.appendChild(headerAside);
 

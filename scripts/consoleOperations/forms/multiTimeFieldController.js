@@ -2,123 +2,125 @@ import { APP_STRINGS } from '../../strings.js';
 import { common } from '../../strings/common.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
-export function createMultiTimeFieldController({
-   listEl,
-   inputEl,
-} = {}) {
-   let times = [];
+export class MultiTimeFieldController {
+   static createMultiTimeFieldController({
+      listEl,
+      inputEl,
+   } = {}) {
+      let times = [];
 
-   function syncFieldState() {
-      const fieldEl = inputEl?.closest('.console-operations-multi-time-field');
+      function syncFieldState() {
+         const fieldEl = inputEl?.closest('.console-operations-multi-time-field');
 
-      if (fieldEl) {
-         fieldEl.classList.toggle(
-            'console-operations-multi-time-field--has-times',
-            times.length > 0
-         );
-      }
-   }
-
-   function render() {
-      if (!listEl) {
-         return;
+         if (fieldEl) {
+            fieldEl.classList.toggle(
+               'console-operations-multi-time-field--has-times',
+               times.length > 0
+            );
+         }
       }
 
-      listEl.replaceChildren();
+      function render() {
+         if (!listEl) {
+            return;
+         }
 
-      times.forEach((time) => {
-         const chipEl = document.createElement('div');
-         chipEl.className = 'console-operations-time-chip';
+         listEl.replaceChildren();
 
-         const labelEl = document.createElement('span');
-         labelEl.className = 'console-operations-time-chip-label';
-         labelEl.textContent = time;
+         times.forEach((time) => {
+            const chipEl = document.createElement('div');
+            chipEl.className = 'console-operations-time-chip';
 
-         const removeButtonEl = document.createElement('button');
-         removeButtonEl.type = 'button';
-         removeButtonEl.className = 'console-operations-time-chip-remove';
-         removeButtonEl.setAttribute(
-            'aria-label',
-            APP_STRINGS.help.removeScheduledTime(time)
-         );
-         removeButtonEl.textContent = common.closeSymbol;
-         removeButtonEl.addEventListener('mousedown', (event) => {
-            event.preventDefault();
+            const labelEl = document.createElement('span');
+            labelEl.className = 'console-operations-time-chip-label';
+            labelEl.textContent = time;
+
+            const removeButtonEl = document.createElement('button');
+            removeButtonEl.type = 'button';
+            removeButtonEl.className = 'console-operations-time-chip-remove';
+            removeButtonEl.setAttribute(
+               'aria-label',
+               APP_STRINGS.help.removeScheduledTime(time)
+            );
+            removeButtonEl.textContent = common.closeSymbol;
+            removeButtonEl.addEventListener('mousedown', (event) => {
+               event.preventDefault();
+            });
+            removeButtonEl.addEventListener('click', () => {
+               removeTime(time);
+            });
+
+            chipEl.append(labelEl, removeButtonEl);
+            listEl.appendChild(chipEl);
          });
-         removeButtonEl.addEventListener('click', () => {
-            removeTime(time);
-         });
 
-         chipEl.append(labelEl, removeButtonEl);
-         listEl.appendChild(chipEl);
-      });
-
-      syncFieldState();
-   }
-
-   function addTime(time) {
-      const normalizedTime = VisitDateRules.formatZooDisplayClockTime(time?.trim() ?? '');
-
-      if (!normalizedTime || times.includes(normalizedTime)) {
-         return false;
+         syncFieldState();
       }
 
-      times.push(normalizedTime);
-      render();
-      return true;
-   }
+      function addTime(time) {
+         const normalizedTime = VisitDateRules.formatZooDisplayClockTime(time?.trim() ?? '');
 
-   function removeTime(time) {
-      times = times.filter(existingTime => existingTime !== time);
-      render();
-   }
+         if (!normalizedTime || times.includes(normalizedTime)) {
+            return false;
+         }
 
-   function removeLastTime() {
-      if (times.length === 0) {
-         return false;
+         times.push(normalizedTime);
+         render();
+         return true;
       }
 
-      times.pop();
-      render();
-      return true;
-   }
-
-   function getTimes() {
-      return [...times];
-   }
-
-   function clearInput() {
-      if (inputEl) {
-         inputEl.value = '';
-      }
-   }
-
-   function commitPendingInput() {
-      const pendingTime = inputEl?.value?.trim() ?? '';
-
-      if (!pendingTime) {
-         return false;
+      function removeTime(time) {
+         times = times.filter(existingTime => existingTime !== time);
+         render();
       }
 
-      const added = addTime(pendingTime);
-      clearInput();
-      return added;
-   }
+      function removeLastTime() {
+         if (times.length === 0) {
+            return false;
+         }
 
-   function reset() {
-      times = [];
+         times.pop();
+         render();
+         return true;
+      }
+
+      function getTimes() {
+         return [...times];
+      }
+
+      function clearInput() {
+         if (inputEl) {
+            inputEl.value = '';
+         }
+      }
+
+      function commitPendingInput() {
+         const pendingTime = inputEl?.value?.trim() ?? '';
+
+         if (!pendingTime) {
+            return false;
+         }
+
+         const added = addTime(pendingTime);
+         clearInput();
+         return added;
+      }
+
+      function reset() {
+         times = [];
+         render();
+         clearInput();
+      }
+
       render();
-      clearInput();
+
+      return {
+         addTime,
+         removeTime,
+         removeLastTime,
+         getTimes,
+         commitPendingInput,
+         reset,
+      };
    }
-
-   render();
-
-   return {
-      addTime,
-      removeTime,
-      removeLastTime,
-      getTimes,
-      commitPendingInput,
-      reset,
-   };
 }
