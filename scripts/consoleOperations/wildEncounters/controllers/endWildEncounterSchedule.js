@@ -1,12 +1,9 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import {
-   getFieldValue,
-   resetFormFields,
-} from '../../helpers/controllerUtils.js';
-import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
-import { loadWildEncounters } from '../../options/loaders.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class EndWildEncounterSchedule {
@@ -44,8 +41,8 @@ export class EndWildEncounterSchedule {
 
       async function prepareForm() {
          if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await loadWildEncounters();
-            populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
+            const wildEncounters = await Loaders.loadWildEncounters();
+            Dropdowns.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
 
          await scheduleTimesFilterController?.refresh?.();
@@ -55,11 +52,11 @@ export class EndWildEncounterSchedule {
          ...controllerOptions,
          endDateEl,
          resetSelection: () => {
-            resetFormFields([wildEncounterEl]);
+            ControllerUtils.resetFormFields([wildEncounterEl]);
             scheduleTimesFilterController?.clear?.();
          },
          getSelectionValues: () => ({
-            wildEncounter: getFieldValue(wildEncounterEl),
+            wildEncounter: ControllerUtils.getFieldValue(wildEncounterEl),
             times: getSelectedTimes(),
          }),
          validateSelection,

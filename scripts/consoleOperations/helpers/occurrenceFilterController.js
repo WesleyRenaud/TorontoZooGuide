@@ -1,5 +1,5 @@
-import { getFieldValue } from './controllerUtils.js';
-import { populateValueDropdown } from '../options/dropdowns.js';
+import { ControllerUtils } from './controllerUtils.js';
+import { Dropdowns } from '../options/dropdowns.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export class OccurrenceFilterController {
@@ -15,7 +15,7 @@ export class OccurrenceFilterController {
       let occurrences = [];
 
       function populateDateDropdown(dates) {
-         populateValueDropdown(dateEl, dates, APP_STRINGS.placeholders.date);
+         Dropdowns.populateValueDropdown(dateEl, dates, APP_STRINGS.placeholders.date);
       }
 
       function populateTimeDropdown(times) {
@@ -24,7 +24,7 @@ export class OccurrenceFilterController {
             return;
          }
 
-         populateValueDropdown(timeEl, times, APP_STRINGS.placeholders.time);
+         Dropdowns.populateValueDropdown(timeEl, times, APP_STRINGS.placeholders.time);
       }
 
       function getOccurrenceValues(field) {
@@ -62,7 +62,7 @@ export class OccurrenceFilterController {
       }
 
       function refreshTimes() {
-         const selectedDate = getFieldValue(dateEl);
+         const selectedDate = ControllerUtils.getFieldValue(dateEl);
 
          populateTimeDropdown([]);
 

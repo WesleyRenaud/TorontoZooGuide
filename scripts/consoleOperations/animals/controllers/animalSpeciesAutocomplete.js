@@ -1,8 +1,8 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { createAnimalSpeciesResultsView } from '../autocomplete/resultsView.js';
+import { ResultsView } from '../autocomplete/resultsView.js';
 import { SpeciesMatcher } from '../autocomplete/speciesMatcher.js';
-import { createAnimalSpeciesSource } from '../autocomplete/speciesSource.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
+import { SpeciesSource } from '../autocomplete/speciesSource.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 
 function debounce(fn, delay = 200) {
    let timer = null;
@@ -25,8 +25,8 @@ export class AnimalSpeciesAutocomplete {
          };
       }
 
-      const speciesSource = createAnimalSpeciesSource();
-      const resultsView = createAnimalSpeciesResultsView({
+      const speciesSource = SpeciesSource.createAnimalSpeciesSource();
+      const resultsView = ResultsView.createAnimalSpeciesResultsView({
          inputEl,
          resultsEl,
       });
@@ -35,7 +35,7 @@ export class AnimalSpeciesAutocomplete {
 
       async function performSearch() {
          const query = ValueNormalizer.asTrimmedString(inputEl.value);
-         const exhibit = getFieldValue(exhibitEl);
+         const exhibit = ControllerUtils.getFieldValue(exhibitEl);
          const requestId = ++searchRequestId;
 
          if (!query) {

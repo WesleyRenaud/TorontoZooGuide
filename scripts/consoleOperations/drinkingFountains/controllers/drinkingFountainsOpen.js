@@ -1,9 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -18,7 +15,7 @@ export class DrinkingFountainsOpen {
       activatePanel,
    } = {}) {
       function resetForm() {
-         resetFormFields([startDateEl, endDateEl]);
+         ControllerUtils.resetFormFields([startDateEl, endDateEl]);
       }
 
       function show() {
@@ -32,7 +29,7 @@ export class DrinkingFountainsOpen {
 
          const startDate = startDateEl?.value.trim() || '';
          const endDate = endDateEl?.value.trim() || '';
-         const validationError = validateOptionalDateRange(startDate, endDate);
+         const validationError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
 
          if (validationError) {
             Status.setStatus(statusEl, validationError, 'is-error');

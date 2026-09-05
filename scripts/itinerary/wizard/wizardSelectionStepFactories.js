@@ -15,12 +15,14 @@ const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
    regions: createItineraryRegionSelectorController,
 });
 
-export function buildWizardSelectionStepConfigs(
-   definitions = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS,
-   factoriesByStepKey = WIZARD_SELECTION_STEP_FACTORIES
-) {
-   return definitions.map((definition) => ({
-      ...definition,
-      factory: factoriesByStepKey[definition.stepKey],
-   }));
+export class WizardSelectionStepFactories {
+   static buildWizardSelectionStepConfigs(
+      definitions = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS,
+      factoriesByStepKey = WIZARD_SELECTION_STEP_FACTORIES
+   ) {
+      return definitions.map((definition) => ({
+         ...definition,
+         factory: factoriesByStepKey[definition.stepKey],
+      }));
+   }
 }

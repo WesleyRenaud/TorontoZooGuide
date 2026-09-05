@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { OccurrenceFilterController } from '../../helpers/occurrenceFilterController.js';
 
 export class GuardiansTalkOccurrenceFilter {
@@ -19,9 +19,9 @@ export class GuardiansTalkOccurrenceFilter {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
             hasWildEncounter: Boolean(
-               getFieldValue(talkNameEl) && getFieldValue(locationEl)
+               ControllerUtils.getFieldValue(talkNameEl) && ControllerUtils.getFieldValue(locationEl)
             ),
-            hasDate: Boolean(getFieldValue(dateEl)),
+            hasDate: Boolean(ControllerUtils.getFieldValue(dateEl)),
             autoSelectSingleTime: true,
          });
       }
@@ -30,8 +30,8 @@ export class GuardiansTalkOccurrenceFilter {
          dateEl,
          populateTimes,
          getSelectionValues: () => ({
-            talk: getFieldValue(talkNameEl),
-            location: getFieldValue(locationEl),
+            talk: ControllerUtils.getFieldValue(talkNameEl),
+            location: ControllerUtils.getFieldValue(locationEl),
          }),
          isSelectionReady: ({ talk, location }) => Boolean(talk && location),
          loadOccurrences: async ({ talk, location }) => {

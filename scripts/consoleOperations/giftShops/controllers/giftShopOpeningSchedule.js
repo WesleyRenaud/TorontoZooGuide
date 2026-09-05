@@ -2,8 +2,8 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { WeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
-import { populateGiftShopDropdown } from '../../options/dropdowns.js';
-import { loadGiftShops } from '../../options/loaders.js';
+import { Dropdowns } from '../../options/dropdowns.js';
+import { Loaders } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class GiftShopOpeningSchedule {
@@ -14,8 +14,8 @@ export class GiftShopOpeningSchedule {
       return WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController({
          ...controllerOptions,
          entityEl: giftShopEl,
-         loadOptions: loadGiftShops,
-         populateOptions: populateGiftShopDropdown,
+         loadOptions: Loaders.loadGiftShops,
+         populateOptions: Dropdowns.populateGiftShopDropdown,
          submitSchedule: ConsoleOperationsApi.setGiftShopOpeningSchedule,
          entityLabel: APP_STRINGS.entityLabels.giftShop,
          optionsLabel: APP_STRINGS.entityLabels.giftShops,

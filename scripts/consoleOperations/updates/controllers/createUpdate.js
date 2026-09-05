@@ -1,11 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -28,11 +23,11 @@ export class CreateUpdate {
 
       function getFormValues() {
          return {
-            title: getFieldValue(titleEl),
-            description: getFieldValue(descriptionEl),
-            type: getFieldValue(typeEl),
-            startDate: getFieldValue(startDateEl),
-            endDate: getFieldValue(endDateEl),
+            title: ControllerUtils.getFieldValue(titleEl),
+            description: ControllerUtils.getFieldValue(descriptionEl),
+            type: ControllerUtils.getFieldValue(typeEl),
+            startDate: ControllerUtils.getFieldValue(startDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
          };
       }
 
@@ -41,11 +36,11 @@ export class CreateUpdate {
          if (!values.description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
          if (!values.type) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.type);
 
-         return validateOptionalDateRange(values.startDate, values.endDate);
+         return ControllerUtils.validateOptionalDateRange(values.startDate, values.endDate);
       }
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       function show() {
@@ -55,7 +50,7 @@ export class CreateUpdate {
       }
 
       function hide() {
-         hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
+         ControllerUtils.hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
       }
 
       async function onSubmitClick() {

@@ -3,91 +3,95 @@ import { PanelNavigator } from '../shell/panelNavigator.js';
 import { APP_STRINGS } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
-export function resetFieldValue(fieldEl) {
-   if (!fieldEl) {
-      return;
+export class ControllerUtils {
+   static resetFieldValue(fieldEl) {
+      if (!fieldEl) {
+         return;
+      }
+
+      if (fieldEl.type === 'checkbox' || fieldEl.type === 'radio') {
+         fieldEl.checked = false;
+         return;
+      }
+
+      if ('value' in fieldEl) {
+         fieldEl.value = '';
+      }
+
    }
 
-   if (fieldEl.type === 'checkbox' || fieldEl.type === 'radio') {
-      fieldEl.checked = false;
-      return;
+   static getFieldValue(fieldEl) {
+      return ValueNormalizer.asTrimmedString(fieldEl?.value);
    }
 
-   if ('value' in fieldEl) {
-      fieldEl.value = '';
+   static resetFormFields(fieldEls = []) {
+      fieldEls.forEach(ControllerUtils.resetFieldValue);
    }
-}
 
-export function getFieldValue(fieldEl) {
-   return ValueNormalizer.asTrimmedString(fieldEl?.value);
-}
-
-export function resetFormFields(fieldEls = []) {
-   fieldEls.forEach(resetFieldValue);
-}
-
-export function hasCheckedField(fieldEls = []) {
-   return fieldEls.some(fieldEl => Boolean(fieldEl?.checked));
-}
-
-export function hideConsolePanel({
-   panelEl,
-   statusEl,
-   setStatus,
-} = {}) {
-   panelEl?.classList.remove('active');
-   PanelNavigator.clearConsolePanelUrlParam();
-   PanelNavigator.clearConsoleMenuButtonSelection();
-   setStatus?.(statusEl, '');
-}
-
-export async function loadOptionsAndShowPanel({
-   statusEl,
-   setStatus,
-   loadOptions,
-   populateOptions,
-   targetEl,
-   resetForm,
-   activatePanel,
-   panelEl,
-   errorMessage,
-} = {}) {
-   setStatus?.(statusEl, '');
-
-   try {
-      const options = await loadOptions();
-      populateOptions?.(targetEl, options);
-      resetForm?.();
-      activatePanel?.(panelEl);
+   static hasCheckedField(fieldEls = []) {
+      return fieldEls.some(fieldEl => Boolean(fieldEl?.checked));
    }
-   catch(err) {
-      setStatus?.(statusEl, errorMessage, 'is-error');
-      activatePanel?.(panelEl);
-   }
-}
 
-export function validateOptionalDateRange(startDate, endDate) {
-   if (!endDate) {
+   static hideConsolePanel({
+      panelEl,
+      statusEl,
+      setStatus,
+   } = {}) {
+      panelEl?.classList.remove('active');
+      PanelNavigator.clearConsolePanelUrlParam();
+      PanelNavigator.clearConsoleMenuButtonSelection();
+      setStatus?.(statusEl, '');
+   }
+
+   static async loadOptionsAndShowPanel({
+      statusEl,
+      setStatus,
+      loadOptions,
+      populateOptions,
+      targetEl,
+      resetForm,
+      activatePanel,
+      panelEl,
+      errorMessage,
+   } = {}) {
+      setStatus?.(statusEl, '');
+
+      try {
+         const options = await loadOptions();
+         populateOptions?.(targetEl, options);
+         resetForm?.();
+         activatePanel?.(panelEl);
+      }
+      catch(err) {
+         setStatus?.(statusEl, errorMessage, 'is-error');
+         activatePanel?.(panelEl);
+      }
+
+   }
+
+   static validateOptionalDateRange(startDate, endDate) {
+      if (!endDate) {
+         return null;
+      }
+
+      const effectiveStart = VisitDateRules.resolveOptionalStartDate(startDate);
+      const startMs = new Date(effectiveStart).getTime();
+      const endMs = new Date(endDate).getTime();
+
+      if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
+         return APP_STRINGS.validation.dateRangeInvalid;
+      }
+
+      if (endMs < startMs) {
+         return APP_STRINGS.validation.endDateBeforeStartDate;
+      }
+
       return null;
    }
 
-   const effectiveStart = VisitDateRules.resolveOptionalStartDate(startDate);
-   const startMs = new Date(effectiveStart).getTime();
-   const endMs = new Date(endDate).getTime();
-
-   if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-      return APP_STRINGS.validation.dateRangeInvalid;
+   static bindResetValueOnChange(sourceEl, targetEl) {
+      sourceEl?.addEventListener('change', () => {
+         ControllerUtils.resetFieldValue(targetEl);
+      });
    }
-
-   if (endMs < startMs) {
-      return APP_STRINGS.validation.endDateBeforeStartDate;
-   }
-
-   return null;
-}
-
-export function bindResetValueOnChange(sourceEl, targetEl) {
-   sourceEl?.addEventListener('change', () => {
-      resetFieldValue(targetEl);
-   });
 }

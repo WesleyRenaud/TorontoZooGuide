@@ -1,9 +1,5 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   resetFormFields,
-} from '../helpers/controllerUtils.js';
+import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { Status } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -28,7 +24,7 @@ export class EndRecurringScheduleFormController {
 
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
          resetSelection?.();
       }
 
@@ -37,7 +33,7 @@ export class EndRecurringScheduleFormController {
             ...(typeof getSelectionValues === 'function'
                ? getSelectionValues()
                : {}),
-            endDate: getFieldValue(endDateEl),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
          };
       }
 
@@ -47,7 +43,7 @@ export class EndRecurringScheduleFormController {
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,

@@ -1,5 +1,5 @@
 import { buildRemovedItemsPopupSections } from './removedItemsPopupContent.js';
-import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
+import { RemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
 import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
@@ -51,7 +51,7 @@ export function showRemovedItemsPopup({
       content,
       closeBtn,
       okBtn,
-   } = createRemovedItemsPopupLayout({ isEmptyItinerary });
+   } = RemovedItemsPopupLayout.createRemovedItemsPopupLayout({ isEmptyItinerary });
    const keptAnimalsByKey = new Map();
    const keptAttractionsByKey = new Map();
 

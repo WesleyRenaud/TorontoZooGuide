@@ -1,9 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
-import {
-   populateGuardiansTalkDropdown,
-   populateValueDropdown,
-} from '../../options/dropdowns.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { Dropdowns } from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class GuardiansTalkLocationFilter {
@@ -24,7 +21,7 @@ export class GuardiansTalkLocationFilter {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b));
 
-         populateValueDropdown(
+         Dropdowns.populateValueDropdown(
             locationEl,
             locationNames,
             APP_STRINGS.placeholders.location
@@ -33,7 +30,7 @@ export class GuardiansTalkLocationFilter {
 
       function clearTalkDropdown() {
          if (talkNameEl?.tagName === 'SELECT') {
-            populateGuardiansTalkDropdown(talkNameEl, []);
+            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';
@@ -55,7 +52,7 @@ export class GuardiansTalkLocationFilter {
       }
 
       async function refreshTalks() {
-         const location = getFieldValue(locationEl);
+         const location = ControllerUtils.getFieldValue(locationEl);
 
          clearTalkDropdown();
 
@@ -71,7 +68,7 @@ export class GuardiansTalkLocationFilter {
             const guardiansTalks = result?.guardians_talks ?? [];
 
             if (talkNameEl?.tagName === 'SELECT') {
-               populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
+               Dropdowns.populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
             }
          }
          catch(err) {

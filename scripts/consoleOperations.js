@@ -1,5 +1,5 @@
-import { initConsoleOperationsPage } from './pages/consoleOperationsPage.js';
+import { ConsoleOperationsPage } from './pages/consoleOperationsPage.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-   initConsoleOperationsPage();
+   ConsoleOperationsPage.initConsoleOperationsPage();
 });

@@ -2,7 +2,7 @@ import {
    createConsoleSpecialControllers,
    wireConsoleOperationControllers,
 } from '../consoleOperations/bootstrap/controllers.js';
-import { wireConsoleOperationDatePickers } from '../consoleOperations/bootstrap/datePickers.js';
+import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
 import { mountConsoleOperationPanels } from '../consoleOperations/bootstrap/panels.js';
 import { collectConsoleOperationRefs } from '../consoleOperations/bootstrap/refs.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
@@ -40,21 +40,23 @@ function initConsoleOperationControllers(refs) {
 }
 
 function initConsoleOperationDateControls(refs) {
-   wireConsoleOperationDatePickers(refs);
+   DatePickers.wireConsoleOperationDatePickers(refs);
 }
 
-export function initConsoleOperationsPage() {
-   const workspaceEl = getConsoleOperationsWorkspace();
+export class ConsoleOperationsPage {
+   static initConsoleOperationsPage() {
+      const workspaceEl = getConsoleOperationsWorkspace();
 
-   if (!workspaceEl) {
-      console.warn('[consoleOperations] missing #consoleOperationsWorkspace');
-      return;
+      if (!workspaceEl) {
+         console.warn('[consoleOperations] missing #consoleOperationsWorkspace');
+         return;
+      }
+
+      initConsoleOperationPanels(workspaceEl);
+
+      const refs = collectConsoleOperationRefs(document);
+
+      initConsoleOperationControllers(refs);
+      initConsoleOperationDateControls(refs);
    }
-
-   initConsoleOperationPanels(workspaceEl);
-
-   const refs = collectConsoleOperationRefs(document);
-
-   initConsoleOperationControllers(refs);
-   initConsoleOperationDateControls(refs);
 }

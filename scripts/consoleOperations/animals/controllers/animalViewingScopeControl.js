@@ -1,5 +1,5 @@
 import { AnimalsApi } from '../../../api/animalsApi.js';
-import { getFieldValue } from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 
 function animalHasIndoorAndOutdoorViewing(scopes = []) {
@@ -32,8 +32,8 @@ export class AnimalViewingScopeControl {
       }
 
       async function refresh() {
-         const species = getFieldValue(speciesEl);
-         const exhibit = getFieldValue(exhibitEl);
+         const species = ControllerUtils.getFieldValue(speciesEl);
+         const exhibit = ControllerUtils.getFieldValue(exhibitEl);
 
          if (!species || !exhibit || !viewingScopeEl) {
             reset();

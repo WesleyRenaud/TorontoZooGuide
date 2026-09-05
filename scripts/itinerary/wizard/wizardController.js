@@ -19,11 +19,11 @@ import { WizardStepConfigs } from './wizardStepConfigs.js';
 import { WizardStepDraftSync } from './wizardStepDraftSync.js';
 
 async function loadDefaultSelectionStepConfigs() {
-   const { buildWizardSelectionStepConfigs } = await import(
+   const { WizardSelectionStepFactories } = await import(
       './wizardSelectionStepFactories.js'
    );
 
-   return buildWizardSelectionStepConfigs();
+   return WizardSelectionStepFactories.buildWizardSelectionStepConfigs();
 }
 
 function clearWizard(mountEl) {

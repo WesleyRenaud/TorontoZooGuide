@@ -1,10 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   resetFormFields,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -25,17 +21,17 @@ export class AddGuardiansTalkOccurrence {
       const formFieldEls = [locationEl, dateEl, timeEl];
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
          talkLocationFilterController?.clear?.();
       }
 
       function getFormValues() {
-         const time = getFieldValue(timeEl);
+         const time = ControllerUtils.getFieldValue(timeEl);
 
          return {
-            talk: getFieldValue(talkNameEl),
-            location: getFieldValue(locationEl),
-            date: getFieldValue(dateEl),
+            talk: ControllerUtils.getFieldValue(talkNameEl),
+            location: ControllerUtils.getFieldValue(locationEl),
+            date: ControllerUtils.getFieldValue(dateEl),
             times: time ? [time] : [],
          };
       }
@@ -63,7 +59,7 @@ export class AddGuardiansTalkOccurrence {
       }
 
       function hide() {
-         hideConsolePanel({
+         ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: Status.setStatus,

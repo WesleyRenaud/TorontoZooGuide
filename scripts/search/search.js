@@ -99,35 +99,37 @@ function createSearchRunner({
    };
 }
 
-export function initSearch({
-   inputEl,
-   getIncludeFlags,
-   getContext,
-   onFocusRow,
-   resultsEl = null,
-   allowEmptyQuery = false,
-   onError = logSearchError,
-} = {}) {
-   if (!inputEl || !resultsEl) {
-      return createNoopSearch();
-   }
-
-   const run = createSearchRunner({
+export class Search {
+   static initSearch({
       inputEl,
-      resultsEl,
       getIncludeFlags,
       getContext,
       onFocusRow,
-      allowEmptyQuery,
-      onError,
-   });
+      resultsEl = null,
+      allowEmptyQuery = false,
+      onError = logSearchError,
+   } = {}) {
+      if (!inputEl || !resultsEl) {
+         return createNoopSearch();
+      }
 
-   const onChange = debounce(run);
-   inputEl.addEventListener('input', onChange);
+      const run = createSearchRunner({
+         inputEl,
+         resultsEl,
+         getIncludeFlags,
+         getContext,
+         onFocusRow,
+         allowEmptyQuery,
+         onError,
+      });
 
-   function refresh() {
-      run();
+      const onChange = debounce(run);
+      inputEl.addEventListener('input', onChange);
+
+      function refresh() {
+         run();
+      }
+
+      return { refresh };
    }
-
-   return { refresh };
 }

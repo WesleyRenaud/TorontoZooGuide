@@ -1,11 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import {
-   getFieldValue,
-   hideConsolePanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
+import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
@@ -29,12 +24,12 @@ export class CreateEvent {
 
       function getFormValues() {
          return {
-            name: getFieldValue(nameEl),
-            location: getFieldValue(locationEl),
-            description: getFieldValue(descriptionEl),
-            link: getFieldValue(linkEl),
-            startDate: VisitDateRules.resolveOptionalStartDate(getFieldValue(startDateEl)),
-            endDate: getFieldValue(endDateEl),
+            name: ControllerUtils.getFieldValue(nameEl),
+            location: ControllerUtils.getFieldValue(locationEl),
+            description: ControllerUtils.getFieldValue(descriptionEl),
+            link: ControllerUtils.getFieldValue(linkEl),
+            startDate: VisitDateRules.resolveOptionalStartDate(ControllerUtils.getFieldValue(startDateEl)),
+            endDate: ControllerUtils.getFieldValue(endDateEl),
          };
       }
 
@@ -43,11 +38,11 @@ export class CreateEvent {
          if (!values.description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
          if (!values.link) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.link);
 
-         return validateOptionalDateRange(values.startDate, values.endDate);
+         return ControllerUtils.validateOptionalDateRange(values.startDate, values.endDate);
       }
 
       function resetForm() {
-         resetFormFields(formFieldEls);
+         ControllerUtils.resetFormFields(formFieldEls);
       }
 
       function show() {
@@ -57,7 +52,7 @@ export class CreateEvent {
       }
 
       function hide() {
-         hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
+         ControllerUtils.hideConsolePanel({ panelEl, statusEl, setStatus: Status.setStatus });
       }
 
       async function onSubmitClick() {

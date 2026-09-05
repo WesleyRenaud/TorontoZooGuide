@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test, beforeEach } from 'node:test';
 
-import { offerPastItineraryClearOrRecovery } from '../../scripts/itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
-import { PromptSession } from '../../scripts/itinerary/pastItinerary/promptSession.js';
+import { OfferPastItineraryClearOrRecovery } from '../../../../scripts/itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
+import { PromptSession } from '../../../../scripts/itinerary/pastItinerary/promptSession.js';
 
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
 const tomorrow = makeNoonDate(2026, 5, 16);
 
@@ -12,8 +12,8 @@ beforeEach(() => {
    PromptSession.resetPastItineraryPromptSessionForTests();
 });
 
-test('offerPastItineraryClearOrRecovery does nothing for empty itineraries', async () => {
-   const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+test('Test_OfferPastItineraryClearOrRecovery_TestEmpty_ExpectNoPrompt', async () => {
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '',
          animals: [],
@@ -30,11 +30,11 @@ test('offerPastItineraryClearOrRecovery does nothing for empty itineraries', asy
    assert.equal(pastDatePromptShown, false);
 });
 
-test('offerPastItineraryClearOrRecovery prompts when the saved visit date is in the past', async () => {
+test('Test_OfferPastItineraryClearOrRecovery_TestPastDate_ExpectPrompt', async () => {
    const calls = [];
    const mountEl = { replaceChildren() {} };
 
-   const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-10',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],
@@ -63,11 +63,11 @@ test('offerPastItineraryClearOrRecovery prompts when the saved visit date is in 
    assert.deepEqual(calls, ['prompt', 'recovery', 'recovered']);
 });
 
-test('offerPastItineraryClearOrRecovery clears when the visitor chooses clear', async () => {
+test('Test_OfferPastItineraryClearOrRecovery_TestChooseClear_ExpectCleared', async () => {
    const calls = [];
    const mountEl = { replaceChildren() {} };
 
-   const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-10',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],
@@ -90,8 +90,8 @@ test('offerPastItineraryClearOrRecovery clears when the visitor chooses clear', 
    assert.deepEqual(calls, ['clear', 'cleared']);
 });
 
-test('offerPastItineraryClearOrRecovery does nothing for current itineraries', async () => {
-   const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+test('Test_OfferPastItineraryClearOrRecovery_TestCurrent_ExpectNoPrompt', async () => {
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-20',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],

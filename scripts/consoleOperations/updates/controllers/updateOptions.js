@@ -20,53 +20,55 @@ function formatUpdateOptionLabel(update) {
    return `${update.title} (${update.type}, ${formatDateRange(update)})`;
 }
 
-export async function loadActiveUpdates() {
-   const result = await ConsoleOperationsApi.getActiveUpdateOptions();
-   return result?.updates ?? [];
-}
-
-export function populateUpdateDropdown(selectEl, updates = []) {
-   if (selectEl?.tagName !== 'SELECT') {
-      return;
+export class UpdateOptions {
+   static async loadActiveUpdates() {
+      const result = await ConsoleOperationsApi.getActiveUpdateOptions();
+      return result?.updates ?? [];
    }
 
-   const fragment = document.createDocumentFragment();
-   fragment.appendChild(createPlaceholderOption(APP_STRINGS.placeholders.update));
+   static populateUpdateDropdown(selectEl, updates = []) {
+      if (selectEl?.tagName !== 'SELECT') {
+         return;
+      }
 
-   updates.forEach((update) => {
-      const optionEl = document.createElement('option');
-      optionEl.value = JSON.stringify({
-         title: update.title,
-         startDate: update.start_date,
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(createPlaceholderOption(APP_STRINGS.placeholders.update));
+
+      updates.forEach((update) => {
+         const optionEl = document.createElement('option');
+         optionEl.value = JSON.stringify({
+            title: update.title,
+            startDate: update.start_date,
+         });
+         optionEl.textContent = formatUpdateOptionLabel(update);
+         optionEl.dataset.title = update.title || '';
+         optionEl.dataset.startDate = update.start_date || '';
+         optionEl.dataset.description = update.description || '';
+         optionEl.dataset.type = update.type || '';
+         optionEl.dataset.endDate = update.end_date || '';
+         fragment.appendChild(optionEl);
       });
-      optionEl.textContent = formatUpdateOptionLabel(update);
-      optionEl.dataset.title = update.title || '';
-      optionEl.dataset.startDate = update.start_date || '';
-      optionEl.dataset.description = update.description || '';
-      optionEl.dataset.type = update.type || '';
-      optionEl.dataset.endDate = update.end_date || '';
-      fragment.appendChild(optionEl);
-   });
 
-   selectEl.replaceChildren(fragment);
-}
+      selectEl.replaceChildren(fragment);
+   }
 
-export function getSelectedUpdateIdentity(selectEl) {
-   const selectedOption = selectEl?.selectedOptions?.[0] ?? null;
+   static getSelectedUpdateIdentity(selectEl) {
+      const selectedOption = selectEl?.selectedOptions?.[0] ?? null;
 
-   return {
-      title: selectedOption?.dataset?.title || '',
-      startDate: selectedOption?.dataset?.startDate || '',
-   };
-}
+      return {
+         title: selectedOption?.dataset?.title || '',
+         startDate: selectedOption?.dataset?.startDate || '',
+      };
+   }
 
-export function getSelectedUpdateData(selectEl) {
-   const selectedOption = selectEl?.selectedOptions?.[0] ?? null;
+   static getSelectedUpdateData(selectEl) {
+      const selectedOption = selectEl?.selectedOptions?.[0] ?? null;
 
-   return {
-      ...getSelectedUpdateIdentity(selectEl),
-      description: selectedOption?.dataset?.description || '',
-      type: selectedOption?.dataset?.type || '',
-      endDate: selectedOption?.dataset?.endDate || '',
-   };
+      return {
+         ...UpdateOptions.getSelectedUpdateIdentity(selectEl),
+         description: selectedOption?.dataset?.description || '',
+         type: selectedOption?.dataset?.type || '',
+         endDate: selectedOption?.dataset?.endDate || '',
+      };
+   }
 }
