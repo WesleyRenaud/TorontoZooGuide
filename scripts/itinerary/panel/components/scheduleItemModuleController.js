@@ -9,7 +9,7 @@ import { ScheduleItemSearch } from '../scheduleItemSearch.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
-import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
+import { ShowScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createScheduleItemModuleController({
@@ -42,7 +42,7 @@ export function createScheduleItemModuleController({
       searchItineraryItems: searchItems = SearchApi.searchItineraryItems,
       getSearchContext = ItinerarySearchContext.getItineraryDateSearchContext,
       scheduleSelectedItem = scheduleSelectedItineraryItem,
-      showNotice = showScheduleItemNotice,
+      showNotice = ShowScheduleItemNotice.showScheduleItemNotice,
       renderSearchResults = ScheduleItemResults.renderScheduleItemSearchResults,
       itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,
       requiresNotOnItineraryConfirmation = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation,

@@ -1,5 +1,5 @@
 import { APP_STRINGS } from '../../strings.js';
-import { showSaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
+import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
@@ -11,21 +11,21 @@ export class ScheduleTimeConflictResolution {
 
       return {
          showProceedWithoutSelection({ onConfirm } = {}) {
-            showSaveIssuesProceedConfirmation({
+            SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
                title: confirmation.proceedWithoutConflictSelectionTitle,
                message: confirmation.proceedWithoutConflictSelectionMessage,
                onConfirm: onConfirm ?? (() => {}),
             });
          },
          showProceedWithUnresolved({ onConfirm } = {}) {
-            showSaveIssuesProceedConfirmation({
+            SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
                title: confirmation.proceedWithUnresolvedConflictsTitle,
                message: confirmation.proceedWithUnresolvedConflictsMessage,
                onConfirm,
             });
          },
          showProceedWithAdditional({ onConfirm } = {}) {
-            showSaveIssuesProceedConfirmation({
+            SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
                title: confirmation.proceedWithAdditionalSelectableActivitiesTitle,
                message: confirmation.proceedWithAdditionalSelectableActivitiesMessage,
                onConfirm,

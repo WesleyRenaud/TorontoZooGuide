@@ -1,17 +1,14 @@
-import {
-   attractionWithoutAnimalMessage,
-   getAttractionsFromWithoutAnimalIssues,
-} from './attractionWithoutAnimalConfirmation.js';
+import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
 import { el } from './dom.js';
-import { getFixedTimeItemsFromLongWaitIssues } from './fixedTimeItemLongWaitConfirmation.js';
+import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { Format } from './format.js';
-import { getPrimaryGuardiansTalkFromUnscheduleIssues } from './guardiansTalkUnscheduleConfirmation.js';
-import { getGuardiansTalksFromWithoutAnimalIssues } from './guardiansTalkWithoutAnimalConfirmation.js';
+import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
+import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { APP_STRINGS } from '../../strings.js';
-import { getPrimaryWildEncounterFromUnscheduleIssues } from './wildEncounterUnscheduleConfirmation.js';
+import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
 function itineraryBuildWarningIssueTypes() {
    const types = ItineraryErrorTypes.getItineraryErrorTypes();
@@ -65,7 +62,7 @@ function asSections(section) {
 }
 
 function buildGuardiansTalkUnscheduleSection(issues, strings) {
-   const talk = getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
+   const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
    const type = ItineraryErrorTypes.getItineraryErrorTypes()?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 
    if (!talk?.talkName || !type) {
@@ -85,7 +82,7 @@ function buildGuardiansTalkUnscheduleSection(issues, strings) {
 }
 
 function buildWildEncounterUnscheduleSection(issues, strings) {
-   const encounter = getPrimaryWildEncounterFromUnscheduleIssues(issues);
+   const encounter = WildEncounterUnscheduleConfirmation.getPrimaryWildEncounterFromUnscheduleIssues(issues);
    const type = ItineraryErrorTypes.getItineraryErrorTypes()?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 
    if (!encounter?.encounterName || !type) {
@@ -114,7 +111,7 @@ function buildGuardiansTalkWithoutAnimalSections(issues, strings) {
       return [];
    }
 
-   return getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
+   return GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
       const talkName = Format.normalizeText(talk.talkName);
       const message = talk.talkTime
          ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
@@ -135,10 +132,10 @@ function buildAttractionWithoutAnimalSections(issues, strings) {
       return [];
    }
 
-   return getAttractionsFromWithoutAnimalIssues(issues).map((attraction) => ({
+   return AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues).map((attraction) => ({
       type,
       title: strings.buildWarningWithoutAnimalTitle,
-      message: attractionWithoutAnimalMessage(attraction, { strings }),
+      message: AttractionWithoutAnimalConfirmation.attractionWithoutAnimalMessage(attraction, { strings }),
    }));
 }
 
@@ -149,7 +146,7 @@ function buildFixedTimeItemLongWaitSections(issues, strings) {
       return [];
    }
 
-   return getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
+   return FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
       const itemName = Format.normalizeText(item.itemName);
       const message = item.itemTime
          ? strings.buildWarningLongWaitMessage(

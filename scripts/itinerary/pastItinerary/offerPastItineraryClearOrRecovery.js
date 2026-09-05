@@ -2,7 +2,7 @@ import { ClearPastItinerary } from './clearPastItinerary.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { PromptSession } from './promptSession.js';
 import { RecoverPastItineraryDate } from './recoverPastItineraryDate.js';
-import { showPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
+import { ShowPastItineraryChoicePrompt } from './showPastItineraryChoicePrompt.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
@@ -22,7 +22,7 @@ export class OfferPastItineraryClearOrRecovery {
          hasContent = ItineraryShape.hasSavedItineraryContent,
          resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
          isVisitDateBeforeFloor = VisitDateRules.isVisitDateBeforeEarliestFloor,
-         showChoicePrompt = showPastItineraryChoicePrompt,
+         showChoicePrompt = ShowPastItineraryChoicePrompt.showPastItineraryChoicePrompt,
          clearItinerary = ClearPastItinerary.clearPastItinerary,
          recoverItineraryDate = RecoverPastItineraryDate.recoverPastItineraryDate,
          isPromptOpen = PromptSession.isPastItineraryPromptOpen,

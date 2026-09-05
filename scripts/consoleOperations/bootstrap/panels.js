@@ -1,18 +1,18 @@
-import { createOffDisplayPanel } from '../animals/panels/offDisplayPanel.js';
-import { createOnDisplayPanel } from '../animals/panels/onDisplayPanel.js';
-import { createRemoveViewingAlertPanel } from '../animals/panels/removeViewingAlertPanel.js';
-import { createRemoveVisibilitySchedulePanel } from '../animals/panels/removeVisibilitySchedulePanel.js';
-import { createViewingAlertPanel } from '../animals/panels/viewingAlertPanel.js';
-import { createVisibilitySchedulePanel } from '../animals/panels/visibilitySchedulePanel.js';
-import { createAttractionClosedPanel } from '../attractions/panels/attractionClosedPanel.js';
-import { createAttractionClosureOverridePanel } from '../attractions/panels/attractionClosureOverridePanel.js';
-import { createAttractionHoursSchedulePanel } from '../attractions/panels/attractionHoursSchedulePanel.js';
-import { createAttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
+import { OffDisplayPanel } from '../animals/panels/offDisplayPanel.js';
+import { OnDisplayPanel } from '../animals/panels/onDisplayPanel.js';
+import { RemoveViewingAlertPanel } from '../animals/panels/removeViewingAlertPanel.js';
+import { RemoveVisibilitySchedulePanel } from '../animals/panels/removeVisibilitySchedulePanel.js';
+import { ViewingAlertPanel } from '../animals/panels/viewingAlertPanel.js';
+import { VisibilitySchedulePanel } from '../animals/panels/visibilitySchedulePanel.js';
+import { AttractionClosedPanel } from '../attractions/panels/attractionClosedPanel.js';
+import { AttractionClosureOverridePanel } from '../attractions/panels/attractionClosureOverridePanel.js';
+import { AttractionHoursSchedulePanel } from '../attractions/panels/attractionHoursSchedulePanel.js';
+import { AttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
 import { DrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
 import { DrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
 import { CreateEventPanel } from '../events/panels/createEventPanel.js';
-import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
-import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
+import { ExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
+import { ExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { GiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
 import { GiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
 import { GiftShopOpeningSchedulePanel } from '../giftShops/panels/giftShopOpeningSchedulePanel.js';
@@ -39,16 +39,16 @@ import { WildEncounterSchedulePanel } from '../wildEncounters/panels/wildEncount
 
 const PANEL_CREATORS = {
    animals: [
-      createOffDisplayPanel,
-      createOnDisplayPanel,
-      createVisibilitySchedulePanel,
-      createRemoveVisibilitySchedulePanel,
-      createViewingAlertPanel,
-      createRemoveViewingAlertPanel,
+      OffDisplayPanel.createOffDisplayPanel,
+      OnDisplayPanel.createOnDisplayPanel,
+      VisibilitySchedulePanel.createVisibilitySchedulePanel,
+      RemoveVisibilitySchedulePanel.createRemoveVisibilitySchedulePanel,
+      ViewingAlertPanel.createViewingAlertPanel,
+      RemoveViewingAlertPanel.createRemoveViewingAlertPanel,
    ],
    exhibits: [
-      createExhibitClosedPanel,
-      createExhibitOpenPanel,
+      ExhibitClosedPanel.createExhibitClosedPanel,
+      ExhibitOpenPanel.createExhibitOpenPanel,
    ],
    restaurants: [
       RestaurantClosedPanel.createRestaurantClosedPanel,
@@ -67,10 +67,10 @@ const PANEL_CREATORS = {
       GiftShopOpeningSchedulePanel.createGiftShopOpeningSchedulePanel,
    ],
    attractions: [
-      createAttractionClosedPanel,
-      createAttractionClosureOverridePanel,
-      createAttractionOpeningSchedulePanel,
-      createAttractionHoursSchedulePanel,
+      AttractionClosedPanel.createAttractionClosedPanel,
+      AttractionClosureOverridePanel.createAttractionClosureOverridePanel,
+      AttractionOpeningSchedulePanel.createAttractionOpeningSchedulePanel,
+      AttractionHoursSchedulePanel.createAttractionHoursSchedulePanel,
    ],
    transportation: [
       TransportationStationClosedPanel.createTransportationStationClosedPanel,
@@ -121,11 +121,13 @@ function createConsoleOperationPanelsFragment(doc = document) {
    return fragment;
 }
 
-export function mountConsoleOperationPanels(workspaceEl) {
-   if (!workspaceEl) {
-      return;
-   }
+export class Panels {
+   static mountConsoleOperationPanels(workspaceEl) {
+      if (!workspaceEl) {
+         return;
+      }
 
-   const doc = workspaceEl.ownerDocument || document;
-   workspaceEl.replaceChildren(createConsoleOperationPanelsFragment(doc));
+      const doc = workspaceEl.ownerDocument || document;
+      workspaceEl.replaceChildren(createConsoleOperationPanelsFragment(doc));
+   }
 }

@@ -7,7 +7,7 @@ import {
    dispatchItineraryUpdated,
    getItinerary,
 } from '../itineraryService.js';
-import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
+import { RemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
 
 async function notifyItineraryUpdated({
    result,
@@ -54,7 +54,7 @@ export function buildItineraryPanelScheduleHandlers(
       removeItem = ItineraryApi.removeItemFromItineraryRequest,
       removeAnimalDraft = DraftStorage.removeAnimalFromItineraryAnimalDraft,
       requiresRemoveConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation,
-      showRemoveConfirmation = showRemoveItineraryItemConfirmation,
+      showRemoveConfirmation = RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       notifyUpdated = notifyItineraryUpdated,
    } = deps;

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showRemoveItineraryItemConfirmation } from '../../scripts/itinerary/panel/removeItineraryItemConfirmation.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
+import { RemoveItineraryItemConfirmation } from '../../../../scripts/itinerary/panel/removeItineraryItemConfirmation.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
 test.describe('removeItineraryItemConfirmation', () => {
    installDomTestHooks({
@@ -14,10 +14,10 @@ test.describe('removeItineraryItemConfirmation', () => {
       },
    });
 
-   test('showRemoveItineraryItemConfirmation uses confirm popup without do-not-show-again', () => {
+   test('Test_ShowRemoveItineraryItemConfirmation_TestDefault_ExpectConfirmPopup', () => {
       const confirmCalls = [];
 
-      showRemoveItineraryItemConfirmation({
+      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
          onConfirm: () => {
             confirmCalls.push('confirmed');
          },
@@ -40,10 +40,10 @@ test.describe('removeItineraryItemConfirmation', () => {
       assert.deepEqual(confirmCalls, ['confirmed']);
    });
 
-   test('showRemoveItineraryItemConfirmation uses transit message for transit transportation', () => {
+   test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage', () => {
       const strings = APP_STRINGS.itinerary.confirmation;
 
-      showRemoveItineraryItemConfirmation({
+      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
          itemType: ScheduleItemKind.TRANSPORTATION.itemType,
          key: 'Zoomobile||0',
       });
@@ -56,10 +56,10 @@ test.describe('removeItineraryItemConfirmation', () => {
       );
    });
 
-   test('showRemoveItineraryItemConfirmation keeps default message for attraction transportation', () => {
+   test('Test_ShowRemoveItineraryItemConfirmation_TestAttractionTransport_ExpectDefaultMessage', () => {
       const strings = APP_STRINGS.itinerary.confirmation;
 
-      showRemoveItineraryItemConfirmation({
+      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
          itemType: ScheduleItemKind.TRANSPORTATION.itemType,
          key: 'Zoomobile||1',
       });

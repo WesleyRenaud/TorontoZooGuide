@@ -1,9 +1,9 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
-import { showAttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
+import { AttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
-import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
-import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
-import { showGuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
+import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
+import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
+import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import {
    buildConfirmedOptionsFromBuildWarnings,
    hasMultipleItineraryBuildWarnings,
@@ -13,8 +13,8 @@ import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { dispatchScheduleItineraryItemResult } from '../itineraryService.js';
 import { PersistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
-import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
-import { showWildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
+import { ScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
+import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
 export function createScheduleItemSaveFailedResult() {
    return {
@@ -86,7 +86,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showScheduleItemNotOnItineraryConfirmation,
+         showConfirmation: ScheduleItemNotOnItineraryConfirmation.showScheduleItemNotOnItineraryConfirmation,
          initialResult,
          request,
          confirmationOptions,
@@ -106,7 +106,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showAttractionOutsideOperatingHoursConfirmation,
+         showConfirmation: AttractionOutsideOperatingHoursConfirmation.showAttractionOutsideOperatingHoursConfirmation,
          initialResult,
          request,
          confirmationOptions,
@@ -135,7 +135,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showGuardiansTalkUnscheduleConfirmation,
+         showConfirmation: GuardiansTalkUnscheduleConfirmation.showGuardiansTalkUnscheduleConfirmation,
          initialResult,
          request,
          confirmationOptions,
@@ -151,7 +151,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showGuardiansTalkWithoutAnimalConfirmation,
+         showConfirmation: GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation,
          initialResult,
          request,
          confirmationOptions,
@@ -167,7 +167,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showFixedTimeItemLongWaitConfirmation,
+         showConfirmation: FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
          initialResult,
          request,
          confirmationOptions,
@@ -183,7 +183,7 @@ export async function scheduleItineraryItemWithConfirmation(
 
    if (ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
       return requestScheduleItemConfirmation({
-         showConfirmation: showWildEncounterUnscheduleConfirmation,
+         showConfirmation: WildEncounterUnscheduleConfirmation.showWildEncounterUnscheduleConfirmation,
          initialResult,
          request,
          confirmationOptions,

@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { showShortVisitConfirmation } from '../../scripts/itinerary/panel/shortVisitConfirmation.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
+import { ShortVisitConfirmation } from '../../../../scripts/itinerary/panel/shortVisitConfirmation.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
 test.describe('shortVisitConfirmation', () => {
    installDomTestHooks({
@@ -13,11 +13,11 @@ test.describe('shortVisitConfirmation', () => {
       },
    });
 
-   test('showShortVisitConfirmation uses do-not-show-again confirm popup on itinerary panel', () => {
+   test('Test_ShowShortVisitConfirmation_TestDoNotShowAgain_ExpectConfirmPopup', () => {
       const confirmCalls = [];
       const cancelCalls = [];
 
-      showShortVisitConfirmation({
+      ShortVisitConfirmation.showShortVisitConfirmation({
          onConfirm: () => {
             confirmCalls.push('confirmed');
          },

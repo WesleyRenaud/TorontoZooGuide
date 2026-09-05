@@ -1,34 +1,29 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   getGuardiansTalksFromWithoutAnimalIssues,
-   getPrimaryGuardiansTalkFromWithoutAnimalIssues,
-   hasGuardiansTalkWithoutAnimalIssue,
-   showGuardiansTalkWithoutAnimalConfirmation,
-} from '../../scripts/itinerary/panel/guardiansTalkWithoutAnimalConfirmation.js';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { GuardiansTalkWithoutAnimalConfirmation } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalConfirmation.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('hasGuardiansTalkWithoutAnimalIssue detects matching issue type', () => {
+test('Test_HasGuardiansTalkWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
    assert.equal(
-      hasGuardiansTalkWithoutAnimalIssue([
+      GuardiansTalkWithoutAnimalConfirmation.hasGuardiansTalkWithoutAnimalIssue([
          { type: 'guardiansTalkWithoutAnimal' },
       ]),
       true
    );
    assert.equal(
-      hasGuardiansTalkWithoutAnimalIssue([
+      GuardiansTalkWithoutAnimalConfirmation.hasGuardiansTalkWithoutAnimalIssue([
          { type: 'fixedTimeItemLongWait' },
       ]),
       false
    );
 });
 
-test('getPrimaryGuardiansTalkFromWithoutAnimalIssues returns talk without time', () => {
+test('Test_GetPrimaryGuardiansTalkFromWithoutAnimalIssues_TestTalk_ExpectNoTime', () => {
    assert.deepEqual(
-      getPrimaryGuardiansTalkFromWithoutAnimalIssues([
+      GuardiansTalkWithoutAnimalConfirmation.getPrimaryGuardiansTalkFromWithoutAnimalIssues([
          {
             type: 'guardiansTalkWithoutAnimal',
             items: [{ name: 'Komodo Dragon' }],
@@ -38,9 +33,9 @@ test('getPrimaryGuardiansTalkFromWithoutAnimalIssues returns talk without time',
    );
 });
 
-test('getGuardiansTalksFromWithoutAnimalIssues returns every named talk', () => {
+test('Test_GetGuardiansTalksFromWithoutAnimalIssues_TestNamedTalks_ExpectAll', () => {
    assert.deepEqual(
-      getGuardiansTalksFromWithoutAnimalIssues([{
+      GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues([{
          type: 'guardiansTalkWithoutAnimal',
          items: [
             {
@@ -66,10 +61,10 @@ test('getGuardiansTalksFromWithoutAnimalIssues returns every named talk', () => 
    );
 });
 
-test('showGuardiansTalkWithoutAnimalConfirmation uses message without time', () => {
+test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
    let confirmed = false;
 
-   showGuardiansTalkWithoutAnimalConfirmation({
+   GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{
          type: 'guardiansTalkWithoutAnimal',
          items: [{ name: 'Komodo Dragon' }],
@@ -91,8 +86,8 @@ test('showGuardiansTalkWithoutAnimalConfirmation uses message without time', () 
    assert.equal(confirmed, true);
 });
 
-test('showGuardiansTalkWithoutAnimalConfirmation no-ops for multiple talks', () => {
-   showGuardiansTalkWithoutAnimalConfirmation({
+test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', () => {
+   GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{
          type: 'guardiansTalkWithoutAnimal',
          items: [
@@ -108,8 +103,8 @@ test('showGuardiansTalkWithoutAnimalConfirmation no-ops for multiple talks', () 
    assert.equal(document.querySelector('.tzg-popup'), null);
 });
 
-test('showGuardiansTalkWithoutAnimalConfirmation no-ops without talk name', () => {
-   showGuardiansTalkWithoutAnimalConfirmation({
+test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
+   GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{ type: 'guardiansTalkWithoutAnimal', items: [] }],
       onConfirm: () => {
          throw new Error('should not confirm');
