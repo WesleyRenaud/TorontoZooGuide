@@ -1,45 +1,37 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createWildEncounterScheduleRowsField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class WildEncounterSchedulePanel {
    static createWildEncounterSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'wildEncounterSchedulePanel',
-         title: APP_STRINGS.panelTitles.wildEncounterSchedule,
+         title: Strings.panelTitles.wildEncounterSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.wildEncounter,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.wildEncounter,
                inputId: 'wildEncounterScheduleName',
-               emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
+               emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'wildEncounterScheduleStartDate',
                endDateId: 'wildEncounterScheduleEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
+               endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
-            createWildEncounterScheduleRowsField({
+            Fragments.createWildEncounterScheduleRowsField({
                rowsId: 'wildEncounterScheduleScheduleRows',
                addRowButtonId: 'wildEncounterScheduleAddScheduleRow',
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.scheduleMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.scheduleMessage,
                inputId: 'wildEncounterScheduleMessage',
-               placeholder: APP_STRINGS.textareas.optionalScheduleMessage(
-                  APP_STRINGS.entityLabels.wildEncounter
+               placeholder: Strings.textareas.optionalScheduleMessage(
+                  Strings.entityLabels.wildEncounter
                ),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitWildEncounterSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'wildEncounterScheduleStatus',
             }),
          ],

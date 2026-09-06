@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { ScheduleTimeConflictConfirmation, WILD_ENCOUNTER_TIME_CONFLICT } from '../../../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
 import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
@@ -55,11 +55,11 @@ test.describe('scheduleTimeConflictConfirmation', () => {
       assert.ok(popup);
       assert.equal(
          title?.textContent,
-         APP_STRINGS.itinerary.confirmation.saveIssuesTitle
+         Strings.itinerary.confirmation.saveIssuesTitle
       );
       assert.equal(
          confirmButton?.textContent,
-         APP_STRINGS.itinerary.confirmation.saveIssuesButton
+         Strings.itinerary.confirmation.saveIssuesButton
       );
       assert.ok(popup.querySelector('.itin-save-issues'));
    });
@@ -86,7 +86,7 @@ test.describe('scheduleTimeConflictConfirmation', () => {
 
       assert.equal(
          proceedPopup?.querySelector('.itin-top-title')?.textContent,
-         APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle
+         Strings.itinerary.confirmation.closeSaveIssuesTitle
       );
 
       proceedButton?.click();

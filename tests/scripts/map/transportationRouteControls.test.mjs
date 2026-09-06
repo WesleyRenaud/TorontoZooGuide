@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { TransportationRouteControls } from '../../../scripts/map/transportationRouteControls.js';
-import { APP_STRINGS } from '../../../scripts/strings.js';
+import { Strings } from '../../../scripts/strings.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
@@ -28,7 +28,7 @@ test('Test_RenderTransportationRouteControls_TestRoutes_ExpectRadios', () => {
    assert.equal(title.className, 'transportation-route-title');
    assert.equal(
       title.textContent,
-      APP_STRINGS.map.transportationRoute.title('Zoomobile'),
+      Strings.map.transportationRoute.title('Zoomobile'),
    );
    assert.equal(options.className, 'transportation-route-options');
    assert.equal(options.children.length, 4);
@@ -46,9 +46,9 @@ test('Test_RenderTransportationRouteControls_TestRoutes_ExpectRadios', () => {
    ]);
    assert.equal(options.children[0].children[0].checked, true);
    assert.deepEqual(labels, [
-      APP_STRINGS.map.transportationRoute.none,
-      APP_STRINGS.map.transportationRoute.current,
-      APP_STRINGS.map.transportationRoute.route('summer'),
-      APP_STRINGS.map.transportationRoute.route('winter'),
+      Strings.map.transportationRoute.none,
+      Strings.map.transportationRoute.current,
+      Strings.map.transportationRoute.route('summer'),
+      Strings.map.transportationRoute.route('winter'),
    ]);
 });

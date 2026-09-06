@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 const ZOO_MAP_SVG_URL = '../images/map/zoo-map.svg';
 
@@ -25,7 +25,7 @@ async function fetchZooMapSvgText() {
       cachedSvgTextPromise = fetch(ZOO_MAP_SVG_URL)
          .then((response) => {
             if (!response.ok) {
-               throw new Error(APP_STRINGS.map.loadSvgFailed(response.status));
+               throw new Error(Strings.map.loadSvgFailed(response.status));
             }
 
             return response.text();

@@ -10,7 +10,7 @@ import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { ShowScheduleItemNotice } from '../showScheduleItemNotice.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class ScheduleItemModuleController {
    static createScheduleItemModuleController({
@@ -48,7 +48,7 @@ export class ScheduleItemModuleController {
          itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,
          requiresNotOnItineraryConfirmation = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation,
          resolveErrorMessage = ItineraryErrorTypes.resolveItineraryErrorMessage,
-         genericErrorMessage = APP_STRINGS.itinerary.errors.generic,
+         genericErrorMessage = Strings.itinerary.errors.generic,
       } = deps;
 
       let selectedRowId = '';

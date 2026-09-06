@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { UpdateOptions } from './updateOptions.js';
 
 export class EndUpdate {
@@ -33,7 +33,7 @@ export class EndUpdate {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.updates,
+            errorMessage: Strings.loadErrors.updates,
          });
       }
 
@@ -42,7 +42,7 @@ export class EndUpdate {
       }
 
       function validateForm({ title, startDate }) {
-         if (!title || !startDate) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.update);
+         if (!title || !startDate) return Strings.validation.entityRequired(Strings.labels.update);
          return null;
       }
 
@@ -64,7 +64,7 @@ export class EndUpdate {
             const result = await ConsoleOperationsApi.endUpdate(values);
 
             if (result.success) {
-               Status.setStatus(statusEl, APP_STRINGS.status.updateEnded, 'is-success');
+               Status.setStatus(statusEl, Strings.status.updateEnded, 'is-success');
                resetForm();
             }
             else {
@@ -72,7 +72,7 @@ export class EndUpdate {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

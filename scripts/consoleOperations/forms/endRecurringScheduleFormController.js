@@ -1,7 +1,7 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { Status } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class EndRecurringScheduleFormController {
    static createEndRecurringScheduleFormController({
@@ -16,9 +16,9 @@ export class EndRecurringScheduleFormController {
       getSelectionValues,
       validateSelection = null,
       prepareForm = null,
-      loadErrorMessage = APP_STRINGS.loadErrors.options,
+      loadErrorMessage = Strings.loadErrors.options,
       submitEndSchedule,
-      successMessage = () => APP_STRINGS.status.scheduleWasEnded,
+      successMessage = () => Strings.status.scheduleWasEnded,
    } = {}) {
       const formFieldEls = [endDateEl];
 
@@ -101,7 +101,7 @@ export class EndRecurringScheduleFormController {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

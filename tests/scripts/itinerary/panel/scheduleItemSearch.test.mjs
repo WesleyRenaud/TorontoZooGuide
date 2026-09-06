@@ -5,7 +5,7 @@ import { ScheduleItemSearch } from '../../../../scripts/itinerary/panel/schedule
 import { ScheduleItemTypes } from '../../../../scripts/itinerary/panel/scheduleItemTypes.js';
 import { ItineraryEventTypes } from '../../../../scripts/itinerary/itineraryEventTypes.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 
 test('Test_BuildScheduleItemSearchPayload_TestAnimalModule_ExpectAnimalsOnly', () => {
    assert.deepEqual(
@@ -106,19 +106,19 @@ test('Test_ScheduleItemTypes_TestTypeDropdownOrder_ExpectPlaceholderFirst', () =
       { value: '', label: 'Choose what to schedule', selected: true },
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
-      { value: 'animals', label: APP_STRINGS.entityLabels.animal },
-      { value: 'attractions', label: APP_STRINGS.entityLabels.attraction },
+      { value: 'animals', label: Strings.entityLabels.animal },
+      { value: 'attractions', label: Strings.entityLabels.attraction },
       {
          value: 'transportations',
-         label: APP_STRINGS.entityLabels.transportation,
+         label: Strings.entityLabels.transportation,
       },
       {
          value: 'guardians_talks',
-         label: APP_STRINGS.entityLabels.guardiansTalk,
+         label: Strings.entityLabels.guardiansTalk,
       },
       {
          value: 'wild_encounters',
-         label: APP_STRINGS.entityLabels.wildEncounter,
+         label: Strings.entityLabels.wildEncounter,
       },
    ]);
 });

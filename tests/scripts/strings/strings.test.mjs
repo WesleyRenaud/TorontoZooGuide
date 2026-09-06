@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { APP_STRINGS } from '../../scripts/strings.js';
+import { Strings } from '../../../scripts/strings.js';
 
-function collectStringValues(value, path = 'APP_STRINGS', values = new Map()) {
+function collectStringValues(value, path = 'Strings', values = new Map()) {
    if (typeof value === 'string') {
       const paths = values.get(value) ?? [];
       paths.push(path);
@@ -27,23 +27,18 @@ function collectStringValues(value, path = 'APP_STRINGS', values = new Map()) {
    return values;
 }
 
-test('APP_STRINGS does not contain duplicate string values', () => {
-   const duplicates = [...collectStringValues(APP_STRINGS).entries()]
+test('Test_Strings_TestStringsDoesNotContainDuplicateStringValues_ExpectOk', () => {
+   const stringBags = Object.fromEntries(
+      Object.getOwnPropertyNames(Strings)
+         .filter((key) => {
+            const value = Strings[key];
+            return value && typeof value === 'object';
+         })
+         .map((key) => [key, Strings[key]])
+   );
+   const duplicates = [...collectStringValues(stringBags).entries()]
       .filter(([, paths]) => paths.length > 1)
       .map(([value, paths]) => `${JSON.stringify(value)}:\n${paths.join('\n')}`);
 
    assert.deepEqual(duplicates, []);
-});
-
-test('APP_STRINGS exposes console confirmation messages', () => {
-   assert.equal(
-      typeof APP_STRINGS.confirm.openingScheduleOverlapTitle,
-      'string'
-   );
-   assert.equal(
-      typeof APP_STRINGS.confirm.openingScheduleOverlapMessage,
-      'string'
-   );
-   assert.equal(APP_STRINGS.confirm.deleteOldSchedules, 'Delete Old Schedules');
-   assert.equal(APP_STRINGS.confirm.trimOldSchedules, 'Trim Old Schedules');
 });

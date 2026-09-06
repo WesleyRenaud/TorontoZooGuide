@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class ExhibitClosed {
    static createExhibitClosedController({
@@ -20,9 +20,9 @@ export class ExhibitClosed {
             endDate: endDate || null,
             message,
          }),
-         entityLabel: APP_STRINGS.entityLabels.exhibit,
-         optionsLabel: APP_STRINGS.entityLabels.exhibits,
-         successMessage: result => APP_STRINGS.status.closed(result.exhibit),
+         entityLabel: Strings.entityLabels.exhibit,
+         optionsLabel: Strings.entityLabels.exhibits,
+         successMessage: result => Strings.status.closed(result.exhibit),
       });
    }
 }

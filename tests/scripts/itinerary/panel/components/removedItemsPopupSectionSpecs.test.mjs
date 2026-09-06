@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { RemovedItemsPopupSectionSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 
 const removedAnimal = {
    species: 'African Lion',
@@ -49,13 +49,13 @@ test('Test_GetUnscheduledSectionSpecs_TestEmitsOnlyPopulatedUnscheduledGroups_Ex
       RemovedItemsPopupSectionSpecs.getUnscheduledSectionSpecs({
          animals: [removedAnimal],
       }).map((section) => section.title),
-      [APP_STRINGS.itinerary.dayPlanner.unscheduledTitle]
+      [Strings.itinerary.dayPlanner.unscheduledTitle]
    );
    assert.deepEqual(
       RemovedItemsPopupSectionSpecs.getUnscheduledSectionSpecs({
          attractions: [removedAttraction],
       }).map((section) => section.title),
-      [APP_STRINGS.map.filter.attractions]
+      [Strings.map.filter.attractions]
    );
 });
 
@@ -68,10 +68,10 @@ test('Test_GetRemovedItemsPopupSectionSpecs_TestIncludesKeepOverridesForRemovedR
    });
 
    const removedAnimalSection = sections.find(
-      section => section.title === APP_STRINGS.itinerary.removedItems.animalsRemovedTitle
+      section => section.title === Strings.itinerary.removedItems.animalsRemovedTitle
    );
    const removedAttractionSection = sections.find(
-      section => section.title === APP_STRINGS.map.filter.attractions
+      section => section.title === Strings.map.filter.attractions
          && section.keepOverrideKey === 'attraction'
    );
 

@@ -1,9 +1,9 @@
 import { Dom } from '../dom.js';
 import { DraftStorage } from '../../draftStorage.js';
 import { Format } from '../format.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { actions, selectors } = APP_STRINGS.itinerary;
+const { actions, selectors } = Strings.itinerary;
 
 export class DateCard {
    static makeDateCard(itin = {}) {

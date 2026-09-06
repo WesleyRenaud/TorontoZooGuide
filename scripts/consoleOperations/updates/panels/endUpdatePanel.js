@@ -1,33 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class EndUpdatePanel {
    static createEndUpdatePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'endUpdatePanel',
-         title: APP_STRINGS.panelTitles.endUpdate,
+         title: Strings.panelTitles.endUpdate,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.update,
+            Fragments.createSelectField({
+               label: Strings.labels.update,
                inputId: 'endUpdateKey',
-               emptyOptionLabel: APP_STRINGS.placeholders.update,
+               emptyOptionLabel: Strings.placeholders.update,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.endDate,
+            Fragments.createDateField({
+               label: Strings.labels.endDate,
                inputId: 'endUpdateEndDate',
-               placeholder: APP_STRINGS.placeholders.endDate,
-               helpText: APP_STRINGS.help.endUpdateToday,
+               placeholder: Strings.placeholders.endDate,
+               helpText: Strings.help.endUpdateToday,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitEndUpdate',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'endUpdateStatus',
             }),
          ],

@@ -2,13 +2,13 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { StoredSelection } from '../../itinerary/selectors/base/storedSelection.js';
 import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class WildEncounters {
    static key = 'wildEncounter';
 
    static createCard(w, index) {
-      const name = w.name || APP_STRINGS.entityLabels.wildEncounter;
+      const name = w.name || Strings.entityLabels.wildEncounter;
       const normalizedName = AssetKeyNormalizer.normalize(name);
       const link = StoredSelection.normalizeStoredLink(w.link);
       const times = MapOccurrenceTimesFormatter.format(w);
@@ -30,7 +30,7 @@ export class WildEncounters {
          },
          details: [
             w.meeting_spot || '',
-            times ? APP_STRINGS.tooltips.times(times) : '',
+            times ? Strings.tooltips.times(times) : '',
          ],
       });
    }

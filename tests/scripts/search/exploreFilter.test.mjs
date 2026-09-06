@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ExploreFilter } from '../../../scripts/search/exploreFilter.js';
-import { APP_STRINGS } from '../../../scripts/strings.js';
+import { Strings } from '../../../scripts/strings.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
@@ -187,7 +187,7 @@ test.describe('initExploreTypeFilter DOM integration', () => {
       assert.equal(chipContainer.children[0].className, 'filter-none');
       assert.equal(
          chipContainer.children[0].textContent,
-         APP_STRINGS.map.transportationRoute.none
+         Strings.map.transportationRoute.none
       );
 
       checkboxes[1].checked = true;

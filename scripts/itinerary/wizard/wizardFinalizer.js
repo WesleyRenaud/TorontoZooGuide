@@ -6,15 +6,15 @@ import { NoticePopup } from '../panel/components/noticePopup.js';
 import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
 import { StorageKeys } from '../storageKeys.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { WizardPopup } from './wizardPopup.js';
 import { WizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
-   title: APP_STRINGS.itinerary.noItemsSelected.title,
-   message: APP_STRINGS.itinerary.noItemsSelected.message,
-   buttonText: APP_STRINGS.itinerary.noItemsSelected.button,
+   title: Strings.itinerary.noItemsSelected.title,
+   message: Strings.itinerary.noItemsSelected.message,
+   buttonText: Strings.itinerary.noItemsSelected.button,
 });
 
 function clearWizardMount(mountEl) {
@@ -80,9 +80,9 @@ export class WizardFinalizer {
       catch (error) {
          showWizardPopup({
             mountEl,
-            title: APP_STRINGS.itinerary.errors.generic,
-            message: error?.message || APP_STRINGS.itinerary.errors.generic,
-            buttonText: APP_STRINGS.itinerary.actions.accept,
+            title: Strings.itinerary.errors.generic,
+            message: error?.message || Strings.itinerary.errors.generic,
+            buttonText: Strings.itinerary.actions.accept,
          });
          return null;
       }

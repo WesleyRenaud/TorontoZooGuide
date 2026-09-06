@@ -1,7 +1,7 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { actions, panel } = APP_STRINGS.itinerary;
+const { actions, panel } = Strings.itinerary;
 
 const MAX_VISIBLE_ITEMS = 3;
 

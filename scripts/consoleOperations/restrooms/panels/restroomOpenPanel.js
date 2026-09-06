@@ -1,33 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestroomOpenPanel {
    static createRestroomOpenPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restroomOpenPanel',
-         title: APP_STRINGS.panelTitles.restroomOpen,
+         title: Strings.panelTitles.restroomOpen,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restroom,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restroom,
                inputId: 'restroomOpenRestroom',
-               emptyOptionLabel: APP_STRINGS.placeholders.restroom,
+               emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restroomOpenStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'restroomOpenEndDate',
-               endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('restroom'),
+               endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('restroom'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestroomOpen',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restroomOpenStatus',
             }),
          ],

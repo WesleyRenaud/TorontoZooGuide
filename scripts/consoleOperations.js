@@ -1,5 +1,11 @@
 import { ConsoleOperationsPage } from './pages/consoleOperationsPage.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-   ConsoleOperationsPage.initConsoleOperationsPage();
-});
+export class ConsoleOperations {
+   static bind() {
+      document.addEventListener('DOMContentLoaded', () => {
+         ConsoleOperationsPage.initConsoleOperationsPage();
+      });
+   }
+}
+
+ConsoleOperations.bind();

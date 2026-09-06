@@ -2,7 +2,7 @@ import { ConfirmPopup } from './components/confirmPopup.js';
 import { Popup } from './components/popup.js';
 import { TransportationScheduleItemKey } from '../selectors/transportationSelector/transportationScheduleItemKey.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function isTransitModeTransportationRemove(itemType, key) {
    if (itemType !== ScheduleItemKind.TRANSPORTATION.itemType) {
@@ -18,7 +18,7 @@ function isTransitModeTransportationRemove(itemType, key) {
 }
 
 function removeConfirmationMessage(itemType, key) {
-   const strings = APP_STRINGS.itinerary.confirmation;
+   const strings = Strings.itinerary.confirmation;
 
    if (isTransitModeTransportationRemove(itemType, key)) {
       return strings.removeTransitTransportationMessage;
@@ -34,13 +34,13 @@ export class RemoveItineraryItemConfirmation {
       onConfirm,
       onCancel,
    } = {}) {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
 
       ConfirmPopup.showItineraryConfirmPopup({
          title: strings.removeItemTitle,
          message: removeConfirmationMessage(itemType, key),
-         confirmText: APP_STRINGS.itinerary.dayPlanner.remove,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         confirmText: Strings.itinerary.dayPlanner.remove,
+         cancelText: Strings.itinerary.actions.cancel,
          mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,
          onCancel,

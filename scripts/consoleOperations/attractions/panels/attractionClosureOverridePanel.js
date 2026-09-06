@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class AttractionClosureOverridePanel {
    static createAttractionClosureOverridePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'attractionClosureOverridePanel',
-         title: APP_STRINGS.panelTitles.attractionClosureOverride,
+         title: Strings.panelTitles.attractionClosureOverride,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.attraction,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.attraction,
                inputId: 'attractionClosureOverrideAttraction',
-               emptyOptionLabel: APP_STRINGS.placeholders.attraction,
+               emptyOptionLabel: Strings.placeholders.attraction,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'attractionClosureOverrideStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'attractionClosureOverrideEndDate',
-               endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('attraction'),
+               endHelpText: Strings.help.keepClosedUntilManuallyReopened('attraction'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closureMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closureMessage,
                inputId: 'attractionClosureOverrideMessage',
-               placeholder: APP_STRINGS.textareas.closureMessage,
+               placeholder: Strings.textareas.closureMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitAttractionClosureOverride',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'attractionClosureOverrideStatus',
             }),
          ],

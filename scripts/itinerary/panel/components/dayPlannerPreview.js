@@ -13,8 +13,7 @@ import { ScheduleItemButton } from './scheduleItemButton.js';
 import { Section } from './section.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 import { Constants } from '../../../shared/constants.js';
-import { APP_STRINGS } from '../../../strings.js';
-import { labels } from '../../../strings/common.js';
+import { Strings } from '../../../strings.js';
 
 function resolveSectionShowEditButton(
    sectionKey,
@@ -180,9 +179,9 @@ export class DayPlannerPreview {
       } = {}
    ) {
       const strings = {
-         ...APP_STRINGS.itinerary.dayPlanner,
-         timeOrderInvalid: APP_STRINGS.itinerary.errors.timeOrderInvalid,
-         departureLabel: labels.departure,
+         ...Strings.itinerary.dayPlanner,
+         timeOrderInvalid: Strings.itinerary.errors.timeOrderInvalid,
+         departureLabel: Strings.labels.departure,
       };
       const hours = zooHours && typeof zooHours === 'object'
          ? zooHours

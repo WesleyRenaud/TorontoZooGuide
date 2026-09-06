@@ -1,38 +1,31 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class GiftShopClosedPanel {
    static createGiftShopClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'giftShopClosedPanel',
-         title: APP_STRINGS.panelTitles.giftShopClosed,
+         title: Strings.panelTitles.giftShopClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.giftShop,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.giftShop,
                inputId: 'giftShopClosedGiftShop',
-               emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
+               emptyOptionLabel: Strings.placeholders.giftShop,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'giftShopClosedStartDate',
                endDateId: 'giftShopClosedEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened('gift shop'),
+               endHelpText: Strings.help.continueUntilReopened('gift shop'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'giftShopClosedMessage',
-               placeholder: APP_STRINGS.textareas.closedMessage('gift shop'),
+               placeholder: Strings.textareas.closedMessage('gift shop'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitGiftShopClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'giftShopClosedStatus',
             }),
          ],

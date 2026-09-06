@@ -1,37 +1,31 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createPanelShell,
-   createScheduleTimesCheckboxField,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class CancelWildEncounterOccurrencePanel {
    static createCancelWildEncounterOccurrencePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'cancelWildEncounterOccurrencePanel',
-         title: APP_STRINGS.panelTitles.cancelWildEncounterOccurrence,
+         title: Strings.panelTitles.cancelWildEncounterOccurrence,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.wildEncounter,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.wildEncounter,
                inputId: 'cancelWildEncounterOccurrenceName',
-               emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
+               emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.date,
+            Fragments.createSelectField({
+               label: Strings.labels.date,
                inputId: 'cancelWildEncounterOccurrenceDate',
-               emptyOptionLabel: APP_STRINGS.placeholders.date,
+               emptyOptionLabel: Strings.placeholders.date,
             }),
-            createScheduleTimesCheckboxField({
-               label: APP_STRINGS.labels.encounterTimes,
+            Fragments.createScheduleTimesCheckboxField({
+               label: Strings.labels.encounterTimes,
                inputId: 'cancelWildEncounterOccurrenceTimes',
-               helpText: APP_STRINGS.help.cancelOccurrenceTimes,
+               helpText: Strings.help.cancelOccurrenceTimes,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitCancelWildEncounterOccurrence',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'cancelWildEncounterOccurrenceStatus',
             }),
          ],

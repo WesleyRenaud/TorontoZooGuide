@@ -1,7 +1,7 @@
 import { ItineraryServiceSave } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { DateSelector } from '../selectors/dateSelector.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class RecoverPastItineraryDate {
@@ -31,8 +31,8 @@ export class RecoverPastItineraryDate {
          initialDate,
          earliestSelectableDate: initialDate,
          hideNextButton: true,
-         titleText: APP_STRINGS.itinerary.stale.recoveryTitle,
-         subtitleText: APP_STRINGS.itinerary.stale.recoverySubtitle,
+         titleText: Strings.itinerary.stale.recoveryTitle,
+         subtitleText: Strings.itinerary.stale.recoverySubtitle,
          onClose: () => {
             dateController.hide();
             onCancel?.();

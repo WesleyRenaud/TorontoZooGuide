@@ -1,16 +1,13 @@
-import {
-   OPEN_WEATHER_API_KEY,
-   TORONTO_ZOO_COORDINATES,
-} from '../config/appConfig.js';
+import { AppConfig } from '../config/appConfig.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 function weatherApiUrl(path) {
    return (
       `https://api.openweathermap.org/data/2.5/${path}`
-      + `?lat=${TORONTO_ZOO_COORDINATES.lat}`
-      + `&lon=${TORONTO_ZOO_COORDINATES.lon}`
+      + `?lat=${AppConfig.TORONTO_ZOO_COORDINATES.lat}`
+      + `&lon=${AppConfig.TORONTO_ZOO_COORDINATES.lon}`
       + `&units=metric`
-      + `&appid=${OPEN_WEATHER_API_KEY}`
+      + `&appid=${AppConfig.OPEN_WEATHER_API_KEY}`
    );
 }
 

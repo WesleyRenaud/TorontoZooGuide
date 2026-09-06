@@ -4,7 +4,7 @@ import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RemoveRestroomAlert {
    static createRemoveRestroomAlertController({
@@ -36,7 +36,7 @@ export class RemoveRestroomAlert {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.restrooms,
+            errorMessage: Strings.loadErrors.restrooms,
          });
       }
 
@@ -64,7 +64,7 @@ export class RemoveRestroomAlert {
          Status.setStatus(statusEl, '');
 
          if (!restroom) {
-            Status.setStatus(statusEl, APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.restroom), 'is-error');
+            Status.setStatus(statusEl, Strings.validation.entityRequired(Strings.entityLabels.restroom), 'is-error');
             return;
          }
 
@@ -79,7 +79,7 @@ export class RemoveRestroomAlert {
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

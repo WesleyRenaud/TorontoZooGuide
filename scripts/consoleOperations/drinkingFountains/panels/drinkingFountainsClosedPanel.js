@@ -1,35 +1,29 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class DrinkingFountainsClosedPanel {
    static createDrinkingFountainsClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'drinkingFountainsClosedPanel',
-         title: APP_STRINGS.panelTitles.drinkingFountainsClosed,
+         title: Strings.panelTitles.drinkingFountainsClosed,
          bodyChildren: [
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'drinkingFountainsClosedStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'drinkingFountainsClosedEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened(
+               endHelpText: Strings.help.continueUntilReopened(
                   'drinking fountains'
                ),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'drinkingFountainsClosedMessage',
-               placeholder: APP_STRINGS.textareas.drinkingFountainsClosedMessage,
+               placeholder: Strings.textareas.drinkingFountainsClosedMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitDrinkingFountainsClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'drinkingFountainsClosedStatus',
             }),
          ],

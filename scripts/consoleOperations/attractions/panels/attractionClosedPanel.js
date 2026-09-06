@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class AttractionClosedPanel {
    static createAttractionClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'attractionClosedPanel',
-         title: APP_STRINGS.panelTitles.attractionClosed,
+         title: Strings.panelTitles.attractionClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.attraction,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.attraction,
                inputId: 'attractionClosedAttraction',
-               emptyOptionLabel: APP_STRINGS.placeholders.attraction,
+               emptyOptionLabel: Strings.placeholders.attraction,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'attractionClosedStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'attractionClosedEndDate',
-               endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('attraction'),
+               endHelpText: Strings.help.keepClosedUntilManuallyReopened('attraction'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closureMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closureMessage,
                inputId: 'attractionClosedMessage',
-               placeholder: APP_STRINGS.textareas.closureMessage,
+               placeholder: Strings.textareas.closureMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitAttractionClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'attractionClosedStatus',
             }),
          ],

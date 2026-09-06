@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { FixedTimeItemLongWaitConfirmation } from '../../../../scripts/itinerary/panel/fixedTimeItemLongWaitConfirmation.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
@@ -62,16 +62,16 @@ test('Test_GetFixedTimeItemsFromLongWaitIssues_TestNamedItems_ExpectAll', () => 
          {
             issueType: 'fixedTimeItemLongWait',
             itemType: 'guardiansTalk',
-            typeLabel: APP_STRINGS.entityLabels.guardiansTalk,
-            typePhrase: APP_STRINGS.entityPhrases.guardiansTalk,
+            typeLabel: Strings.entityLabels.guardiansTalk,
+            typePhrase: Strings.entityPhrases.guardiansTalk,
             itemName: 'Amur Tiger',
             itemTime: '11:00 AM',
          },
          {
             issueType: 'fixedTimeItemLongWait',
             itemType: 'wildEncounter',
-            typeLabel: APP_STRINGS.entityLabels.wildEncounter,
-            typePhrase: APP_STRINGS.entityPhrases.wildEncounter,
+            typeLabel: Strings.entityLabels.wildEncounter,
+            typePhrase: Strings.entityPhrases.wildEncounter,
             itemName: 'Capybara',
             itemTime: null,
          },
@@ -104,7 +104,7 @@ test('Test_ShowFixedTimeItemLongWaitConfirmation_TestSingle_ExpectMessage', () =
 
    assert.equal(
       document.querySelector('.itin-top-title')?.textContent,
-      `Long Wait for ${APP_STRINGS.entityLabels.guardiansTalk}?`
+      `Long Wait for ${Strings.entityLabels.guardiansTalk}?`
    );
    assert.equal(
       document.querySelector('.tzg-popup-message')?.textContent,

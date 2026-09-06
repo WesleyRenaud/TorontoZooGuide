@@ -1,9 +1,9 @@
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupKeepButtonState {
    static getKeepOverrideButtonState(
       isSelected,
-      strings = APP_STRINGS
+      strings = Strings
    ) {
       const selected = Boolean(isSelected);
       const removedItemsStrings = strings.itinerary.removedItems;

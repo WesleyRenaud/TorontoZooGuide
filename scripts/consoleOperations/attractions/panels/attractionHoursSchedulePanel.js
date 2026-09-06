@@ -1,56 +1,49 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateField,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class AttractionHoursSchedulePanel {
    static createAttractionHoursSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'attractionHoursSchedulePanel',
-         title: APP_STRINGS.panelTitles.attractionHoursSchedule,
+         title: Strings.panelTitles.attractionHoursSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.attraction,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.attraction,
                inputId: 'attractionHoursScheduleAttraction',
-               emptyOptionLabel: APP_STRINGS.placeholders.attraction,
+               emptyOptionLabel: Strings.placeholders.attraction,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'attractionHoursScheduleStartDate',
-               startLabel: APP_STRINGS.labels.scheduleStartDate,
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startLabel: Strings.labels.scheduleStartDate,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'attractionHoursScheduleEndDate',
-               endLabel: APP_STRINGS.labels.scheduleEndDate,
-               endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
+               endLabel: Strings.labels.scheduleEndDate,
+               endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.weekdayStartTime,
+            Fragments.createDateField({
+               label: Strings.labels.weekdayStartTime,
                inputId: 'attractionHoursScheduleWeekdayStartTime',
-               placeholder: APP_STRINGS.placeholders.weekdayStartTime,
+               placeholder: Strings.placeholders.weekdayStartTime,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.weekdayEndTime,
+            Fragments.createDateField({
+               label: Strings.labels.weekdayEndTime,
                inputId: 'attractionHoursScheduleWeekdayEndTime',
-               placeholder: APP_STRINGS.placeholders.weekdayEndTime,
+               placeholder: Strings.placeholders.weekdayEndTime,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.weekendHolidayStartTime,
+            Fragments.createDateField({
+               label: Strings.labels.weekendHolidayStartTime,
                inputId: 'attractionHoursScheduleWeekendHolidayStartTime',
-               placeholder: APP_STRINGS.placeholders.weekendHolidayStartTime,
+               placeholder: Strings.placeholders.weekendHolidayStartTime,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.weekendHolidayEndTime,
+            Fragments.createDateField({
+               label: Strings.labels.weekendHolidayEndTime,
                inputId: 'attractionHoursScheduleWeekendHolidayEndTime',
-               placeholder: APP_STRINGS.placeholders.weekendHolidayEndTime,
+               placeholder: Strings.placeholders.weekendHolidayEndTime,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitAttractionHoursSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'attractionHoursScheduleStatus',
             }),
          ],

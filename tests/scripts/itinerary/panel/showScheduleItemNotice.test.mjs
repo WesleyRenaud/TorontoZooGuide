@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ShowScheduleItemNotice } from '../../../../scripts/itinerary/panel/showScheduleItemNotice.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemNotice', () => {
@@ -24,12 +24,12 @@ test.describe('showScheduleItemNotice', () => {
       assert.ok(popup);
       assert.equal(
          title?.textContent,
-         APP_STRINGS.itinerary.scheduleItem.errorTitle
+         Strings.itinerary.scheduleItem.errorTitle
       );
       assert.equal(message?.textContent, 'Could not schedule item.');
       assert.equal(
          button?.textContent,
-         APP_STRINGS.itinerary.noItemsSelected.button
+         Strings.itinerary.noItemsSelected.button
       );
    });
 

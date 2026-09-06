@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryPanelContent } from '../../../../scripts/itinerary/panel/itineraryPanelContent.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -154,7 +154,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
             errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
+            message: Strings.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -173,7 +173,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
+         message: Strings.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
       }]);
    });
 
@@ -189,7 +189,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          unscheduleAll: async () => ({
             errorType: MOCK_ERROR_TYPES.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+            message: Strings.itinerary.errors.unscheduleAllNothingScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -208,7 +208,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+         message: Strings.itinerary.errors.unscheduleAllNothingScheduled,
       }]);
    });
 
@@ -240,7 +240,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.confirmation.bulkScheduleItineraryNotEnoughTimeMessage,
+         message: Strings.itinerary.confirmation.bulkScheduleItineraryNotEnoughTimeMessage,
       }]);
    });
 
@@ -279,7 +279,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.generic,
+         message: Strings.itinerary.errors.generic,
       }]);
    });
 
@@ -323,7 +323,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'success',
-         message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
+         message: Strings.itinerary.dayPlanner.rebuildScheduleSuccess,
       }]);
    });
 
@@ -362,7 +362,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(confirmationCalls.length, 0);
       assert.deepEqual(feedbackCalls, [{
          variant: 'success',
-         message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
+         message: Strings.itinerary.dayPlanner.rebuildScheduleSuccess,
       }]);
    });
 
@@ -377,7 +377,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => ({
             errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
+            message: Strings.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -407,7 +407,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
+         message: Strings.itinerary.errors.bulkScheduleItineraryAlreadyScheduled,
       }]);
    });
 
@@ -493,7 +493,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, true);
       assert.deepEqual(feedbackCalls, [{
          variant: 'success',
-         message: APP_STRINGS.itinerary.dayPlanner.unscheduleAllSuccess,
+         message: Strings.itinerary.dayPlanner.unscheduleAllSuccess,
       }]);
    });
 
@@ -509,7 +509,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          unscheduleAll: async () => ({
             errorType: MOCK_ERROR_TYPES.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
-            message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+            message: Strings.itinerary.errors.unscheduleAllNothingScheduled,
          }),
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -546,7 +546,7 @@ test.describe('itineraryPanelContent', () => {
       assert.deepEqual(notices, []);
       assert.deepEqual(feedbackCalls, [{
          variant: 'error',
-         message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+         message: Strings.itinerary.errors.unscheduleAllNothingScheduled,
       }]);
    });
 

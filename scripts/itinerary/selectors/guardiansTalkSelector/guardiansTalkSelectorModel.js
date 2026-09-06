@@ -2,7 +2,7 @@ import { StoredSelection } from '../base/storedSelection.js';
 import { GuardiansTalkScheduleItemKey } from './guardiansTalkScheduleItemKey.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkSelectorModel {
    static getGuardiansTalkName(row) {
@@ -18,14 +18,14 @@ export class GuardiansTalkSelectorModel {
    static formatGuardiansTalkTitleSuffix(name) {
       return ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(
          name,
-         APP_STRINGS.entityLabels.guardiansTalk
+         Strings.entityLabels.guardiansTalk
       );
    }
 
    static formatGuardiansTalkSearchTitle(name) {
       return ScheduledOccurrencePresentation.formatOccurrenceSearchTitle(
          name,
-         APP_STRINGS.entityLabels.guardiansTalk
+         Strings.entityLabels.guardiansTalk
       );
    }
 

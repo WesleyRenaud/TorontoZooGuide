@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { SelectorControllerElements } from '../../../../scripts/itinerary/selectors/selectorControllerElements.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test.describe('createSelectorElements', () => {
@@ -32,15 +32,15 @@ test.describe('createSelectorElements', () => {
       assert.equal(elements.resultsEl.className, 'itin-results');
       assert.equal(
          elements.nextButtonEl.textContent,
-         APP_STRINGS.itinerary.actions.next
+         Strings.itinerary.actions.next
       );
       assert.equal(
          elements.finishButtonEl.textContent,
-         APP_STRINGS.itinerary.actions.finish
+         Strings.itinerary.actions.finish
       );
       assert.equal(
          elements.closeButtonEl.getAttribute('aria-label'),
-         APP_STRINGS.itinerary.aria.closeBuilder
+         Strings.itinerary.aria.closeBuilder
       );
    });
 

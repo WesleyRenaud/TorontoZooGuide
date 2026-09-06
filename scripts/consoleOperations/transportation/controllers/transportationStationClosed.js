@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class TransportationStationClosed {
    static createTransportationStationClosedController({
@@ -20,9 +20,9 @@ export class TransportationStationClosed {
             endDate: endDate || null,
             message,
          }),
-         entityLabel: APP_STRINGS.entityLabels.transportationStation,
-         optionsLabel: APP_STRINGS.entityLabels.transportationStations,
-         successMessage: result => APP_STRINGS.status.closed(result.transportation_station),
+         entityLabel: Strings.entityLabels.transportationStation,
+         optionsLabel: Strings.entityLabels.transportationStations,
+         successMessage: result => Strings.status.closed(result.transportation_station),
       });
    }
 }

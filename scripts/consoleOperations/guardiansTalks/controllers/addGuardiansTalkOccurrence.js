@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class AddGuardiansTalkOccurrence {
    static createAddGuardiansTalkOccurrenceController({
@@ -38,15 +38,15 @@ export class AddGuardiansTalkOccurrence {
 
       function validateForm({ talk, location, date, times }) {
          const required = [
-            [location, APP_STRINGS.labels.location],
-            [talk, APP_STRINGS.labels.talkName],
-            [date, APP_STRINGS.labels.date],
-            [times[0], APP_STRINGS.labels.talkTime],
+            [location, Strings.labels.location],
+            [talk, Strings.labels.talkName],
+            [date, Strings.labels.date],
+            [times[0], Strings.labels.talkTime],
          ];
 
          for (const [value, label] of required) {
             if (!value) {
-               return APP_STRINGS.validation.entityRequired(label);
+               return Strings.validation.entityRequired(label);
             }
          }
 
@@ -75,7 +75,7 @@ export class AddGuardiansTalkOccurrence {
             show();
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
+            Status.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
             show();
          }
       });
@@ -114,7 +114,7 @@ export class AddGuardiansTalkOccurrence {
             resetForm();
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       });
 

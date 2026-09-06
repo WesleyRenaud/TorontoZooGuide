@@ -1,39 +1,33 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class OnDisplayPanel {
    static createOnDisplayPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'onDisplayPanel',
-         title: APP_STRINGS.panelTitles.onDisplay,
+         title: Strings.panelTitles.onDisplay,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'onDisplayExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'onDisplaySpecies',
                resultsId: 'onDisplaySpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.viewingScope,
+            Fragments.createSelectField({
+               label: Strings.labels.viewingScope,
                inputId: 'onDisplayViewingScope',
-               emptyOptionLabel: APP_STRINGS.placeholders.viewingScope,
-               options: APP_STRINGS.viewingScopes,
+               emptyOptionLabel: Strings.placeholders.viewingScope,
+               options: Strings.viewingScopes,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitOnDisplay',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'onDisplayStatus',
             }),
          ],

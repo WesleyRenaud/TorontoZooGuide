@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 export class CarouselView {
    static createTooltipCarouselView({
@@ -54,10 +54,10 @@ export class CarouselView {
          const nav = document.createElement('div');
          nav.className = 'tooltip-nav';
 
-         const left = createArrow(APP_STRINGS.common.previousSymbol, () => step(-1));
+         const left = createArrow(Strings.common.previousSymbol, () => step(-1));
          left.classList.add('tooltip-prev', 'visible');
 
-         const right = createArrow(APP_STRINGS.common.nextSymbol, () => step(+1));
+         const right = createArrow(Strings.common.nextSymbol, () => step(+1));
          right.classList.add('tooltip-next', 'visible');
 
          nav.appendChild(left);

@@ -3,7 +3,7 @@ import { SelectionState } from './base/selectionState.js';
 import { SelectorControllerConfig } from './selectorControllerConfig.js';
 import { SelectorControllerElements } from './selectorControllerElements.js';
 import { SelectorSearchRunner } from './selectorSearchRunner.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class CreateSelectorController {
    static createItinerarySelectorController({
@@ -34,10 +34,10 @@ export class CreateSelectorController {
 
    makeSelection = row => ({ id: getId(row) }),
 
-   topTitle = APP_STRINGS.itinerary.selectors.builderTitle,
-   h1 = APP_STRINGS.itinerary.selectors.defaultTitle,
-   subtitle = APP_STRINGS.itinerary.selectors.defaultSubtitle,
-   emptyText = APP_STRINGS.itinerary.emptyText.results,
+   topTitle = Strings.itinerary.selectors.builderTitle,
+   h1 = Strings.itinerary.selectors.defaultTitle,
+   subtitle = Strings.itinerary.selectors.defaultSubtitle,
+   emptyText = Strings.itinerary.emptyText.results,
 
    renderRowLeft,
    renderExtraControls = null,

@@ -7,7 +7,7 @@ import { Format } from './format.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
 function itineraryBuildWarningIssueTypes() {
@@ -221,7 +221,7 @@ export class ItineraryBuildWarningsConfirmation {
    }
 
    static buildItineraryBuildWarningSections(issues = []) {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
 
       return BUILD_WARNING_SECTION_LIST_BUILDERS.flatMap((buildSections) => (
          buildSections(issues, strings)
@@ -247,13 +247,13 @@ export class ItineraryBuildWarningsConfirmation {
          return;
       }
 
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
 
       ConfirmPopup.showItineraryConfirmPopup({
          title: strings.saveIssuesTitle,
          bodyContent: createBuildWarningsContent(sections),
          confirmText: strings.saveIssuesButton,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,
          onCancel,

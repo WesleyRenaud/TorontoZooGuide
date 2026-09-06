@@ -1,13 +1,13 @@
 import { Format } from '../format.js';
 import { ItineraryAdjustmentTypes } from '../../itineraryAdjustmentTypes.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupAdjustmentSpecs {
    static buildAdjustmentRowSpec(
       adjustment = {},
       {
          adjustmentTypes = ItineraryAdjustmentTypes.getItineraryAdjustmentTypes(),
-         strings = APP_STRINGS,
+         strings = Strings,
          formatTime = Format.formatClockTime,
       } = {}
    ) {

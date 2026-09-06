@@ -1,7 +1,7 @@
 import { Constants } from '../../../shared/constants.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { dayPlanner } = APP_STRINGS.itinerary;
+const { dayPlanner } = Strings.itinerary;
 
 export const MAX_TIMELINE_PILL_COLUMNS = Constants.MAX_TIMELINE_PILL_COLUMNS;
 export const MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = Constants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;

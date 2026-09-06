@@ -1,5 +1,5 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupLayout {
    static createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {}) {
@@ -10,10 +10,10 @@ export class RemovedItemsPopupLayout {
 
       const topbar = Dom.el('div', 'itin-card-topbar itin-card-topbar-with-close');
       topbar.appendChild(
-         Dom.el('div', 'itin-top-title', APP_STRINGS.itinerary.removedItems.itineraryUpdated)
+         Dom.el('div', 'itin-top-title', Strings.itinerary.removedItems.itineraryUpdated)
       );
 
-      const closeBtn = Dom.el('button', 'itin-close', APP_STRINGS.common.closeSymbol);
+      const closeBtn = Dom.el('button', 'itin-close', Strings.common.closeSymbol);
       closeBtn.type = 'button';
       topbar.appendChild(closeBtn);
 
@@ -30,8 +30,8 @@ export class RemovedItemsPopupLayout {
             'div',
             'itin-h1',
             isEmptyItinerary
-               ? APP_STRINGS.itinerary.removedItems.emptyItineraryTitle
-               : APP_STRINGS.itinerary.removedItems.someDetailsChanged
+               ? Strings.itinerary.removedItems.emptyItineraryTitle
+               : Strings.itinerary.removedItems.someDetailsChanged
          )
       );
 
@@ -40,8 +40,8 @@ export class RemovedItemsPopupLayout {
             'div',
             'itin-subtitle',
             isEmptyItinerary
-               ? APP_STRINGS.itinerary.removedItems.emptyItinerarySubtitle
-               : APP_STRINGS.itinerary.removedItems.changedSubtitle
+               ? Strings.itinerary.removedItems.emptyItinerarySubtitle
+               : Strings.itinerary.removedItems.changedSubtitle
          )
       );
 
@@ -52,7 +52,7 @@ export class RemovedItemsPopupLayout {
       const okBtn = Dom.el(
          'button',
          'itin-finish',
-         APP_STRINGS.itinerary.actions.accept
+         Strings.itinerary.actions.accept
       );
       okBtn.type = 'button';
       actions.appendChild(okBtn);

@@ -4,7 +4,7 @@ import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ScheduledOccurrencePresentation } from '../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function getOccurrenceName(row) {
    return row?.name ?? '';
@@ -223,7 +223,7 @@ export class CreateScheduledOccurrenceSelector {
             : null,
          makeSelection,
 
-         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+         topTitle: Strings.itinerary.selectors.builderTitle,
          h1: heading,
          subtitle,
          emptyText,

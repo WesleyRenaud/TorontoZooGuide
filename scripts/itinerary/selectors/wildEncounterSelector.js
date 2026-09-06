@@ -1,5 +1,5 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { WildEncounterSelectorModel } from './wildEncounterSelector/wildEncounterSelectorModel.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
@@ -23,10 +23,10 @@ export class WildEncounterSelector {
          responseKey: 'wild_encounters',
          searchFlag: 'includeWildEncounters',
          imageDirectory: 'wild-encounters',
-         defaultTitle: APP_STRINGS.entityLabels.wildEncounter,
-         heading: APP_STRINGS.site.nav.wildEncounters,
-         subtitle: APP_STRINGS.itinerary.selectors.wildEncounterSubtitle,
-         emptyText: APP_STRINGS.itinerary.emptyText.wildEncounters,
+         defaultTitle: Strings.entityLabels.wildEncounter,
+         heading: Strings.site.nav.wildEncounters,
+         subtitle: Strings.itinerary.selectors.wildEncounterSubtitle,
+         emptyText: Strings.itinerary.emptyText.wildEncounters,
 
          getName: WildEncounterSelectorModel.getWildEncounterName,
          getId: WildEncounterSelectorModel.getWildEncounterId,

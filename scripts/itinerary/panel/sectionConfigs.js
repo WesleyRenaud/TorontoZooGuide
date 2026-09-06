@@ -1,7 +1,7 @@
 import { Rows } from './rows.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class SectionConfigs {
    static ITINERARY_PANEL_SECTION_KEYS = {
@@ -73,35 +73,35 @@ export class SectionConfigs {
       const sectionConfigs = [
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
-            title: APP_STRINGS.site.nav.animals,
+            title: Strings.site.nav.animals,
             count: animalRows.length,
             children: animalRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
          },
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
-            title: APP_STRINGS.map.filter.attractions,
+            title: Strings.map.filter.attractions,
             count: attractionRows.length,
             children: attractionRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
          },
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
-            title: APP_STRINGS.entityLabels.transportation,
+            title: Strings.entityLabels.transportation,
             count: transportationRows.length,
             children: transportationRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
          },
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
-            title: APP_STRINGS.site.nav.meetTheGuardians,
+            title: Strings.site.nav.meetTheGuardians,
             count: guardiansRows.length,
             children: guardiansRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
          },
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
-            title: APP_STRINGS.site.nav.wildEncounters,
+            title: Strings.site.nav.wildEncounters,
             count: wildRows.length,
             children: wildRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,

@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestroomAlertPanel {
    static createRestroomAlertPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restroomAlertPanel',
-         title: APP_STRINGS.panelTitles.restroomAlert,
+         title: Strings.panelTitles.restroomAlert,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restroom,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restroom,
                inputId: 'restroomAlertRestroom',
-               emptyOptionLabel: APP_STRINGS.placeholders.restroom,
+               emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restroomAlertStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'restroomAlertEndDate',
-               endHelpText: APP_STRINGS.help.keepAlertActiveUntilRemoved,
+               endHelpText: Strings.help.keepAlertActiveUntilRemoved,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.alertMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.alertMessage,
                inputId: 'restroomAlertMessage',
-               placeholder: APP_STRINGS.placeholders.restroomAlertExample,
+               placeholder: Strings.placeholders.restroomAlertExample,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestroomAlert',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restroomAlertStatus',
             }),
          ],

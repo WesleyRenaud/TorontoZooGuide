@@ -1,7 +1,7 @@
 import { ScheduleItemSearch } from './scheduleItemSearch.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class RowActionProps {
    static hasItineraryScheduleTimes(item) {
@@ -35,7 +35,7 @@ export class RowActionProps {
          return {};
       }
 
-      const actionLabel = APP_STRINGS.itinerary.scheduleItem.scheduleButton;
+      const actionLabel = Strings.itinerary.scheduleItem.scheduleButton;
 
       return {
          actionLabel,
@@ -65,7 +65,7 @@ export class RowActionProps {
          return {};
       }
 
-      const actionLabel = APP_STRINGS.itinerary.dayPlanner.unschedule;
+      const actionLabel = Strings.itinerary.dayPlanner.unschedule;
 
       return {
          actionLabel,
@@ -92,7 +92,7 @@ export class RowActionProps {
          return {};
       }
 
-      const removeLabel = APP_STRINGS.itinerary.dayPlanner.remove;
+      const removeLabel = Strings.itinerary.dayPlanner.remove;
       const onRemove = () => onRemoveItem({
          itemType,
          key,

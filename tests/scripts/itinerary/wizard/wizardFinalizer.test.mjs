@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardFinalizer } from '../../../../scripts/itinerary/wizard/wizardFinalizer.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -41,7 +41,7 @@ test.describe('WizardFinalizer.finalizeItineraryWizard', () => {
       assert.equal(popupCalls.length, 1);
       assert.equal(
          popupCalls[0].title,
-         APP_STRINGS.itinerary.noItemsSelected.title
+         Strings.itinerary.noItemsSelected.title
       );
    });
 

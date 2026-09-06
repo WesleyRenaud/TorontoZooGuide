@@ -1,42 +1,36 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class AddGuardiansTalkOccurrencePanel {
    static createAddGuardiansTalkOccurrencePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'addGuardiansTalkOccurrencePanel',
-         title: APP_STRINGS.panelTitles.addGuardiansTalkOccurrence,
+         title: Strings.panelTitles.addGuardiansTalkOccurrence,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.location,
+            Fragments.createSelectField({
+               label: Strings.labels.location,
                inputId: 'addGuardiansTalkOccurrenceLocation',
-               emptyOptionLabel: APP_STRINGS.placeholders.location,
+               emptyOptionLabel: Strings.placeholders.location,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.talkName,
+            Fragments.createSelectField({
+               label: Strings.labels.talkName,
                inputId: 'addGuardiansTalkOccurrenceTalkName',
-               emptyOptionLabel: APP_STRINGS.placeholders.talk,
+               emptyOptionLabel: Strings.placeholders.talk,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.date,
+            Fragments.createDateField({
+               label: Strings.labels.date,
                inputId: 'addGuardiansTalkOccurrenceDate',
-               placeholder: APP_STRINGS.placeholders.startDate,
+               placeholder: Strings.placeholders.startDate,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.talkTime,
+            Fragments.createDateField({
+               label: Strings.labels.talkTime,
                inputId: 'addGuardiansTalkOccurrenceTime',
-               placeholder: APP_STRINGS.placeholders.time,
+               placeholder: Strings.placeholders.time,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitAddGuardiansTalkOccurrence',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'addGuardiansTalkOccurrenceStatus',
             }),
          ],

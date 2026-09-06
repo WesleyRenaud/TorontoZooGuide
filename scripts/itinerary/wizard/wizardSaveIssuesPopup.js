@@ -4,7 +4,7 @@ import {
    ScheduleTimeConflictConfirmation,
 } from '../panel/scheduleTimeConflictConfirmation.js';
 import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { WildEncounterConflictResolution } from './wildEncounterConflictResolution.js';
 
 export class WizardSaveIssuesPopup {
@@ -31,14 +31,14 @@ export class WizardSaveIssuesPopup {
       } = createSaveIssues(issues);
 
       showNoticePopup({
-         title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
+         title: Strings.itinerary.confirmation.saveIssuesTitle,
          bodyContent: content,
-         buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
+         buttonText: Strings.itinerary.confirmation.saveIssuesButton,
          showCloseButton: true,
          onClose: ({ close } = {}) => {
             showProceedConfirmation({
-               title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
-               message: APP_STRINGS.itinerary.confirmation
+               title: Strings.itinerary.confirmation.closeSaveIssuesTitle,
+               message: Strings.itinerary.confirmation
                   .proceedWithoutConflictSelectionMessage,
                onConfirm: close,
             });

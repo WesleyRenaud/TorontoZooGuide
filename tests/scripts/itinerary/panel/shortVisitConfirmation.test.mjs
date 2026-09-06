@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ShortVisitConfirmation } from '../../../../scripts/itinerary/panel/shortVisitConfirmation.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
@@ -27,7 +27,7 @@ test.describe('shortVisitConfirmation', () => {
       });
 
       const popup = document.querySelector('.tzg-confirm');
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const title = popup?.querySelector('.itin-top-title');
       const message = popup?.querySelector('.tzg-popup-message');
       const confirmButton = popup?.querySelector('.tzg-popup-confirm');

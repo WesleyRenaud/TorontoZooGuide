@@ -4,7 +4,7 @@ import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class AnimalVisibilitySchedule {
    static createAnimalVisibilityScheduleController({
@@ -54,15 +54,15 @@ export class AnimalVisibilitySchedule {
          dailyEndTime,
       }) {
          if (!species) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.species);
+            return Strings.validation.entityRequired(Strings.labels.species);
          }
 
          if (!exhibit) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.exhibit);
+            return Strings.validation.entityRequired(Strings.entityLabels.exhibit);
          }
 
          if (!dailyStartTime || !dailyEndTime) {
-            return APP_STRINGS.validation.dailyViewingTimes;
+            return Strings.validation.dailyViewingTimes;
          }
 
          return ControllerUtils.validateOptionalDateRange(startDate, endDate);
@@ -120,7 +120,7 @@ export class AnimalVisibilitySchedule {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.exhibits,
+            errorMessage: Strings.loadErrors.exhibits,
          });
       }
 
@@ -147,7 +147,7 @@ export class AnimalVisibilitySchedule {
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

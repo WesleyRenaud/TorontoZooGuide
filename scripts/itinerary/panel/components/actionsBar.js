@@ -1,6 +1,6 @@
 import { ConfirmPopup } from './confirmPopup.js';
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class ActionsBar {
    static makeActionsBar({ onAfterClear } = {}) {
@@ -9,7 +9,7 @@ export class ActionsBar {
       const editBtn = Dom.el(
          'button',
          'itin-panel-edit-btn',
-         APP_STRINGS.itinerary.actions.editItinerary
+         Strings.itinerary.actions.editItinerary
       );
       editBtn.type = 'button';
       editBtn.addEventListener('click', (e) => {
@@ -17,16 +17,16 @@ export class ActionsBar {
          window.dispatchEvent(new CustomEvent('tzg:editItinerary'));
       });
 
-      const clearBtn = Dom.el('button', 'itin-panel-clear-btn', APP_STRINGS.itinerary.actions.clear);
+      const clearBtn = Dom.el('button', 'itin-panel-clear-btn', Strings.itinerary.actions.clear);
       clearBtn.type = 'button';
       clearBtn.addEventListener('click', (e) => {
          e.stopPropagation();
 
          ConfirmPopup.showItineraryConfirmPopup({
-            title: APP_STRINGS.itinerary.confirmation.clearTitle,
-            message: APP_STRINGS.itinerary.confirmation.clearMessage,
-            confirmText: APP_STRINGS.itinerary.actions.clear,
-            cancelText: APP_STRINGS.itinerary.actions.cancel,
+            title: Strings.itinerary.confirmation.clearTitle,
+            message: Strings.itinerary.confirmation.clearMessage,
+            confirmText: Strings.itinerary.actions.clear,
+            cancelText: Strings.itinerary.actions.cancel,
             onConfirm: async () => {
                await onAfterClear?.();
             }

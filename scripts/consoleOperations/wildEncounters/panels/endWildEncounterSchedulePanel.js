@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateField,
-   createPanelShell,
-   createScheduleTimesCheckboxField,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class EndWildEncounterSchedulePanel {
    static createEndWildEncounterSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'endWildEncounterSchedulePanel',
-         title: APP_STRINGS.panelTitles.endWildEncounterSchedule,
+         title: Strings.panelTitles.endWildEncounterSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.wildEncounter,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.wildEncounter,
                inputId: 'endWildEncounterScheduleName',
-               emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
+               emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            createScheduleTimesCheckboxField({
-               label: APP_STRINGS.labels.encounterTimes,
+            Fragments.createScheduleTimesCheckboxField({
+               label: Strings.labels.encounterTimes,
                inputId: 'endWildEncounterScheduleTimes',
-               helpText: APP_STRINGS.help.endScheduleTimes,
+               helpText: Strings.help.endScheduleTimes,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.endDate,
+            Fragments.createDateField({
+               label: Strings.labels.endDate,
                inputId: 'endWildEncounterScheduleDate',
-               placeholder: APP_STRINGS.placeholders.scheduleEndDate,
-               helpText: APP_STRINGS.help.endScheduleToday,
+               placeholder: Strings.placeholders.scheduleEndDate,
+               helpText: Strings.help.endScheduleToday,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitEndWildEncounterSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'endWildEncounterScheduleStatus',
             }),
          ],

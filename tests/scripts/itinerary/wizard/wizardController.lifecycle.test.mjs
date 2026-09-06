@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
 import { State } from '../../../../scripts/itinerary/wizard/state.js';
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -191,7 +191,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
       assert.equal(popupConfigs.length, 1);
       assert.equal(
          popupConfigs[0].title,
-         APP_STRINGS.itinerary.confirmation.saveChangesTitle
+         Strings.itinerary.confirmation.saveChangesTitle
       );
    });
 

@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkLocationFilter {
    static createGuardiansTalkLocationFilterController({
@@ -24,7 +24,7 @@ export class GuardiansTalkLocationFilter {
          Dropdowns.populateValueDropdown(
             locationEl,
             locationNames,
-            APP_STRINGS.placeholders.location
+            Strings.placeholders.location
          );
       }
 

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityOpenFormController } from '../../forms/entityOpenFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class ExhibitOpen {
    static createExhibitOpenController({
@@ -19,9 +19,9 @@ export class ExhibitOpen {
             startDate: startDate || null,
             endDate: endDate || null,
          }),
-         entityLabel: APP_STRINGS.entityLabels.exhibit,
-         optionsLabel: APP_STRINGS.entityLabels.exhibits,
-         successMessage: result => APP_STRINGS.status.explicitlyOpen(result.exhibit),
+         entityLabel: Strings.entityLabels.exhibit,
+         optionsLabel: Strings.entityLabels.exhibits,
+         successMessage: result => Strings.status.explicitlyOpen(result.exhibit),
       });
    }
 }

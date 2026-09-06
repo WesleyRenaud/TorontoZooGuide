@@ -6,7 +6,7 @@ import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class CancelWildEncounterOccurrence {
    static createCancelWildEncounterOccurrenceController({
@@ -62,15 +62,15 @@ export class CancelWildEncounterOccurrence {
 
       function validateForm({ wildEncounter, date, times }) {
          if (!wildEncounter) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
+            return Strings.validation.entityRequired(Strings.entityLabels.wildEncounter);
          }
 
          if (!date) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
+            return Strings.validation.entityRequired(Strings.labels.date);
          }
 
          if (!times.length) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes);
+            return Strings.validation.entityRequired(Strings.labels.encounterTimes);
          }
 
          return null;
@@ -110,7 +110,7 @@ export class CancelWildEncounterOccurrence {
             show();
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.loadErrors.wildEncounters, 'is-error');
+            Status.setStatus(statusEl, Strings.loadErrors.wildEncounters, 'is-error');
             show();
          }
       }
@@ -138,7 +138,7 @@ export class CancelWildEncounterOccurrence {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

@@ -4,7 +4,7 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { AnimalSelectorModel } from '../../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { LikelihoodPresentation } from '../../likelihood/likelihoodPresentation.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class Animals {
    static key = 'animal';
@@ -45,7 +45,7 @@ export class Animals {
          },
          details: [
             AnimalSelectorModel.getAnimalSubtitle(a),
-            APP_STRINGS.tooltips.likelihoodDetail(
+            Strings.tooltips.likelihoodDetail(
                LikelihoodPresentation.getLikelihoodPhrase(a.likelihood),
                a.likelihood
             ),

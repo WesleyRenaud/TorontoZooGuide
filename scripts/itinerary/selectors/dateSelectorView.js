@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function createButton({
    className,
@@ -18,7 +18,7 @@ function createButton({
 }
 
 export class DateSelectorView {
-   static buildDateSelectorView(strings = APP_STRINGS) {
+   static buildDateSelectorView(strings = Strings) {
       const root = document.createElement('div');
       root.className = 'itin-overlay';
 

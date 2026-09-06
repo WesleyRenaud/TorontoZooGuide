@@ -1,5 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createSelectorInfoLink(infoLink) {
    if (!infoLink) {
@@ -11,7 +11,7 @@ function createSelectorInfoLink(infoLink) {
    linkEl.href = infoLink;
    linkEl.target = '_blank';
    linkEl.rel = 'noopener noreferrer';
-   linkEl.textContent = APP_STRINGS.common.moreInfo;
+   linkEl.textContent = Strings.common.moreInfo;
 
    linkEl.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -49,15 +49,15 @@ function createToggleButton({
    function updateButtonState() {
       const added = isRowSelected();
       button.textContent = added
-         ? APP_STRINGS.itinerary.actions.remove
-         : APP_STRINGS.itinerary.actions.addSymbol;
+         ? Strings.itinerary.actions.remove
+         : Strings.itinerary.actions.addSymbol;
       button.classList.toggle('is-added', added);
       button.setAttribute('aria-pressed', String(added));
       button.setAttribute(
          'aria-label',
          added
-            ? APP_STRINGS.itinerary.aria.removeFromItinerary
-            : APP_STRINGS.itinerary.aria.addToItinerary
+            ? Strings.itinerary.aria.removeFromItinerary
+            : Strings.itinerary.aria.addToItinerary
       );
    }
 
@@ -173,7 +173,7 @@ export class ResultRenderer {
    }
 
    static createSelectorTextColumn({
-      title = APP_STRINGS.entityLabels.item,
+      title = Strings.entityLabels.item,
       titleSuffix = '',
       subtitle = '',
       infoLink = null,
@@ -259,7 +259,7 @@ export class ResultRenderer {
          const titleParts = typeof getTitleParts === 'function'
             ? getTitleParts(row)
             : null;
-         const title = getTitle(row) || APP_STRINGS.entityLabels.item;
+         const title = getTitle(row) || Strings.entityLabels.item;
          const titleSuffix = typeof getTitleSuffix === 'function'
             ? getTitleSuffix(row)
             : '';
@@ -277,7 +277,7 @@ export class ResultRenderer {
 
          return ResultRenderer.createSelectorRowContent({
             imageSrc,
-            imageAlt: titleForAlt ? APP_STRINGS.itinerary.itemImage(titleForAlt) : '',
+            imageAlt: titleForAlt ? Strings.itinerary.itemImage(titleForAlt) : '',
             textColumnEl: ResultRenderer.createSelectorTextColumn({
                title,
                titleSuffix,

@@ -1,5 +1,4 @@
-import { APP_STRINGS } from '../../strings.js';
-import { common } from '../../strings/common.js';
+import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class MultiTimeFieldController {
@@ -40,9 +39,9 @@ export class MultiTimeFieldController {
             removeButtonEl.className = 'console-operations-time-chip-remove';
             removeButtonEl.setAttribute(
                'aria-label',
-               APP_STRINGS.help.removeScheduledTime(time)
+               Strings.help.removeScheduledTime(time)
             );
-            removeButtonEl.textContent = common.closeSymbol;
+            removeButtonEl.textContent = Strings.common.closeSymbol;
             removeButtonEl.addEventListener('mousedown', (event) => {
                event.preventDefault();
             });

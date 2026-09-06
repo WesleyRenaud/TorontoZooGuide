@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class TransportationRoute {
    static createTransportationRouteController({
@@ -41,7 +41,7 @@ export class TransportationRoute {
 
       function validateForm({ route, startDate, endDate }) {
          if (!route) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.route);
+            return Strings.validation.entityRequired(Strings.labels.route);
          }
 
          return ControllerUtils.validateOptionalDateRange(startDate, endDate);
@@ -80,7 +80,7 @@ export class TransportationRoute {
       function handleSubmitSuccess(result) {
          Status.setStatus(
             statusEl,
-            APP_STRINGS.status.transportationRouteSet(result),
+            Strings.status.transportationRouteSet(result),
             'is-success'
          );
 
@@ -110,7 +110,7 @@ export class TransportationRoute {
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

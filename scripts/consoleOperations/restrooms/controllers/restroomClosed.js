@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RestroomClosed {
    static createRestroomClosedController({
@@ -20,9 +20,9 @@ export class RestroomClosed {
             endDate: endDate || null,
             message,
          }),
-         entityLabel: APP_STRINGS.entityLabels.restroom,
-         optionsLabel: APP_STRINGS.entityLabels.restrooms,
-         successMessage: result => APP_STRINGS.status.closed(result.restroom),
+         entityLabel: Strings.entityLabels.restroom,
+         optionsLabel: Strings.entityLabels.restrooms,
+         successMessage: result => Strings.status.closed(result.restroom),
       });
    }
 }

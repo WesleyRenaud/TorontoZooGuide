@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class WildEncounterScheduleRows {
@@ -26,7 +26,7 @@ export class WildEncounterScheduleRows {
 
    static validateWildEncounterScheduleRows(rows = []) {
       if (!rows.length) {
-         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes);
+         return Strings.validation.entityRequired(Strings.labels.encounterTimes);
       }
 
       const seenTimes = new Set();
@@ -35,17 +35,17 @@ export class WildEncounterScheduleRows {
          const normalized = WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(row);
 
          if (!normalized.time) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTime);
+            return Strings.validation.entityRequired(Strings.labels.encounterTime);
          }
 
          if (!WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.some(
             (day) => normalized[day]
          )) {
-            return APP_STRINGS.validation.encounterScheduleRowNeedsDay;
+            return Strings.validation.encounterScheduleRowNeedsDay;
          }
 
          if (seenTimes.has(normalized.time)) {
-            return APP_STRINGS.validation.duplicateEncounterTime;
+            return Strings.validation.duplicateEncounterTime;
          }
 
          seenTimes.add(normalized.time);

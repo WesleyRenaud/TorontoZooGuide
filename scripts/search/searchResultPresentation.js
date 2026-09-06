@@ -5,7 +5,7 @@ import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
 import { GuardiansTalkSelectorModel } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { WildEncounterSelectorModel } from '../itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 const SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
 
@@ -40,7 +40,7 @@ export class SearchResultPresentation {
 
    static buildLocationSummary(row, fallback) {
       return [
-         row.location ? APP_STRINGS.search.location(row.location) : null,
+         row.location ? Strings.search.location(row.location) : null,
          row.sub_location,
       ]
          .filter(Boolean)
@@ -61,36 +61,36 @@ export class SearchResultPresentation {
          getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,
       },
       transportationStation: buildNamedResultPresentation(
-         APP_STRINGS.entityLabels.transportationStation,
+         Strings.entityLabels.transportationStation,
          () => null
       ),
       attraction: buildNamedResultPresentation(
-         APP_STRINGS.entityLabels.attraction,
+         Strings.entityLabels.attraction,
          AttractionSelectorModel.getAttractionSubtitle
       ),
       giftShop: buildNamedResultPresentation(
-         APP_STRINGS.entityLabels.giftShop,
+         Strings.entityLabels.giftShop,
          (row) => SearchResultPresentation.buildLocationSummary(
             row,
-            APP_STRINGS.entityLabels.giftShop
+            Strings.entityLabels.giftShop
          )
       ),
       restroom: {
-         getTitle: (row) => row.title || APP_STRINGS.entityLabels.restroom,
+         getTitle: (row) => row.title || Strings.entityLabels.restroom,
          getSubtitle: () => null,
       },
       restaurant: buildNamedResultPresentation(
-         APP_STRINGS.entityLabels.restaurant,
+         Strings.entityLabels.restaurant,
          (row) => SearchResultPresentation.buildLocationSummary(
             row,
-            APP_STRINGS.entityLabels.restaurant
+            Strings.entityLabels.restaurant
          )
       ),
       pavilion: buildNamedResultPresentation(
-         APP_STRINGS.entityLabels.pavilion,
+         Strings.entityLabels.pavilion,
          (row) => row.region
-            ? APP_STRINGS.search.region(row.region)
-            : APP_STRINGS.entityLabels.pavilion
+            ? Strings.search.region(row.region)
+            : Strings.entityLabels.pavilion
       ),
    };
 

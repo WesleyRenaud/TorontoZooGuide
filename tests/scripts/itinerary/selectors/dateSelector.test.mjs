@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { DateSelector } from '../../../../scripts/itinerary/selectors/dateSelector.js';
 import { DateSelectorView } from '../../../../scripts/itinerary/selectors/dateSelectorView.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -35,12 +35,12 @@ test.describe('dateSelector', () => {
       assert.equal(view.root.className, 'itin-overlay');
       assert.equal(
          view.root.querySelector('.itin-h1')?.textContent,
-         APP_STRINGS.itinerary.selectors.titleDate
+         Strings.itinerary.selectors.titleDate
       );
       assert.equal(view.inputEl.className, 'itin-date-input');
       assert.equal(
          view.nextButtonEl.textContent,
-         APP_STRINGS.itinerary.actions.next
+         Strings.itinerary.actions.next
       );
    });
 

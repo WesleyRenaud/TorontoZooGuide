@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardSaveIssuesPopup } from '../../../../scripts/itinerary/wizard/wizardSaveIssuesPopup.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 
 const savedItinerary = {
    date: '2026-06-15',
@@ -66,11 +66,11 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupConfirmsCloseT
 
    assert.equal(
       proceedConfig?.title,
-      APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle
+      Strings.itinerary.confirmation.closeSaveIssuesTitle
    );
    assert.equal(
       proceedConfig?.message,
-      APP_STRINGS.itinerary.confirmation.proceedWithoutConflictSelectionMessage
+      Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage
    );
 
    proceedConfig?.onConfirm();

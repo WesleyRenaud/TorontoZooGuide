@@ -1,6 +1,5 @@
 import { ConsoleDatePickers } from '../../datePickers/consoleDatePickers.js';
-import { APP_STRINGS } from '../../strings.js';
-import { common } from '../../strings/common.js';
+import { Strings } from '../../strings.js';
 import { WildEncounterScheduleRows } from './wildEncounterScheduleRows.js';
 
 function createDayCheckbox({
@@ -42,8 +41,8 @@ function createScheduleRow({
    timeInputEl.id = `wildEncounterScheduleRow${rowIndex}Time`;
    timeInputEl.type = 'text';
    timeInputEl.className = 'console-operations-input console-operations-datetime';
-   timeInputEl.placeholder = APP_STRINGS.placeholders.time;
-   timeInputEl.setAttribute('aria-label', APP_STRINGS.labels.encounterTime);
+   timeInputEl.placeholder = Strings.placeholders.time;
+   timeInputEl.setAttribute('aria-label', Strings.labels.encounterTime);
    timeInputEl.autocomplete = 'off';
 
    const normalizedRow = WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(initialRow);
@@ -63,7 +62,7 @@ function createScheduleRow({
       const { inputEl, optionLabelEl } = createDayCheckbox({
          rowIndex,
          dayKey,
-         label: APP_STRINGS.schedule.dayLabels[dayKey],
+         label: Strings.schedule.dayLabels[dayKey],
          checked: normalizedRow[dayKey],
       });
 
@@ -84,9 +83,9 @@ function createScheduleRow({
       removeButtonEl.className = 'console-operations-schedule-row-remove';
       removeButtonEl.setAttribute(
          'aria-label',
-         APP_STRINGS.help.removeEncounterScheduleRow
+         Strings.help.removeEncounterScheduleRow
       );
-      removeButtonEl.textContent = common.closeSymbol;
+      removeButtonEl.textContent = Strings.common.closeSymbol;
       removeSlotEl.appendChild(removeButtonEl);
    }
 

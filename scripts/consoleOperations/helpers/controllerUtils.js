@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { PanelNavigator } from '../shell/panelNavigator.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class ControllerUtils {
@@ -79,11 +79,11 @@ export class ControllerUtils {
       const endMs = new Date(endDate).getTime();
 
       if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-         return APP_STRINGS.validation.dateRangeInvalid;
+         return Strings.validation.dateRangeInvalid;
       }
 
       if (endMs < startMs) {
-         return APP_STRINGS.validation.endDateBeforeStartDate;
+         return Strings.validation.endDateBeforeStartDate;
       }
 
       return null;

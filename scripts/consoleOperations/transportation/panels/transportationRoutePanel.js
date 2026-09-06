@@ -1,36 +1,30 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createRadioGroupField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class TransportationRoutePanel {
    static createTransportationRoutePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'transportationRoutePanel',
-         title: APP_STRINGS.panelTitles.transportationRoute,
+         title: Strings.panelTitles.transportationRoute,
          bodyChildren: [
-            createRadioGroupField({
-               label: APP_STRINGS.labels.route,
+            Fragments.createRadioGroupField({
+               label: Strings.labels.route,
                name: 'transportationRoute',
                options: [
-                  { id: 'transportationRouteSummer', value: 'summer', label: APP_STRINGS.schedule.routeLabels.summer },
-                  { id: 'transportationRouteWinter', value: 'winter', label: APP_STRINGS.schedule.routeLabels.winter },
+                  { id: 'transportationRouteSummer', value: 'summer', label: Strings.schedule.routeLabels.summer },
+                  { id: 'transportationRouteWinter', value: 'winter', label: Strings.schedule.routeLabels.winter },
                ],
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'transportationRouteStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'transportationRouteEndDate',
-               endHelpText: APP_STRINGS.help.keepRouteUntilChanged,
+               endHelpText: Strings.help.keepRouteUntilChanged,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitTransportationRoute',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'transportationRouteStatus',
             }),
          ],

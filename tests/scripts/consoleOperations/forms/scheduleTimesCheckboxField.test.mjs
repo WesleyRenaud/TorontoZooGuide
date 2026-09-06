@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { APP_STRINGS } from '../../../../scripts/strings.js';
-import {
-   createScheduleTimesCheckboxField,
-} from '../../../../scripts/consoleOperations/templates/fragments.js';
+import { Strings } from '../../../../scripts/strings.js';
+import { Fragments } from '../../../../scripts/consoleOperations/templates/fragments.js';
 import { ScheduleTimesCheckboxField } from '../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -20,7 +18,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    installDomTestHooks();
 
    test('Test_CreateScheduleTimesCheckboxField_TestIdle_ExpectPlaceholder', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesIdle',
       });
@@ -30,12 +28,12 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
       assert.equal(listEl.hidden, false);
       assert.equal(
          placeholderEl?.textContent,
-         APP_STRINGS.placeholders.selectWildEncounterFirst
+         Strings.placeholders.selectWildEncounterFirst
       );
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestTimes_ExpectUnchecked', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimes',
       });
@@ -53,7 +51,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestSingleTime_ExpectAutoSelect', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingle',
       });
@@ -72,7 +70,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_UpdateScheduleTimesCheckboxList_TestSingleOccurrence_ExpectAutoSelect', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingleUpdate',
       });
@@ -89,7 +87,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestEmpty_ExpectNoTimesMessage', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesEmpty',
       });
@@ -102,12 +100,12 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
       assert.equal(listEl.hidden, false);
       assert.equal(
          placeholderEl?.textContent,
-         APP_STRINGS.help.noScheduledEncounterTimes
+         Strings.help.noScheduledEncounterTimes
       );
    });
 
    test('Test_ResetScheduleTimesCheckboxList_TestReset_ExpectIdlePlaceholder', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesReset',
       });
@@ -118,12 +116,12 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
 
       assert.equal(
          listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
-         APP_STRINGS.placeholders.selectWildEncounterFirst
+         Strings.placeholders.selectWildEncounterFirst
       );
    });
 
    test('Test_UpdateScheduleTimesCheckboxList_TestEncounterNoDate_ExpectSelectDate', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelectDate',
       });
@@ -137,12 +135,12 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
 
       assert.equal(
          listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
-         APP_STRINGS.placeholders.selectDateFirst
+         Strings.placeholders.selectDateFirst
       );
    });
 
    test('Test_GetSelectedScheduleTimes_TestChecked_ExpectValues', () => {
-      const fieldEl = createScheduleTimesCheckboxField({
+      const fieldEl = Fragments.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelected',
       });

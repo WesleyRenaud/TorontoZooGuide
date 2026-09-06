@@ -1,5 +1,5 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function makeToggleButton({ label, view, activeView, onSelect }) {
    const button = Dom.el('button', 'itin-panel-view-toggle-button', label);
@@ -48,7 +48,7 @@ export class ItineraryPanelViews {
 
       toggle.appendChild(
          makeToggleButton({
-            label: APP_STRINGS.itinerary.dayPlanner.listViewLabel,
+            label: Strings.itinerary.dayPlanner.listViewLabel,
             view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
             activeView,
             onSelect: selectView,
@@ -56,7 +56,7 @@ export class ItineraryPanelViews {
       );
       toggle.appendChild(
          makeToggleButton({
-            label: APP_STRINGS.itinerary.dayPlanner.dayPlannerLabel,
+            label: Strings.itinerary.dayPlanner.dayPlannerLabel,
             view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner,
             activeView,
             onSelect: selectView,

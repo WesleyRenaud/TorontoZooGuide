@@ -2,7 +2,7 @@ import { WarningIcon } from '../../assets/warningIcon.js';
 import { Popup } from '../../itinerary/panel/components/popup.js';
 import { Dom } from '../../itinerary/panel/dom.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const ROOT_SELECTOR = '.console-overlap-dialog-root';
 
@@ -36,27 +36,27 @@ function createDialogLayout() {
    const actions = Dom.el('div', 'console-overlap-dialog-actions');
    const cancelButton = createDialogButton(
       'console-overlap-dialog-cancel',
-      APP_STRINGS.itinerary.actions.cancel
+      Strings.itinerary.actions.cancel
    );
    const replaceButton = createDialogButton(
       'console-overlap-dialog-action',
-      APP_STRINGS.confirm.deleteOldSchedules
+      Strings.confirm.deleteOldSchedules
    );
    const trimButton = createDialogButton(
       'console-overlap-dialog-action',
-      APP_STRINGS.confirm.trimOldSchedules
+      Strings.confirm.trimOldSchedules
    );
 
    card.setAttribute('role', 'dialog');
    card.setAttribute('aria-modal', 'true');
-   card.setAttribute('aria-label', APP_STRINGS.confirm.openingScheduleOverlapTitle);
+   card.setAttribute('aria-label', Strings.confirm.openingScheduleOverlapTitle);
 
    header.append(
       createDialogWarningIcon(),
-      Dom.el('h2', 'console-overlap-dialog-title', APP_STRINGS.confirm.openingScheduleOverlapTitle)
+      Dom.el('h2', 'console-overlap-dialog-title', Strings.confirm.openingScheduleOverlapTitle)
    );
    body.appendChild(
-      Dom.el('p', 'console-overlap-dialog-message', APP_STRINGS.confirm.openingScheduleOverlapMessage)
+      Dom.el('p', 'console-overlap-dialog-message', Strings.confirm.openingScheduleOverlapMessage)
    );
    actions.append(cancelButton, replaceButton, trimButton);
    card.append(header, body, actions);

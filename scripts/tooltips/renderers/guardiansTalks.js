@@ -3,13 +3,13 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { OpenGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class GuardiansTalks {
    static key = 'guardiansTalk';
 
    static createCard(t, index) {
-      const name = t.name || APP_STRINGS.entityLabels.guardiansTalk;
+      const name = t.name || Strings.entityLabels.guardiansTalk;
       const normalizedName = AssetKeyNormalizer.normalize(name);
       const times = MapOccurrenceTimesFormatter.format(t);
       const linkedAnimal = OpenGuardiansTalkLinkedAnimal.getGuardiansTalkLinkedAnimal(t);
@@ -35,9 +35,9 @@ export class GuardiansTalks {
          },
          title,
          details: [
-            APP_STRINGS.search.location(t.location),
-            times ? APP_STRINGS.tooltips.times(times) : '',
-            APP_STRINGS.tooltips.description(APP_STRINGS.tooltips.guardiansTalkDescription),
+            Strings.search.location(t.location),
+            times ? Strings.tooltips.times(times) : '',
+            Strings.tooltips.description(Strings.tooltips.guardiansTalkDescription),
          ],
       });
    }

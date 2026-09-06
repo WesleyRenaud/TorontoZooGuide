@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class GiftShopClosureOverridePanel {
    static createGiftShopClosureOverridePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'giftShopClosureOverridePanel',
-         title: APP_STRINGS.panelTitles.giftShopClosureOverride,
+         title: Strings.panelTitles.giftShopClosureOverride,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.giftShop,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.giftShop,
                inputId: 'giftShopClosureOverrideGiftShop',
-               emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
+               emptyOptionLabel: Strings.placeholders.giftShop,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'giftShopClosureOverrideStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'giftShopClosureOverrideEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened('gift shop'),
+               endHelpText: Strings.help.continueUntilReopened('gift shop'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'giftShopClosureOverrideMessage',
-               placeholder: APP_STRINGS.textareas.closedMessage('gift shop'),
+               placeholder: Strings.textareas.closedMessage('gift shop'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitGiftShopClosureOverride',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'giftShopClosureOverrideStatus',
             }),
          ],

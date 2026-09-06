@@ -3,23 +3,23 @@ import { Popup } from './components/popup.js';
 import { Format } from './format.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 
 function resolveItemTypeMeta(item) {
    if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
       return {
          itemType: ItinerarySaveIssueItemType.guardiansTalk,
-         typeLabel: APP_STRINGS.entityLabels.guardiansTalk,
-         typePhrase: APP_STRINGS.entityPhrases.guardiansTalk,
+         typeLabel: Strings.entityLabels.guardiansTalk,
+         typePhrase: Strings.entityPhrases.guardiansTalk,
       };
    }
 
    if (ScheduleConflictCompatibility.isWildEncounterConflictItem(item)) {
       return {
          itemType: ItinerarySaveIssueItemType.wildEncounter,
-         typeLabel: APP_STRINGS.entityLabels.wildEncounter,
-         typePhrase: APP_STRINGS.entityPhrases.wildEncounter,
+         typeLabel: Strings.entityLabels.wildEncounter,
+         typePhrase: Strings.entityPhrases.wildEncounter,
       };
    }
 
@@ -97,7 +97,7 @@ export class FixedTimeItemLongWaitConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const items = FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues);
 
       // Multi-item long waits use showItineraryBuildWarningsConfirmation.
@@ -111,7 +111,7 @@ export class FixedTimeItemLongWaitConfirmation {
          title: strings.fixedTimeItemLongWaitTitle(item.typeLabel),
          message: longWaitConfirmMessage(item, strings),
          confirmText: strings.saveIssuesButton,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,
          onCancel,

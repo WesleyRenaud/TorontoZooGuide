@@ -8,7 +8,7 @@ import {
    getAnimalSpecies,
    getAnimalSubtitle,
 } from './model.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createLikelihoodWarning(level) {
    if (!level) {
@@ -19,8 +19,8 @@ function createLikelihoodWarning(level) {
    warning.className = `itin-likelihood-warning ${level}`;
    warning.appendChild(WarningIcon.createWarningIcon());
    warning.title = level === 'low'
-      ? APP_STRINGS.itinerary.selectors.lowVisibilityHint
-      : APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay;
+      ? Strings.itinerary.selectors.lowVisibilityHint
+      : Strings.itinerary.confirmation.animalMayBeOffDisplay;
 
    return warning;
 }
@@ -50,7 +50,7 @@ export class View {
 
       return ResultRenderer.createSelectorRowContent({
          imageSrc,
-         imageAlt: APP_STRINGS.itinerary.itemPhoto(species),
+         imageAlt: Strings.itinerary.itemPhoto(species),
          textColumnEl: ResultRenderer.createSelectorTextColumn({
             subtitle,
             titleNode: titleWrap,
@@ -71,7 +71,7 @@ export class View {
       checkbox.checked = false;
 
       const text = document.createElement('span');
-      text.textContent = APP_STRINGS.itinerary.selectors.includeOffDisplayAnimals;
+      text.textContent = Strings.itinerary.selectors.includeOffDisplayAnimals;
 
       checkbox.addEventListener('change', () => {
          onChange?.(checkbox.checked);

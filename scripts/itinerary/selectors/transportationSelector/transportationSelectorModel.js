@@ -3,7 +3,7 @@ import { ItineraryTransportationStationRoles } from '../../itineraryTransportati
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { TransportationScheduleItemKey } from './transportationScheduleItemKey.js';
 
 function asObject(value) {
@@ -179,11 +179,11 @@ export class TransportationSelectorModel {
       }
 
       if (firstStation && lastStation && firstStation !== lastStation) {
-         return APP_STRINGS.labels.transportationStations(firstStation, lastStation);
+         return Strings.labels.transportationStations(firstStation, lastStation);
       }
 
       if (firstStation && lastStation) {
-         return APP_STRINGS.labels.transportationRoundTrip(firstStation);
+         return Strings.labels.transportationRoundTrip(firstStation);
       }
 
       return firstStation || lastStation;
@@ -207,7 +207,7 @@ export class TransportationSelectorModel {
 
    static getTransportationTitle(row) {
       return TransportationSelectorModel.getTransportationName(row)
-         || APP_STRINGS.entityLabels.transportation;
+         || Strings.entityLabels.transportation;
    }
 
    static isAlsoAttractionTransportation(row) {
@@ -226,7 +226,7 @@ export class TransportationSelectorModel {
    }
 
    static buildAddAsTransportationMessage(row) {
-      return APP_STRINGS.itinerary.confirmation.addAsTransportationMessage(
+      return Strings.itinerary.confirmation.addAsTransportationMessage(
          TransportationSelectorModel.getTransportationName(row)
       );
    }
@@ -238,8 +238,8 @@ export class TransportationSelectorModel {
    static getTransportationSubtitle(row) {
       return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: TransportationSelectorModel.isFreeWithAdmissionTransportation(row)
-            ? APP_STRINGS.search.freeWithAdmission
-            : APP_STRINGS.search.extraCharge,
+            ? Strings.search.freeWithAdmission
+            : Strings.search.extraCharge,
          timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange({
             start_time: row?.open_time,
             end_time: row?.close_time,

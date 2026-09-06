@@ -1,36 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSchedulePresetField,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createWeeklyScheduleCheckboxes,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class GiftShopOpeningSchedulePanel {
    static createGiftShopOpeningSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'giftShopOpeningSchedulePanel',
-         title: APP_STRINGS.panelTitles.giftShopOpeningSchedule,
+         title: Strings.panelTitles.giftShopOpeningSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.giftShop,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.giftShop,
                inputId: 'giftShopOpeningScheduleGiftShop',
-               emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
+               emptyOptionLabel: Strings.placeholders.giftShop,
             }),
-            createSchedulePresetField({
+            Fragments.createSchedulePresetField({
                inputId: 'giftShopOpeningSchedulePreset',
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'giftShopOpeningScheduleStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'giftShopOpeningScheduleEndDate',
-               endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
+               endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            createWeeklyScheduleCheckboxes({
+            Fragments.createWeeklyScheduleCheckboxes({
                dayIds: {
                   monday: 'giftShopOpeningScheduleMonday',
                   tuesday: 'giftShopOpeningScheduleTuesday',
@@ -42,15 +33,15 @@ export class GiftShopOpeningSchedulePanel {
                   holidays: 'giftShopOpeningScheduleHolidaysOnly',
                },
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.scheduleMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.scheduleMessage,
                inputId: 'giftShopOpeningScheduleMessage',
-               placeholder: APP_STRINGS.textareas.scheduledClosedMessage('gift shop'),
+               placeholder: Strings.textareas.scheduledClosedMessage('gift shop'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitGiftShopOpeningSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'giftShopOpeningScheduleStatus',
             }),
          ],

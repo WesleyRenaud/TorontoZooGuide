@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { SaveIssuesProceedConfirmation } from '../../../../scripts/itinerary/wizard/saveIssuesProceedConfirmation.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
@@ -34,7 +34,7 @@ test.describe('saveIssuesProceedConfirmation', () => {
       assert.equal(message?.textContent, 'Save issues message');
       assert.equal(
          confirmButton?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedAnyway
+         Strings.itinerary.confirmation.proceedAnyway
       );
       assert.equal(popup.querySelector('.tzg-popup-do-not-show-again'), null);
 

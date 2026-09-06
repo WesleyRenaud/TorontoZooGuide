@@ -4,7 +4,7 @@ import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { RegionStorage } from './regionSelector/regionStorage.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
 function getAnimalTitle(row) {
@@ -38,10 +38,10 @@ function shouldConfirmOffDisplayAnimal({
 
 function promptForOffDisplayAnimalSelection(row, proceed) {
    ConfirmPopup.showItineraryConfirmPopup({
-      title: APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay,
+      title: Strings.itinerary.confirmation.animalMayBeOffDisplay,
       message: AnimalSelectorModel.buildOffDisplayWarningMessage(row),
-      confirmText: APP_STRINGS.itinerary.actions.add,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
+      confirmText: Strings.itinerary.actions.add,
+      cancelText: Strings.itinerary.actions.cancel,
       onConfirm: proceed,
    });
 }
@@ -81,10 +81,10 @@ export class AnimalSelector {
 
          makeSelection: AnimalSelectorModel.makeAnimalSelection,
 
-         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-         h1: APP_STRINGS.itinerary.selectors.titleAnimals,
-         subtitle: APP_STRINGS.itinerary.selectors.animalSubtitle,
-         emptyText: APP_STRINGS.itinerary.emptyText.animals,
+         topTitle: Strings.itinerary.selectors.builderTitle,
+         h1: Strings.itinerary.selectors.titleAnimals,
+         subtitle: Strings.itinerary.selectors.animalSubtitle,
+         emptyText: Strings.itinerary.emptyText.animals,
 
          renderRowLeft: View.renderAnimalSelectorRowLeft,
 

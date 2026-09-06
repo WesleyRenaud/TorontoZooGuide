@@ -2,7 +2,7 @@ import { Popup } from './popup.js';
 import { ScheduleItemModuleController } from './scheduleItemModuleController.js';
 import { ScheduleItemModuleForm } from './scheduleItemModuleForm.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -22,7 +22,7 @@ export class ShowScheduleItemModule {
       onScheduled = null,
       preselectedRow = null,
    } = {}) {
-      const strings = APP_STRINGS.itinerary.scheduleItem;
+      const strings = Strings.itinerary.scheduleItem;
       const {
          body: moduleBodyEl,
          scheduleTimeFields,
@@ -41,7 +41,7 @@ export class ShowScheduleItemModule {
             {
                key: 'cancel',
                className: 'itin-prev',
-               text: APP_STRINGS.itinerary.actions.cancel,
+               text: Strings.itinerary.actions.cancel,
             },
             {
                key: 'schedule',

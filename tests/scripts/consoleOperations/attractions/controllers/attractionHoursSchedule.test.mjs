@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { AttractionHoursSchedule } from '../../../../../scripts/consoleOperations/attractions/controllers/attractionHoursSchedule.js';
 import { ConsoleDatePickers } from '../../../../../scripts/datePickers/consoleDatePickers.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 const WEEKDAY_BOUNDS = {
@@ -81,7 +81,7 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValida
 
    assert.equal(
       controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.attractionHoursTimesRequired
+      Strings.validation.attractionHoursTimesRequired
    );
 });
 
@@ -92,8 +92,8 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectV
 
    assert.equal(
       controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.entityRequired(
-         APP_STRINGS.entityLabels.attraction
+      Strings.validation.entityRequired(
+         Strings.entityLabels.attraction
       )
    );
 });
@@ -106,7 +106,7 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValida
 
    assert.equal(
       controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.attractionHoursWeekdayOrder
+      Strings.validation.attractionHoursWeekdayOrder
    );
 });
 
@@ -118,7 +118,7 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValida
 
    assert.equal(
       controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.attractionHoursWeekendHolidayOrder
+      Strings.validation.attractionHoursWeekendHolidayOrder
    );
 });
 
@@ -147,7 +147,7 @@ test('Test_CreateAttractionHoursScheduleController_TestEndBeforeStart_ExpectVali
 
    assert.equal(
       controller.validateForm(controller.getFormValues()),
-      APP_STRINGS.validation.endDateBeforeStartDate
+      Strings.validation.endDateBeforeStartDate
    );
 });
 

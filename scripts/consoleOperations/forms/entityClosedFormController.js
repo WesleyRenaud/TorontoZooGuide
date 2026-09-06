@@ -1,7 +1,7 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { Status } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class EntityClosedFormController {
    static createEntityClosedFormController({
@@ -18,10 +18,10 @@ export class EntityClosedFormController {
       loadOptions,
       populateOptions,
       submitClosedStatus,
-      entityLabel = APP_STRINGS.entityLabels.item,
-      optionsLabel = APP_STRINGS.entityLabels.items,
-      loadErrorMessage = APP_STRINGS.loadErrors.entityOptions(optionsLabel),
-      successMessage = () => APP_STRINGS.status.closed(entityLabel),
+      entityLabel = Strings.entityLabels.item,
+      optionsLabel = Strings.entityLabels.items,
+      loadErrorMessage = Strings.loadErrors.entityOptions(optionsLabel),
+      successMessage = () => Strings.status.closed(entityLabel),
    } = {}) {
       const formFieldEls = [entityEl, startDateEl, endDateEl, messageEl];
       const hasDateRange = Boolean(startDateEl || endDateEl);
@@ -38,7 +38,7 @@ export class EntityClosedFormController {
 
       function validateForm({ entity, startDate, endDate }) {
          if (!entity) {
-            return APP_STRINGS.validation.entityRequired(entityLabel);
+            return Strings.validation.entityRequired(entityLabel);
          }
 
          if (!hasDateRange) {
@@ -112,7 +112,7 @@ export class EntityClosedFormController {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

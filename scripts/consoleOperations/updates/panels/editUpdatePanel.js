@@ -1,49 +1,41 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { labels } from '../../../strings/common.js';
-import {
-   createActions,
-   createDateField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class EditUpdatePanel {
    static createEditUpdatePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'editUpdatePanel',
-         title: APP_STRINGS.panelTitles.editUpdate,
+         title: Strings.panelTitles.editUpdate,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.update,
+            Fragments.createSelectField({
+               label: Strings.labels.update,
                inputId: 'editUpdateKey',
-               emptyOptionLabel: APP_STRINGS.placeholders.update,
+               emptyOptionLabel: Strings.placeholders.update,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.description,
+            Fragments.createTextareaField({
+               label: Strings.labels.description,
                inputId: 'editUpdateDescription',
-               placeholder: APP_STRINGS.textareas.currentDescription,
+               placeholder: Strings.textareas.currentDescription,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.type,
+            Fragments.createSelectField({
+               label: Strings.labels.type,
                inputId: 'editUpdateType',
-               emptyOptionLabel: APP_STRINGS.placeholders.option,
+               emptyOptionLabel: Strings.placeholders.option,
                options: [
-                  ...APP_STRINGS.updateTypes,
-                  { value: labels.departure },
+                  ...Strings.updateTypes,
+                  { value: Strings.labels.departure },
                ],
             }),
-            createDateField({
-               label: APP_STRINGS.labels.endDate,
+            Fragments.createDateField({
+               label: Strings.labels.endDate,
                inputId: 'editUpdateEndDate',
-               placeholder: APP_STRINGS.placeholders.newEndDate,
-               helpText: APP_STRINGS.help.keepUpdateActiveWithoutEndDate,
+               placeholder: Strings.placeholders.newEndDate,
+               helpText: Strings.help.keepUpdateActiveWithoutEndDate,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitEditUpdate',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'editUpdateStatus',
             }),
          ],
