@@ -277,56 +277,57 @@ function wireControllerBindings({
    });
 }
 
-export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters }) {
-   return {
-      guardiansTalkScheduleLocationFilterController:
-         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
-            locationEl: guardiansTalks.schedule.locationEl,
-            talkNameEl: guardiansTalks.schedule.talkNameEl,
-         }),
-      endGuardiansTalkScheduleLocationFilterController:
-         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
-            locationEl: guardiansTalks.endSchedule.locationEl,
-            talkNameEl: guardiansTalks.endSchedule.talkNameEl,
-         }),
-      addGuardiansTalkOccurrenceLocationFilterController:
-         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
-            locationEl: guardiansTalks.addOccurrence.locationEl,
-            talkNameEl: guardiansTalks.addOccurrence.talkNameEl,
-         }),
-      cancelGuardiansTalkOccurrenceLocationFilterController:
-         GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
-            locationEl: guardiansTalks.cancelOccurrence.locationEl,
-            talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
-         }),
-      cancelGuardiansTalkOccurrenceFilterController:
-         GuardiansTalkOccurrenceFilter.createGuardiansTalkOccurrenceFilterController({
-            locationEl: guardiansTalks.cancelOccurrence.locationEl,
-            talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
-            dateEl: guardiansTalks.cancelOccurrence.dateEl,
-            timesEl: guardiansTalks.cancelOccurrence.timesEl,
-         }),
-      guardiansTalkScheduleTimesFilterController:
-         GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
-            locationEl: guardiansTalks.endSchedule.locationEl,
-            talkNameEl: guardiansTalks.endSchedule.talkNameEl,
-            timesEl: guardiansTalks.endSchedule.timesEl,
-         }),
-      wildEncounterOccurrenceFilterController:
-         WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
-            wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
-            dateEl: wildEncounters.cancelOccurrence.dateEl,
-            timesEl: wildEncounters.cancelOccurrence.timesEl,
-         }),
-      wildEncounterScheduleTimesFilterController:
-         WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
-            wildEncounterEl: wildEncounters.endSchedule.wildEncounterEl,
-            timesEl: wildEncounters.endSchedule.timesEl,
-         }),
-   };
-}
+export class Controllers {
+   static createConsoleSpecialControllers({ guardiansTalks, wildEncounters }) {
+      return {
+         guardiansTalkScheduleLocationFilterController:
+            GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+               locationEl: guardiansTalks.schedule.locationEl,
+               talkNameEl: guardiansTalks.schedule.talkNameEl,
+            }),
+         endGuardiansTalkScheduleLocationFilterController:
+            GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+               locationEl: guardiansTalks.endSchedule.locationEl,
+               talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+            }),
+         addGuardiansTalkOccurrenceLocationFilterController:
+            GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+               locationEl: guardiansTalks.addOccurrence.locationEl,
+               talkNameEl: guardiansTalks.addOccurrence.talkNameEl,
+            }),
+         cancelGuardiansTalkOccurrenceLocationFilterController:
+            GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+               locationEl: guardiansTalks.cancelOccurrence.locationEl,
+               talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
+            }),
+         cancelGuardiansTalkOccurrenceFilterController:
+            GuardiansTalkOccurrenceFilter.createGuardiansTalkOccurrenceFilterController({
+               locationEl: guardiansTalks.cancelOccurrence.locationEl,
+               talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
+               dateEl: guardiansTalks.cancelOccurrence.dateEl,
+               timesEl: guardiansTalks.cancelOccurrence.timesEl,
+            }),
+         guardiansTalkScheduleTimesFilterController:
+            GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
+               locationEl: guardiansTalks.endSchedule.locationEl,
+               talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+               timesEl: guardiansTalks.endSchedule.timesEl,
+            }),
+         wildEncounterOccurrenceFilterController:
+            WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
+               wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
+               dateEl: wildEncounters.cancelOccurrence.dateEl,
+               timesEl: wildEncounters.cancelOccurrence.timesEl,
+            }),
+         wildEncounterScheduleTimesFilterController:
+            WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
+               wildEncounterEl: wildEncounters.endSchedule.wildEncounterEl,
+               timesEl: wildEncounters.endSchedule.timesEl,
+            }),
+      };
+   }
 
-export function wireConsoleOperationControllers({
+   static wireConsoleOperationControllers({
    refs,
    activatePanel,
    guardiansTalkScheduleLocationFilterController,
@@ -338,20 +339,21 @@ export function wireConsoleOperationControllers({
    wildEncounterOccurrenceFilterController,
    wildEncounterScheduleTimesFilterController,
 }) {
-   initAnimalSpeciesAutocompletes(refs.animals);
+      initAnimalSpeciesAutocompletes(refs.animals);
 
-   wireControllerBindings({
-      refs,
-      activatePanel,
-      specialControllers: {
-         guardiansTalkScheduleLocationFilterController,
-         endGuardiansTalkScheduleLocationFilterController,
-         addGuardiansTalkOccurrenceLocationFilterController,
-         cancelGuardiansTalkOccurrenceLocationFilterController,
-         cancelGuardiansTalkOccurrenceFilterController,
-         guardiansTalkScheduleTimesFilterController,
-         wildEncounterOccurrenceFilterController,
-         wildEncounterScheduleTimesFilterController,
-      },
-   });
+      wireControllerBindings({
+         refs,
+         activatePanel,
+         specialControllers: {
+            guardiansTalkScheduleLocationFilterController,
+            endGuardiansTalkScheduleLocationFilterController,
+            addGuardiansTalkOccurrenceLocationFilterController,
+            cancelGuardiansTalkOccurrenceLocationFilterController,
+            cancelGuardiansTalkOccurrenceFilterController,
+            guardiansTalkScheduleTimesFilterController,
+            wildEncounterOccurrenceFilterController,
+            wildEncounterScheduleTimesFilterController,
+         },
+      });
+   }
 }

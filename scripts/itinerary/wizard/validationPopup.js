@@ -1,6 +1,6 @@
 import { Summary } from './diff/summary.js';
 import { RemovedItemsPopup } from '../../itinerary/panel/components/removedItemsPopup.js';
-import { acceptItinerary } from '../itineraryService.js';
+import { ItineraryService } from '../itineraryService.js';
 
 export class ValidationPopup {
    static showWizardValidationPopupIfNeeded({
@@ -37,7 +37,7 @@ export class ValidationPopup {
          adjustments,
          isEmptyItinerary,
          onAccept: ({ animalsToKeep = [], attractionsToKeep = [] } = {}) => {
-            void acceptItinerary({ animalsToKeep, attractionsToKeep });
+            void ItineraryService.acceptItinerary({ animalsToKeep, attractionsToKeep });
          },
          onDismiss: () => {},
          onViewAlternatives,

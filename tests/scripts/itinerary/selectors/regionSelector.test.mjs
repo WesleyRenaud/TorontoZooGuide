@@ -1,24 +1,13 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import {
-   createItineraryRegionSelectorController,
-   shouldSkipRegionSelectionSync,
-} from '../../scripts/itinerary/selectors/regionSelector.js';
-import { DraftStorage } from '../../scripts/itinerary/draftStorage.js';
-import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import {
-   createDomNode,
-   installDocument,
-   installTestWindow,
-   teardownDocument,
-} from './helpers/domMock.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-import {
-   clickExhibitToggle,
-   clickRegionToggle,
-} from './helpers/regionSelectorDom.mjs';
-import { mockRegionSelectorFetch } from './helpers/fetchMock.mjs';
+import { RegionSelector } from '../../../../scripts/itinerary/selectors/regionSelector.js';
+import { DraftStorage } from '../../../../scripts/itinerary/draftStorage.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
+import { createDomNode, installDocument, installTestWindow, teardownDocument } from '../../helpers/domMock.mjs';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
+import { clickExhibitToggle, clickRegionToggle } from '../../helpers/regionSelectorDom.mjs';
+import { mockRegionSelectorFetch } from '../../helpers/fetchMock.mjs';
 
 async function flushAsyncWork() {
    await new Promise((resolve) => {
@@ -41,11 +30,11 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('shouldSkipRegionSelectionSync ignores matching fingerprint after UI toggles', () => {
+test('Test_RegionSelector_TestRegionSelectorShouldSkipRegionSelectionSyncIgnoresMatchingFingerprintAfterUIToggles_ExpectOk', () => {
    const fingerprint = ['Africa Savanna', 'Eurasia Wilds'].join('\0');
 
    assert.equal(
-      shouldSkipRegionSelectionSync({
+      RegionSelector.shouldSkipRegionSelectionSync({
          fingerprintAtShow: fingerprint,
          fingerprintNow: fingerprint,
          selectionChangedSinceShow: false,
@@ -53,7 +42,7 @@ test('shouldSkipRegionSelectionSync ignores matching fingerprint after UI toggle
       true
    );
    assert.equal(
-      shouldSkipRegionSelectionSync({
+      RegionSelector.shouldSkipRegionSelectionSync({
          fingerprintAtShow: fingerprint,
          fingerprintNow: fingerprint,
          selectionChangedSinceShow: true,
@@ -62,7 +51,7 @@ test('shouldSkipRegionSelectionSync ignores matching fingerprint after UI toggle
    );
 });
 
-test('region selector skips animal rebuild when exhibit selection is unchanged', async () => {
+test('Test_Region_TestRegionSelectorSkipsAnimalRebuildWhenExhibitSelection_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
@@ -77,7 +66,7 @@ test('region selector skips animal rebuild when exhibit selection is unchanged',
    const mountEl = createDomNode('div');
    let nextPayload;
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onNext: (animals) => {
          nextPayload = animals;
@@ -93,7 +82,7 @@ test('region selector skips animal rebuild when exhibit selection is unchanged',
    assert.equal(nextPayload, null);
 });
 
-test('region selector rebuilds animals after re-selecting an exhibit in the UI', async () => {
+test('Test_Region_TestRegionSelectorRebuildsAnimalsAfterReSelectingAn_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
@@ -118,7 +107,7 @@ test('region selector rebuilds animals after re-selecting an exhibit in the UI',
    const mountEl = createDomNode('div');
    let nextPayload;
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onNext: (animals) => {
          nextPayload = animals;
@@ -151,11 +140,11 @@ test('region selector rebuilds animals after re-selecting an exhibit in the UI',
    assert.equal(controller.shouldSkipClosingSelectionSync(), true);
 });
 
-test('region selector hide clears the mount element', async () => {
+test('Test_Region_TestRegionSelectorHideClearsTheMountElement_ExpectOk', async () => {
    mockRegionSelectorFetch();
 
    const mountEl = createDomNode('div');
-   const controller = createItineraryRegionSelectorController({ mountEl });
+   const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
 
    await controller.show();
    assert.equal(mountEl.children.length, 1);
@@ -164,21 +153,21 @@ test('region selector hide clears the mount element', async () => {
    assert.equal(mountEl.children.length, 0);
 });
 
-test('region selector no-ops show and hide without a mount element', async () => {
-   const controller = createItineraryRegionSelectorController({ mountEl: null });
+test('Test_Region_TestRegionSelectorNoOpsShowAndHideWithout_ExpectOk', async () => {
+   const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl: null });
 
    await controller.show();
    controller.hide();
 });
 
-test('region selector routes close and prev actions', async () => {
+test('Test_Region_TestRegionSelectorRoutesCloseAndPrevActions_ExpectOk', async () => {
    mockRegionSelectorFetch();
 
    const mountEl = createDomNode('div');
    const closeCalls = [];
    const prevCalls = [];
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onClose: () => {
          closeCalls.push('close');
@@ -198,7 +187,7 @@ test('region selector routes close and prev actions', async () => {
    assert.deepEqual(prevCalls, [null]);
 });
 
-test('region selector prev rebuilds animals after toggling an exhibit', async () => {
+test('Test_Region_TestRegionSelectorPrevRebuildsAnimalsAfterTogglingAn_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
@@ -228,7 +217,7 @@ test('region selector prev rebuilds animals after toggling an exhibit', async ()
    const mountEl = createDomNode('div');
    let prevPayload;
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onPrev: (animals) => {
          prevPayload = animals;
@@ -250,7 +239,7 @@ test('region selector prev rebuilds animals after toggling an exhibit', async ()
    );
 });
 
-test('region selector finish skips rebuild when stored animals match selected exhibits', async () => {
+test('Test_Region_TestRegionSelectorFinishSkipsRebuildWhenStoredAnimals_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
@@ -269,7 +258,7 @@ test('region selector finish skips rebuild when stored animals match selected ex
    const mountEl = createDomNode('div');
    const finishCalls = [];
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onFinish: (animals) => {
          finishCalls.push(animals);
@@ -285,7 +274,7 @@ test('region selector finish skips rebuild when stored animals match selected ex
    assert.deepEqual(finishCalls, [null]);
 });
 
-test('region selector finish rebuilds animals when catalog grew for selected exhibits', async () => {
+test('Test_Region_TestRegionSelectorFinishRebuildsAnimalsWhenCatalogGrew_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.ANIMALS_KEY,
       JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
@@ -305,7 +294,7 @@ test('region selector finish rebuilds animals when catalog grew for selected exh
    const mountEl = createDomNode('div');
    const finishCalls = [];
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onFinish: (animals) => {
          finishCalls.push(animals);
@@ -325,7 +314,7 @@ test('region selector finish rebuilds animals when catalog grew for selected exh
    );
 });
 
-test('region selector finish rebuilds animals when exhibits are selected without stored animals', async () => {
+test('Test_Region_TestRegionSelectorFinishRebuildsAnimalsWhenExhibitsAre_ExpectOk', async () => {
    mockRegionSelectorFetch({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
@@ -335,7 +324,7 @@ test('region selector finish rebuilds animals when exhibits are selected without
    const mountEl = createDomNode('div');
    const finishCalls = [];
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onFinish: (animals) => {
          finishCalls.push(animals);
@@ -358,7 +347,7 @@ test('region selector finish rebuilds animals when exhibits are selected without
    );
 });
 
-test('region selector toggles regions and ignores empty regions', async () => {
+test('Test_Region_TestRegionSelectorTogglesRegionsAndIgnoresEmptyRegions_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([])
@@ -372,7 +361,7 @@ test('region selector toggles regions and ignores empty regions', async () => {
    });
 
    const mountEl = createDomNode('div');
-   const controller = createItineraryRegionSelectorController({ mountEl });
+   const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
 
    await controller.show();
 
@@ -384,7 +373,7 @@ test('region selector toggles regions and ignores empty regions', async () => {
    assert.equal(controller.shouldSkipClosingSelectionSync(), false);
 });
 
-test('region selector finish commits animals when selection changed', async () => {
+test('Test_Region_TestRegionSelectorFinishCommitsAnimalsWhenSelectionChanged_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([])
@@ -399,7 +388,7 @@ test('region selector finish commits animals when selection changed', async () =
    const mountEl = createDomNode('div');
    const finishCalls = [];
 
-   const controller = createItineraryRegionSelectorController({
+   const controller = RegionSelector.createItineraryRegionSelectorController({
       mountEl,
       onFinish: (animals) => {
          finishCalls.push(animals);
@@ -421,11 +410,11 @@ test('region selector finish commits animals when selection changed', async () =
    );
 });
 
-test('region selector reuses the built view on subsequent show calls', async () => {
+test('Test_Region_TestRegionSelectorReusesTheBuiltViewOnSubsequent_ExpectOk', async () => {
    mockRegionSelectorFetch();
 
    const mountEl = createDomNode('div');
-   const controller = createItineraryRegionSelectorController({ mountEl });
+   const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
 
    await controller.show();
    const firstRoot = mountEl.children[0];

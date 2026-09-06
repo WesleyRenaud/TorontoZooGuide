@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { createItineraryDateSelectorController } from '../../scripts/itinerary/selectors/dateSelector.js';
-import { DateSelectorView } from '../../scripts/itinerary/selectors/dateSelectorView.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
+import { DateSelector } from '../../../../scripts/itinerary/selectors/dateSelector.js';
+import { DateSelectorView } from '../../../../scripts/itinerary/selectors/dateSelectorView.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 
@@ -29,7 +29,7 @@ test.describe('dateSelector', () => {
       },
    });
 
-   test('DateSelectorView.buildDateSelectorView renders the visit-date selector shell', () => {
+   test('Test_DateSelectorView_TestDateSelectorViewBuildDateSelectorViewRendersTheVisitDateSelectorShell_ExpectOk', () => {
       const view = DateSelectorView.buildDateSelectorView();
 
       assert.equal(view.root.className, 'itin-overlay');
@@ -44,9 +44,9 @@ test.describe('dateSelector', () => {
       );
    });
 
-   test('createItineraryDateSelectorController show and hide manage the mount element', () => {
+   test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerShowAndHideManageTheMount_ExpectOk', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const controller = createItineraryDateSelectorController({
+      const controller = DateSelector.createItineraryDateSelectorController({
          mountEl,
          earliestSelectableDate: floor,
          deps: {
@@ -65,10 +65,10 @@ test.describe('dateSelector', () => {
       assert.equal(mountEl.children.length, 0);
    });
 
-   test('createItineraryDateSelectorController commits the selected date on next', () => {
+   test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerCommitsTheSelectedDateOnNext_ExpectOk', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const savedDates = [];
-      const controller = createItineraryDateSelectorController({
+      const controller = DateSelector.createItineraryDateSelectorController({
          mountEl,
          earliestSelectableDate: floor,
          onSave: (isoDate) => {
@@ -88,10 +88,10 @@ test.describe('dateSelector', () => {
       assert.equal(mountEl.children.length, 1);
    });
 
-   test('createItineraryDateSelectorController calls onClose from the close button', () => {
+   test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerCallsOnCloseFromTheCloseButton_ExpectOk', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const closeCalls = [];
-      const controller = createItineraryDateSelectorController({
+      const controller = DateSelector.createItineraryDateSelectorController({
          mountEl,
          earliestSelectableDate: floor,
          onClose: () => {

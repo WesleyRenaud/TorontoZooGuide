@@ -1,4 +1,4 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { DraftStorage } from '../../draftStorage.js';
 import { Format } from '../format.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -12,17 +12,17 @@ export class DateCard {
 
       if (!prettyDate) return null;
 
-      const dateWrap = el('div', 'itin-panel-date');
+      const dateWrap = Dom.el('div', 'itin-panel-date');
 
-      const topRow = el('div', 'itin-panel-date-top');
-      const textWrap = el('div', 'itin-panel-date-text');
+      const topRow = Dom.el('div', 'itin-panel-date-top');
+      const textWrap = Dom.el('div', 'itin-panel-date-text');
 
-      textWrap.appendChild(el('div', 'itin-panel-date-label', selectors.visitDate));
-      textWrap.appendChild(el('div', 'itin-panel-date-value', prettyDate));
+      textWrap.appendChild(Dom.el('div', 'itin-panel-date-label', selectors.visitDate));
+      textWrap.appendChild(Dom.el('div', 'itin-panel-date-value', prettyDate));
 
-      const actionsWrap = el('div', 'itin-panel-header-actions');
+      const actionsWrap = Dom.el('div', 'itin-panel-header-actions');
 
-      const editBtn = el('button', 'itin-panel-section-edit-btn', actions.edit);
+      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', actions.edit);
       editBtn.type = 'button';
 
       editBtn.addEventListener('click', (e) => {

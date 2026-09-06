@@ -1,18 +1,18 @@
-import { createItineraryAnimalSelectorController } from '../selectors/animalSelector.js';
-import { createItineraryAttractionSelectorController } from '../selectors/attractionSelector.js';
-import { createItineraryGuardiansTalkSelectorController } from '../selectors/guardiansTalkSelector.js';
-import { createItineraryRegionSelectorController } from '../selectors/regionSelector.js';
-import { createItineraryTransportationSelectorController } from '../selectors/transportationSelector.js';
-import { createItineraryWildEncounterSelectorController } from '../selectors/wildEncounterSelector.js';
+import { AnimalSelector } from '../selectors/animalSelector.js';
+import { AttractionSelector } from '../selectors/attractionSelector.js';
+import { GuardiansTalkSelector } from '../selectors/guardiansTalkSelector.js';
+import { RegionSelector } from '../selectors/regionSelector.js';
+import { TransportationSelector } from '../selectors/transportationSelector.js';
+import { WildEncounterSelector } from '../selectors/wildEncounterSelector.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 
 const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
-   transportations: createItineraryTransportationSelectorController,
-   wildEncounters: createItineraryWildEncounterSelectorController,
-   guardiansTalks: createItineraryGuardiansTalkSelectorController,
-   attractions: createItineraryAttractionSelectorController,
-   animals: createItineraryAnimalSelectorController,
-   regions: createItineraryRegionSelectorController,
+   transportations: TransportationSelector.createItineraryTransportationSelectorController,
+   wildEncounters: WildEncounterSelector.createItineraryWildEncounterSelectorController,
+   guardiansTalks: GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController,
+   attractions: AttractionSelector.createItineraryAttractionSelectorController,
+   animals: AnimalSelector.createItineraryAnimalSelectorController,
+   regions: RegionSelector.createItineraryRegionSelectorController,
 });
 
 export class WizardSelectionStepFactories {

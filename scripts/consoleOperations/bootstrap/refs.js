@@ -445,12 +445,14 @@ function createGroupRefs(doc, groupConfig = {}) {
    return groupRefs;
 }
 
-export function collectConsoleOperationRefs(doc = document) {
-   const refs = {};
+export class Refs {
+   static collectConsoleOperationRefs(doc = document) {
+      const refs = {};
 
-   Object.entries(CONSOLE_OPERATION_REF_CONFIG).forEach(([key, groupConfig]) => {
-      refs[key] = createGroupRefs(doc, groupConfig);
-   });
+      Object.entries(CONSOLE_OPERATION_REF_CONFIG).forEach(([key, groupConfig]) => {
+         refs[key] = createGroupRefs(doc, groupConfig);
+      });
 
-   return refs;
+      return refs;
+   }
 }

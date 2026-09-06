@@ -1,5 +1,5 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Format } from '../format.js';
 import { common } from '../../../strings/common.js';
 import { ValidationBubble } from '../../../validationBubble.js';
@@ -19,11 +19,11 @@ export class ItineraryTimeInput {
       resolveInvalidMessage = null,
       invalidMessage = '',
    }) {
-      const field = el('label', 'itinerary-day-time-control');
-      const labelText = el('span', 'itinerary-day-time-control-label', label);
-      const form = el('form', 'itinerary-day-time-form');
-      const inputWrap = el('div', 'itinerary-day-time-input-wrap');
-      const input = el('input', 'itinerary-day-time-input');
+      const field = Dom.el('label', 'itinerary-day-time-control');
+      const labelText = Dom.el('span', 'itinerary-day-time-control-label', label);
+      const form = Dom.el('form', 'itinerary-day-time-form');
+      const inputWrap = Dom.el('div', 'itinerary-day-time-input-wrap');
+      const input = Dom.el('input', 'itinerary-day-time-input');
       const validationBubble = ValidationBubble.createValidationBubbleController({
          anchorEl: inputWrap,
       });

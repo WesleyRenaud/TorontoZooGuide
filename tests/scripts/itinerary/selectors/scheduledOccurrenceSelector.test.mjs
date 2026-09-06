@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduledOccurrenceSort } from '../../scripts/itinerary/scheduledOccurrenceSort.js';
+import { ScheduledOccurrenceSort } from '../../../../scripts/itinerary/scheduledOccurrenceSort.js';
 
-test('ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime sorts selector rows by start time', () => {
+test('Test_ScheduledOccurrenceSort_TestScheduledOccurrenceSortSortScheduledOccurrencesByStartTimeSortsSelectorRowsByStartTime_ExpectOk', () => {
    const rows = [
       { name: 'Kangaroo', start_time: '3:30 PM' },
       { name: 'Guardians of White Rhinos', start_time: '2:00 PM' },
@@ -24,7 +24,7 @@ test('ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime sorts selector
    );
 });
 
-test('ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime sorts custom time fields and keeps bad times last', () => {
+test('Test_ScheduledOccurrenceSort_TestScheduledOccurrenceSortSortScheduledOccurrencesByStartTimeSortsCustomTimeFieldsAndKeeps_ExpectOk', () => {
    const rows = [
       { name: 'Missing Time' },
       { name: 'Morning', time: '10:00' },

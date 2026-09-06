@@ -1,5 +1,5 @@
 import { SearchApi } from '../api/searchApi.js';
-import { renderSearchResults } from './resultsView.js';
+import { ResultsView } from './resultsView.js';
 import { SearchRows } from './searchRows.js';
 
 const DEFAULT_DEBOUNCE_MS = 250;
@@ -90,7 +90,7 @@ function createSearchRunner({
             return;
          }
 
-         renderSearchResults(resultsEl, SearchRows.flattenSearchRows(response), onFocusRow);
+         ResultsView.renderSearchResults(resultsEl, SearchRows.flattenSearchRows(response), onFocusRow);
       } catch (error) {
          if (requestTracker.isCurrentRequest(requestId)) {
             onError(error);

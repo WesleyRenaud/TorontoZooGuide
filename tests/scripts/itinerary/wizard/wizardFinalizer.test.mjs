@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { finalizeItineraryWizard } from '../../scripts/itinerary/wizard/wizardFinalizer.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { WizardFinalizer } from '../../../../scripts/itinerary/wizard/wizardFinalizer.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
-test.describe('finalizeItineraryWizard', () => {
+test.describe('WizardFinalizer.finalizeItineraryWizard', () => {
    installDomTestHooks({
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
@@ -19,11 +19,11 @@ test.describe('finalizeItineraryWizard', () => {
       },
    });
 
-   test('shows the empty-selection popup when finish is blocked', async () => {
+   test('Test_Shows_TestShowsTheEmptySelectionPopupWhenFinishIs_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupCalls = [];
 
-      const result = await finalizeItineraryWizard(
+      const result = await WizardFinalizer.finalizeItineraryWizard(
          { date: '2026-06-15', animals: [] },
          mountEl,
          {
@@ -45,7 +45,7 @@ test.describe('finalizeItineraryWizard', () => {
       );
    });
 
-   test('saves, syncs draft state, clears the mount, and calls onDone', async () => {
+   test('Test_Saves_TestSavesSyncsDraftStateClearsTheMountAnd_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       mountEl.replaceChildren(createDomNode('div', 'wizard-step'));
       const synced = [];
@@ -55,7 +55,7 @@ test.describe('finalizeItineraryWizard', () => {
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       };
 
-      const result = await finalizeItineraryWizard(
+      const result = await WizardFinalizer.finalizeItineraryWizard(
          savedItinerary,
          mountEl,
          {
@@ -80,11 +80,11 @@ test.describe('finalizeItineraryWizard', () => {
       assert.equal(mountEl.children.length, 0);
    });
 
-   test('shows a wizard error popup when save fails', async () => {
+   test('Test_Shows_TestShowsAWizardErrorPopupWhenSaveFails_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupCalls = [];
 
-      const result = await finalizeItineraryWizard(
+      const result = await WizardFinalizer.finalizeItineraryWizard(
          { date: '2026-06-15', animals: ['Lion'] },
          mountEl,
          {
@@ -105,11 +105,11 @@ test.describe('finalizeItineraryWizard', () => {
       assert.equal(popupCalls[0].message, 'Save failed');
    });
 
-   test('returns cancelled when save is cancelled from a confirmation', async () => {
+   test('Test_Returns_TestReturnsCancelledWhenSaveIsCancelledFromA_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupCalls = [];
 
-      const result = await finalizeItineraryWizard(
+      const result = await WizardFinalizer.finalizeItineraryWizard(
          {
             date: '2026-06-15',
             guardiansTalks: [{ name: 'Arctic Wolf' }],
@@ -131,7 +131,7 @@ test.describe('finalizeItineraryWizard', () => {
       assert.equal(popupCalls.length, 0);
    });
 
-   test('opens the save-issues notice when the backend returns issues', async () => {
+   test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const saveIssuesCalls = [];
       const savedItinerary = {
@@ -140,7 +140,7 @@ test.describe('finalizeItineraryWizard', () => {
          saveIssues: [{ type: 'conflict', message: 'Conflict' }],
       };
 
-      await finalizeItineraryWizard(
+      await WizardFinalizer.finalizeItineraryWizard(
          savedItinerary,
          mountEl,
          {

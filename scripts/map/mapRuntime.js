@@ -12,10 +12,10 @@ import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { Panzoom } from './panzoom.js';
-import { createDataSources } from './sources.js';
+import { Sources } from './sources.js';
 import { Store } from './store.js';
-import { createTooltipController } from '../tooltips/tooltipController.js';
-import { createMapUpdater } from './updater.js';
+import { TooltipController } from '../tooltips/tooltipController.js';
+import { Updater } from './updater.js';
 
 function hasRequiredRuntimeElements({
    mapInner,
@@ -55,7 +55,7 @@ function createMapTooltip({
    tooltipEl,
    speciesOverlay,
 } = {}) {
-   return createTooltipController({
+   return TooltipController.createTooltipController({
       tooltipEl,
       onAnimalCardClick: createAnimalCardClickHandler(speciesOverlay),
       ...createMapBannerSet(),
@@ -99,7 +99,8 @@ function createTooltipRepositioner({
    };
 }
 
-export function createMapRuntime({
+export class MapRuntime {
+   static createMapRuntime({
    mapInner,
    tooltipEl,
    hoverTooltipEl,
@@ -114,66 +115,67 @@ export function createMapRuntime({
    getSelectedTypes = () => [],
    onDateContextChange = null,
 } = {}) {
-   const viewportEl = mapInner?.parentElement;
+      const viewportEl = mapInner?.parentElement;
 
-   if (!hasRequiredRuntimeElements({ mapInner, tooltipEl, viewportEl })) {
-      return null;
-   }
+      if (!hasRequiredRuntimeElements({ mapInner, tooltipEl, viewportEl })) {
+         return null;
+      }
 
-   const panzoom = Panzoom.createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
-   const store = Store.createMapStore();
-   const sources = createDataSources(store);
-   const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
-   const speciesOverlay = SpeciesOverlay.initSpeciesOverlay();
+      const panzoom = Panzoom.createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
+      const store = Store.createMapStore();
+      const sources = Sources.createDataSources(store);
+      const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
+      const speciesOverlay = SpeciesOverlay.initSpeciesOverlay();
 
-   const tooltip = createMapTooltip({
-      tooltipEl,
-      speciesOverlay,
-   });
+      const tooltip = createMapTooltip({
+         tooltipEl,
+         speciesOverlay,
+      });
 
-   initMapLabels(showMapLabelsCheckbox);
+      initMapLabels(showMapLabelsCheckbox);
 
-   const markers = Markers.createMarkerLayer({
-      mapInner,
-      tooltip,
-      hover,
-      enableCoordinateEditing,
-   });
-
-   const focus = createMapFocus({
-      panzoom,
-      markers,
-      tooltip,
-      viewportEl,
-   });
-
-   const updater = createMapUpdater({
-      store,
-      sources,
-      markers,
-      focus,
-      getIncludeOffDisplay,
-      getIncludeClosedRestaurants,
-      getIncludeClosedRestrooms,
-      getIncludeClosedGiftShops,
-      getIncludeClosedAttractions,
-      getTransportationRoute,
-      getSelectedTypes,
-      onDateContextChange,
-   });
-
-   return {
-      panzoom,
-      store,
-      sources,
-      hover,
-      tooltip,
-      markers,
-      focus,
-      updater,
-      repositionTooltips: createTooltipRepositioner({
+      const markers = Markers.createMarkerLayer({
+         mapInner,
          tooltip,
          hover,
-      }),
-   };
+         enableCoordinateEditing,
+      });
+
+      const focus = createMapFocus({
+         panzoom,
+         markers,
+         tooltip,
+         viewportEl,
+      });
+
+      const updater = Updater.createMapUpdater({
+         store,
+         sources,
+         markers,
+         focus,
+         getIncludeOffDisplay,
+         getIncludeClosedRestaurants,
+         getIncludeClosedRestrooms,
+         getIncludeClosedGiftShops,
+         getIncludeClosedAttractions,
+         getTransportationRoute,
+         getSelectedTypes,
+         onDateContextChange,
+      });
+
+      return {
+         panzoom,
+         store,
+         sources,
+         hover,
+         tooltip,
+         markers,
+         focus,
+         updater,
+         repositionTooltips: createTooltipRepositioner({
+            tooltip,
+            hover,
+         }),
+      };
+   }
 }

@@ -1,19 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { openItineraryWizard } from '../../scripts/itinerary/wizard/wizardController.js';
-import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-import { makeNoonDate } from './helpers/visitDateMock.mjs';
-import {
-   createStubStepController,
-   syncedSelection,
-} from './helpers/wizardTestFixtures.mjs';
+import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
+import { State } from '../../../../scripts/itinerary/wizard/state.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
+import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
+import { createStubStepController, syncedSelection } from '../../helpers/wizardTestFixtures.mjs';
 
-test.describe('openItineraryWizard draft sync', () => {
+test.describe('WizardController.openItineraryWizard draft sync', () => {
    installDomTestHooks({
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
@@ -22,7 +19,7 @@ test.describe('openItineraryWizard draft sync', () => {
          delete globalThis.localStorage;
       },
    });
-   test('does not prompt when closing after a date-only draft sync', async () => {
+   test('Test_Does_TestDoesNotPromptWhenClosingAfterADate_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupConfigs = [];
       let closeHandler = null;
@@ -30,12 +27,12 @@ test.describe('openItineraryWizard draft sync', () => {
 
       mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
-      await openItineraryWizard({
+      await WizardController.openItineraryWizard({
          mountEl,
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => selectedDate,
-            createWizardState: () => createItineraryWizardState({
+            createWizardState: () => State.createItineraryWizardState({
                date: '',
                animals: [],
                attractions: [],
@@ -64,19 +61,19 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(mountEl.children.length, 0);
    });
 
-   test('skips date draft sync when the picker date already matches the wizard', async () => {
+   test('Test_Skips_TestSkipsDateDraftSyncWhenThePickerDate_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupConfigs = [];
       let closeHandler = null;
       const selectedDate = makeNoonDate(2026, 5, 15);
 
-      await openItineraryWizard({
+      await WizardController.openItineraryWizard({
          mountEl,
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => selectedDate,
             createWizardState: () => {
-               const wizard = createItineraryWizardState({
+               const wizard = State.createItineraryWizardState({
                   date: '2026-06-15',
                   animals: [],
                   attractions: [],
@@ -108,19 +105,19 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(popupConfigs.length, 1);
    });
 
-   test('skips selection draft sync when the step reports no pending changes', async () => {
+   test('Test_Skips_TestSkipsSelectionDraftSyncWhenTheStepReports_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupConfigs = [];
       let closeHandler = null;
 
-      await openItineraryWizard({
+      await WizardController.openItineraryWizard({
          mountEl,
          startAt: 'animals',
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: () => {
-               const wizard = createItineraryWizardState({
+               const wizard = State.createItineraryWizardState({
                   date: '',
                   animals: [],
                   attractions: [],
@@ -159,7 +156,7 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(popupConfigs.length, 1);
    });
 
-   test('finalize onDone consumes pending validation and clears the overlay', async () => {
+   test('Test_Finalize_TestFinalizeOnDoneConsumesPendingValidationAndClearsThe_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;
       const selectedAnimals = syncedSelection();
@@ -172,13 +169,13 @@ test.describe('openItineraryWizard draft sync', () => {
 
       mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
-      await openItineraryWizard({
+      await WizardController.openItineraryWizard({
          mountEl,
          startAt: 'animals',
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => createItineraryWizardState({
+            createWizardState: () => State.createItineraryWizardState({
                date: '2026-06-15',
                animals: [],
                attractions: [],

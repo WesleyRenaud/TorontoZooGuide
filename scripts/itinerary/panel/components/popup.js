@@ -1,4 +1,4 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function joinClassNames(...classNames) {
@@ -9,7 +9,7 @@ function createPopupButton({
    className,
    text,
 } = {}) {
-   const button = el('button', className, text);
+   const button = Dom.el('button', className, text);
    button.type = 'button';
    return button;
 }
@@ -36,26 +36,26 @@ export class Popup {
       showCloseButton = false,
       closeAriaLabel = APP_STRINGS.itinerary.aria.closeBuilder,
    } = {}) {
-      const root = el('div', joinClassNames('tzg-popup', popupClassName));
-      const overlay = el('div', 'itin-overlay');
+      const root = Dom.el('div', joinClassNames('tzg-popup', popupClassName));
+      const overlay = Dom.el('div', 'itin-overlay');
 
-      const card = el('section', 'itin-card tzg-popup-card');
+      const card = Dom.el('section', 'itin-card tzg-popup-card');
       card.setAttribute('role', 'dialog');
       card.setAttribute('aria-modal', 'true');
       card.setAttribute('aria-label', title);
 
-      const topbar = el(
+      const topbar = Dom.el(
          'div',
          showCloseButton
             ? 'itin-card-topbar itin-card-topbar-with-close'
             : 'itin-card-topbar'
       );
       topbar.appendChild(
-         el('div', 'itin-top-title', title)
+         Dom.el('div', 'itin-top-title', title)
       );
 
       const closeButton = showCloseButton
-         ? el('button', 'itin-close', APP_STRINGS.common.closeSymbol)
+         ? Dom.el('button', 'itin-close', APP_STRINGS.common.closeSymbol)
          : null;
 
       if (closeButton) {
@@ -64,19 +64,19 @@ export class Popup {
          topbar.appendChild(closeButton);
       }
 
-      const body = el('div', 'itin-card-body tzg-popup-body');
+      const body = Dom.el('div', 'itin-card-body tzg-popup-body');
 
       if (bodyContent) {
          body.appendChild(bodyContent);
       }
       else {
          body.appendChild(
-            el('div', 'tzg-popup-message', message)
+            Dom.el('div', 'tzg-popup-message', message)
          );
       }
 
-      const actions = el('div', 'itin-card-actions');
-      const actionsRight = el(
+      const actions = Dom.el('div', 'itin-card-actions');
+      const actionsRight = Dom.el(
          'div',
          joinClassNames('itin-actions-right', actionsClassName)
       );

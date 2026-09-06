@@ -1,13 +1,13 @@
 import { WarningIcon } from '../../assets/warningIcon.js';
 import { Popup } from '../../itinerary/panel/components/popup.js';
-import { el } from '../../itinerary/panel/dom.js';
+import { Dom } from '../../itinerary/panel/dom.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const ROOT_SELECTOR = '.console-overlap-dialog-root';
 
 function createDialogWarningIcon() {
-   const warning = el(
+   const warning = Dom.el(
       'span',
       'itin-likelihood-warning medium console-overlap-dialog-icon-wrap'
    );
@@ -22,18 +22,18 @@ function createDialogWarningIcon() {
 }
 
 function createDialogButton(className, text) {
-   const button = el('button', className, text);
+   const button = Dom.el('button', className, text);
    button.type = 'button';
    return button;
 }
 
 function createDialogLayout() {
-   const root = el('div', 'console-overlap-dialog-root');
-   const overlay = el('div', 'console-overlap-dialog-overlay');
-   const card = el('section', 'console-overlap-dialog-card');
-   const header = el('div', 'console-overlap-dialog-header');
-   const body = el('div', 'console-overlap-dialog-body');
-   const actions = el('div', 'console-overlap-dialog-actions');
+   const root = Dom.el('div', 'console-overlap-dialog-root');
+   const overlay = Dom.el('div', 'console-overlap-dialog-overlay');
+   const card = Dom.el('section', 'console-overlap-dialog-card');
+   const header = Dom.el('div', 'console-overlap-dialog-header');
+   const body = Dom.el('div', 'console-overlap-dialog-body');
+   const actions = Dom.el('div', 'console-overlap-dialog-actions');
    const cancelButton = createDialogButton(
       'console-overlap-dialog-cancel',
       APP_STRINGS.itinerary.actions.cancel
@@ -53,10 +53,10 @@ function createDialogLayout() {
 
    header.append(
       createDialogWarningIcon(),
-      el('h2', 'console-overlap-dialog-title', APP_STRINGS.confirm.openingScheduleOverlapTitle)
+      Dom.el('h2', 'console-overlap-dialog-title', APP_STRINGS.confirm.openingScheduleOverlapTitle)
    );
    body.appendChild(
-      el('p', 'console-overlap-dialog-message', APP_STRINGS.confirm.openingScheduleOverlapMessage)
+      Dom.el('p', 'console-overlap-dialog-message', APP_STRINGS.confirm.openingScheduleOverlapMessage)
    );
    actions.append(cancelButton, replaceButton, trimButton);
    card.append(header, body, actions);

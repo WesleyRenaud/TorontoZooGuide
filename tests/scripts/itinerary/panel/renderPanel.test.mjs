@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { renderItineraryPanelInto, clearStoredItinerary } from '../../scripts/itinerary/panel/renderPanel.js';
-import { ItineraryPanelViewState } from '../../scripts/itinerary/panel/itineraryPanelViewState.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { RenderPanel } from '../../../../scripts/itinerary/panel/renderPanel.js';
+import { ItineraryPanelViewState } from '../../../../scripts/itinerary/panel/itineraryPanelViewState.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const ZOO_HOURS = {
    open: '09:00',
@@ -26,17 +26,17 @@ const POPULATED_ITINERARY = {
    },
 };
 
-test.describe('renderItineraryPanelInto', () => {
+test.describe('RenderPanel.renderItineraryPanelInto', () => {
    installDomTestHooks({
       before: () => {
          ItineraryPanelViewState.resetActiveItineraryPanelView('list');
       },
    });
 
-   test('renders build-only content when no itinerary is saved', async () => {
+   test('Test_Renders_TestRendersBuildOnlyContentWhenNoItineraryIs_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
 
-      await renderItineraryPanelInto(bodyEl, {
+      await RenderPanel.renderItineraryPanelInto(bodyEl, {
          loadItinerary: async () => null,
          resolveHoursDate: async () => '2026-06-15',
          loadZooHours: async () => ZOO_HOURS,
@@ -48,10 +48,10 @@ test.describe('renderItineraryPanelInto', () => {
       assert.equal(bodyEl.querySelector('.itin-panel-date'), null);
    });
 
-   test('renders date-only itineraries the same as other saved itineraries', async () => {
+   test('Test_Renders_TestRendersDateOnlyItinerariesTheSameAsOther_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
 
-      await renderItineraryPanelInto(bodyEl, {
+      await RenderPanel.renderItineraryPanelInto(bodyEl, {
          loadItinerary: async () => ({
             date: '2026-06-15',
             animals: [],
@@ -72,10 +72,10 @@ test.describe('renderItineraryPanelInto', () => {
       assert.equal(bodyEl.querySelectorAll('.itin-panel-build-btn').length, 0);
    });
 
-   test('renders itinerary sections and the day planner for populated itineraries', async () => {
+   test('Test_Renders_TestRendersItinerarySectionsAndTheDayPlannerFor_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
 
-      await renderItineraryPanelInto(bodyEl, {
+      await RenderPanel.renderItineraryPanelInto(bodyEl, {
          loadItinerary: async () => POPULATED_ITINERARY,
          resolveHoursDate: async () => '2026-06-15',
          loadZooHours: async () => ZOO_HOURS,
@@ -88,7 +88,7 @@ test.describe('renderItineraryPanelInto', () => {
       assert.equal(bodyEl.querySelectorAll('.itin-panel-build-btn').length, 0);
    });
 
-   test('ignores stale renders when a newer render starts first', async () => {
+   test('Test_Ignores_TestIgnoresStaleRendersWhenANewerRenderStarts_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       let resolveFirst = null;
       let buildCount = 0;
@@ -100,7 +100,7 @@ test.describe('renderItineraryPanelInto', () => {
          return fragment;
       };
 
-      const firstRender = renderItineraryPanelInto(bodyEl, {
+      const firstRender = RenderPanel.renderItineraryPanelInto(bodyEl, {
          loadItinerary: () => new Promise((resolve) => {
             resolveFirst = resolve;
          }),
@@ -112,7 +112,7 @@ test.describe('renderItineraryPanelInto', () => {
          },
       });
 
-      await renderItineraryPanelInto(bodyEl, {
+      await RenderPanel.renderItineraryPanelInto(bodyEl, {
          loadItinerary: async () => POPULATED_ITINERARY,
          resolveHoursDate: async () => '2026-06-15',
          loadZooHours: async () => ZOO_HOURS,
@@ -129,8 +129,8 @@ test.describe('renderItineraryPanelInto', () => {
       assert.equal(bodyEl.querySelectorAll('.render-marker').length, 1);
    });
 
-   test('renderItineraryPanelInto returns early without a body element', async () => {
-      await renderItineraryPanelInto(null, {
+   test('Test_RenderPanel_TestRenderPanelRenderItineraryPanelIntoReturnsEarlyWithoutABodyElement_ExpectOk', async () => {
+      await RenderPanel.renderItineraryPanelInto(null, {
          loadItinerary: async () => {
             throw new Error('should not load');
          },
@@ -138,12 +138,12 @@ test.describe('renderItineraryPanelInto', () => {
    });
 });
 
-test.describe('clearStoredItinerary', () => {
-   test('clears the saved itinerary and draft storage', async () => {
+test.describe('RenderPanel.clearStoredItinerary', () => {
+   test('Test_Clears_TestClearsTheSavedItineraryAndDraftStorage_ExpectOk', async () => {
       let cleared = false;
       let draftCleared = false;
 
-      await clearStoredItinerary({
+      await RenderPanel.clearStoredItinerary({
          clearSavedItinerary: async () => {
             cleared = true;
          },
@@ -156,7 +156,7 @@ test.describe('clearStoredItinerary', () => {
       assert.equal(draftCleared, true);
    });
 
-   test('logs and swallows errors when clearing the itinerary fails', async () => {
+   test('Test_Logs_TestLogsAndSwallowsErrorsWhenClearingTheItinerary_ExpectOk', async () => {
       const errors = [];
       const originalConsoleError = console.error;
 
@@ -165,7 +165,7 @@ test.describe('clearStoredItinerary', () => {
       };
 
       try {
-         await clearStoredItinerary({
+         await RenderPanel.clearStoredItinerary({
             clearSavedItinerary: async () => {
                throw new Error('clear failed');
             },

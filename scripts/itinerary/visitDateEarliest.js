@@ -3,7 +3,7 @@
  * and panel day planner (which ISO day to load zoo hours for when nothing is saved).
  */
 import { DraftStorage } from './draftStorage.js';
-import { getZooHours } from './itineraryService.js';
+import { ItineraryService } from './itineraryService.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 /**
@@ -14,7 +14,7 @@ export class VisitDateEarliest {
    static async resolveEarliestSelectableVisitDateNoon(deps = {}) {
       const {
          getTodayFn = VisitDateRules.getToday,
-         getZooHoursFn = getZooHours,
+         getZooHoursFn = ItineraryService.getZooHours,
          isPastClose = VisitDateRules.isLocalTimeAtOrPastZooClose,
          addDays = VisitDateRules.addLocalCalendarDays,
          toIso = VisitDateRules.toISODate,

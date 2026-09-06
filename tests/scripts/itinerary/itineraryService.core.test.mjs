@@ -1,20 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   acceptItinerary,
-   bulkScheduleItinerary,
-   clearItinerary,
-   getItinerary,
-   getZooHours,
-   hasActiveItinerary,
-} from '../../scripts/itinerary/itineraryService.js';
-import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
-import { mockJsonResponse } from './helpers/fetchMock.mjs';
+import { ItineraryService } from '../../../scripts/itinerary/itineraryService.js';
+import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
+import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
 installItineraryServiceTestHooks();
 
-test('getItinerary normalizes saved itinerary responses', async () => {
+test('Test_ItineraryService_TestItineraryServiceGetItineraryNormalizesSavedItineraryResponses_ExpectOk', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -38,16 +31,16 @@ test('getItinerary normalizes saved itinerary responses', async () => {
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const itinerary = await getItinerary();
+   const itinerary = await ItineraryService.getItinerary();
 
    assert.equal(itinerary.date, '2026-06-15');
    assert.equal(itinerary.animals[0].species, 'African Lion');
    assert.equal(itinerary.isActive, true);
 });
 
-test('getZooHours returns null for invalid dates and normalized hours otherwise', async () => {
-   assert.equal(await getZooHours(null), null);
-   assert.equal(await getZooHours('not-a-date'), null);
+test('Test_ItineraryService_TestItineraryServiceGetZooHoursReturnsNullForInvalidDatesAnd_ExpectOk', async () => {
+   assert.equal(await ItineraryService.getZooHours(null), null);
+   assert.equal(await ItineraryService.getZooHours('not-a-date'), null);
 
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-zoo-hours');
@@ -65,7 +58,7 @@ test('getZooHours returns null for invalid dates and normalized hours otherwise'
       });
    };
 
-   assert.deepEqual(await getZooHours('2026-06-15'), {
+   assert.deepEqual(await ItineraryService.getZooHours('2026-06-15'), {
       date: '',
       earlyAdmissionTime: '',
       openTime: '09:30',
@@ -74,7 +67,7 @@ test('getZooHours returns null for invalid dates and normalized hours otherwise'
    });
 });
 
-test('clearItinerary dispatches cleared itinerary events', async () => {
+test('Test_ItineraryService_TestItineraryServiceClearItineraryDispatchesClearedItineraryEvents_ExpectOk', async () => {
    const events = [];
    window.addEventListener = (type, handler) => {
       window.__handler = handler;
@@ -89,13 +82,13 @@ test('clearItinerary dispatches cleared itinerary events', async () => {
       return mockJsonResponse({ success: true });
    };
 
-   const result = await clearItinerary();
+   const result = await ItineraryService.clearItinerary();
 
    assert.deepEqual(events, ['tzg:itineraryCleared', 'tzg:itineraryUpdated']);
    assert.deepEqual(result, { success: true });
 });
 
-test('bulkScheduleItinerary returns normalized itinerary and issues', async () => {
+test('Test_ItineraryService_TestItineraryServiceBulkScheduleItineraryReturnsNormalizedItineraryAndIssues_ExpectOk', async () => {
    globalThis.fetch = async (url, options) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -122,13 +115,13 @@ test('bulkScheduleItinerary returns normalized itinerary and issues', async () =
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await bulkScheduleItinerary();
+   const result = await ItineraryService.bulkScheduleItinerary();
 
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
    assert.equal(result.issues[0].code, 'bulkScheduleItineraryNotEnoughTime');
 });
 
-test('acceptItinerary keeps selected animals and attractions', async () => {
+test('Test_ItineraryService_TestItineraryServiceAcceptItineraryKeepsSelectedAnimalsAndAttractions_ExpectOk', async () => {
    globalThis.fetch = async (url, options) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -155,7 +148,7 @@ test('acceptItinerary keeps selected animals and attractions', async () => {
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const itinerary = await acceptItinerary({
+   const itinerary = await ItineraryService.acceptItinerary({
       animalsToKeep: ['African Lion'],
       attractionsToKeep: ['Zoomobile'],
    });
@@ -164,7 +157,7 @@ test('acceptItinerary keeps selected animals and attractions', async () => {
    assert.equal(itinerary.attractions[0].name, 'Zoomobile');
 });
 
-test('hasActiveItinerary is true when only a visit date is saved', async () => {
+test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenOnlyAVisit_ExpectOk', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -186,10 +179,10 @@ test('hasActiveItinerary is true when only a visit date is saved', async () => {
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await hasActiveItinerary(), true);
+   assert.equal(await ItineraryService.hasActiveItinerary(), true);
 });
 
-test('hasActiveItinerary is false when no itinerary is saved', async () => {
+test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsFalseWhenNoItineraryIs_ExpectOk', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: null });
@@ -211,10 +204,10 @@ test('hasActiveItinerary is false when no itinerary is saved', async () => {
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await hasActiveItinerary(), false);
+   assert.equal(await ItineraryService.hasActiveItinerary(), false);
 });
 
-test('hasActiveItinerary is true when itinerary is active and populated', async () => {
+test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenItineraryIsActive_ExpectOk', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -238,5 +231,5 @@ test('hasActiveItinerary is true when itinerary is active and populated', async 
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await hasActiveItinerary(), true);
+   assert.equal(await ItineraryService.hasActiveItinerary(), true);
 });

@@ -6,23 +6,6 @@ import { ItinerarySearchContext } from './itinerarySearchContext.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
-export const isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
-export const normalizeItinerary = ItineraryNormalizer.normalizeItinerary;
-
-export function dispatchItineraryUpdated(itinerary) {
-   window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
-      detail: { itinerary },
-   }));
-}
-
-export function dispatchScheduleItineraryItemResult(result) {
-   if (!result?.itinerary) {
-      return;
-   }
-
-   dispatchItineraryUpdated(ItineraryNormalizer.normalizeItineraryFromApiResult(result));
-}
-
 async function fetchSavedItineraryVisitDate() {
    const { date } = await ItineraryApi.getItineraryDateRequest();
 
@@ -33,104 +16,124 @@ async function fetchSavedItineraryVisitDate() {
    return date;
 }
 
-export async function getItinerary() {
-   const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-   const result = await ItineraryApi.getItineraryRequest(temp);
-   return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-}
+export class ItineraryService {
+   static isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
 
-export async function getZooHours(date) {
-   if (!date) {
-      return null;
+   static normalizeItinerary = ItineraryNormalizer.normalizeItinerary;
+
+   static dispatchItineraryUpdated(itinerary) {
+      window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
+         detail: { itinerary },
+      }));
    }
 
-   const month = VisitDateRules.getMonth(date);
-   const day = VisitDateRules.getDay(date);
-   const year = VisitDateRules.getYear(date);
+   static dispatchScheduleItineraryItemResult(result) {
+      if (!result?.itinerary) {
+         return;
+      }
 
-   if (month == null || day == null || year == null) {
-      return null;
+      ItineraryService.dispatchItineraryUpdated(ItineraryNormalizer.normalizeItineraryFromApiResult(result));
    }
 
-   const result = await ItineraryApi.getZooHoursRequest({ day, month, year });
-   return result?.hours || null;
-}
+   static async getItinerary() {
+      const date = await fetchSavedItineraryVisitDate();
+      const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
+      const result = await ItineraryApi.getItineraryRequest(temp);
+      return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+   }
 
-export async function clearItinerary() {
-   const result = await ItineraryApi.clearItineraryRequest();
-   const clearedItinerary = ItineraryNormalizer.createEmptyItinerary();
+   static async getZooHours(date) {
+      if (!date) {
+         return null;
+      }
 
-   window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
-   dispatchItineraryUpdated(clearedItinerary);
+      const month = VisitDateRules.getMonth(date);
+      const day = VisitDateRules.getDay(date);
+      const year = VisitDateRules.getYear(date);
 
-   return result;
-}
+      if (month == null || day == null || year == null) {
+         return null;
+      }
 
-export async function bulkScheduleItinerary({
+      const result = await ItineraryApi.getZooHoursRequest({ day, month, year });
+      return result?.hours || null;
+   }
+
+   static async clearItinerary() {
+      const result = await ItineraryApi.clearItineraryRequest();
+      const clearedItinerary = ItineraryNormalizer.createEmptyItinerary();
+
+      window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
+      ItineraryService.dispatchItineraryUpdated(clearedItinerary);
+
+      return result;
+   }
+
+   static async bulkScheduleItinerary({
    confirmingFixedTimeItemLongWait = false,
 } = {}) {
-   const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-   const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
-      confirmingFixedTimeItemLongWait,
-   });
+      const date = await fetchSavedItineraryVisitDate();
+      const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
+      const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
+         confirmingFixedTimeItemLongWait,
+      });
 
-   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+      if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+         return {
+            errorType: result.errorType,
+            message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
+            issues: result.issues ?? [],
+         };
+      }
+
+      const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+      ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
+
       return {
-         errorType: result.errorType,
-         message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
+         itinerary: normalizedItinerary,
          issues: result.issues ?? [],
       };
    }
 
-   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-   dispatchItineraryUpdated(normalizedItinerary);
+   static async unscheduleAllItineraryItems() {
+      const date = await fetchSavedItineraryVisitDate();
+      const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
+      const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
 
-   return {
-      itinerary: normalizedItinerary,
-      issues: result.issues ?? [],
-   };
-}
+      if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+         return {
+            errorType: result.errorType,
+            message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
+         };
+      }
 
-export async function unscheduleAllItineraryItems() {
-   const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-   const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
+      const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+      ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
 
-   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
       return {
-         errorType: result.errorType,
-         message: ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType),
+         itinerary: normalizedItinerary,
       };
    }
 
-   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-   dispatchItineraryUpdated(normalizedItinerary);
-
-   return {
-      itinerary: normalizedItinerary,
-   };
-}
-
-export async function acceptItinerary({
+   static async acceptItinerary({
    animalsToKeep = [],
    attractionsToKeep = [],
 } = {}) {
-   const date = await fetchSavedItineraryVisitDate();
-   const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-   const result = await ItineraryApi.acceptItineraryRequest(
-      temp,
-      { animalsToKeep, attractionsToKeep }
-   );
-   const acceptedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+      const date = await fetchSavedItineraryVisitDate();
+      const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
+      const result = await ItineraryApi.acceptItineraryRequest(
+         temp,
+         { animalsToKeep, attractionsToKeep }
+      );
+      const acceptedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 
-   dispatchItineraryUpdated(acceptedItinerary);
+      ItineraryService.dispatchItineraryUpdated(acceptedItinerary);
 
-   return acceptedItinerary;
-}
+      return acceptedItinerary;
+   }
 
-export async function hasActiveItinerary() {
-   const itin = await getItinerary();
-   return Boolean(itin.isActive) && ItineraryShape.hasSavedItineraryContent(itin);
+   static async hasActiveItinerary() {
+      const itin = await ItineraryService.getItinerary();
+      return Boolean(itin.isActive) && ItineraryShape.hasSavedItineraryContent(itin);
+   }
 }

@@ -1,5 +1,5 @@
 import { DayPlannerTimelineMetrics } from '../dayPlannerTimelineMetrics.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Constants } from '../../../shared/constants.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
@@ -123,7 +123,7 @@ export class DayPlannerTimelinePillPlacement {
       }
 
       const placementBand = resolveStripPlacementBand(gridLine, offsetFraction);
-      const pillStrip = el('div', 'itinerary-day-pill-strip');
+      const pillStrip = Dom.el('div', 'itinerary-day-pill-strip');
 
       if (offsetFraction > 0) {
          pillStrip.setAttribute('data-offset-fraction', String(offsetFraction));
@@ -157,7 +157,7 @@ export class DayPlannerTimelinePillPlacement {
          durationMinutes,
          slotSpanMinutes
       );
-      const pillStrip = el('div', 'itinerary-day-pill-strip');
+      const pillStrip = Dom.el('div', 'itinerary-day-pill-strip');
 
       if (offsetFraction > 0) {
          pillStrip.setAttribute('data-offset-fraction', String(offsetFraction));

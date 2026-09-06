@@ -1,6 +1,6 @@
 import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
 import { View } from './attractionSelector/view.js';
-import { createItinerarySelectorController } from './createSelectorController.js';
+import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { APP_STRINGS } from '../../strings.js';
@@ -27,90 +27,92 @@ function promptForAlsoTransportationAttractionSelection(row, proceed) {
    });
 }
 
-export function createItineraryAttractionSelectorController({
+export class AttractionSelector {
+   static createItineraryAttractionSelectorController({
    mountEl,
    onNext,
    onPrev,
    onFinish,
    onClose,
 } = {}) {
-   let includeClosedAttractions = false;
+      let includeClosedAttractions = false;
 
-   return createItinerarySelectorController({
-      mountEl,
-      onNext,
-      onPrev,
-      onFinish,
-      onClose,
+      return CreateSelectorController.createItinerarySelectorController({
+         mountEl,
+         onNext,
+         onPrev,
+         onFinish,
+         onClose,
 
-      storageKey: STORAGE_KEY,
-      migrateSelected: AttractionSelectorModel.migrateStoredAttractions,
+         storageKey: STORAGE_KEY,
+         migrateSelected: AttractionSelectorModel.migrateStoredAttractions,
 
-      getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),
+         getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),
 
-      buildSearchPayload: query => ({
-         query,
-         includeAttractions: true,
-         includeClosedAttractions,
-      }),
+         buildSearchPayload: query => ({
+            query,
+            includeAttractions: true,
+            includeClosedAttractions,
+         }),
 
-      extractRows: response => response.attractions,
+         extractRows: response => response.attractions,
 
-      getId: AttractionSelectorModel.getAttractionId,
-      getTitle: AttractionSelectorModel.getAttractionTitle,
-      getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
-      getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
-      getInfoLink: () => null,
-      onTitleClick: (row) => {
-         const link = AttractionSelectorModel.getAttractionInfoLink(row);
+         getId: AttractionSelectorModel.getAttractionId,
+         getTitle: AttractionSelectorModel.getAttractionTitle,
+         getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
+         getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
+         getInfoLink: () => null,
+         onTitleClick: (row) => {
+            const link = AttractionSelectorModel.getAttractionInfoLink(row);
 
-         if (link) {
-            window.open(link, '_blank');
-         }
-      },
-      shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
+            if (link) {
+               window.open(link, '_blank');
+            }
+         },
+         shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
 
-      makeSelection: AttractionSelectorModel.makeAttractionSelection,
+         makeSelection: AttractionSelectorModel.makeAttractionSelection,
 
-      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-      h1: APP_STRINGS.itinerary.selectors.titleAttractions,
-      subtitle: APP_STRINGS.itinerary.selectors.attractionSubtitle,
-      emptyText: APP_STRINGS.itinerary.emptyText.attractions,
+         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+         h1: APP_STRINGS.itinerary.selectors.titleAttractions,
+         subtitle: APP_STRINGS.itinerary.selectors.attractionSubtitle,
+         emptyText: APP_STRINGS.itinerary.emptyText.attractions,
 
-      onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
-         const continueAdd = () => {
-            if (!AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
+         onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
+            const continueAdd = () => {
+               if (!AttractionSelectorModel.shouldConfirmAlsoTransportationAttraction({
+                  row,
+                  isSelected,
+               })) {
+                  proceed();
+                  return;
+               }
+
+               promptForAlsoTransportationAttractionSelection(row, proceed);
+            };
+
+            if (!AttractionSelectorModel.shouldConfirmClosedAttraction({
                row,
                isSelected,
+               includeClosedAttractions,
             })) {
-               proceed();
+               continueAdd();
                return;
             }
 
-            promptForAlsoTransportationAttractionSelection(row, proceed);
-         };
+            promptForClosedAttractionSelection(row, continueAdd);
+         },
 
-         if (!AttractionSelectorModel.shouldConfirmClosedAttraction({
-            row,
-            isSelected,
-            includeClosedAttractions,
-         })) {
-            continueAdd();
-            return;
-         }
-
-         promptForClosedAttractionSelection(row, continueAdd);
-      },
-
-      renderExtraControls: ({ bodyEl, rerunSearch }) => {
-         includeClosedAttractions = false;
-         View.renderIncludeClosedAttractionsToggle({
-            bodyEl,
-            rerunSearch,
-            onChange: (checked) => {
-               includeClosedAttractions = checked;
-            },
-         });
-      },
-   });
+         renderExtraControls: ({ bodyEl, rerunSearch }) => {
+            includeClosedAttractions = false;
+            View.renderIncludeClosedAttractionsToggle({
+               bodyEl,
+               rerunSearch,
+               onChange: (checked) => {
+                  includeClosedAttractions = checked;
+               },
+            });
+         },
+      });
+   }
 }

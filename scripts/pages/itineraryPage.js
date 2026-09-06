@@ -1,13 +1,13 @@
-import { initItineraryMap } from '../itinerary/itineraryMapController.js';
+import { ItineraryMapController } from '../itinerary/itineraryMapController.js';
 import { ItineraryRenderer } from '../itinerary/itineraryRenderer.js';
-import { getItinerary } from '../itinerary/itineraryService.js';
+import { ItineraryService } from '../itinerary/itineraryService.js';
 import { ItineraryShape } from '../itinerary/itineraryShape.js';
 import { Popup } from '../itinerary/panel/components/popup.js';
 import { OfferPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
 import { Summary } from '../itinerary/wizard/diff/summary.js';
 import { ValidationPopup } from '../itinerary/wizard/validationPopup.js';
 import { WheelBlocker } from '../itinerary/wizard/wheelBlocker.js';
-import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
+import { WizardController } from '../itinerary/wizard/wizardController.js';
 import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 
@@ -20,7 +20,7 @@ function hasEmbeddedMap() {
 
 function createWizardOpener(mountEl) {
    return ({ startAt = null } = {}) => {
-      openItineraryWizard({
+      WizardController.openItineraryWizard({
          mountEl,
          startAt,
       });
@@ -68,7 +68,7 @@ async function refreshItineraryPageContent(
    openWizard,
    { openBuilderWhenEmpty = false, itinerary: providedItinerary = null, skipStaleCheck = false } = {}
 ) {
-   const itinerary = providedItinerary ?? await getItinerary();
+   const itinerary = providedItinerary ?? await ItineraryService.getItinerary();
 
    if (!skipStaleCheck) {
       const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
@@ -138,9 +138,9 @@ async function initEmbeddedItineraryMap() {
 
    try {
       await LoadInlineZooMap.loadInlineZooMap();
-      initItineraryMap();
+      ItineraryMapController.initItineraryMap();
    } catch (err) {
-      console.warn('initItineraryMap() failed:', err);
+      console.warn('ItineraryMapController.initItineraryMap() failed:', err);
    }
 }
 
@@ -149,22 +149,24 @@ async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
    await initEmbeddedItineraryMap();
 }
 
-export function initItineraryPage() {
-   const mountEl = Popup.getItineraryOverlayMountEl();
-   if (!mountEl) return;
+export class ItineraryPage {
+   static initItineraryPage() {
+      const mountEl = Popup.getItineraryOverlayMountEl();
+      if (!mountEl) return;
 
-   SpeciesOverlay.initSpeciesOverlay();
+      SpeciesOverlay.initSpeciesOverlay();
 
-   const refreshPanel = (options) => refreshItineraryPageContent(
-      mountEl,
-      openWizard,
-      options
-   );
-   const openWizard = createWizardOpener(mountEl);
+      const refreshPanel = (options) => refreshItineraryPageContent(
+         mountEl,
+         openWizard,
+         options
+      );
+      const openWizard = createWizardOpener(mountEl);
 
-   WheelBlocker.blockMapWheelWhileWizardOpen(mountEl);
-   bindWizardEvents(openWizard);
-   bindPanelRefreshEvents(refreshPanel);
+      WheelBlocker.blockMapWheelWhileWizardOpen(mountEl);
+      bindWizardEvents(openWizard);
+      bindPanelRefreshEvents(refreshPanel);
 
-   void initItineraryPageContent(mountEl, openWizard, refreshPanel);
+      void initItineraryPageContent(mountEl, openWizard, refreshPanel);
+   }
 }

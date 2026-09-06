@@ -1,7 +1,7 @@
 import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { Popup } from './components/popup.js';
-import { el } from './dom.js';
+import { Dom } from './dom.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { Format } from './format.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
@@ -180,13 +180,13 @@ const BUILD_WARNING_SECTION_LIST_BUILDERS = Object.freeze([
 ]);
 
 function createBuildWarningsContent(sections) {
-   const content = el('div', 'itin-build-warnings tzg-popup-confirm-body');
+   const content = Dom.el('div', 'itin-build-warnings tzg-popup-confirm-body');
 
    sections.forEach((section) => {
-      const moduleEl = el('div', 'itin-build-warning-module');
+      const moduleEl = Dom.el('div', 'itin-build-warning-module');
       moduleEl.append(
-         el('div', 'itin-build-warning-module-title', section.title),
-         el('div', 'itin-build-warning-module-message', section.message)
+         Dom.el('div', 'itin-build-warning-module-title', section.title),
+         Dom.el('div', 'itin-build-warning-module-message', section.message)
       );
       content.appendChild(moduleEl);
    });

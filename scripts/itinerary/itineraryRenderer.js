@@ -1,4 +1,4 @@
-import { renderItineraryPanelInto } from './panel/renderPanel.js';
+import { RenderPanel } from './panel/renderPanel.js';
 
 export class ItineraryRenderer {
    static getItineraryPanelBody() {
@@ -6,6 +6,6 @@ export class ItineraryRenderer {
    }
 
    static renderItineraryPanel(bodyEl = ItineraryRenderer.getItineraryPanelBody()) {
-      return renderItineraryPanelInto(bodyEl);
+      return RenderPanel.renderItineraryPanelInto(bodyEl);
    }
 }

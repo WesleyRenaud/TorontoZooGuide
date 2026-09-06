@@ -3,7 +3,7 @@ import { ItineraryConfirmationResult } from './itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
-import { dispatchItineraryUpdated } from './itineraryService.js';
+import { ItineraryService } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { AttractionWithoutAnimalConfirmation } from './panel/attractionWithoutAnimalConfirmation.js';
@@ -181,47 +181,49 @@ async function requestSetItineraryWithConfirmations(
    return createConfirmedSetItineraryResult(initialResult, diffBaseline);
 }
 
-export async function saveItinerary(
+export class ItineraryServiceSave {
+   static async saveItinerary(
    itinerary = {},
    {
       overridingConflictingGuardiansTalks = false,
       selectedExhibits = [],
    } = {},
 ) {
-   const savePayload = ItineraryShape.toSetItineraryPayload(itinerary);
-   const basePayload = {
-      ...savePayload,
-      selectedExhibits,
-      temp: (await ItinerarySearchContext.getItineraryDateSearchContext({ date: savePayload.date })).temp,
-      overridingConflictingGuardiansTalks,
-   };
+      const savePayload = ItineraryShape.toSetItineraryPayload(itinerary);
+      const basePayload = {
+         ...savePayload,
+         selectedExhibits,
+         temp: (await ItinerarySearchContext.getItineraryDateSearchContext({ date: savePayload.date })).temp,
+         overridingConflictingGuardiansTalks,
+      };
 
-   const confirmationResult = await requestSetItineraryWithConfirmations(basePayload);
+      const confirmationResult = await requestSetItineraryWithConfirmations(basePayload);
 
-   if (confirmationResult.cancelled) {
-      return confirmationResult;
+      if (confirmationResult.cancelled) {
+         return confirmationResult;
+      }
+
+      const { result, diffBaseline } = confirmationResult;
+
+      if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
+         throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType));
+      }
+
+      const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
+      const saveDiff = ItineraryDiff.buildItineraryDiff(
+         ItineraryShape.normalizeItineraryDraft(diffBaseline ?? itinerary),
+         normalizedItinerary,
+         {},
+         normalizedItinerary.itineraryConfig ?? {}
+      );
+
+      normalizedItinerary.saveIssues = result.issues;
+      ItineraryValidationResult.applyItineraryDiffToValidation(
+         normalizedItinerary,
+         saveDiff,
+         { adjustments: result.adjustments ?? [] });
+      ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
+
+      return normalizedItinerary;
    }
-
-   const { result, diffBaseline } = confirmationResult;
-
-   if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
-      throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(result.errorType));
-   }
-
-   const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-   const saveDiff = ItineraryDiff.buildItineraryDiff(
-      ItineraryShape.normalizeItineraryDraft(diffBaseline ?? itinerary),
-      normalizedItinerary,
-      {},
-      normalizedItinerary.itineraryConfig ?? {}
-   );
-
-   normalizedItinerary.saveIssues = result.issues;
-   ItineraryValidationResult.applyItineraryDiffToValidation(
-      normalizedItinerary,
-      saveDiff,
-      { adjustments: result.adjustments ?? [] });
-   dispatchItineraryUpdated(normalizedItinerary);
-
-   return normalizedItinerary;
 }

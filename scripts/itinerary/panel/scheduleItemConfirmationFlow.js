@@ -7,7 +7,7 @@ import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAn
 import { ItineraryBuildWarningsConfirmation } from './itineraryBuildWarningsConfirmation.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
-import { dispatchScheduleItineraryItemResult } from '../itineraryService.js';
+import { ItineraryService } from '../itineraryService.js';
 import { PersistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
 import { ScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
@@ -78,7 +78,7 @@ export class ScheduleItemConfirmationFlow {
       const initialResult = await ItineraryApi.scheduleItineraryItemRequest(request, confirmationOptions);
 
       if (ItineraryErrorTypes.isItinerarySuccess(initialResult.errorType)) {
-         dispatchScheduleItineraryItemResult(initialResult);
+         ItineraryService.dispatchScheduleItineraryItemResult(initialResult);
          return initialResult;
       }
 

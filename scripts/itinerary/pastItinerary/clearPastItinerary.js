@@ -1,8 +1,8 @@
-import { clearStoredItinerary } from '../panel/renderPanel.js';
+import { RenderPanel } from '../panel/renderPanel.js';
 
 export class ClearPastItinerary {
    static async clearPastItinerary(deps = {}) {
-      const { clearItinerary = clearStoredItinerary } = deps;
+      const { clearItinerary = RenderPanel.clearStoredItinerary } = deps;
 
       await clearItinerary(deps);
    }

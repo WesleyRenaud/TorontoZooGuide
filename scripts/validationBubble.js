@@ -1,4 +1,4 @@
-import { el } from './itinerary/panel/dom.js';
+import { Dom } from './itinerary/panel/dom.js';
 
 const DEFAULT_CLASS_NAMES = {
    bubble: 'tzg-validation-bubble',
@@ -103,13 +103,13 @@ export class ValidationBubble {
 
          dismiss();
 
-         bubbleEl = el('div', classes.bubble);
+         bubbleEl = Dom.el('div', classes.bubble);
          bubbleEl.setAttribute('role', 'alert');
 
-         const icon = el('span', classes.icon, iconText);
+         const icon = Dom.el('span', classes.icon, iconText);
          icon.setAttribute('aria-hidden', 'true');
          bubbleEl.appendChild(icon);
-         bubbleEl.appendChild(el('span', classes.text, message));
+         bubbleEl.appendChild(Dom.el('span', classes.text, message));
          document.body.appendChild(bubbleEl);
          positionValidationBubble(bubbleEl, anchorEl);
          bindRepositionListeners();

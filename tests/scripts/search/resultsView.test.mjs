@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { renderSearchResults } from '../../scripts/search/resultsView.js';
-import {
-   createDomNode,
-   installDocument,
-   installTestWindow,
-   teardownDocument,
-} from './helpers/domMock.mjs';
+import { ResultsView } from '../../../scripts/search/resultsView.js';
+import { createDomNode, installDocument, installTestWindow, teardownDocument } from '../helpers/domMock.mjs';
 
 afterEach(() => {
    teardownDocument();
@@ -29,12 +24,12 @@ function findDescendant(node, className) {
    return null;
 }
 
-test('renderSearchResults shows thumbnails for animals and attractions', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForAnimalsAndAttractions_ExpectOk', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       {
          type: 'animal',
          species: 'African Lion',
@@ -75,7 +70,7 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
    assert.equal(attractionTitle?.querySelector('.species-link'), null);
 });
 
-test('renderSearchResults links attraction titles when info_link is present', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksAttractionTitlesWhenInfoLink_ExpectOk', () => {
    installDocument();
    installTestWindow();
 
@@ -86,7 +81,7 @@ test('renderSearchResults links attraction titles when info_link is present', ()
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       {
          type: 'attraction',
          name: 'Conservation Carousel',
@@ -107,12 +102,12 @@ test('renderSearchResults links attraction titles when info_link is present', ()
    assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
 });
 
-test('renderSearchResults links wild encounter titles when url is present', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksWildEncounterTitlesWhenUrl_ExpectOk', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       {
          type: 'wildEncounter',
          name: 'African Rainforest',
@@ -142,12 +137,12 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    assert.equal(findDescendant(row, 'tooltip-link'), null);
 });
 
-test('renderSearchResults formats wild encounter subtitles like schedule item search', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsFormatsWildEncounterSubtitlesLikeSchedule_ExpectOk', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       {
          type: 'wildEncounter',
          name: 'From Howls to Honks',
@@ -168,12 +163,12 @@ test('renderSearchResults formats wild encounter subtitles like schedule item se
    );
 });
 
-test('renderSearchResults keeps text-only rows for restrooms', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsKeepsTextOnlyRowsForRestrooms_ExpectOk', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       { type: 'restroom', title: 'Americas Pavilion Restroom' },
    ]);
 
@@ -184,12 +179,12 @@ test('renderSearchResults keeps text-only rows for restrooms', () => {
    assert.ok(findDescendant(row, 'animal-result-map-btn'));
 });
 
-test('renderSearchResults shows thumbnails for named map detail image types', () => {
+test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamedMapDetail_ExpectOk', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
-   renderSearchResults(resultsEl, [
+   ResultsView.renderSearchResults(resultsEl, [
       { type: 'restaurant', name: 'Beavertails Pastry', location: 'Front Courtyard' },
       { type: 'giftShop', name: 'Zootique', location: 'Africa' },
       { type: 'guardiansTalk', name: 'Amur Tiger', location: 'Eurasia Wilds' },

@@ -90,61 +90,63 @@ function applyPendingValidation(state, {
       : false;
 }
 
-export function createItineraryWizardState(existing = {}) {
-   const initialDraft = ItineraryShape.cloneItineraryDraft(
-      ItineraryShape.hydrateWizardDraftFromSavedItinerary(existing)
-   );
-   const state = {
-      ...buildWizardDraftSnapshot(initialDraft),
-      ...createPendingValidationState(),
-   };
+export class State {
+   static createItineraryWizardState(existing = {}) {
+      const initialDraft = ItineraryShape.cloneItineraryDraft(
+         ItineraryShape.hydrateWizardDraftFromSavedItinerary(existing)
+      );
+      const state = {
+         ...buildWizardDraftSnapshot(initialDraft),
+         ...createPendingValidationState(),
+      };
 
-   writeDraftState(initialDraft);
+      writeDraftState(initialDraft);
 
-   function persistDraft() {
-      writeDraftState(buildWizardDraftSnapshot(state));
+      function persistDraft() {
+         writeDraftState(buildWizardDraftSnapshot(state));
+      }
+
+      return {
+         state,
+
+         updateSelection(key, value, { preserveOnInvalid = false } = {}) {
+            if (!applySelectionUpdate(state, key, value, { preserveOnInvalid })) {
+               return;
+            }
+
+            persistDraft();
+         },
+
+         applyValidationResult(date, result) {
+            state.date = date;
+            applyPendingValidation(state, result ?? {});
+
+            persistDraft();
+         },
+
+         consumePendingValidation() {
+            return consumePendingValidationState(state);
+         },
+
+         allowEmptyFinish(allowEmpty = false) {
+            return state.pendingValidatedEmpty || allowEmpty === true;
+         },
+
+         hasUnsavedChanges() {
+            const snapshot = buildWizardDraftSnapshot(state);
+
+            if (ItineraryShape.isItineraryEmptyDraft(snapshot) && ItineraryShape.isItineraryEmptyDraft(initialDraft)) {
+               return false;
+            }
+
+            return !ItineraryShape.areItineraryDraftsSemanticallyEqual(snapshot, initialDraft);
+         },
+
+         discardChanges() {
+            assignWizardDraft(state, initialDraft);
+            resetPendingValidation(state);
+            writeDraftState(initialDraft);
+         },
+      };
    }
-
-   return {
-      state,
-
-      updateSelection(key, value, { preserveOnInvalid = false } = {}) {
-         if (!applySelectionUpdate(state, key, value, { preserveOnInvalid })) {
-            return;
-         }
-
-         persistDraft();
-      },
-
-      applyValidationResult(date, result) {
-         state.date = date;
-         applyPendingValidation(state, result ?? {});
-
-         persistDraft();
-      },
-
-      consumePendingValidation() {
-         return consumePendingValidationState(state);
-      },
-
-      allowEmptyFinish(allowEmpty = false) {
-         return state.pendingValidatedEmpty || allowEmpty === true;
-      },
-
-      hasUnsavedChanges() {
-         const snapshot = buildWizardDraftSnapshot(state);
-
-         if (ItineraryShape.isItineraryEmptyDraft(snapshot) && ItineraryShape.isItineraryEmptyDraft(initialDraft)) {
-            return false;
-         }
-
-         return !ItineraryShape.areItineraryDraftsSemanticallyEqual(snapshot, initialDraft);
-      },
-
-      discardChanges() {
-         assignWizardDraft(state, initialDraft);
-         resetPendingValidation(state);
-         writeDraftState(initialDraft);
-      },
-   };
 }

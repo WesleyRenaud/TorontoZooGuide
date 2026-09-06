@@ -1,9 +1,9 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Format } from '../format.js';
 
 function createFieldLabel(text) {
-   return el('label', 'schedule-item-field-label', text);
+   return Dom.el('label', 'schedule-item-field-label', text);
 }
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
@@ -12,8 +12,8 @@ function readPickerTimeValue(instance, dateStr, inputEl) {
 
 export class ScheduleItemTimeFields {
    static makeScheduleItemTimeFields(strings = {}) {
-      const timeField = el('div', 'schedule-item-field schedule-item-time-field');
-      const durationField = el('div', 'schedule-item-field schedule-item-duration-field');
+      const timeField = Dom.el('div', 'schedule-item-field schedule-item-time-field');
+      const durationField = Dom.el('div', 'schedule-item-field schedule-item-duration-field');
       const timeLabel = createFieldLabel(strings.timeLabel ?? '');
       const durationLabel = createFieldLabel(strings.durationLabel ?? '');
       const timeInput = document.createElement('input');

@@ -1,24 +1,24 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class RemovedItemsPopupLayout {
    static createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {}) {
-      const root = el('div', 'tzg-popup');
-      const overlay = el('div', 'itin-overlay');
+      const root = Dom.el('div', 'tzg-popup');
+      const overlay = Dom.el('div', 'itin-overlay');
 
-      const card = el('section', 'itin-card itin-removed-popup-card');
+      const card = Dom.el('section', 'itin-card itin-removed-popup-card');
 
-      const topbar = el('div', 'itin-card-topbar itin-card-topbar-with-close');
+      const topbar = Dom.el('div', 'itin-card-topbar itin-card-topbar-with-close');
       topbar.appendChild(
-         el('div', 'itin-top-title', APP_STRINGS.itinerary.removedItems.itineraryUpdated)
+         Dom.el('div', 'itin-top-title', APP_STRINGS.itinerary.removedItems.itineraryUpdated)
       );
 
-      const closeBtn = el('button', 'itin-close', APP_STRINGS.common.closeSymbol);
+      const closeBtn = Dom.el('button', 'itin-close', APP_STRINGS.common.closeSymbol);
       closeBtn.type = 'button';
       topbar.appendChild(closeBtn);
 
-      const body = el('div', 'itin-card-body itin-removed-popup-body');
-      const content = el(
+      const body = Dom.el('div', 'itin-card-body itin-removed-popup-body');
+      const content = Dom.el(
          'div',
          isEmptyItinerary
             ? 'itin-removed-popup-content itin-removed-popup-content-empty'
@@ -26,7 +26,7 @@ export class RemovedItemsPopupLayout {
       );
 
       content.appendChild(
-         el(
+         Dom.el(
             'div',
             'itin-h1',
             isEmptyItinerary
@@ -36,7 +36,7 @@ export class RemovedItemsPopupLayout {
       );
 
       content.appendChild(
-         el(
+         Dom.el(
             'div',
             'itin-subtitle',
             isEmptyItinerary
@@ -47,9 +47,9 @@ export class RemovedItemsPopupLayout {
 
       body.appendChild(content);
 
-      const actions = el('div', 'itin-card-actions');
+      const actions = Dom.el('div', 'itin-card-actions');
 
-      const okBtn = el(
+      const okBtn = Dom.el(
          'button',
          'itin-finish',
          APP_STRINGS.itinerary.actions.accept

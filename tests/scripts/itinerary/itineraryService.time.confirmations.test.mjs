@@ -1,16 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   setItineraryArrivalTime,
-   setItineraryDepartureTime,
-} from '../../scripts/itinerary/itineraryServiceTime.js';
-import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
+import { ItineraryServiceTime } from '../../../scripts/itinerary/itineraryServiceTime.js';
+import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
-test('setItineraryArrivalTime confirms early admission warning before retrying', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeConfirmsEarlyAdmissionWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
@@ -78,7 +75,7 @@ test('setItineraryArrivalTime confirms early admission warning before retrying',
       };
    };
 
-   const setPromise = setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -113,7 +110,7 @@ test('setItineraryArrivalTime confirms early admission warning before retrying',
       confirmingEarlyAdmission: true,
    });
 });
-test('setItineraryDepartureTime confirms short visit warning before retrying', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeConfirmsShortVisitWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
@@ -181,7 +178,7 @@ test('setItineraryDepartureTime confirms short visit warning before retrying', a
       };
    };
 
-   const setPromise = setItineraryDepartureTime('16:00');
+   const setPromise = ItineraryServiceTime.setItineraryDepartureTime('16:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -211,7 +208,7 @@ test('setItineraryDepartureTime confirms short visit warning before retrying', a
    });
 });
 
-test('setItineraryArrivalTime rejects when the visitor cancels confirmation', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheVisitorCancelsConfirmation_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
@@ -267,7 +264,7 @@ test('setItineraryArrivalTime rejects when the visitor cancels confirmation', as
       };
    };
 
-   const setPromise = setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -281,7 +278,7 @@ test('setItineraryArrivalTime rejects when the visitor cancels confirmation', as
    );
 });
 
-test('setItineraryArrivalTime throws for non-confirmation errors', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeThrowsForNonConfirmationErrors_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
       errorTypes: {
          SUCCESS: 'success',
@@ -333,12 +330,12 @@ test('setItineraryArrivalTime throws for non-confirmation errors', async () => {
    };
 
    await assert.rejects(
-      setItineraryArrivalTime('09:00'),
+      ItineraryServiceTime.setItineraryArrivalTime('09:00'),
       /outside operating hours/i
    );
 });
 
-test('setItineraryArrivalTime returns the raw API result when no itinerary payload is included', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeReturnsTheRawAPIResultWhen_ExpectOk', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
@@ -379,13 +376,13 @@ test('setItineraryArrivalTime returns the raw API result when no itinerary paylo
       };
    };
 
-   const result = await setItineraryArrivalTime('09:30');
+   const result = await ItineraryServiceTime.setItineraryArrivalTime('09:30');
 
    assert.equal(result.errorType, 'success');
    assert.equal(result.itinerary, undefined);
 });
 
-test('setItineraryArrivalTime persists warning suppression when do not show again is checked', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimePersistsWarningSuppressionWhenDoNot_ExpectOk', async () => {
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
@@ -462,7 +459,7 @@ test('setItineraryArrivalTime persists warning suppression when do not show agai
       };
    };
 
-   const setPromise = setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -489,7 +486,7 @@ test('setItineraryArrivalTime persists warning suppression when do not show agai
    );
 });
 
-test('setItineraryArrivalTime rejects when the confirmed retry fails', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheConfirmedRetryFails_ExpectOk', async () => {
    let arrivalRequestCount = 0;
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
@@ -555,7 +552,7 @@ test('setItineraryArrivalTime rejects when the confirmed retry fails', async () 
    };
 
    await assert.rejects(async () => {
-      const setPromise = setItineraryArrivalTime('09:00');
+      const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
 
       await new Promise((resolve) => {
          setTimeout(resolve, 0);

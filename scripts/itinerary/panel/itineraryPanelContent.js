@@ -10,32 +10,12 @@ import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfir
 import { ItineraryBuildWarningsConfirmation } from './itineraryBuildWarningsConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
-import {
-   buildItineraryPanelScheduleHandlers,
-   openScheduleItemModule,
-} from './itineraryPanelScheduleHandlers.js';
+import { ItineraryPanelScheduleHandlers } from './itineraryPanelScheduleHandlers.js';
 import { ItineraryPanelViewState } from './itineraryPanelViewState.js';
-import {
-   bulkScheduleItinerary,
-   unscheduleAllItineraryItems,
-} from '../itineraryService.js';
-import {
-   setItineraryArrivalTime,
-   setItineraryDepartureTime,
-} from '../itineraryServiceTime.js';
+import { ItineraryService } from '../itineraryService.js';
+import { ItineraryServiceTime } from '../itineraryServiceTime.js';
 import { SectionConfigs } from './sectionConfigs.js';
 import { APP_STRINGS } from '../../strings.js';
-
-export function destroyRenderedPanelChildren(bodyEl) {
-   Array.from(bodyEl?.children ?? []).forEach((child) => {
-      child.__tzgCleanup?.();
-   });
-}
-
-export function clearRenderedPanel(bodyEl) {
-   destroyRenderedPanelChildren(bodyEl);
-   bodyEl?.replaceChildren();
-}
 
 function appendDayPlannerViewWithHours(
    dayPlannerView,
@@ -48,9 +28,9 @@ function appendDayPlannerViewWithHours(
    } = {}
 ) {
    const {
-      openModule = openScheduleItemModule,
-      bulkSchedule = bulkScheduleItinerary,
-      unscheduleAll = unscheduleAllItineraryItems,
+      openModule = ItineraryPanelScheduleHandlers.openScheduleItemModule,
+      bulkSchedule = ItineraryService.bulkScheduleItinerary,
+      unscheduleAll = ItineraryService.unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = BulkScheduleItineraryNotEnoughTimeConfirmation.hasBulkScheduleItineraryNotEnoughTimeIssue,
       hasMultipleBuildWarnings = ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings,
       showBuildWarningsConfirmation = ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation,
@@ -58,7 +38,7 @@ function appendDayPlannerViewWithHours(
       showLongWaitConfirmation = FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = DayPlannerActionFeedback.setPendingDayPlannerActionFeedback,
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
-      buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
+      buildScheduleHandlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers,
       makeDayPlanner = DayPlanner.makeDayPlannerPreview,
       genericErrorMessage = APP_STRINGS.itinerary.errors.generic,
    } = deps;
@@ -199,7 +179,19 @@ function appendDayPlannerViewWithHours(
    );
 }
 
-export function buildItineraryPanelContent(
+export class ItineraryPanelContent {
+   static destroyRenderedPanelChildren(bodyEl) {
+      Array.from(bodyEl?.children ?? []).forEach((child) => {
+         child.__tzgCleanup?.();
+      });
+   }
+
+   static clearRenderedPanel(bodyEl) {
+      ItineraryPanelContent.destroyRenderedPanelChildren(bodyEl);
+      bodyEl?.replaceChildren();
+   }
+
+   static buildItineraryPanelContent(
    itinerary,
    zooHours,
    {
@@ -207,76 +199,76 @@ export function buildItineraryPanelContent(
       deps = {},
    } = {}
 ) {
-   const {
-      makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
-      makeActions = ActionsBar.makeActionsBar,
-      createDateCard = DateCard.makeDateCard,
-      buildSections = SectionConfigs.buildSectionConfigs,
-      createSection = Section.makeSection,
-      buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
-      onAfterClear = null,
-      setArrivalTime = setItineraryArrivalTime,
-      setDepartureTime = setItineraryDepartureTime,
-   } = deps;
+      const {
+         makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
+         makeActions = ActionsBar.makeActionsBar,
+         createDateCard = DateCard.makeDateCard,
+         buildSections = SectionConfigs.buildSectionConfigs,
+         createSection = Section.makeSection,
+         buildScheduleHandlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers,
+         onAfterClear = null,
+         setArrivalTime = ItineraryServiceTime.setItineraryArrivalTime,
+         setDepartureTime = ItineraryServiceTime.setItineraryDepartureTime,
+      } = deps;
 
-   const fragment = document.createDocumentFragment();
-   const {
-      root,
-      sharedHeader,
-      listView,
-      dayPlannerView,
-   } = makeViewShell();
+      const fragment = document.createDocumentFragment();
+      const {
+         root,
+         sharedHeader,
+         listView,
+         dayPlannerView,
+      } = makeViewShell();
 
-   sharedHeader.appendChild(
-      makeActions({
-         onAfterClear,
-      })
-   );
-
-   const dateCard = createDateCard(itinerary);
-
-   if (dateCard) {
-      sharedHeader.appendChild(dateCard);
-   }
-
-   const scheduleHandlers = buildScheduleHandlers(itinerary, {
-      onPanelRefresh,
-      deps,
-   });
-
-   buildSections(itinerary, {
-      onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
-   }).forEach((sectionConfig) => {
-      listView.appendChild(
-         createSection(sectionConfig)
+      sharedHeader.appendChild(
+         makeActions({
+            onAfterClear,
+         })
       );
-   });
 
-   appendDayPlannerViewWithHours(
-      dayPlannerView,
-      zooHours,
-      itinerary,
-      {
-         onArrivalTimeChange: async (arrivalTime) => {
-            await setArrivalTime(arrivalTime);
-            await onPanelRefresh?.();
-         },
-         onDepartureTimeChange: async (departureTime) => {
-            await setDepartureTime(departureTime);
-            await onPanelRefresh?.();
-         },
-      },
-      {
+      const dateCard = createDateCard(itinerary);
+
+      if (dateCard) {
+         sharedHeader.appendChild(dateCard);
+      }
+
+      const scheduleHandlers = buildScheduleHandlers(itinerary, {
          onPanelRefresh,
          deps,
-      }
-   );
-   fragment.appendChild(root);
+      });
 
-   return fragment;
-}
+      buildSections(itinerary, {
+         onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
+      }).forEach((sectionConfig) => {
+         listView.appendChild(
+            createSection(sectionConfig)
+         );
+      });
 
-export function buildEmptyItineraryPanelContent(
+      appendDayPlannerViewWithHours(
+         dayPlannerView,
+         zooHours,
+         itinerary,
+         {
+            onArrivalTimeChange: async (arrivalTime) => {
+               await setArrivalTime(arrivalTime);
+               await onPanelRefresh?.();
+            },
+            onDepartureTimeChange: async (departureTime) => {
+               await setDepartureTime(departureTime);
+               await onPanelRefresh?.();
+            },
+         },
+         {
+            onPanelRefresh,
+            deps,
+         }
+      );
+      fragment.appendChild(root);
+
+      return fragment;
+   }
+
+   static buildEmptyItineraryPanelContent(
    bodyEl,
    zooHours,
    {
@@ -284,22 +276,23 @@ export function buildEmptyItineraryPanelContent(
       deps = {},
    } = {}
 ) {
-   const {
-      makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
-      renderEmptyState = BuildOnly.renderBuildOnly,
-   } = deps;
+      const {
+         makeViewShell = ItineraryPanelViewState.makeItineraryPanelViewShell,
+         renderEmptyState = BuildOnly.renderBuildOnly,
+      } = deps;
 
-   const {
-      root,
-      listView,
-      dayPlannerView,
-   } = makeViewShell();
+      const {
+         root,
+         listView,
+         dayPlannerView,
+      } = makeViewShell();
 
-   renderEmptyState(listView);
-   renderEmptyState(dayPlannerView);
-   appendDayPlannerViewWithHours(dayPlannerView, zooHours, {}, {}, {
-      onPanelRefresh,
-      deps,
-   });
-   bodyEl.appendChild(root);
+      renderEmptyState(listView);
+      renderEmptyState(dayPlannerView);
+      appendDayPlannerViewWithHours(dayPlannerView, zooHours, {}, {}, {
+         onPanelRefresh,
+         deps,
+      });
+      bodyEl.appendChild(root);
+   }
 }

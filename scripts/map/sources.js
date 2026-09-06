@@ -43,124 +43,126 @@ function createClosedExhibitSource() {
    });
 }
 
-export function createDataSources(store) {
-   return {
-      animal: createTypedDynamicApiSource(
-         store,
-         'animal',
-         MapApi.getVisibleAnimals,
-         (ctx) => buildDatePayload(ctx, {
-            temp: ctx.temp,
-            includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
-            speciesToInclude: ctx.speciesToInclude,
-            animalsToInclude: ctx.animalsToInclude,
-            itineraryMode: ctx.itineraryMode,
-         })
-      ),
+export class Sources {
+   static createDataSources(store) {
+      return {
+         animal: createTypedDynamicApiSource(
+            store,
+            'animal',
+            MapApi.getVisibleAnimals,
+            (ctx) => buildDatePayload(ctx, {
+               temp: ctx.temp,
+               includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
+               speciesToInclude: ctx.speciesToInclude,
+               animalsToInclude: ctx.animalsToInclude,
+               itineraryMode: ctx.itineraryMode,
+            })
+         ),
 
-      pavilion: createTypedStaticApiSource(store, 'pavilion', MapApi.getPavilions),
+         pavilion: createTypedStaticApiSource(store, 'pavilion', MapApi.getPavilions),
 
-      restaurant: createTypedDynamicApiSource(
-         store,
-         'restaurant',
-         MapApi.getRestaurants,
-         (ctx) => buildDatePayload(ctx, {
-            includeClosedRestaurants: ctx.includeClosedRestaurants,
-            restaurantsToInclude: ctx.restaurantsToInclude,
-         })
-      ),
+         restaurant: createTypedDynamicApiSource(
+            store,
+            'restaurant',
+            MapApi.getRestaurants,
+            (ctx) => buildDatePayload(ctx, {
+               includeClosedRestaurants: ctx.includeClosedRestaurants,
+               restaurantsToInclude: ctx.restaurantsToInclude,
+            })
+         ),
 
-      restroom: createTypedDynamicApiSource(
-         store,
-         'restroom',
-         MapApi.getRestrooms,
-         (ctx) => buildDatePayload(ctx, {
-            includeClosedRestrooms: ctx.includeClosedRestrooms,
-         })
-      ),
+         restroom: createTypedDynamicApiSource(
+            store,
+            'restroom',
+            MapApi.getRestrooms,
+            (ctx) => buildDatePayload(ctx, {
+               includeClosedRestrooms: ctx.includeClosedRestrooms,
+            })
+         ),
 
-      giftShop: createTypedDynamicApiSource(
-         store,
-         'giftShop',
-         MapApi.getGiftShops,
-         (ctx) => buildDatePayload(ctx, {
-            includeClosedGiftShops: ctx.includeClosedGiftShops,
-            giftShopsToInclude: ctx.giftShopsToInclude,
-         })
-      ),
+         giftShop: createTypedDynamicApiSource(
+            store,
+            'giftShop',
+            MapApi.getGiftShops,
+            (ctx) => buildDatePayload(ctx, {
+               includeClosedGiftShops: ctx.includeClosedGiftShops,
+               giftShopsToInclude: ctx.giftShopsToInclude,
+            })
+         ),
 
-      attraction: createTypedDynamicApiSource(
-         store,
-         'attraction',
-         MapApi.getAttractions,
-         (ctx) => buildDatePayload(ctx, {
-            includeClosedAttractions: ctx.includeClosedAttractions,
-            attractionsToInclude: ctx.attractionsToInclude,
-            itineraryMode: ctx.itineraryMode,
-         })
-      ),
+         attraction: createTypedDynamicApiSource(
+            store,
+            'attraction',
+            MapApi.getAttractions,
+            (ctx) => buildDatePayload(ctx, {
+               includeClosedAttractions: ctx.includeClosedAttractions,
+               attractionsToInclude: ctx.attractionsToInclude,
+               itineraryMode: ctx.itineraryMode,
+            })
+         ),
 
-      transportationRoute: TransportationRouteSource.createTransportationRouteSource(store, {
-         fetchTransportationRoute: MapApi.getTransportationRoute,
-         hideRouteLayers: TransportationRouteOverlay.hideTransportationRouteLayers,
-         showRouteLayer: TransportationRouteOverlay.showTransportationRouteLayer,
-      }),
+         transportationRoute: TransportationRouteSource.createTransportationRouteSource(store, {
+            fetchTransportationRoute: MapApi.getTransportationRoute,
+            hideRouteLayers: TransportationRouteOverlay.hideTransportationRouteLayers,
+            showRouteLayer: TransportationRouteOverlay.showTransportationRouteLayer,
+         }),
 
-      guardiansTalk: createTypedDynamicApiSource(
-         store,
-         'guardiansTalk',
-         MapApi.getGuardiansTalks,
-         (ctx) => buildDatePayload(ctx, {
-            guardiansTalksToInclude: ctx.guardiansTalksToInclude,
-            itineraryMode: ctx.itineraryMode,
-         })
-      ),
+         guardiansTalk: createTypedDynamicApiSource(
+            store,
+            'guardiansTalk',
+            MapApi.getGuardiansTalks,
+            (ctx) => buildDatePayload(ctx, {
+               guardiansTalksToInclude: ctx.guardiansTalksToInclude,
+               itineraryMode: ctx.itineraryMode,
+            })
+         ),
 
-      wildEncounter: createTypedDynamicApiSource(
-         store,
-         'wildEncounter',
-         MapApi.getWildEncounters,
-         (ctx) => buildDatePayload(ctx, {
-            wildEncountersToInclude: ctx.wildEncountersToInclude,
-            itineraryMode: ctx.itineraryMode,
-         })
-      ),
+         wildEncounter: createTypedDynamicApiSource(
+            store,
+            'wildEncounter',
+            MapApi.getWildEncounters,
+            (ctx) => buildDatePayload(ctx, {
+               wildEncountersToInclude: ctx.wildEncountersToInclude,
+               itineraryMode: ctx.itineraryMode,
+            })
+         ),
 
-      drinkingFountain: createTypedDynamicApiSource(
-         store,
-         'drinkingFountain',
-         MapApi.getDrinkingFountains,
-         (ctx) => buildDatePayload(ctx)
-      ),
+         drinkingFountain: createTypedDynamicApiSource(
+            store,
+            'drinkingFountain',
+            MapApi.getDrinkingFountains,
+            (ctx) => buildDatePayload(ctx)
+         ),
 
-      defibrillator: createTypedStaticApiSource(store, 'defibrillator', MapApi.getDefibrillators),
+         defibrillator: createTypedStaticApiSource(store, 'defibrillator', MapApi.getDefibrillators),
 
-      emergencyIntercom: createTypedStaticApiSource(
-         store,
-         'emergencyIntercom',
-         MapApi.getEmergencyIntercoms
-      ),
+         emergencyIntercom: createTypedStaticApiSource(
+            store,
+            'emergencyIntercom',
+            MapApi.getEmergencyIntercoms
+         ),
 
-      guestService: createTypedStaticApiSource(
-         store,
-         'guestService',
-         MapApi.getGuestServices
-      ),
+         guestService: createTypedStaticApiSource(
+            store,
+            'guestService',
+            MapApi.getGuestServices
+         ),
 
-      picnicSite: createTypedStaticApiSource(
-         store,
-         'picnicSite',
-         MapApi.getPicnicSites
-      ),
+         picnicSite: createTypedStaticApiSource(
+            store,
+            'picnicSite',
+            MapApi.getPicnicSites
+         ),
 
-      eventSite: createTypedStaticApiSource(
-         store,
-         'eventSite',
-         MapApi.getEventSites
-      ),
+         eventSite: createTypedStaticApiSource(
+            store,
+            'eventSite',
+            MapApi.getEventSites
+         ),
 
-      exhibit: createTypedStaticApiSource(store, 'exhibit', MapApi.getExhibits),
+         exhibit: createTypedStaticApiSource(store, 'exhibit', MapApi.getExhibits),
 
-      closedExhibit: createClosedExhibitSource(),
-   };
+         closedExhibit: createClosedExhibitSource(),
+      };
+   }
 }

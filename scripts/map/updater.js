@@ -11,7 +11,8 @@ function buildUniqueTypes(types = []) {
    return Array.from(new Set(types));
 }
 
-export function createMapUpdater({
+export class Updater {
+   static createMapUpdater({
    store,
    sources,
    markers,
@@ -25,228 +26,229 @@ export function createMapUpdater({
    getSelectedTypes,
    onDateContextChange = null,
 }) {
-   let lastPreset = null;
-   let lastDateStr = null;
-   let pendingOptions = null;
+      let lastPreset = null;
+      let lastDateStr = null;
+      let pendingOptions = null;
 
-   function rememberLastMapRequest(preset, dateStr) {
-      lastPreset = preset;
-      lastDateStr = dateStr;
-   }
-
-   function focusIfRequested(options) {
-      FocusRequest.scheduleFocusRequest(focus, options?.focus || null);
-   }
-
-   function clearRenderedMarkers() {
-      markers.render([]);
-      ItineraryPathOverlay.clearItineraryPathOverlay();
-      TransportationRouteOverlay.hideTransportationRouteLayers();
-   }
-
-   function resolvePendingUpdateOptions(options) {
-      if (options) {
-         return options;
+      function rememberLastMapRequest(preset, dateStr) {
+         lastPreset = preset;
+         lastDateStr = dateStr;
       }
 
-      if (!pendingOptions) {
-         return null;
+      function focusIfRequested(options) {
+         FocusRequest.scheduleFocusRequest(focus, options?.focus || null);
       }
 
-      const resolvedOptions = pendingOptions;
-      pendingOptions = null;
-      return resolvedOptions;
-   }
-
-   function getControlSnapshot() {
-      return {
-         includeOffDisplayAnimals: getIncludeOffDisplay(),
-         includeClosedRestaurants: getIncludeClosedRestaurants(),
-         includeClosedRestrooms: getIncludeClosedRestrooms(),
-         includeClosedGiftShops: getIncludeClosedGiftShops(),
-         includeClosedAttractions: getIncludeClosedAttractions(),
-         transportationRoute: getTransportationRoute(),
-         selectedTypes: getSelectedTypes(),
-      };
-   }
-
-   function buildFocusContext(options) {
-      const focusRow = options?.focus?.row || null;
-      const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
-
-      return {
-         focusRow,
-         focusType,
-      };
-   }
-
-   function buildRequestedLayers(dateCtx, options) {
-      const controls = getControlSnapshot();
-      const { focusRow, focusType } = buildFocusContext(options);
-
-      const {
-         ctx,
-         selectedTypes,
-      } = LayerRequest.buildLayerRequest({
-         dateCtx,
-         selectedTypes: controls.selectedTypes,
-         transportationRoute: controls.transportationRoute,
-         focusRow,
-         focusType,
-         includeOffDisplayAnimals: controls.includeOffDisplayAnimals,
-         includeClosedRestaurants: controls.includeClosedRestaurants,
-         includeClosedRestrooms: controls.includeClosedRestrooms,
-         includeClosedGiftShops: controls.includeClosedGiftShops,
-         includeClosedAttractions: controls.includeClosedAttractions,
-      });
-
-      return {
-         ctx,
-         selectedTypes,
-      };
-   }
-
-   function syncItineraryTransportationRoute(itinerary) {
-      const routeMarkers = LayerRequest.resolveItineraryTransportationRouteMarkers(itinerary);
-
-      if (!routeMarkers) {
+      function clearRenderedMarkers() {
+         markers.render([]);
+         ItineraryPathOverlay.clearItineraryPathOverlay();
          TransportationRouteOverlay.hideTransportationRouteLayers();
-         return;
       }
 
-      TransportationRouteOverlay.showTransportationRouteMarkers(
-         routeMarkers.route,
-         routeMarkers.markerSequences
-      );
-   }
+      function resolvePendingUpdateOptions(options) {
+         if (options) {
+            return options;
+         }
 
-   async function renderItineraryOnly(dateCtx, itinerary, options) {
-      try {
-         syncItineraryTransportationRoute(itinerary);
-         markers.render(LayerRequest.buildItineraryRows(itinerary));
-         ItineraryPathOverlay.renderItineraryPathOverlay(
-            ItineraryPathModel.resolveItineraryPath(options, itinerary)
+         if (!pendingOptions) {
+            return null;
+         }
+
+         const resolvedOptions = pendingOptions;
+         pendingOptions = null;
+         return resolvedOptions;
+      }
+
+      function getControlSnapshot() {
+         return {
+            includeOffDisplayAnimals: getIncludeOffDisplay(),
+            includeClosedRestaurants: getIncludeClosedRestaurants(),
+            includeClosedRestrooms: getIncludeClosedRestrooms(),
+            includeClosedGiftShops: getIncludeClosedGiftShops(),
+            includeClosedAttractions: getIncludeClosedAttractions(),
+            transportationRoute: getTransportationRoute(),
+            selectedTypes: getSelectedTypes(),
+         };
+      }
+
+      function buildFocusContext(options) {
+         const focusRow = options?.focus?.row || null;
+         const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
+
+         return {
+            focusRow,
+            focusType,
+         };
+      }
+
+      function buildRequestedLayers(dateCtx, options) {
+         const controls = getControlSnapshot();
+         const { focusRow, focusType } = buildFocusContext(options);
+
+         const {
+            ctx,
+            selectedTypes,
+         } = LayerRequest.buildLayerRequest({
+            dateCtx,
+            selectedTypes: controls.selectedTypes,
+            transportationRoute: controls.transportationRoute,
+            focusRow,
+            focusType,
+            includeOffDisplayAnimals: controls.includeOffDisplayAnimals,
+            includeClosedRestaurants: controls.includeClosedRestaurants,
+            includeClosedRestrooms: controls.includeClosedRestrooms,
+            includeClosedGiftShops: controls.includeClosedGiftShops,
+            includeClosedAttractions: controls.includeClosedAttractions,
+         });
+
+         return {
+            ctx,
+            selectedTypes,
+         };
+      }
+
+      function syncItineraryTransportationRoute(itinerary) {
+         const routeMarkers = LayerRequest.resolveItineraryTransportationRouteMarkers(itinerary);
+
+         if (!routeMarkers) {
+            TransportationRouteOverlay.hideTransportationRouteLayers();
+            return;
+         }
+
+         TransportationRouteOverlay.showTransportationRouteMarkers(
+            routeMarkers.route,
+            routeMarkers.markerSequences
          );
+      }
+
+      async function renderItineraryOnly(dateCtx, itinerary, options) {
+         try {
+            syncItineraryTransportationRoute(itinerary);
+            markers.render(LayerRequest.buildItineraryRows(itinerary));
+            ItineraryPathOverlay.renderItineraryPathOverlay(
+               ItineraryPathModel.resolveItineraryPath(options, itinerary)
+            );
+            focusIfRequested(options);
+            return true;
+         } catch (err) {
+            console.warn('Failed to render itinerary layers:', err);
+            clearRenderedMarkers();
+            return true;
+         }
+      }
+
+      function getStoredLayerRows(type) {
+         return store.byType[type] || [];
+      }
+
+      async function fetchLayerRows(layer, ctx) {
+         const source = sources[layer];
+
+         if (!source) {
+            return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
+         }
+
+         try {
+            return await source.fetch(ctx);
+         } catch {
+            return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
+         }
+      }
+
+      async function fetchSelectedLayers(selectedTypes, ctx) {
+         const uniqueTypes = buildUniqueTypes(selectedTypes);
+
+         await Promise.all(
+            uniqueTypes.map((layer) => fetchLayerRows(layer, ctx))
+         );
+
+         return uniqueTypes;
+      }
+
+      function combineLayerRows(selectedTypes = []) {
+         return buildUniqueTypes(selectedTypes)
+            .flatMap((type) => getStoredLayerRows(type));
+      }
+
+      async function renderSelectedLayers(dateCtx, options = null) {
+         const {
+            ctx,
+            selectedTypes,
+         } = buildRequestedLayers(dateCtx, options);
+
+         await ClosedExhibitOverlay.syncClosedExhibitOverlays(sources, ctx);
+         ItineraryPathOverlay.clearItineraryPathOverlay();
+
+         if (selectedTypes.length === 0) {
+            clearRenderedMarkers();
+            return;
+         }
+
+         const fetchedTypes = await fetchSelectedLayers(selectedTypes, ctx);
+         markers.render(combineLayerRows(fetchedTypes));
          focusIfRequested(options);
-         return true;
-      } catch (err) {
-         console.warn('Failed to render itinerary layers:', err);
-         clearRenderedMarkers();
-         return true;
-      }
-   }
-
-   function getStoredLayerRows(type) {
-      return store.byType[type] || [];
-   }
-
-   async function fetchLayerRows(layer, ctx) {
-      const source = sources[layer];
-
-      if (!source) {
-         return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
       }
 
-      try {
-         return await source.fetch(ctx);
-      } catch {
-         return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
-      }
-   }
+      async function run(dateCtx, options = null) {
+         const itinerary = options?.itinerary || null;
 
-   async function fetchSelectedLayers(selectedTypes, ctx) {
-      const uniqueTypes = buildUniqueTypes(selectedTypes);
+         if (itinerary) {
+            await renderItineraryOnly(dateCtx, itinerary, options);
+            return;
+         }
 
-      await Promise.all(
-         uniqueTypes.map((layer) => fetchLayerRows(layer, ctx))
-      );
-
-      return uniqueTypes;
-   }
-
-   function combineLayerRows(selectedTypes = []) {
-      return buildUniqueTypes(selectedTypes)
-         .flatMap((type) => getStoredLayerRows(type));
-   }
-
-   async function renderSelectedLayers(dateCtx, options = null) {
-      const {
-         ctx,
-         selectedTypes,
-      } = buildRequestedLayers(dateCtx, options);
-
-      await ClosedExhibitOverlay.syncClosedExhibitOverlays(sources, ctx);
-      ItineraryPathOverlay.clearItineraryPathOverlay();
-
-      if (selectedTypes.length === 0) {
-         clearRenderedMarkers();
-         return;
+         await renderSelectedLayers(dateCtx, options);
       }
 
-      const fetchedTypes = await fetchSelectedLayers(selectedTypes, ctx);
-      markers.render(combineLayerRows(fetchedTypes));
-      focusIfRequested(options);
-   }
+      async function updateMap(preset, dateStr, options = null) {
+         rememberLastMapRequest(preset, dateStr);
 
-   async function run(dateCtx, options = null) {
-      const itinerary = options?.itinerary || null;
+         const resolvedOptions = resolvePendingUpdateOptions(options);
+         const dateContext = await DateContext.buildMapDateContext(preset, dateStr);
+         onDateContextChange?.(dateContext);
 
-      if (itinerary) {
-         await renderItineraryOnly(dateCtx, itinerary, options);
-         return;
+         return run(dateContext, resolvedOptions);
       }
 
-      await renderSelectedLayers(dateCtx, options);
-   }
+      function refetchWithCurrentControls(options) {
+         if (!lastPreset) {
+            pendingOptions = options;
+            return null;
+         }
 
-   async function updateMap(preset, dateStr, options = null) {
-      rememberLastMapRequest(preset, dateStr);
-
-      const resolvedOptions = resolvePendingUpdateOptions(options);
-      const dateContext = await DateContext.buildMapDateContext(preset, dateStr);
-      onDateContextChange?.(dateContext);
-
-      return run(dateContext, resolvedOptions);
-   }
-
-   function refetchWithCurrentControls(options) {
-      if (!lastPreset) {
-         pendingOptions = options;
-         return null;
+         return updateMap(lastPreset, lastDateStr, options);
       }
 
-      return updateMap(lastPreset, lastDateStr, options);
-   }
+      function focusFromSearchRow(payload) {
+         const focusRequest = FocusRequest.normalizeSearchFocusRequest(payload);
 
-   function focusFromSearchRow(payload) {
-      const focusRequest = FocusRequest.normalizeSearchFocusRequest(payload);
+         if (!focusRequest) {
+            return;
+         }
 
-      if (!focusRequest) {
-         return;
+         return refetchWithCurrentControls({ focus: focusRequest });
       }
 
-      return refetchWithCurrentControls({ focus: focusRequest });
-   }
+      function focusFromDeepLink(payload) {
+         const resolved = FocusRequest.resolveDeepLinkFocus(payload);
 
-   function focusFromDeepLink(payload) {
-      const resolved = FocusRequest.resolveDeepLinkFocus(payload);
+         if (!resolved) {
+            return;
+         }
 
-      if (!resolved) {
-         return;
+         if (resolved.mode === 'direct') {
+            FocusRequest.scheduleFocusRequest(focus, resolved.focusRequest);
+            return null;
+         }
+
+         return refetchWithCurrentControls({ focus: resolved.focusRequest });
       }
 
-      if (resolved.mode === 'direct') {
-         FocusRequest.scheduleFocusRequest(focus, resolved.focusRequest);
-         return null;
-      }
-
-      return refetchWithCurrentControls({ focus: resolved.focusRequest });
+      return {
+         updateMap,
+         refetchWithCurrentControls,
+         focusFromSearchRow,
+         focusFromDeepLink,
+      };
    }
-
-   return {
-      updateMap,
-      refetchWithCurrentControls,
-      focusFromSearchRow,
-      focusFromDeepLink,
-   };
 }
