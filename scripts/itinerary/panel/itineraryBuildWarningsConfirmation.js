@@ -221,10 +221,8 @@ export class ItineraryBuildWarningsConfirmation {
    }
 
    static buildItineraryBuildWarningSections(issues = []) {
-      const strings = Strings.itinerary.confirmation;
-
       return BUILD_WARNING_SECTION_LIST_BUILDERS.flatMap((buildSections) => (
-         buildSections(issues, strings)
+         buildSections(issues, Strings.itinerary.confirmation)
       ));
 
    }
@@ -247,12 +245,10 @@ export class ItineraryBuildWarningsConfirmation {
          return;
       }
 
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.saveIssuesTitle,
+         title: Strings.itinerary.confirmation.saveIssuesTitle,
          bodyContent: createBuildWarningsContent(sections),
-         confirmText: strings.saveIssuesButton,
+         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

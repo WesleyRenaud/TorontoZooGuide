@@ -43,7 +43,6 @@ export class WildEncounterUnscheduleConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
       const encounter = WildEncounterUnscheduleConfirmation.getPrimaryWildEncounterFromUnscheduleIssues(issues);
 
       if (!encounter?.encounterName) {
@@ -52,16 +51,16 @@ export class WildEncounterUnscheduleConfirmation {
 
       const encounterName = Format.normalizeText(encounter.encounterName);
       const message = encounter.encounterTime
-         ? strings.wildEncounterRescheduleMessage(
+         ? Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
             encounterName,
             encounter.encounterTime
          )
-         : strings.wildEncounterRescheduleMessageWithoutTime(encounterName);
+         : Strings.itinerary.confirmation.wildEncounterRescheduleMessageWithoutTime(encounterName);
 
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.wildEncounterRescheduleTitle,
+         title: Strings.itinerary.confirmation.wildEncounterRescheduleTitle,
          message,
-         confirmText: strings.updatePlanConfirm,
+         confirmText: Strings.itinerary.confirmation.updatePlanConfirm,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

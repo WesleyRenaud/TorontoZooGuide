@@ -3,8 +3,6 @@ import { DraftStorage } from '../../draftStorage.js';
 import { Format } from '../format.js';
 import { Strings } from '../../../strings.js';
 
-const { actions, selectors } = Strings.itinerary;
-
 export class DateCard {
    static makeDateCard(itin = {}) {
       const date = itin.date || DraftStorage.getStoredItineraryDate();
@@ -17,12 +15,12 @@ export class DateCard {
       const topRow = Dom.el('div', 'itin-panel-date-top');
       const textWrap = Dom.el('div', 'itin-panel-date-text');
 
-      textWrap.appendChild(Dom.el('div', 'itin-panel-date-label', selectors.visitDate));
+      textWrap.appendChild(Dom.el('div', 'itin-panel-date-label', Strings.itinerary.selectors.visitDate));
       textWrap.appendChild(Dom.el('div', 'itin-panel-date-value', prettyDate));
 
       const actionsWrap = Dom.el('div', 'itin-panel-header-actions');
 
-      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', actions.edit);
+      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
       editBtn.type = 'button';
 
       editBtn.addEventListener('click', (e) => {

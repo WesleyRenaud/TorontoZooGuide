@@ -7,13 +7,11 @@ export class ScheduleItemNotOnItineraryConfirmation {
       onConfirm,
       onCancel,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.scheduleItemNotOnItineraryTitle,
-         message: strings.scheduleItemNotOnItineraryMessage,
-         confirmText: strings.scheduleItemNotOnItineraryConfirm,
-         doNotShowAgainLabel: strings.doNotShowAgain,
+         title: Strings.itinerary.confirmation.scheduleItemNotOnItineraryTitle,
+         message: Strings.itinerary.confirmation.scheduleItemNotOnItineraryMessage,
+         confirmText: Strings.itinerary.confirmation.scheduleItemNotOnItineraryConfirm,
+         doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,

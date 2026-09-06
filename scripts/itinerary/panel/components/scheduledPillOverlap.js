@@ -1,8 +1,6 @@
 import { Constants } from '../../../shared/constants.js';
 import { Strings } from '../../../strings.js';
 
-const { dayPlanner } = Strings.itinerary;
-
 export const MAX_TIMELINE_PILL_COLUMNS = Constants.MAX_TIMELINE_PILL_COLUMNS;
 export const MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = Constants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;
 
@@ -15,7 +13,6 @@ export class ScheduledPillOverlap {
       return Constants.TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES;
    }
 
-
    static getScheduledItemTimeRange(scheduledItem = {}) {
       const startMinutes = Number(scheduledItem.startMinutes);
       const endMinutes = ScheduledPillOverlap.getScheduledItemEndMinutes(scheduledItem);
@@ -26,13 +23,11 @@ export class ScheduledPillOverlap {
       };
    }
 
-
    static getScheduledItemEndMinutes(scheduledItem = {}) {
       const endMinutes = Number(scheduledItem.endMinutes);
 
       return Number.isFinite(endMinutes) ? endMinutes : Number.NaN;
    }
-
 
    static getScheduledPillVisualBand(scheduledItem = {}) {
       const clusteredItems = scheduledItem.clusterItems ?? scheduledItem.summaryItems;
@@ -67,14 +62,12 @@ export class ScheduledPillOverlap {
       };
    }
 
-
    static doScheduledTimeRangesOverlap(leftRange = {}, rightRange = {}) {
       return (
          leftRange.startMinutes < rightRange.endMinutes
          && rightRange.startMinutes < leftRange.endMinutes
       );
    }
-
 
    static scheduledPillsOverlapInDefaultPosition(
       leftItem = {},
@@ -85,7 +78,6 @@ export class ScheduledPillOverlap {
          ScheduledPillOverlap.getScheduledPillVisualBand(rightItem)
       );
    }
-
 
    static computeFirstFreeHorizontalOffsetIndex(
       placedItems = [],
@@ -114,7 +106,6 @@ export class ScheduledPillOverlap {
       return maxColumn + 1;
    }
 
-
    static getScheduledItemMaximumDuration(scheduledItem = {}) {
       const maximumDuration = Number(scheduledItem.maximumDuration);
 
@@ -132,11 +123,9 @@ export class ScheduledPillOverlap {
       return 0;
    }
 
-
    static compareScheduledItemLabels(leftItem = {}, rightItem = {}) {
       return (leftItem.label ?? '').localeCompare(rightItem.label ?? '');
    }
-
 
    static compareScheduledItemsForGroupDisplay(leftItem = {}, rightItem = {}) {
       const durationDelta = ScheduledPillOverlap.getScheduledItemMaximumDuration(rightItem)
@@ -149,11 +138,9 @@ export class ScheduledPillOverlap {
       return ScheduledPillOverlap.compareScheduledItemLabels(leftItem, rightItem);
    }
 
-
    static sortScheduledItemsForGroupDisplay(items = []) {
       return [...items].sort(ScheduledPillOverlap.compareScheduledItemsForGroupDisplay);
    }
-
 
    static formatScheduledPillGroupLabel(items = []) {
       if (!items.length) {
@@ -167,7 +154,7 @@ export class ScheduledPillOverlap {
          return firstLabel;
       }
 
-      return dayPlanner.scheduledPillGroupLabel(
+      return Strings.itinerary.dayPlanner.scheduledPillGroupLabel(
          firstLabel,
          sortedItems.length - 1
       );

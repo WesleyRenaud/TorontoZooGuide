@@ -97,7 +97,6 @@ export class FixedTimeItemLongWaitConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
       const items = FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues);
 
       // Multi-item long waits use showItineraryBuildWarningsConfirmation.
@@ -108,9 +107,9 @@ export class FixedTimeItemLongWaitConfirmation {
       const [item] = items;
 
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.fixedTimeItemLongWaitTitle(item.typeLabel),
-         message: longWaitConfirmMessage(item, strings),
-         confirmText: strings.saveIssuesButton,
+         title: Strings.itinerary.confirmation.fixedTimeItemLongWaitTitle(item.typeLabel),
+         message: longWaitConfirmMessage(item, Strings.itinerary.confirmation),
+         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

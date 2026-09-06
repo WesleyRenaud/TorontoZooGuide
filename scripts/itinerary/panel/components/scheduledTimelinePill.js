@@ -6,8 +6,6 @@ import { Constants } from '../../../shared/constants.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 import { Strings } from '../../../strings.js';
 
-const { dayPlanner } = Strings.itinerary;
-
 function applyScheduledPillRegionColors(pill, item = null) {
    RegionColors.applyRegionColorsToElement(
       pill,
@@ -71,7 +69,7 @@ function replaceGroupedScheduledPillLabel(
          Dom.el(
             'span',
             'itinerary-day-scheduled-pill-count',
-            dayPlanner.scheduledPillMoreCount(suffixCount)
+            Strings.itinerary.dayPlanner.scheduledPillMoreCount(suffixCount)
          )
       );
    }
@@ -104,11 +102,11 @@ function buildGroupedScheduledPill(
    const pill = Dom.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu itinerary-day-scheduled-pill--grouped');
    const header = Dom.el('div', 'itinerary-day-scheduled-pill-header itinerary-day-scheduled-pill-header--grouped');
    const previousButton = makeScheduledPillArrowButton(
-      dayPlanner.previousScheduledItem,
+      Strings.itinerary.dayPlanner.previousScheduledItem,
       'previous'
    );
    const nextButton = makeScheduledPillArrowButton(
-      dayPlanner.nextScheduledItem,
+      Strings.itinerary.dayPlanner.nextScheduledItem,
       'next'
    );
    const labelMount = Dom.el('div', 'itinerary-day-scheduled-pill-label-mount');

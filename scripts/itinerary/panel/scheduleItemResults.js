@@ -1,8 +1,5 @@
 import { Strings } from '../../strings.js';
 
-const scheduleItemStrings = Strings.itinerary.scheduleItem;
-const actionStrings = Strings.itinerary.actions;
-
 function createEmptyState(emptyText) {
    const empty = document.createElement('div');
    empty.className = 'itin-empty';
@@ -20,12 +17,12 @@ function createSelectButton({
 
    function updateButtonState() {
       const selected = isSelected();
-      button.textContent = selected ? '✓' : actionStrings.addSymbol;
+      button.textContent = selected ? '✓' : Strings.itinerary.actions.addSymbol;
       button.classList.toggle('is-added', selected);
       button.setAttribute('aria-pressed', String(selected));
       button.setAttribute(
          'aria-label',
-         selected ? scheduleItemStrings.itemSelected : scheduleItemStrings.selectItem
+         selected ? Strings.itinerary.scheduleItem.itemSelected : Strings.itinerary.scheduleItem.selectItem
       );
    }
 

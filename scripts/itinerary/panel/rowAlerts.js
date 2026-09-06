@@ -1,8 +1,6 @@
 import { LikelihoodValues } from '../../likelihood/likelihoodValues.js';
 import { Strings } from '../../strings.js';
 
-const { removedItems } = Strings.itinerary;
-
 function getLikelihoodPair(animal) {
    const beforeRaw = animal?.likelihoodBefore;
    const afterRaw = animal?.likelihoodAfter;
@@ -18,7 +16,7 @@ function buildAnimalRemovalReasonLine(animal) {
 
    if (!reason) return '';
 
-   return removedItems.unavailableReason(reason);
+   return Strings.itinerary.removedItems.unavailableReason(reason);
 }
 
 function buildAnimalVisibilityChange(animal) {
@@ -31,7 +29,7 @@ function buildAnimalVisibilityChange(animal) {
       };
    }
 
-   const line = removedItems.projectedVisibilityChanged(before, after);
+   const line = Strings.itinerary.removedItems.projectedVisibilityChanged(before, after);
 
    if (after < before) {
       return {
@@ -65,7 +63,7 @@ export class RowAlerts {
 
       if (!reason) return '';
 
-      return removedItems.notAvailableOnDate(reason);
+      return Strings.itinerary.removedItems.notAvailableOnDate(reason);
    }
 
    static buildGuardiansRemovalReasonLine(guardiansTalk) {
@@ -73,7 +71,7 @@ export class RowAlerts {
 
       if (!reason) return '';
 
-      return removedItems.notAvailableOnDate(reason);
+      return Strings.itinerary.removedItems.notAvailableOnDate(reason);
    }
 
    static buildWildRemovalReasonLine(wildEncounter) {
@@ -81,6 +79,6 @@ export class RowAlerts {
 
       if (!reason) return '';
 
-      return removedItems.notAvailableOnDate(reason);
+      return Strings.itinerary.removedItems.notAvailableOnDate(reason);
    }
 }

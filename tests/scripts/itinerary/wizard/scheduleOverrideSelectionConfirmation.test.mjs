@@ -38,15 +38,14 @@ test.describe('showScheduleOverrideSelectionConfirmation', () => {
       });
 
       const popup = document.querySelector('.tzg-confirm');
-      const strings = Strings.itinerary.confirmation;
       const title = popup?.querySelector('.itin-top-title');
       const message = popup?.querySelector('.tzg-popup-message');
       const confirmButton = popup?.querySelector('.tzg-popup-confirm');
 
       assert.ok(popup);
-      assert.equal(title?.textContent, strings.scheduleOverrideSelectionTitle);
-      assert.equal(message?.textContent, strings.scheduleOverrideSelectionMessage);
-      assert.equal(confirmButton?.textContent, strings.saveIssuesButton);
+      assert.equal(title?.textContent, Strings.itinerary.confirmation.scheduleOverrideSelectionTitle);
+      assert.equal(message?.textContent, Strings.itinerary.confirmation.scheduleOverrideSelectionMessage);
+      assert.equal(confirmButton?.textContent, Strings.itinerary.confirmation.saveIssuesButton);
       assert.equal(popup.querySelector('.tzg-popup-do-not-show-again'), null);
 
       confirmButton?.click();

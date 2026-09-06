@@ -43,7 +43,6 @@ export class GuardiansTalkUnscheduleConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
       const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
 
       if (!talk?.talkName) {
@@ -52,16 +51,16 @@ export class GuardiansTalkUnscheduleConfirmation {
 
       const talkName = Format.normalizeText(talk.talkName);
       const message = talk.talkTime
-         ? strings.guardiansTalkRescheduleMessage(
+         ? Strings.itinerary.confirmation.guardiansTalkRescheduleMessage(
             talkName,
             talk.talkTime
          )
-         : strings.guardiansTalkRescheduleMessageWithoutTime(talkName);
+         : Strings.itinerary.confirmation.guardiansTalkRescheduleMessageWithoutTime(talkName);
 
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.guardiansTalkRescheduleTitle,
+         title: Strings.itinerary.confirmation.guardiansTalkRescheduleTitle,
          message,
-         confirmText: strings.updatePlanConfirm,
+         confirmText: Strings.itinerary.confirmation.updatePlanConfirm,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

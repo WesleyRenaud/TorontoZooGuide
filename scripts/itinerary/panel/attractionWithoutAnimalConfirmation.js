@@ -82,7 +82,6 @@ export class AttractionWithoutAnimalConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
       const attractions = AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues);
 
       // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
@@ -93,12 +92,12 @@ export class AttractionWithoutAnimalConfirmation {
       const [attraction] = attractions;
 
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.attractionWithoutAnimalTitle,
+         title: Strings.itinerary.confirmation.attractionWithoutAnimalTitle,
          message: AttractionWithoutAnimalConfirmation.attractionWithoutAnimalMessage(attraction, {
             includeConfirmPrompt: true,
-            strings,
+            strings: Strings.itinerary.confirmation,
          }),
-         confirmText: strings.saveIssuesButton,
+         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

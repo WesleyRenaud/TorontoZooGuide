@@ -59,7 +59,6 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
       const talks = GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues);
 
       // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
@@ -70,13 +69,13 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       const [talk] = talks;
       const talkName = Format.normalizeText(talk.talkName);
       const message = talk.talkTime
-         ? strings.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
-         : strings.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);
+         ? Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
+         : Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);
 
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.guardiansTalkWithoutAnimalTitle,
+         title: Strings.itinerary.confirmation.guardiansTalkWithoutAnimalTitle,
          message,
-         confirmText: strings.saveIssuesButton,
+         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,

@@ -1,13 +1,11 @@
 import { Dom } from '../dom.js';
 import { Strings } from '../../../strings.js';
 
-const { scheduleItem } = Strings.itinerary;
-
 export class ScheduleItemButton {
    static setScheduleItemButtonBusy(
       button,
       isBusy,
-      busyLabel = scheduleItem.schedulingBusy
+      busyLabel = Strings.itinerary.scheduleItem.schedulingBusy
    ) {
       if (!button.dataset.defaultLabel) {
          button.dataset.defaultLabel = button.textContent;
@@ -22,7 +20,7 @@ export class ScheduleItemButton {
    static async runScheduleItemButtonAction(
       button,
       action,
-      busyLabel = scheduleItem.schedulingBusy
+      busyLabel = Strings.itinerary.scheduleItem.schedulingBusy
    ) {
       if (button.disabled) {
          return;
@@ -39,7 +37,7 @@ export class ScheduleItemButton {
    }
 
    static makeScheduleItemButton({
-      label = scheduleItem.title,
+      label = Strings.itinerary.scheduleItem.title,
       onClick = null,
       variant = 'primary',
    } = {}) {

@@ -8,12 +8,10 @@ export class ShowScheduleItemNotice {
          showNoticePopup = NoticePopup.showItineraryNoticePopup,
          getMountEl = Popup.getItineraryPanelMountEl,
       } = deps;
-      const strings = Strings.itinerary;
-
       showNoticePopup({
-         title: strings.scheduleItem.errorTitle,
+         title: Strings.itinerary.scheduleItem.errorTitle,
          message,
-         buttonText: strings.noItemsSelected.button,
+         buttonText: Strings.itinerary.noItemsSelected.button,
          mountEl: getMountEl() ?? document.body,
       });
    }

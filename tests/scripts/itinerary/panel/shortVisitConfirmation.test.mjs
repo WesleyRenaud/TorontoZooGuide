@@ -27,15 +27,14 @@ test.describe('shortVisitConfirmation', () => {
       });
 
       const popup = document.querySelector('.tzg-confirm');
-      const strings = Strings.itinerary.confirmation;
       const title = popup?.querySelector('.itin-top-title');
       const message = popup?.querySelector('.tzg-popup-message');
       const confirmButton = popup?.querySelector('.tzg-popup-confirm');
       const cancelButton = popup?.querySelector('.tzg-popup-cancel');
 
       assert.ok(popup);
-      assert.equal(title?.textContent, strings.shortVisitTitle);
-      assert.equal(message?.textContent, strings.shortVisitMessage);
+      assert.equal(title?.textContent, Strings.itinerary.confirmation.shortVisitTitle);
+      assert.equal(message?.textContent, Strings.itinerary.confirmation.shortVisitMessage);
       assert.ok(popup.querySelector('.tzg-popup-do-not-show-again'));
 
       cancelButton?.click();

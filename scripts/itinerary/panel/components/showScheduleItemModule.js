@@ -22,11 +22,10 @@ export class ShowScheduleItemModule {
       onScheduled = null,
       preselectedRow = null,
    } = {}) {
-      const strings = Strings.itinerary.scheduleItem;
       const {
          body: moduleBodyEl,
          scheduleTimeFields,
-      } = ScheduleItemModuleForm.buildScheduleItemModuleBody(strings, eventTypes);
+      } = ScheduleItemModuleForm.buildScheduleItemModuleBody(Strings.itinerary.scheduleItem, eventTypes);
       const {
          root,
          overlay,
@@ -34,7 +33,7 @@ export class ShowScheduleItemModule {
          closeButton,
       } = Popup.createItineraryPopupLayout({
          popupClassName: 'schedule-item-module',
-         title: strings.title,
+         title: Strings.itinerary.scheduleItem.title,
          bodyContent: moduleBodyEl,
          showCloseButton: true,
          actionButtons: [
@@ -46,7 +45,7 @@ export class ShowScheduleItemModule {
             {
                key: 'schedule',
                className: 'itin-finish',
-               text: strings.scheduleButton,
+               text: Strings.itinerary.scheduleItem.scheduleButton,
             },
          ],
       });
@@ -55,7 +54,7 @@ export class ShowScheduleItemModule {
       const controller = ScheduleItemModuleController.createScheduleItemModuleController({
          itinerary,
          eventTypes,
-         strings,
+         strings: Strings.itinerary.scheduleItem,
          preselectedRow,
          scheduleTimeFields,
          onScheduled,
