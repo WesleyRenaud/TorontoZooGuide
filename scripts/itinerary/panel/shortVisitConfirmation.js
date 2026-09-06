@@ -4,12 +4,10 @@ import { Strings } from '../../strings.js';
 
 export class ShortVisitConfirmation {
    static showShortVisitConfirmation({ onConfirm, onCancel } = {}) {
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.shortVisitTitle,
-         message: strings.shortVisitMessage,
-         doNotShowAgainLabel: strings.doNotShowAgain,
+         title: Strings.itinerary.confirmation.shortVisitTitle,
+         message: Strings.itinerary.confirmation.shortVisitMessage,
+         doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl: Popup.getItineraryPanelMountEl()
             ?? document.body,

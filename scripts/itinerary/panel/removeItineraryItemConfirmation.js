@@ -18,13 +18,11 @@ function isTransitModeTransportationRemove(itemType, key) {
 }
 
 function removeConfirmationMessage(itemType, key) {
-   const strings = Strings.itinerary.confirmation;
-
    if (isTransitModeTransportationRemove(itemType, key)) {
-      return strings.removeTransitTransportationMessage;
+      return Strings.itinerary.confirmation.removeTransitTransportationMessage;
    }
 
-   return strings.removeItemMessage;
+   return Strings.itinerary.confirmation.removeItemMessage;
 }
 
 export class RemoveItineraryItemConfirmation {
@@ -34,10 +32,8 @@ export class RemoveItineraryItemConfirmation {
       onConfirm,
       onCancel,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.removeItemTitle,
+         title: Strings.itinerary.confirmation.removeItemTitle,
          message: removeConfirmationMessage(itemType, key),
          confirmText: Strings.itinerary.dayPlanner.remove,
          cancelText: Strings.itinerary.actions.cancel,

@@ -7,11 +7,9 @@ export class AttractionOutsideOperatingHoursConfirmation {
       onConfirm,
       onCancel,
    } = {}) {
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.attractionOutsideOperatingHoursTitle,
-         message: strings.attractionOutsideOperatingHoursMessage,
+         title: Strings.itinerary.confirmation.attractionOutsideOperatingHoursTitle,
+         message: Strings.itinerary.confirmation.attractionOutsideOperatingHoursMessage,
          confirmText: Strings.itinerary.actions.adjust,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl: Popup.getItineraryPanelMountEl() ?? document.body,

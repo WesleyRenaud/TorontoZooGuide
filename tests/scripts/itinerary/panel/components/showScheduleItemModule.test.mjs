@@ -21,11 +21,9 @@ test.describe('showScheduleItemModule', () => {
       });
 
       const root = document.querySelector('.schedule-item-module');
-      const strings = Strings.itinerary.scheduleItem;
-
       assert.ok(popup);
       assert.ok(root);
-      assert.equal(root?.querySelector('.itin-top-title')?.textContent, strings.title);
+      assert.equal(root?.querySelector('.itin-top-title')?.textContent, Strings.itinerary.scheduleItem.title);
       assert.ok(root?.querySelector('.schedule-item-select'));
       assert.equal(root?.querySelector('.schedule-item-select')?.disabled, false);
       assert.ok(root?.querySelector('.schedule-item-search-input'));
@@ -36,7 +34,7 @@ test.describe('showScheduleItemModule', () => {
       assert.ok(root?.querySelector('.schedule-item-duration-input'));
       assert.ok(root?.querySelector('.schedule-item-results'));
       assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), null);
-      assert.equal(root?.querySelector('.itin-finish')?.textContent, strings.scheduleButton);
+      assert.equal(root?.querySelector('.itin-finish')?.textContent, Strings.itinerary.scheduleItem.scheduleButton);
       assert.equal(
          root?.querySelector('.itin-prev')?.textContent,
          Strings.itinerary.actions.cancel

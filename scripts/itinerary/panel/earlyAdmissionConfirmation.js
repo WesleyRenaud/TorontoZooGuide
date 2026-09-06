@@ -4,12 +4,10 @@ import { Strings } from '../../strings.js';
 
 export class EarlyAdmissionConfirmation {
    static showEarlyAdmissionConfirmation({ onConfirm, onCancel } = {}) {
-      const strings = Strings.itinerary.confirmation;
-
       ConfirmPopup.showItineraryConfirmPopup({
-         title: strings.earlyAdmissionTitle,
-         message: strings.earlyAdmissionMessage,
-         doNotShowAgainLabel: strings.doNotShowAgain,
+         title: Strings.itinerary.confirmation.earlyAdmissionTitle,
+         message: Strings.itinerary.confirmation.earlyAdmissionMessage,
+         doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
          mountEl: Popup.getItineraryPanelMountEl()
             ?? document.body,

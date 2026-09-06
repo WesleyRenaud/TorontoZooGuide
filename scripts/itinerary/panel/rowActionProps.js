@@ -35,10 +35,8 @@ export class RowActionProps {
          return {};
       }
 
-      const actionLabel = Strings.itinerary.scheduleItem.scheduleButton;
-
       return {
-         actionLabel,
+         actionLabel: Strings.itinerary.scheduleItem.scheduleButton,
          onAction: () => onScheduleItem({
             itemType,
             row,
@@ -65,10 +63,8 @@ export class RowActionProps {
          return {};
       }
 
-      const actionLabel = Strings.itinerary.dayPlanner.unschedule;
-
       return {
-         actionLabel,
+         actionLabel: Strings.itinerary.dayPlanner.unschedule,
          onAction: () => onUnscheduleItem({
             itemType,
             key,
@@ -92,7 +88,6 @@ export class RowActionProps {
          return {};
       }
 
-      const removeLabel = Strings.itinerary.dayPlanner.remove;
       const onRemove = () => onRemoveItem({
          itemType,
          key,
@@ -100,13 +95,13 @@ export class RowActionProps {
 
       if (useSecondaryAction) {
          return {
-            secondaryActionLabel: removeLabel,
+            secondaryActionLabel: Strings.itinerary.dayPlanner.remove,
             onSecondaryAction: onRemove,
          };
       }
 
       return {
-         actionLabel: removeLabel,
+         actionLabel: Strings.itinerary.dayPlanner.remove,
          onAction: onRemove,
       };
    }

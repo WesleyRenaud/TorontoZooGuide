@@ -1,8 +1,6 @@
 import { Dom } from '../dom.js';
 import { Strings } from '../../../strings.js';
 
-const { actions, panel } = Strings.itinerary;
-
 const MAX_VISIBLE_ITEMS = 3;
 
 function updateSectionBodyHeight(body, bodyInner) {
@@ -64,9 +62,9 @@ export class Section {
 
       const headerActions = Dom.el('div', 'itin-panel-header-actions');
 
-      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', actions.edit);
+      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
       editBtn.type = 'button';
-      editBtn.setAttribute('aria-label', panel.editSectionAria(title));
+      editBtn.setAttribute('aria-label', Strings.itinerary.panel.editSectionAria(title));
       editBtn.addEventListener('click', (e) => {
          e.preventDefault();
          e.stopPropagation();
@@ -77,7 +75,7 @@ export class Section {
 
       const toggleBtn = Dom.el('button', 'itin-panel-toggle');
       toggleBtn.type = 'button';
-      toggleBtn.setAttribute('aria-label', panel.toggleSectionAria(title));
+      toggleBtn.setAttribute('aria-label', Strings.itinerary.panel.toggleSectionAria(title));
       toggleBtn.appendChild(Dom.el('span', 'itin-panel-toggle-icon'));
 
       if (showEditButton) {
