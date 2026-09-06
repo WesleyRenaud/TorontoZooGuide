@@ -1,6 +1,6 @@
 import { AnimalSelectorModel } from './animalSelector/animalSelectorModel.js';
 import { View } from './animalSelector/view.js';
-import { createItinerarySelectorController } from './createSelectorController.js';
+import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { RegionStorage } from './regionSelector/regionStorage.js';
@@ -54,69 +54,71 @@ function renderOffDisplayAnimalControls({ bodyEl, rerunSearch, onChange }) {
    });
 }
 
-export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
-   let includeOffDisplayAnimals = false;
+export class AnimalSelector {
+   static createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
+      let includeOffDisplayAnimals = false;
 
-   return createItinerarySelectorController({
-      mountEl,
-      onNext,
-      onPrev,
-      onFinish,
-      onClose,
+      return CreateSelectorController.createItinerarySelectorController({
+         mountEl,
+         onNext,
+         onPrev,
+         onFinish,
+         onClose,
 
-      storageKey: STORAGE_KEY,
-      migrateSelected: AnimalSelectorModel.migrateStoredAnimals,
+         storageKey: STORAGE_KEY,
+         migrateSelected: AnimalSelectorModel.migrateStoredAnimals,
 
-      getContext: ItinerarySearchContext.getItineraryDateSearchContext,
+         getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
-      buildSearchPayload: query => buildAnimalSearchPayload(query, includeOffDisplayAnimals),
+         buildSearchPayload: query => buildAnimalSearchPayload(query, includeOffDisplayAnimals),
 
-      extractRows: response => response.animals,
+         extractRows: response => response.animals,
 
-      getId: AnimalSelectorModel.getAnimalId,
-      getTitle: getAnimalTitle,
-      getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
-      getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
+         getId: AnimalSelectorModel.getAnimalId,
+         getTitle: getAnimalTitle,
+         getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
+         getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
 
-      makeSelection: AnimalSelectorModel.makeAnimalSelection,
+         makeSelection: AnimalSelectorModel.makeAnimalSelection,
 
-      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-      h1: APP_STRINGS.itinerary.selectors.titleAnimals,
-      subtitle: APP_STRINGS.itinerary.selectors.animalSubtitle,
-      emptyText: APP_STRINGS.itinerary.emptyText.animals,
+         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+         h1: APP_STRINGS.itinerary.selectors.titleAnimals,
+         subtitle: APP_STRINGS.itinerary.selectors.animalSubtitle,
+         emptyText: APP_STRINGS.itinerary.emptyText.animals,
 
-      renderRowLeft: View.renderAnimalSelectorRowLeft,
+         renderRowLeft: View.renderAnimalSelectorRowLeft,
 
-      onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
-         const completeToggle = () => {
-            if (!isSelected) {
-               RegionStorage.restoreRemovedAnimalKey(AnimalSelectorModel.getAnimalId(row));
+         onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
+            const completeToggle = () => {
+               if (!isSelected) {
+                  RegionStorage.restoreRemovedAnimalKey(AnimalSelectorModel.getAnimalId(row));
+               }
+
+               proceed();
+            };
+
+            if (!shouldConfirmOffDisplayAnimal({
+               row,
+               isSelected,
+               includeOffDisplayAnimals,
+            })) {
+               completeToggle();
+               return;
             }
 
-            proceed();
-         };
+            promptForOffDisplayAnimalSelection(row, completeToggle);
+         },
 
-         if (!shouldConfirmOffDisplayAnimal({
-            row,
-            isSelected,
-            includeOffDisplayAnimals,
-         })) {
-            completeToggle();
-            return;
-         }
-
-         promptForOffDisplayAnimalSelection(row, completeToggle);
-      },
-
-      renderExtraControls: ({ bodyEl, rerunSearch }) => {
-         includeOffDisplayAnimals = false;
-         renderOffDisplayAnimalControls({
-            bodyEl,
-            rerunSearch,
-            onChange: (checked) => {
-               includeOffDisplayAnimals = checked;
-            },
-         });
-      },
-   });
+         renderExtraControls: ({ bodyEl, rerunSearch }) => {
+            includeOffDisplayAnimals = false;
+            renderOffDisplayAnimalControls({
+               bodyEl,
+               rerunSearch,
+               onChange: (checked) => {
+                  includeOffDisplayAnimals = checked;
+               },
+            });
+         },
+      });
+   }
 }

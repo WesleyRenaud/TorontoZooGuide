@@ -3,7 +3,7 @@ import { DraftStorage } from './draftStorage.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
-import { dispatchItineraryUpdated } from './itineraryService.js';
+import { ItineraryService } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { VisitDateEarliest } from './visitDateEarliest.js';
 
@@ -42,7 +42,7 @@ export class EnsureItineraryVisitDate {
 
       const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
 
-      dispatchItineraryUpdated(normalizedItinerary);
+      ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
 
       return normalizedItinerary;
    }

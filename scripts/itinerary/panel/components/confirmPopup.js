@@ -1,22 +1,22 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Popup } from './popup.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const { actions } = APP_STRINGS.itinerary;
 
 function createConfirmPopupBody(message, doNotShowAgainLabel) {
-   const body = el('div', 'tzg-popup-confirm-body');
+   const body = Dom.el('div', 'tzg-popup-confirm-body');
 
    body.appendChild(
-      el('div', 'tzg-popup-message', message)
+      Dom.el('div', 'tzg-popup-message', message)
    );
 
    if (!doNotShowAgainLabel) {
       return body;
    }
 
-   const label = el('label', 'toggle-row tzg-popup-do-not-show-again');
-   const checkbox = el('input');
+   const label = Dom.el('label', 'toggle-row tzg-popup-do-not-show-again');
+   const checkbox = Dom.el('input');
    checkbox.type = 'checkbox';
 
    label.append(checkbox, ` ${doNotShowAgainLabel}`);

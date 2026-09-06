@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { createItinerarySelectorController } from '../../scripts/itinerary/selectors/createSelectorController.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { CreateSelectorController } from '../../../../scripts/itinerary/selectors/createSelectorController.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
 function buildStubElements() {
    return {
@@ -19,7 +19,7 @@ function buildStubElements() {
    };
 }
 
-test.describe('createItinerarySelectorController', () => {
+test.describe('CreateSelectorController.createItinerarySelectorController', () => {
    installDomTestHooks({
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
@@ -29,10 +29,10 @@ test.describe('createItinerarySelectorController', () => {
       },
    });
 
-   test('show and hide manage the mount element and run an initial search', async () => {
+   test('Test_Show_TestShowAndHideManageTheMountElementAnd_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const searchedQueries = [];
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector',
          getId: (row) => row.id,
@@ -66,9 +66,9 @@ test.describe('createItinerarySelectorController', () => {
       assert.equal(mountEl.children.length, 0);
    });
 
-   test('shouldSkipClosingSelectionSync detects unchanged selections after show', () => {
+   test('Test_ShouldSkipClosingSelectionSync_TestShouldSkipClosingSelectionSyncDetectsUnchangedSelectionsAfterShow_ExpectOk', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector-skip',
          getId: (row) => row.id,
@@ -87,12 +87,12 @@ test.describe('createItinerarySelectorController', () => {
       assert.equal(controller.shouldSkipClosingSelectionSync(), true);
    });
 
-   test('next and close handlers receive the current selection snapshot', async () => {
+   test('Test_Next_TestNextAndCloseHandlersReceiveTheCurrentSelection_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const nextSnapshots = [];
       const closeCalls = [];
       let builtElements = null;
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector-handlers',
          getId: (row) => row.id,
@@ -125,12 +125,12 @@ test.describe('createItinerarySelectorController', () => {
       assert.deepEqual(closeCalls, ['closed']);
    });
 
-   test('prev and finish handlers receive the current selection snapshot', async () => {
+   test('Test_Prev_TestPrevAndFinishHandlersReceiveTheCurrentSelection_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const prevSnapshots = [];
       const finishSnapshots = [];
       let builtElements = null;
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector-prev-finish',
          getId: (row) => row.id,
@@ -163,10 +163,10 @@ test.describe('createItinerarySelectorController', () => {
       assert.deepEqual(finishSnapshots, [[]]);
    });
 
-   test('renderExtraControls can rerun the current search', async () => {
+   test('Test_RenderExtraControls_TestRenderExtraControlsCanRerunTheCurrentSearch_ExpectOk', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const searchedQueries = [];
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector-extra',
          getId: (row) => row.id,
@@ -196,9 +196,9 @@ test.describe('createItinerarySelectorController', () => {
       assert.deepEqual(searchedQueries, ['', '']);
    });
 
-   test('show reuses the built shell on subsequent opens', () => {
+   test('Test_Show_TestShowReusesTheBuiltShellOnSubsequentOpens_ExpectOk', () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const controller = createItinerarySelectorController({
+      const controller = CreateSelectorController.createItinerarySelectorController({
          mountEl,
          storageKey: 'tzg.test-selector-reuse',
          getId: (row) => row.id,

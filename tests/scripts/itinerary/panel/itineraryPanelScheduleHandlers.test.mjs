@@ -1,11 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   buildItineraryPanelScheduleHandlers,
-   openScheduleItemModule,
-} from '../../scripts/itinerary/panel/itineraryPanelScheduleHandlers.js';
-import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { ItineraryPanelScheduleHandlers } from '../../../../scripts/itinerary/panel/itineraryPanelScheduleHandlers.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
 const ITINERARY_CONFIG = {
    eventTypes: ['lunch', 'break'],
@@ -21,10 +18,10 @@ const ANIMAL_ROW = {
    scheduleItemKind: 'animals',
 };
 
-test('openScheduleItemModule forwards options to the schedule module popup', () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersOpenScheduleItemModuleForwardsOptionsToTheScheduleModule_ExpectOk', () => {
    const calls = [];
 
-   openScheduleItemModule({
+   ItineraryPanelScheduleHandlers.openScheduleItemModule({
       itinerary: { date: '2026-06-15' },
       eventTypes: ['lunch'],
       onScheduled: () => {},
@@ -44,9 +41,9 @@ test('openScheduleItemModule forwards options to the schedule module popup', () 
    });
 });
 
-test('buildItineraryPanelScheduleHandlers opens the module for a picked row', () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersOpensTheModuleForAPicked_ExpectOk', () => {
    const opened = [];
-   const handlers = buildItineraryPanelScheduleHandlers(
+   const handlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
          onPanelRefresh: async () => {},
@@ -66,11 +63,11 @@ test('buildItineraryPanelScheduleHandlers opens the module for a picked row', ()
    assert.equal(opened[0].preselectedRow, ANIMAL_ROW);
 });
 
-test('buildItineraryPanelScheduleHandlers unschedules items and refreshes the panel', async () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersUnschedulesItemsAndRefreshesThePanel_ExpectOk', async () => {
    const unscheduled = [];
    let refreshed = false;
    let notified = false;
-   const handlers = buildItineraryPanelScheduleHandlers(
+   const handlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers(
       {},
       {
          onPanelRefresh: async () => {
@@ -102,12 +99,12 @@ test('buildItineraryPanelScheduleHandlers unschedules items and refreshes the pa
    assert.equal(refreshed, true);
 });
 
-test('buildItineraryPanelScheduleHandlers confirms before removing configured event types', async () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersConfirmsBeforeRemovingConfiguredEventTypes_ExpectOk', async () => {
    const removed = [];
    const confirmations = [];
    let refreshed = false;
    let notified = false;
-   const handlers = buildItineraryPanelScheduleHandlers(
+   const handlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
          onPanelRefresh: async () => {
@@ -146,9 +143,9 @@ test('buildItineraryPanelScheduleHandlers confirms before removing configured ev
    assert.equal(refreshed, true);
 });
 
-test('buildItineraryPanelScheduleHandlers passes item identity into remove confirmation', async () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersPassesItemIdentityIntoRemoveConfirmation_ExpectOk', async () => {
    const confirmations = [];
-   const handlers = buildItineraryPanelScheduleHandlers(
+   const handlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
          deps: {
@@ -176,10 +173,10 @@ test('buildItineraryPanelScheduleHandlers passes item identity into remove confi
    assert.equal(confirmations[0].key, 'Zoomobile||0');
 });
 
-test('buildItineraryPanelScheduleHandlers removes animals without confirmation', async () => {
+test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersRemovesAnimalsWithoutConfirmation_ExpectOk', async () => {
    const removed = [];
    let notified = false;
-   const handlers = buildItineraryPanelScheduleHandlers(
+   const handlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
          deps: {

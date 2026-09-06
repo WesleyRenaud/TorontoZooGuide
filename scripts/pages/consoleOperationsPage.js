@@ -1,10 +1,7 @@
-import {
-   createConsoleSpecialControllers,
-   wireConsoleOperationControllers,
-} from '../consoleOperations/bootstrap/controllers.js';
+import { Controllers } from '../consoleOperations/bootstrap/controllers.js';
 import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
 import { Panels } from '../consoleOperations/bootstrap/panels.js';
-import { collectConsoleOperationRefs } from '../consoleOperations/bootstrap/refs.js';
+import { Refs } from '../consoleOperations/bootstrap/refs.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
 const CONSOLE_OPERATIONS_WORKSPACE_ID = 'consoleOperationsWorkspace';
@@ -14,7 +11,7 @@ function getConsoleOperationsWorkspace() {
 }
 
 function createConsoleOperationSpecialControllers(refs) {
-   return createConsoleSpecialControllers({
+   return Controllers.createConsoleSpecialControllers({
       guardiansTalks: refs.guardiansTalks,
       wildEncounters: refs.wildEncounters,
    });
@@ -30,7 +27,7 @@ function initConsoleOperationControllers(refs) {
       restorePanelFromUrl,
    } = PanelNavigator.createConsolePanelNavigator(document);
 
-   wireConsoleOperationControllers({
+   Controllers.wireConsoleOperationControllers({
       refs,
       activatePanel,
       ...createConsoleOperationSpecialControllers(refs),
@@ -54,7 +51,7 @@ export class ConsoleOperationsPage {
 
       initConsoleOperationPanels(workspaceEl);
 
-      const refs = collectConsoleOperationRefs(document);
+      const refs = Refs.collectConsoleOperationRefs(document);
 
       initConsoleOperationControllers(refs);
       initConsoleOperationDateControls(refs);

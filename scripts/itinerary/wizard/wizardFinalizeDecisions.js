@@ -1,10 +1,10 @@
-import { isItineraryEmpty } from '../itineraryService.js';
+import { ItineraryService } from '../itineraryService.js';
 
 export class WizardFinalizeDecisions {
    static shouldBlockEmptyFinish(
       finalItinerary,
       allowEmpty = false,
-      isEmpty = isItineraryEmpty
+      isEmpty = ItineraryService.isItineraryEmpty
    ) {
       return !allowEmpty && isEmpty(finalItinerary);
    }

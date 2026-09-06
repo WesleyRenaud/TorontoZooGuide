@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { scheduleSelectedItineraryItem } from '../../scripts/itinerary/panel/scheduleItemActions.js';
-import {
-   MOCK_ERROR_TYPES,
-   mockJsonResponse,
-   mockScheduleItemFetch,
-   installScheduleItemActionsTestHooks,
-} from './helpers/scheduleItemActionsTestSetup.mjs';
+import { ScheduleItemActions } from '../../../../scripts/itinerary/panel/scheduleItemActions.js';
+import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
@@ -15,7 +10,7 @@ function mockItineraryDateResponse() {
    return mockJsonResponse({ date: '2026-06-15' });
 }
 
-test('scheduleSelectedItineraryItem persists suppression before confirming', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemPersistsSuppressionBeforeConfirming_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -50,7 +45,7 @@ test('scheduleSelectedItineraryItem persists suppression before confirming', asy
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -93,7 +88,7 @@ test('scheduleSelectedItineraryItem persists suppression before confirming', asy
    );
 });
 
-test('scheduleSelectedItineraryItem confirms before scheduling a new animal', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingANewAnimal_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -116,7 +111,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -144,7 +139,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
    assert.equal(requests[1].body.confirmingScheduleItemNotOnItinerary, true);
 });
 
-test('scheduleSelectedItineraryItem confirms before scheduling a talk without matching animal', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingATalkWithout_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -175,7 +170,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a talk without ma
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [],
@@ -213,7 +208,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a talk without ma
    assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
-test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -243,7 +238,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
@@ -281,7 +276,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
-test('scheduleSelectedItineraryItem returns cancelled when guardians talk reschedule is declined', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
@@ -298,7 +293,7 @@ test('scheduleSelectedItineraryItem returns cancelled when guardians talk resche
       },
    });
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '11:00' }],
@@ -322,7 +317,7 @@ test('scheduleSelectedItineraryItem returns cancelled when guardians talk resche
    assert.equal(result.errorType, 'guardiansTalkWillUnscheduleItems');
 });
 
-test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAWildEncounter_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -352,7 +347,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '14:00' }],
@@ -390,7 +385,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
    assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
 });
 
-test('scheduleSelectedItineraryItem confirms multiple build warnings together', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsMultipleBuildWarningsTogether_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -432,7 +427,7 @@ test('scheduleSelectedItineraryItem confirms multiple build warnings together', 
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', start_time: '11:00 AM' }],
@@ -475,7 +470,7 @@ test('scheduleSelectedItineraryItem confirms multiple build warnings together', 
    assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
-test('scheduleSelectedItineraryItem adjusts attraction outside operating hours', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemAdjustsAttractionOutsideOperatingHours_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -498,7 +493,7 @@ test('scheduleSelectedItineraryItem adjusts attraction outside operating hours',
       });
    };
 
-   const schedulePromise = scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [],

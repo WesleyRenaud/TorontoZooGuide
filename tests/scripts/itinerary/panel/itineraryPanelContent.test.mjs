@@ -1,17 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-   buildEmptyItineraryPanelContent,
-   buildItineraryPanelContent,
-   clearRenderedPanel,
-   destroyRenderedPanelChildren,
-} from '../../scripts/itinerary/panel/itineraryPanelContent.js';
-import { APP_STRINGS } from '../../scripts/strings.js';
-import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDomTestHooks } from './helpers/domTestSetup.mjs';
-import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
+import { ItineraryPanelContent } from '../../../../scripts/itinerary/panel/itineraryPanelContent.js';
+import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { createDomNode } from '../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 const ZOO_HOURS = {
    open: '09:00',
@@ -74,7 +69,7 @@ function captureDayPlannerOptions(deps = {}) {
 test.describe('itineraryPanelContent', () => {
    installDomTestHooks();
 
-   test('destroyRenderedPanelChildren runs child cleanup hooks', () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentDestroyRenderedPanelChildrenRunsChildCleanupHooks_ExpectOk', () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       const child = createDomNode('div', 'panel-child');
       let cleaned = false;
@@ -84,21 +79,21 @@ test.describe('itineraryPanelContent', () => {
       };
       bodyEl.appendChild(child);
 
-      destroyRenderedPanelChildren(bodyEl);
+      ItineraryPanelContent.destroyRenderedPanelChildren(bodyEl);
 
       assert.equal(cleaned, true);
    });
 
-   test('clearRenderedPanel removes rendered children', () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentClearRenderedPanelRemovesRenderedChildren_ExpectOk', () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       bodyEl.appendChild(createDomNode('div', 'panel-child'));
 
-      clearRenderedPanel(bodyEl);
+      ItineraryPanelContent.clearRenderedPanel(bodyEl);
 
       assert.equal(bodyEl.children.length, 0);
    });
 
-   test('buildEmptyItineraryPanelContent opens the schedule module from the planner', () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentOpensTheScheduleModuleFromThe_ExpectOk', () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       const opened = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
@@ -108,7 +103,7 @@ test.describe('itineraryPanelContent', () => {
          buildEventTypes: () => ['lunch'],
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          deps,
       });
 
@@ -118,7 +113,7 @@ test.describe('itineraryPanelContent', () => {
       assert.deepEqual(opened[0].eventTypes, ['lunch']);
    });
 
-   test('buildEmptyItineraryPanelContent shows error feedback when bulk scheduling fails', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenBulkScheduling_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       let refreshed = false;
       const feedbackCalls = [];
@@ -131,7 +126,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          onPanelRefresh: async () => {
             refreshed = true;
          },
@@ -147,7 +142,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -166,7 +161,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          onPanelRefresh: async () => {
             refreshed = true;
          },
@@ -182,7 +177,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -201,7 +196,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          onPanelRefresh: async () => {
             refreshed = true;
          },
@@ -217,7 +212,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildEmptyItineraryPanelContent refreshes and shows not-enough-time feedback', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRefreshesAndShowsNotEnoughTime_ExpectOk', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       let refreshed = false;
       const feedbackCalls = [];
@@ -233,7 +228,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          onPanelRefresh: async () => {
             refreshed = true;
          },
@@ -249,7 +244,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent uses the generic error when bulk scheduling fails without a message', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentUsesTheGenericErrorWhenBulk_ExpectOk', async () => {
       let refreshed = false;
       const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
@@ -261,7 +256,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [],
@@ -288,7 +283,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent queues success feedback after rebuild schedule', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentQueuesSuccessFeedbackAfterRebuildSchedule_ExpectOk', async () => {
       let refreshed = false;
       const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
@@ -300,7 +295,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [{
@@ -332,7 +327,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildEmptyItineraryPanelContent rebuilds without long-wait confirmation for existing items', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRebuildsWithoutLongWaitConfirmationFor_ExpectOk', async () => {
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -354,7 +349,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+      ItineraryPanelContent.buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
          onPanelRefresh: async () => {
             refreshed = true;
          },
@@ -371,7 +366,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -389,7 +384,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [],
@@ -416,7 +411,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent refreshes after arrival and departure time changes', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentRefreshesAfterArrivalAndDepartureTime_ExpectOk', async () => {
       const arrivalCalls = [];
       const departureCalls = [];
       let refreshed = 0;
@@ -429,7 +424,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -455,7 +450,7 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, 2);
    });
 
-   test('buildItineraryPanelContent unschedules all items and queues success feedback', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentUnschedulesAllItemsAndQueuesSuccess_ExpectOk', async () => {
       let unscheduled = false;
       let refreshed = false;
       const feedbackCalls = [];
@@ -469,7 +464,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [{
@@ -502,7 +497,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,
          suppressedErrorTypes: [],
@@ -524,7 +519,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [{
@@ -555,7 +550,7 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
-   test('buildItineraryPanelContent shows error feedback when unschedule all throws', async () => {
+   test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenUnscheduleAll_ExpectOk', async () => {
       let refreshed = false;
       const feedbackCalls = [];
       const notices = [];
@@ -571,7 +566,7 @@ test.describe('itineraryPanelContent', () => {
          },
       });
 
-      buildItineraryPanelContent(
+      ItineraryPanelContent.buildItineraryPanelContent(
          {
             date: '2026-06-15',
             animals: [{

@@ -1,4 +1,4 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const { actions, panel } = APP_STRINGS.itinerary;
@@ -52,19 +52,19 @@ export class Section {
       stepKey,
       showEditButton = true,
    }) {
-      const section = el('section', 'itin-panel-section');
+      const section = Dom.el('section', 'itin-panel-section');
 
-      const header = el('div', 'itin-panel-section-header');
+      const header = Dom.el('div', 'itin-panel-section-header');
 
-      const titleEl = el('div', 'itin-panel-section-title');
+      const titleEl = Dom.el('div', 'itin-panel-section-title');
       titleEl.appendChild(document.createTextNode(title));
 
-      const countEl = el('span', 'itin-panel-count', `(${count})`);
+      const countEl = Dom.el('span', 'itin-panel-count', `(${count})`);
       titleEl.appendChild(countEl);
 
-      const headerActions = el('div', 'itin-panel-header-actions');
+      const headerActions = Dom.el('div', 'itin-panel-header-actions');
 
-      const editBtn = el('button', 'itin-panel-section-edit-btn', actions.edit);
+      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', actions.edit);
       editBtn.type = 'button';
       editBtn.setAttribute('aria-label', panel.editSectionAria(title));
       editBtn.addEventListener('click', (e) => {
@@ -75,10 +75,10 @@ export class Section {
          }));
       });
 
-      const toggleBtn = el('button', 'itin-panel-toggle');
+      const toggleBtn = Dom.el('button', 'itin-panel-toggle');
       toggleBtn.type = 'button';
       toggleBtn.setAttribute('aria-label', panel.toggleSectionAria(title));
-      toggleBtn.appendChild(el('span', 'itin-panel-toggle-icon'));
+      toggleBtn.appendChild(Dom.el('span', 'itin-panel-toggle-icon'));
 
       if (showEditButton) {
          headerActions.appendChild(editBtn);
@@ -89,8 +89,8 @@ export class Section {
       header.appendChild(titleEl);
       header.appendChild(headerActions);
 
-      const body = el('div', 'itin-panel-section-body');
-      const bodyInner = el('div', 'itin-panel-section-body-inner');
+      const body = Dom.el('div', 'itin-panel-section-body');
+      const bodyInner = Dom.el('div', 'itin-panel-section-body-inner');
 
       children.forEach(child => bodyInner.appendChild(child));
       body.appendChild(bodyInner);

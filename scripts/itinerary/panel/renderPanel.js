@@ -1,82 +1,76 @@
 import { DraftStorage } from '../draftStorage.js';
-import {
-   buildEmptyItineraryPanelContent,
-   buildItineraryPanelContent,
-   clearRenderedPanel,
-} from './itineraryPanelContent.js';
-import {
-   clearItinerary,
-   getItinerary,
-   getZooHours,
-} from '../itineraryService.js';
+import { ItineraryPanelContent } from './itineraryPanelContent.js';
+import { ItineraryService } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
 
-export async function clearStoredItinerary(deps = {}) {
-   const {
-      clearSavedItinerary = clearItinerary,
-      clearDraftStorage = DraftStorage.clearItineraryDraftStorage,
-   } = deps;
+export class RenderPanel {
+   static async clearStoredItinerary(deps = {}) {
+      const {
+         clearSavedItinerary = ItineraryService.clearItinerary,
+         clearDraftStorage = DraftStorage.clearItineraryDraftStorage,
+      } = deps;
 
-   try {
-      await clearSavedItinerary();
-      clearDraftStorage();
+      try {
+         await clearSavedItinerary();
+         clearDraftStorage();
+      }
+      catch (err) {
+         console.error('Failed to clear itinerary:', err);
+      }
    }
-   catch (err) {
-      console.error('Failed to clear itinerary:', err);
-   }
-}
 
-export async function renderItineraryPanelInto(
+   static async renderItineraryPanelInto(
    bodyEl,
    deps = {}
 ) {
-   if (!bodyEl) {
-      return;
+      if (!bodyEl) {
+         return;
+      }
+
+      const {
+         loadItinerary = ItineraryService.getItinerary,
+         resolveHoursDate = VisitDateEarliest.resolveEffectiveItineraryHoursDateIso,
+         loadZooHours = ItineraryService.getZooHours,
+         itineraryIsEmpty = ItineraryShape.isItineraryCompletelyUnset,
+         buildContent = ItineraryPanelContent.buildItineraryPanelContent,
+         buildEmptyContent = ItineraryPanelContent.buildEmptyItineraryPanelContent,
+         clearPanel = ItineraryPanelContent.clearRenderedPanel,
+         onAfterClear = RenderPanel.clearStoredItinerary,
+      } = deps;
+
+      const renderToken = ++latestRenderToken;
+      const itinerary = await loadItinerary();
+      const hoursDate = await resolveHoursDate(itinerary);
+      const zooHours = await loadZooHours(hoursDate);
+
+      if (renderToken !== latestRenderToken) {
+         return;
+      }
+
+      clearPanel(bodyEl);
+
+      const refreshPanel = () => RenderPanel.renderItineraryPanelInto(bodyEl, deps);
+      const contentDeps = {
+         onAfterClear,
+         ...deps,
+      };
+
+      if (!itinerary || itineraryIsEmpty(itinerary)) {
+         buildEmptyContent(bodyEl, zooHours, {
+            onPanelRefresh: refreshPanel,
+            deps: contentDeps,
+         });
+         return;
+      }
+
+      bodyEl.appendChild(
+         buildContent(itinerary, zooHours, {
+            onPanelRefresh: refreshPanel,
+            deps: contentDeps,
+         })
+      );
    }
-
-   const {
-      loadItinerary = getItinerary,
-      resolveHoursDate = VisitDateEarliest.resolveEffectiveItineraryHoursDateIso,
-      loadZooHours = getZooHours,
-      itineraryIsEmpty = ItineraryShape.isItineraryCompletelyUnset,
-      buildContent = buildItineraryPanelContent,
-      buildEmptyContent = buildEmptyItineraryPanelContent,
-      clearPanel = clearRenderedPanel,
-      onAfterClear = clearStoredItinerary,
-   } = deps;
-
-   const renderToken = ++latestRenderToken;
-   const itinerary = await loadItinerary();
-   const hoursDate = await resolveHoursDate(itinerary);
-   const zooHours = await loadZooHours(hoursDate);
-
-   if (renderToken !== latestRenderToken) {
-      return;
-   }
-
-   clearPanel(bodyEl);
-
-   const refreshPanel = () => renderItineraryPanelInto(bodyEl, deps);
-   const contentDeps = {
-      onAfterClear,
-      ...deps,
-   };
-
-   if (!itinerary || itineraryIsEmpty(itinerary)) {
-      buildEmptyContent(bodyEl, zooHours, {
-         onPanelRefresh: refreshPanel,
-         deps: contentDeps,
-      });
-      return;
-   }
-
-   bodyEl.appendChild(
-      buildContent(itinerary, zooHours, {
-         onPanelRefresh: refreshPanel,
-         deps: contentDeps,
-      })
-   );
 }

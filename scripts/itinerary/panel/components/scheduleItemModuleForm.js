@@ -1,4 +1,4 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { ScheduleItemTimeFields } from './scheduleItemTimeFields.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
@@ -10,19 +10,19 @@ import { WildEncounterSelectorModel } from '../../selectors/wildEncounterSelecto
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function createFieldLabel(text) {
-   return el('label', 'schedule-item-field-label', text);
+   return Dom.el('label', 'schedule-item-field-label', text);
 }
 
 function createOnlyItineraryItemsCheckbox(labelText) {
-   const wrap = el('div', 'schedule-item-only-itinerary-wrap');
-   const label = el('label', 'schedule-item-only-itinerary-row');
+   const wrap = Dom.el('div', 'schedule-item-only-itinerary-wrap');
+   const label = Dom.el('label', 'schedule-item-only-itinerary-row');
    const checkbox = document.createElement('input');
 
    checkbox.type = 'checkbox';
    checkbox.className = 'schedule-item-only-itinerary-checkbox';
    checkbox.checked = false;
 
-   const text = el('span', 'schedule-item-only-itinerary-label', labelText);
+   const text = Dom.el('span', 'schedule-item-only-itinerary-label', labelText);
    label.append(checkbox, text);
    wrap.appendChild(label);
 
@@ -35,7 +35,7 @@ function createSelectField({
    getOptionValue = (option) => option,
    getOptionLabel = (option) => String(option),
 } = {}) {
-   const field = el('div', 'schedule-item-field schedule-item-type-field');
+   const field = Dom.el('div', 'schedule-item-field schedule-item-type-field');
    const select = document.createElement('select');
    select.className = 'schedule-item-select';
 
@@ -128,7 +128,7 @@ export class ScheduleItemModuleForm {
    }
 
    static buildScheduleItemModuleBody(strings, eventTypes = []) {
-      const body = el('div', 'schedule-item-module-body');
+      const body = Dom.el('div', 'schedule-item-module-body');
 
       const typeField = createSelectField({
          label: strings.typeLabel,
@@ -137,7 +137,7 @@ export class ScheduleItemModuleForm {
          getOptionLabel: (option) => option.label,
       });
 
-      const searchField = el('div', 'schedule-item-field schedule-item-search-field');
+      const searchField = Dom.el('div', 'schedule-item-field schedule-item-search-field');
       const searchLabelEl = createFieldLabel(strings.searchLabel);
       const searchInput = document.createElement('input');
       searchInput.className = 'schedule-item-search-input';
@@ -151,7 +151,7 @@ export class ScheduleItemModuleForm {
 
       searchField.append(searchLabelEl, searchInput);
 
-      const resultsEl = el('div', 'itin-results schedule-item-results');
+      const resultsEl = Dom.el('div', 'itin-results schedule-item-results');
       resultsEl.setAttribute('aria-live', 'polite');
       const scheduleTimeFields = ScheduleItemTimeFields.makeScheduleItemTimeFields(strings);
 

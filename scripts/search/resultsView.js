@@ -150,11 +150,13 @@ function createSearchResultsFragment(rows, onFocusRow) {
    return fragment;
 }
 
-export function renderSearchResults(resultsEl, rows, onFocusRow) {
-   if (!Array.isArray(rows) || rows.length === 0) {
-      resultsEl.replaceChildren();
-      return;
-   }
+export class ResultsView {
+   static renderSearchResults(resultsEl, rows, onFocusRow) {
+      if (!Array.isArray(rows) || rows.length === 0) {
+         resultsEl.replaceChildren();
+         return;
+      }
 
-   resultsEl.replaceChildren(createSearchResultsFragment(rows, onFocusRow));
+      resultsEl.replaceChildren(createSearchResultsFragment(rows, onFocusRow));
+   }
 }

@@ -1,6 +1,6 @@
 import { DayPlannerScheduledPillOptions } from './dayPlannerScheduledPillOptions.js';
 import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { SpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { Constants } from '../../../shared/constants.js';
@@ -37,7 +37,7 @@ function makeScheduledItemBlock(
    menuOptions = {},
    item = null
 ) {
-   const block = el('div', 'itinerary-day-event');
+   const block = Dom.el('div', 'itinerary-day-event');
    const slotSpan = maximumDuration / Constants.TIMELINE_SLOT_MINUTES;
 
    block.style.setProperty('--itinerary-event-slot-span', String(slotSpan));
@@ -162,11 +162,11 @@ export class DayPlannerTimeline {
       timeLabel,
       slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
    ) {
-      const timeCell = el('div', 'itinerary-day-time');
+      const timeCell = Dom.el('div', 'itinerary-day-time');
 
-      timeCell.appendChild(el('span', 'itinerary-day-time-label', timeLabel));
+      timeCell.appendChild(Dom.el('span', 'itinerary-day-time-label', timeLabel));
 
-      const gridLine = el('div', 'itinerary-day-grid-line');
+      const gridLine = Dom.el('div', 'itinerary-day-grid-line');
       const heightFraction = DayPlannerTimeline.timelineSlotRowHeightFraction(slotSpanMinutes);
 
       timeCell.style.setProperty(
@@ -190,12 +190,12 @@ export class DayPlannerTimeline {
          return;
       }
 
-      timeCell.appendChild(el('span', 'itinerary-day-time-boundary-label', label));
+      timeCell.appendChild(Dom.el('span', 'itinerary-day-time-boundary-label', label));
 
    }
 
    static makeUnavailableMessage(message) {
-      return el('div', 'itinerary-day-unavailable', message);
+      return Dom.el('div', 'itinerary-day-unavailable', message);
 
    }
 

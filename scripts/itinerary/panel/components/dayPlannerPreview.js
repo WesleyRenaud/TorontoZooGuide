@@ -6,7 +6,7 @@ import { DayPlannerScheduledItems } from '../dayPlannerScheduledItems.js';
 import { DayPlannerTimeline } from './dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Format } from '../format.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import { ScheduleItemButton } from './scheduleItemButton.js';
@@ -55,8 +55,8 @@ function makeItemsListSection(
       return null;
    }
 
-   const wrapper = el('section', 'itinerary-day-items-sections');
-   const title = el('h4', 'itinerary-day-items-title', sectionTitle);
+   const wrapper = Dom.el('section', 'itinerary-day-items-sections');
+   const title = Dom.el('h4', 'itinerary-day-items-title', sectionTitle);
 
    wrapper.appendChild(title);
    sectionConfigs.forEach((sectionConfig) => {
@@ -187,15 +187,15 @@ export class DayPlannerPreview {
       const hours = zooHours && typeof zooHours === 'object'
          ? zooHours
          : {};
-      const root = el('div', 'itinerary-day-planner-content');
-      const section = el('section', 'itinerary-day-module');
-      const header = el('div', 'itinerary-day-module-header');
-      const headerAside = el('div', 'itinerary-day-module-header-aside');
-      const scheduleActions = el('div', 'itinerary-day-module-schedule-actions');
-      const titleWrap = el('div');
-      const title = el('h3', '', strings.title);
+      const root = Dom.el('div', 'itinerary-day-planner-content');
+      const section = Dom.el('section', 'itinerary-day-module');
+      const header = Dom.el('div', 'itinerary-day-module-header');
+      const headerAside = Dom.el('div', 'itinerary-day-module-header-aside');
+      const scheduleActions = Dom.el('div', 'itinerary-day-module-schedule-actions');
+      const titleWrap = Dom.el('div');
+      const title = Dom.el('h3', '', strings.title);
       const date = Format.formatISODateFull(hours.date, strings.date);
-      const timeline = el('div', 'itinerary-day-timeline');
+      const timeline = Dom.el('div', 'itinerary-day-timeline');
 
       section.setAttribute('aria-label', strings.aria);
       timeline.setAttribute('aria-hidden', 'true');

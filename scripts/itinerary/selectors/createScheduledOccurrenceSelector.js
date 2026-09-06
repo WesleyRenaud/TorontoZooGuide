@@ -1,5 +1,5 @@
 import { StoredSelection } from './base/storedSelection.js';
-import { createItinerarySelectorController } from './createSelectorController.js';
+import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ScheduledOccurrencePresentation } from '../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
@@ -73,27 +73,6 @@ function createStoredOccurrenceFromObject(item, {
    return storedOccurrence;
 }
 
-export function createScheduledOccurrenceMigration({
-   emptyStoredFields,
-   buildImageSrc,
-   includeLink = false,
-   readStoredFields,
-   getId,
-} = {}) {
-   return (items) => StoredSelection.migrateStoredSelectionItems(items, {
-      fromString: (item) => createStoredOccurrenceFromString(item, {
-         emptyStoredFields,
-         buildImageSrc,
-      }),
-      fromObject: (item) => createStoredOccurrenceFromObject(item, {
-         buildImageSrc,
-         includeLink,
-         readStoredFields,
-         getId,
-      }),
-   });
-}
-
 function createOccurrenceSelection(row, {
    getId,
    getLink = null,
@@ -136,7 +115,29 @@ function createOccurrenceSelection(row, {
    return selection;
 }
 
-export function createScheduledOccurrenceSelectorController({
+export class CreateScheduledOccurrenceSelector {
+   static createScheduledOccurrenceMigration({
+   emptyStoredFields,
+   buildImageSrc,
+   includeLink = false,
+   readStoredFields,
+   getId,
+} = {}) {
+      return (items) => StoredSelection.migrateStoredSelectionItems(items, {
+         fromString: (item) => createStoredOccurrenceFromString(item, {
+            emptyStoredFields,
+            buildImageSrc,
+         }),
+         fromObject: (item) => createStoredOccurrenceFromObject(item, {
+            buildImageSrc,
+            includeLink,
+            readStoredFields,
+            getId,
+         }),
+      });
+   }
+
+   static createScheduledOccurrenceSelectorController({
    mountEl,
    onNext,
    onPrev,
@@ -160,71 +161,72 @@ export function createScheduledOccurrenceSelectorController({
    readStoredFields,
    buildSelectionFields,
 } = {}) {
-   const buildImageSrc = (name) => (
-      ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(imageDirectory, name)
-   );
+      const buildImageSrc = (name) => (
+         ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(imageDirectory, name)
+      );
 
-   const migrateSelected = createScheduledOccurrenceMigration({
-      emptyStoredFields,
-      buildImageSrc,
-      includeLink: typeof getLink === 'function',
-      readStoredFields,
-      getId,
-   });
+      const migrateSelected = CreateScheduledOccurrenceSelector.createScheduledOccurrenceMigration({
+         emptyStoredFields,
+         buildImageSrc,
+         includeLink: typeof getLink === 'function',
+         readStoredFields,
+         getId,
+      });
 
-   const makeSelection = (row) => createOccurrenceSelection(row, {
-      getId,
-      getLink,
-      getName,
-      getTimeOfDay,
-      buildImageSrc,
-      buildSelectionFields,
-   });
+      const makeSelection = (row) => createOccurrenceSelection(row, {
+         getId,
+         getLink,
+         getName,
+         getTimeOfDay,
+         buildImageSrc,
+         buildSelectionFields,
+      });
 
-   return createItinerarySelectorController({
-      mountEl,
-      onPrev,
-      onNext,
-      onFinish,
-      onClose,
-      hideNextButton,
+      return CreateSelectorController.createItinerarySelectorController({
+         mountEl,
+         onPrev,
+         onNext,
+         onFinish,
+         onClose,
+         hideNextButton,
 
-      storageKey,
-      migrateSelected,
+         storageKey,
+         migrateSelected,
 
-      getContext: ItinerarySearchContext.getItineraryDateSearchContext,
+         getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
-      buildSearchPayload: (query) => ({
-         query,
-         [searchFlag]: true,
-      }),
+         buildSearchPayload: (query) => ({
+            query,
+            [searchFlag]: true,
+         }),
 
-      extractRows: (response) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
-         response[responseKey],
-         getTimeOfDay),
+         extractRows: (response) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
+            response[responseKey],
+            getTimeOfDay),
 
-      getId,
-      getTitle: (row) => getName(row) || defaultTitle,
-      getSubtitle: (row) => ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
-         primaryValue: getPrimaryValue(row),
-         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
-      }),
-      getImageSrc: (row) => buildImageSrc(getName(row)),
-      getInfoLink: () => null,
-      onTitleClick: typeof getLink === 'function'
-         ? (row) => {
-            const link = getLink(row);
+         getId,
+         getTitle: (row) => getName(row) || defaultTitle,
+         getSubtitle: (row) => ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+            primaryValue: getPrimaryValue(row),
+            timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
+         }),
+         getImageSrc: (row) => buildImageSrc(getName(row)),
+         getInfoLink: () => null,
+         onTitleClick: typeof getLink === 'function'
+            ? (row) => {
+               const link = getLink(row);
 
-            if (link) {
-               window.open(link, '_blank');
+               if (link) {
+                  window.open(link, '_blank');
+               }
             }
-         }
-         : null,
-      makeSelection,
+            : null,
+         makeSelection,
 
-      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-      h1: heading,
-      subtitle,
-      emptyText,
-   });
+         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+         h1: heading,
+         subtitle,
+         emptyText,
+      });
+   }
 }

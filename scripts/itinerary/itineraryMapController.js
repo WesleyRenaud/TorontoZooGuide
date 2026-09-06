@@ -1,9 +1,6 @@
-import {
-   getItinerary,
-   isItineraryEmpty,
-} from './itineraryService.js';
+import { ItineraryService } from './itineraryService.js';
 import { ItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
-import { createMapRuntime } from '../map/mapRuntime.js';
+import { MapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteOverlay } from '../map/transportationRouteOverlay.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
@@ -41,17 +38,11 @@ function isCoordinateEditingEnabled() {
 }
 
 function createItineraryMapRuntime() {
-   return createMapRuntime({
+   return MapRuntime.createMapRuntime({
       ...getItineraryMapElements(),
       enableCoordinateEditing: isCoordinateEditingEnabled(),
       ...ITINERARY_MAP_FILTERS,
    });
-}
-
-export function clearItineraryMapDisplay(runtime) {
-   runtime?.markers?.render([]);
-   ItineraryPathOverlay.clearItineraryPathOverlay();
-   TransportationRouteOverlay.hideTransportationRouteLayers();
 }
 
 function getItineraryMapDate(itinerary) {
@@ -60,10 +51,10 @@ function getItineraryMapDate(itinerary) {
 
 async function refreshItineraryMap(runtime) {
    try {
-      const itinerary = await getItinerary();
+      const itinerary = await ItineraryService.getItinerary();
 
-      if (!itinerary || isItineraryEmpty(itinerary)) {
-         clearItineraryMapDisplay(runtime);
+      if (!itinerary || ItineraryService.isItineraryEmpty(itinerary)) {
+         ItineraryMapController.clearItineraryMapDisplay(runtime);
          return;
       }
 
@@ -75,7 +66,7 @@ async function refreshItineraryMap(runtime) {
    }
    catch (err) {
       console.error('Failed to load itinerary:', err);
-      clearItineraryMapDisplay(runtime);
+      ItineraryMapController.clearItineraryMapDisplay(runtime);
    }
 }
 
@@ -91,19 +82,27 @@ function bindItineraryMapEvents(runtime) {
    return refreshMap;
 }
 
-export function initItineraryMap() {
-   if (itineraryMapRuntime) {
-      return itineraryMapRuntime;
+export class ItineraryMapController {
+   static clearItineraryMapDisplay(runtime) {
+      runtime?.markers?.render([]);
+      ItineraryPathOverlay.clearItineraryPathOverlay();
+      TransportationRouteOverlay.hideTransportationRouteLayers();
    }
 
-   const runtime = createItineraryMapRuntime();
+   static initItineraryMap() {
+      if (itineraryMapRuntime) {
+         return itineraryMapRuntime;
+      }
 
-   if (!runtime) return;
+      const runtime = createItineraryMapRuntime();
 
-   itineraryMapRuntime = runtime;
+      if (!runtime) return;
 
-   const refreshMap = bindItineraryMapEvents(runtime);
-   void refreshMap();
+      itineraryMapRuntime = runtime;
 
-   return runtime;
+      const refreshMap = bindItineraryMapEvents(runtime);
+      void refreshMap();
+
+      return runtime;
+   }
 }

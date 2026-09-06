@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
-import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { State } from '../../../../scripts/itinerary/wizard/state.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
+import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
@@ -13,8 +13,8 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('hasUnsavedChanges is true after selecting only a visit date', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueAfterSelectingOnlyAVisit_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '',
       animals: [],
       attractions: [],
@@ -29,8 +29,8 @@ test('hasUnsavedChanges is true after selecting only a visit date', () => {
    assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
-test('hasUnsavedChanges is true when selections differ from initial', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenSelectionsDifferFromInitial_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '',
       animals: [],
       attractions: [],
@@ -45,8 +45,8 @@ test('hasUnsavedChanges is true when selections differ from initial', () => {
    assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
-test('hasUnsavedChanges is false when animals match semantically after refetch-style metadata', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsFalseWhenAnimalsMatchSemanticallyAfter_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       attractions: [],
@@ -67,8 +67,8 @@ test('hasUnsavedChanges is false when animals match semantically after refetch-s
    assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
-test('hasUnsavedChanges ignores revisiting the same visit date on a saved itinerary', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIgnoresRevisitingTheSameVisitDateOn_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'Red Panda', exhibit: 'Eurasia Wilds' }],
       attractions: [],
@@ -81,8 +81,8 @@ test('hasUnsavedChanges ignores revisiting the same visit date on a saved itiner
    assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
-test('hasUnsavedChanges is true when only the visit date changes on a saved itinerary', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenOnlyTheVisitDate_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'Red Panda', exhibit: 'Eurasia Wilds' }],
       attractions: [],
@@ -95,8 +95,8 @@ test('hasUnsavedChanges is true when only the visit date changes on a saved itin
    assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
-test('hasUnsavedChanges stays false after revisiting date and animals without edits', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesStaysFalseAfterRevisitingDateAndAnimals_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       attractions: [{ name: 'Carousel' }],
@@ -117,8 +117,8 @@ test('hasUnsavedChanges stays false after revisiting date and animals without ed
    assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
-test('applyValidationResult with null validated does not mark itinerary as empty', () => {
-   const wizard = createItineraryWizardState({
+test('Test_ApplyValidationResult_TestApplyValidationResultWithNullValidatedDoesNotMarkItinerary_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       attractions: [],
@@ -131,8 +131,8 @@ test('applyValidationResult with null validated does not mark itinerary as empty
    assert.equal(wizard.consumePendingValidation().isEmptyItinerary, false);
 });
 
-test('hasUnsavedChanges is true when clearing a non-empty initial itinerary', () => {
-   const wizard = createItineraryWizardState({
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenClearingANonEmpty_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-06-15',
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       attractions: [],
@@ -145,8 +145,8 @@ test('hasUnsavedChanges is true when clearing a non-empty initial itinerary', ()
    assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
-test('hydrates also-transportation attractions when opening wizard state', () => {
-   const wizard = createItineraryWizardState({
+test('Test_Hydrates_TestHydratesAlsoTransportationAttractionsWhenOpeningWizardState_ExpectOk', () => {
+   const wizard = State.createItineraryWizardState({
       date: '2026-08-17',
       animals: [],
       attractions: [],

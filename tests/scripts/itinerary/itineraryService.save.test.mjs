@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { saveItinerary } from '../../scripts/itinerary/itineraryServiceSave.js';
-import { ItineraryErrorTypes } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { StorageKeys } from '../../scripts/itinerary/storageKeys.js';
-import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
+import { ItineraryServiceSave } from '../../../scripts/itinerary/itineraryServiceSave.js';
+import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
+import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
-test('saveItinerary includes selected exhibits in the backend payload', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSelectedExhibitsInTheBackend_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna', '  ', 'Eurasia'])
@@ -47,7 +47,7 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
       };
    };
 
-   await saveItinerary({
+   await ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -58,7 +58,7 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
    });
 });
 
-test('saveItinerary omits selected exhibits by default', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelectedExhibitsByDefault_ExpectOk', async () => {
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
@@ -85,7 +85,7 @@ test('saveItinerary omits selected exhibits by default', async () => {
       };
    };
 
-   await saveItinerary({
+   await ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -94,7 +94,7 @@ test('saveItinerary omits selected exhibits by default', async () => {
    });
 });
 
-test('saveItinerary confirms before saving a guardians talk without a matching animal', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -146,7 +146,7 @@ test('saveItinerary confirms before saving a guardians talk without a matching a
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -178,7 +178,7 @@ test('saveItinerary confirms before saving a guardians talk without a matching a
    assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
-test('saveItinerary confirms before saving an attraction without a matching animal', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAnAttractionWithout_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -228,7 +228,7 @@ test('saveItinerary confirms before saving an attraction without a matching anim
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-20',
       animals: [],
       attractions: ['Kangaroo Walk-Thru'],
@@ -260,7 +260,7 @@ test('saveItinerary confirms before saving an attraction without a matching anim
    assert.equal(requests[1].body.confirmingAttractionWithoutAnimal, true);
 });
 
-test('saveItinerary confirms before saving a guardians talk that unschedules items', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -306,7 +306,7 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -338,7 +338,7 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
-test('saveItinerary returns cancelled when guardians talk reschedule is cancelled', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -372,7 +372,7 @@ test('saveItinerary returns cancelled when guardians talk reschedule is cancelle
       }),
    });
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -402,7 +402,7 @@ test('saveItinerary returns cancelled when guardians talk reschedule is cancelle
    });
 });
 
-test('saveItinerary confirms before saving a wild encounter that unschedules items', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAWildEncounter_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -448,7 +448,7 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -480,7 +480,7 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
    assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
 });
 
-test('saveItinerary resolves schedule time conflicts before unschedule warnings', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesScheduleTimeConflictsBeforeUnschedule_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -561,7 +561,7 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -602,7 +602,7 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
    assert.deepEqual(requests[1].body.wildEncounters, []);
 });
 
-test('saveItinerary does not diff unselected schedule conflicts as removals', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiffUnselectedScheduleConflicts_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -682,7 +682,7 @@ test('saveItinerary does not diff unselected schedule conflicts as removals', as
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -716,7 +716,7 @@ test('saveItinerary does not diff unselected schedule conflicts as removals', as
    assert.equal(result.validation.hasChanges, false);
 });
 
-test('saveItinerary preserves saved animals on conflict retry when payload omits them', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSavedAnimalsOnConflictRetry_ExpectOk', async () => {
    const requests = [];
    const itineraryConfig = {
       itinerary_error_types: {
@@ -806,7 +806,7 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
       };
    };
 
-   const savePromise = saveItinerary({
+   const savePromise = ItineraryServiceSave.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -839,7 +839,7 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
    }]);
 });
 
-test('saveItinerary does not diff also-transportation attractions as removed', async () => {
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiffAlsoTransportationAttractions_ExpectOk', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body).transportations, [{
@@ -870,7 +870,7 @@ test('saveItinerary does not diff also-transportation attractions as removed', a
       };
    };
 
-   const result = await saveItinerary({
+   const result = await ItineraryServiceSave.saveItinerary({
       date: '2026-08-17',
       animals: [],
       attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],

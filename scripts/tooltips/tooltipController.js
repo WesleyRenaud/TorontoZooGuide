@@ -1,11 +1,12 @@
 import { BannerSync } from './bannerSync.js';
-import { createTooltipCarouselView } from './carouselView.js';
-import { createTooltipGlobalListeners } from './globalListeners.js';
+import { CarouselView } from './carouselView.js';
+import { GlobalListeners } from './globalListeners.js';
 import { MarkerVisuals } from '../markers/markerVisuals.js';
 import { PositionTooltip } from './positionTooltip.js';
 import { TooltipRenderers } from './tooltipRenderers.js';
 
-export function createTooltipController({
+export class TooltipController {
+   static createTooltipController({
    tooltipEl,
    onAnimalCardClick,
    offDisplayBanner,
@@ -14,203 +15,203 @@ export function createTooltipController({
    giftShopClosedBanner,
    attractionClosedBanner,
    drinkingFountainClosedBanner }) {
+      let openState = createEmptyOpenState();
 
-   let openState = createEmptyOpenState();
-
-   function createEmptyOpenState() {
-      return {
-         marker: null,
-         items: [],
-      };
-   }
-
-   function getOpenMarker() {
-      return openState.marker;
-   }
-
-   function getOpenItems() {
-      return openState.items;
-   }
-
-   function getOpenItem(index) {
-      return getOpenItems()[index] || null;
-   }
-
-   function setOpenState(marker, items) {
-      openState = {
-         marker,
-         items: Array.isArray(items) ? items : [],
-      };
-   }
-
-   function resetOpenState() {
-      openState = createEmptyOpenState();
-   }
-
-   const banners = BannerSync.createTooltipBannerSync({
-      offDisplayBanner,
-      restaurantClosedBanner,
-      restroomMessageBanner,
-      giftShopClosedBanner,
-      attractionClosedBanner,
-      drinkingFountainClosedBanner,
-   });
-
-   const carousel = createTooltipCarouselView({
-      tooltipEl,
-      getRendererForItem: TooltipRenderers.getRendererForItem,
-      onIndexChange: (index) => {
-         syncMarkerToIndex(index);
-         banners.sync(getOpenItem(index));
-      },
-   });
-
-   const globalListeners = createTooltipGlobalListeners({
-      tooltipEl,
-      isOpen,
-      close,
-      step: (delta) => carousel.step(delta),
-      getItemAtIndex: getOpenItem,
-      onAnimalCardClick,
-   });
-
-   function isOpen() {
-      return Boolean(getOpenMarker()) || isTooltipVisible();
-   }
-
-   function isTooltipVisible() {
-      return tooltipEl && tooltipEl.style.display === 'flex';
-   }
-
-   function setTooltipVisibility(isVisible) {
-      if (!tooltipEl) {
-         return;
+      function createEmptyOpenState() {
+         return {
+            marker: null,
+            items: [],
+         };
       }
 
-      tooltipEl.style.display = isVisible ? 'flex' : 'none';
-      tooltipEl.style.pointerEvents = isVisible ? 'auto' : 'none';
-   }
-
-   function restoreOpenMarkerVisual() {
-      const marker = getOpenMarker();
-
-      if (!marker) {
-         return;
+      function getOpenMarker() {
+         return openState.marker;
       }
 
-      MarkerVisuals.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
-   }
-
-   function addMarkerClickHandler(markerEl, items, clickable) {
-      if (!clickable) {
-         return;
+      function getOpenItems() {
+         return openState.items;
       }
 
-      markerEl.addEventListener('click', (event) => {
-         event.stopPropagation();
-         toggle(markerEl, items);
-      });
-   }
+      function getOpenItem(index) {
+         return getOpenItems()[index] || null;
+      }
 
-   function addMarkerHoverHandlers(markerEl, hover) {
-      markerEl.addEventListener('mouseenter', (event) => {
-         hover.show(markerEl.dataset.hover || '', event);
-      });
-      markerEl.addEventListener('mousemove', (event) => {
-         hover.move(event);
-      });
-      markerEl.addEventListener('mouseleave', () => {
-         hover.hide();
-      });
-   }
+      function setOpenState(marker, items) {
+         openState = {
+            marker,
+            items: Array.isArray(items) ? items : [],
+         };
+      }
 
-   function attachToMarker(markerEl, items, hover, opts = {}) {
-      const clickable = opts.clickable !== false;
+      function resetOpenState() {
+         openState = createEmptyOpenState();
+      }
 
-      addMarkerClickHandler(markerEl, items, clickable);
-      addMarkerHoverHandlers(markerEl, hover);
-   }
+      const banners = BannerSync.createTooltipBannerSync({
+         offDisplayBanner,
+         restaurantClosedBanner,
+         restroomMessageBanner,
+         giftShopClosedBanner,
+         attractionClosedBanner,
+         drinkingFountainClosedBanner,
+      });
 
-   function toggle(markerEl, items) {
-      if (isOpen() && getOpenMarker() === markerEl) {
+      const carousel = CarouselView.createTooltipCarouselView({
+         tooltipEl,
+         getRendererForItem: TooltipRenderers.getRendererForItem,
+         onIndexChange: (index) => {
+            syncMarkerToIndex(index);
+            banners.sync(getOpenItem(index));
+         },
+      });
+
+      const globalListeners = GlobalListeners.createTooltipGlobalListeners({
+         tooltipEl,
+         isOpen,
+         close,
+         step: (delta) => carousel.step(delta),
+         getItemAtIndex: getOpenItem,
+         onAnimalCardClick,
+      });
+
+      function isOpen() {
+         return Boolean(getOpenMarker()) || isTooltipVisible();
+      }
+
+      function isTooltipVisible() {
+         return tooltipEl && tooltipEl.style.display === 'flex';
+      }
+
+      function setTooltipVisibility(isVisible) {
+         if (!tooltipEl) {
+            return;
+         }
+
+         tooltipEl.style.display = isVisible ? 'flex' : 'none';
+         tooltipEl.style.pointerEvents = isVisible ? 'auto' : 'none';
+      }
+
+      function restoreOpenMarkerVisual() {
+         const marker = getOpenMarker();
+
+         if (!marker) {
+            return;
+         }
+
+         MarkerVisuals.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
+      }
+
+      function addMarkerClickHandler(markerEl, items, clickable) {
+         if (!clickable) {
+            return;
+         }
+
+         markerEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggle(markerEl, items);
+         });
+      }
+
+      function addMarkerHoverHandlers(markerEl, hover) {
+         markerEl.addEventListener('mouseenter', (event) => {
+            hover.show(markerEl.dataset.hover || '', event);
+         });
+         markerEl.addEventListener('mousemove', (event) => {
+            hover.move(event);
+         });
+         markerEl.addEventListener('mouseleave', () => {
+            hover.hide();
+         });
+      }
+
+      function attachToMarker(markerEl, items, hover, opts = {}) {
+         const clickable = opts.clickable !== false;
+
+         addMarkerClickHandler(markerEl, items, clickable);
+         addMarkerHoverHandlers(markerEl, hover);
+      }
+
+      function toggle(markerEl, items) {
+         if (isOpen() && getOpenMarker() === markerEl) {
+            close();
+            return;
+         }
+
+         open(markerEl, items);
+      }
+
+      function open(markerEl, items) {
+         if (!tooltipEl || !markerEl) {
+            return;
+         }
+
          close();
-         return;
-      }
+         setOpenState(markerEl, items);
 
-      open(markerEl, items);
-   }
+         if (!carousel.render(getOpenItems())) {
+            banners.sync(getOpenItem(0));
+            globalListeners.install();
+            return;
+         }
 
-   function open(markerEl, items) {
-      if (!tooltipEl || !markerEl) {
-         return;
-      }
-
-      close();
-      setOpenState(markerEl, items);
-
-      if (!carousel.render(getOpenItems())) {
-         banners.sync(getOpenItem(0));
+         setTooltipVisibility(true);
          globalListeners.install();
-         return;
+         carousel.showFirst();
+         PositionTooltip.positionTooltip(tooltipEl, markerEl);
       }
 
-      setTooltipVisibility(true);
-      globalListeners.install();
-      carousel.showFirst();
-      PositionTooltip.positionTooltip(tooltipEl, markerEl);
-   }
+      function close() {
+         if (!tooltipEl) {
+            resetOpenState();
+            return;
+         }
 
-   function close() {
-      if (!tooltipEl) {
+         globalListeners.uninstall();
+         banners.hideAll();
+         restoreOpenMarkerVisual();
+         setTooltipVisibility(false);
+         carousel.clear();
          resetOpenState();
-         return;
       }
 
-      globalListeners.uninstall();
-      banners.hideAll();
-      restoreOpenMarkerVisual();
-      setTooltipVisibility(false);
-      carousel.clear();
-      resetOpenState();
-   }
+      function syncMarkerToIndex(index) {
+         const marker = getOpenMarker();
+         const item = getOpenItem(index);
 
-   function syncMarkerToIndex(index) {
-      const marker = getOpenMarker();
-      const item = getOpenItem(index);
+         if (!marker || !item) {
+            return;
+         }
 
-      if (!marker || !item) {
-         return;
+         const type = String(item.type || '');
+         if (type !== 'animal') {
+            return;
+         }
+
+         MarkerVisuals.setMarkerToAnimalIcon(marker, item);
       }
 
-      const type = String(item.type || '');
-      if (type !== 'animal') {
-         return;
+      function jumpTo(matchFn) {
+         carousel.jumpTo(matchFn);
       }
 
-      MarkerVisuals.setMarkerToAnimalIcon(marker, item);
-   }
+      function reposition() {
+         const marker = getOpenMarker();
 
-   function jumpTo(matchFn) {
-      carousel.jumpTo(matchFn);
-   }
+         if (!tooltipEl || !isTooltipVisible() || !marker) {
+            return;
+         }
 
-   function reposition() {
-      const marker = getOpenMarker();
-
-      if (!tooltipEl || !isTooltipVisible() || !marker) {
-         return;
+         PositionTooltip.positionTooltip(tooltipEl, marker);
       }
 
-      PositionTooltip.positionTooltip(tooltipEl, marker);
+      return {
+         attachToMarker,
+         open,
+         close,
+         toggle,
+         jumpTo,
+         getOpenItems,
+         reposition,
+      };
    }
-
-   return {
-      attachToMarker,
-      open,
-      close,
-      toggle,
-      jumpTo,
-      getOpenItems,
-      reposition,
-   };
 }

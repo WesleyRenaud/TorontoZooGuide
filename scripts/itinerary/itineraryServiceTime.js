@@ -1,10 +1,7 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
-import {
-   dispatchItineraryUpdated,
-   getItinerary,
-} from './itineraryService.js';
+import { ItineraryService } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { EarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
@@ -12,11 +9,10 @@ import { ShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { PersistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
-class ItineraryTimeChangeCancelledError extends Error {
-   constructor() {
-      super('Itinerary time change cancelled.');
-      this.name = 'ItineraryTimeChangeCancelledError';
-   }
+function createItineraryTimeChangeCancelledError() {
+   const error = new Error('Itinerary time change cancelled.');
+   error.name = 'ItineraryTimeChangeCancelledError';
+   return error;
 }
 
 function requestConfirmedItineraryTimeChange({
@@ -53,7 +49,7 @@ function requestConfirmedItineraryTimeChange({
             }
          },
          onCancel: () => {
-            reject(new ItineraryTimeChangeCancelledError());
+            reject(createItineraryTimeChangeCancelledError());
          },
       });
    });
@@ -115,7 +111,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
 }
 
 async function setItineraryTimeAndDispatch(requestFn, timeValue) {
-   const previousItinerary = await getItinerary();
+   const previousItinerary = await ItineraryService.getItinerary();
    const result = await setItineraryTimeWithConfirmation(requestFn, timeValue);
    const normalizedItinerary = buildValidatedTimeSetItinerary(
       previousItinerary,
@@ -123,23 +119,25 @@ async function setItineraryTimeAndDispatch(requestFn, timeValue) {
    );
 
    if (normalizedItinerary) {
-      dispatchItineraryUpdated(normalizedItinerary);
+      ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
       return normalizedItinerary;
    }
 
    return result;
 }
 
-export async function setItineraryArrivalTime(arrivalTime) {
-   return setItineraryTimeAndDispatch(
-      ItineraryApi.setItineraryArrivalTimeRequest,
-      arrivalTime
-   );
-}
+export class ItineraryServiceTime {
+   static async setItineraryArrivalTime(arrivalTime) {
+      return setItineraryTimeAndDispatch(
+         ItineraryApi.setItineraryArrivalTimeRequest,
+         arrivalTime
+      );
+   }
 
-export async function setItineraryDepartureTime(departureTime) {
-   return setItineraryTimeAndDispatch(
-      ItineraryApi.setItineraryDepartureTimeRequest,
-      departureTime
-   );
+   static async setItineraryDepartureTime(departureTime) {
+      return setItineraryTimeAndDispatch(
+         ItineraryApi.setItineraryDepartureTimeRequest,
+         departureTime
+      );
+   }
 }

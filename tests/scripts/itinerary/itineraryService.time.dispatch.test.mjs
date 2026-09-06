@@ -1,14 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-   setItineraryDepartureTime,
-} from '../../scripts/itinerary/itineraryServiceTime.js';
-import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
+import { ItineraryServiceTime } from '../../../scripts/itinerary/itineraryServiceTime.js';
+import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
-test('setItineraryDepartureTime dispatches unscheduled diff for trimmed visit window', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeDispatchesUnscheduledDiffForTrimmedVisit_ExpectOk', async () => {
    const updates = [];
 
    window.dispatchEvent = (event) => {
@@ -84,7 +82,7 @@ test('setItineraryDepartureTime dispatches unscheduled diff for trimmed visit wi
       };
    };
 
-   const result = await setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceTime.setItineraryDepartureTime('16:15');
 
    assert.equal(result.validation.hasChanges, true);
    assert.deepEqual(
@@ -98,7 +96,7 @@ test('setItineraryDepartureTime dispatches unscheduled diff for trimmed visit wi
    );
 });
 
-test('setItineraryDepartureTime dispatches removed and unscheduled talks and encounters', async () => {
+test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeDispatchesRemovedAndUnscheduledTalksAnd_ExpectOk', async () => {
    const updates = [];
 
    window.dispatchEvent = (event) => {
@@ -174,7 +172,7 @@ test('setItineraryDepartureTime dispatches removed and unscheduled talks and enc
       };
    };
 
-   const result = await setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceTime.setItineraryDepartureTime('16:15');
 
    assert.equal(result.validation.hasChanges, true);
    assert.deepEqual(

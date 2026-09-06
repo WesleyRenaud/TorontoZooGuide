@@ -1,8 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import {
-   el,
-   safeImg,
-} from '../dom.js';
+import { Dom } from '../dom.js';
 
 function createItemNameElement({
    name,
@@ -46,17 +43,17 @@ export class ItemRow {
       secondaryActionLabel = '',
       onSecondaryAction = null,
    }) {
-      const row = el('div', 'itin-panel-item');
+      const row = Dom.el('div', 'itin-panel-item');
 
-      const left = el('div', 'itin-panel-item-left');
+      const left = Dom.el('div', 'itin-panel-item-left');
 
       if (imageSrc) {
-         const thumb = el('div', 'itin-panel-thumb');
-         thumb.appendChild(safeImg(imageSrc));
+         const thumb = Dom.el('div', 'itin-panel-thumb');
+         thumb.appendChild(Dom.safeImg(imageSrc));
          left.appendChild(thumb);
       }
 
-      const text = el('div', 'itin-panel-text');
+      const text = Dom.el('div', 'itin-panel-text');
       text.appendChild(createItemNameElement({
          name,
          nameSuffix,
@@ -67,7 +64,7 @@ export class ItemRow {
 
       metaLines.forEach(line => {
          if (!line) return;
-         text.appendChild(el('div', 'itin-panel-meta', line));
+         text.appendChild(Dom.el('div', 'itin-panel-meta', line));
       });
 
       if (alertLine) {
@@ -76,11 +73,11 @@ export class ItemRow {
                ? 'itin-panel-alert-positive'
                : 'itin-panel-alert';
 
-         text.appendChild(el('div', alertClass, alertLine));
+         text.appendChild(Dom.el('div', alertClass, alertLine));
       }
 
       if (linkText) {
-         const link = el('div', 'itin-panel-link', linkText);
+         const link = Dom.el('div', 'itin-panel-link', linkText);
          link.addEventListener('click', (e) => {
             e.stopPropagation();
             onLinkClick?.();
@@ -105,7 +102,7 @@ export class ItemRow {
       }
 
       if (rowActions.length) {
-         const actions = el('div', 'itin-panel-item-actions');
+         const actions = Dom.el('div', 'itin-panel-item-actions');
 
          rowActions.forEach(({ label, onAction: handleAction }) => {
             const actionButton = document.createElement('button');

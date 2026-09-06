@@ -1,4 +1,4 @@
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { Constants } from '../../../shared/constants.js';
 
 export class DayPlannerActionFeedbackBanner {
@@ -7,7 +7,7 @@ export class DayPlannerActionFeedbackBanner {
          return null;
       }
 
-      const slot = el('div', 'itinerary-day-action-feedback-slot');
+      const slot = Dom.el('div', 'itinerary-day-action-feedback-slot');
       slot.setAttribute('aria-live', 'polite');
       container.appendChild(slot);
 
@@ -29,7 +29,7 @@ export class DayPlannerActionFeedbackBanner {
          return null;
       }
 
-      const banner = el(
+      const banner = Dom.el(
          'div',
          `itinerary-day-action-feedback itinerary-day-action-feedback--${variant}`,
          message

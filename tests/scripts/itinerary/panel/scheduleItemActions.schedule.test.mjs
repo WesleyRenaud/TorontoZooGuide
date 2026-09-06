@@ -1,16 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { scheduleSelectedItineraryItem } from '../../scripts/itinerary/panel/scheduleItemActions.js';
-import {
-   mockJsonResponse,
-   mockScheduleItemFetch,
-   installScheduleItemActionsTestHooks,
-} from './helpers/scheduleItemActionsTestSetup.mjs';
+import { ScheduleItemActions } from '../../../../scripts/itinerary/panel/scheduleItemActions.js';
+import { mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
-test('scheduleSelectedItineraryItem dispatches itineraryUpdated on success', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemDispatchesItineraryUpdatedOnSuccess_ExpectOk', async () => {
    const events = [];
 
    globalThis.window.dispatchEvent = (event) => {
@@ -37,7 +33,7 @@ test('scheduleSelectedItineraryItem dispatches itineraryUpdated on success', asy
       },
    });
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -51,7 +47,7 @@ test('scheduleSelectedItineraryItem dispatches itineraryUpdated on success', asy
    assert.equal(events[0]?.animals?.[0]?.species, 'Tiger');
 });
 
-test('scheduleSelectedItineraryItem schedules an event', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSchedulesAnEvent_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -63,7 +59,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
       return mockScheduleItemFetch()(url, options);
    };
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'lunch',
       null,
@@ -92,7 +88,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
    );
 });
 
-test('scheduleSelectedItineraryItem schedules when type is unset but a row is selected', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSchedulesWhenTypeIsUnsetBut_ExpectOk', async () => {
    const urls = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -101,7 +97,7 @@ test('scheduleSelectedItineraryItem schedules when type is unset but a row is se
       return mockScheduleItemFetch()(url, options);
    };
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -120,7 +116,7 @@ test('scheduleSelectedItineraryItem schedules when type is unset but a row is se
    assert.deepEqual(urls, ['/get-itinerary-date', '/schedule-itinerary-item']);
 });
 
-test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemReturnsNoAvailableSlotWithoutRefreshing_ExpectOk', async () => {
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
@@ -130,7 +126,7 @@ test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing',
       },
    });
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -144,7 +140,7 @@ test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing',
    assert.equal(result.errorType, 'noAvailableSlot');
 });
 
-test('scheduleSelectedItineraryItem surfaces requestedTimeNotAvailable', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSurfacesRequestedTimeNotAvailable_ExpectOk', async () => {
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
@@ -154,7 +150,7 @@ test('scheduleSelectedItineraryItem surfaces requestedTimeNotAvailable', async (
       },
    });
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       {
@@ -169,7 +165,7 @@ test('scheduleSelectedItineraryItem surfaces requestedTimeNotAvailable', async (
    assert.equal(result.errorType, 'requestedTimeNotAvailable');
 });
 
-test('scheduleSelectedItineraryItem saves the effective visit date when none is set', async () => {
+test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSavesTheEffectiveVisitDateWhen_ExpectOk', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
@@ -215,7 +211,7 @@ test('scheduleSelectedItineraryItem saves the effective visit date when none is 
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await scheduleSelectedItineraryItem(
+   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
       { animals: [], attractions: [] },
       'animals',
       {

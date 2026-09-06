@@ -1,6 +1,6 @@
-import { saveItinerary } from '../itineraryServiceSave.js';
+import { ItineraryServiceSave } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import { createItineraryDateSelectorController } from '../selectors/dateSelector.js';
+import { DateSelector } from '../selectors/dateSelector.js';
 import { APP_STRINGS } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
@@ -14,8 +14,8 @@ export class RecoverPastItineraryDate {
       deps = {},
    } = {}) {
       const {
-         createDateController = createItineraryDateSelectorController,
-         saveItineraryFn = saveItinerary,
+         createDateController = DateSelector.createItineraryDateSelectorController,
+         saveItineraryFn = ItineraryServiceSave.saveItinerary,
          normalizeDraft = ItineraryShape.normalizeItineraryDraft,
          toIso = VisitDateRules.toISODate,
       } = deps;

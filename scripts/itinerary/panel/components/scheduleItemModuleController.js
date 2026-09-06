@@ -2,7 +2,7 @@ import { SearchApi } from '../../../api/searchApi.js';
 import { ItineraryConfirmationResult } from '../../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
-import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
+import { ScheduleItemActions } from '../scheduleItemActions.js';
 import { ScheduleItemModuleSelection } from './scheduleItemModuleSelection.js';
 import { ScheduleItemResults } from '../scheduleItemResults.js';
 import { ScheduleItemSearch } from '../scheduleItemSearch.js';
@@ -42,7 +42,7 @@ export class ScheduleItemModuleController {
       const {
          searchItineraryItems: searchItems = SearchApi.searchItineraryItems,
          getSearchContext = ItinerarySearchContext.getItineraryDateSearchContext,
-         scheduleSelectedItem = scheduleSelectedItineraryItem,
+         scheduleSelectedItem = ScheduleItemActions.scheduleSelectedItineraryItem,
          showNotice = ShowScheduleItemNotice.showScheduleItemNotice,
          renderSearchResults = ScheduleItemResults.renderScheduleItemSearchResults,
          itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,

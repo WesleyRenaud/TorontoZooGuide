@@ -106,7 +106,8 @@ function handlePresetChange({
    });
 }
 
-export function initMapControls({
+export class Controls {
+   static initMapControls({
    mapPreset,
    mapDateInput,
    includeOffDisplayCheckbox,
@@ -118,62 +119,63 @@ export function initMapControls({
    earliestSelectableNoon,
    onUpdate,
 } = {}) {
-   if (!mapPreset || !mapDateInput || !onUpdate) {
-      console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
-      return null;
-   }
+      if (!mapPreset || !mapDateInput || !onUpdate) {
+         console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
+         return null;
+      }
 
-   const fp = initMapDatePicker(mapDateInput, {
-      mapPreset,
-      earliestSelectableNoon,
-      onSpecificDayChange: (dateStr) => {
-         onUpdate('specific-day', dateStr);
-      },
-   });
+      const fp = initMapDatePicker(mapDateInput, {
+         mapPreset,
+         earliestSelectableNoon,
+         onSpecificDayChange: (dateStr) => {
+            onUpdate('specific-day', dateStr);
+         },
+      });
 
-   const refetch = () => updateMapForCurrentControls({
-      mapPreset,
-      mapDateInput,
-      fp,
-      onUpdate,
-   });
-
-   mapPreset.addEventListener('change', () => {
-      handlePresetChange({
+      const refetch = () => updateMapForCurrentControls({
          mapPreset,
          mapDateInput,
          fp,
          onUpdate,
       });
-   });
 
-   mapDateInput.addEventListener('mousedown', (event) => {
-      if (!isSpecificDayPreset(mapPreset)) {
-         return;
-      }
+      mapPreset.addEventListener('change', () => {
+         handlePresetChange({
+            mapPreset,
+            mapDateInput,
+            fp,
+            onUpdate,
+         });
+      });
 
-      event.preventDefault();
-      fp?.open();
-   });
+      mapDateInput.addEventListener('mousedown', (event) => {
+         if (!isSpecificDayPreset(mapPreset)) {
+            return;
+         }
 
-   mapDateInput.addEventListener('focus', () => {
-      blurMapDateInput(mapDateInput);
-   });
+         event.preventDefault();
+         fp?.open();
+      });
 
-   bindChangeListeners([
-      includeOffDisplayCheckbox,
-      includeClosedRestaurantsCheckbox,
-      includeClosedRestroomsCheckbox,
-      includeClosedGiftShopsCheckbox,
-      includeClosedAttractionsCheckbox,
-   ], refetch);
+      mapDateInput.addEventListener('focus', () => {
+         blurMapDateInput(mapDateInput);
+      });
 
-   bindChangeListeners(transportationRouteRadios, refetch);
+      bindChangeListeners([
+         includeOffDisplayCheckbox,
+         includeClosedRestaurantsCheckbox,
+         includeClosedRestroomsCheckbox,
+         includeClosedGiftShopsCheckbox,
+         includeClosedAttractionsCheckbox,
+      ], refetch);
 
-   syncDateInputVisibility(mapPreset, mapDateInput);
+      bindChangeListeners(transportationRouteRadios, refetch);
 
-   return {
-      flatpickr: fp,
-      refetch,
-   };
+      syncDateInputVisibility(mapPreset, mapDateInput);
+
+      return {
+         flatpickr: fp,
+         refetch,
+      };
+   }
 }

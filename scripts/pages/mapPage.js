@@ -1,13 +1,13 @@
 import { FocusFromQuery } from '../focus/focusFromQuery.js';
 import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
-import { initMapControls } from '../map/controls.js';
+import { Controls } from '../map/controls.js';
 import { DateContext } from '../map/dateContext.js';
 import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
-import { createMapRuntime } from '../map/mapRuntime.js';
+import { MapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
 import { Search } from '../search/search.js';
-import { createExploreUpdates } from '../updates/exploreUpdates.js';
+import { ExploreUpdates } from '../updates/exploreUpdates.js';
 
 function getMapPageElements() {
    return {
@@ -127,7 +127,7 @@ function initMapPageControls({
    getSearch,
    earliestSelectableNoon,
 } = {}) {
-   initMapControls({
+   Controls.initMapControls({
       mapPreset: elements.mapPreset,
       mapDateInput: elements.mapDateInput,
       includeOffDisplayCheckbox: elements.includeOffDisplayCheckbox,
@@ -156,52 +156,54 @@ function triggerInitialMapUpdate(mapPreset) {
    mapPreset.dispatchEvent(new Event('change'));
 }
 
-export async function initMapPage() {
-   const elements = getMapPageElements();
+export class MapPage {
+   static async initMapPage() {
+      const elements = getMapPageElements();
 
-   if (!hasRequiredMapPageElements(elements)) return;
+      if (!hasRequiredMapPageElements(elements)) return;
 
-   await LoadInlineZooMap.loadInlineZooMap();
-   await TransportationRouteControls.initTransportationRouteControls(elements.transportationRoutesEl);
+      await LoadInlineZooMap.loadInlineZooMap();
+      await TransportationRouteControls.initTransportationRouteControls(elements.transportationRoutesEl);
 
-   let explore = null;
-   let search = null;
-   const updates = createExploreUpdates({
-      listEl: elements.exploreUpdatesListEl,
-   });
+      let explore = null;
+      let search = null;
+      const updates = ExploreUpdates.createExploreUpdates({
+         listEl: elements.exploreUpdatesListEl,
+      });
 
-   const runtime = createMapRuntime(createRuntimeOptions(elements, {
-      getSelectedTypes: () => explore?.getSelectedTypes?.() || [],
-      updates,
-   }));
+      const runtime = MapRuntime.createMapRuntime(createRuntimeOptions(elements, {
+         getSelectedTypes: () => explore?.getSelectedTypes?.() || [],
+         updates,
+      }));
 
-   if (!runtime) return;
+      if (!runtime) return;
 
-   const { updater } = runtime;
-   const getSearch = () => search;
+      const { updater } = runtime;
+      const getSearch = () => search;
 
-   explore = initMapExploreFilter({
-      updater,
-      getSearch,
-      animalSearchResultsEl: elements.animalSearchResultsEl,
-   });
+      explore = initMapExploreFilter({
+         updater,
+         getSearch,
+         animalSearchResultsEl: elements.animalSearchResultsEl,
+      });
 
-   search = initMapSearch({
-      elements,
-      explore,
-      updater,
-   });
+      search = initMapSearch({
+         elements,
+         explore,
+         updater,
+      });
 
-   const earliestVisitNoon = await VisitDateEarliest.resolveEarliestSelectableVisitDateNoon();
+      const earliestVisitNoon = await VisitDateEarliest.resolveEarliestSelectableVisitDateNoon();
 
-   initMapPageControls({
-      elements,
-      updater,
-      getSearch,
-      earliestSelectableNoon: earliestVisitNoon,
-   });
+      initMapPageControls({
+         elements,
+         updater,
+         getSearch,
+         earliestSelectableNoon: earliestVisitNoon,
+      });
 
-   initMapDeepLinkFocus(updater);
+      initMapDeepLinkFocus(updater);
 
-   triggerInitialMapUpdate(elements.mapPreset);
+      triggerInitialMapUpdate(elements.mapPreset);
+   }
 }

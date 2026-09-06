@@ -1,12 +1,12 @@
 import { ConfirmPopup } from './confirmPopup.js';
-import { el } from '../dom.js';
+import { Dom } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export class ActionsBar {
    static makeActionsBar({ onAfterClear } = {}) {
-      const actionsWrap = el('div', 'itin-panel-actions-wrap');
+      const actionsWrap = Dom.el('div', 'itin-panel-actions-wrap');
 
-      const editBtn = el(
+      const editBtn = Dom.el(
          'button',
          'itin-panel-edit-btn',
          APP_STRINGS.itinerary.actions.editItinerary
@@ -17,7 +17,7 @@ export class ActionsBar {
          window.dispatchEvent(new CustomEvent('tzg:editItinerary'));
       });
 
-      const clearBtn = el('button', 'itin-panel-clear-btn', APP_STRINGS.itinerary.actions.clear);
+      const clearBtn = Dom.el('button', 'itin-panel-clear-btn', APP_STRINGS.itinerary.actions.clear);
       clearBtn.type = 'button';
       clearBtn.addEventListener('click', (e) => {
          e.stopPropagation();
