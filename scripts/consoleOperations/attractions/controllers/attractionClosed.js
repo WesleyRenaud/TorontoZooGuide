@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class AttractionClosed {
    static createAttractionClosedController({
@@ -20,9 +20,9 @@ export class AttractionClosed {
             endDate: endDate || null,
             message,
          }),
-         entityLabel: APP_STRINGS.entityLabels.attraction,
-         optionsLabel: APP_STRINGS.entityLabels.attractions,
-         successMessage: result => APP_STRINGS.status.closed(result.attraction),
+         entityLabel: Strings.entityLabels.attraction,
+         optionsLabel: Strings.entityLabels.attractions,
+         successMessage: result => Strings.status.closed(result.attraction),
       });
    }
 }

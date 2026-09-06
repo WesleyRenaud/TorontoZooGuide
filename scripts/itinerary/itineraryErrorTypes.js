@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 let itineraryErrorTypes = null;
 let suppressedItineraryErrorTypes = [];
@@ -100,7 +100,7 @@ export class ItineraryErrorTypes {
 
    static resolveItineraryErrorMessage(
       errorType,
-      strings = APP_STRINGS.itinerary.errors
+      strings = Strings.itinerary.errors
    ) {
       if (errorType === itineraryErrorTypes?.ITINERARY_DATE_NOT_SET) {
          return strings.itineraryDateNotSet;

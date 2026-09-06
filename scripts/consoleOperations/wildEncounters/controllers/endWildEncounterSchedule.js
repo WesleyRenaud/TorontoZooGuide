@@ -4,7 +4,7 @@ import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxFie
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class EndWildEncounterSchedule {
    static createEndWildEncounterScheduleController({
@@ -21,11 +21,11 @@ export class EndWildEncounterSchedule {
 
       function validateSelection({ wildEncounter, times }) {
          if (!wildEncounter) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
+            return Strings.validation.entityRequired(Strings.entityLabels.wildEncounter);
          }
 
          if (!times.length) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes);
+            return Strings.validation.entityRequired(Strings.labels.encounterTimes);
          }
 
          return null;
@@ -61,9 +61,9 @@ export class EndWildEncounterSchedule {
          }),
          validateSelection,
          prepareForm,
-         loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
+         loadErrorMessage: Strings.loadErrors.wildEncounters,
          submitEndSchedule,
-         successMessage: result => APP_STRINGS.status.scheduleEnded(result.wildEncounter),
+         successMessage: result => Strings.status.scheduleEnded(result.wildEncounter),
       });
 
       wildEncounterEl?.addEventListener('change', async () => {

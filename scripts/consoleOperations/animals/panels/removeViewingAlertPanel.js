@@ -1,34 +1,28 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RemoveViewingAlertPanel {
    static createRemoveViewingAlertPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'removeViewingAlertPanel',
-         title: APP_STRINGS.panelTitles.removeViewingAlert,
+         title: Strings.panelTitles.removeViewingAlert,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'removeViewingAlertExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'removeViewingAlertSpecies',
                resultsId: 'removeViewingAlertSpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRemoveViewingAlert',
-               submitLabel: APP_STRINGS.actions.removeAlert,
+               submitLabel: Strings.actions.removeAlert,
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'removeViewingAlertStatus',
             }),
          ],

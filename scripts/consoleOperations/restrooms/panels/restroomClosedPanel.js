@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestroomClosedPanel {
    static createRestroomClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restroomClosedPanel',
-         title: APP_STRINGS.panelTitles.restroomClosed,
+         title: Strings.panelTitles.restroomClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restroom,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restroom,
                inputId: 'restroomClosedRestroom',
-               emptyOptionLabel: APP_STRINGS.placeholders.restroom,
+               emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restroomClosedStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'restroomClosedEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened('restroom'),
+               endHelpText: Strings.help.continueUntilReopened('restroom'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'restroomClosedMessage',
-               placeholder: APP_STRINGS.textareas.closedMessage('restroom'),
+               placeholder: Strings.textareas.closedMessage('restroom'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestroomClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restroomClosedStatus',
             }),
          ],

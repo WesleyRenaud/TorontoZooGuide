@@ -1,13 +1,13 @@
 import { RemovedItemsPopupContentRows } from './removedItemsPopupContentRows.js';
 import { Rows } from '../rows.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
 
 export class RemovedItemsPopupSectionSpecs {
    static getUnscheduledSectionSpecs(
       safeUnscheduled = {},
-      strings = APP_STRINGS
+      strings = Strings
    ) {
       const sections = [];
 
@@ -43,7 +43,7 @@ export class RemovedItemsPopupSectionSpecs {
       reducedVisibility,
       improvedVisibility,
       adjustments,
-   } = {}, strings = APP_STRINGS) {
+   } = {}, strings = Strings) {
       const safeAdded = added ?? {};
       const safeRemoved = removed ?? {};
       const safeUnscheduled = unscheduled ?? {};

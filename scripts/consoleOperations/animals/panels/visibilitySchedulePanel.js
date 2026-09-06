@@ -1,59 +1,50 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createDateField,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class VisibilitySchedulePanel {
    static createVisibilitySchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'visibilitySchedulePanel',
-         title: APP_STRINGS.panelTitles.visibilitySchedule,
+         title: Strings.panelTitles.visibilitySchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'visibilityScheduleExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'visibilityScheduleSpecies',
                resultsId: 'visibilityScheduleSpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'visibilityScheduleStartDate',
-               startLabel: APP_STRINGS.labels.scheduleStartDate,
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startLabel: Strings.labels.scheduleStartDate,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'visibilityScheduleEndDate',
-               endLabel: APP_STRINGS.labels.scheduleEndDate,
-               endHelpText: APP_STRINGS.help.keepVisibilityScheduleUntilChanged,
+               endLabel: Strings.labels.scheduleEndDate,
+               endHelpText: Strings.help.keepVisibilityScheduleUntilChanged,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.dailyViewingStartTime,
+            Fragments.createDateField({
+               label: Strings.labels.dailyViewingStartTime,
                inputId: 'visibilityScheduleDailyStartTime',
-               placeholder: APP_STRINGS.placeholders.dailyStartTime,
+               placeholder: Strings.placeholders.dailyStartTime,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.dailyViewingEndTime,
+            Fragments.createDateField({
+               label: Strings.labels.dailyViewingEndTime,
                inputId: 'visibilityScheduleDailyEndTime',
-               placeholder: APP_STRINGS.placeholders.dailyEndTime,
+               placeholder: Strings.placeholders.dailyEndTime,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.message,
+            Fragments.createTextareaField({
+               label: Strings.labels.message,
                inputId: 'visibilityScheduleMessage',
-               placeholder: APP_STRINGS.textareas.viewingMessage,
+               placeholder: Strings.textareas.viewingMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitVisibilitySchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'visibilityScheduleStatus',
             }),
          ],

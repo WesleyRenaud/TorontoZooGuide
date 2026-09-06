@@ -1,7 +1,7 @@
 import { DateSelectionModel } from './dateSelectionModel.js';
 import { DateSelectorPickerBinding } from './dateSelectorPickerBinding.js';
 import { DateSelectorView } from './dateSelectorView.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
 export class DateSelector {
@@ -74,7 +74,7 @@ export class DateSelector {
             return;
          }
 
-         elements = buildView(APP_STRINGS);
+         elements = buildView(Strings);
 
          if (titleText && elements.root) {
             elements.root.querySelector('.itin-h1').textContent = titleText;

@@ -1,11 +1,11 @@
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
 
 export class ScheduleTimeConflictResolution {
    static createScheduleTimeConflictResolutionConfirmations(
-      strings = APP_STRINGS
+      strings = Strings
    ) {
       const confirmation = strings.itinerary.confirmation;
 

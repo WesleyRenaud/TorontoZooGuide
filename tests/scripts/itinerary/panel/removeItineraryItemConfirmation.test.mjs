@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { RemoveItineraryItemConfirmation } from '../../../../scripts/itinerary/panel/removeItineraryItemConfirmation.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
@@ -24,7 +24,7 @@ test.describe('removeItineraryItemConfirmation', () => {
       });
 
       const popup = document.querySelector('.tzg-confirm');
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const title = popup?.querySelector('.itin-top-title');
       const message = popup?.querySelector('.tzg-popup-message');
       const confirmButton = popup?.querySelector('.tzg-popup-confirm');
@@ -33,7 +33,7 @@ test.describe('removeItineraryItemConfirmation', () => {
       assert.equal(title?.textContent, strings.removeItemTitle);
       assert.equal(message?.textContent, strings.removeItemMessage);
       assert.equal(popup.querySelector('.tzg-popup-do-not-show-again'), null);
-      assert.equal(confirmButton?.textContent, APP_STRINGS.itinerary.dayPlanner.remove);
+      assert.equal(confirmButton?.textContent, Strings.itinerary.dayPlanner.remove);
 
       confirmButton?.click();
 
@@ -41,7 +41,7 @@ test.describe('removeItineraryItemConfirmation', () => {
    });
 
    test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage', () => {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
 
       RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
          itemType: ScheduleItemKind.TRANSPORTATION.itemType,
@@ -57,7 +57,7 @@ test.describe('removeItineraryItemConfirmation', () => {
    });
 
    test('Test_ShowRemoveItineraryItemConfirmation_TestAttractionTransport_ExpectDefaultMessage', () => {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
 
       RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
          itemType: ScheduleItemKind.TRANSPORTATION.itemType,

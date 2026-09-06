@@ -1,7 +1,7 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { Popup } from './components/popup.js';
 import { Format } from './format.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
 
@@ -57,7 +57,7 @@ export class AttractionWithoutAnimalConfirmation {
       attraction,
       {
       includeConfirmPrompt = false,
-      strings = APP_STRINGS.itinerary.confirmation,
+      strings = Strings.itinerary.confirmation,
       } = {}
    ) {
       const attractionName = Format.normalizeText(attraction.attractionName);
@@ -82,7 +82,7 @@ export class AttractionWithoutAnimalConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const attractions = AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues);
 
       // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
@@ -99,7 +99,7 @@ export class AttractionWithoutAnimalConfirmation {
             strings,
          }),
          confirmText: strings.saveIssuesButton,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,
          onCancel,

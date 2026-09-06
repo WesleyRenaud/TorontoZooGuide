@@ -4,7 +4,7 @@ import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlap
 import { WeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class AttractionOpeningSchedule {
    static createAttractionOpeningScheduleController({
@@ -17,8 +17,8 @@ export class AttractionOpeningSchedule {
          loadOptions: Loaders.loadAttractions,
          populateOptions: Dropdowns.populateAttractionDropdown,
          submitSchedule: ConsoleOperationsApi.setAttractionOpeningSchedule,
-         entityLabel: APP_STRINGS.entityLabels.attraction,
-         optionsLabel: APP_STRINGS.entityLabels.attractions,
+         entityLabel: Strings.entityLabels.attraction,
+         optionsLabel: Strings.entityLabels.attractions,
          payloadKey: 'attraction',
          resultName: result => result.attraction,
          resolveOverlapConflict: async payload => {

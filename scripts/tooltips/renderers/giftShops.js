@@ -1,12 +1,12 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class GiftShops {
    static key = 'giftShop';
 
    static createCard(g, index) {
-      const name = g.name || APP_STRINGS.entityLabels.giftShop;
+      const name = g.name || Strings.entityLabels.giftShop;
       const normalizedName = AssetKeyNormalizer.normalize(name);
 
       return CardFactory.createTooltipCard({
@@ -18,7 +18,7 @@ export class GiftShops {
          },
          title: { text: name },
          details: [
-            g.description ? APP_STRINGS.tooltips.description(g.description) : '',
+            g.description ? Strings.tooltips.description(g.description) : '',
          ],
       });
    }

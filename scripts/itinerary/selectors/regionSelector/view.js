@@ -1,5 +1,5 @@
 import { RegionRenderer } from './regionRenderer.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createEmptyState(message) {
    const emptyEl = document.createElement('div');
@@ -16,7 +16,7 @@ export class View {
 
       if (regions.length === 0) {
          resultsEl.replaceChildren(
-            createEmptyState(APP_STRINGS.itinerary.emptyText.regions)
+            createEmptyState(Strings.itinerary.emptyText.regions)
          );
          return;
       }

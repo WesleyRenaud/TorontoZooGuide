@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
 const SCHEDULE_TIMES_PLACEHOLDER_CLASS = 'console-operations-schedule-times-placeholder';
@@ -70,7 +70,7 @@ export class ScheduleTimesCheckboxField {
 
       renderScheduleTimesListMessage(
          listEl,
-         APP_STRINGS.placeholders.selectWildEncounterFirst
+         Strings.placeholders.selectWildEncounterFirst
       );
    }
 
@@ -92,7 +92,7 @@ export class ScheduleTimesCheckboxField {
       if (!normalizedTimes.length) {
          renderScheduleTimesListMessage(
             listEl,
-            APP_STRINGS.help.noScheduledEncounterTimes
+            Strings.help.noScheduledEncounterTimes
          );
          return;
       }
@@ -151,7 +151,7 @@ export class ScheduleTimesCheckboxField {
       if (!hasDate) {
          ScheduleTimesCheckboxField.setScheduleTimesCheckboxListMessage(
             listEl,
-            APP_STRINGS.placeholders.selectDateFirst
+            Strings.placeholders.selectDateFirst
          );
          return;
       }

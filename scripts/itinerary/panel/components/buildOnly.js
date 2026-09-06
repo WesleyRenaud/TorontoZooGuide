@@ -1,5 +1,5 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class BuildOnly {
    static renderBuildOnly(body) {
@@ -7,7 +7,7 @@ export class BuildOnly {
       const buildBtn = Dom.el(
          'button',
          'itin-panel-build-btn',
-         APP_STRINGS.itinerary.actions.build
+         Strings.itinerary.actions.build
       );
       buildBtn.type = 'button';
       buildBtn.addEventListener('click', (e) => {

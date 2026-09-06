@@ -1,12 +1,12 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class TransportationStations {
    static key = 'transportationStation';
 
    static createCard(s, index) {
-      const name = s.name || APP_STRINGS.tooltips.defaultTransportationStationName;
+      const name = s.name || Strings.tooltips.defaultTransportationStationName;
       const normalizedName = AssetKeyNormalizer.normalize(name);
 
       return CardFactory.createTooltipCard({
@@ -18,7 +18,7 @@ export class TransportationStations {
          },
          title: { text: name },
          details: [
-            s.description ? APP_STRINGS.tooltips.description(s.description) : '',
+            s.description ? Strings.tooltips.description(s.description) : '',
          ],
       });
    }

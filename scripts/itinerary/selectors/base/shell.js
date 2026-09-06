@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createButton({
    className,
@@ -41,8 +41,8 @@ export class Shell {
 
       const closeButton = createButton({
          className: 'itin-close',
-         text: APP_STRINGS.common.closeSymbol,
-         ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
+         text: Strings.common.closeSymbol,
+         ariaLabel: Strings.itinerary.aria.closeBuilder,
       });
 
       topbar.append(topTitleEl, closeButton);
@@ -61,7 +61,7 @@ export class Shell {
       const inputEl = document.createElement('input');
       inputEl.className = 'itin-search-input';
       inputEl.type = 'text';
-      inputEl.placeholder = APP_STRINGS.itinerary.searchPlaceholder;
+      inputEl.placeholder = Strings.itinerary.searchPlaceholder;
       inputEl.autocomplete = 'off';
 
       const resultsEl = document.createElement('div');
@@ -75,7 +75,7 @@ export class Shell {
 
       const prevButton = createButton({
          className: 'itin-prev',
-         text: APP_STRINGS.itinerary.actions.previous,
+         text: Strings.itinerary.actions.previous,
       });
 
       const actionsRight = document.createElement('div');
@@ -86,14 +86,14 @@ export class Shell {
       if (!hideNextButton) {
          nextButton = createButton({
             className: 'itin-next',
-            text: APP_STRINGS.itinerary.actions.next,
+            text: Strings.itinerary.actions.next,
          });
          actionsRight.appendChild(nextButton);
       }
 
       const finishButton = createButton({
          className: 'itin-finish',
-         text: APP_STRINGS.itinerary.actions.finish,
+         text: Strings.itinerary.actions.finish,
       });
 
       actionsRight.appendChild(finishButton);

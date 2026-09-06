@@ -1,7 +1,7 @@
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
-const scheduleItemStrings = APP_STRINGS.itinerary.scheduleItem;
-const actionStrings = APP_STRINGS.itinerary.actions;
+const scheduleItemStrings = Strings.itinerary.scheduleItem;
+const actionStrings = Strings.itinerary.actions;
 
 function createEmptyState(emptyText) {
    const empty = document.createElement('div');

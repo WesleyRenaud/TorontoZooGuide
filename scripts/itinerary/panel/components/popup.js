@@ -1,5 +1,5 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function joinClassNames(...classNames) {
    return classNames.filter(Boolean).join(' ');
@@ -28,13 +28,13 @@ export class Popup {
 
    static createItineraryPopupLayout({
       popupClassName = '',
-      title = APP_STRINGS.common.headsUp,
+      title = Strings.common.headsUp,
       message = '',
       bodyContent = null,
       actionsClassName = '',
       actionButtons = [],
       showCloseButton = false,
-      closeAriaLabel = APP_STRINGS.itinerary.aria.closeBuilder,
+      closeAriaLabel = Strings.itinerary.aria.closeBuilder,
    } = {}) {
       const root = Dom.el('div', joinClassNames('tzg-popup', popupClassName));
       const overlay = Dom.el('div', 'itin-overlay');
@@ -55,7 +55,7 @@ export class Popup {
       );
 
       const closeButton = showCloseButton
-         ? Dom.el('button', 'itin-close', APP_STRINGS.common.closeSymbol)
+         ? Dom.el('button', 'itin-close', Strings.common.closeSymbol)
          : null;
 
       if (closeButton) {

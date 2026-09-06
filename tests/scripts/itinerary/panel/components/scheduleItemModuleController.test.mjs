@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { ScheduleItemModuleController } from '../../../../../scripts/itinerary/panel/components/scheduleItemModuleController.js';
 import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 const EVENT_TYPES = ['lunch', 'break'];
@@ -668,7 +668,7 @@ test('Test_HandleSchedule_TestHandleScheduleShowsResolvedErrorNoticesAndGenericF
 
    await failingController.handleSchedule();
 
-   assert.equal(notices.at(-1), APP_STRINGS.itinerary.errors.generic);
+   assert.equal(notices.at(-1), Strings.itinerary.errors.generic);
 });
 
 test('Test_HandleSchedule_TestHandleScheduleReturnsSilentlyForNotOnItineraryConfirmations_ExpectOk', async () => {

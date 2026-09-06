@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestaurantClosureOverridePanel {
    static createRestaurantClosureOverridePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restaurantClosureOverridePanel',
-         title: APP_STRINGS.panelTitles.restaurantClosureOverride,
+         title: Strings.panelTitles.restaurantClosureOverride,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restaurant,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restaurant,
                inputId: 'restaurantClosureOverrideRestaurant',
-               emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
+               emptyOptionLabel: Strings.placeholders.restaurant,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restaurantClosureOverrideStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'restaurantClosureOverrideEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened('restaurant'),
+               endHelpText: Strings.help.continueUntilReopened('restaurant'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'restaurantClosureOverrideMessage',
-               placeholder: APP_STRINGS.textareas.closedMessage('restaurant'),
+               placeholder: Strings.textareas.closedMessage('restaurant'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestaurantClosureOverride',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restaurantClosureOverrideStatus',
             }),
          ],

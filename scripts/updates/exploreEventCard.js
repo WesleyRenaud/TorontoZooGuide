@@ -1,12 +1,12 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 function createEventTitleEl(event) {
    const titleEl = document.createElement('h4');
    titleEl.className = 'explore-update-title';
 
-   const name = event.name || APP_STRINGS.map.events.title;
+   const name = event.name || Strings.map.events.title;
    const location = ValueNormalizer.asTrimmedString(event.location);
    const link = ValueNormalizer.asTrimmedString(event.link);
 

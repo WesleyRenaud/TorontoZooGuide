@@ -154,7 +154,8 @@
       "tests/scripts/itinerary/wizard/wizardController.draftSync.test.mjs",
       "tests/scripts/itinerary/wizard/wizardController.lifecycle.test.mjs",
       "tests/scripts/itinerary/wizard/wizardFinalizer.test.mjs",
-      "tests/scripts/itinerary/wizard/wizardState.test.mjs"
+      "tests/scripts/itinerary/wizard/wizardState.test.mjs",
+      "tests/scripts/strings/strings.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"

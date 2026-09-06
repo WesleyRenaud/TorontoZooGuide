@@ -1,61 +1,34 @@
-import {
-   actions,
-   common,
-   entityLabels,
-   entityPhrases,
-   labels,
-   likelihood,
-   schedule,
-} from './strings/common.js';
-import {
-   apiErrors,
-   confirm,
-   help,
-   loadErrors,
-   panelTitles,
-   placeholders,
-   status,
-   textareas,
-   updateTypes,
-   validation,
-   viewingScopes,
-} from './strings/console.js';
-import { guestStatus } from './strings/guestStatus.js';
-import { itinerary } from './strings/itinerary.js';
-import {
-   map,
-   search,
-   tooltips,
-} from './strings/map.js';
-import {
-   animalsPage,
-   site,
-} from './strings/pages.js';
+import { Common } from './strings/common.js';
+import { Console } from './strings/console.js';
+import { GuestStatus } from './strings/guestStatus.js';
+import { Itinerary } from './strings/itinerary.js';
+import { Map } from './strings/map.js';
+import { Pages } from './strings/pages.js';
 
-export const APP_STRINGS = {
-   actions,
-   apiErrors,
-   common,
-   confirm,
-   site,
-   animalsPage,
-   guestStatus,
-   itinerary,
-   help,
-   loadErrors,
-   labels,
-   likelihood,
-   map,
-   placeholders,
-   textareas,
-   panelTitles,
-   search,
-   schedule,
-   status,
-   tooltips,
-   updateTypes,
-   entityLabels,
-   entityPhrases,
-   validation,
-   viewingScopes,
-};
+export class Strings {
+   static actions = Common.actions;
+   static apiErrors = Console.apiErrors;
+   static common = Common.common;
+   static confirm = Console.confirm;
+   static site = Pages.site;
+   static animalsPage = Pages.animalsPage;
+   static guestStatus = GuestStatus.guestStatus;
+   static itinerary = Itinerary.itinerary;
+   static help = Console.help;
+   static loadErrors = Console.loadErrors;
+   static labels = Common.labels;
+   static likelihood = Common.likelihood;
+   static map = Map.map;
+   static placeholders = Console.placeholders;
+   static textareas = Console.textareas;
+   static panelTitles = Console.panelTitles;
+   static search = Map.search;
+   static schedule = Common.schedule;
+   static status = Console.status;
+   static tooltips = Map.tooltips;
+   static updateTypes = Console.updateTypes;
+   static entityLabels = Common.entityLabels;
+   static entityPhrases = Common.entityPhrases;
+   static validation = Console.validation;
+   static viewingScopes = Console.viewingScopes;
+}

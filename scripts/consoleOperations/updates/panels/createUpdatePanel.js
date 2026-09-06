@@ -1,50 +1,41 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { labels } from '../../../strings/common.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createTextInputField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class CreateUpdatePanel {
    static createCreateUpdatePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'createUpdatePanel',
-         title: APP_STRINGS.panelTitles.createUpdate,
+         title: Strings.panelTitles.createUpdate,
          bodyChildren: [
-            createTextInputField({
-               label: APP_STRINGS.labels.title,
+            Fragments.createTextInputField({
+               label: Strings.labels.title,
                inputId: 'createUpdateTitle',
-               placeholder: APP_STRINGS.textareas.updateTitleExample,
+               placeholder: Strings.textareas.updateTitleExample,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.description,
+            Fragments.createTextareaField({
+               label: Strings.labels.description,
                inputId: 'createUpdateDescription',
-               placeholder: APP_STRINGS.textareas.updateDescription,
+               placeholder: Strings.textareas.updateDescription,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.type,
+            Fragments.createSelectField({
+               label: Strings.labels.type,
                inputId: 'createUpdateType',
-               emptyOptionLabel: APP_STRINGS.placeholders.type,
+               emptyOptionLabel: Strings.placeholders.type,
                options: [
-                  ...APP_STRINGS.updateTypes,
-                  { value: labels.departure },
+                  ...Strings.updateTypes,
+                  { value: Strings.labels.departure },
                ],
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'createUpdateStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'createUpdateEndDate',
-               endHelpText: APP_STRINGS.help.keepUpdateActiveWithoutEndDate,
+               endHelpText: Strings.help.keepUpdateActiveWithoutEndDate,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitCreateUpdate',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'createUpdateStatus',
             }),
          ],

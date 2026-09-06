@@ -2,7 +2,7 @@ import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 const DEFAULT_ATTRACTION_TITLE = 'Attraction';
 const CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
@@ -88,8 +88,8 @@ export class AttractionSelectorModel {
    static getAttractionSubtitle(row) {
       return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
          primaryValue: AttractionSelectorModel.isFreeWithAdmission(row)
-            ? APP_STRINGS.search.freeWithAdmission
-            : APP_STRINGS.search.extraCharge,
+            ? Strings.search.freeWithAdmission
+            : Strings.search.extraCharge,
          timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange({
             start_time: row?.open_time,
             end_time: row?.close_time,
@@ -164,7 +164,7 @@ export class AttractionSelectorModel {
    }
 
    static buildAlsoTransportationAttractionMessage(row) {
-      return APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationMessage(
+      return Strings.itinerary.confirmation.attractionAlsoTransportationMessage(
          AttractionSelectorModel.getAttractionName(row)
       );
    }

@@ -4,7 +4,7 @@ import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RestroomAlert {
    static createRestroomAlertController({
@@ -38,11 +38,11 @@ export class RestroomAlert {
          message,
       }) {
          if (!restroom) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.restroom);
+            return Strings.validation.entityRequired(Strings.entityLabels.restroom);
          }
 
          if (!message) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.alertMessage);
+            return Strings.validation.entityRequired(Strings.labels.alertMessage);
          }
 
          return ControllerUtils.validateOptionalDateRange(startDate, endDate);
@@ -62,7 +62,7 @@ export class RestroomAlert {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.restrooms,
+            errorMessage: Strings.loadErrors.restrooms,
          });
       }
 
@@ -121,7 +121,7 @@ export class RestroomAlert {
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

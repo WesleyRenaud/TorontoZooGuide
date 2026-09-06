@@ -4,7 +4,7 @@ import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RemoveViewingAlert {
    static createRemoveViewingAlertController({
@@ -29,11 +29,11 @@ export class RemoveViewingAlert {
 
       function validateForm({ species, exhibit }) {
          if (!species) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.species);
+            return Strings.validation.entityRequired(Strings.labels.species);
          }
 
          if (!exhibit) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.exhibit);
+            return Strings.validation.entityRequired(Strings.entityLabels.exhibit);
          }
 
          return null;
@@ -53,7 +53,7 @@ export class RemoveViewingAlert {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.exhibits,
+            errorMessage: Strings.loadErrors.exhibits,
          });
       }
 
@@ -105,7 +105,7 @@ export class RemoveViewingAlert {
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

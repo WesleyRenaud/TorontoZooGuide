@@ -1,6 +1,6 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
 import { GuardiansTalkSelectorModel } from './guardiansTalkSelector/guardiansTalkSelectorModel.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 
@@ -23,10 +23,10 @@ export class GuardiansTalkSelector {
          responseKey: 'guardians_talks',
          searchFlag: 'includeGuardiansTalks',
          imageDirectory: 'guardians-talks',
-         defaultTitle: APP_STRINGS.itinerary.selectors.talkFallback,
-         heading: APP_STRINGS.site.nav.meetTheGuardians,
-         subtitle: APP_STRINGS.itinerary.selectors.guardiansTalkSubtitle,
-         emptyText: APP_STRINGS.itinerary.emptyText.guardiansTalks,
+         defaultTitle: Strings.itinerary.selectors.talkFallback,
+         heading: Strings.site.nav.meetTheGuardians,
+         subtitle: Strings.itinerary.selectors.guardiansTalkSubtitle,
+         emptyText: Strings.itinerary.emptyText.guardiansTalks,
 
          getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getId: GuardiansTalkSelectorModel.getGuardiansTalkId,

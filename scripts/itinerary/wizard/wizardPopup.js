@@ -1,12 +1,12 @@
 import { Popup } from '../panel/components/popup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class WizardPopup {
    static showItineraryWizardPopup({
       mountEl,
-      title = APP_STRINGS.common.headsUp,
+      title = Strings.common.headsUp,
       message = '',
-      buttonText = APP_STRINGS.itinerary.noItemsSelected.button,
+      buttonText = Strings.itinerary.noItemsSelected.button,
    } = {}) {
       if (!mountEl) return;
 

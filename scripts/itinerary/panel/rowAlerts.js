@@ -1,7 +1,7 @@
 import { LikelihoodValues } from '../../likelihood/likelihoodValues.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
-const { removedItems } = APP_STRINGS.itinerary;
+const { removedItems } = Strings.itinerary;
 
 function getLikelihoodPair(animal) {
    const beforeRaw = animal?.likelihoodBefore;

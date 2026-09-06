@@ -15,7 +15,7 @@ import { ItineraryPanelViewState } from './itineraryPanelViewState.js';
 import { ItineraryService } from '../itineraryService.js';
 import { ItineraryServiceTime } from '../itineraryServiceTime.js';
 import { SectionConfigs } from './sectionConfigs.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function appendDayPlannerViewWithHours(
    dayPlannerView,
@@ -40,7 +40,7 @@ function appendDayPlannerViewWithHours(
       buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
       buildScheduleHandlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers,
       makeDayPlanner = DayPlanner.makeDayPlannerPreview,
-      genericErrorMessage = APP_STRINGS.itinerary.errors.generic,
+      genericErrorMessage = Strings.itinerary.errors.generic,
    } = deps;
 
    const scheduleHandlers = buildScheduleHandlers(itinerary, {
@@ -83,7 +83,7 @@ function appendDayPlannerViewWithHours(
                   await queueActionFeedback({
                      variant: 'error',
                      message: (
-                        APP_STRINGS.itinerary.confirmation
+                        Strings.itinerary.confirmation
                            .bulkScheduleItineraryNotEnoughTimeMessage
                      ),
                   });
@@ -92,7 +92,7 @@ function appendDayPlannerViewWithHours(
 
                await queueActionFeedback({
                   variant: 'success',
-                  message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
+                  message: Strings.itinerary.dayPlanner.rebuildScheduleSuccess,
                });
             };
 
@@ -163,7 +163,7 @@ function appendDayPlannerViewWithHours(
 
                await queueActionFeedback({
                   variant: 'success',
-                  message: APP_STRINGS.itinerary.dayPlanner.unscheduleAllSuccess,
+                  message: Strings.itinerary.dayPlanner.unscheduleAllSuccess,
                });
             }
             catch (err) {

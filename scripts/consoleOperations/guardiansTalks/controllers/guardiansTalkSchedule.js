@@ -5,7 +5,7 @@ import { RecurringScheduleFormController } from '../../forms/recurringScheduleFo
 import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkSchedule {
    static createGuardiansTalkScheduleController({
@@ -41,11 +41,11 @@ export class GuardiansTalkSchedule {
 
       function validateSelection({ talk, location }) {
          if (!location) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
+            return Strings.validation.entityRequired(Strings.labels.location);
          }
 
          if (!talk) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
+            return Strings.validation.entityRequired(Strings.labels.talkName);
          }
 
          return null;
@@ -112,9 +112,9 @@ export class GuardiansTalkSchedule {
          }),
          validateSelection,
          prepareForm,
-         loadErrorMessage: APP_STRINGS.loadErrors.locations,
+         loadErrorMessage: Strings.loadErrors.locations,
          submitSchedule,
-         successMessage: result => APP_STRINGS.status.guardiansTalkScheduleSaved(result),
+         successMessage: result => Strings.status.guardiansTalkScheduleSaved(result),
          shouldReportSubmitFailure: result => !result?.dismissed,
       });
    }

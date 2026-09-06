@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 const TYPE_FILTER_ID = 'typeFilter';
 const TRANSPORTATION_ROUTE_SELECTOR = 'input[name="transportationRoute-zoomobile"]:checked';
@@ -54,7 +54,7 @@ function getCheckboxLabel(checkbox) {
 function createNoSelectionChip() {
    const chip = document.createElement('span');
    chip.className = 'filter-none';
-   chip.textContent = APP_STRINGS.map.transportationRoute.none;
+   chip.textContent = Strings.map.transportationRoute.none;
    return chip;
 }
 

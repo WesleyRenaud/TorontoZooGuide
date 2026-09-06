@@ -3,26 +3,26 @@ import { View } from './attractionSelector/view.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
 
 function promptForClosedAttractionSelection(row, proceed) {
    ConfirmPopup.showItineraryConfirmPopup({
-      title: APP_STRINGS.itinerary.confirmation.attractionMayBeClosed,
+      title: Strings.itinerary.confirmation.attractionMayBeClosed,
       message: AttractionSelectorModel.buildClosedAttractionMessage(row),
-      confirmText: APP_STRINGS.itinerary.actions.add,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
+      confirmText: Strings.itinerary.actions.add,
+      cancelText: Strings.itinerary.actions.cancel,
       onConfirm: proceed,
    });
 }
 
 function promptForAlsoTransportationAttractionSelection(row, proceed) {
    ConfirmPopup.showItineraryConfirmPopup({
-      title: APP_STRINGS.itinerary.confirmation.attractionAlsoTransportationTitle,
+      title: Strings.itinerary.confirmation.attractionAlsoTransportationTitle,
       message: AttractionSelectorModel.buildAlsoTransportationAttractionMessage(row),
-      confirmText: APP_STRINGS.itinerary.actions.confirm,
-      cancelText: APP_STRINGS.animalsPage.back,
+      confirmText: Strings.itinerary.actions.confirm,
+      cancelText: Strings.animalsPage.back,
       onConfirm: proceed,
    });
 }
@@ -73,10 +73,10 @@ export class AttractionSelector {
 
          makeSelection: AttractionSelectorModel.makeAttractionSelection,
 
-         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-         h1: APP_STRINGS.itinerary.selectors.titleAttractions,
-         subtitle: APP_STRINGS.itinerary.selectors.attractionSubtitle,
-         emptyText: APP_STRINGS.itinerary.emptyText.attractions,
+         topTitle: Strings.itinerary.selectors.builderTitle,
+         h1: Strings.itinerary.selectors.titleAttractions,
+         subtitle: Strings.itinerary.selectors.attractionSubtitle,
+         emptyText: Strings.itinerary.emptyText.attractions,
 
          onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
             const continueAdd = () => {

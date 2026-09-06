@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
 
 export class CreateEvent {
@@ -34,9 +34,9 @@ export class CreateEvent {
       }
 
       function validateForm(values) {
-         if (!values.name) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.name);
-         if (!values.description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
-         if (!values.link) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.link);
+         if (!values.name) return Strings.validation.entityRequired(Strings.labels.name);
+         if (!values.description) return Strings.validation.entityRequired(Strings.labels.description);
+         if (!values.link) return Strings.validation.entityRequired(Strings.labels.link);
 
          return ControllerUtils.validateOptionalDateRange(values.startDate, values.endDate);
       }
@@ -72,7 +72,7 @@ export class CreateEvent {
             if (result.success) {
                Status.setStatus(
                   statusEl,
-                  APP_STRINGS.status.eventCreated(result),
+                  Strings.status.eventCreated(result),
                   'is-success'
                );
                resetForm();
@@ -82,7 +82,7 @@ export class CreateEvent {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

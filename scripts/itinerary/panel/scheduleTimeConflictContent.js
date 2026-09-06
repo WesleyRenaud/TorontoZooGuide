@@ -4,7 +4,7 @@ import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { ScheduleTimeConflictButtonState } from './scheduleTimeConflictButtonState.js';
 import { ResultRenderer } from '../selectors/base/resultRenderer.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 import { ScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
 import { WildEncounterConflictResolution } from '../wizard/wildEncounterConflictResolution.js';
@@ -47,13 +47,13 @@ function createWildEncounterSelectButton({
    const button = Dom.el(
       'button',
       'itin-add-btn itin-save-issue-select-btn',
-      APP_STRINGS.itinerary.actions.addSymbol
+      Strings.itinerary.actions.addSymbol
    );
 
    button.type = 'button';
    button.setAttribute(
       'aria-label',
-      APP_STRINGS.itinerary.aria.addToItinerary
+      Strings.itinerary.aria.addToItinerary
    );
 
    button.addEventListener('click', () => {
@@ -71,8 +71,8 @@ function createScheduleConflictSubtitle(item) {
       RowPresentation.buildScheduledTimeFieldLine(item)
    );
    const locationLabel = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
-      ? APP_STRINGS.labels.location
-      : APP_STRINGS.itinerary.selectors.meetingSpot;
+      ? Strings.labels.location
+      : Strings.itinerary.selectors.meetingSpot;
    const locationValue = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
       ? item.location
       : item.meeting_spot;
@@ -93,7 +93,7 @@ function createWildEncounterConflictRow({
    const row = Dom.el('div', 'animal-result itin-save-issue-conflict-row');
    const content = ResultRenderer.createSelectorRowContent({
       imageSrc: ScheduleTimeConflictContent.buildConflictItemImageSrc(item),
-      imageAlt: APP_STRINGS.itinerary.itemImage(item.name),
+      imageAlt: Strings.itinerary.itemImage(item.name),
       textColumnEl: ResultRenderer.createSelectorTextColumn({
          title: item.name,
          subtitleNode: createScheduleConflictSubtitle(item),
@@ -124,7 +124,7 @@ function createWildEncounterConflictBlock(issue) {
       Dom.el(
          'p',
          'itin-save-issue-conflict-message',
-         APP_STRINGS.itinerary.confirmation.scheduleConflictsMessage
+         Strings.itinerary.confirmation.scheduleConflictsMessage
       )
    );
 
@@ -155,7 +155,7 @@ function createWildEncounterConflictSection(issues) {
       Dom.el(
          'h3',
          'itin-save-issue-section-title',
-         APP_STRINGS.itinerary.confirmation.scheduleConflictsTitle
+         Strings.itinerary.confirmation.scheduleConflictsTitle
       )
    );
 

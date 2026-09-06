@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
 import { State } from '../../../../scripts/itinerary/wizard/state.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';

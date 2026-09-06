@@ -1,46 +1,38 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class ViewingAlertPanel {
    static createViewingAlertPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'viewingAlertPanel',
-         title: APP_STRINGS.panelTitles.viewingAlert,
+         title: Strings.panelTitles.viewingAlert,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'viewingAlertExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'viewingAlertSpecies',
                resultsId: 'viewingAlertSpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'viewingAlertStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'viewingAlertEndDate',
-               endHelpText: APP_STRINGS.help.keepAlertActiveUntilRemoved,
+               endHelpText: Strings.help.keepAlertActiveUntilRemoved,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.alertMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.alertMessage,
                inputId: 'viewingAlertMessage',
-               placeholder: APP_STRINGS.textareas.viewingAlert,
+               placeholder: Strings.textareas.viewingAlert,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitViewingAlert',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'viewingAlertStatus',
             }),
          ],

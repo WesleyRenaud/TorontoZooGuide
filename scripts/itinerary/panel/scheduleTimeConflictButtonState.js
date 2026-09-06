@@ -1,11 +1,11 @@
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
 
 export class ScheduleTimeConflictButtonState {
    static getConflictSelectionButtonState(
       selection,
       item,
-      strings = APP_STRINGS
+      strings = Strings
    ) {
       const selected = ScheduleConflictCompatibility.isConflictItemSelected(selection, item);
       const selectable = ScheduleConflictCompatibility.canSelectConflictItem(selection, item);

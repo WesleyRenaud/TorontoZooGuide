@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityOpenFormController } from '../../forms/entityOpenFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RestroomOpen {
    static createRestroomOpenController({
@@ -19,9 +19,9 @@ export class RestroomOpen {
             startDate: startDate || null,
             endDate: endDate || null,
          }),
-         entityLabel: APP_STRINGS.entityLabels.restroom,
-         optionsLabel: APP_STRINGS.entityLabels.restrooms,
-         successMessage: result => APP_STRINGS.status.explicitlyOpen(result.restroom),
+         entityLabel: Strings.entityLabels.restroom,
+         optionsLabel: Strings.entityLabels.restrooms,
+         successMessage: result => Strings.status.explicitlyOpen(result.restroom),
       });
    }
 }

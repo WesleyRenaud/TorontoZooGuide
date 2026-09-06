@@ -1,7 +1,7 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { Dom } from '../dom.js';
 import { Format } from '../format.js';
-import { common } from '../../../strings/common.js';
+import { Strings } from '../../../strings.js';
 import { ValidationBubble } from '../../../validationBubble.js';
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
@@ -37,7 +37,7 @@ export class ItineraryTimeInput {
       clearButton.type = 'button';
       clearButton.className = 'itinerary-day-time-clear-btn';
       clearButton.setAttribute('aria-label', clearAriaLabel);
-      clearButton.textContent = common.closeSymbol;
+      clearButton.textContent = Strings.common.closeSymbol;
       clearButton.hidden = !onChange;
 
       function syncClearButtonState() {

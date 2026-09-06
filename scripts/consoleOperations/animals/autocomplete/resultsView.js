@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class ResultsView {
    static createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
@@ -41,7 +41,7 @@ export class ResultsView {
          if (!matches.length) {
             const empty = document.createElement('div');
             empty.className = 'console-operations-autocomplete-empty';
-            empty.textContent = APP_STRINGS.common.noMatches;
+            empty.textContent = Strings.common.noMatches;
             renderResults([empty]);
             resultsEl.classList.add('active');
             return;

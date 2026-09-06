@@ -4,7 +4,7 @@ import { GiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
 import { OffDisplayBanner } from '../banners/offDisplayBanner.js';
 import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
 import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
-import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
+import { AppConfig } from '../config/appConfig.js';
 import { FocusController } from '../focus/focusController.js';
 import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { LabelVisibility } from './labelVisibility.js';
@@ -121,7 +121,7 @@ export class MapRuntime {
          return null;
       }
 
-      const panzoom = Panzoom.createPanzoom(mapInner, { contain: DEFAULT_MAP_CONTAIN });
+      const panzoom = Panzoom.createPanzoom(mapInner, { contain: AppConfig.DEFAULT_MAP_CONTAIN });
       const store = Store.createMapStore();
       const sources = Sources.createDataSources(store);
       const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { UpdateOptions } from './updateOptions.js';
 
 export class EditUpdate {
@@ -51,7 +51,7 @@ export class EditUpdate {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.updates,
+            errorMessage: Strings.loadErrors.updates,
          });
       }
 
@@ -66,12 +66,12 @@ export class EditUpdate {
          type,
          endDate,
       }) {
-         if (!title || !startDate) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.update);
-         if (!description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
-         if (!type) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.type);
+         if (!title || !startDate) return Strings.validation.entityRequired(Strings.labels.update);
+         if (!description) return Strings.validation.entityRequired(Strings.labels.description);
+         if (!type) return Strings.validation.entityRequired(Strings.labels.type);
 
          if (endDate && new Date(endDate).getTime() < new Date(startDate).getTime()) {
-            return APP_STRINGS.validation.endDateBeforeStartDate;
+            return Strings.validation.endDateBeforeStartDate;
          }
 
          return null;
@@ -99,7 +99,7 @@ export class EditUpdate {
             const result = await ConsoleOperationsApi.editUpdate(values);
 
             if (result.success) {
-               Status.setStatus(statusEl, APP_STRINGS.status.updateEdited, 'is-success');
+               Status.setStatus(statusEl, Strings.status.updateEdited, 'is-success');
                resetForm();
             }
             else {
@@ -107,7 +107,7 @@ export class EditUpdate {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

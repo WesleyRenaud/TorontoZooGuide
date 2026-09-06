@@ -1,33 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RemoveVisibilitySchedulePanel {
    static createRemoveVisibilitySchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'removeVisibilitySchedulePanel',
-         title: APP_STRINGS.panelTitles.removeVisibilitySchedule,
+         title: Strings.panelTitles.removeVisibilitySchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'removeVisibilityScheduleExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'removeVisibilityScheduleSpecies',
                resultsId: 'removeVisibilityScheduleSpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRemoveVisibilitySchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'removeVisibilityScheduleStatus',
             }),
          ],

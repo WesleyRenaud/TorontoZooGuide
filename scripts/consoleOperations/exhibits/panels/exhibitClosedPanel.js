@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class ExhibitClosedPanel {
    static createExhibitClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'exhibitClosedPanel',
-         title: APP_STRINGS.panelTitles.exhibitClosed,
+         title: Strings.panelTitles.exhibitClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'exhibitClosedExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'exhibitClosedStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'exhibitClosedEndDate',
-               endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('exhibit'),
+               endHelpText: Strings.help.keepClosedUntilManuallyReopened('exhibit'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closureMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closureMessage,
                inputId: 'exhibitClosedMessage',
-               placeholder: APP_STRINGS.textareas.closureMessage,
+               placeholder: Strings.textareas.closureMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitExhibitClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'exhibitClosedStatus',
             }),
          ],

@@ -1,11 +1,11 @@
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function createUpdateTypeEl(update) {
    const typeEl = document.createElement('span');
    typeEl.className = `explore-update-type explore-update-type-${String(update.type || '')
       .toLowerCase()
       .replaceAll(' ', '-')}`;
-   typeEl.textContent = update.type || APP_STRINGS.labels.update;
+   typeEl.textContent = update.type || Strings.labels.update;
    return typeEl;
 }
 
@@ -21,7 +21,7 @@ export class ExploreUpdateCard {
 
       const titleEl = document.createElement('h4');
       titleEl.className = 'explore-update-title';
-      titleEl.textContent = update.title || APP_STRINGS.labels.update;
+      titleEl.textContent = update.title || Strings.labels.update;
 
       const descriptionEl = document.createElement('p');
       descriptionEl.className = 'explore-update-description';

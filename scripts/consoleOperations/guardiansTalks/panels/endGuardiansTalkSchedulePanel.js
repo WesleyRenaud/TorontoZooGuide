@@ -1,44 +1,37 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateField,
-   createPanelShell,
-   createScheduleTimesCheckboxField,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class EndGuardiansTalkSchedulePanel {
    static createEndGuardiansTalkSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'endGuardiansTalkSchedulePanel',
-         title: APP_STRINGS.panelTitles.endGuardiansTalkSchedule,
+         title: Strings.panelTitles.endGuardiansTalkSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.location,
+            Fragments.createSelectField({
+               label: Strings.labels.location,
                inputId: 'endGuardiansTalkScheduleLocation',
-               emptyOptionLabel: APP_STRINGS.placeholders.location,
+               emptyOptionLabel: Strings.placeholders.location,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.talkName,
+            Fragments.createSelectField({
+               label: Strings.labels.talkName,
                inputId: 'endGuardiansTalkScheduleTalkName',
-               emptyOptionLabel: APP_STRINGS.placeholders.talk,
+               emptyOptionLabel: Strings.placeholders.talk,
             }),
-            createScheduleTimesCheckboxField({
-               label: APP_STRINGS.labels.talkTimes,
+            Fragments.createScheduleTimesCheckboxField({
+               label: Strings.labels.talkTimes,
                inputId: 'endGuardiansTalkScheduleTimes',
-               helpText: APP_STRINGS.help.endScheduleTimes,
+               helpText: Strings.help.endScheduleTimes,
             }),
-            createDateField({
-               label: APP_STRINGS.labels.endDate,
+            Fragments.createDateField({
+               label: Strings.labels.endDate,
                inputId: 'endGuardiansTalkScheduleEndDate',
-               placeholder: APP_STRINGS.placeholders.scheduleEndDate,
-               helpText: APP_STRINGS.help.endScheduleToday,
+               placeholder: Strings.placeholders.scheduleEndDate,
+               helpText: Strings.help.endScheduleToday,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitEndGuardiansTalkSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'endGuardiansTalkScheduleStatus',
             }),
          ],

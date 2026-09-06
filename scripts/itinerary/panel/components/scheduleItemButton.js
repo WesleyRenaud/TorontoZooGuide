@@ -1,7 +1,7 @@
 import { Dom } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { scheduleItem } = APP_STRINGS.itinerary;
+const { scheduleItem } = Strings.itinerary;
 
 export class ScheduleItemButton {
    static setScheduleItemButtonBusy(

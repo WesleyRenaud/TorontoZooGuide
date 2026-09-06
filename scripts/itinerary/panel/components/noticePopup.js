@@ -1,12 +1,12 @@
 import { Popup } from './popup.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class NoticePopup {
    static showItineraryNoticePopup({
-      title = APP_STRINGS.common.headsUp,
+      title = Strings.common.headsUp,
       message = '',
       bodyContent = null,
-      buttonText = APP_STRINGS.itinerary.noItemsSelected.button,
+      buttonText = Strings.itinerary.noItemsSelected.button,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
       onConfirm = null,
       showCloseButton = false,

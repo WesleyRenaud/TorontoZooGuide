@@ -1,27 +1,22 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class DrinkingFountainsOpenPanel {
    static createDrinkingFountainsOpenPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'drinkingFountainsOpenPanel',
-         title: APP_STRINGS.panelTitles.drinkingFountainsOpen,
+         title: Strings.panelTitles.drinkingFountainsOpen,
          bodyChildren: [
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'drinkingFountainsOpenStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'drinkingFountainsOpenEndDate',
-               endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
+               endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitDrinkingFountainsOpen',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'drinkingFountainsOpenStatus',
             }),
          ],

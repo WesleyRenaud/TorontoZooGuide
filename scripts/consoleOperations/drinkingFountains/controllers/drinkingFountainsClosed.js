@@ -3,7 +3,7 @@ import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class DrinkingFountainsClosed {
    static createDrinkingFountainsClosedController({
@@ -46,7 +46,7 @@ export class DrinkingFountainsClosed {
             });
 
             if (result.success) {
-               Status.setStatus(statusEl, APP_STRINGS.status.drinkingFountainsClosed, 'is-success');
+               Status.setStatus(statusEl, Strings.status.drinkingFountainsClosed, 'is-success');
                resetForm();
             }
             else {
@@ -54,7 +54,7 @@ export class DrinkingFountainsClosed {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

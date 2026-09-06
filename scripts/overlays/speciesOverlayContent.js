@@ -1,7 +1,7 @@
 import { AnimalDisplayLines } from '../animals/animalDisplayLines.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function readText(value) {
    return typeof value === 'string'
@@ -70,7 +70,7 @@ export class SpeciesOverlayContent {
          fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibitLine));
       }
 
-      APP_STRINGS.animalsPage.detailSections.forEach(([title, key]) => {
+      Strings.animalsPage.detailSections.forEach(([title, key]) => {
          appendIfPresent(
             fragment,
             createDetailSection(title, animal?.[key])

@@ -1,11 +1,11 @@
-import { APP_STRINGS } from '../strings.js';
-import { formatString } from '../strings/formatString.js';
+import { Strings } from '../strings.js';
+import { FormatString } from '../strings/formatString.js';
 
 export class ApiErrorMessageResolver {
    static resolveApiErrorMessage(
       apiErrorType,
       apiErrorParams = {},
-      strings = APP_STRINGS.apiErrors
+      strings = Strings.apiErrors
    ) {
       if (!apiErrorType || typeof apiErrorType !== 'string') {
          return null;
@@ -17,12 +17,12 @@ export class ApiErrorMessageResolver {
          return null;
       }
 
-      return formatString(template, apiErrorParams);
+      return FormatString.formatString(template, apiErrorParams);
    }
 
    static resolveConsoleMutationError(
       result,
-      fallbackMessage = APP_STRINGS.common.genericFailed
+      fallbackMessage = Strings.common.genericFailed
    ) {
       if (!result?.apiErrorType) {
          return fallbackMessage;

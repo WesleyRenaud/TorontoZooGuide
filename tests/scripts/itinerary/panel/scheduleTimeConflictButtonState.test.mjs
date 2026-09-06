@@ -4,7 +4,7 @@ import test from 'node:test';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { ScheduleTimeConflictButtonState } from '../../../../scripts/itinerary/panel/scheduleTimeConflictButtonState.js';
 import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 
 const greatBarrierReef = {
@@ -39,8 +39,8 @@ test('Test_GetConflictSelectionButtonState_TestUnselectedSelectable_ExpectAddAct
          selectable: true,
          requiresTrimOverride: false,
          disabled: false,
-         textContent: APP_STRINGS.itinerary.actions.addSymbol,
-         ariaLabel: APP_STRINGS.itinerary.aria.addToItinerary,
+         textContent: Strings.itinerary.actions.addSymbol,
+         ariaLabel: Strings.itinerary.aria.addToItinerary,
       }
    );
 });
@@ -57,8 +57,8 @@ test('Test_GetConflictSelectionButtonState_TestSelected_ExpectRemoveAction', () 
          selectable: true,
          requiresTrimOverride: false,
          disabled: false,
-         textContent: APP_STRINGS.itinerary.actions.remove,
-         ariaLabel: APP_STRINGS.itinerary.aria.removeFromItinerary,
+         textContent: Strings.itinerary.actions.remove,
+         ariaLabel: Strings.itinerary.aria.removeFromItinerary,
       }
    );
 });
@@ -78,7 +78,7 @@ test('Test_GetConflictSelectionButtonState_TestBlockedAndTrim_ExpectDisabledAndO
    );
    assert.equal(
       ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, africanLionTalk).ariaLabel,
-      APP_STRINGS.itinerary.aria.addToItineraryWithScheduleOverride
+      Strings.itinerary.aria.addToItineraryWithScheduleOverride
    );
 });
 
@@ -90,10 +90,10 @@ test('Test_ApplyConflictSelectionButtonState_TestToggle_ExpectAttributesAndClass
    ScheduleTimeConflictButtonState.applyConflictSelectionButtonState(button, state);
 
    assert.equal(button.disabled, false);
-   assert.equal(button.textContent, APP_STRINGS.itinerary.actions.addSymbol);
+   assert.equal(button.textContent, Strings.itinerary.actions.addSymbol);
    assert.equal(
       button.getAttribute('aria-label'),
-      APP_STRINGS.itinerary.aria.addToItinerary
+      Strings.itinerary.aria.addToItinerary
    );
    assert.equal(button.classList.contains('is-added'), false);
    assert.equal(button.classList.contains('requires-trim-override'), false);
@@ -104,7 +104,7 @@ test('Test_ApplyConflictSelectionButtonState_TestToggle_ExpectAttributesAndClass
       ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, greatBarrierReef)
    );
 
-   assert.equal(button.textContent, APP_STRINGS.itinerary.actions.remove);
+   assert.equal(button.textContent, Strings.itinerary.actions.remove);
    assert.equal(button.classList.contains('is-added'), true);
    assert.equal(
       ScheduleConflictCompatibility.isConflictItemSelected(selection, greatBarrierReef),

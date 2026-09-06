@@ -1,36 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSchedulePresetField,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createWeeklyScheduleCheckboxes,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class AttractionOpeningSchedulePanel {
    static createAttractionOpeningSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'attractionOpeningSchedulePanel',
-         title: APP_STRINGS.panelTitles.attractionOpeningSchedule,
+         title: Strings.panelTitles.attractionOpeningSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.attraction,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.attraction,
                inputId: 'attractionOpeningScheduleAttraction',
-               emptyOptionLabel: APP_STRINGS.placeholders.attraction,
+               emptyOptionLabel: Strings.placeholders.attraction,
             }),
-            createSchedulePresetField({
+            Fragments.createSchedulePresetField({
                inputId: 'attractionOpeningSchedulePreset',
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'attractionOpeningScheduleStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'attractionOpeningScheduleEndDate',
-               endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
+               endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            createWeeklyScheduleCheckboxes({
+            Fragments.createWeeklyScheduleCheckboxes({
                dayIds: {
                   monday: 'attractionOpeningScheduleMonday',
                   tuesday: 'attractionOpeningScheduleTuesday',
@@ -42,15 +33,15 @@ export class AttractionOpeningSchedulePanel {
                   holidays: 'attractionOpeningScheduleHolidaysOnly',
                },
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.scheduleMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.scheduleMessage,
                inputId: 'attractionOpeningScheduleMessage',
-               placeholder: APP_STRINGS.textareas.scheduledClosedMessage('attraction'),
+               placeholder: Strings.textareas.scheduledClosedMessage('attraction'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitAttractionOpeningSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'attractionOpeningScheduleStatus',
             }),
          ],

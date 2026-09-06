@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createButton({
    className,
@@ -26,19 +26,19 @@ export class Shell {
       card.className = 'itin-card itin-card-tall';
       card.setAttribute('role', 'dialog');
       card.setAttribute('aria-modal', 'true');
-      card.setAttribute('aria-label', APP_STRINGS.itinerary.aria.selectRegionsAndExhibits);
+      card.setAttribute('aria-label', Strings.itinerary.aria.selectRegionsAndExhibits);
 
       const topbar = document.createElement('div');
       topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
 
       const topTitleEl = document.createElement('div');
       topTitleEl.className = 'itin-top-title';
-      topTitleEl.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
+      topTitleEl.textContent = Strings.itinerary.selectors.builderTitle;
 
       const closeButton = createButton({
          className: 'itin-close',
-         text: APP_STRINGS.common.closeSymbol,
-         ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
+         text: Strings.common.closeSymbol,
+         ariaLabel: Strings.itinerary.aria.closeBuilder,
       });
 
       topbar.append(topTitleEl, closeButton);
@@ -48,7 +48,7 @@ export class Shell {
 
       const heading = document.createElement('h1');
       heading.className = 'itin-h1';
-      heading.textContent = APP_STRINGS.itinerary.selectors.titleRegions;
+      heading.textContent = Strings.itinerary.selectors.titleRegions;
 
       const resultsEl = document.createElement('div');
       resultsEl.className = 'itin-region-results itin-results';
@@ -60,7 +60,7 @@ export class Shell {
 
       const prevButton = createButton({
          className: 'itin-prev',
-         text: APP_STRINGS.animalsPage.back,
+         text: Strings.animalsPage.back,
       });
 
       const actionsRight = document.createElement('div');
@@ -68,12 +68,12 @@ export class Shell {
 
       const nextButton = createButton({
          className: 'itin-next',
-         text: APP_STRINGS.itinerary.actions.next,
+         text: Strings.itinerary.actions.next,
       });
 
       const finishButton = createButton({
          className: 'itin-next itin-finish',
-         text: APP_STRINGS.itinerary.actions.finish,
+         text: Strings.itinerary.actions.finish,
       });
 
       actionsRight.append(nextButton, finishButton);

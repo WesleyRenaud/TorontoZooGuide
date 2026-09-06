@@ -1,6 +1,6 @@
 import { MapApi } from '../api/mapApi.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function createRouteOption({
    groupName,
@@ -35,7 +35,7 @@ function createTransportationRouteSection(transportation) {
 
    const title = document.createElement('div');
    title.className = 'transportation-route-title';
-   title.textContent = APP_STRINGS.map.transportationRoute.title(transportation.name);
+   title.textContent = Strings.map.transportationRoute.title(transportation.name);
 
    const options = document.createElement('div');
    options.className = 'transportation-route-options';
@@ -46,18 +46,18 @@ function createTransportationRouteSection(transportation) {
       createRouteOption({
          groupName,
          value: 'none',
-         label: APP_STRINGS.map.transportationRoute.none,
+         label: Strings.map.transportationRoute.none,
          checked: true,
       }),
       createRouteOption({
          groupName,
          value: 'current',
-         label: APP_STRINGS.map.transportationRoute.current,
+         label: Strings.map.transportationRoute.current,
       }),
       ...transportation.routes.map((route) => createRouteOption({
          groupName,
          value: route,
-         label: APP_STRINGS.map.transportationRoute.route(route),
+         label: Strings.map.transportationRoute.route(route),
       })),
    );
 

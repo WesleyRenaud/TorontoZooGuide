@@ -1,42 +1,36 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createPanelShell,
-   createScheduleTimesCheckboxField,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class CancelGuardiansTalkOccurrencePanel {
    static createCancelGuardiansTalkOccurrencePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'cancelGuardiansTalkOccurrencePanel',
-         title: APP_STRINGS.panelTitles.cancelGuardiansTalkOccurrence,
+         title: Strings.panelTitles.cancelGuardiansTalkOccurrence,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.location,
+            Fragments.createSelectField({
+               label: Strings.labels.location,
                inputId: 'cancelGuardiansTalkOccurrenceLocation',
-               emptyOptionLabel: APP_STRINGS.placeholders.location,
+               emptyOptionLabel: Strings.placeholders.location,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.talkName,
+            Fragments.createSelectField({
+               label: Strings.labels.talkName,
                inputId: 'cancelGuardiansTalkOccurrenceTalkName',
-               emptyOptionLabel: APP_STRINGS.placeholders.talk,
+               emptyOptionLabel: Strings.placeholders.talk,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.date,
+            Fragments.createSelectField({
+               label: Strings.labels.date,
                inputId: 'cancelGuardiansTalkOccurrenceDate',
-               emptyOptionLabel: APP_STRINGS.placeholders.date,
+               emptyOptionLabel: Strings.placeholders.date,
             }),
-            createScheduleTimesCheckboxField({
-               label: APP_STRINGS.labels.talkTimes,
+            Fragments.createScheduleTimesCheckboxField({
+               label: Strings.labels.talkTimes,
                inputId: 'cancelGuardiansTalkOccurrenceTimes',
-               helpText: APP_STRINGS.help.cancelOccurrenceTimes,
+               helpText: Strings.help.cancelOccurrenceTimes,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitCancelGuardiansTalkOccurrence',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'cancelGuardiansTalkOccurrenceStatus',
             }),
          ],

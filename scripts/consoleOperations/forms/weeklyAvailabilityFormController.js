@@ -2,7 +2,7 @@ import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { Status } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class WeeklyAvailabilityFormController {
    static createWeeklyAvailabilityFormController({
@@ -28,8 +28,8 @@ export class WeeklyAvailabilityFormController {
       loadOptions,
       populateOptions,
       submitSchedule,
-      entityLabel = APP_STRINGS.entityLabels.item,
-      optionsLabel = APP_STRINGS.entityLabels.items,
+      entityLabel = Strings.entityLabels.item,
+      optionsLabel = Strings.entityLabels.items,
       payloadKey = 'item',
       resultName = result => result?.[payloadKey] ?? '',
       resolveOverlapConflict = null,
@@ -168,7 +168,7 @@ export class WeeklyAvailabilityFormController {
             resetForm,
             activatePanel,
             panelEl,
-            errorMessage: APP_STRINGS.loadErrors.entityOptions(optionsLabel),
+            errorMessage: Strings.loadErrors.entityOptions(optionsLabel),
          });
       }
 
@@ -195,7 +195,7 @@ export class WeeklyAvailabilityFormController {
 
          Status.setStatus(
             statusEl,
-            APP_STRINGS.status.openingScheduleSaved(name),
+            Strings.status.openingScheduleSaved(name),
             'is-success'
          );
 
@@ -212,12 +212,12 @@ export class WeeklyAvailabilityFormController {
          Status.setStatus(statusEl, '');
 
          if (!entity) {
-            Status.setStatus(statusEl, APP_STRINGS.validation.entityRequired(entityLabel), 'is-error');
+            Status.setStatus(statusEl, Strings.validation.entityRequired(entityLabel), 'is-error');
             return;
          }
 
          if (!hasAtLeastOneOpenDay()) {
-            Status.setStatus(statusEl, APP_STRINGS.validation.weeklyAvailability, 'is-error');
+            Status.setStatus(statusEl, Strings.validation.weeklyAvailability, 'is-error');
             return;
          }
 
@@ -252,7 +252,7 @@ export class WeeklyAvailabilityFormController {
 
                Status.setStatus(
                   statusEl,
-                  resolvedResult.error || APP_STRINGS.common.genericFailed,
+                  resolvedResult.error || Strings.common.genericFailed,
                   'is-error'
                );
                return;
@@ -261,7 +261,7 @@ export class WeeklyAvailabilityFormController {
             Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

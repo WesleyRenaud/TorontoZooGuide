@@ -1,8 +1,8 @@
 import { Dom } from '../dom.js';
 import { Popup } from './popup.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { actions } = APP_STRINGS.itinerary;
+const { actions } = Strings.itinerary;
 
 function createConfirmPopupBody(message, doNotShowAgainLabel) {
    const body = Dom.el('div', 'tzg-popup-confirm-body');
@@ -30,7 +30,7 @@ function createConfirmPopupBody(message, doNotShowAgainLabel) {
 
 export class ConfirmPopup {
    static showItineraryConfirmPopup({
-      title = APP_STRINGS.common.headsUp,
+      title = Strings.common.headsUp,
       message = '',
       bodyContent = null,
       confirmText = actions.confirm,

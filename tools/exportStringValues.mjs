@@ -1,4 +1,4 @@
-import { APP_STRINGS } from '../scripts/strings.js';
+import { Strings } from '../scripts/strings.js';
 
 function serializeStrings(value) {
    if (typeof value === 'function') {
@@ -22,4 +22,13 @@ function serializeStrings(value) {
    return value;
 }
 
-process.stdout.write(JSON.stringify(serializeStrings(APP_STRINGS)));
+process.stdout.write(JSON.stringify(serializeStrings(
+   Object.fromEntries(
+      Object.getOwnPropertyNames(Strings)
+         .filter((key) => {
+            const value = Strings[key];
+            return value && typeof value === 'object';
+         })
+         .map((key) => [key, Strings[key]])
+   )
+)));

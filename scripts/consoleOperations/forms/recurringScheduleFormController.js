@@ -1,7 +1,7 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { Status } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class RecurringScheduleFormController {
    static createRecurringScheduleFormController({
@@ -22,12 +22,12 @@ export class RecurringScheduleFormController {
       getSelectionValues,
       validateSelection = null,
       prepareForm = null,
-      loadErrorMessage = APP_STRINGS.loadErrors.options,
+      loadErrorMessage = Strings.loadErrors.options,
       submitSchedule,
-      successMessage = () => APP_STRINGS.status.scheduleWasSaved,
+      successMessage = () => Strings.status.scheduleWasSaved,
       shouldReportSubmitFailure = null,
-      timeRequiredMessage = APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time),
-      noDaysSelectedMessage = APP_STRINGS.validation.oneDay,
+      timeRequiredMessage = Strings.validation.entityRequired(Strings.labels.time),
+      noDaysSelectedMessage = Strings.validation.oneDay,
       validateRecurringSchedule = null,
    } = {}) {
       const recurringFieldEls = [
@@ -158,7 +158,7 @@ export class RecurringScheduleFormController {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

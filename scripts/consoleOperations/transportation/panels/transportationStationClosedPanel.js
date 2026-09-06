@@ -1,39 +1,32 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class TransportationStationClosedPanel {
    static createTransportationStationClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'transportationStationClosedPanel',
-         title: APP_STRINGS.panelTitles.transportationStationClosed,
+         title: Strings.panelTitles.transportationStationClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.transportationStation,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.transportationStation,
                inputId: 'transportationStationClosedTransportationStation',
-               emptyOptionLabel: APP_STRINGS.placeholders.transportationStation,
+               emptyOptionLabel: Strings.placeholders.transportationStation,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'transportationStationClosedStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'transportationStationClosedEndDate',
-               endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('transportation station'),
+               endHelpText: Strings.help.keepClosedUntilManuallyReopened('transportation station'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closureMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closureMessage,
                inputId: 'transportationStationClosedMessage',
-               placeholder: APP_STRINGS.textareas.closureMessage,
+               placeholder: Strings.textareas.closureMessage,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitTransportationStationClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'transportationStationClosedStatus',
             }),
          ],

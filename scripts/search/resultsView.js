@@ -5,7 +5,7 @@ import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
 import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { SearchResultPresentation } from './searchResultPresentation.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function openWildEncounterLink(row) {
    const link = StoredSelection.normalizeStoredLink(row.link);
@@ -118,7 +118,7 @@ function createFocusButton(row, onFocusRow) {
    const button = document.createElement('button');
    button.type = 'button';
    button.className = 'animal-result-map-btn';
-   button.textContent = APP_STRINGS.common.viewOnMap;
+   button.textContent = Strings.common.viewOnMap;
 
    button.addEventListener('click', (event) => {
       event.stopPropagation();

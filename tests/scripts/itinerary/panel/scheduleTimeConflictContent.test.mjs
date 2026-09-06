@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { ScheduleTimeConflictContent } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContent.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
@@ -70,7 +70,7 @@ test.describe('scheduleTimeConflictContent', () => {
       assert.ok(section);
       assert.equal(
          section?.querySelector('.itin-save-issue-section-title')?.textContent,
-         APP_STRINGS.itinerary.confirmation.scheduleConflictsTitle
+         Strings.itinerary.confirmation.scheduleConflictsTitle
       );
       assert.equal(rows.length, 2);
       assert.equal(buttons.length, 2);
@@ -103,14 +103,14 @@ test.describe('scheduleTimeConflictContent', () => {
 
       assert.equal(
          firstButton?.textContent,
-         APP_STRINGS.itinerary.actions.addSymbol
+         Strings.itinerary.actions.addSymbol
       );
 
       firstButton?.click();
 
       assert.equal(
          firstButton?.textContent,
-         APP_STRINGS.itinerary.actions.remove
+         Strings.itinerary.actions.remove
       );
       assert.equal(firstButton?.classList.contains('is-added'), true);
       assert.equal(secondButton?.disabled, true);

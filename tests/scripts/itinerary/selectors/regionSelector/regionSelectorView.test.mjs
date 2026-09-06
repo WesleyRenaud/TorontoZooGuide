@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { View } from '../../../../../scripts/itinerary/selectors/regionSelector/view.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { dispatchResultsClick } from '../../../helpers/regionSelectorDom.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
@@ -23,7 +23,7 @@ test.describe('region selector view', () => {
       assert.equal(resultsEl.children[0].className, 'itin-empty');
       assert.equal(
          resultsEl.children[0].textContent,
-         APP_STRINGS.itinerary.emptyText.regions
+         Strings.itinerary.emptyText.regions
       );
    });
 

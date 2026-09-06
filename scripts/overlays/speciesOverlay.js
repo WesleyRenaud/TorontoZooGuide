@@ -2,7 +2,7 @@ import { AnimalsApi } from '../api/animalsApi.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 import { SpeciesOverlayContent } from './speciesOverlayContent.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function resolveOverlayElements() {
    const overlay = document.getElementById('speciesOverlay');
@@ -49,7 +49,7 @@ function createOverlayHeader({ linkedAnimals, index, onNavigate }) {
 
    const position = document.createElement('span');
    position.className = 'species-overlay-nav-position';
-   position.textContent = APP_STRINGS.common.animalPosition(
+   position.textContent = Strings.common.animalPosition(
       index + 1,
       linkedAnimals.length
    );
@@ -57,15 +57,15 @@ function createOverlayHeader({ linkedAnimals, index, onNavigate }) {
    nav.append(
       createNavButton({
          className: 'species-overlay-nav-btn species-overlay-nav-prev',
-         label: APP_STRINGS.common.previousAnimal,
-         symbol: APP_STRINGS.common.previousSymbol,
+         label: Strings.common.previousAnimal,
+         symbol: Strings.common.previousSymbol,
          onClick: () => onNavigate(-1),
       }),
       position,
       createNavButton({
          className: 'species-overlay-nav-btn species-overlay-nav-next',
-         label: APP_STRINGS.common.nextAnimal,
-         symbol: APP_STRINGS.common.nextSymbol,
+         label: Strings.common.nextAnimal,
+         symbol: Strings.common.nextSymbol,
          onClick: () => onNavigate(1),
       })
    );
@@ -117,8 +117,8 @@ export class SpeciesOverlay {
 
          boundCloseButton = closeButton;
          closeButton.type = 'button';
-         closeButton.setAttribute('aria-label', APP_STRINGS.common.close);
-         closeButton.textContent = APP_STRINGS.common.closeSymbol;
+         closeButton.setAttribute('aria-label', Strings.common.close);
+         closeButton.textContent = Strings.common.closeSymbol;
          closeButton.addEventListener('click', (event) => {
             event.stopPropagation();
             close();

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityOpenFormController } from '../../forms/entityOpenFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class TransportationStationOpen {
    static createTransportationStationOpenController({
@@ -17,9 +17,9 @@ export class TransportationStationOpen {
          submitOpenStatus: ({ entity }) => ConsoleOperationsApi.setTransportationStationOpen({
             transportationStation: entity,
          }),
-         entityLabel: APP_STRINGS.entityLabels.transportationStation,
-         optionsLabel: APP_STRINGS.entityLabels.transportationStations,
-         successMessage: result => APP_STRINGS.status.open(result.transportation_station),
+         entityLabel: Strings.entityLabels.transportationStation,
+         optionsLabel: Strings.entityLabels.transportationStations,
+         successMessage: result => Strings.status.open(result.transportation_station),
       });
    }
 }

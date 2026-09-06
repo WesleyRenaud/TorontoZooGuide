@@ -1,5 +1,5 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function createPlaceholderOption(label) {
    const optionEl = document.createElement('option');
@@ -32,7 +32,7 @@ export class UpdateOptions {
       }
 
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(createPlaceholderOption(APP_STRINGS.placeholders.update));
+      fragment.appendChild(createPlaceholderOption(Strings.placeholders.update));
 
       updates.forEach((update) => {
          const optionEl = document.createElement('option');

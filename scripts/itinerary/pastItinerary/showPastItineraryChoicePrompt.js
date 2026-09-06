@@ -1,5 +1,5 @@
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class ShowPastItineraryChoicePrompt {
    static showPastItineraryChoicePrompt({
@@ -16,10 +16,10 @@ export class ShowPastItineraryChoicePrompt {
 
       showConfirmPopup({
          mountEl,
-         title: APP_STRINGS.itinerary.stale.title,
-         message: APP_STRINGS.itinerary.stale.message,
-         cancelText: APP_STRINGS.itinerary.actions.clear,
-         confirmText: APP_STRINGS.itinerary.stale.recover,
+         title: Strings.itinerary.stale.title,
+         message: Strings.itinerary.stale.message,
+         cancelText: Strings.itinerary.actions.clear,
+         confirmText: Strings.itinerary.stale.recover,
          onCancel: () => {
             onClear?.();
          },

@@ -1,5 +1,5 @@
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function readText(value = '') {
    return typeof value === 'string'
@@ -11,7 +11,7 @@ function buildBackButton(onBack) {
    const button = document.createElement('button');
    button.className = 'animal-info-back-button';
    button.type = 'button';
-   button.textContent = APP_STRINGS.animalsPage.backWithArrow;
+   button.textContent = Strings.animalsPage.backWithArrow;
    button.addEventListener('click', () => onBack?.());
    return button;
 }
@@ -75,7 +75,7 @@ function buildViewOnMapButton(animal, exhibitName) {
    const button = document.createElement('button');
    button.className = 'view-on-map-button';
    button.type = 'button';
-   button.textContent = APP_STRINGS.common.viewOnMap;
+   button.textContent = Strings.common.viewOnMap;
 
    button.addEventListener('click', () => {
       const url = new URL('map.html', window.location.href);
@@ -111,7 +111,7 @@ function buildAnimalDetailContent(animal, { exhibitName } = {}) {
       fragment.appendChild(buildViewOnMapButton(animal, exhibitName));
    }
 
-   APP_STRINGS.animalsPage.detailSections.forEach(([title, field]) => {
+   Strings.animalsPage.detailSections.forEach(([title, field]) => {
       const section = buildDetailSection(title, animal?.[field]);
 
       if (section) {

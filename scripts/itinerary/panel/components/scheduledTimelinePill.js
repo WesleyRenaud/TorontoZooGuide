@@ -4,9 +4,9 @@ import { OpenTimelinePill } from './openTimelinePill.js';
 import { ScheduledPillPresentation } from '../scheduledPillPresentation.js';
 import { Constants } from '../../../shared/constants.js';
 import { RegionColors } from '../../../shared/regionColors.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
-const { dayPlanner } = APP_STRINGS.itinerary;
+const { dayPlanner } = Strings.itinerary;
 
 function applyScheduledPillRegionColors(pill, item = null) {
    RegionColors.applyRegionColorsToElement(

@@ -1,7 +1,7 @@
 import { Dom } from '../dom.js';
 import { RemovedItemsPopupKeepButtonState } from './removedItemsPopupKeepButtonState.js';
 import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopupOnly) {
    if (!rowNode) {
@@ -11,7 +11,7 @@ function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopup
    const btn = Dom.el(
       'button',
       'itin-removed-alt-btn',
-      APP_STRINGS.itinerary.removedItems.viewAlternatives
+      Strings.itinerary.removedItems.viewAlternatives
    );
 
    btn.type = 'button';

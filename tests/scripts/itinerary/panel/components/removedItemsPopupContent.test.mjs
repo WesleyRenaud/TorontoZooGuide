@@ -5,7 +5,7 @@ import { RemovedItemsPopupContent } from '../../../../../scripts/itinerary/panel
 import { RemovedItemsPopupSectionSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupSectionSpecs.js';
 import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhibitKey.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test('Test_RemovedItemsPopupSectionSpecs_TestRemovedItemsPopupSectionSpecsHasRemovedItemsPopupContentReportsRemovedAnimals_ExpectOk', () => {
@@ -49,11 +49,11 @@ test.describe('removedItemsPopupContent', () => {
       assert.equal(sections.length, 2);
       assert.equal(
          sections[0]?.querySelector('.itin-removed-section-title')?.textContent,
-         APP_STRINGS.itinerary.removedItems.itineraryTimesTitle
+         Strings.itinerary.removedItems.itineraryTimesTitle
       );
       assert.equal(
          sections[1]?.querySelector('.itin-removed-section-title')?.textContent,
-         APP_STRINGS.itinerary.dayPlanner.unscheduledTitle
+         Strings.itinerary.dayPlanner.unscheduledTitle
       );
       assert.ok(sections[0]?.querySelector('.itin-panel-item'));
       assert.ok(sections[1]?.querySelector('.itin-panel-item'));
@@ -79,14 +79,14 @@ test.describe('removedItemsPopupContent', () => {
       assert.ok(keepButton);
       assert.equal(
          keepButton?.textContent,
-         APP_STRINGS.itinerary.removedItems.keepInItinerary
+         Strings.itinerary.removedItems.keepInItinerary
       );
 
       keepButton?.click();
 
       assert.equal(
          keepButton?.textContent,
-         APP_STRINGS.itinerary.dayPlanner.remove
+         Strings.itinerary.dayPlanner.remove
       );
       assert.equal(keepButton?.classList.contains('is-selected'), true);
    });
@@ -112,7 +112,7 @@ test.describe('removedItemsPopupContent', () => {
       assert.ok(alternativesButton);
       assert.equal(
          alternativesButton?.textContent,
-         APP_STRINGS.itinerary.removedItems.viewAlternatives
+         Strings.itinerary.removedItems.viewAlternatives
       );
 
       alternativesButton?.click();

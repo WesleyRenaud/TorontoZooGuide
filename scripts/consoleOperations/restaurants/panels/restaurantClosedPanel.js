@@ -1,38 +1,31 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestaurantClosedPanel {
    static createRestaurantClosedPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restaurantClosedPanel',
-         title: APP_STRINGS.panelTitles.restaurantClosed,
+         title: Strings.panelTitles.restaurantClosed,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restaurant,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restaurant,
                inputId: 'restaurantClosedRestaurant',
-               emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
+               emptyOptionLabel: Strings.placeholders.restaurant,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restaurantClosedStartDate',
                endDateId: 'restaurantClosedEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilReopened('restaurant'),
+               endHelpText: Strings.help.continueUntilReopened('restaurant'),
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.closedMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.closedMessage,
                inputId: 'restaurantClosedMessage',
-               placeholder: APP_STRINGS.textareas.closedMessage('restaurant'),
+               placeholder: Strings.textareas.closedMessage('restaurant'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestaurantClosed',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restaurantClosedStatus',
             }),
          ],

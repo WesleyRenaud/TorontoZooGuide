@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { RemovedItemsPopupKeepButtonState } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupKeepButtonState.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
 test('Test_GetKeepOverrideButtonState_TestUnselected_ExpectKeepLabels', () => {
    assert.deepEqual(RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(false), {
       selected: false,
-      textContent: APP_STRINGS.itinerary.removedItems.keepInItinerary,
+      textContent: Strings.itinerary.removedItems.keepInItinerary,
       title: '',
       ariaPressed: 'false',
    });
@@ -17,8 +17,8 @@ test('Test_GetKeepOverrideButtonState_TestUnselected_ExpectKeepLabels', () => {
 test('Test_GetKeepOverrideButtonState_TestSelected_ExpectRemoveLabels', () => {
    assert.deepEqual(RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(true), {
       selected: true,
-      textContent: APP_STRINGS.itinerary.dayPlanner.remove,
-      title: APP_STRINGS.itinerary.removedItems.removeFromItineraryHint,
+      textContent: Strings.itinerary.dayPlanner.remove,
+      title: Strings.itinerary.removedItems.removeFromItineraryHint,
       ariaPressed: 'true',
    });
 });
@@ -30,18 +30,18 @@ test('Test_ApplyKeepOverrideButtonState_TestToggle_ExpectSyncedPresentation', ()
 
    assert.equal(
       button.textContent,
-      APP_STRINGS.itinerary.removedItems.keepInItinerary
+      Strings.itinerary.removedItems.keepInItinerary
    );
    assert.equal(button.getAttribute('aria-pressed'), 'false');
    assert.equal(button.classList.contains('is-selected'), false);
 
    RemovedItemsPopupKeepButtonState.applyKeepOverrideButtonState(button, RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(true));
 
-   assert.equal(button.textContent, APP_STRINGS.itinerary.dayPlanner.remove);
+   assert.equal(button.textContent, Strings.itinerary.dayPlanner.remove);
    assert.equal(button.getAttribute('aria-pressed'), 'true');
    assert.equal(button.classList.contains('is-selected'), true);
    assert.equal(
       button.title,
-      APP_STRINGS.itinerary.removedItems.removeFromItineraryHint
+      Strings.itinerary.removedItems.removeFromItineraryHint
    );
 });

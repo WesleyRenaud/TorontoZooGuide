@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { MarkerHoverText } from '../../../scripts/markers/markerHoverText.js';
-import { APP_STRINGS } from '../../../scripts/strings.js';
+import { Strings } from '../../../scripts/strings.js';
 
 test('Test_BuildHoverText_TestMissingOrHiddenTypes_ExpectEmpty', () => {
    assert.equal(MarkerHoverText.buildHoverText(null), '');
@@ -42,7 +42,7 @@ test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => 
       {
          type: 'drinkingFountain',
          items: [{ type: 'drinkingFountain' }, { type: 'drinkingFountain' }],
-         expected: `${APP_STRINGS.map.hover.drinkingFountain} + 1`,
+         expected: `${Strings.map.hover.drinkingFountain} + 1`,
       },
       {
          type: 'guestService',
@@ -84,7 +84,7 @@ test('Test_BuildHoverText_TestGuardiansTalkCounted_ExpectPlusCount', () => {
    );
    assert.equal(
       MarkerHoverText.buildHoverText([{ type: 'guardiansTalk' }]),
-      APP_STRINGS.entityLabels.guardiansTalk
+      Strings.entityLabels.guardiansTalk
    );
 });
 
@@ -100,7 +100,7 @@ test('Test_BuildHoverText_TestWildEncounterVariants_ExpectMeetingSpotText', () =
    );
    assert.equal(
       MarkerHoverText.buildHoverText([{ type: 'wildEncounter' }]),
-      APP_STRINGS.map.hover.wildEncounterMeetingSpot
+      Strings.map.hover.wildEncounterMeetingSpot
    );
    assert.equal(
       MarkerHoverText.buildHoverText([

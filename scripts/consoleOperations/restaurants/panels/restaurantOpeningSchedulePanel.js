@@ -1,36 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSchedulePresetField,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createWeeklyScheduleCheckboxes,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RestaurantOpeningSchedulePanel {
    static createRestaurantOpeningSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'restaurantOpeningSchedulePanel',
-         title: APP_STRINGS.panelTitles.restaurantOpeningSchedule,
+         title: Strings.panelTitles.restaurantOpeningSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restaurant,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restaurant,
                inputId: 'restaurantOpeningScheduleRestaurant',
-               emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
+               emptyOptionLabel: Strings.placeholders.restaurant,
             }),
-            createSchedulePresetField({
+            Fragments.createSchedulePresetField({
                inputId: 'restaurantOpeningSchedulePreset',
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'restaurantOpeningScheduleStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'restaurantOpeningScheduleEndDate',
-               endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
+               endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            createWeeklyScheduleCheckboxes({
+            Fragments.createWeeklyScheduleCheckboxes({
                dayIds: {
                   monday: 'restaurantOpeningScheduleMonday',
                   tuesday: 'restaurantOpeningScheduleTuesday',
@@ -42,15 +33,15 @@ export class RestaurantOpeningSchedulePanel {
                   holidays: 'restaurantOpeningScheduleHolidaysOnly',
                },
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.scheduleMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.scheduleMessage,
                inputId: 'restaurantOpeningScheduleMessage',
-               placeholder: APP_STRINGS.textareas.scheduledClosedMessage('restaurant'),
+               placeholder: Strings.textareas.scheduledClosedMessage('restaurant'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRestaurantOpeningSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'restaurantOpeningScheduleStatus',
             }),
          ],

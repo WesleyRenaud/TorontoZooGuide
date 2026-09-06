@@ -1,7 +1,7 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { Popup } from './components/popup.js';
 import { Format } from './format.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 const GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
 
@@ -43,7 +43,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       onCancel,
       mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
 
       if (!talk?.talkName) {
@@ -62,7 +62,7 @@ export class GuardiansTalkUnscheduleConfirmation {
          title: strings.guardiansTalkRescheduleTitle,
          message,
          confirmText: strings.updatePlanConfirm,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         cancelText: Strings.itinerary.actions.cancel,
          mountEl,
          onConfirm,
          onCancel,

@@ -6,7 +6,7 @@ import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterSc
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class WildEncounterSchedule {
    static createWildEncounterScheduleController({
@@ -28,7 +28,7 @@ export class WildEncounterSchedule {
          wildEncounter,
       }) {
          if (!wildEncounter) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
+            return Strings.validation.entityRequired(Strings.entityLabels.wildEncounter);
          }
 
          return null;
@@ -92,9 +92,9 @@ export class WildEncounterSchedule {
          }),
          validateSelection,
          prepareForm,
-         loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
+         loadErrorMessage: Strings.loadErrors.wildEncounters,
          submitSchedule,
-         successMessage: result => APP_STRINGS.status.scheduleSaved(result.wildEncounter),
+         successMessage: result => Strings.status.scheduleSaved(result.wildEncounter),
          shouldReportSubmitFailure: result => !result?.dismissed,
       });
    }

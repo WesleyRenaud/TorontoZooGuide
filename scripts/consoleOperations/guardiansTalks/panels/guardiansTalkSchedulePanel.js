@@ -1,50 +1,42 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-   createWildEncounterScheduleRowsField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class GuardiansTalkSchedulePanel {
    static createGuardiansTalkSchedulePanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'guardiansTalkSchedulePanel',
-         title: APP_STRINGS.panelTitles.guardiansTalkSchedule,
+         title: Strings.panelTitles.guardiansTalkSchedule,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.labels.location,
+            Fragments.createSelectField({
+               label: Strings.labels.location,
                inputId: 'guardiansTalkScheduleLocation',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.talkName,
+            Fragments.createSelectField({
+               label: Strings.labels.talkName,
                inputId: 'guardiansTalkScheduleTalkName',
-               emptyOptionLabel: APP_STRINGS.placeholders.talk,
+               emptyOptionLabel: Strings.placeholders.talk,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'guardiansTalkScheduleStartDate',
                endDateId: 'guardiansTalkScheduleEndDate',
-               endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
+               endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
-            createWildEncounterScheduleRowsField({
-               label: APP_STRINGS.labels.talkTimes,
+            Fragments.createWildEncounterScheduleRowsField({
+               label: Strings.labels.talkTimes,
                rowsId: 'guardiansTalkScheduleScheduleRows',
                addRowButtonId: 'guardiansTalkScheduleAddScheduleRow',
-               helpText: APP_STRINGS.help.talkScheduleRows,
+               helpText: Strings.help.talkScheduleRows,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.scheduleMessage,
+            Fragments.createTextareaField({
+               label: Strings.labels.scheduleMessage,
                inputId: 'guardiansTalkScheduleMessage',
-               placeholder: APP_STRINGS.textareas.optionalScheduleMessage('talk'),
+               placeholder: Strings.textareas.optionalScheduleMessage('talk'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitGuardiansTalkSchedule',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'guardiansTalkScheduleStatus',
             }),
          ],

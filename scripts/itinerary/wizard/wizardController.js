@@ -7,7 +7,7 @@ import { ItineraryService } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { State } from './state.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
@@ -216,10 +216,10 @@ export class WizardController {
          }
 
          showConfirmPopup({
-            title: APP_STRINGS.itinerary.confirmation.saveChangesTitle,
-            message: APP_STRINGS.itinerary.confirmation.saveChangesMessage,
-            confirmText: APP_STRINGS.actions.save,
-            cancelText: APP_STRINGS.itinerary.actions.discard,
+            title: Strings.itinerary.confirmation.saveChangesTitle,
+            message: Strings.itinerary.confirmation.saveChangesMessage,
+            confirmText: Strings.actions.save,
+            cancelText: Strings.itinerary.actions.discard,
             onConfirm: () => {
                void finish();
             },

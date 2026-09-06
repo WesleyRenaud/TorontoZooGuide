@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ActionsBar } from '../../../../../scripts/itinerary/panel/components/actionsBar.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('makeActionsBar', () => {
@@ -29,7 +29,7 @@ test.describe('makeActionsBar', () => {
       assert.deepEqual(dispatched, ['tzg:editItinerary']);
       assert.equal(
          editButton?.textContent,
-         APP_STRINGS.itinerary.actions.editItinerary
+         Strings.itinerary.actions.editItinerary
       );
    });
 
@@ -50,11 +50,11 @@ test.describe('makeActionsBar', () => {
       assert.ok(popup);
       assert.equal(
          title?.textContent,
-         APP_STRINGS.itinerary.confirmation.clearTitle
+         Strings.itinerary.confirmation.clearTitle
       );
       assert.equal(
          confirmButton?.textContent,
-         APP_STRINGS.itinerary.actions.clear
+         Strings.itinerary.actions.clear
       );
 
       confirmButton?.click();

@@ -1,6 +1,6 @@
 import { NoticePopup } from './components/noticePopup.js';
 import { Popup } from './components/popup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class ShowScheduleItemNotice {
    static showScheduleItemNotice(message = '', deps = {}) {
@@ -8,7 +8,7 @@ export class ShowScheduleItemNotice {
          showNoticePopup = NoticePopup.showItineraryNoticePopup,
          getMountEl = Popup.getItineraryPanelMountEl,
       } = deps;
-      const strings = APP_STRINGS.itinerary;
+      const strings = Strings.itinerary;
 
       showNoticePopup({
          title: strings.scheduleItem.errorTitle,

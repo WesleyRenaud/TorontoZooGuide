@@ -1,33 +1,27 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class ExhibitOpenPanel {
    static createExhibitOpenPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'exhibitOpenPanel',
-         title: APP_STRINGS.panelTitles.exhibitOpen,
+         title: Strings.panelTitles.exhibitOpen,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'exhibitOpenExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'exhibitOpenStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'exhibitOpenEndDate',
-               endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('exhibit'),
+               endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('exhibit'),
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitExhibitOpen',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'exhibitOpenStatus',
             }),
          ],

@@ -4,7 +4,7 @@ import test from 'node:test';
 import { ShowScheduleItemModule } from '../../../../../scripts/itinerary/panel/components/showScheduleItemModule.js';
 import { ScheduleItemSearch } from '../../../../../scripts/itinerary/panel/scheduleItemSearch.js';
 import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemModule', () => {
@@ -21,7 +21,7 @@ test.describe('showScheduleItemModule', () => {
       });
 
       const root = document.querySelector('.schedule-item-module');
-      const strings = APP_STRINGS.itinerary.scheduleItem;
+      const strings = Strings.itinerary.scheduleItem;
 
       assert.ok(popup);
       assert.ok(root);
@@ -39,7 +39,7 @@ test.describe('showScheduleItemModule', () => {
       assert.equal(root?.querySelector('.itin-finish')?.textContent, strings.scheduleButton);
       assert.equal(
          root?.querySelector('.itin-prev')?.textContent,
-         APP_STRINGS.itinerary.actions.cancel
+         Strings.itinerary.actions.cancel
       );
    });
 
@@ -75,7 +75,7 @@ test.describe('showScheduleItemModule', () => {
       assert.equal(root?.querySelector('.schedule-item-time-input')?.disabled, false);
       assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
       assert.match(resultText, /Zoomobile/);
-      assert.match(resultText, new RegExp(APP_STRINGS.search.extraCharge));
+      assert.match(resultText, new RegExp(Strings.search.extraCharge));
       assert.doesNotMatch(resultText, /round trip/);
       assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
    });

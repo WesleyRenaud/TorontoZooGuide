@@ -5,7 +5,7 @@ import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class CancelGuardiansTalkOccurrence {
    static createCancelGuardiansTalkOccurrenceController({
@@ -78,19 +78,19 @@ export class CancelGuardiansTalkOccurrence {
 
       function validateForm({ talk, location, date, times }) {
          if (!location) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
+            return Strings.validation.entityRequired(Strings.labels.location);
          }
 
          if (!talk) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
+            return Strings.validation.entityRequired(Strings.labels.talkName);
          }
 
          if (!date) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
+            return Strings.validation.entityRequired(Strings.labels.date);
          }
 
          if (!times.length) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTimes);
+            return Strings.validation.entityRequired(Strings.labels.talkTimes);
          }
 
          return null;
@@ -130,7 +130,7 @@ export class CancelGuardiansTalkOccurrence {
             show();
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
+            Status.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
             show();
          }
       }
@@ -159,7 +159,7 @@ export class CancelGuardiansTalkOccurrence {
 
          }
          catch(err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

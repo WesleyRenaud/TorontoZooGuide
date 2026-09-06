@@ -11,7 +11,7 @@ import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/g
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { WildEncounterSelectorModel } from '../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class Rows {
    static buildAnimalRows(
@@ -66,13 +66,13 @@ export class Rows {
       return RowBuilders.buildNamedRows(attractions, {
          normalizeItem: Format.normalizeAttraction,
          prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
-         defaultName: APP_STRINGS.entityLabels.attraction,
+         defaultName: Strings.entityLabels.attraction,
          imageDirectory: 'attractions',
          getName: (attraction) => attraction.name,
          getMetaLines: (attraction) => [
             attraction.subtitle,
-            RowPresentation.buildFieldLine(APP_STRINGS.labels.location, attraction.region),
-            RowPresentation.buildFieldLine(APP_STRINGS.labels.price, attraction.price),
+            RowPresentation.buildFieldLine(Strings.labels.location, attraction.region),
+            RowPresentation.buildFieldLine(Strings.labels.price, attraction.price),
             RowPresentation.buildApproximateStartTimeFieldLine(attraction),
          ],
          getAlertLine: RowAlerts.buildAttractionRemovalReasonLine,
@@ -98,7 +98,7 @@ export class Rows {
       return RowBuilders.buildNamedRows(transportations, {
          normalizeItem: Format.normalizeTransportation,
          prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
-         defaultName: APP_STRINGS.entityLabels.transportation,
+         defaultName: Strings.entityLabels.transportation,
          imageDirectory: 'transportations',
          getName: TransportationSelectorModel.getTransportationName,
          getMetaLines: (transportation) => [
@@ -124,13 +124,13 @@ export class Rows {
       return RowBuilders.buildNamedRows(guardiansTalks, {
          normalizeItem: Format.normalizeTalk,
          prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
-         defaultName: APP_STRINGS.entityLabels.guardiansTalk,
+         defaultName: Strings.entityLabels.guardiansTalk,
          imageDirectory: 'guardians-talks',
          getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getNameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
          getMetaLines: (talk) => [
-            RowPresentation.buildFieldLine(APP_STRINGS.labels.location, talk.location),
+            RowPresentation.buildFieldLine(Strings.labels.location, talk.location),
             RowPresentation.buildScheduledTimeFieldLine(talk),
          ],
          getAlertLine: RowAlerts.buildGuardiansRemovalReasonLine,
@@ -162,14 +162,14 @@ export class Rows {
       return RowBuilders.buildNamedRows(wildEncounters, {
          normalizeItem: Format.normalizeWild,
          prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
-         defaultName: APP_STRINGS.entityLabels.wildEncounter,
+         defaultName: Strings.entityLabels.wildEncounter,
          imageDirectory: 'wild-encounters',
          getName: WildEncounterSelectorModel.getWildEncounterName,
          getImageName: WildEncounterSelectorModel.getWildEncounterName,
          getNameSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
          getMetaLines: (wild) => [
             RowPresentation.buildFieldLine(
-               APP_STRINGS.itinerary.selectors.meetingSpot,
+               Strings.itinerary.selectors.meetingSpot,
                wild.meeting_spot
             ),
             RowPresentation.buildScheduledTimeFieldLine(wild),

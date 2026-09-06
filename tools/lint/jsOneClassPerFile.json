@@ -395,15 +395,20 @@
       "scripts/tooltips/tooltipController.js",
       "scripts/updates/exploreUpdates.js",
       "scripts/consoleOperations/bootstrap/controllers.js",
-      "scripts/consoleOperations/bootstrap/refs.js"
-   ],
-   "exclude": [
+      "scripts/consoleOperations/bootstrap/refs.js",
       "scripts/mainMap.js",
       "scripts/mainItinerary.js",
       "scripts/consoleOperations.js",
       "scripts/strings.js",
-      "scripts/strings/**",
-      "scripts/config/**",
+      "scripts/strings/common.js",
+      "scripts/strings/console.js",
+      "scripts/strings/formatString.js",
+      "scripts/strings/guestStatus.js",
+      "scripts/strings/itinerary.js",
+      "scripts/strings/map.js",
+      "scripts/strings/pages.js",
+      "scripts/config/appConfig.js",
       "scripts/consoleOperations/templates/fragments.js"
-   ]
+   ],
+   "exclude": []
 }

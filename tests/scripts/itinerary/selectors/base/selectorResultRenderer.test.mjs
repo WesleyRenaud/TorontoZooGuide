@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ResultRenderer } from '../../../../../scripts/itinerary/selectors/base/resultRenderer.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
@@ -45,7 +45,7 @@ test.describe('selector result renderer', () => {
       );
       assert.equal(
          column.querySelector('.tooltip-link')?.textContent,
-         APP_STRINGS.common.moreInfo
+         Strings.common.moreInfo
       );
    });
 
@@ -84,13 +84,13 @@ test.describe('selector result renderer', () => {
       assert.equal(resultsEl.children.length, 2);
 
       const firstButton = resultsEl.children[0].querySelector('.itin-add-btn');
-      assert.equal(firstButton?.textContent, APP_STRINGS.itinerary.actions.addSymbol);
+      assert.equal(firstButton?.textContent, Strings.itinerary.actions.addSymbol);
 
       firstButton?.listeners.click?.({
          stopPropagation() {},
       });
       assert.deepEqual(toggled, ['lion']);
-      assert.equal(firstButton?.textContent, APP_STRINGS.itinerary.actions.remove);
+      assert.equal(firstButton?.textContent, Strings.itinerary.actions.remove);
       assert.equal(firstButton?.classList.contains('is-added'), true);
    });
 

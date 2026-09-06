@@ -1,5 +1,5 @@
 import { NamedItems } from './namedItems.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function createPlaceholderOption(label) {
    const placeholder = document.createElement('option');
@@ -25,7 +25,7 @@ function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
 
 export class Dropdowns {
    static populateDropdown(selectEl, items, {
-      emptyOptionLabel = APP_STRINGS.placeholders.option,
+      emptyOptionLabel = Strings.placeholders.option,
       getName = item => String(item ?? '').trim(),
       sortItems = null,
    } = {}) {
@@ -58,34 +58,34 @@ export class Dropdowns {
    }
 
    static populateExhibitDropdown(selectEl, exhibits) {
-      populateNamedDropdown(selectEl, exhibits, APP_STRINGS.placeholders.exhibit);
+      populateNamedDropdown(selectEl, exhibits, Strings.placeholders.exhibit);
    }
 
    static populateRestaurantDropdown(selectEl, restaurants) {
-      populateNamedDropdown(selectEl, restaurants, APP_STRINGS.placeholders.restaurant);
+      populateNamedDropdown(selectEl, restaurants, Strings.placeholders.restaurant);
    }
 
    static populateRestroomDropdown(selectEl, restrooms) {
-      populateNamedDropdown(selectEl, restrooms, APP_STRINGS.placeholders.restroom);
+      populateNamedDropdown(selectEl, restrooms, Strings.placeholders.restroom);
    }
 
    static populateGiftShopDropdown(selectEl, giftShops) {
-      populateNamedDropdown(selectEl, giftShops, APP_STRINGS.placeholders.giftShop);
+      populateNamedDropdown(selectEl, giftShops, Strings.placeholders.giftShop);
    }
 
    static populateAttractionDropdown(selectEl, attractions) {
-      populateNamedDropdown(selectEl, attractions, APP_STRINGS.placeholders.attraction);
+      populateNamedDropdown(selectEl, attractions, Strings.placeholders.attraction);
    }
 
    static populateTransportationStationDropdown(selectEl, transportationStations) {
-      populateNamedDropdown(selectEl, transportationStations, APP_STRINGS.placeholders.transportationStation);
+      populateNamedDropdown(selectEl, transportationStations, Strings.placeholders.transportationStation);
    }
 
    static populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
-      populateNamedDropdown(selectEl, guardiansTalks, APP_STRINGS.placeholders.talk);
+      populateNamedDropdown(selectEl, guardiansTalks, Strings.placeholders.talk);
    }
 
    static populateWildEncounterDropdown(selectEl, wildEncounters) {
-      populateNamedDropdown(selectEl, wildEncounters, APP_STRINGS.placeholders.wildEncounter);
+      populateNamedDropdown(selectEl, wildEncounters, Strings.placeholders.wildEncounter);
    }
 }

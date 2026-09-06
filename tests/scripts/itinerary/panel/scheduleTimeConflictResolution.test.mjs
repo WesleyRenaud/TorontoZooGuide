@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { ScheduleTimeConflictResolution } from '../../../../scripts/itinerary/panel/scheduleTimeConflictResolution.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -186,11 +186,11 @@ test.describe('Test_CreateScheduleTimeConflictResolutionConfirmations', () => {
 
       assert.equal(
          popup?.querySelector('.itin-top-title')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithoutConflictSelectionTitle
+         Strings.itinerary.confirmation.proceedWithoutConflictSelectionTitle
       );
       assert.equal(
          popup?.querySelector('.tzg-popup-message')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithoutConflictSelectionMessage
+         Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage
       );
 
       confirmButton?.click();
@@ -212,11 +212,11 @@ test.describe('Test_CreateScheduleTimeConflictResolutionConfirmations', () => {
 
       assert.equal(
          popup?.querySelector('.itin-top-title')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithUnresolvedConflictsTitle
+         Strings.itinerary.confirmation.proceedWithUnresolvedConflictsTitle
       );
       assert.equal(
          popup?.querySelector('.tzg-popup-message')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithUnresolvedConflictsMessage
+         Strings.itinerary.confirmation.proceedWithUnresolvedConflictsMessage
       );
 
       popup?.querySelector('.tzg-popup-confirm')?.click();
@@ -238,11 +238,11 @@ test.describe('Test_CreateScheduleTimeConflictResolutionConfirmations', () => {
 
       assert.equal(
          popup?.querySelector('.itin-top-title')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle
+         Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle
       );
       assert.equal(
          popup?.querySelector('.tzg-popup-message')?.textContent,
-         APP_STRINGS.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage
+         Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage
       );
 
       popup?.querySelector('.tzg-popup-confirm')?.click();

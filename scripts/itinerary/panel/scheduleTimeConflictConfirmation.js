@@ -1,7 +1,7 @@
 import { NoticePopup } from './components/noticePopup.js';
 import { ScheduleTimeConflictContent } from './scheduleTimeConflictContent.js';
 import { ScheduleTimeConflictResolution } from './scheduleTimeConflictResolution.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 
 export const WILD_ENCOUNTER_TIME_CONFLICT = ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT;
@@ -19,14 +19,14 @@ export class ScheduleTimeConflictConfirmation {
       } = ScheduleTimeConflictContent.createSaveIssuesContent(issues);
 
       NoticePopup.showItineraryNoticePopup({
-         title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
+         title: Strings.itinerary.confirmation.saveIssuesTitle,
          bodyContent: content,
-         buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
+         buttonText: Strings.itinerary.confirmation.saveIssuesButton,
          showCloseButton: true,
          onClose: ({ close } = {}) => {
             SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation({
-               title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
-               message: APP_STRINGS.itinerary.confirmation
+               title: Strings.itinerary.confirmation.closeSaveIssuesTitle,
+               message: Strings.itinerary.confirmation
                   .proceedWithoutConflictSelectionMessage,
                onConfirm: () => {
                   onCancel?.();

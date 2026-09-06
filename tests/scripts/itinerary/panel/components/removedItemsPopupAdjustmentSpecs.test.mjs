@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { RemovedItemsPopupAdjustmentSpecs } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupAdjustmentSpecs.js';
-import { APP_STRINGS } from '../../../../../scripts/strings.js';
+import { Strings } from '../../../../../scripts/strings.js';
 
 const ADJUSTMENT_TYPES = {
    ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
@@ -22,8 +22,8 @@ test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_Exp
          value: '09:30',
       }),
       {
-         name: APP_STRINGS.itinerary.dayPlanner.arrivalLabel,
-         alertLine: APP_STRINGS.itinerary.removedItems.arrivalAdjusted(
+         name: Strings.itinerary.dayPlanner.arrivalLabel,
+         alertLine: Strings.itinerary.removedItems.arrivalAdjusted(
             '9:00 AM',
             '9:30 AM'
          ),
@@ -43,8 +43,8 @@ test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_E
          value: '18:00',
       }),
       {
-         name: APP_STRINGS.labels.departure,
-         alertLine: APP_STRINGS.itinerary.removedItems.departureAdjusted(
+         name: Strings.labels.departure,
+         alertLine: Strings.itinerary.removedItems.departureAdjusted(
             '6:30 PM',
             '6:00 PM'
          ),

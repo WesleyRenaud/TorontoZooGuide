@@ -3,7 +3,7 @@ import { EndRecurringScheduleFormController } from '../../forms/endRecurringSche
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Dropdowns } from '../../options/dropdowns.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class EndGuardiansTalkSchedule {
    static createEndGuardiansTalkScheduleController({
@@ -36,15 +36,15 @@ export class EndGuardiansTalkSchedule {
 
       function validateSelection({ talk, location, times }) {
          if (!location) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
+            return Strings.validation.entityRequired(Strings.labels.location);
          }
 
          if (!talk) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
+            return Strings.validation.entityRequired(Strings.labels.talkName);
          }
 
          if (!times.length) {
-            return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTimes);
+            return Strings.validation.entityRequired(Strings.labels.talkTimes);
          }
 
          return null;
@@ -82,9 +82,9 @@ export class EndGuardiansTalkSchedule {
          }),
          validateSelection,
          prepareForm,
-         loadErrorMessage: APP_STRINGS.loadErrors.locations,
+         loadErrorMessage: Strings.loadErrors.locations,
          submitEndSchedule,
-         successMessage: result => APP_STRINGS.status.guardiansTalkScheduleEnded(result),
+         successMessage: result => Strings.status.guardiansTalkScheduleEnded(result),
       });
 
       locationEl?.addEventListener('change', async () => {

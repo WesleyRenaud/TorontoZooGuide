@@ -1,14 +1,14 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 function buildTimeFieldLine(value) {
    if (!value) {
       return '';
    }
 
-   return `${APP_STRINGS.labels.time}: ${value}`;
+   return `${Strings.labels.time}: ${value}`;
 }
 
 export class RowPresentation {
@@ -59,7 +59,7 @@ export class RowPresentation {
       }
 
       return {
-         linkText: APP_STRINGS.common.moreInfo,
+         linkText: Strings.common.moreInfo,
          onLinkClick: () => window.open(link, '_blank'),
       };
    }

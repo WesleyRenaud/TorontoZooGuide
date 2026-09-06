@@ -1,49 +1,42 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createDateRangeFields,
-   createPanelShell,
-   createStatus,
-   createTextareaField,
-   createTextInputField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class CreateEventPanel {
    static createCreateEventPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'createEventPanel',
-         title: APP_STRINGS.panelTitles.createEvent,
+         title: Strings.panelTitles.createEvent,
          bodyChildren: [
-            createTextInputField({
-               label: APP_STRINGS.labels.name,
+            Fragments.createTextInputField({
+               label: Strings.labels.name,
                inputId: 'createEventName',
-               placeholder: APP_STRINGS.textareas.eventNameExample,
+               placeholder: Strings.textareas.eventNameExample,
             }),
-            createTextInputField({
-               label: APP_STRINGS.labels.location,
+            Fragments.createTextInputField({
+               label: Strings.labels.location,
                inputId: 'createEventLocation',
-               placeholder: APP_STRINGS.textareas.eventLocationExample,
+               placeholder: Strings.textareas.eventLocationExample,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.description,
+            Fragments.createTextareaField({
+               label: Strings.labels.description,
                inputId: 'createEventDescription',
-               placeholder: APP_STRINGS.textareas.eventDescription,
+               placeholder: Strings.textareas.eventDescription,
             }),
-            createTextInputField({
-               label: APP_STRINGS.labels.link,
+            Fragments.createTextInputField({
+               label: Strings.labels.link,
                inputId: 'createEventLink',
-               placeholder: APP_STRINGS.textareas.eventLinkExample,
+               placeholder: Strings.textareas.eventLinkExample,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'createEventStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'createEventEndDate',
-               endHelpText: APP_STRINGS.help.keepEventActiveWithoutEndDate,
+               endHelpText: Strings.help.keepEventActiveWithoutEndDate,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitCreateEvent',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'createEventStatus',
             }),
          ],

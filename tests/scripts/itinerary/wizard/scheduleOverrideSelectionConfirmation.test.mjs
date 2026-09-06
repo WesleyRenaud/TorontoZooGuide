@@ -2,21 +2,21 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ScheduleOverrideSelectionConfirmation } from '../../../../scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.js';
-import { APP_STRINGS } from '../../../../scripts/strings.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 test('Test_ScheduleOverrideSelectionConfirmation_TestCopy_ExpectDefined', () => {
    assert.equal(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionTitle,
+      Strings.itinerary.confirmation.scheduleOverrideSelectionTitle,
       'Adjust Activity Times?'
    );
    assert.match(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
+      Strings.itinerary.confirmation.scheduleOverrideSelectionMessage,
       /overlap in time/
    );
    assert.match(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
+      Strings.itinerary.confirmation.scheduleOverrideSelectionMessage,
       /Wild Encounters taking priority/
    );
 });
@@ -38,7 +38,7 @@ test.describe('showScheduleOverrideSelectionConfirmation', () => {
       });
 
       const popup = document.querySelector('.tzg-confirm');
-      const strings = APP_STRINGS.itinerary.confirmation;
+      const strings = Strings.itinerary.confirmation;
       const title = popup?.querySelector('.itin-top-title');
       const message = popup?.querySelector('.tzg-popup-message');
       const confirmButton = popup?.querySelector('.tzg-popup-confirm');

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class GiftShopClosureOverride {
    static createGiftShopClosureOverrideController({
@@ -22,9 +22,9 @@ export class GiftShopClosureOverride {
                message,
             })
          ),
-         entityLabel: APP_STRINGS.entityLabels.giftShop,
-         optionsLabel: APP_STRINGS.entityLabels.giftShops,
-         successMessage: result => APP_STRINGS.status.closureOverrideSaved(result.gift_shop),
+         entityLabel: Strings.entityLabels.giftShop,
+         optionsLabel: Strings.entityLabels.giftShops,
+         successMessage: result => Strings.status.closureOverrideSaved(result.gift_shop),
       });
    }
 }

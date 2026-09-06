@@ -1,5 +1,5 @@
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 
 export class SaveIssuesProceedConfirmation {
    static showSaveIssuesProceedConfirmation({
@@ -10,8 +10,8 @@ export class SaveIssuesProceedConfirmation {
       ConfirmPopup.showItineraryConfirmPopup({
          title,
          message,
-         confirmText: APP_STRINGS.itinerary.confirmation.proceedAnyway,
-         cancelText: APP_STRINGS.itinerary.actions.cancel,
+         confirmText: Strings.itinerary.confirmation.proceedAnyway,
+         cancelText: Strings.itinerary.actions.cancel,
          onConfirm,
       });
    }

@@ -1,5 +1,5 @@
 import { ExploreTabs } from './exploreTabs.js';
-import { APP_STRINGS } from '../strings.js';
+import { Strings } from '../strings.js';
 
 function createArrowButton({
    label,
@@ -74,13 +74,13 @@ export class ExploreUpdatesChrome {
 
       navEl.append(
          createArrowButton({
-            label: isEventsTab ? APP_STRINGS.map.previousEvent : APP_STRINGS.map.previousUpdate,
-            symbol: APP_STRINGS.common.previousSymbol,
+            label: isEventsTab ? Strings.map.previousEvent : Strings.map.previousUpdate,
+            symbol: Strings.common.previousSymbol,
             onClick: () => onStep(-1),
          }),
          createArrowButton({
-            label: isEventsTab ? APP_STRINGS.map.nextEvent : APP_STRINGS.map.nextUpdate,
-            symbol: APP_STRINGS.common.nextSymbol,
+            label: isEventsTab ? Strings.map.nextEvent : Strings.map.nextUpdate,
+            symbol: Strings.common.nextSymbol,
             onClick: () => onStep(1),
          })
       );
@@ -103,7 +103,7 @@ export class ExploreUpdatesChrome {
 
       toggleEl.setAttribute(
          'aria-label',
-         isCollapsed ? APP_STRINGS.map.showUpdates : APP_STRINGS.map.hideUpdates
+         isCollapsed ? Strings.map.showUpdates : Strings.map.hideUpdates
       );
       toggleEl.setAttribute('aria-expanded', String(!isCollapsed));
    }

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class CreateUpdate {
    static createCreateUpdateController({
@@ -32,9 +32,9 @@ export class CreateUpdate {
       }
 
       function validateForm(values) {
-         if (!values.title) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.title);
-         if (!values.description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
-         if (!values.type) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.type);
+         if (!values.title) return Strings.validation.entityRequired(Strings.labels.title);
+         if (!values.description) return Strings.validation.entityRequired(Strings.labels.description);
+         if (!values.type) return Strings.validation.entityRequired(Strings.labels.type);
 
          return ControllerUtils.validateOptionalDateRange(values.startDate, values.endDate);
       }
@@ -70,7 +70,7 @@ export class CreateUpdate {
             if (result.success) {
                Status.setStatus(
                   statusEl,
-                  APP_STRINGS.status.updateCreated(result),
+                  Strings.status.updateCreated(result),
                   'is-success'
                );
                resetForm();
@@ -80,7 +80,7 @@ export class CreateUpdate {
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 export class RestaurantClosureOverride {
    static createRestaurantClosureOverrideController({
@@ -22,9 +22,9 @@ export class RestaurantClosureOverride {
                message,
             })
          ),
-         entityLabel: APP_STRINGS.entityLabels.restaurant,
-         optionsLabel: APP_STRINGS.entityLabels.restaurants,
-         successMessage: result => APP_STRINGS.status.closureOverrideSaved(result.restaurant),
+         entityLabel: Strings.entityLabels.restaurant,
+         optionsLabel: Strings.entityLabels.restaurants,
+         successMessage: result => Strings.status.closureOverrideSaved(result.restaurant),
       });
    }
 }

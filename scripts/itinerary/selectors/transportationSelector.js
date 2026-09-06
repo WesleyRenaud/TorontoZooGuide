@@ -1,17 +1,17 @@
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
+import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 
 const STORAGE_KEY = 'tzg.itineraryTransportations';
 
 function promptForAddAsTransportationSelection(row, proceed) {
    ConfirmPopup.showItineraryConfirmPopup({
-      title: APP_STRINGS.itinerary.confirmation.addAsTransportationTitle,
+      title: Strings.itinerary.confirmation.addAsTransportationTitle,
       message: TransportationSelectorModel.buildAddAsTransportationMessage(row),
-      confirmText: APP_STRINGS.itinerary.actions.confirm,
-      cancelText: APP_STRINGS.animalsPage.back,
+      confirmText: Strings.itinerary.actions.confirm,
+      cancelText: Strings.animalsPage.back,
       onConfirm: proceed,
    });
 }
@@ -60,10 +60,10 @@ export class TransportationSelector {
 
          makeSelection: TransportationSelectorModel.makeTransportationSelection,
 
-         topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
-         h1: APP_STRINGS.itinerary.selectors.titleTransportations,
-         subtitle: APP_STRINGS.itinerary.selectors.transportationSubtitle,
-         emptyText: APP_STRINGS.itinerary.emptyText.transportations,
+         topTitle: Strings.itinerary.selectors.builderTitle,
+         h1: Strings.itinerary.selectors.titleTransportations,
+         subtitle: Strings.itinerary.selectors.transportationSubtitle,
+         emptyText: Strings.itinerary.emptyText.transportations,
 
          onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
             if (!TransportationSelectorModel.shouldConfirmAddAsTransportation({

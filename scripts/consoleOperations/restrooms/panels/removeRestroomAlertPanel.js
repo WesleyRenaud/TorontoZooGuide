@@ -1,27 +1,22 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class RemoveRestroomAlertPanel {
    static createRemoveRestroomAlertPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'removeRestroomAlertPanel',
-         title: APP_STRINGS.panelTitles.removeRestroomAlert,
+         title: Strings.panelTitles.removeRestroomAlert,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.restroom,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.restroom,
                inputId: 'removeRestroomAlertRestroom',
-               emptyOptionLabel: APP_STRINGS.placeholders.restroom,
+               emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitRemoveRestroomAlert',
-               submitLabel: APP_STRINGS.actions.removeAlert,
+               submitLabel: Strings.actions.removeAlert,
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'removeRestroomAlertStatus',
             }),
          ],

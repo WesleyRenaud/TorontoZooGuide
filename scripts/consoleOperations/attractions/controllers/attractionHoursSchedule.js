@@ -8,7 +8,7 @@ import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.
 import { Dropdowns } from '../../options/dropdowns.js';
 import { Loaders } from '../../options/loaders.js';
 import { Status } from '../../shell/status.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 
 function timePairIsOrdered(startTime, endTime) {
    const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(startTime);
@@ -70,8 +70,8 @@ export class AttractionHoursSchedule {
 
       function validateForm(values) {
          if (!values.attraction) {
-            return APP_STRINGS.validation.entityRequired(
-               APP_STRINGS.entityLabels.attraction
+            return Strings.validation.entityRequired(
+               Strings.entityLabels.attraction
             );
          }
 
@@ -81,18 +81,18 @@ export class AttractionHoursSchedule {
             || !values.weekendHolidayStartTime
             || !values.weekendHolidayEndTime
          ) {
-            return APP_STRINGS.validation.attractionHoursTimesRequired;
+            return Strings.validation.attractionHoursTimesRequired;
          }
 
          if (!timePairIsOrdered(values.weekdayStartTime, values.weekdayEndTime)) {
-            return APP_STRINGS.validation.attractionHoursWeekdayOrder;
+            return Strings.validation.attractionHoursWeekdayOrder;
          }
 
          if (!timePairIsOrdered(
             values.weekendHolidayStartTime,
             values.weekendHolidayEndTime
          )) {
-            return APP_STRINGS.validation.attractionHoursWeekendHolidayOrder;
+            return Strings.validation.attractionHoursWeekendHolidayOrder;
          }
 
          return ControllerUtils.validateOptionalDateRange(
@@ -144,7 +144,7 @@ export class AttractionHoursSchedule {
             statusEl,
             ApiErrorMessageResolver.resolveConsoleMutationError(
                boundsResult,
-               APP_STRINGS.loadErrors.attractionHoursTimeBounds
+               Strings.loadErrors.attractionHoursTimeBounds
             ),
             'is-error'
          );
@@ -164,8 +164,8 @@ export class AttractionHoursSchedule {
          catch {
             Status.setStatus(
                statusEl,
-               APP_STRINGS.loadErrors.entityOptions(
-                  APP_STRINGS.entityLabels.attractions
+               Strings.loadErrors.entityOptions(
+                  Strings.entityLabels.attractions
                ),
                'is-error'
             );
@@ -198,7 +198,7 @@ export class AttractionHoursSchedule {
       function handleSubmitSuccess(result) {
          Status.setStatus(
             statusEl,
-            APP_STRINGS.status.attractionHoursScheduleSaved(result.attraction),
+            Strings.status.attractionHoursScheduleSaved(result.attraction),
             'is-success'
          );
          resetForm();
@@ -250,7 +250,7 @@ export class AttractionHoursSchedule {
             );
          }
          catch {
-            Status.setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
+            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

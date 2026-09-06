@@ -1,7 +1,7 @@
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
-import { APP_STRINGS } from '../../../strings.js';
+import { Strings } from '../../../strings.js';
 import { WildEncounterScheduleItemKey } from './wildEncounterScheduleItemKey.js';
 
 export class WildEncounterSelectorModel {
@@ -22,14 +22,14 @@ export class WildEncounterSelectorModel {
    static formatWildEncounterTitleSuffix(name) {
       return ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(
          name,
-         APP_STRINGS.entityLabels.wildEncounter
+         Strings.entityLabels.wildEncounter
       );
    }
 
    static formatWildEncounterSearchTitle(name) {
       return ScheduledOccurrencePresentation.formatOccurrenceSearchTitle(
          name,
-         APP_STRINGS.entityLabels.wildEncounter
+         Strings.entityLabels.wildEncounter
       );
    }
 

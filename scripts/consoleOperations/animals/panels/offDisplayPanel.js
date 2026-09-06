@@ -1,52 +1,44 @@
-import { APP_STRINGS } from '../../../strings.js';
-import {
-   createActions,
-   createAutocompleteField,
-   createDateRangeFields,
-   createPanelShell,
-   createSelectField,
-   createStatus,
-   createTextareaField,
-} from '../../templates/fragments.js';
+import { Strings } from '../../../strings.js';
+import { Fragments } from '../../templates/fragments.js';
 
 export class OffDisplayPanel {
    static createOffDisplayPanel() {
-      return createPanelShell({
+      return Fragments.createPanelShell({
          panelId: 'offDisplayPanel',
-         title: APP_STRINGS.panelTitles.offDisplay,
+         title: Strings.panelTitles.offDisplay,
          bodyChildren: [
-            createSelectField({
-               label: APP_STRINGS.entityLabels.exhibit,
+            Fragments.createSelectField({
+               label: Strings.entityLabels.exhibit,
                inputId: 'offDisplayExhibit',
-               emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
+               emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            createAutocompleteField({
-               label: APP_STRINGS.labels.species,
+            Fragments.createAutocompleteField({
+               label: Strings.labels.species,
                inputId: 'offDisplaySpecies',
                resultsId: 'offDisplaySpeciesResults',
-               placeholder: APP_STRINGS.placeholders.speciesSearch,
+               placeholder: Strings.placeholders.speciesSearch,
             }),
-            createSelectField({
-               label: APP_STRINGS.labels.viewingScope,
+            Fragments.createSelectField({
+               label: Strings.labels.viewingScope,
                inputId: 'offDisplayViewingScope',
-               emptyOptionLabel: APP_STRINGS.placeholders.viewingScope,
-               options: APP_STRINGS.viewingScopes,
+               emptyOptionLabel: Strings.placeholders.viewingScope,
+               options: Strings.viewingScopes,
             }),
-            createDateRangeFields({
+            Fragments.createDateRangeFields({
                startDateId: 'offDisplayStartDate',
-               startHelpText: APP_STRINGS.help.startImmediately,
+               startHelpText: Strings.help.startImmediately,
                endDateId: 'offDisplayEndDate',
-               endHelpText: APP_STRINGS.help.keepOffDisplayUntilOnDisplay,
+               endHelpText: Strings.help.keepOffDisplayUntilOnDisplay,
             }),
-            createTextareaField({
-               label: APP_STRINGS.labels.reason,
+            Fragments.createTextareaField({
+               label: Strings.labels.reason,
                inputId: 'offDisplayMessage',
-               placeholder: APP_STRINGS.textareas.offDisplayReason,
+               placeholder: Strings.textareas.offDisplayReason,
             }),
-            createActions({
+            Fragments.createActions({
                submitId: 'submitOffDisplay',
             }),
-            createStatus({
+            Fragments.createStatus({
                statusId: 'offDisplayStatus',
             }),
          ],
