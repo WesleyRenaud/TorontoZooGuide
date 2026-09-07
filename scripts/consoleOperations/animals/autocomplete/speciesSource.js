@@ -1,6 +1,6 @@
 import { AnimalsApi } from '../../../api/animalsApi.js';
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 
 function normalizeSpeciesList(species) {
    return [...new Set(
@@ -25,7 +25,7 @@ export class SpeciesSource {
             return allSpecies;
          }
 
-         const rawSpecies = await Loaders.loadSpecies();
+         const rawSpecies = await ConsoleOptionsLoader.loadSpecies();
          allSpecies = normalizeSpeciesList(rawSpecies);
          allSpeciesLoaded = true;
          return allSpecies;

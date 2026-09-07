@@ -1,0 +1,187 @@
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { Strings } from '../../../strings.js';
+
+function joinClassNames(...classNames) {
+   return classNames.filter(Boolean).join(' ');
+}
+
+function createPopupButton({
+   className,
+   text,
+} = {}) {
+   const button = ItineraryPanelDom.el('button', className, text);
+   button.type = 'button';
+   return button;
+}
+
+export class ItineraryPanelPopup {
+   static getItineraryOverlayMountEl() {
+      return document.getElementById('itineraryFlow')
+         ?? document.querySelector('.map-container');
+
+   }
+
+   static getItineraryPanelMountEl() {
+      return document.querySelector('.itinerary-panel');
+
+   }
+
+   static createItineraryPopupLayout({
+      popupClassName = '',
+      title = Strings.common.headsUp,
+      message = '',
+      bodyContent = null,
+      actionsClassName = '',
+      actionButtons = [],
+      showCloseButton = false,
+      closeAriaLabel = Strings.itinerary.aria.closeBuilder,
+   } = {}) {
+      const root = ItineraryPanelDom.el('div', joinClassNames('tzg-popup', popupClassName));
+      const overlay = ItineraryPanelDom.el('div', 'itin-overlay');
+
+      const card = ItineraryPanelDom.el('section', 'itin-card tzg-popup-card');
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-label', title);
+
+      const topbar = ItineraryPanelDom.el(
+         'div',
+         showCloseButton
+            ? 'itin-card-topbar itin-card-topbar-with-close'
+            : 'itin-card-topbar'
+      );
+      topbar.appendChild(
+         ItineraryPanelDom.el('div', 'itin-top-title', title)
+      );
+
+      const closeButton = showCloseButton
+         ? ItineraryPanelDom.el('button', 'itin-close', Strings.common.closeSymbol)
+         : null;
+
+      if (closeButton) {
+         closeButton.type = 'button';
+         closeButton.setAttribute('aria-label', closeAriaLabel);
+         topbar.appendChild(closeButton);
+      }
+
+      const body = ItineraryPanelDom.el('div', 'itin-card-body tzg-popup-body');
+
+      if (bodyContent) {
+         body.appendChild(bodyContent);
+      }
+      else {
+         body.appendChild(
+            ItineraryPanelDom.el('div', 'tzg-popup-message', message)
+         );
+      }
+
+      const actions = ItineraryPanelDom.el('div', 'itin-card-actions');
+      const actionsRight = ItineraryPanelDom.el(
+         'div',
+         joinClassNames('itin-actions-right', actionsClassName)
+      );
+
+      const buttonEls = {};
+
+      actionButtons.forEach((buttonConfig) => {
+         const buttonEl = createPopupButton(buttonConfig);
+
+         if (buttonConfig?.key) {
+            buttonEls[buttonConfig.key] = buttonEl;
+         }
+
+         actionsRight.appendChild(buttonEl);
+      });
+
+      actions.appendChild(actionsRight);
+      card.append(topbar, body, actions);
+      overlay.appendChild(card);
+      root.appendChild(overlay);
+
+      return {
+         root,
+         overlay,
+         buttonEls,
+         closeButton,
+      };
+
+   }
+
+   static mountDismissablePopup({
+      mountEl = document.body,
+      root,
+      overlay,
+      initialFocusEl = null,
+      onDismiss = null,
+      dismissOnOverlayClick = true,
+      dismissOnEscape = true,
+   } = {}) {
+      if (!mountEl || !root || !overlay) {
+         return {
+            close() {},
+            dismiss() {},
+         };
+      }
+
+      let isClosed = false;
+
+      function cleanup() {
+         if (isClosed) {
+            return false;
+         }
+
+         isClosed = true;
+         document.removeEventListener('keydown', onKeyDown);
+
+         if (root.__tzgPopupCleanup === close) {
+            delete root.__tzgPopupCleanup;
+         }
+
+         root.remove();
+         return true;
+      }
+
+      function close() {
+         cleanup();
+      }
+
+      function dismiss() {
+         if (!cleanup()) {
+            return;
+         }
+
+         onDismiss?.();
+      }
+
+      function onKeyDown(event) {
+         if (!dismissOnEscape || event.key !== 'Escape') {
+            return;
+         }
+
+         event.preventDefault();
+         dismiss();
+      }
+
+      if (dismissOnOverlayClick) {
+         overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+               dismiss();
+            }
+         });
+      }
+
+      root.__tzgPopupCleanup = close;
+
+      mountEl.appendChild(root);
+      document.addEventListener('keydown', onKeyDown);
+
+      requestAnimationFrame(() => {
+         initialFocusEl?.focus?.();
+      });
+
+      return {
+         close,
+         dismiss,
+      };
+   }
+}

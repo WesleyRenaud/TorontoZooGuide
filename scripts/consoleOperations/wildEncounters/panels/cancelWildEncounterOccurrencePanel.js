@@ -1,31 +1,35 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../templates/consoleScheduleTimesCheckboxFieldBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class CancelWildEncounterOccurrencePanel {
    static createCancelWildEncounterOccurrencePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'cancelWildEncounterOccurrencePanel',
          title: Strings.panelTitles.cancelWildEncounterOccurrence,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.wildEncounter,
                inputId: 'cancelWildEncounterOccurrenceName',
                emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.date,
                inputId: 'cancelWildEncounterOccurrenceDate',
                emptyOptionLabel: Strings.placeholders.date,
             }),
-            Fragments.createScheduleTimesCheckboxField({
+            ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
                label: Strings.labels.encounterTimes,
                inputId: 'cancelWildEncounterOccurrenceTimes',
                helpText: Strings.help.cancelOccurrenceTimes,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitCancelWildEncounterOccurrence',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'cancelWildEncounterOccurrenceStatus',
             }),
          ],

@@ -2,8 +2,8 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { WeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class AttractionOpeningSchedule {
@@ -14,8 +14,8 @@ export class AttractionOpeningSchedule {
       return WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController({
          ...controllerOptions,
          entityEl: attractionEl,
-         loadOptions: Loaders.loadAttractions,
-         populateOptions: Dropdowns.populateAttractionDropdown,
+         loadOptions: ConsoleOptionsLoader.loadAttractions,
+         populateOptions: ConsoleDropdownPopulator.populateAttractionDropdown,
          submitSchedule: ConsoleOperationsApi.setAttractionOpeningSchedule,
          entityLabel: Strings.entityLabels.attraction,
          optionsLabel: Strings.entityLabels.attractions,

@@ -1,7 +1,7 @@
 import { AnimalVisibility } from './diff/animalVisibility.js';
 import { ItemKey } from './diff/itemKey.js';
 import { RemovedItems } from './diff/removedItems.js';
-import { Format } from '../panel/format.js';
+import { ItineraryItemFormatter } from '../panel/itineraryItemFormatter.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
@@ -148,7 +148,7 @@ export class ItineraryDiff {
    ) {
       const removed = buildRemovedItems(previous, validated, backendRemoved);
       const unscheduled = buildUnscheduledItems(previous, validated);
-      const minDelta = Format.normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
+      const minDelta = ItineraryItemFormatter.normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
       const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed, (
          minDelta == null ? undefined : minDelta / 100
       ));

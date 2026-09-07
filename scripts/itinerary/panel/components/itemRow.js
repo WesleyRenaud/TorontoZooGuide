@@ -1,5 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 
 function createItemNameElement({
    name,
@@ -43,17 +43,17 @@ export class ItemRow {
       secondaryActionLabel = '',
       onSecondaryAction = null,
    }) {
-      const row = Dom.el('div', 'itin-panel-item');
+      const row = ItineraryPanelDom.el('div', 'itin-panel-item');
 
-      const left = Dom.el('div', 'itin-panel-item-left');
+      const left = ItineraryPanelDom.el('div', 'itin-panel-item-left');
 
       if (imageSrc) {
-         const thumb = Dom.el('div', 'itin-panel-thumb');
-         thumb.appendChild(Dom.safeImg(imageSrc));
+         const thumb = ItineraryPanelDom.el('div', 'itin-panel-thumb');
+         thumb.appendChild(ItineraryPanelDom.safeImg(imageSrc));
          left.appendChild(thumb);
       }
 
-      const text = Dom.el('div', 'itin-panel-text');
+      const text = ItineraryPanelDom.el('div', 'itin-panel-text');
       text.appendChild(createItemNameElement({
          name,
          nameSuffix,
@@ -64,7 +64,7 @@ export class ItemRow {
 
       metaLines.forEach(line => {
          if (!line) return;
-         text.appendChild(Dom.el('div', 'itin-panel-meta', line));
+         text.appendChild(ItineraryPanelDom.el('div', 'itin-panel-meta', line));
       });
 
       if (alertLine) {
@@ -73,11 +73,11 @@ export class ItemRow {
                ? 'itin-panel-alert-positive'
                : 'itin-panel-alert';
 
-         text.appendChild(Dom.el('div', alertClass, alertLine));
+         text.appendChild(ItineraryPanelDom.el('div', alertClass, alertLine));
       }
 
       if (linkText) {
-         const link = Dom.el('div', 'itin-panel-link', linkText);
+         const link = ItineraryPanelDom.el('div', 'itin-panel-link', linkText);
          link.addEventListener('click', (e) => {
             e.stopPropagation();
             onLinkClick?.();
@@ -102,7 +102,7 @@ export class ItemRow {
       }
 
       if (rowActions.length) {
-         const actions = Dom.el('div', 'itin-panel-item-actions');
+         const actions = ItineraryPanelDom.el('div', 'itin-panel-item-actions');
 
          rowActions.forEach(({ label, onAction: handleAction }) => {
             const actionButton = document.createElement('button');

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
-import { State } from '../../../../scripts/itinerary/wizard/state.js';
+import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -34,7 +34,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
                date: '',
                animals: [],
                attractions: [],
@@ -81,7 +81,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: () => {
-               const wizard = State.createItineraryWizardState({
+               const wizard = ItineraryWizardStore.createItineraryWizardState({
                   date: '',
                   animals: [],
                   attractions: [],
@@ -135,7 +135,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: () => {
-               const wizard = State.createItineraryWizardState({
+               const wizard = ItineraryWizardStore.createItineraryWizardState({
                   date: '',
                   animals: [],
                   attractions: [],
@@ -180,7 +180,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
                date: '2026-06-15',
                animals: [],
                attractions: [],
@@ -239,7 +239,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: (existing) => {
-               wizard = State.createItineraryWizardState(existing);
+               wizard = ItineraryWizardStore.createItineraryWizardState(existing);
                return wizard;
             },
             createDateStepController: () => ({ show() {} }),
@@ -304,7 +304,7 @@ test.describe('WizardController.openItineraryWizard close flow', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 6, 28),
             createWizardState: (existing) => {
-               wizard = State.createItineraryWizardState(existing ?? {
+               wizard = ItineraryWizardStore.createItineraryWizardState(existing ?? {
                   date: '',
                   animals: [],
                   attractions: [],
@@ -403,7 +403,7 @@ test.describe('WizardController.openItineraryWizard finish flow', () => {
                isActive: true,
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: (existing) => State.createItineraryWizardState(existing),
+            createWizardState: (existing) => ItineraryWizardStore.createItineraryWizardState(existing),
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [
                {
@@ -461,7 +461,7 @@ test.describe('WizardController.openItineraryWizard finish flow', () => {
                isActive: true,
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: (existing) => State.createItineraryWizardState(existing),
+            createWizardState: (existing) => ItineraryWizardStore.createItineraryWizardState(existing),
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [
                {

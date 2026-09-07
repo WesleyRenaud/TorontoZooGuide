@@ -1,6 +1,6 @@
 import { DayPlannerTimelineMetrics } from '../dayPlannerTimelineMetrics.js';
-import { Dom } from '../dom.js';
-import { Constants } from '../../../shared/constants.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
 
@@ -75,14 +75,14 @@ function resolveStripPlacementBand(
    gridLine,
    offsetFraction = 0,
    durationMinutes = null,
-   slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
+   slotSpanMinutes = TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
 ) {
    const pointBand = DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, offsetFraction);
 
    if (Number.isFinite(durationMinutes) && durationMinutes > 0) {
       const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
          ? slotSpanMinutes
-         : Constants.TIMELINE_SLOT_MINUTES;
+         : TimelineLayoutConstants.TIMELINE_SLOT_MINUTES;
 
       return {
          offsetFraction: pointBand.offsetFraction,
@@ -123,7 +123,7 @@ export class DayPlannerTimelinePillPlacement {
       }
 
       const placementBand = resolveStripPlacementBand(gridLine, offsetFraction);
-      const pillStrip = Dom.el('div', 'itinerary-day-pill-strip');
+      const pillStrip = ItineraryPanelDom.el('div', 'itinerary-day-pill-strip');
 
       if (offsetFraction > 0) {
          pillStrip.setAttribute('data-offset-fraction', String(offsetFraction));
@@ -149,7 +149,7 @@ export class DayPlannerTimelinePillPlacement {
       gridLine,
       offsetFraction = 0,
       durationMinutes = 0,
-      slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES
+      slotSpanMinutes = TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
    ) {
       const placementBand = resolveStripPlacementBand(
          gridLine,
@@ -157,7 +157,7 @@ export class DayPlannerTimelinePillPlacement {
          durationMinutes,
          slotSpanMinutes
       );
-      const pillStrip = Dom.el('div', 'itinerary-day-pill-strip');
+      const pillStrip = ItineraryPanelDom.el('div', 'itinerary-day-pill-strip');
 
       if (offsetFraction > 0) {
          pillStrip.setAttribute('data-offset-fraction', String(offsetFraction));

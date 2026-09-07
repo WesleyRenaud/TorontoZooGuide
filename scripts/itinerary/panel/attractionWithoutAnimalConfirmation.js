@@ -1,6 +1,6 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Format } from './format.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
 const ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
@@ -26,13 +26,13 @@ export class AttractionWithoutAnimalConfirmation {
          .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
-            const attractionName = Format.normalizeText(item?.name);
+            const attractionName = ItineraryItemFormatter.normalizeText(item?.name);
 
             if (!attractionName) {
                return;
             }
 
-            const attractionTime = Format.formatClockTime(item?.start_time);
+            const attractionTime = ItineraryItemFormatter.formatClockTime(item?.start_time);
 
             attractionsByName.set(
                attractionName,
@@ -60,7 +60,7 @@ export class AttractionWithoutAnimalConfirmation {
       strings = Strings.itinerary.confirmation,
       } = {}
    ) {
-      const attractionName = Format.normalizeText(attraction.attractionName);
+      const attractionName = ItineraryItemFormatter.normalizeText(attraction.attractionName);
       const body = attraction.attractionTime
          ? strings.attractionWithoutAnimalBody(
             attractionName,
@@ -80,7 +80,7 @@ export class AttractionWithoutAnimalConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const attractions = AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues);
 

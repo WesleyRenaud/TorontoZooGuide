@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class AddGuardiansTalkOccurrence {
@@ -54,7 +54,7 @@ export class AddGuardiansTalkOccurrence {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
 
@@ -62,12 +62,12 @@ export class AddGuardiansTalkOccurrence {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
       showButtonEl?.addEventListener('click', async () => {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             resetForm();
@@ -75,7 +75,7 @@ export class AddGuardiansTalkOccurrence {
             show();
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
             show();
          }
       });
@@ -85,12 +85,12 @@ export class AddGuardiansTalkOccurrence {
       submitButtonEl?.addEventListener('click', async () => {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -98,7 +98,7 @@ export class AddGuardiansTalkOccurrence {
             const result = await ConsoleOperationsApi.addGuardiansTalkOccurrence(formValues);
 
             if (!result.success) {
-               Status.setStatus(
+               ConsoleStatusPresenter.setStatus(
                   statusEl,
                   ApiErrorMessageResolver.resolveConsoleMutationError(result),
                   'is-error'
@@ -106,7 +106,7 @@ export class AddGuardiansTalkOccurrence {
                return;
             }
 
-            Status.setStatus(
+            ConsoleStatusPresenter.setStatus(
                statusEl,
                `${result.talk} in ${result.location} on ${result.date} at ${result.times[0]} was added.`,
                'is-success'
@@ -114,7 +114,7 @@ export class AddGuardiansTalkOccurrence {
             resetForm();
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       });
 

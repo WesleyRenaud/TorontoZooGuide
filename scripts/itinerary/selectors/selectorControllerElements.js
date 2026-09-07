@@ -1,4 +1,4 @@
-import { Shell } from './base/shell.js';
+import { SelectorShellBuilder } from './base/selectorShellBuilder.js';
 
 export class SelectorControllerElements {
    static createSelectorElements({
@@ -7,7 +7,7 @@ export class SelectorControllerElements {
       subtitle,
       hideNextButton,
    } = {}) {
-      const shell = Shell.buildSelectorShell({
+      const shell = SelectorShellBuilder.buildSelectorShell({
          topTitle,
          h1,
          subtitle,

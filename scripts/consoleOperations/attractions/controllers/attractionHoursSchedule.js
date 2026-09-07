@@ -5,9 +5,9 @@ import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 function timePairIsOrdered(startTime, endTime) {
@@ -40,7 +40,7 @@ export class AttractionHoursSchedule {
       weekendHolidayStartTimePicker = null,
       weekendHolidayEndTimePicker = null,
       activatePanel,
-      loadAttractions = Loaders.loadAttractions,
+      loadAttractions = ConsoleOptionsLoader.loadAttractions,
       loadTimeBounds = ConsoleOperationsApi.getAttractionHoursScheduleTimeBounds,
       saveSchedule = ConsoleOperationsApi.setAttractionHoursSchedule,
       replaceScheduleOverlaps = ConsoleOperationsApi.replaceAttractionHoursScheduleOverlaps,
@@ -140,7 +140,7 @@ export class AttractionHoursSchedule {
          }
 
          applyTimeBounds(null);
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             ApiErrorMessageResolver.resolveConsoleMutationError(
                boundsResult,
@@ -152,17 +152,17 @@ export class AttractionHoursSchedule {
       }
 
       async function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             const attractions = await loadAttractions();
-            Dropdowns.populateAttractionDropdown(attractionEl, attractions);
+            ConsoleDropdownPopulator.populateAttractionDropdown(attractionEl, attractions);
             resetForm();
             await refreshTimeBounds();
             activatePanel?.(panelEl);
          }
          catch {
-            Status.setStatus(
+            ConsoleStatusPresenter.setStatus(
                statusEl,
                Strings.loadErrors.entityOptions(
                   Strings.entityLabels.attractions
@@ -177,7 +177,7 @@ export class AttractionHoursSchedule {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -196,7 +196,7 @@ export class AttractionHoursSchedule {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             Strings.status.attractionHoursScheduleSaved(result.attraction),
             'is-success'
@@ -209,11 +209,11 @@ export class AttractionHoursSchedule {
          const validationError = validateForm(values);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             const result = await saveSchedule(values);
@@ -235,7 +235,7 @@ export class AttractionHoursSchedule {
                   return;
                }
 
-               Status.setStatus(
+               ConsoleStatusPresenter.setStatus(
                   statusEl,
                   ApiErrorMessageResolver.resolveConsoleMutationError(resolved),
                   'is-error'
@@ -243,14 +243,14 @@ export class AttractionHoursSchedule {
                return;
             }
 
-            Status.setStatus(
+            ConsoleStatusPresenter.setStatus(
                statusEl,
                ApiErrorMessageResolver.resolveConsoleMutationError(result),
                'is-error'
             );
          }
          catch {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

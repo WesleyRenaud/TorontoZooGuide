@@ -2,9 +2,9 @@ import { ItineraryMapController } from '../itinerary/itineraryMapController.js';
 import { ItineraryRenderer } from '../itinerary/itineraryRenderer.js';
 import { ItineraryService } from '../itinerary/itineraryService.js';
 import { ItineraryShape } from '../itinerary/itineraryShape.js';
-import { Popup } from '../itinerary/panel/components/popup.js';
+import { ItineraryPanelPopup } from '../itinerary/panel/components/itineraryPanelPopup.js';
 import { OfferPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
-import { Summary } from '../itinerary/wizard/diff/summary.js';
+import { WizardDiffSummary } from '../itinerary/wizard/diff/wizardDiffSummary.js';
 import { ValidationPopup } from '../itinerary/wizard/validationPopup.js';
 import { WheelBlocker } from '../itinerary/wizard/wheelBlocker.js';
 import { WizardController } from '../itinerary/wizard/wizardController.js';
@@ -57,7 +57,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
          reducedVisibility: itinerary.validation.reducedVisibility,
          improvedVisibility: itinerary.validation.improvedVisibility,
          adjustments: itinerary.validation.adjustments,
-         isEmptyItinerary: Summary.isValidatedItineraryEmpty(itinerary),
+         isEmptyItinerary: WizardDiffSummary.isValidatedItineraryEmpty(itinerary),
       },
       onViewAlternatives: (step) => openWizard({ startAt: step }),
    });
@@ -151,7 +151,7 @@ async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
 
 export class ItineraryPage {
    static initItineraryPage() {
-      const mountEl = Popup.getItineraryOverlayMountEl();
+      const mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl();
       if (!mountEl) return;
 
       SpeciesOverlay.initSpeciesOverlay();

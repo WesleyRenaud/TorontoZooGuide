@@ -1,8 +1,8 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 
 function makeToggleButton({ label, view, activeView, onSelect }) {
-   const button = Dom.el('button', 'itin-panel-view-toggle-button', label);
+   const button = ItineraryPanelDom.el('button', 'itin-panel-view-toggle-button', label);
    button.type = 'button';
    button.dataset.view = view;
    button.setAttribute('aria-pressed', view === activeView ? 'true' : 'false');
@@ -32,11 +32,11 @@ export class ItineraryPanelViews {
       activeView = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
       onViewChange = null,
    } = {}) {
-      const root = Dom.el('div', 'itin-panel-view-shell');
-      const toggle = Dom.el('div', 'itin-panel-view-toggle');
-      const sharedHeader = Dom.el('div', 'itin-panel-shared-header');
-      const listView = Dom.el('div', 'itin-panel-view itin-panel-list-view');
-      const dayPlannerView = Dom.el('div', 'itin-panel-view itin-panel-day-planner-view');
+      const root = ItineraryPanelDom.el('div', 'itin-panel-view-shell');
+      const toggle = ItineraryPanelDom.el('div', 'itin-panel-view-toggle');
+      const sharedHeader = ItineraryPanelDom.el('div', 'itin-panel-shared-header');
+      const listView = ItineraryPanelDom.el('div', 'itin-panel-view itin-panel-list-view');
+      const dayPlannerView = ItineraryPanelDom.el('div', 'itin-panel-view itin-panel-day-planner-view');
 
       listView.dataset.view = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
       dayPlannerView.dataset.view = ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner;

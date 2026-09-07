@@ -1,28 +1,32 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class RemoveViewingAlertPanel {
    static createRemoveViewingAlertPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'removeViewingAlertPanel',
          title: Strings.panelTitles.removeViewingAlert,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.exhibit,
                inputId: 'removeViewingAlertExhibit',
                emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            Fragments.createAutocompleteField({
+            ConsoleAutocompleteFieldBuilder.createAutocompleteField({
                label: Strings.labels.species,
                inputId: 'removeViewingAlertSpecies',
                resultsId: 'removeViewingAlertSpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRemoveViewingAlert',
                submitLabel: Strings.actions.removeAlert,
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'removeViewingAlertStatus',
             }),
          ],

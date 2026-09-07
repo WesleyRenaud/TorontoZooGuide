@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
 export class EndGuardiansTalkSchedule {
@@ -27,7 +27,7 @@ export class EndGuardiansTalkSchedule {
          }
 
          if (talkNameEl?.tagName === 'SELECT') {
-            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
+            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';

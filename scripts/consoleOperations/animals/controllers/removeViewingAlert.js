@@ -1,9 +1,9 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class RemoveViewingAlert {
@@ -46,9 +46,9 @@ export class RemoveViewingAlert {
       async function show() {
          await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
-            setStatus: Status.setStatus,
-            loadOptions: Loaders.loadExhibits,
-            populateOptions: Dropdowns.populateExhibitDropdown,
+            setStatus: ConsoleStatusPresenter.setStatus,
+            loadOptions: ConsoleOptionsLoader.loadExhibits,
+            populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
             targetEl: exhibitEl,
             resetForm,
             activatePanel,
@@ -61,7 +61,7 @@ export class RemoveViewingAlert {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -73,7 +73,7 @@ export class RemoveViewingAlert {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
             'is-success'
@@ -85,12 +85,12 @@ export class RemoveViewingAlert {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -101,11 +101,11 @@ export class RemoveViewingAlert {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

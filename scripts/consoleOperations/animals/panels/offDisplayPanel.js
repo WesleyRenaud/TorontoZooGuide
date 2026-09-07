@@ -1,44 +1,50 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class OffDisplayPanel {
    static createOffDisplayPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'offDisplayPanel',
          title: Strings.panelTitles.offDisplay,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.exhibit,
                inputId: 'offDisplayExhibit',
                emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            Fragments.createAutocompleteField({
+            ConsoleAutocompleteFieldBuilder.createAutocompleteField({
                label: Strings.labels.species,
                inputId: 'offDisplaySpecies',
                resultsId: 'offDisplaySpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.viewingScope,
                inputId: 'offDisplayViewingScope',
                emptyOptionLabel: Strings.placeholders.viewingScope,
                options: Strings.viewingScopes,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'offDisplayStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'offDisplayEndDate',
                endHelpText: Strings.help.keepOffDisplayUntilOnDisplay,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.reason,
                inputId: 'offDisplayMessage',
                placeholder: Strings.textareas.offDisplayReason,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitOffDisplay',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'offDisplayStatus',
             }),
          ],

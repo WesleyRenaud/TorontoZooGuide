@@ -1,23 +1,28 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateFieldBuilder } from '../../templates/consoleDateFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class EditUpdatePanel {
    static createEditUpdatePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'editUpdatePanel',
          title: Strings.panelTitles.editUpdate,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.update,
                inputId: 'editUpdateKey',
                emptyOptionLabel: Strings.placeholders.update,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.description,
                inputId: 'editUpdateDescription',
                placeholder: Strings.textareas.currentDescription,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.type,
                inputId: 'editUpdateType',
                emptyOptionLabel: Strings.placeholders.option,
@@ -26,16 +31,16 @@ export class EditUpdatePanel {
                   { value: Strings.labels.departure },
                ],
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.endDate,
                inputId: 'editUpdateEndDate',
                placeholder: Strings.placeholders.newEndDate,
                helpText: Strings.help.keepUpdateActiveWithoutEndDate,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitEditUpdate',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'editUpdateStatus',
             }),
          ],

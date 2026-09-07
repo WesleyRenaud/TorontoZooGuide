@@ -1,6 +1,6 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Format } from './format.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
 const WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE = 'wildEncounterWillUnscheduleItems';
@@ -10,7 +10,7 @@ export class WildEncounterUnscheduleConfirmation {
       return issues
          .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
-            .map((item) => Format.normalizeText(item?.name))
+            .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
             .filter(Boolean));
 
    }
@@ -25,9 +25,9 @@ export class WildEncounterUnscheduleConfirmation {
       const encounterItem = issues
          .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
-         .find((item) => Format.normalizeText(item?.name) === encounterName);
+         .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === encounterName);
 
-      const encounterTime = Format.formatClockTime(encounterItem?.start_time);
+      const encounterTime = ItineraryItemFormatter.formatClockTime(encounterItem?.start_time);
 
       if (!encounterTime) {
          return { encounterName };
@@ -41,7 +41,7 @@ export class WildEncounterUnscheduleConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const encounter = WildEncounterUnscheduleConfirmation.getPrimaryWildEncounterFromUnscheduleIssues(issues);
 
@@ -49,7 +49,7 @@ export class WildEncounterUnscheduleConfirmation {
          return;
       }
 
-      const encounterName = Format.normalizeText(encounter.encounterName);
+      const encounterName = ItineraryItemFormatter.normalizeText(encounter.encounterName);
       const message = encounter.encounterTime
          ? Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
             encounterName,

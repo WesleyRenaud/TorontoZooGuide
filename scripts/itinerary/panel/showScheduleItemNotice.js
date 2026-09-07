@@ -1,12 +1,12 @@
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { NoticePopup } from './components/noticePopup.js';
-import { Popup } from './components/popup.js';
 import { Strings } from '../../strings.js';
 
 export class ShowScheduleItemNotice {
    static showScheduleItemNotice(message = '', deps = {}) {
       const {
          showNoticePopup = NoticePopup.showItineraryNoticePopup,
-         getMountEl = Popup.getItineraryPanelMountEl,
+         getMountEl = ItineraryPanelPopup.getItineraryPanelMountEl,
       } = deps;
       showNoticePopup({
          title: Strings.itinerary.scheduleItem.errorTitle,

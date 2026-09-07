@@ -1,7 +1,7 @@
 import { LikelihoodValues } from '../likelihood/likelihoodValues.js';
-import { Format } from './panel/format.js';
+import { ItineraryItemFormatter } from './panel/itineraryItemFormatter.js';
 import { SpeciesExhibitKey } from './speciesExhibitKey.js';
-import { Summary } from './wizard/diff/summary.js';
+import { WizardDiffSummary } from './wizard/diff/wizardDiffSummary.js';
 
 function maxStoredLikelihood(...values) {
    const likelihoods = values
@@ -147,10 +147,10 @@ export class ItineraryValidation {
          itineraryAnimalMinLikelihood,
       } = {}
    ) {
-      const visibilityChangeThreshold = Format.normalizeNonNegativeNumber(
+      const visibilityChangeThreshold = ItineraryItemFormatter.normalizeNonNegativeNumber(
          animalVisibilityChangeThreshold
       );
-      const animalMinLikelihood = Format.normalizeNonNegativeNumber(
+      const animalMinLikelihood = ItineraryItemFormatter.normalizeNonNegativeNumber(
          itineraryAnimalMinLikelihood
       );
       const visibilityAnimals = aggregateAnimalsForVisibilityComparison(
@@ -194,11 +194,11 @@ export class ItineraryValidation {
          improvedVisibility,
          adjustments: [],
          hasChanges: (
-            Summary.hasAddedItems(added)
-            || Summary.hasRemovedItems(removed)
-            || Summary.hasUnscheduledItems(unscheduled)
-            || Summary.hasReducedVisibility(reducedVisibility)
-            || Summary.hasImprovedVisibility(improvedVisibility)
+            WizardDiffSummary.hasAddedItems(added)
+            || WizardDiffSummary.hasRemovedItems(removed)
+            || WizardDiffSummary.hasUnscheduledItems(unscheduled)
+            || WizardDiffSummary.hasReducedVisibility(reducedVisibility)
+            || WizardDiffSummary.hasImprovedVisibility(improvedVisibility)
          ),
       };
    }

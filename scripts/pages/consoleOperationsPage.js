@@ -1,7 +1,7 @@
-import { Controllers } from '../consoleOperations/bootstrap/controllers.js';
+import { ConsoleControllersBootstrap } from '../consoleOperations/bootstrap/consoleControllersBootstrap.js';
+import { ConsoleOperationPanelsBootstrap } from '../consoleOperations/bootstrap/consoleOperationPanelsBootstrap.js';
+import { ConsoleOperationRefsCollector } from '../consoleOperations/bootstrap/consoleOperationRefsCollector.js';
 import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
-import { Panels } from '../consoleOperations/bootstrap/panels.js';
-import { Refs } from '../consoleOperations/bootstrap/refs.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
 const CONSOLE_OPERATIONS_WORKSPACE_ID = 'consoleOperationsWorkspace';
@@ -11,14 +11,14 @@ function getConsoleOperationsWorkspace() {
 }
 
 function createConsoleOperationSpecialControllers(refs) {
-   return Controllers.createConsoleSpecialControllers({
+   return ConsoleControllersBootstrap.createConsoleSpecialControllers({
       guardiansTalks: refs.guardiansTalks,
       wildEncounters: refs.wildEncounters,
    });
 }
 
 function initConsoleOperationPanels(workspaceEl) {
-   Panels.mountConsoleOperationPanels(workspaceEl);
+   ConsoleOperationPanelsBootstrap.mountConsoleOperationPanels(workspaceEl);
 }
 
 function initConsoleOperationControllers(refs) {
@@ -27,7 +27,7 @@ function initConsoleOperationControllers(refs) {
       restorePanelFromUrl,
    } = PanelNavigator.createConsolePanelNavigator(document);
 
-   Controllers.wireConsoleOperationControllers({
+   ConsoleControllersBootstrap.wireConsoleOperationControllers({
       refs,
       activatePanel,
       ...createConsoleOperationSpecialControllers(refs),
@@ -51,7 +51,7 @@ export class ConsoleOperationsPage {
 
       initConsoleOperationPanels(workspaceEl);
 
-      const refs = Refs.collectConsoleOperationRefs(document);
+      const refs = ConsoleOperationRefsCollector.collectConsoleOperationRefs(document);
 
       initConsoleOperationControllers(refs);
       initConsoleOperationDateControls(refs);

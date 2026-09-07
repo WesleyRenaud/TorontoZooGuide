@@ -1,8 +1,8 @@
-import { Constants } from '../../shared/constants.js';
+import { TimelineLayoutConstants } from '../../shared/timelineLayoutConstants.js';
 
 export class ScheduledPillPresentation {
    static isExtendedScheduledPill(durationMinutes) {
       return Number.isFinite(durationMinutes)
-         && durationMinutes >= Constants.EXTENDED_SCHEDULED_PILL_MINUTES;
+         && durationMinutes >= TimelineLayoutConstants.EXTENDED_SCHEDULED_PILL_MINUTES;
    }
 }

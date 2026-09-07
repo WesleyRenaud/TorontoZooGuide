@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { Strings } from '../../../../scripts/strings.js';
-import { Fragments } from '../../../../scripts/consoleOperations/templates/fragments.js';
 import { ScheduleTimesCheckboxField } from '../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleScheduleTimesCheckboxFieldBuilder.js';
 
 function getCheckboxEls(listEl) {
    return [
@@ -18,7 +18,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    installDomTestHooks();
 
    test('Test_CreateScheduleTimesCheckboxField_TestIdle_ExpectPlaceholder', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesIdle',
       });
@@ -33,7 +33,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestTimes_ExpectUnchecked', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimes',
       });
@@ -51,7 +51,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestSingleTime_ExpectAutoSelect', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingle',
       });
@@ -70,7 +70,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_UpdateScheduleTimesCheckboxList_TestSingleOccurrence_ExpectAutoSelect', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSingleUpdate',
       });
@@ -87,7 +87,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_PopulateScheduleTimesCheckboxList_TestEmpty_ExpectNoTimesMessage', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesEmpty',
       });
@@ -105,7 +105,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_ResetScheduleTimesCheckboxList_TestReset_ExpectIdlePlaceholder', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesReset',
       });
@@ -121,7 +121,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_UpdateScheduleTimesCheckboxList_TestEncounterNoDate_ExpectSelectDate', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelectDate',
       });
@@ -140,7 +140,7 @@ test.describe('Test_ScheduleTimesCheckboxField', () => {
    });
 
    test('Test_GetSelectedScheduleTimes_TestChecked_ExpectValues', () => {
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testEncounterTimesSelected',
       });

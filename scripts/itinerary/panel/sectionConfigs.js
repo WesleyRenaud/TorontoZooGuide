@@ -1,4 +1,4 @@
-import { Rows } from './rows.js';
+import { ItineraryPanelRowsBuilder } from './itineraryPanelRowsBuilder.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
 import { Strings } from '../../strings.js';
@@ -52,24 +52,24 @@ export class SectionConfigs {
          transportations,
          { splitSequences: splitTransportationSequences }
       );
-      const animalRows = Rows.buildAnimalRows(animals, rowActionOptions);
+      const animalRows = ItineraryPanelRowsBuilder.buildAnimalRows(animals, rowActionOptions);
       const attractionRows = [
-         ...Rows.buildAttractionRows(attractions, rowActionOptions),
-         ...Rows.buildTransportationRows(
+         ...ItineraryPanelRowsBuilder.buildAttractionRows(attractions, rowActionOptions),
+         ...ItineraryPanelRowsBuilder.buildTransportationRows(
             listTransportations.filter(
                TransportationSelectorModel.isTransportationAddedAsAttraction
             ),
             rowActionOptions
          ),
       ];
-      const transportationRows = Rows.buildTransportationRows(
+      const transportationRows = ItineraryPanelRowsBuilder.buildTransportationRows(
          listTransportations.filter((item) => (
             !TransportationSelectorModel.isTransportationAddedAsAttraction(item)
          )),
          rowActionOptions
       );
-      const guardiansRows = Rows.buildGuardiansRows(guardiansTalks, { onRemoveItem });
-      const wildRows = Rows.buildWildRows(wildEncounters, { onRemoveItem });
+      const guardiansRows = ItineraryPanelRowsBuilder.buildGuardiansRows(guardiansTalks, { onRemoveItem });
+      const wildRows = ItineraryPanelRowsBuilder.buildWildRows(wildEncounters, { onRemoveItem });
       const sectionConfigs = [
          {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,

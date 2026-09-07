@@ -1,7 +1,7 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Format } from './format.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../strings.js';
 import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
@@ -44,7 +44,7 @@ function longWaitItems(issues = []) {
 }
 
 function longWaitConfirmMessage(item, strings) {
-   const itemName = Format.normalizeText(item.itemName);
+   const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
 
    return item.itemTime
       ? strings.fixedTimeItemLongWaitMessage(
@@ -69,14 +69,14 @@ export class FixedTimeItemLongWaitConfirmation {
 
       return longWaitItems(issues)
          .map((item) => {
-            const itemName = Format.normalizeText(item?.name);
+            const itemName = ItineraryItemFormatter.normalizeText(item?.name);
 
             if (!itemName) {
                return null;
             }
 
             const itemMeta = resolveItemTypeMeta(item);
-            const itemTime = Format.formatClockTime(item.start_time);
+            const itemTime = ItineraryItemFormatter.formatClockTime(item.start_time);
 
             return {
                issueType,
@@ -95,7 +95,7 @@ export class FixedTimeItemLongWaitConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const items = FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues);
 

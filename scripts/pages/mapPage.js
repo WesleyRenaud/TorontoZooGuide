@@ -1,8 +1,8 @@
 import { FocusFromQuery } from '../focus/focusFromQuery.js';
 import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
-import { Controls } from '../map/controls.js';
 import { DateContext } from '../map/dateContext.js';
 import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { MapControlsBinder } from '../map/mapControlsBinder.js';
 import { MapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
@@ -127,7 +127,7 @@ function initMapPageControls({
    getSearch,
    earliestSelectableNoon,
 } = {}) {
-   Controls.initMapControls({
+   MapControlsBinder.initMapControls({
       mapPreset: elements.mapPreset,
       mapDateInput: elements.mapDateInput,
       includeOffDisplayCheckbox: elements.includeOffDisplayCheckbox,

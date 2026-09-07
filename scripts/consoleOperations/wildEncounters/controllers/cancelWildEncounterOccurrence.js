@@ -2,10 +2,10 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class CancelWildEncounterOccurrence {
@@ -48,7 +48,7 @@ export class CancelWildEncounterOccurrence {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
 
@@ -56,7 +56,7 @@ export class CancelWildEncounterOccurrence {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -78,8 +78,8 @@ export class CancelWildEncounterOccurrence {
 
       async function prepareForm() {
          if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await Loaders.loadWildEncounters();
-            Dropdowns.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
+            const wildEncounters = await ConsoleOptionsLoader.loadWildEncounters();
+            ConsoleDropdownPopulator.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
       }
 
@@ -92,7 +92,7 @@ export class CancelWildEncounterOccurrence {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             `${result.wildEncounter} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
             'is-success'
@@ -102,7 +102,7 @@ export class CancelWildEncounterOccurrence {
       }
 
       async function onShowClick() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             resetForm();
@@ -110,7 +110,7 @@ export class CancelWildEncounterOccurrence {
             show();
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.loadErrors.wildEncounters, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.wildEncounters, 'is-error');
             show();
          }
       }
@@ -118,12 +118,12 @@ export class CancelWildEncounterOccurrence {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -134,11 +134,11 @@ export class CancelWildEncounterOccurrence {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

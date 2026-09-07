@@ -1,24 +1,31 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsoleDateFieldBuilder } from '../../templates/consoleDateFieldBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class VisibilitySchedulePanel {
    static createVisibilitySchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'visibilitySchedulePanel',
          title: Strings.panelTitles.visibilitySchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.exhibit,
                inputId: 'visibilityScheduleExhibit',
                emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            Fragments.createAutocompleteField({
+            ConsoleAutocompleteFieldBuilder.createAutocompleteField({
                label: Strings.labels.species,
                inputId: 'visibilityScheduleSpecies',
                resultsId: 'visibilityScheduleSpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'visibilityScheduleStartDate',
                startLabel: Strings.labels.scheduleStartDate,
                startHelpText: Strings.help.startImmediately,
@@ -26,25 +33,25 @@ export class VisibilitySchedulePanel {
                endLabel: Strings.labels.scheduleEndDate,
                endHelpText: Strings.help.keepVisibilityScheduleUntilChanged,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.dailyViewingStartTime,
                inputId: 'visibilityScheduleDailyStartTime',
                placeholder: Strings.placeholders.dailyStartTime,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.dailyViewingEndTime,
                inputId: 'visibilityScheduleDailyEndTime',
                placeholder: Strings.placeholders.dailyEndTime,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.message,
                inputId: 'visibilityScheduleMessage',
                placeholder: Strings.textareas.viewingMessage,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitVisibilitySchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'visibilityScheduleStatus',
             }),
          ],

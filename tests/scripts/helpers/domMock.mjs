@@ -1,6 +1,6 @@
 /** Minimal DOM stubs for itinerary panel component tests. */
 
-import { Constants } from '../../../scripts/shared/constants.js';
+import { TimelineLayoutConstants } from '../../../scripts/shared/timelineLayoutConstants.js';
 import { createDomNode } from './domNodeMock.mjs';
 import { queryNodes, querySelectorInNode } from './domSelectorMock.mjs';
 
@@ -96,14 +96,14 @@ export function installTestWindow() {
             property === '--itinerary-half-hour-slot-height'
             && element?.classList?.contains('itinerary-day-timeline')
          ) {
-            return `${Constants.TIMELINE_SLOT_HEIGHT_PX}px`;
+            return `${TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX}px`;
          }
 
          if (
             property === '--itinerary-pill-strip-top-offset'
             && element?.classList?.contains('itinerary-day-timeline')
          ) {
-            return `${Constants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX}px`;
+            return `${TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX}px`;
          }
 
          return '';

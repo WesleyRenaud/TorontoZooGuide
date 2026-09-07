@@ -1,23 +1,29 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
+import { ConsoleTextInputFieldBuilder } from '../../templates/consoleTextInputFieldBuilder.js';
 
 export class CreateUpdatePanel {
    static createCreateUpdatePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'createUpdatePanel',
          title: Strings.panelTitles.createUpdate,
          bodyChildren: [
-            Fragments.createTextInputField({
+            ConsoleTextInputFieldBuilder.createTextInputField({
                label: Strings.labels.title,
                inputId: 'createUpdateTitle',
                placeholder: Strings.textareas.updateTitleExample,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.description,
                inputId: 'createUpdateDescription',
                placeholder: Strings.textareas.updateDescription,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.type,
                inputId: 'createUpdateType',
                emptyOptionLabel: Strings.placeholders.type,
@@ -26,16 +32,16 @@ export class CreateUpdatePanel {
                   { value: Strings.labels.departure },
                ],
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'createUpdateStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'createUpdateEndDate',
                endHelpText: Strings.help.keepUpdateActiveWithoutEndDate,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitCreateUpdate',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'createUpdateStatus',
             }),
          ],

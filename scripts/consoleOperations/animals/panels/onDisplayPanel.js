@@ -1,33 +1,37 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class OnDisplayPanel {
    static createOnDisplayPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'onDisplayPanel',
          title: Strings.panelTitles.onDisplay,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.exhibit,
                inputId: 'onDisplayExhibit',
                emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            Fragments.createAutocompleteField({
+            ConsoleAutocompleteFieldBuilder.createAutocompleteField({
                label: Strings.labels.species,
                inputId: 'onDisplaySpecies',
                resultsId: 'onDisplaySpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.viewingScope,
                inputId: 'onDisplayViewingScope',
                emptyOptionLabel: Strings.placeholders.viewingScope,
                options: Strings.viewingScopes,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitOnDisplay',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'onDisplayStatus',
             }),
          ],

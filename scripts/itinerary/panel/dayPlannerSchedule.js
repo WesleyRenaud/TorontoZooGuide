@@ -1,7 +1,7 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { Format } from './format.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import { Constants } from '../../shared/constants.js';
+import { TimelineLayoutConstants } from '../../shared/timelineLayoutConstants.js';
 
 function isTimeWithinBounds(timeValue, bounds) {
    if (!bounds) {
@@ -89,7 +89,7 @@ export class DayPlannerSchedule {
    }
 
    static formatMinutesAsClockTime(totalMinutes) {
-      return Format.formatClockTime(
+      return ItineraryItemFormatter.formatClockTime(
          DayPlannerSchedule.formatMinutesAsScheduleTimeKey(totalMinutes)
       );
    }
@@ -252,15 +252,15 @@ export class DayPlannerSchedule {
       }
 
       const slotStarts = [];
-      const firstHalfHour = Math.ceil(openMinutes / Constants.TIMELINE_SLOT_MINUTES)
-         * Constants.TIMELINE_SLOT_MINUTES;
+      const firstHalfHour = Math.ceil(openMinutes / TimelineLayoutConstants.TIMELINE_SLOT_MINUTES)
+         * TimelineLayoutConstants.TIMELINE_SLOT_MINUTES;
 
       slotStarts.push(openMinutes);
 
       for (
          let slotStart = firstHalfHour;
          slotStart < closeMinutes;
-         slotStart += Constants.TIMELINE_SLOT_MINUTES
+         slotStart += TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
       ) {
          if (slotStart === openMinutes) {
             continue;

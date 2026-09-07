@@ -2,9 +2,9 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class CancelGuardiansTalkOccurrence {
@@ -40,7 +40,7 @@ export class CancelGuardiansTalkOccurrence {
             talkLocationFilterController.clear();
          }
          else if (talkNameEl?.tagName === 'SELECT') {
-            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
+            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';
@@ -64,7 +64,7 @@ export class CancelGuardiansTalkOccurrence {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
 
@@ -72,7 +72,7 @@ export class CancelGuardiansTalkOccurrence {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -112,7 +112,7 @@ export class CancelGuardiansTalkOccurrence {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             `${result.talk} in ${result.location} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
             'is-success'
@@ -122,7 +122,7 @@ export class CancelGuardiansTalkOccurrence {
       }
 
       async function onShowClick() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             resetForm();
@@ -130,7 +130,7 @@ export class CancelGuardiansTalkOccurrence {
             show();
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
             show();
          }
       }
@@ -138,12 +138,12 @@ export class CancelGuardiansTalkOccurrence {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -154,12 +154,12 @@ export class CancelGuardiansTalkOccurrence {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
 
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

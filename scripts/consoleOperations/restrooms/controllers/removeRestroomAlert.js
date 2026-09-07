@@ -1,9 +1,9 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class RemoveRestroomAlert {
@@ -29,9 +29,9 @@ export class RemoveRestroomAlert {
       async function show() {
          await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
-            setStatus: Status.setStatus,
-            loadOptions: Loaders.loadRestrooms,
-            populateOptions: Dropdowns.populateRestroomDropdown,
+            setStatus: ConsoleStatusPresenter.setStatus,
+            loadOptions: ConsoleOptionsLoader.loadRestrooms,
+            populateOptions: ConsoleDropdownPopulator.populateRestroomDropdown,
             targetEl: restroomEl,
             resetForm,
             activatePanel,
@@ -44,12 +44,12 @@ export class RemoveRestroomAlert {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             `Alert removed for ${result.restroom}.`,
             'is-success'
@@ -61,10 +61,10 @@ export class RemoveRestroomAlert {
       async function onSubmitClick() {
          const restroom = getRestroom();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          if (!restroom) {
-            Status.setStatus(statusEl, Strings.validation.entityRequired(Strings.entityLabels.restroom), 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.validation.entityRequired(Strings.entityLabels.restroom), 'is-error');
             return;
          }
 
@@ -75,11 +75,11 @@ export class RemoveRestroomAlert {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

@@ -1,4 +1,4 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 
 export class ScheduleItemButton {
@@ -41,7 +41,7 @@ export class ScheduleItemButton {
       onClick = null,
       variant = 'primary',
    } = {}) {
-      const button = Dom.el('button', 'itinerary-day-schedule-item-btn', label);
+      const button = ItineraryPanelDom.el('button', 'itinerary-day-schedule-item-btn', label);
       button.type = 'button';
       button.dataset.defaultLabel = label;
 
@@ -61,7 +61,7 @@ export class ScheduleItemButton {
    }
 
    static makeScheduleActionsBar(buttons = []) {
-      const bar = Dom.el('div', 'itinerary-day-schedule-actions');
+      const bar = ItineraryPanelDom.el('div', 'itinerary-day-schedule-actions');
 
       buttons.forEach((button) => {
          bar.appendChild(button);

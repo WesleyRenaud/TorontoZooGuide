@@ -1,14 +1,14 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 
 function resolvePillStrip(pill) {
    return pill.closest?.('.itinerary-day-pill-strip') ?? null;
 }
 
 function buildPillMenuButtonDots() {
-   const dots = Dom.el('span', 'itinerary-day-open-pill-menu-dots');
+   const dots = ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dots');
 
    for (let index = 0; index < 3; index += 1) {
-      dots.appendChild(Dom.el('span', 'itinerary-day-open-pill-menu-dot'));
+      dots.appendChild(ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dot'));
    }
 
    return dots;
@@ -53,7 +53,7 @@ function bindMenuPanelActions(menuPanel, menuItems, closeMenu) {
 
 export class ItineraryPillMenu {
    static buildPillMenuNodes(menuAriaLabel, menuItems = []) {
-      const menu = Dom.el('div', 'itinerary-day-open-pill-menu');
+      const menu = ItineraryPanelDom.el('div', 'itinerary-day-open-pill-menu');
       const menuButton = document.createElement('button');
 
       menuButton.type = 'button';
@@ -63,7 +63,7 @@ export class ItineraryPillMenu {
       menuButton.setAttribute('aria-expanded', 'false');
       menuButton.appendChild(buildPillMenuButtonDots());
 
-      const menuPanel = Dom.el('div', 'itinerary-day-open-pill-menu-panel');
+      const menuPanel = ItineraryPanelDom.el('div', 'itinerary-day-open-pill-menu-panel');
       menuPanel.setAttribute('role', 'menu');
       menuPanel.hidden = true;
 

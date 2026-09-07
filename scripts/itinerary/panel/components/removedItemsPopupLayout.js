@@ -1,24 +1,24 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupLayout {
    static createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {}) {
-      const root = Dom.el('div', 'tzg-popup');
-      const overlay = Dom.el('div', 'itin-overlay');
+      const root = ItineraryPanelDom.el('div', 'tzg-popup');
+      const overlay = ItineraryPanelDom.el('div', 'itin-overlay');
 
-      const card = Dom.el('section', 'itin-card itin-removed-popup-card');
+      const card = ItineraryPanelDom.el('section', 'itin-card itin-removed-popup-card');
 
-      const topbar = Dom.el('div', 'itin-card-topbar itin-card-topbar-with-close');
+      const topbar = ItineraryPanelDom.el('div', 'itin-card-topbar itin-card-topbar-with-close');
       topbar.appendChild(
-         Dom.el('div', 'itin-top-title', Strings.itinerary.removedItems.itineraryUpdated)
+         ItineraryPanelDom.el('div', 'itin-top-title', Strings.itinerary.removedItems.itineraryUpdated)
       );
 
-      const closeBtn = Dom.el('button', 'itin-close', Strings.common.closeSymbol);
+      const closeBtn = ItineraryPanelDom.el('button', 'itin-close', Strings.common.closeSymbol);
       closeBtn.type = 'button';
       topbar.appendChild(closeBtn);
 
-      const body = Dom.el('div', 'itin-card-body itin-removed-popup-body');
-      const content = Dom.el(
+      const body = ItineraryPanelDom.el('div', 'itin-card-body itin-removed-popup-body');
+      const content = ItineraryPanelDom.el(
          'div',
          isEmptyItinerary
             ? 'itin-removed-popup-content itin-removed-popup-content-empty'
@@ -26,7 +26,7 @@ export class RemovedItemsPopupLayout {
       );
 
       content.appendChild(
-         Dom.el(
+         ItineraryPanelDom.el(
             'div',
             'itin-h1',
             isEmptyItinerary
@@ -36,7 +36,7 @@ export class RemovedItemsPopupLayout {
       );
 
       content.appendChild(
-         Dom.el(
+         ItineraryPanelDom.el(
             'div',
             'itin-subtitle',
             isEmptyItinerary
@@ -47,9 +47,9 @@ export class RemovedItemsPopupLayout {
 
       body.appendChild(content);
 
-      const actions = Dom.el('div', 'itin-card-actions');
+      const actions = ItineraryPanelDom.el('div', 'itin-card-actions');
 
-      const okBtn = Dom.el(
+      const okBtn = ItineraryPanelDom.el(
          'button',
          'itin-finish',
          Strings.itinerary.actions.accept

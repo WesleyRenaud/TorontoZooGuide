@@ -1,4 +1,4 @@
-import { Summary } from './diff/summary.js';
+import { WizardDiffSummary } from './diff/wizardDiffSummary.js';
 import { RemovedItemsPopup } from '../../itinerary/panel/components/removedItemsPopup.js';
 import { ItineraryService } from '../itineraryService.js';
 
@@ -17,11 +17,11 @@ export class ValidationPopup {
       const isEmptyItinerary = pendingValidation?.isEmptyItinerary ?? false;
 
       if (
-         !Summary.hasRemovedItems(removed) &&
-         !Summary.hasUnscheduledItems(unscheduled) &&
-         !Summary.hasAddedItems(added) &&
-         !Summary.hasReducedVisibility(reducedVisibility) &&
-         !Summary.hasImprovedVisibility(improvedVisibility) &&
+         !WizardDiffSummary.hasRemovedItems(removed) &&
+         !WizardDiffSummary.hasUnscheduledItems(unscheduled) &&
+         !WizardDiffSummary.hasAddedItems(added) &&
+         !WizardDiffSummary.hasReducedVisibility(reducedVisibility) &&
+         !WizardDiffSummary.hasImprovedVisibility(improvedVisibility) &&
          !adjustments?.length
       ) {
          return;

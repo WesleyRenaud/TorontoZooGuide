@@ -1,36 +1,40 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateFieldBuilder } from '../../templates/consoleDateFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class AddGuardiansTalkOccurrencePanel {
    static createAddGuardiansTalkOccurrencePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'addGuardiansTalkOccurrencePanel',
          title: Strings.panelTitles.addGuardiansTalkOccurrence,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.location,
                inputId: 'addGuardiansTalkOccurrenceLocation',
                emptyOptionLabel: Strings.placeholders.location,
             }),
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.labels.talkName,
                inputId: 'addGuardiansTalkOccurrenceTalkName',
                emptyOptionLabel: Strings.placeholders.talk,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.date,
                inputId: 'addGuardiansTalkOccurrenceDate',
                placeholder: Strings.placeholders.startDate,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.talkTime,
                inputId: 'addGuardiansTalkOccurrenceTime',
                placeholder: Strings.placeholders.time,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitAddGuardiansTalkOccurrence',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'addGuardiansTalkOccurrenceStatus',
             }),
          ],

@@ -1,5 +1,5 @@
-import { Dom } from '../dom.js';
-import { Constants } from '../../../shared/constants.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 
 export class DayPlannerActionFeedbackBanner {
    static appendDayPlannerActionFeedbackSlot(container) {
@@ -7,7 +7,7 @@ export class DayPlannerActionFeedbackBanner {
          return null;
       }
 
-      const slot = Dom.el('div', 'itinerary-day-action-feedback-slot');
+      const slot = ItineraryPanelDom.el('div', 'itinerary-day-action-feedback-slot');
       slot.setAttribute('aria-live', 'polite');
       container.appendChild(slot);
 
@@ -21,15 +21,15 @@ export class DayPlannerActionFeedbackBanner {
          message = '',
       } = {},
       {
-         dismissMs = Constants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
-         fadeMs = Constants.DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
+         dismissMs = TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
+         fadeMs = TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
       } = {}
    ) {
       if (!slot || !message) {
          return null;
       }
 
-      const banner = Dom.el(
+      const banner = ItineraryPanelDom.el(
          'div',
          `itinerary-day-action-feedback itinerary-day-action-feedback--${variant}`,
          message

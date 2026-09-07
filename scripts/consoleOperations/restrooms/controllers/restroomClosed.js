@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class RestroomClosed {
@@ -12,8 +12,8 @@ export class RestroomClosed {
       return EntityClosedFormController.createEntityClosedFormController({
          ...controllerOptions,
          entityEl: restroomEl,
-         loadOptions: Loaders.loadRestrooms,
-         populateOptions: Dropdowns.populateRestroomDropdown,
+         loadOptions: ConsoleOptionsLoader.loadRestrooms,
+         populateOptions: ConsoleDropdownPopulator.populateRestroomDropdown,
          submitClosedStatus: ({ entity, startDate, endDate, message }) => ConsoleOperationsApi.setRestroomClosed({
             restroom: entity,
             startDate: startDate || null,

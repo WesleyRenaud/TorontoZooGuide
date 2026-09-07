@@ -1,13 +1,17 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleRadioGroupFieldBuilder } from '../../templates/consoleRadioGroupFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class TransportationRoutePanel {
    static createTransportationRoutePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'transportationRoutePanel',
          title: Strings.panelTitles.transportationRoute,
          bodyChildren: [
-            Fragments.createRadioGroupField({
+            ConsoleRadioGroupFieldBuilder.createRadioGroupField({
                label: Strings.labels.route,
                name: 'transportationRoute',
                options: [
@@ -15,16 +19,16 @@ export class TransportationRoutePanel {
                   { id: 'transportationRouteWinter', value: 'winter', label: Strings.schedule.routeLabels.winter },
                ],
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'transportationRouteStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'transportationRouteEndDate',
                endHelpText: Strings.help.keepRouteUntilChanged,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitTransportationRoute',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'transportationRouteStatus',
             }),
          ],

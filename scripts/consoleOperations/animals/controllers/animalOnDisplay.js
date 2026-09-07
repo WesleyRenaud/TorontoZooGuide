@@ -2,10 +2,10 @@ import { AnimalViewingScopeControl } from './animalViewingScopeControl.js';
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class AnimalOnDisplay {
@@ -52,7 +52,7 @@ export class AnimalOnDisplay {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -65,7 +65,7 @@ export class AnimalOnDisplay {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             Strings.status.animalOnDisplay(result),
             'is-success'
@@ -77,9 +77,9 @@ export class AnimalOnDisplay {
       async function show() {
          await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
-            setStatus: Status.setStatus,
-            loadOptions: Loaders.loadExhibits,
-            populateOptions: Dropdowns.populateExhibitDropdown,
+            setStatus: ConsoleStatusPresenter.setStatus,
+            loadOptions: ConsoleOptionsLoader.loadExhibits,
+            populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
             targetEl: exhibitEl,
             resetForm,
             activatePanel,
@@ -91,12 +91,12 @@ export class AnimalOnDisplay {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -107,7 +107,7 @@ export class AnimalOnDisplay {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(
+               ConsoleStatusPresenter.setStatus(
                   statusEl,
                   ApiErrorMessageResolver.resolveConsoleMutationError(result),
                   'is-error'
@@ -116,7 +116,7 @@ export class AnimalOnDisplay {
 
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

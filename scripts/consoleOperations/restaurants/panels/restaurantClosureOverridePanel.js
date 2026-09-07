@@ -1,32 +1,37 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class RestaurantClosureOverridePanel {
    static createRestaurantClosureOverridePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'restaurantClosureOverridePanel',
          title: Strings.panelTitles.restaurantClosureOverride,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.restaurant,
                inputId: 'restaurantClosureOverrideRestaurant',
                emptyOptionLabel: Strings.placeholders.restaurant,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'restaurantClosureOverrideStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'restaurantClosureOverrideEndDate',
                endHelpText: Strings.help.continueUntilReopened('restaurant'),
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.closedMessage,
                inputId: 'restaurantClosureOverrideMessage',
                placeholder: Strings.textareas.closedMessage('restaurant'),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRestaurantClosureOverride',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'restaurantClosureOverrideStatus',
             }),
          ],

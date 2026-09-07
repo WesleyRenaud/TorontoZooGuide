@@ -4,8 +4,8 @@ import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlap
 import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
-import { Loaders } from '../../options/loaders.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class WildEncounterSchedule {
@@ -70,8 +70,8 @@ export class WildEncounterSchedule {
 
       async function prepareForm() {
          if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await Loaders.loadWildEncounters();
-            Dropdowns.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
+            const wildEncounters = await ConsoleOptionsLoader.loadWildEncounters();
+            ConsoleDropdownPopulator.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
       }
 

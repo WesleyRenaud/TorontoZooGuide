@@ -1,4 +1,4 @@
-import { Popup } from './popup.js';
+import { ItineraryPanelPopup } from './itineraryPanelPopup.js';
 import { ScheduleItemModuleController } from './scheduleItemModuleController.js';
 import { ScheduleItemModuleForm } from './scheduleItemModuleForm.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
@@ -31,7 +31,7 @@ export class ShowScheduleItemModule {
          overlay,
          buttonEls,
          closeButton,
-      } = Popup.createItineraryPopupLayout({
+      } = ItineraryPanelPopup.createItineraryPopupLayout({
          popupClassName: 'schedule-item-module',
          title: Strings.itinerary.scheduleItem.title,
          bodyContent: moduleBodyEl,
@@ -90,8 +90,8 @@ export class ShowScheduleItemModule {
          dialogEl?.setAttribute('tabindex', '-1');
       }
 
-      const popup = Popup.mountDismissablePopup({
-         mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
+      const popup = ItineraryPanelPopup.mountDismissablePopup({
+         mountEl: ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body,
          root,
          overlay,
          initialFocusEl: preselectedRow ? dialogEl : typeSelect,

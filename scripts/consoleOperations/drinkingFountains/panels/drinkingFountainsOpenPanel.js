@@ -1,22 +1,25 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class DrinkingFountainsOpenPanel {
    static createDrinkingFountainsOpenPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'drinkingFountainsOpenPanel',
          title: Strings.panelTitles.drinkingFountainsOpen,
          bodyChildren: [
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'drinkingFountainsOpenStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'drinkingFountainsOpenEndDate',
                endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitDrinkingFountainsOpen',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'drinkingFountainsOpenStatus',
             }),
          ],

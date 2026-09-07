@@ -1,11 +1,11 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
-import { Dom } from '../dom.js';
-import { Format } from '../format.js';
+import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 import { ValidationBubble } from '../../../validationBubble.js';
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
-   return Format.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
+   return ItineraryItemFormatter.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
 }
 
 export class ItineraryTimeInput {
@@ -19,15 +19,15 @@ export class ItineraryTimeInput {
       resolveInvalidMessage = null,
       invalidMessage = '',
    }) {
-      const field = Dom.el('label', 'itinerary-day-time-control');
-      const labelText = Dom.el('span', 'itinerary-day-time-control-label', label);
-      const form = Dom.el('form', 'itinerary-day-time-form');
-      const inputWrap = Dom.el('div', 'itinerary-day-time-input-wrap');
-      const input = Dom.el('input', 'itinerary-day-time-input');
+      const field = ItineraryPanelDom.el('label', 'itinerary-day-time-control');
+      const labelText = ItineraryPanelDom.el('span', 'itinerary-day-time-control-label', label);
+      const form = ItineraryPanelDom.el('form', 'itinerary-day-time-form');
+      const inputWrap = ItineraryPanelDom.el('div', 'itinerary-day-time-input-wrap');
+      const input = ItineraryPanelDom.el('input', 'itinerary-day-time-input');
       const validationBubble = ValidationBubble.createValidationBubbleController({
          anchorEl: inputWrap,
       });
-      let committedValue = value ? Format.formatClockTime(value) : '';
+      let committedValue = value ? ItineraryItemFormatter.formatClockTime(value) : '';
       let flatpickrInstance = null;
       let latestPickerValue = committedValue;
       let suppressNextCloseSave = false;

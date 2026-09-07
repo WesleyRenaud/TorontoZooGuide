@@ -1,5 +1,5 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
-import { Dom } from './dom.js';
+import { ItineraryPanelDom } from './itineraryPanelDom.js';
 import { RowPresentation } from './rowPresentation.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
 import { ScheduleTimeConflictButtonState } from './scheduleTimeConflictButtonState.js';
@@ -44,7 +44,7 @@ function createWildEncounterSelectButton({
    selection,
    buttonEntries,
 } = {}) {
-   const button = Dom.el(
+   const button = ItineraryPanelDom.el(
       'button',
       'itin-add-btn itin-save-issue-select-btn',
       Strings.itinerary.actions.addSymbol
@@ -64,8 +64,8 @@ function createWildEncounterSelectButton({
 }
 
 function createScheduleConflictSubtitle(item) {
-   const subtitle = Dom.el('div', 'animal-result-exhibit');
-   const time = Dom.el(
+   const subtitle = ItineraryPanelDom.el('div', 'animal-result-exhibit');
+   const time = ItineraryPanelDom.el(
       'span',
       'itin-panel-time-conflict',
       RowPresentation.buildScheduledTimeFieldLine(item)
@@ -90,7 +90,7 @@ function createWildEncounterConflictRow({
    selection,
    buttonEntries,
 } = {}) {
-   const row = Dom.el('div', 'animal-result itin-save-issue-conflict-row');
+   const row = ItineraryPanelDom.el('div', 'animal-result itin-save-issue-conflict-row');
    const content = ResultRenderer.createSelectorRowContent({
       imageSrc: ScheduleTimeConflictContent.buildConflictItemImageSrc(item),
       imageAlt: Strings.itinerary.itemImage(item.name),
@@ -116,12 +116,12 @@ function createWildEncounterConflictRow({
 
 function createWildEncounterConflictBlock(issue) {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
-   const block = Dom.el('div', 'itin-save-issue-conflict');
+   const block = ItineraryPanelDom.el('div', 'itin-save-issue-conflict');
    const buttonEntries = [];
    const items = ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(issue.items);
 
    block.appendChild(
-      Dom.el(
+      ItineraryPanelDom.el(
          'p',
          'itin-save-issue-conflict-message',
          Strings.itinerary.confirmation.scheduleConflictsMessage
@@ -148,11 +148,11 @@ function createWildEncounterConflictBlock(issue) {
 }
 
 function createWildEncounterConflictSection(issues) {
-   const section = Dom.el('section', 'itin-save-issue-section');
+   const section = ItineraryPanelDom.el('section', 'itin-save-issue-section');
    const conflictGroups = [];
 
    section.appendChild(
-      Dom.el(
+      ItineraryPanelDom.el(
          'h3',
          'itin-save-issue-section-title',
          Strings.itinerary.confirmation.scheduleConflictsTitle
@@ -197,7 +197,7 @@ export class ScheduleTimeConflictContent {
    }
 
    static createSaveIssuesContent(issues) {
-      const content = Dom.el('div', 'itin-save-issues');
+      const content = ItineraryPanelDom.el('div', 'itin-save-issues');
       const wildEncounterConflictIssues = issues.filter(
          issue => issue?.type === ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT
       );
