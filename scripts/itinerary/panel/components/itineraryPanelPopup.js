@@ -1,18 +1,6 @@
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelPopupBuilder } from './itineraryPanelPopupBuilder.js';
 import { Strings } from '../../../strings.js';
-
-function joinClassNames(...classNames) {
-   return classNames.filter(Boolean).join(' ');
-}
-
-function createPopupButton({
-   className,
-   text,
-} = {}) {
-   const button = ItineraryPanelDom.el('button', className, text);
-   button.type = 'button';
-   return button;
-}
 
 export class ItineraryPanelPopup {
    static getItineraryOverlayMountEl() {
@@ -36,7 +24,7 @@ export class ItineraryPanelPopup {
       showCloseButton = false,
       closeAriaLabel = Strings.itinerary.aria.closeBuilder,
    } = {}) {
-      const root = ItineraryPanelDom.el('div', joinClassNames('tzg-popup', popupClassName));
+      const root = ItineraryPanelDom.el('div', ItineraryPanelPopupBuilder.joinClassNames('tzg-popup', popupClassName));
       const overlay = ItineraryPanelDom.el('div', 'itin-overlay');
 
       const card = ItineraryPanelDom.el('section', 'itin-card tzg-popup-card');
@@ -78,13 +66,13 @@ export class ItineraryPanelPopup {
       const actions = ItineraryPanelDom.el('div', 'itin-card-actions');
       const actionsRight = ItineraryPanelDom.el(
          'div',
-         joinClassNames('itin-actions-right', actionsClassName)
+         ItineraryPanelPopupBuilder.joinClassNames('itin-actions-right', actionsClassName)
       );
 
       const buttonEls = {};
 
       actionButtons.forEach((buttonConfig) => {
-         const buttonEl = createPopupButton(buttonConfig);
+         const buttonEl = ItineraryPanelPopupBuilder.createPopupButton(buttonConfig);
 
          if (buttonConfig?.key) {
             buttonEls[buttonConfig.key] = buttonEl;

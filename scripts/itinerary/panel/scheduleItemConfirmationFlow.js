@@ -1,67 +1,15 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
 import { AttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
-import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryBuildWarningsConfirmation } from './itineraryBuildWarningsConfirmation.js';
-import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryService } from '../itineraryService.js';
 import { PersistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
+import { ScheduleItemConfirmationFlowHelpers } from './scheduleItemConfirmationFlowHelpers.js';
 import { ScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
-
-function getConfirmationMountEl() {
-   return ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body;
-}
-
-function requestScheduleItemConfirmation({
-   showConfirmation,
-   initialResult,
-   request,
-   confirmationOptions,
-   confirmationProps = {},
-   buildConfirmedOptions,
-   beforeConfirm = async () => {},
-   resolveConfirmErrorAsSaveFailed = false,
-}) {
-   return new Promise((resolve) => {
-      const confirm = async (confirmArgs = {}) => {
-         await beforeConfirm(confirmArgs);
-
-         const confirmedResult = await ScheduleItemConfirmationFlow.scheduleItineraryItemWithConfirmation(
-            request,
-            {
-               ...confirmationOptions,
-               ...buildConfirmedOptions(confirmArgs),
-            }
-         );
-
-         resolve(confirmedResult);
-      };
-
-      showConfirmation({
-         ...confirmationProps,
-         onConfirm: async (confirmArgs) => {
-            if (!resolveConfirmErrorAsSaveFailed) {
-               await confirm(confirmArgs);
-               return;
-            }
-
-            try {
-               await confirm(confirmArgs);
-            }
-            catch (error) {
-               resolve(ScheduleItemConfirmationFlow.createScheduleItemSaveFailedResult());
-            }
-         },
-         onCancel: () => {
-            resolve(ItineraryConfirmationResult.createItineraryConfirmationCancelledResult(initialResult));
-         },
-      });
-   });
-}
 
 export class ScheduleItemConfirmationFlow {
    static createScheduleItemSaveFailedResult() {
@@ -83,7 +31,7 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: ScheduleItemNotOnItineraryConfirmation.showScheduleItemNotOnItineraryConfirmation,
             initialResult,
             request,
@@ -103,7 +51,7 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: AttractionOutsideOperatingHoursConfirmation.showAttractionOutsideOperatingHoursConfirmation,
             initialResult,
             request,
@@ -116,13 +64,13 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryBuildWarningsConfirmation.hasMultipleItineraryBuildWarnings(initialResult.issues)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: ItineraryBuildWarningsConfirmation.showItineraryBuildWarningsConfirmation,
             initialResult,
             request,
             confirmationOptions,
             confirmationProps: {
-               mountEl: getConfirmationMountEl(),
+               mountEl: ScheduleItemConfirmationFlowHelpers.getConfirmationMountEl(),
                issues: initialResult.issues,
             },
             buildConfirmedOptions: () => ItineraryBuildWarningsConfirmation.buildConfirmedOptionsFromBuildWarnings(
@@ -132,13 +80,13 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: GuardiansTalkUnscheduleConfirmation.showGuardiansTalkUnscheduleConfirmation,
             initialResult,
             request,
             confirmationOptions,
             confirmationProps: {
-               mountEl: getConfirmationMountEl(),
+               mountEl: ScheduleItemConfirmationFlowHelpers.getConfirmationMountEl(),
                issues: initialResult.issues,
             },
             buildConfirmedOptions: () => ({
@@ -148,13 +96,13 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: GuardiansTalkWithoutAnimalConfirmation.showGuardiansTalkWithoutAnimalConfirmation,
             initialResult,
             request,
             confirmationOptions,
             confirmationProps: {
-               mountEl: getConfirmationMountEl(),
+               mountEl: ScheduleItemConfirmationFlowHelpers.getConfirmationMountEl(),
                issues: initialResult.issues,
             },
             buildConfirmedOptions: () => ({
@@ -164,13 +112,13 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: FixedTimeItemLongWaitConfirmation.showFixedTimeItemLongWaitConfirmation,
             initialResult,
             request,
             confirmationOptions,
             confirmationProps: {
-               mountEl: getConfirmationMountEl(),
+               mountEl: ScheduleItemConfirmationFlowHelpers.getConfirmationMountEl(),
                issues: initialResult.issues,
             },
             buildConfirmedOptions: () => ({
@@ -180,13 +128,13 @@ export class ScheduleItemConfirmationFlow {
       }
 
       if (ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
-         return requestScheduleItemConfirmation({
+         return ScheduleItemConfirmationFlowHelpers.requestScheduleItemConfirmation({
             showConfirmation: WildEncounterUnscheduleConfirmation.showWildEncounterUnscheduleConfirmation,
             initialResult,
             request,
             confirmationOptions,
             confirmationProps: {
-               mountEl: getConfirmationMountEl(),
+               mountEl: ScheduleItemConfirmationFlowHelpers.getConfirmationMountEl(),
                issues: initialResult.issues,
             },
             buildConfirmedOptions: () => ({

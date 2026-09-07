@@ -1,29 +1,10 @@
-const DEFAULT_CONTAIN = 'outside';
-const FOCUS_CONTAIN = 'none';
-
-function setContain(panzoom, mode) {
-   if (!panzoom) return;
-   if (panzoom.options) panzoom.options.contain = mode;
-   if (typeof panzoom.setOptions === 'function') panzoom.setOptions({ contain: mode });
-}
-
-function getPanXY(panzoom) {
-   const p = (typeof panzoom.getPan === 'function' ? panzoom.getPan() : null) || {};
-   const x = Number.isFinite(p.x) ? p.x : (Number.isFinite(p.panX) ? p.panX : 0);
-   const y = Number.isFinite(p.y) ? p.y : (Number.isFinite(p.panY) ? p.panY : 0);
-   return { x, y };
-}
-
-function clampNow(panzoom) {
-   const p = getPanXY(panzoom);
-   panzoom.pan(p.x, p.y, { animate: false });
-}
+import { CenterPanHelpers } from './centerPanHelpers.js';
 
 export class Center {
    static centerMarkerWithContain(panzoom, markerEl, viewportEl) {
       if (!panzoom || !markerEl || !viewportEl) return;
 
-      const prevContain = panzoom?.options?.contain ?? DEFAULT_CONTAIN;
+      const prevContain = panzoom?.options?.contain ?? CenterPanHelpers.DEFAULT_CONTAIN;
 
       const markerRect = markerEl.getBoundingClientRect();
       const viewportRect = viewportEl.getBoundingClientRect();
@@ -41,15 +22,15 @@ export class Center {
       const panDx = dx / scale;
       const panDy = dy / scale;
 
-      const pan = getPanXY(panzoom);
+      const pan = CenterPanHelpers.getPanXY(panzoom);
       const targetX = pan.x + panDx;
       const targetY = pan.y + panDy;
 
-      setContain(panzoom, FOCUS_CONTAIN);
+      CenterPanHelpers.setContain(panzoom, CenterPanHelpers.FOCUS_CONTAIN);
       panzoom.pan(targetX, targetY, { animate: false });
 
-      setContain(panzoom, prevContain);
+      CenterPanHelpers.setContain(panzoom, prevContain);
       panzoom.pan(targetX, targetY, { animate: false });
-      clampNow(panzoom);
+      CenterPanHelpers.clampNow(panzoom);
    }
 }

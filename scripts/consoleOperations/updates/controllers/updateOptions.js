@@ -1,24 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { Strings } from '../../../strings.js';
-
-function createPlaceholderOption(label) {
-   const optionEl = document.createElement('option');
-   optionEl.value = '';
-   optionEl.textContent = label;
-   return optionEl;
-}
-
-function formatDateRange(update) {
-   if (!update.end_date) {
-      return `${update.start_date} onward`;
-   }
-
-   return `${update.start_date} to ${update.end_date}`;
-}
-
-function formatUpdateOptionLabel(update) {
-   return `${update.title} (${update.type}, ${formatDateRange(update)})`;
-}
+import { UpdateOptionsFormatter } from './updateOptionsFormatter.js';
 
 export class UpdateOptions {
    static async loadActiveUpdates() {
@@ -32,7 +14,7 @@ export class UpdateOptions {
       }
 
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(createPlaceholderOption(Strings.placeholders.update));
+      fragment.appendChild(UpdateOptionsFormatter.createPlaceholderOption(Strings.placeholders.update));
 
       updates.forEach((update) => {
          const optionEl = document.createElement('option');
@@ -40,7 +22,7 @@ export class UpdateOptions {
             title: update.title,
             startDate: update.start_date,
          });
-         optionEl.textContent = formatUpdateOptionLabel(update);
+         optionEl.textContent = UpdateOptionsFormatter.formatUpdateOptionLabel(update);
          optionEl.dataset.title = update.title || '';
          optionEl.dataset.startDate = update.start_date || '';
          optionEl.dataset.description = update.description || '';
