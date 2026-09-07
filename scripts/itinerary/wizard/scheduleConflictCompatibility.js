@@ -1,160 +1,6 @@
 import { DayPlannerSchedule } from '../panel/dayPlannerSchedule.js';
+import { ScheduleConflictBlockerAnalyzer } from './scheduleConflictBlockerAnalyzer.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
-
-function trimRangeAgainstBlocker(start, end, blockerStart, blockerEnd) {
-   if (blockerEnd <= start || blockerStart >= end) {
-      return { start, end };
-   }
-
-   if (blockerStart <= start && blockerEnd >= end) {
-      return null;
-   }
-
-   if (blockerStart <= start && blockerEnd < end) {
-      return { start: blockerEnd, end };
-   }
-
-   if (blockerStart > start && blockerEnd >= end) {
-      return { start, end: blockerStart };
-   }
-
-   if (blockerStart > start && blockerEnd < end) {
-      return { start: blockerEnd, end };
-   }
-
-   return null;
-}
-
-function getTrimmedGuardiansTalkMinutes(talk, blockers = []) {
-   let start = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
-   let end = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
-
-   for (const blocker of blockers) {
-      const blockerStart = DayPlannerSchedule.parseClockTimeMinutes(blocker.start_time);
-      const blockerEnd = DayPlannerSchedule.parseClockTimeMinutes(blocker.end_time);
-      const trimmedRange = trimRangeAgainstBlocker(
-         start,
-         end,
-         blockerStart,
-         blockerEnd
-      );
-
-      if (trimmedRange == null) {
-         return null;
-      }
-
-      start = trimmedRange.start;
-      end = trimmedRange.end;
-   }
-
-   return { start, end };
-}
-
-function isGuardiansTalkFullyCoveredByBlockers(talk, blockers = []) {
-   const trimmedRange = getTrimmedGuardiansTalkMinutes(talk, blockers);
-
-   if (trimmedRange == null) {
-      return true;
-   }
-
-   return trimmedRange.start >= trimmedRange.end;
-}
-
-function conflictItemKey(item) {
-   return `${item.item_type}::${item.name}`;
-}
-
-function getSelectionBlockersForItem(selection, item) {
-   const blockers = [];
-   let reachedCurrentItem = false;
-
-   for (const selectedItem of selection.items) {
-      if (conflictItemKey(selectedItem) === conflictItemKey(item)) {
-         reachedCurrentItem = true;
-         continue;
-      }
-
-      if (ScheduleConflictCompatibility.isWildEncounterConflictItem(selectedItem)) {
-         blockers.push(selectedItem);
-         continue;
-      }
-
-      if (reachedCurrentItem) {
-         continue;
-      }
-
-      if (
-         ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)
-         && ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
-         && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
-      ) {
-         blockers.push(selectedItem);
-      }
-   }
-
-   return blockers;
-}
-
-function guardiansTalkRequiresTrimOverride(talk, blockers = []) {
-   const trimmedRange = getTrimmedGuardiansTalkMinutes(talk, blockers);
-
-   if (trimmedRange == null || trimmedRange.start >= trimmedRange.end) {
-      return false;
-   }
-
-   const originalStart = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
-   const originalEnd = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
-
-   return (
-      trimmedRange.start !== originalStart
-      || trimmedRange.end !== originalEnd
-   );
-}
-
-function getGuardiansTalkTrimBlockers(selection, talk, extraBlocker = null) {
-   const blockers = getSelectionBlockersForItem(selection, talk);
-
-   if (
-      extraBlocker
-      && !blockers.some(
-         (blocker) => conflictItemKey(blocker) === conflictItemKey(extraBlocker)
-      )
-   ) {
-      blockers.push(extraBlocker);
-   }
-
-   return blockers;
-}
-
-function encounterHasScheduleExceptionWithSelectedTalks(selection, encounter) {
-   return selection.items.some(
-      (selectedItem) => {
-         if (!ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)) {
-            return false;
-         }
-
-         if (!ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, encounter)) {
-            return false;
-         }
-
-         const blockers = getGuardiansTalkTrimBlockers(
-            selection,
-            selectedItem,
-            encounter
-         );
-         const trimmedRange = getTrimmedGuardiansTalkMinutes(
-            selectedItem,
-            blockers
-         );
-
-         if (trimmedRange == null) {
-            return true;
-         }
-
-         return guardiansTalkRequiresTrimOverride(selectedItem, blockers);
-      }
-   );
-}
 
 export class ScheduleConflictCompatibility {
    static isWildEncounterConflictItem(item) {
@@ -179,10 +25,10 @@ export class ScheduleConflictCompatibility {
    }
 
    static isConflictItemSelected(selection, item) {
-      const key = conflictItemKey(item);
+      const key = ScheduleConflictBlockerAnalyzer.conflictItemKey(item);
 
       return selection.items.some(
-         (selectedItem) => conflictItemKey(selectedItem) === key
+         (selectedItem) => ScheduleConflictBlockerAnalyzer.conflictItemKey(selectedItem) === key
       );
    }
 
@@ -192,9 +38,9 @@ export class ScheduleConflictCompatibility {
       }
 
       if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
-         return !isGuardiansTalkFullyCoveredByBlockers(
+         return !ScheduleConflictBlockerAnalyzer.isGuardiansTalkFullyCoveredByBlockers(
             item,
-            getSelectionBlockersForItem(selection, item)
+            ScheduleConflictBlockerAnalyzer.getSelectionBlockersForItem(selection, item)
          );
       }
 
@@ -213,9 +59,9 @@ export class ScheduleConflictCompatibility {
          (selectedItem) => (
             ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)
             && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
-            && getTrimmedGuardiansTalkMinutes(
+            && ScheduleConflictBlockerAnalyzer.getTrimmedGuardiansTalkMinutes(
                selectedItem,
-               getGuardiansTalkTrimBlockers(selection, selectedItem, item)
+               ScheduleConflictBlockerAnalyzer.getGuardiansTalkTrimBlockers(selection, selectedItem, item)
             ) == null
          )
       );
@@ -232,9 +78,9 @@ export class ScheduleConflictCompatibility {
             return false;
          }
 
-         return guardiansTalkRequiresTrimOverride(
+         return ScheduleConflictBlockerAnalyzer.guardiansTalkRequiresTrimOverride(
             item,
-            getSelectionBlockersForItem(selection, item)
+            ScheduleConflictBlockerAnalyzer.getSelectionBlockersForItem(selection, item)
          );
       }
 
@@ -243,7 +89,7 @@ export class ScheduleConflictCompatibility {
             return false;
          }
 
-         return encounterHasScheduleExceptionWithSelectedTalks(selection, item);
+         return ScheduleConflictBlockerAnalyzer.encounterHasScheduleExceptionWithSelectedTalks(selection, item);
       }
 
       return false;
@@ -273,10 +119,10 @@ export class ScheduleConflictCompatibility {
 
    static toggleConflictItemSelection(selection, item) {
       if (ScheduleConflictCompatibility.isConflictItemSelected(selection, item)) {
-         const key = conflictItemKey(item);
+         const key = ScheduleConflictBlockerAnalyzer.conflictItemKey(item);
 
          selection.items = selection.items.filter(
-            (selectedItem) => conflictItemKey(selectedItem) !== key
+            (selectedItem) => ScheduleConflictBlockerAnalyzer.conflictItemKey(selectedItem) !== key
          );
 
          return;

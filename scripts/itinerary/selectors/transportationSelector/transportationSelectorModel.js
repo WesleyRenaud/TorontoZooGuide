@@ -1,125 +1,10 @@
 import { StoredSelection } from '../base/storedSelection.js';
-import { ItineraryTransportationStationRoles } from '../../itineraryTransportationStationRoles.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../../strings.js';
 import { TransportationScheduleItemKey } from './transportationScheduleItemKey.js';
-
-function asObject(value) {
-   return value && typeof value === 'object'
-      ? value
-      : {};
-}
-
-function uniqueNames(names) {
-   const seen = new Set();
-   const ordered = [];
-
-   names.forEach((name) => {
-      if (!name || seen.has(name)) {
-         return;
-      }
-
-      seen.add(name);
-      ordered.push(name);
-   });
-
-   return ordered;
-}
-
-function namesForRoles(stations, roles) {
-   return uniqueNames(
-      stations
-         .filter((station) => roles.includes(station.role))
-         .map((station) => StoredSelection.normalizeStoredString(station.name))
-   );
-}
-
-function getTransportationLegs(row) {
-   const legs = asObject(row).legs;
-
-   return Array.isArray(legs)
-      ? legs.map((leg) => asObject(leg))
-      : [];
-}
-
-function fallbackStationNames(row, pickFromLeg) {
-   const legs = getTransportationLegs(row);
-
-   if (legs.length > 0) {
-      const name = StoredSelection.normalizeStoredString(pickFromLeg(legs));
-      return name ? [name] : [];
-   }
-
-   if (!TransportationSelectorModel.isTransportationAddedAsAttraction(row)) {
-      return [];
-   }
-
-   const mainStation = StoredSelection.normalizeStoredString(row?.main_station);
-   return mainStation ? [mainStation] : [];
-}
-
-function boardingStationNames(row) {
-   const stations = TransportationSelectorModel.getTransportationStations(row);
-
-   if (stations.length > 0) {
-      return namesForRoles(
-         stations,
-         ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles()
-      );
-   }
-
-   return fallbackStationNames(row, (legs) => legs[0].from_station);
-}
-
-function offboardingStationNames(row) {
-   const stations = TransportationSelectorModel.getTransportationStations(row);
-
-   if (stations.length > 0) {
-      return namesForRoles(
-         stations,
-         ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles()
-      );
-   }
-
-   return fallbackStationNames(row, (legs) => legs[legs.length - 1].to_station);
-}
-
-function createStoredTransportationFromString(item) {
-   const name = StoredSelection.normalizeStoredString(item);
-
-   if (!name) {
-      return null;
-   }
-
-   return {
-      id: name,
-      name,
-      subtitle: '',
-      infoLink: null,
-      imageSrc: null,
-      addedAsAttraction: false,
-   };
-}
-
-function createStoredTransportationFromObject(item) {
-   const name = StoredSelection.normalizeStoredString(item.name);
-   const id = StoredSelection.normalizeStoredId(item.id, name);
-
-   if (!id) {
-      return null;
-   }
-
-   return {
-      id,
-      name,
-      subtitle: StoredSelection.normalizeStoredString(item.subtitle),
-      infoLink: StoredSelection.normalizeStoredLink(item.infoLink),
-      imageSrc: StoredSelection.normalizeStoredLink(item.imageSrc),
-      addedAsAttraction: StoredSelection.normalizeStoredBoolean(item.addedAsAttraction),
-   };
-}
+import { TransportationStationNameResolver } from './transportationStationNameResolver.js';
 
 export class TransportationSelectorModel {
    static getTransportationName(row) {
@@ -146,15 +31,15 @@ export class TransportationSelectorModel {
    }
 
    static getTransportationStations(row) {
-      const stations = asObject(row).stations;
+      const stations = TransportationStationNameResolver.asObject(row).stations;
 
       return Array.isArray(stations)
-         ? stations.map((station) => asObject(station))
+         ? stations.map((station) => TransportationStationNameResolver.asObject(station))
          : [];
    }
 
    static isTransportationScheduled(row) {
-      return getTransportationLegs(row).length > 0;
+      return TransportationStationNameResolver.getTransportationLegs(row).length > 0;
    }
 
    static isBulkTransitEvaluated(row) {
@@ -170,8 +55,8 @@ export class TransportationSelectorModel {
    }
 
    static buildTransportationStationsLine(row) {
-      const [firstStation] = boardingStationNames(row);
-      const offboarding = offboardingStationNames(row);
+      const [firstStation] = TransportationStationNameResolver.boardingStationNames(row);
+      const offboarding = TransportationStationNameResolver.offboardingStationNames(row);
       const lastStation = offboarding[offboarding.length - 1];
 
       if (!firstStation && !lastStation) {
@@ -249,8 +134,8 @@ export class TransportationSelectorModel {
 
    static migrateStoredTransportations(items) {
       return StoredSelection.migrateStoredSelectionItems(items, {
-         fromString: createStoredTransportationFromString,
-         fromObject: createStoredTransportationFromObject,
+         fromString: TransportationStationNameResolver.createStoredTransportationFromString,
+         fromObject: TransportationStationNameResolver.createStoredTransportationFromObject,
       });
    }
 
