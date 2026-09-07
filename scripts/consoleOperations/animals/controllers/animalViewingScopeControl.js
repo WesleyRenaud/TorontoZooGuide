@@ -1,20 +1,7 @@
+import { AnimalViewingScopeControlHelpers } from './animalViewingScopeControlHelpers.js';
 import { AnimalsApi } from '../../../api/animalsApi.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
-
-function animalHasIndoorAndOutdoorViewing(scopes = []) {
-   return (
-      scopes.includes(AnimalViewingScope.INDOOR) &&
-      scopes.includes(AnimalViewingScope.OUTDOOR)
-   );
-}
-
-function singleSpecificViewingScope(scopes = []) {
-   const specificScopes = scopes.filter(scope => scope !== AnimalViewingScope.ALL);
-   return specificScopes.length === 1
-      ? specificScopes[0]
-      : '';
-}
 
 export class AnimalViewingScopeControl {
    static createAnimalViewingScopeControl({
@@ -48,7 +35,7 @@ export class AnimalViewingScopeControl {
                exhibit,
             });
 
-            const canChooseSpecificScope = animalHasIndoorAndOutdoorViewing(scopes);
+            const canChooseSpecificScope = AnimalViewingScopeControlHelpers.animalHasIndoorAndOutdoorViewing(scopes);
             viewingScopeEl.disabled = !canChooseSpecificScope;
 
             if (canChooseSpecificScope) {
@@ -56,7 +43,7 @@ export class AnimalViewingScopeControl {
                return;
             }
 
-            const availableScope = singleSpecificViewingScope(scopes);
+            const availableScope = AnimalViewingScopeControlHelpers.singleSpecificViewingScope(scopes);
 
             if (availableScope) {
                viewingScopeEl.value = availableScope;

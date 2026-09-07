@@ -1,24 +1,7 @@
 import { ItemRow } from './components/itemRow.js';
+import { RowBuildersHelpers } from './rowBuildersHelpers.js';
 import { RowPresentation } from './rowPresentation.js';
 import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
-
-function normalizeItems(items = [], normalizeItem) {
-   return items.map((item) => normalizeItem(item));
-}
-
-function maxStoredLikelihood(...values) {
-   const likelihoods = values
-      .map((value) => (
-         value == null || value === '' ? NaN : Number(value)
-      ))
-      .filter((value) => Number.isFinite(value));
-
-   if (!likelihoods.length) {
-      return null;
-   }
-
-   return Math.max(...likelihoods);
-}
 
 export class RowBuilders {
    static buildUniqueAnimals(animals = []) {
@@ -26,16 +9,16 @@ export class RowBuilders {
          buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
          mergeAnimals: (existing, animal) => ({
             ...existing,
-            likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),
-            old_likelihood: maxStoredLikelihood(
+            likelihood: RowBuildersHelpers.maxStoredLikelihood(existing.likelihood, animal.likelihood),
+            old_likelihood: RowBuildersHelpers.maxStoredLikelihood(
                existing.old_likelihood,
                animal.old_likelihood
             ),
-            likelihoodBefore: maxStoredLikelihood(
+            likelihoodBefore: RowBuildersHelpers.maxStoredLikelihood(
                existing.likelihoodBefore,
                animal.likelihoodBefore
             ),
-            likelihoodAfter: maxStoredLikelihood(
+            likelihoodAfter: RowBuildersHelpers.maxStoredLikelihood(
                existing.likelihoodAfter,
                animal.likelihoodAfter
             ),
@@ -53,7 +36,7 @@ export class RowBuilders {
       } = {}
    ) {
       const preparedItems = prepareItems(
-         normalizeItems(items, normalizeItem)
+         RowBuildersHelpers.normalizeItems(items, normalizeItem)
       );
 
       return preparedItems.map((item) => ItemRow.makeItemRow(buildRowProps(item)));

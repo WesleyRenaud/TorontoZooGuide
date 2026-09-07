@@ -1,49 +1,7 @@
 import { SvgPathParsing } from './svgPathParsing.js';
+import { WalkGraphPathGeometryHelpers } from './walkGraphPathGeometryHelpers.js';
 
 let cachedWalkGraphPath = null;
-
-function findSliceBetweenPoints(segments, fromPoint, toPoint, searchStartIndex = 0) {
-   const fromIndices = segments
-      .map((segment, segmentIndex) => (
-         segmentIndex >= searchStartIndex && SvgPathParsing.pointsNear(segment, fromPoint)
-            ? segmentIndex
-            : -1
-      ))
-      .filter((segmentIndex) => segmentIndex >= 0);
-
-   for (const fromIndex of fromIndices) {
-      for (
-         let toIndex = fromIndex + 1;
-         toIndex < segments.length;
-         toIndex += 1
-      ) {
-         if (segments[toIndex].tag === 'M') {
-            break;
-         }
-
-         if (SvgPathParsing.pointsNear(segments[toIndex], toPoint)) {
-            return {
-               fromIndex,
-               toIndex,
-            };
-         }
-      }
-   }
-
-   return null;
-}
-
-function appendSlice(pathParts, segments, fromIndex, toIndex, includeMove) {
-   for (let index = fromIndex; index <= toIndex; index += 1) {
-      const segment = segments[index];
-
-      if (segment.tag === 'M' && !includeMove) {
-         continue;
-      }
-
-      pathParts.push(segment.d);
-   }
-}
 
 export class WalkGraphPathGeometry {
    static getWalkGraphPathSegments() {
@@ -80,7 +38,7 @@ export class WalkGraphPathGeometry {
       for (let index = 0; index < waypoints.length - 1; index += 1) {
          const fromPoint = waypoints[index];
          const toPoint = waypoints[index + 1];
-         const slice = findSliceBetweenPoints(
+         const slice = WalkGraphPathGeometryHelpers.findSliceBetweenPoints(
             segments,
             fromPoint,
             toPoint,
@@ -101,7 +59,7 @@ export class WalkGraphPathGeometry {
             continue;
          }
 
-         appendSlice(
+         WalkGraphPathGeometryHelpers.appendSlice(
             pathParts,
             segments,
             slice.fromIndex,

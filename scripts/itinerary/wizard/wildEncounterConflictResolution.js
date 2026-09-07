@@ -1,27 +1,6 @@
 import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
 import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-
-function toConflictResolutionDraftItem(item) {
-   if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
-      return {
-         name: item.name,
-         location: item.location,
-      };
-   }
-
-   return {
-      name: item.name,
-      meeting_spot: item.meeting_spot,
-   };
-}
-
-function getDraftItemName(item) {
-   if (typeof item === 'string') {
-      return item;
-   }
-
-   return item?.name ?? '';
-}
+import { WildEncounterConflictResolutionHelpers } from './wildEncounterConflictResolutionHelpers.js';
 
 export class WildEncounterConflictResolution {
    static getWildEncounterConflictIssueStartTime(issue) {
@@ -92,10 +71,10 @@ export class WildEncounterConflictResolution {
    ) {
       const guardiansTalks = selectedItems
          .filter(ScheduleConflictCompatibility.isGuardiansTalkConflictItem)
-         .map(toConflictResolutionDraftItem);
+         .map(WildEncounterConflictResolutionHelpers.toConflictResolutionDraftItem);
       const wildEncounters = selectedItems
          .filter((item) => !ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item))
-         .map(toConflictResolutionDraftItem);
+         .map(WildEncounterConflictResolutionHelpers.toConflictResolutionDraftItem);
 
       return {
          ...itinerary,
@@ -136,7 +115,7 @@ export class WildEncounterConflictResolution {
       );
 
       const keepDraftItem = (item) => {
-         const name = getDraftItemName(item);
+         const name = WildEncounterConflictResolutionHelpers.getDraftItemName(item);
 
          return !conflictingNames.has(name) || selectedNames.has(name);
       };

@@ -1,62 +1,5 @@
 import { ItineraryPanelDom } from './itinerary/panel/itineraryPanelDom.js';
-
-const DEFAULT_CLASS_NAMES = {
-   bubble: 'tzg-validation-bubble',
-   icon: 'tzg-validation-bubble-icon',
-   text: 'tzg-validation-bubble-text',
-};
-
-const VIEWPORT_PADDING = 12;
-const ANCHOR_GAP = 12;
-const ARROW_SIZE = 14;
-
-function resolveClassNames(classNames = {}) {
-   return {
-      ...DEFAULT_CLASS_NAMES,
-      ...classNames,
-   };
-}
-
-function positionValidationBubble(bubbleEl, anchorEl) {
-   const anchorRect = anchorEl.getBoundingClientRect();
-   const bubbleRect = bubbleEl.getBoundingClientRect();
-   const viewportWidth = window.innerWidth;
-   const viewportHeight = window.innerHeight;
-
-   let left = anchorRect.left;
-   const maxLeft = viewportWidth - bubbleRect.width - VIEWPORT_PADDING;
-
-   if (left > maxLeft) {
-      left = Math.max(VIEWPORT_PADDING, maxLeft);
-   }
-
-   let top = anchorRect.bottom + ANCHOR_GAP;
-   const maxTop = viewportHeight - bubbleRect.height - VIEWPORT_PADDING;
-
-   if (top > maxTop) {
-      top = Math.max(
-         VIEWPORT_PADDING,
-         anchorRect.top - bubbleRect.height - ANCHOR_GAP
-      );
-   }
-
-   bubbleEl.style.left = `${left}px`;
-   bubbleEl.style.top = `${top}px`;
-
-   const anchorCenter = anchorRect.left + (anchorRect.width / 2);
-   const arrowLeft = Math.max(
-      ARROW_SIZE,
-      Math.min(
-         bubbleRect.width - ARROW_SIZE,
-         anchorCenter - left
-      )
-   );
-
-   bubbleEl.style.setProperty(
-      '--tzg-validation-bubble-arrow-left',
-      `${arrowLeft}px`
-   );
-}
+import { ValidationBubbleHelpers } from './validationBubbleHelpers.js';
 
 export class ValidationBubble {
    static createValidationBubbleController({
@@ -64,7 +7,7 @@ export class ValidationBubble {
       classNames = {},
       iconText = '!',
    } = {}) {
-      const classes = resolveClassNames(classNames);
+      const classes = ValidationBubbleHelpers.resolveClassNames(classNames);
       let bubbleEl = null;
       let repositionHandler = null;
 
@@ -82,7 +25,7 @@ export class ValidationBubble {
          unbindRepositionListeners();
          repositionHandler = () => {
             if (bubbleEl && anchorEl) {
-               positionValidationBubble(bubbleEl, anchorEl);
+               ValidationBubbleHelpers.positionValidationBubble(bubbleEl, anchorEl);
             }
          };
 
@@ -111,7 +54,7 @@ export class ValidationBubble {
          bubbleEl.appendChild(icon);
          bubbleEl.appendChild(ItineraryPanelDom.el('span', classes.text, message));
          document.body.appendChild(bubbleEl);
-         positionValidationBubble(bubbleEl, anchorEl);
+         ValidationBubbleHelpers.positionValidationBubble(bubbleEl, anchorEl);
          bindRepositionListeners();
       }
 

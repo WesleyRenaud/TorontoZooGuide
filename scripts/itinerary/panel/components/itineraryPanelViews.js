@@ -1,26 +1,6 @@
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelViewsHelpers } from './itineraryPanelViewsHelpers.js';
 import { Strings } from '../../../strings.js';
-
-function makeToggleButton({ label, view, activeView, onSelect }) {
-   const button = ItineraryPanelDom.el('button', 'itin-panel-view-toggle-button', label);
-   button.type = 'button';
-   button.dataset.view = view;
-   button.setAttribute('aria-pressed', view === activeView ? 'true' : 'false');
-   button.addEventListener('click', () => onSelect(view));
-   return button;
-}
-
-function setViewVisibility(root, selectedView) {
-   root.querySelectorAll('.itin-panel-view-toggle-button').forEach((button) => {
-      const isSelected = button.dataset.view === selectedView;
-      button.classList.toggle('itin-panel-view-toggle-button-active', isSelected);
-      button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-   });
-
-   root.querySelectorAll('.itin-panel-view').forEach((view) => {
-      view.hidden = view.dataset.view !== selectedView;
-   });
-}
 
 export class ItineraryPanelViews {
    static ITINERARY_PANEL_VIEWS = {
@@ -43,11 +23,11 @@ export class ItineraryPanelViews {
 
       const selectView = (view) => {
          onViewChange?.(view);
-         setViewVisibility(root, view);
+         ItineraryPanelViewsHelpers.setViewVisibility(root, view);
       };
 
       toggle.appendChild(
-         makeToggleButton({
+         ItineraryPanelViewsHelpers.makeToggleButton({
             label: Strings.itinerary.dayPlanner.listViewLabel,
             view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list,
             activeView,
@@ -55,7 +35,7 @@ export class ItineraryPanelViews {
          })
       );
       toggle.appendChild(
-         makeToggleButton({
+         ItineraryPanelViewsHelpers.makeToggleButton({
             label: Strings.itinerary.dayPlanner.dayPlannerLabel,
             view: ItineraryPanelViews.ITINERARY_PANEL_VIEWS.dayPlanner,
             activeView,
@@ -67,7 +47,7 @@ export class ItineraryPanelViews {
       root.appendChild(toggle);
       root.appendChild(listView);
       root.appendChild(dayPlannerView);
-      setViewVisibility(root, activeView);
+      ItineraryPanelViewsHelpers.setViewVisibility(root, activeView);
 
       return {
          root,
