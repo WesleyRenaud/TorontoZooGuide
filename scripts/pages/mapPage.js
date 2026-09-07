@@ -1,166 +1,15 @@
-import { FocusFromQuery } from '../focus/focusFromQuery.js';
 import { VisitDateEarliest } from '../itinerary/visitDateEarliest.js';
-import { DateContext } from '../map/dateContext.js';
 import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
-import { MapControlsBinder } from '../map/mapControlsBinder.js';
 import { MapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteControls } from '../map/transportationRouteControls.js';
-import { ExploreFilter } from '../search/exploreFilter.js';
-import { Search } from '../search/search.js';
+import { MapPageBootstrap } from './mapPageBootstrap.js';
 import { ExploreUpdates } from '../updates/exploreUpdates.js';
-
-function getMapPageElements() {
-   return {
-      mapInner: document.getElementById('mapInner'),
-      mapPreset: document.getElementById('mapPreset'),
-      mapDateInput: document.getElementById('mapDate'),
-      showMapLabelsCheckbox: document.getElementById('showMapLabels'),
-      includeOffDisplayCheckbox: document.getElementById('includeOffDisplayAnimals'),
-      includeClosedRestaurantsCheckbox: document.getElementById('includeClosedRestaurants'),
-      includeClosedRestroomsCheckbox: document.getElementById('includeClosedRestrooms'),
-      includeClosedGiftShopsCheckbox: document.getElementById('includeClosedGiftShops'),
-      includeClosedAttractionsCheckbox: document.getElementById('includeClosedAttractions'),
-      transportationRoutesEl: document.getElementById('transportationRoutes'),
-      animalSearchInput: document.getElementById('animalSearch'),
-      animalSearchResultsEl: document.getElementById('animalSearchResults'),
-      exploreUpdatesListEl: document.getElementById('exploreUpdatesList'),
-      tooltipEl: document.getElementById('tooltip'),
-      hoverTooltipEl: document.getElementById('hoverTooltip'),
-   };
-}
-
-function hasRequiredMapPageElements({
-   mapInner,
-   mapPreset,
-   mapDateInput,
-   tooltipEl,
-} = {}) {
-   return Boolean(mapInner && mapPreset && mapDateInput && tooltipEl);
-}
-
-function isCoordinateEditingEnabled() {
-   const urlParams = new URLSearchParams(window.location.search);
-   return urlParams.get('editCoords') === '1';
-}
-
-function getSelectedTransportationRoute() {
-   return Array.from(document.querySelectorAll('input[name="transportationRoute-zoomobile"]'))
-      .find((radio) => radio.checked)
-      ?.value ?? 'none';
-}
-
-function clearAnimalSearchResults(resultsEl) {
-   resultsEl?.replaceChildren();
-}
-
-function createMapDateContextGetter({
-   mapPreset,
-   mapDateInput,
-} = {}) {
-   return async () => {
-      const preset = mapPreset?.value || '';
-      const dateStr = mapDateInput?.value?.trim?.() || '';
-      return await DateContext.buildMapDateContext(preset, dateStr);
-   };
-}
-
-function createRuntimeOptions(elements, {
-   getSelectedTypes,
-   updates,
-} = {}) {
-   return {
-      mapInner: elements.mapInner,
-      tooltipEl: elements.tooltipEl,
-      hoverTooltipEl: elements.hoverTooltipEl,
-      showMapLabelsCheckbox: elements.showMapLabelsCheckbox,
-      enableCoordinateEditing: isCoordinateEditingEnabled(),
-      getIncludeOffDisplay: () => elements.includeOffDisplayCheckbox?.checked ?? false,
-      getIncludeClosedRestaurants: () => elements.includeClosedRestaurantsCheckbox?.checked ?? false,
-      getIncludeClosedRestrooms: () => elements.includeClosedRestroomsCheckbox?.checked ?? false,
-      getIncludeClosedGiftShops: () => elements.includeClosedGiftShopsCheckbox?.checked ?? false,
-      getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
-      getTransportationRoute: () => getSelectedTransportationRoute(),
-      getSelectedTypes,
-      onDateContextChange: (dateCtx) => updates?.refresh?.(dateCtx),
-   };
-}
-
-function initMapExploreFilter({
-   updater,
-   getSearch,
-   animalSearchResultsEl,
-} = {}) {
-   return ExploreFilter.initExploreTypeFilter({
-      onChange: () => {
-         updater.refetchWithCurrentControls(null);
-         getSearch()?.refresh?.();
-      },
-      onAnimalsUnchecked: () => {
-         clearAnimalSearchResults(animalSearchResultsEl);
-      },
-   });
-}
-
-function initMapSearch({
-   elements,
-   explore,
-   updater,
-} = {}) {
-   return Search.initSearch({
-      inputEl: elements.animalSearchInput,
-      resultsEl: elements.animalSearchResultsEl,
-      getIncludeFlags: () => ({
-         ...explore.buildSearchIncludeFlags(),
-         includeClosedRestaurants: elements.includeClosedRestaurantsCheckbox?.checked ?? false,
-         includeClosedRestrooms: elements.includeClosedRestroomsCheckbox?.checked ?? false,
-         includeClosedGiftShops: elements.includeClosedGiftShopsCheckbox?.checked ?? false,
-         includeClosedAttractions: elements.includeClosedAttractionsCheckbox?.checked ?? false,
-      }),
-      getContext: createMapDateContextGetter(elements),
-      onFocusRow: (row) => updater.focusFromSearchRow(row),
-   });
-}
-
-function initMapPageControls({
-   elements,
-   updater,
-   getSearch,
-   earliestSelectableNoon,
-} = {}) {
-   MapControlsBinder.initMapControls({
-      mapPreset: elements.mapPreset,
-      mapDateInput: elements.mapDateInput,
-      includeOffDisplayCheckbox: elements.includeOffDisplayCheckbox,
-      includeClosedRestaurantsCheckbox: elements.includeClosedRestaurantsCheckbox,
-      includeClosedRestroomsCheckbox: elements.includeClosedRestroomsCheckbox,
-      includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
-      includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
-      transportationRouteRadios: document.querySelectorAll('input[name="transportationRoute-zoomobile"]'),
-      earliestSelectableNoon,
-      onUpdate: (preset, dateStr) => {
-         updater.updateMap(preset, dateStr, null);
-         getSearch()?.refresh?.();
-      },
-   });
-}
-
-function initMapDeepLinkFocus(updater) {
-   FocusFromQuery.initFocusFromQuery({
-      onFocus: (rowOrSpec) => {
-         updater.focusFromDeepLink(rowOrSpec);
-      },
-   });
-}
-
-function triggerInitialMapUpdate(mapPreset) {
-   mapPreset.dispatchEvent(new Event('change'));
-}
 
 export class MapPage {
    static async initMapPage() {
-      const elements = getMapPageElements();
+      const elements = MapPageBootstrap.getMapPageElements();
 
-      if (!hasRequiredMapPageElements(elements)) return;
+      if (!MapPageBootstrap.hasRequiredMapPageElements(elements)) return;
 
       await LoadInlineZooMap.loadInlineZooMap();
       await TransportationRouteControls.initTransportationRouteControls(elements.transportationRoutesEl);
@@ -171,7 +20,7 @@ export class MapPage {
          listEl: elements.exploreUpdatesListEl,
       });
 
-      const runtime = MapRuntime.createMapRuntime(createRuntimeOptions(elements, {
+      const runtime = MapRuntime.createMapRuntime(MapPageBootstrap.createRuntimeOptions(elements, {
          getSelectedTypes: () => explore?.getSelectedTypes?.() || [],
          updates,
       }));
@@ -181,13 +30,13 @@ export class MapPage {
       const { updater } = runtime;
       const getSearch = () => search;
 
-      explore = initMapExploreFilter({
+      explore = MapPageBootstrap.initMapExploreFilter({
          updater,
          getSearch,
          animalSearchResultsEl: elements.animalSearchResultsEl,
       });
 
-      search = initMapSearch({
+      search = MapPageBootstrap.initMapSearch({
          elements,
          explore,
          updater,
@@ -195,15 +44,15 @@ export class MapPage {
 
       const earliestVisitNoon = await VisitDateEarliest.resolveEarliestSelectableVisitDateNoon();
 
-      initMapPageControls({
+      MapPageBootstrap.initMapPageControls({
          elements,
          updater,
          getSearch,
          earliestSelectableNoon: earliestVisitNoon,
       });
 
-      initMapDeepLinkFocus(updater);
+      MapPageBootstrap.initMapDeepLinkFocus(updater);
 
-      triggerInitialMapUpdate(elements.mapPreset);
+      MapPageBootstrap.triggerInitialMapUpdate(elements.mapPreset);
    }
 }
