@@ -1,30 +1,7 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
+import { ItineraryItemFormatterHelpers } from './itineraryItemFormatterHelpers.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
-
-function asObject(value) {
-   return value && typeof value === 'object'
-      ? value
-      : {};
-}
-
-function normalizeOptionalText(value) {
-   const text = ItineraryItemFormatter.normalizeText(value);
-   return text || null;
-}
-
-function normalizeMaximumDuration(value) {
-   const maximumDuration = ValueNormalizer.normalizeNumber(value);
-   return maximumDuration && maximumDuration > 0 ? maximumDuration : null;
-}
-
-function normalizeItineraryNameForSave(value) {
-   if (typeof value === 'string') {
-      return ItineraryItemFormatter.normalizeText(value);
-   }
-
-   return ItineraryItemFormatter.normalizeText(asObject(value).name);
-}
 
 export class ItineraryItemFormatter {
    static normalizeNumber = ValueNormalizer.normalizeNumber;
@@ -124,21 +101,21 @@ export class ItineraryItemFormatter {
    }
 
    static normalizeAnimal(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
 
       return {
          ...source,
          species: ItineraryItemFormatter.normalizeText(source.species),
          exhibit: ItineraryItemFormatter.normalizeText(source.exhibit),
-         link: normalizeOptionalText(source.link),
-         removalReason: normalizeOptionalText(source.removalReason),
+         link: ItineraryItemFormatterHelpers.normalizeOptionalText(source.link),
+         removalReason: ItineraryItemFormatterHelpers.normalizeOptionalText(source.removalReason),
          likelihoodBefore: ValueNormalizer.normalizeNumber(source.likelihoodBefore),
          likelihoodAfter: ValueNormalizer.normalizeNumber(source.likelihoodAfter),
       };
    }
 
    static normalizeAttraction(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
 
       return {
          ...source,
@@ -147,18 +124,18 @@ export class ItineraryItemFormatter {
          region: ItineraryItemFormatter.normalizeText(source.region),
          location: ItineraryItemFormatter.normalizeText(source.location),
          price: ItineraryItemFormatter.normalizeText(source.price),
-         open_time: normalizeOptionalText(source.open_time),
-         close_time: normalizeOptionalText(source.close_time),
-         infoLink: normalizeOptionalText(source.info_link),
-         removalReason: normalizeOptionalText(source.removalReason),
+         open_time: ItineraryItemFormatterHelpers.normalizeOptionalText(source.open_time),
+         close_time: ItineraryItemFormatterHelpers.normalizeOptionalText(source.close_time),
+         infoLink: ItineraryItemFormatterHelpers.normalizeOptionalText(source.info_link),
+         removalReason: ItineraryItemFormatterHelpers.normalizeOptionalText(source.removalReason),
       };
    }
 
    static normalizeTransportation(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
       const legs = Array.isArray(source.legs)
          ? source.legs.map((leg) => {
-            const sourceLeg = asObject(leg);
+            const sourceLeg = ItineraryItemFormatterHelpers.asObject(leg);
 
             return {
                ...sourceLeg,
@@ -171,7 +148,7 @@ export class ItineraryItemFormatter {
          : [];
       const stations = Array.isArray(source.stations)
          ? source.stations.map((station) => {
-            const sourceStation = asObject(station);
+            const sourceStation = ItineraryItemFormatterHelpers.asObject(station);
 
             return {
                ...sourceStation,
@@ -189,32 +166,32 @@ export class ItineraryItemFormatter {
       return {
          ...source,
          name: ItineraryItemFormatter.normalizeText(source.name),
-         main_station: normalizeOptionalText(source.main_station),
-         infoLink: normalizeOptionalText(source.info_link),
+         main_station: ItineraryItemFormatterHelpers.normalizeOptionalText(source.main_station),
+         infoLink: ItineraryItemFormatterHelpers.normalizeOptionalText(source.info_link),
          added_as_attraction: source.added_as_attraction === true,
          bulk_transit_evaluated: source.bulk_transit_evaluated === true,
          legs,
          stations,
-         route: normalizeOptionalText(source.route),
+         route: ItineraryItemFormatterHelpers.normalizeOptionalText(source.route),
          route_marker_sequences: ValueNormalizer.asArray(source.route_marker_sequences).map(
             ValueNormalizer.asTrimmedStringList
          ),
-         removalReason: normalizeOptionalText(source.removalReason),
+         removalReason: ItineraryItemFormatterHelpers.normalizeOptionalText(source.removalReason),
       };
    }
 
    static normalizeTalk(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
 
       return {
          ...source,
          name: ItineraryItemFormatter.normalizeText(source.name),
          location: ItineraryItemFormatter.normalizeText(source.location),
          start_time: ItineraryItemFormatter.normalizeText(source.start_time),
-         maximum_duration: normalizeMaximumDuration(source.maximum_duration),
+         maximum_duration: ItineraryItemFormatterHelpers.normalizeMaximumDuration(source.maximum_duration),
          end_time: ItineraryItemFormatter.normalizeText(source.end_time),
-         link: normalizeOptionalText(source.link),
-         removalReason: normalizeOptionalText(source.removalReason),
+         link: ItineraryItemFormatterHelpers.normalizeOptionalText(source.link),
+         removalReason: ItineraryItemFormatterHelpers.normalizeOptionalText(source.removalReason),
          linked_animals: NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(
             source.linked_animals
          ),
@@ -222,12 +199,12 @@ export class ItineraryItemFormatter {
    }
 
    static normalizeGuardiansTalkForSave(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
 
       return {
          name: ItineraryItemFormatter.normalizeText(source.name),
-         start_time: normalizeOptionalText(source.start_time),
-         end_time: normalizeOptionalText(source.end_time),
+         start_time: ItineraryItemFormatterHelpers.normalizeOptionalText(source.start_time),
+         end_time: ItineraryItemFormatterHelpers.normalizeOptionalText(source.end_time),
       };
    }
 
@@ -237,12 +214,12 @@ export class ItineraryItemFormatter {
       }
 
       return items
-         .map(normalizeItineraryNameForSave)
+         .map(ItineraryItemFormatterHelpers.normalizeItineraryNameForSave)
          .filter(Boolean);
    }
 
    static normalizeWild(value) {
-      const source = asObject(value);
+      const source = ItineraryItemFormatterHelpers.asObject(value);
 
       return {
          ...source,
@@ -250,10 +227,10 @@ export class ItineraryItemFormatter {
          meeting_spot: ItineraryItemFormatter.normalizeText(source.meeting_spot),
          region: ItineraryItemFormatter.normalizeText(source.region),
          start_time: ItineraryItemFormatter.normalizeText(source.start_time),
-         maximum_duration: normalizeMaximumDuration(source.maximum_duration),
+         maximum_duration: ItineraryItemFormatterHelpers.normalizeMaximumDuration(source.maximum_duration),
          end_time: ItineraryItemFormatter.normalizeText(source.end_time),
-         link: normalizeOptionalText(source.link),
-         removalReason: normalizeOptionalText(source.removalReason),
+         link: ItineraryItemFormatterHelpers.normalizeOptionalText(source.link),
+         removalReason: ItineraryItemFormatterHelpers.normalizeOptionalText(source.removalReason),
       };
    }
 
@@ -262,7 +239,7 @@ export class ItineraryItemFormatter {
          return WildEncounterScheduleItemKey.fromWire(value)?.toWire() ?? '';
       }
 
-      return WildEncounterScheduleItemKey.fromRow(asObject(value))?.toWire() ?? '';
+      return WildEncounterScheduleItemKey.fromRow(ItineraryItemFormatterHelpers.asObject(value))?.toWire() ?? '';
    }
 
    static normalizeWildEncounterListForSave(items) {

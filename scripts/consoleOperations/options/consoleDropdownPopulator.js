@@ -1,27 +1,5 @@
-import { NamedItems } from './namedItems.js';
+import { ConsoleDropdownOptionBuilder } from './consoleDropdownOptionBuilder.js';
 import { Strings } from '../../strings.js';
-
-function createPlaceholderOption(label) {
-   const placeholder = document.createElement('option');
-   placeholder.value = '';
-   placeholder.textContent = label;
-   return placeholder;
-}
-
-function createNamedOption(name) {
-   const option = document.createElement('option');
-   option.value = name;
-   option.textContent = name;
-   return option;
-}
-
-function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
-   ConsoleDropdownPopulator.populateDropdown(selectEl, items, {
-      emptyOptionLabel,
-      getName: NamedItems.getOptionItemName,
-      sortItems: NamedItems.sortNamedOptions,
-   });
-}
 
 export class ConsoleDropdownPopulator {
    static populateDropdown(selectEl, items, {
@@ -34,7 +12,7 @@ export class ConsoleDropdownPopulator {
       }
 
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(createPlaceholderOption(emptyOptionLabel));
+      fragment.appendChild(ConsoleDropdownOptionBuilder.createPlaceholderOption(emptyOptionLabel));
 
       const resolvedItems = typeof sortItems === 'function'
          ? sortItems(items ?? [])
@@ -45,7 +23,7 @@ export class ConsoleDropdownPopulator {
 
          if (!name) return;
 
-         fragment.appendChild(createNamedOption(name));
+         fragment.appendChild(ConsoleDropdownOptionBuilder.createNamedOption(name));
       });
 
       selectEl.replaceChildren(fragment);
@@ -58,34 +36,34 @@ export class ConsoleDropdownPopulator {
    }
 
    static populateExhibitDropdown(selectEl, exhibits) {
-      populateNamedDropdown(selectEl, exhibits, Strings.placeholders.exhibit);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, exhibits, Strings.placeholders.exhibit);
    }
 
    static populateRestaurantDropdown(selectEl, restaurants) {
-      populateNamedDropdown(selectEl, restaurants, Strings.placeholders.restaurant);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, restaurants, Strings.placeholders.restaurant);
    }
 
    static populateRestroomDropdown(selectEl, restrooms) {
-      populateNamedDropdown(selectEl, restrooms, Strings.placeholders.restroom);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, restrooms, Strings.placeholders.restroom);
    }
 
    static populateGiftShopDropdown(selectEl, giftShops) {
-      populateNamedDropdown(selectEl, giftShops, Strings.placeholders.giftShop);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, giftShops, Strings.placeholders.giftShop);
    }
 
    static populateAttractionDropdown(selectEl, attractions) {
-      populateNamedDropdown(selectEl, attractions, Strings.placeholders.attraction);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, attractions, Strings.placeholders.attraction);
    }
 
    static populateTransportationStationDropdown(selectEl, transportationStations) {
-      populateNamedDropdown(selectEl, transportationStations, Strings.placeholders.transportationStation);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, transportationStations, Strings.placeholders.transportationStation);
    }
 
    static populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
-      populateNamedDropdown(selectEl, guardiansTalks, Strings.placeholders.talk);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, guardiansTalks, Strings.placeholders.talk);
    }
 
    static populateWildEncounterDropdown(selectEl, wildEncounters) {
-      populateNamedDropdown(selectEl, wildEncounters, Strings.placeholders.wildEncounter);
+      ConsoleDropdownOptionBuilder.populateNamedDropdown(selectEl, wildEncounters, Strings.placeholders.wildEncounter);
    }
 }

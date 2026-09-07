@@ -1,48 +1,9 @@
+import { DraftStorageHelpers } from './draftStorageHelpers.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { RegionSelection } from './selectors/regionSelector/regionSelection.js';
 import { RegionStorage } from './selectors/regionSelector/regionStorage.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { StorageKeys } from './storageKeys.js';
-
-const DRAFT_ITEM_STORAGE_KEYS = Object.freeze({
-   animals: StorageKeys.ANIMALS_KEY,
-   attractions: StorageKeys.ATTRACTIONS_KEY,
-   guardiansTalks: StorageKeys.GUARDIANS_KEY,
-   wildEncounters: StorageKeys.WILD_KEY,
-   transportations: StorageKeys.TRANSPORTATIONS_KEY,
-});
-
-function loadStoredDraftItems() {
-   return Object.fromEntries(
-      Object.entries(DRAFT_ITEM_STORAGE_KEYS).map(([draftKey, storageKey]) => (
-         [draftKey, DraftStorage.loadArray(storageKey)]
-      ))
-   );
-}
-
-function writeItineraryAnimalDraft(animals = []) {
-   const draftAnimals = animals
-      .map(RegionSelection.makeSelectedAnimal)
-      .filter(Boolean);
-
-   DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, draftAnimals);
-}
-
-function pruneSelectedExhibitsWithoutAnimals(animals = []) {
-   const presentExhibits = new Set(RegionSelection.getExhibitNamesFromAnimals(animals));
-   const nextSelectedExhibits = RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY)
-      .filter((exhibitName) => presentExhibits.has(exhibitName));
-
-   RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, nextSelectedExhibits);
-}
-
-function syncSelectedExhibitsFromItinerary(itinerary = {}) {
-   if (!Array.isArray(itinerary.selectedExhibits)) {
-      return;
-   }
-
-   RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, itinerary.selectedExhibits);
-}
 
 export class DraftStorage {
    static ITINERARY_DRAFT_KEYS = [
@@ -98,7 +59,7 @@ export class DraftStorage {
    static loadStoredItineraryDraft() {
       return ItineraryShape.normalizeItineraryDraft({
          date: DraftStorage.getStoredItineraryDate(),
-         ...loadStoredDraftItems(),
+         ...DraftStorageHelpers.loadStoredDraftItems(),
       });
    }
 
@@ -107,7 +68,7 @@ export class DraftStorage {
 
       DraftStorage.setStoredItineraryDate(normalizedDraft.date);
 
-      Object.entries(DRAFT_ITEM_STORAGE_KEYS).forEach(([draftKey, storageKey]) => {
+      Object.entries(DraftStorageHelpers.DRAFT_ITEM_STORAGE_KEYS).forEach(([draftKey, storageKey]) => {
          DraftStorage.saveArray(storageKey, normalizedDraft[draftKey]);
       });
    }
@@ -165,8 +126,8 @@ export class DraftStorage {
    }
 
    static syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
-      writeItineraryAnimalDraft(itinerary.animals ?? []);
-      syncSelectedExhibitsFromItinerary(itinerary);
+      DraftStorageHelpers.writeItineraryAnimalDraft(itinerary.animals ?? []);
+      DraftStorageHelpers.syncSelectedExhibitsFromItinerary(itinerary);
       RegionStorage.clearRemovedAnimalKeys();
    }
 
@@ -187,7 +148,7 @@ export class DraftStorage {
          .map(RegionSelection.normalizeSelectedAnimal)
          .filter((animal) => animal && RegionSelection.buildSelectedAnimalKey(animal) !== removeKey);
 
-      writeItineraryAnimalDraft(remainingAnimals);
-      pruneSelectedExhibitsWithoutAnimals(remainingAnimals);
+      DraftStorageHelpers.writeItineraryAnimalDraft(remainingAnimals);
+      DraftStorageHelpers.pruneSelectedExhibitsWithoutAnimals(remainingAnimals);
    }
 }

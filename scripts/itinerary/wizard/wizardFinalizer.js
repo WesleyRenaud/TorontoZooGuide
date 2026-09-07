@@ -4,44 +4,11 @@ import { ItineraryServiceSave } from '../itineraryServiceSave.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { NoticePopup } from '../panel/components/noticePopup.js';
 import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
-import { RegionStorage } from '../selectors/regionSelector/regionStorage.js';
-import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
+import { WizardFinalizerHelpers } from './wizardFinalizerHelpers.js';
 import { WizardPopup } from './wizardPopup.js';
 import { WizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
-
-const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
-   title: Strings.itinerary.noItemsSelected.title,
-   message: Strings.itinerary.noItemsSelected.message,
-   buttonText: Strings.itinerary.noItemsSelected.button,
-});
-
-function clearWizardMount(mountEl) {
-   mountEl?.replaceChildren();
-}
-
-function createFinalItineraryDraft(draft = {}, normalizeDraft = ItineraryShape.normalizeItineraryDraft) {
-   return normalizeDraft(draft);
-}
-
-function showEmptySelectionPopup(mountEl, showWizardPopup = WizardPopup.showItineraryWizardPopup) {
-   showWizardPopup({
-      mountEl,
-      ...EMPTY_SELECTION_POPUP_CONFIG,
-   });
-}
-
-function saveFinalItinerary(
-   finalItinerary,
-   { overridingConflictingGuardiansTalks = false } = {},
-   saveItineraryFn = ItineraryServiceSave.saveItinerary,
-) {
-   return saveItineraryFn(finalItinerary, {
-      overridingConflictingGuardiansTalks,
-      selectedExhibits: RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY),
-   });
-}
 
 export class WizardFinalizer {
    static async finalizeItineraryWizard(
@@ -61,17 +28,17 @@ export class WizardFinalizer {
          shouldShowSaveIssues = WizardFinalizeDecisions.shouldShowSaveIssuesPopup,
       } = deps;
 
-      const finalItinerary = createFinalItineraryDraft(draft, normalizeDraft);
+      const finalItinerary = WizardFinalizerHelpers.createFinalItineraryDraft(draft, normalizeDraft);
 
       if (shouldBlockEmpty(finalItinerary, allowEmpty)) {
-         showEmptySelectionPopup(mountEl, showWizardPopup);
+         WizardFinalizerHelpers.showEmptySelectionPopup(mountEl, showWizardPopup);
          return null;
       }
 
       let savedItinerary;
 
       try {
-         savedItinerary = await saveFinalItinerary(
+         savedItinerary = await WizardFinalizerHelpers.saveFinalItinerary(
             finalItinerary,
             {},
             saveItineraryFn,
@@ -101,7 +68,7 @@ export class WizardFinalizer {
          showSaveIssuesPopup(savedItinerary, {
             showNoticePopup,
             showProceedConfirmation,
-            saveFinalItinerary: (itinerary, options) => saveFinalItinerary(
+            saveFinalItinerary: (itinerary, options) => WizardFinalizerHelpers.saveFinalItinerary(
                itinerary,
                options,
                saveItineraryFn,
@@ -109,7 +76,7 @@ export class WizardFinalizer {
          });
       }
 
-      clearWizardMount(mountEl);
+      WizardFinalizerHelpers.clearWizardMount(mountEl);
 
       onDone?.(savedItinerary);
 
