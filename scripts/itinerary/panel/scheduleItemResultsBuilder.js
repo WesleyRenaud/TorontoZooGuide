@@ -1,0 +1,84 @@
+import { Strings } from '../../strings.js';
+
+export class ScheduleItemResultsBuilder {
+   static createEmptyState(emptyText) {
+      const empty = document.createElement('div');
+      empty.className = 'itin-empty';
+      empty.textContent = emptyText;
+      return empty;
+   }
+
+   static createSelectButton({
+      isSelected,
+      onSelect,
+   } = {}) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'itin-add-btn schedule-item-select-btn';
+
+      function updateButtonState() {
+         const selected = isSelected();
+         button.textContent = selected ? '✓' : Strings.itinerary.actions.addSymbol;
+         button.classList.toggle('is-added', selected);
+         button.setAttribute('aria-pressed', String(selected));
+         button.setAttribute(
+            'aria-label',
+            selected ? Strings.itinerary.scheduleItem.itemSelected : Strings.itinerary.scheduleItem.selectItem
+         );
+      }
+
+      button.addEventListener('click', (event) => {
+         event.stopPropagation();
+         onSelect();
+      });
+
+      updateButtonState();
+
+      return {
+         button,
+         updateButtonState,
+      };
+   }
+
+   static createResultRow({
+      row,
+      getId,
+      selectedRowId,
+      renderRowLeft,
+      onSelectRow,
+   } = {}) {
+      const id = getId(row);
+      const isSelected = () => id === selectedRowId;
+
+      const item = document.createElement('div');
+      item.className = 'animal-result schedule-item-result';
+      item.classList.toggle('is-selected', isSelected());
+      item.setAttribute('role', 'button');
+      item.tabIndex = 0;
+      item.setAttribute(
+         'aria-pressed',
+         String(isSelected())
+      );
+
+      const selectControl = ScheduleItemResultsBuilder.createSelectButton({
+         isSelected,
+         onSelect: () => onSelectRow?.(row, id),
+      });
+
+      item.append(renderRowLeft(row), selectControl.button);
+
+      function handleSelect() {
+         onSelectRow?.(row, id);
+      }
+
+      item.addEventListener('click', handleSelect);
+      item.addEventListener('keydown', (event) => {
+         if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleSelect();
+         }
+      });
+
+      return item;
+   }
+}

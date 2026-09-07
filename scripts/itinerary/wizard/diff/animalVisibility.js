@@ -1,49 +1,4 @@
-import { ItemKey } from './itemKey.js';
-import { LikelihoodValues } from '../../../likelihood/likelihoodValues.js';
-
-function getAnimalLikelihood(animal) {
-   return LikelihoodValues.likelihoodToFraction(animal?.likelihood);
-}
-
-function buildAnimalsBySpecies(animals = []) {
-   const bestBySpecies = new Map();
-
-   animals.forEach((animal) => {
-      const speciesKey = ItemKey.buildItemKey(animal, 'species');
-
-      if (!speciesKey) {
-         return;
-      }
-
-      const likelihood = getAnimalLikelihood(animal);
-      const currentBest = bestBySpecies.get(speciesKey);
-
-      if (!currentBest) {
-         bestBySpecies.set(speciesKey, animal);
-         return;
-      }
-
-      if (likelihood == null) {
-         return;
-      }
-
-      const currentBestLikelihood = getAnimalLikelihood(currentBest);
-
-      if (currentBestLikelihood == null || likelihood > currentBestLikelihood) {
-         bestBySpecies.set(speciesKey, animal);
-      }
-   });
-
-   return bestBySpecies;
-}
-
-function buildRemovedSpeciesKeys(removedAnimals = []) {
-   return new Set(
-      removedAnimals
-         .map((animal) => ItemKey.buildItemKey(animal, 'species'))
-         .filter(Boolean)
-   );
-}
+import { AnimalVisibilityHelpers } from './animalVisibilityHelpers.js';
 
 export class AnimalVisibility {
    static buildAnimalVisibilityChanges(
@@ -52,9 +7,9 @@ export class AnimalVisibility {
       removedAnimals = [],
       minDelta = 0.2
    ) {
-      const previousBySpecies = buildAnimalsBySpecies(previousAnimals);
-      const validatedBySpecies = buildAnimalsBySpecies(validatedAnimals);
-      const removedSpeciesKeys = buildRemovedSpeciesKeys(removedAnimals);
+      const previousBySpecies = AnimalVisibilityHelpers.buildAnimalsBySpecies(previousAnimals);
+      const validatedBySpecies = AnimalVisibilityHelpers.buildAnimalsBySpecies(validatedAnimals);
+      const removedSpeciesKeys = AnimalVisibilityHelpers.buildRemovedSpeciesKeys(removedAnimals);
 
       const reduced = [];
       const improved = [];
@@ -70,8 +25,8 @@ export class AnimalVisibility {
             return;
          }
 
-         const likelihoodBefore = getAnimalLikelihood(previousAnimal);
-         const likelihoodAfter = getAnimalLikelihood(validatedAnimal);
+         const likelihoodBefore = AnimalVisibilityHelpers.getAnimalLikelihood(previousAnimal);
+         const likelihoodAfter = AnimalVisibilityHelpers.getAnimalLikelihood(validatedAnimal);
 
          if (likelihoodBefore == null || likelihoodAfter == null) {
             return;
