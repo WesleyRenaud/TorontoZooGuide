@@ -3,26 +3,7 @@ import { ExploreEventCard } from './exploreEventCard.js';
 import { ExploreTabs } from './exploreTabs.js';
 import { ExploreUpdateCard } from './exploreUpdateCard.js';
 import { ExploreUpdatesChrome } from './exploreUpdatesChrome.js';
-
-function buildDatePayload(dateCtx) {
-   return {
-      month: dateCtx.month,
-      day: dateCtx.day,
-      year: dateCtx.year,
-   };
-}
-
-function resolveActiveTab(activeTab, updates, events) {
-   if (activeTab === ExploreTabs.EXPLORE_TAB.UPDATES && !updates.length && events.length) {
-      return ExploreTabs.EXPLORE_TAB.EVENTS;
-   }
-
-   if (activeTab === ExploreTabs.EXPLORE_TAB.EVENTS && !events.length && updates.length) {
-      return ExploreTabs.EXPLORE_TAB.UPDATES;
-   }
-
-   return activeTab;
-}
+import { ExploreUpdatesHelpers } from './exploreUpdatesHelpers.js';
 
 export class ExploreUpdates {
    static createExploreUpdates({
@@ -95,7 +76,7 @@ export class ExploreUpdates {
          updates = nextUpdates;
          events = nextEvents;
          currentIndex = 0;
-         activeTab = resolveActiveTab(activeTab, updates, events);
+         activeTab = ExploreUpdatesHelpers.resolveActiveTab(activeTab, updates, events);
          renderCurrentItem();
       }
 
@@ -151,8 +132,8 @@ export class ExploreUpdates {
 
          try {
             const [nextUpdates, nextEvents] = await Promise.all([
-               MapApi.getUpdates(buildDatePayload(dateCtx)),
-               MapApi.getEvents(buildDatePayload(dateCtx)),
+               MapApi.getUpdates(ExploreUpdatesHelpers.buildDatePayload(dateCtx)),
+               MapApi.getEvents(ExploreUpdatesHelpers.buildDatePayload(dateCtx)),
             ]);
 
             renderItems({

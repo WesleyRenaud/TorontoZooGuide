@@ -1,16 +1,5 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-
-function normalizeRegionName(name = '') {
-   return typeof name === 'string'
-      ? name.trim()
-      : '';
-}
-
-function normalizeRegionExhibits(exhibits = []) {
-   return exhibits
-      .map((exhibit) => normalizeRegionName(exhibit))
-      .filter(Boolean);
-}
+import { RegionSelectionNormalizer } from './regionSelectionNormalizer.js';
 
 export class RegionSelection {
    static createEmptyRegion() {
@@ -27,8 +16,8 @@ export class RegionSelection {
       } = region;
 
       return {
-         name: normalizeRegionName(name),
-         exhibits: normalizeRegionExhibits(exhibits),
+         name: RegionSelectionNormalizer.normalizeRegionName(name),
+         exhibits: RegionSelectionNormalizer.normalizeRegionExhibits(exhibits),
       };
    }
 

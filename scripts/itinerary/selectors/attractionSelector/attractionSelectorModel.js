@@ -1,4 +1,5 @@
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
+import { AttractionSelectorStoredAttractionFactory } from './attractionSelectorStoredAttractionFactory.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
@@ -6,47 +7,6 @@ import { Strings } from '../../../strings.js';
 
 const DEFAULT_ATTRACTION_TITLE = 'Attraction';
 const CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
-
-function createStoredAttractionFromString(item) {
-   const name = StoredSelection.normalizeStoredString(item);
-
-   if (!name) {
-      return null;
-   }
-
-   return {
-      id: name,
-      name,
-      subtitle: '',
-      freeWithAdmission: false,
-      seasonal: false,
-      isClosed: false,
-      addedAsAttraction: false,
-      infoLink: null,
-      imageSrc: null,
-   };
-}
-
-function createStoredAttractionFromObject(item) {
-   const name = StoredSelection.normalizeStoredString(item.name);
-   const id = StoredSelection.normalizeStoredId(item.id, name);
-
-   if (!id) {
-      return null;
-   }
-
-   return {
-      id,
-      name,
-      subtitle: StoredSelection.normalizeStoredString(item.subtitle),
-      freeWithAdmission: StoredSelection.normalizeStoredBoolean(item.freeWithAdmission),
-      seasonal: StoredSelection.normalizeStoredBoolean(item.seasonal),
-      isClosed: StoredSelection.normalizeStoredBoolean(item.isClosed),
-      addedAsAttraction: StoredSelection.normalizeStoredBoolean(item.addedAsAttraction),
-      infoLink: StoredSelection.normalizeStoredLink(item.infoLink),
-      imageSrc: StoredSelection.normalizeStoredLink(item.imageSrc),
-   };
-}
 
 export class AttractionSelectorModel {
    static getAttractionName(row) {
@@ -111,8 +71,8 @@ export class AttractionSelectorModel {
 
    static migrateStoredAttractions(items) {
       return StoredSelection.migrateStoredSelectionItems(items, {
-         fromString: createStoredAttractionFromString,
-         fromObject: createStoredAttractionFromObject,
+         fromString: AttractionSelectorStoredAttractionFactory.createStoredAttractionFromString,
+         fromObject: AttractionSelectorStoredAttractionFactory.createStoredAttractionFromObject,
       });
    }
 

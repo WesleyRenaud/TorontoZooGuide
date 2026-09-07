@@ -1,39 +1,6 @@
-import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { ConsoleDatePickersHelpers } from './consoleDatePickersHelpers.js';
 import { Flatpickr } from './flatpickr.js';
 import { TimePickerEnterCommit } from './timePickerEnterCommit.js';
-
-const DATE_PICKER_OPTIONS = {
-   enableTime: false,
-   dateFormat: 'Y-m-d',
-};
-
-function initDatePicker(inputEl, options = {}, initFlatpickrFn = Flatpickr.initFlatpickr) {
-   return initFlatpickrFn(inputEl, {
-      ...DATE_PICKER_OPTIONS,
-      ...options,
-   });
-}
-
-function bindEndDateMinDate(
-   startDateEl,
-   endDatePicker,
-   {
-      emptyMinDate = null,
-   } = {}
-) {
-   if (!startDateEl || !endDatePicker) {
-      return;
-   }
-
-   function syncMinDate() {
-      const startValue = ValueNormalizer.asTrimmedString(startDateEl.value);
-
-      endDatePicker.set('minDate', startValue || emptyMinDate);
-   }
-
-   startDateEl.addEventListener('change', syncMinDate);
-   syncMinDate();
-}
 
 export class ConsoleDatePickers {
    static CONSOLE_TIME_PICKER_OPTIONS = {
@@ -99,15 +66,15 @@ export class ConsoleDatePickers {
          initFlatpickrFn = Flatpickr.initFlatpickr,
       } = {}
    ) {
-      const startPicker = initDatePicker(startDateEl, {
+      const startPicker = ConsoleDatePickersHelpers.initDatePicker(startDateEl, {
          minDate,
       }, initFlatpickrFn);
 
-      const endPicker = initDatePicker(endDateEl, {
+      const endPicker = ConsoleDatePickersHelpers.initDatePicker(endDateEl, {
          minDate,
       }, initFlatpickrFn);
 
-      bindEndDateMinDate(startDateEl, endPicker, {
+      ConsoleDatePickersHelpers.bindEndDateMinDate(startDateEl, endPicker, {
          emptyMinDate: minDate,
       });
 
@@ -126,9 +93,9 @@ export class ConsoleDatePickers {
          initFlatpickrFn = Flatpickr.initFlatpickr,
       } = {}
    ) {
-      const startDatePicker = initDatePicker(startDateEl, {}, initFlatpickrFn);
+      const startDatePicker = ConsoleDatePickersHelpers.initDatePicker(startDateEl, {}, initFlatpickrFn);
 
-      const endDatePicker = initDatePicker(endDateEl, {}, initFlatpickrFn);
+      const endDatePicker = ConsoleDatePickersHelpers.initDatePicker(endDateEl, {}, initFlatpickrFn);
 
       const dailyStartTimePicker = ConsoleDatePickers.initTimePicker(
          dailyStartTimeEl,
@@ -142,7 +109,7 @@ export class ConsoleDatePickers {
          initFlatpickrFn
       );
 
-      bindEndDateMinDate(startDateEl, endDatePicker);
+      ConsoleDatePickersHelpers.bindEndDateMinDate(startDateEl, endDatePicker);
 
       return {
          startDatePicker,

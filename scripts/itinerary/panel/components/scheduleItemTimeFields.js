@@ -1,21 +1,14 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-
-function createFieldLabel(text) {
-   return ItineraryPanelDom.el('label', 'schedule-item-field-label', text);
-}
-
-function readPickerTimeValue(instance, dateStr, inputEl) {
-   return ItineraryItemFormatter.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
-}
+import { ScheduleItemTimeFieldsHelpers } from './scheduleItemTimeFieldsHelpers.js';
 
 export class ScheduleItemTimeFields {
    static makeScheduleItemTimeFields(strings = {}) {
       const timeField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-time-field');
       const durationField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-duration-field');
-      const timeLabel = createFieldLabel(strings.timeLabel ?? '');
-      const durationLabel = createFieldLabel(strings.durationLabel ?? '');
+      const timeLabel = ScheduleItemTimeFieldsHelpers.createFieldLabel(strings.timeLabel ?? '');
+      const durationLabel = ScheduleItemTimeFieldsHelpers.createFieldLabel(strings.durationLabel ?? '');
       const timeInput = document.createElement('input');
       const durationInput = document.createElement('input');
       let selectedStartTime = '';
@@ -74,7 +67,7 @@ export class ScheduleItemTimeFields {
 
          const pickerInstance = instance ?? flatpickrInstance;
 
-         selectedStartTime = readPickerTimeValue(pickerInstance, dateStr, timeInput);
+         selectedStartTime = ScheduleItemTimeFieldsHelpers.readPickerTimeValue(pickerInstance, dateStr, timeInput);
          timeInput.value = selectedStartTime;
       }
 
@@ -83,7 +76,7 @@ export class ScheduleItemTimeFields {
             return '';
          }
 
-         return selectedStartTime || readPickerTimeValue(flatpickrInstance, '', timeInput);
+         return selectedStartTime || ScheduleItemTimeFieldsHelpers.readPickerTimeValue(flatpickrInstance, '', timeInput);
       }
 
       timeField.append(timeLabel, timeInput);
