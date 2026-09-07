@@ -1,4 +1,5 @@
 import { ConsoleDatePickers } from '../../datePickers/consoleDatePickers.js';
+import { DatePickersBindingHelpers } from './datePickersBindingHelpers.js';
 
 const DATE_PICKER_BINDINGS = {
    dateRanges: [
@@ -47,64 +48,18 @@ const DATE_PICKER_BINDINGS = {
    ],
 };
 
-function getNestedValue(source, path = []) {
-   return path.reduce(
-      (currentValue, key) => currentValue?.[key],
-      source
-   );
-}
-
-function initDateRangePickerBinding(refs, path) {
-   const binding = getNestedValue(refs, path);
-
-   ConsoleDatePickers.initDateRangePickers(
-      binding?.startDateEl,
-      binding?.endDateEl
-   );
-}
-
-function initSingleDatePickerBinding(refs, path) {
-   ConsoleDatePickers.initDateRangePickers(
-      getNestedValue(refs, path),
-      null
-   );
-}
-
-function initDateTimePickerBinding(refs, {
-   path,
-   startTimeKey,
-   endTimeKey = null,
-   timeFieldKeys = [],
-} = {}) {
-   const binding = getNestedValue(refs, path);
-
-   if (timeFieldKeys.length) {
-      timeFieldKeys.forEach((fieldKey) => {
-         ConsoleDatePickers.initTimePicker(binding?.[fieldKey]);
-      });
-      return;
-   }
-
-   ConsoleDatePickers.initScheduleDateTimePickers(
-      binding?.startDateEl,
-      binding?.endDateEl,
-      binding?.[startTimeKey],
-      endTimeKey ? binding?.[endTimeKey] : null
-   );
-}
-
 export class DatePickers {
    static wireConsoleOperationDatePickers(refs) {
       DATE_PICKER_BINDINGS.dateRanges.forEach(path => {
-         initDateRangePickerBinding(refs, path);
+         DatePickersBindingHelpers.initDateRangePickerBinding(refs, path);
       });
 
       DATE_PICKER_BINDINGS.singleDates.forEach(path => {
-         initSingleDatePickerBinding(refs, path);
+         DatePickersBindingHelpers.initSingleDatePickerBinding(refs, path);
       });
 
       DATE_PICKER_BINDINGS.dateTimes.forEach(binding => {
-         initDateTimePickerBinding(refs, binding);
+         DatePickersBindingHelpers.initDateTimePickerBinding(refs, binding);
       });
 
       if (refs.attractions?.hoursSchedule) {

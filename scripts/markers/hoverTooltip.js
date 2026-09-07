@@ -1,49 +1,4 @@
-const HOVER_TOOLTIP_POSITION = Object.freeze({
-   viewportPadding: 14,
-   cursorOffsetX: 18,
-   cursorOffsetY: 22,
-});
-
-function isTooltipVisible(hoverTooltipEl) {
-   return Boolean(
-      hoverTooltipEl
-      && hoverTooltipEl.style.display !== 'none'
-   );
-}
-
-function clampToViewport(value, size, viewportSize) {
-   const { viewportPadding } = HOVER_TOOLTIP_POSITION;
-
-   return Math.max(
-      viewportPadding,
-      Math.min(viewportSize - size - viewportPadding, value)
-   );
-}
-
-function calculateTooltipPosition(event, tooltipRect) {
-   const {
-      cursorOffsetX,
-      cursorOffsetY,
-      viewportPadding,
-   } = HOVER_TOOLTIP_POSITION;
-
-   let x = event.clientX + cursorOffsetX;
-   let y = event.clientY - tooltipRect.height - cursorOffsetY;
-
-   if (y < viewportPadding) {
-      y = event.clientY + cursorOffsetY;
-   }
-
-   return {
-      x: clampToViewport(x, tooltipRect.width, window.innerWidth),
-      y: clampToViewport(y, tooltipRect.height, window.innerHeight),
-   };
-}
-
-function applyTooltipPosition(hoverTooltipEl, { x, y }) {
-   hoverTooltipEl.style.left = `${x}px`;
-   hoverTooltipEl.style.top = `${y}px`;
-}
+import { HoverTooltipPositioner } from './hoverTooltipPositioner.js';
 
 export class HoverTooltip {
    static createHoverTooltip(hoverTooltipEl) {
@@ -62,14 +17,14 @@ export class HoverTooltip {
       }
 
       function move(e) {
-         if (!isTooltipVisible(hoverTooltipEl)) return;
+         if (!HoverTooltipPositioner.isTooltipVisible(hoverTooltipEl)) return;
 
-         const position = calculateTooltipPosition(
+         const position = HoverTooltipPositioner.calculateTooltipPosition(
             e,
             hoverTooltipEl.getBoundingClientRect()
          );
 
-         applyTooltipPosition(hoverTooltipEl, position);
+         HoverTooltipPositioner.applyTooltipPosition(hoverTooltipEl, position);
       }
 
       return { show, hide, move };

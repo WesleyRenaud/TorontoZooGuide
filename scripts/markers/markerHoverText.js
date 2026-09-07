@@ -1,102 +1,68 @@
+import { MarkerHoverTextFormatter } from './markerHoverTextFormatter.js';
 import { Strings } from '../strings.js';
 
 const HIDDEN_HOVER_TYPES = new Set([
    'transportationRouteMarker',
 ]);
 
-function readItemText(item, field, fallback) {
-   return item?.[field] || fallback;
-}
-
-function formatCountedHoverText(itemsAtPoint, getTitle) {
-   const firstTitle = getTitle(itemsAtPoint[0]);
-
-   if (itemsAtPoint.length === 1) {
-      return firstTitle;
-   }
-
-   return `${firstTitle} + ${itemsAtPoint.length - 1}`;
-}
-
-function formatGuardiansTalkHoverText(itemsAtPoint) {
-   return formatCountedHoverText(itemsAtPoint, (item) => {
-      const name = item?.name || '';
-      return name
-         ? Strings.map.hover.guardiansTalkWithName(name)
-         : Strings.entityLabels.guardiansTalk;
-   });
-}
-
-function formatWildEncounterHoverText(itemsAtPoint) {
-   if (itemsAtPoint.length === 1) {
-      const name = itemsAtPoint[0]?.name || '';
-      return name
-         ? Strings.map.hover.wildEncounterMeetingSpotWithName(name)
-         : Strings.map.hover.wildEncounterMeetingSpot;
-   }
-
-   const first = itemsAtPoint[0]?.name || Strings.map.hover.wildEncounterMeetingSpot;
-   return Strings.map.hover.wildEncounterMultiple(first, itemsAtPoint.length - 1);
-}
-
 const HOVER_FORMATTERS = Object.freeze({
-   animal: (items) => formatCountedHoverText(
+   animal: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'species', Strings.entityLabels.animal)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'species', Strings.entityLabels.animal)
    ),
-   pavilion: (items) => formatCountedHoverText(
+   pavilion: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.pavilion)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.pavilion)
    ),
-   restaurant: (items) => formatCountedHoverText(
+   restaurant: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.restaurant)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.restaurant)
    ),
-   restroom: (items) => formatCountedHoverText(
+   restroom: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'title', Strings.entityLabels.restroom)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'title', Strings.entityLabels.restroom)
    ),
-   giftShop: (items) => formatCountedHoverText(
+   giftShop: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.giftShop)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.giftShop)
    ),
-   attraction: (items) => formatCountedHoverText(
+   attraction: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.attraction)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.attraction)
    ),
-   transportation: (items) => formatCountedHoverText(
+   transportation: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.attraction)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.attraction)
    ),
-   transportationStation: (items) => formatCountedHoverText(
+   transportationStation: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.entityLabels.transportationStation)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.transportationStation)
    ),
-   guardiansTalk: formatGuardiansTalkHoverText,
-   wildEncounter: formatWildEncounterHoverText,
-   drinkingFountain: (items) => formatCountedHoverText(
+   guardiansTalk: MarkerHoverTextFormatter.formatGuardiansTalkHoverText,
+   wildEncounter: MarkerHoverTextFormatter.formatWildEncounterHoverText,
+   drinkingFountain: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
       () => Strings.map.hover.drinkingFountain
    ),
-   defibrillator: (items) => formatCountedHoverText(
+   defibrillator: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
       () => Strings.map.hover.defibrillator
    ),
-   emergencyIntercom: (items) => formatCountedHoverText(
+   emergencyIntercom: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
       () => Strings.map.hover.emergencyIntercom
    ),
-   guestService: (items) => formatCountedHoverText(
+   guestService: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'service_type', Strings.map.hover.guestService)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'service_type', Strings.map.hover.guestService)
    ),
-   picnicSite: (items) => formatCountedHoverText(
+   picnicSite: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
       () => Strings.map.hover.picnicSite
    ),
-   eventSite: (items) => formatCountedHoverText(
+   eventSite: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', Strings.map.hover.eventSite)
+      (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.map.hover.eventSite)
    ),
 });
 
