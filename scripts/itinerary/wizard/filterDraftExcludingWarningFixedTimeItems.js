@@ -1,49 +1,16 @@
-import { ItineraryItemFormatter } from '../panel/itineraryItemFormatter.js';
+
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
-
-function fixedTimeOccurrenceKey(row = {}) {
-   const name = ItineraryItemFormatter.normalizeText(row.name).toLowerCase();
-   const startTime = ItineraryItemFormatter.formatClockTime(row.start_time);
-
-   if (!name) {
-      return '';
-   }
-
-   return startTime
-      ? `${name}\0${startTime}`
-      : `name:${name}`;
-}
-
-function rejectedOccurrenceKeys(items, isItemType) {
-   return new Set(
-      items
-         .filter(isItemType)
-         .map(fixedTimeOccurrenceKey)
-         .filter(Boolean)
-   );
-}
-
-function keepDraftItem(row, rejectedKeys) {
-   const key = fixedTimeOccurrenceKey(row);
-
-   if (key && rejectedKeys.has(key)) {
-      return false;
-   }
-
-   const nameKey = `name:${ItineraryItemFormatter.normalizeText(row.name).toLowerCase()}`;
-
-   return !rejectedKeys.has(nameKey);
-}
+import { WarningFixedTimeDraftFilter } from './warningFixedTimeDraftFilter.js';
 
 export class FilterDraftExcludingWarningFixedTimeItems {
    static filterDraftExcludingWarningFixedTimeItems(draft = {}, issues = []) {
       const warningItems = issues.flatMap((issue) => issue.items ?? []);
-      const rejectedTalkKeys = rejectedOccurrenceKeys(
+      const rejectedTalkKeys = WarningFixedTimeDraftFilter.rejectedOccurrenceKeys(
          warningItems,
          ScheduleConflictCompatibility.isGuardiansTalkConflictItem
       );
-      const rejectedEncounterKeys = rejectedOccurrenceKeys(
+      const rejectedEncounterKeys = WarningFixedTimeDraftFilter.rejectedOccurrenceKeys(
          warningItems,
          ScheduleConflictCompatibility.isWildEncounterConflictItem
       );
@@ -51,11 +18,11 @@ export class FilterDraftExcludingWarningFixedTimeItems {
       return {
          [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks]: (
             draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks] ?? []
-         ).filter((talk) => keepDraftItem(talk, rejectedTalkKeys)),
+         ).filter((talk) => WarningFixedTimeDraftFilter.keepDraftItem(talk, rejectedTalkKeys)),
          [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters]: (
             draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters] ?? []
          ).filter((encounter) => (
-            keepDraftItem(encounter, rejectedEncounterKeys)
+            WarningFixedTimeDraftFilter.keepDraftItem(encounter, rejectedEncounterKeys)
          )),
       };
    }
