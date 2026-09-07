@@ -3,35 +3,9 @@ import path from 'node:path';
 import process from 'node:process';
 
 const ROOT = process.cwd();
-const CONFIG_PATH = path.join(ROOT, 'tools/lint/jsOneClassPerFile.json');
-
-function loadConfig() {
-   if (!fs.existsSync(CONFIG_PATH)) {
-      return {
-         include: [],
-         exclude: [],
-      };
-   }
-
-   return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-}
 
 function toPosix(filePath) {
    return filePath.split(path.sep).join('/');
-}
-
-function globToRegExp(pattern) {
-   const escaped = pattern
-      .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-      .replace(/\*\*/g, '::DOUBLESTAR::')
-      .replace(/\*/g, '[^/]*')
-      .replace(/::DOUBLESTAR::/g, '.*');
-
-   return new RegExp(`^${escaped}$`);
-}
-
-function matchesAny(relativePath, patterns) {
-   return patterns.some(pattern => globToRegExp(pattern).test(relativePath));
 }
 
 function camelToPascal(stem) {
@@ -92,23 +66,10 @@ function checkFile(fullPath) {
 }
 
 function main() {
-   const config = loadConfig();
-   const include = config.include ?? [];
-   const exclude = config.exclude ?? [];
    const scriptsDir = path.join(ROOT, 'scripts');
    const violations = [];
 
    walkJsFiles(scriptsDir).forEach(fullPath => {
-      const relativePath = toPosix(path.relative(ROOT, fullPath));
-
-      if (include.length > 0 && !matchesAny(relativePath, include)) {
-         return;
-      }
-
-      if (matchesAny(relativePath, exclude)) {
-         return;
-      }
-
       const violation = checkFile(fullPath);
 
       if (violation) {
