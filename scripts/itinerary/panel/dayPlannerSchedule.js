@@ -1,30 +1,8 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
+import { DayPlannerScheduleHelpers } from './dayPlannerScheduleHelpers.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { TimelineLayoutConstants } from '../../shared/timelineLayoutConstants.js';
-
-function isTimeWithinBounds(timeValue, bounds) {
-   if (!bounds) {
-      return true;
-   }
-
-   const normalizedTimeValue = ValueNormalizer.asTrimmedString(timeValue);
-
-   if (!normalizedTimeValue) {
-      return true;
-   }
-
-   const timeMinutes = DayPlannerSchedule.parseClockTimeMinutes(normalizedTimeValue);
-
-   if (!Number.isFinite(timeMinutes)) {
-      return false;
-   }
-
-   return (
-      timeMinutes >= bounds.minMinutes
-      && timeMinutes <= bounds.maxMinutes
-   );
-}
 
 export class DayPlannerSchedule {
    static parseClockTimeMinutes(timeValue) {
@@ -168,7 +146,7 @@ export class DayPlannerSchedule {
    }
 
    static isArrivalTimeWithinBounds(timeValue, bounds) {
-      return isTimeWithinBounds(timeValue, bounds);
+      return DayPlannerScheduleHelpers.isTimeWithinBounds(timeValue, bounds);
    }
 
    static buildDepartureTimeBounds(zooHours = {}) {
@@ -194,7 +172,7 @@ export class DayPlannerSchedule {
    }
 
    static isDepartureTimeWithinBounds(timeValue, bounds) {
-      return isTimeWithinBounds(timeValue, bounds);
+      return DayPlannerScheduleHelpers.isTimeWithinBounds(timeValue, bounds);
    }
 
    static areItineraryScheduleTimesOrdered(arrivalTime, departureTime) {

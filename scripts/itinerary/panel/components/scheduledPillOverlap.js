@@ -1,12 +1,9 @@
+import { ScheduledPillOverlapHelpers } from './scheduledPillOverlapHelpers.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
 
 export const MAX_TIMELINE_PILL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_COLUMNS;
 export const MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;
-
-function minutesPerSlotFromHeightPx(heightPx) {
-   return (heightPx / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX) * TimelineLayoutConstants.TIMELINE_SLOT_MINUTES;
-}
 
 export class ScheduledPillOverlap {
    static getScheduledPillMinDisplayMinutes() {
@@ -45,14 +42,14 @@ export class ScheduledPillOverlap {
 
       const { startMinutes } = ScheduledPillOverlap.getScheduledItemTimeRange(scheduledItem);
       const scheduledDurationMinutes = Number(scheduledItem.maximumDuration);
-      const visualStartMinutes = startMinutes - minutesPerSlotFromHeightPx(
+      const visualStartMinutes = startMinutes - ScheduledPillOverlapHelpers.minutesPerSlotFromHeightPx(
          TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
       );
       const minimumHeightPx = scheduledItem.isPointPillBlocker
          ? TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
          : TimelineLayoutConstants.TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX;
       const visualDurationMinutes = Math.max(
-         minutesPerSlotFromHeightPx(minimumHeightPx),
+         ScheduledPillOverlapHelpers.minutesPerSlotFromHeightPx(minimumHeightPx),
          scheduledDurationMinutes
       );
 

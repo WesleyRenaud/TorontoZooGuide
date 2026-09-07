@@ -1,25 +1,14 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
+import { AttractionHoursScheduleHelpers } from './attractionHoursScheduleHelpers.js';
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { OpeningScheduleOverlap } from '../../forms/openingScheduleOverlap.js';
 import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { DayPlannerSchedule } from '../../../itinerary/panel/dayPlannerSchedule.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
-
-function timePairIsOrdered(startTime, endTime) {
-   const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(startTime);
-   const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(endTime);
-
-   return (
-      startMinutes != null
-      && endMinutes != null
-      && startMinutes < endMinutes
-   );
-}
 
 export class AttractionHoursSchedule {
    static createAttractionHoursScheduleController({
@@ -84,11 +73,11 @@ export class AttractionHoursSchedule {
             return Strings.validation.attractionHoursTimesRequired;
          }
 
-         if (!timePairIsOrdered(values.weekdayStartTime, values.weekdayEndTime)) {
+         if (!AttractionHoursScheduleHelpers.timePairIsOrdered(values.weekdayStartTime, values.weekdayEndTime)) {
             return Strings.validation.attractionHoursWeekdayOrder;
          }
 
-         if (!timePairIsOrdered(
+         if (!AttractionHoursScheduleHelpers.timePairIsOrdered(
             values.weekendHolidayStartTime,
             values.weekendHolidayEndTime
          )) {

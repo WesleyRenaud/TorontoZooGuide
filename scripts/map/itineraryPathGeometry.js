@@ -1,11 +1,5 @@
+import { ItineraryPathGeometryHelpers } from './itineraryPathGeometryHelpers.js';
 import { WalkGraphPathGeometry } from './walkGraphPathGeometry.js';
-
-function legsShareJoinNode(previousLeg, currentLeg) {
-   return (
-      previousLeg.nodeIds[previousLeg.nodeIds.length - 1]
-      === currentLeg.nodeIds[0]
-   );
-}
 
 export class ItineraryPathGeometry {
    static buildSmoothedPathD(points, { tension = 0.38 } = {}) {
@@ -100,7 +94,7 @@ export class ItineraryPathGeometry {
 
          if (slices.length === 0) {
             fromPointSequence = 0;
-         } else if (legsShareJoinNode(legs[legIndex - 1], leg)) {
+         } else if (ItineraryPathGeometryHelpers.legsShareJoinNode(legs[legIndex - 1], leg)) {
             fromPointSequence = slices[slices.length - 1][1];
          } else {
             fromPointSequence = slices[slices.length - 1][1] + 1;
