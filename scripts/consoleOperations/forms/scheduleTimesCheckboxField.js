@@ -1,32 +1,8 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
+import { ScheduleTimesCheckboxFieldRenderer } from './scheduleTimesCheckboxFieldRenderer.js';
 import { Strings } from '../../strings.js';
 
 const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
-const SCHEDULE_TIMES_PLACEHOLDER_CLASS = 'console-operations-schedule-times-placeholder';
-const SCHEDULE_TIMES_SINGLE_CLASS = 'console-operations-schedule-times-single';
-
-function getScheduleTimesListEl(el) {
-   return ScheduleTimesCheckboxField.resolveScheduleTimesListEl(el);
-}
-
-function renderScheduleTimesListMessage(listEl, message) {
-   listEl.replaceChildren();
-
-   const placeholderEl = document.createElement('div');
-   placeholderEl.className = SCHEDULE_TIMES_PLACEHOLDER_CLASS;
-   placeholderEl.textContent = message;
-   listEl.appendChild(placeholderEl);
-}
-
-function renderSingleSelectedScheduleTime(listEl, time) {
-   listEl.replaceChildren();
-
-   const timeEl = document.createElement('div');
-   timeEl.className = SCHEDULE_TIMES_SINGLE_CLASS;
-   timeEl.dataset.scheduleTime = time;
-   timeEl.textContent = time;
-   listEl.appendChild(timeEl);
-}
 
 export class ScheduleTimesCheckboxField {
    static resolveScheduleTimesListEl(el) {
@@ -52,23 +28,23 @@ export class ScheduleTimesCheckboxField {
    }
 
    static setScheduleTimesCheckboxListMessage(el, message) {
-      const listEl = getScheduleTimesListEl(el);
+      const listEl = ScheduleTimesCheckboxFieldRenderer.getScheduleTimesListEl(el);
 
       if (!listEl) {
          return;
       }
 
-      renderScheduleTimesListMessage(listEl, message);
+      ScheduleTimesCheckboxFieldRenderer.renderScheduleTimesListMessage(listEl, message);
    }
 
    static resetScheduleTimesCheckboxList(el) {
-      const listEl = getScheduleTimesListEl(el);
+      const listEl = ScheduleTimesCheckboxFieldRenderer.getScheduleTimesListEl(el);
 
       if (!listEl) {
          return;
       }
 
-      renderScheduleTimesListMessage(
+      ScheduleTimesCheckboxFieldRenderer.renderScheduleTimesListMessage(
          listEl,
          Strings.placeholders.selectWildEncounterFirst
       );
@@ -81,7 +57,7 @@ export class ScheduleTimesCheckboxField {
          autoSelectSingleTime = false,
       } = {}
    ) {
-      const listEl = getScheduleTimesListEl(el);
+      const listEl = ScheduleTimesCheckboxFieldRenderer.getScheduleTimesListEl(el);
 
       if (!listEl) {
          return;
@@ -90,7 +66,7 @@ export class ScheduleTimesCheckboxField {
       const normalizedTimes = ValueNormalizer.asTrimmedStringList(times);
 
       if (!normalizedTimes.length) {
-         renderScheduleTimesListMessage(
+         ScheduleTimesCheckboxFieldRenderer.renderScheduleTimesListMessage(
             listEl,
             Strings.help.noScheduledEncounterTimes
          );
@@ -98,7 +74,7 @@ export class ScheduleTimesCheckboxField {
       }
 
       if (autoSelectSingleTime && normalizedTimes.length === 1) {
-         renderSingleSelectedScheduleTime(listEl, normalizedTimes[0]);
+         ScheduleTimesCheckboxFieldRenderer.renderSingleSelectedScheduleTime(listEl, normalizedTimes[0]);
          return;
       }
 
@@ -126,7 +102,7 @@ export class ScheduleTimesCheckboxField {
       hasDate = false,
       autoSelectSingleTime = false,
    } = {}) {
-      const listEl = getScheduleTimesListEl(el);
+      const listEl = ScheduleTimesCheckboxFieldRenderer.getScheduleTimesListEl(el);
 
       if (!listEl) {
          return;
@@ -166,13 +142,13 @@ export class ScheduleTimesCheckboxField {
    }
 
    static getSelectedScheduleTimes(el) {
-      const listEl = getScheduleTimesListEl(el);
+      const listEl = ScheduleTimesCheckboxFieldRenderer.getScheduleTimesListEl(el);
 
       if (!listEl) {
          return [];
       }
 
-      const singleTimeEl = listEl.querySelector(`.${SCHEDULE_TIMES_SINGLE_CLASS}`);
+      const singleTimeEl = listEl.querySelector(`.${ScheduleTimesCheckboxFieldRenderer.SCHEDULE_TIMES_SINGLE_CLASS}`);
       const singleTime = ValueNormalizer.asTrimmedString(
          singleTimeEl?.dataset?.scheduleTime
       );

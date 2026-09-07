@@ -1,52 +1,9 @@
-import { LikelihoodValues } from '../../likelihood/likelihoodValues.js';
+import { RowAlertsBuilder } from './rowAlertsBuilder.js';
 import { Strings } from '../../strings.js';
-
-function getLikelihoodPair(animal) {
-   const beforeRaw = animal?.likelihoodBefore;
-   const afterRaw = animal?.likelihoodAfter;
-
-   const before = LikelihoodValues.likelihoodToPercent(beforeRaw);
-   const after = LikelihoodValues.likelihoodToPercent(afterRaw);
-
-   return { before, after };
-}
-
-function buildAnimalRemovalReasonLine(animal) {
-   const reason = animal.removalReason ?? '';
-
-   if (!reason) return '';
-
-   return Strings.itinerary.removedItems.unavailableReason(reason);
-}
-
-function buildAnimalVisibilityChange(animal) {
-   const { before, after } = getLikelihoodPair(animal);
-
-   if (before == null || after == null || before === after) {
-      return {
-         line: '',
-         tone: 'default',
-      };
-   }
-
-   const line = Strings.itinerary.removedItems.projectedVisibilityChanged(before, after);
-
-   if (after < before) {
-      return {
-         line,
-         tone: 'default',
-      };
-   }
-
-   return {
-      line,
-      tone: 'positive',
-   };
-}
 
 export class RowAlerts {
    static buildAnimalAlert(animal) {
-      const removalLine = buildAnimalRemovalReasonLine(animal);
+      const removalLine = RowAlertsBuilder.buildAnimalRemovalReasonLine(animal);
 
       if (removalLine) {
          return {
@@ -55,7 +12,7 @@ export class RowAlerts {
          };
       }
 
-      return buildAnimalVisibilityChange(animal);
+      return RowAlertsBuilder.buildAnimalVisibilityChange(animal);
    }
 
    static buildAttractionRemovalReasonLine(attraction) {

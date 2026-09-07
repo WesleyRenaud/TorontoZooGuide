@@ -1,59 +1,8 @@
+import { DayPlannerTimelinePillAppendHelpers } from './dayPlannerTimelinePillAppendHelpers.js';
 import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlacement.js';
-import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
 import { OpenTimelinePill } from './openTimelinePill.js';
 import { ScheduledTimelinePill } from './scheduledTimelinePill.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
-
-function applyPointPillStripPlacement(pillStrip, placement = '') {
-   if (!pillStrip || !placement) {
-      return;
-   }
-
-   pillStrip.setAttribute('data-visit-boundary-placement', placement);
-}
-
-function insertPointPillInStrip(strip, pill) {
-   strip.appendChild(pill);
-}
-
-function resolveTimePillOptions(
-   marker,
-   timeHandlers = {},
-   strings = {},
-   visitBoundaryEventTypes = {}
-) {
-   const boundaries = ItineraryEventTypes.normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
-
-   if (marker.kind === boundaries.arrival) {
-      const options = {
-         menuAriaLabel: strings.arrivalTimeMenuAria,
-         removeLabel: strings.remove,
-         visitBoundaryPlacement: 'ends-at-anchor',
-      };
-
-      if (typeof timeHandlers.onArrivalTimeChange === 'function') {
-         options.onRemove = () => timeHandlers.onArrivalTimeChange('');
-      }
-
-      return options;
-   }
-
-   if (marker.kind === boundaries.departure) {
-      const options = {
-         menuAriaLabel: strings.departureTimeMenuAria,
-         removeLabel: strings.remove,
-         visitBoundaryPlacement: 'starts-at-anchor',
-      };
-
-      if (typeof timeHandlers.onDepartureTimeChange === 'function') {
-         options.onRemove = () => timeHandlers.onDepartureTimeChange('');
-      }
-
-      return options;
-   }
-
-   return {};
-}
 
 export class DayPlannerTimelinePillAppend {
    static appendTimelinePill(
@@ -79,8 +28,8 @@ export class DayPlannerTimelinePillAppend {
          offsetFraction
       );
 
-      applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
-      insertPointPillInStrip(strip, pill);
+      DayPlannerTimelinePillAppendHelpers.applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
+      DayPlannerTimelinePillAppendHelpers.insertPointPillInStrip(strip, pill);
    }
 
    static appendScheduledDurationPill(
@@ -139,7 +88,7 @@ export class DayPlannerTimelinePillAppend {
             gridLine,
             marker.label,
             marker.offsetFraction,
-            resolveTimePillOptions(
+            DayPlannerTimelinePillAppendHelpers.resolveTimePillOptions(
                marker,
                timeHandlers,
                strings,
