@@ -1,61 +1,9 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { AnimalDisplayLines } from '../../../animals/animalDisplayLines.js';
+import { AnimalSelectorStoredAnimalFactory } from './animalSelectorStoredAnimalFactory.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { EnclosureType } from '../../../shared/enums/enclosureType.js';
-
-function normalizeLegacyStoredSpecies(item) {
-   return StoredSelection.normalizeStoredString(item.species)
-      || StoredSelection.normalizeStoredString(item.SPECIES);
-}
-
-function normalizeLegacyStoredExhibit(item) {
-   return StoredSelection.normalizeStoredString(item.exhibit)
-      || StoredSelection.normalizeStoredString(item.EXHIBIT);
-}
-
-function normalizeLegacyStoredImageSrc(item) {
-   return StoredSelection.normalizeStoredLink(item.imageSrc)
-      || StoredSelection.normalizeStoredLink(item.image_src)
-      || StoredSelection.normalizeStoredLink(item.image);
-}
-
-function createStoredAnimalFromString(item) {
-   const species = StoredSelection.normalizeStoredString(item);
-
-   if (!species) {
-      return null;
-   }
-
-   return {
-      id: `${species}||`,
-      species,
-      exhibit: '',
-      imageSrc: null,
-   };
-}
-
-function createStoredAnimalFromObject(item) {
-   const species = normalizeLegacyStoredSpecies(item);
-   const exhibit = normalizeLegacyStoredExhibit(item);
-   const enclosureName = AnimalIdentity.normalizeAnimalIdentityFields(item).enclosure_name;
-   const defaultId = enclosureName
-      ? `${species}||${exhibit}||${enclosureName}`
-      : `${species}||${exhibit}`;
-   const id = StoredSelection.normalizeStoredId(item.id, defaultId);
-
-   if (!id) {
-      return null;
-   }
-
-   return {
-      id,
-      species,
-      exhibit,
-      ...(enclosureName ? { enclosure_name: enclosureName } : {}),
-      imageSrc: normalizeLegacyStoredImageSrc(item),
-   };
-}
 
 export class AnimalSelectorModel {
    static OFF_DISPLAY_WARNING_THRESHOLD = 80;
@@ -149,8 +97,8 @@ export class AnimalSelectorModel {
 
    static migrateStoredAnimals(items) {
       return StoredSelection.migrateStoredSelectionItems(items, {
-         fromString: createStoredAnimalFromString,
-         fromObject: createStoredAnimalFromObject,
+         fromString: AnimalSelectorStoredAnimalFactory.createStoredAnimalFromString,
+         fromObject: AnimalSelectorStoredAnimalFactory.createStoredAnimalFromObject,
       });
    }
 

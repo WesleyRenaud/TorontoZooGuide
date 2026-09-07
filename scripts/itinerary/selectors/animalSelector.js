@@ -1,58 +1,12 @@
 import { AnimalSelectorModel } from './animalSelector/animalSelectorModel.js';
 import { AnimalSelectorRenderer } from './animalSelector/animalSelectorRenderer.js';
+import { AnimalSelectorControllerHelpers } from './animalSelectorControllerHelpers.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { RegionStorage } from './regionSelector/regionStorage.js';
 import { Strings } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
-function getAnimalTitle(row) {
-   return AnimalSelectorModel.getAnimalTitleLine(row);
-}
-
-function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {
-   return {
-      query,
-      includeAnimals: true,
-      includeOffDisplayAnimals,
-      forItinerary: true,
-   };
-}
-
-function shouldConfirmOffDisplayAnimal({
-   row,
-   isSelected,
-   includeOffDisplayAnimals,
-} = {}) {
-   if (isSelected) {
-      return false;
-   }
-
-   if (!includeOffDisplayAnimals) {
-      return false;
-   }
-
-   return AnimalSelectorModel.isLikelyOffDisplayAnimal(row);
-}
-
-function promptForOffDisplayAnimalSelection(row, proceed) {
-   ConfirmPopup.showItineraryConfirmPopup({
-      title: Strings.itinerary.confirmation.animalMayBeOffDisplay,
-      message: AnimalSelectorModel.buildOffDisplayWarningMessage(row),
-      confirmText: Strings.itinerary.actions.add,
-      cancelText: Strings.itinerary.actions.cancel,
-      onConfirm: proceed,
-   });
-}
-
-function renderOffDisplayAnimalControls({ bodyEl, rerunSearch, onChange }) {
-   AnimalSelectorRenderer.renderIncludeOffDisplayToggle({
-      bodyEl,
-      rerunSearch,
-      onChange,
-   });
-}
 
 export class AnimalSelector {
    static createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
@@ -70,12 +24,12 @@ export class AnimalSelector {
 
          getContext: ItinerarySearchContext.getItineraryDateSearchContext,
 
-         buildSearchPayload: query => buildAnimalSearchPayload(query, includeOffDisplayAnimals),
+         buildSearchPayload: query => AnimalSelectorControllerHelpers.buildAnimalSearchPayload(query, includeOffDisplayAnimals),
 
          extractRows: response => response.animals,
 
          getId: AnimalSelectorModel.getAnimalId,
-         getTitle: getAnimalTitle,
+         getTitle: AnimalSelectorControllerHelpers.getAnimalTitle,
          getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
          getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
 
@@ -97,7 +51,7 @@ export class AnimalSelector {
                proceed();
             };
 
-            if (!shouldConfirmOffDisplayAnimal({
+            if (!AnimalSelectorControllerHelpers.shouldConfirmOffDisplayAnimal({
                row,
                isSelected,
                includeOffDisplayAnimals,
@@ -106,12 +60,12 @@ export class AnimalSelector {
                return;
             }
 
-            promptForOffDisplayAnimalSelection(row, completeToggle);
+            AnimalSelectorControllerHelpers.promptForOffDisplayAnimalSelection(row, completeToggle);
          },
 
          renderExtraControls: ({ bodyEl, rerunSearch }) => {
             includeOffDisplayAnimals = false;
-            renderOffDisplayAnimalControls({
+            AnimalSelectorControllerHelpers.renderOffDisplayAnimalControls({
                bodyEl,
                rerunSearch,
                onChange: (checked) => {
