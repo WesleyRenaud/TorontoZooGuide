@@ -1,76 +1,35 @@
-import { DraftStorage } from '../../draftStorage.js';
-
-function identity(items) {
-   return items;
-}
-
-function cloneSelectedItems(items) {
-   return items.slice();
-}
-
-function loadSelectedItems(storageKey, migrateSelected = identity) {
-   return migrateSelected(DraftStorage.loadArray(storageKey));
-}
-
-function persistSelectedItems(storageKey, selectedItems) {
-   DraftStorage.saveArray(storageKey, selectedItems);
-}
-
-function getSelectedIndexById(selectedItems, id) {
-   return selectedItems.findIndex((item) => item?.id === id);
-}
-
-function buildSelectionItem(row, {
-   getId,
-   makeSelection,
-} = {}) {
-   const id = getId(row);
-
-   if (!id) {
-      return null;
-   }
-
-   const selection = makeSelection(row);
-   const selectionItem = selection && typeof selection === 'object'
-      ? selection
-      : {};
-
-   return {
-      ...selectionItem,
-      id: selectionItem.id || id,
-   };
-}
+import { SelectionStateHelpers } from './selectionStateHelpers.js';
 
 export class SelectionState {
    static createSelectorSelectionState({
       storageKey,
-      migrateSelected = identity,
+      migrateSelected = SelectionStateHelpers.identity,
       getId,
       makeSelection = (row) => ({ id: getId(row) }),
    } = {}) {
-      let selectedItems = loadSelectedItems(storageKey, migrateSelected);
+      let selectedItems = SelectionStateHelpers.loadSelectedItems(storageKey, migrateSelected);
 
       function getSelectedSnapshot() {
-         return cloneSelectedItems(selectedItems);
+         return SelectionStateHelpers.cloneSelectedItems(selectedItems);
       }
 
       function replaceSelectedItems(nextSelectedItems) {
          selectedItems = nextSelectedItems;
-         persistSelectedItems(storageKey, selectedItems);
+         SelectionStateHelpers.persistSelectedItems(storageKey, selectedItems);
          return getSelectedSnapshot();
       }
 
       function reload() {
-         selectedItems = loadSelectedItems(storageKey, migrateSelected);
+         selectedItems = SelectionStateHelpers.loadSelectedItems(storageKey, migrateSelected);
          return getSelectedSnapshot();
       }
 
       function isSelected(id) {
-         return getSelectedIndexById(selectedItems, id) !== -1;
+         return SelectionStateHelpers.getSelectedIndexById(selectedItems, id) !== -1;
       }
 
       function toggleRow(row) {
-         const selectionItem = buildSelectionItem(row, {
+         const selectionItem = SelectionStateHelpers.buildSelectionItem(row, {
             getId,
             makeSelection,
          });
@@ -79,7 +38,7 @@ export class SelectionState {
             return getSelectedSnapshot();
          }
 
-         const selectedIndex = getSelectedIndexById(
+         const selectedIndex = SelectionStateHelpers.getSelectedIndexById(
             selectedItems,
             selectionItem.id
          );

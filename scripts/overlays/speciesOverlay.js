@@ -1,84 +1,8 @@
 import { AnimalsApi } from '../api/animalsApi.js';
 import { NormalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
-import { SpeciesOverlayContent } from './speciesOverlayContent.js';
+import { SpeciesOverlayBuilder } from './speciesOverlayBuilder.js';
 import { Strings } from '../strings.js';
-
-function resolveOverlayElements() {
-   const overlay = document.getElementById('speciesOverlay');
-
-   return {
-      overlay,
-      content: overlay?.querySelector('.species-overlay-content') ?? null,
-      closeButton: overlay?.querySelector('.species-close') ?? null,
-   };
-}
-
-function findLinkedAnimalIndex(linkedAnimals, animal) {
-   const { species, exhibit } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
-
-   return linkedAnimals.findIndex((linkedAnimal) => (
-      linkedAnimal.species === species
-      && linkedAnimal.exhibit === exhibit
-   ));
-}
-
-function createNavButton({ className, label, symbol, onClick }) {
-   const button = document.createElement('button');
-   button.type = 'button';
-   button.className = className;
-   button.setAttribute('aria-label', label);
-   button.textContent = symbol;
-   button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      onClick();
-   });
-   return button;
-}
-
-function createOverlayHeader({ linkedAnimals, index, onNavigate }) {
-   const header = document.createElement('div');
-   header.className = 'species-overlay-header';
-
-   if (linkedAnimals.length < 2) {
-      return header;
-   }
-
-   const nav = document.createElement('div');
-   nav.className = 'species-overlay-nav';
-
-   const position = document.createElement('span');
-   position.className = 'species-overlay-nav-position';
-   position.textContent = Strings.common.animalPosition(
-      index + 1,
-      linkedAnimals.length
-   );
-
-   nav.append(
-      createNavButton({
-         className: 'species-overlay-nav-btn species-overlay-nav-prev',
-         label: Strings.common.previousAnimal,
-         symbol: Strings.common.previousSymbol,
-         onClick: () => onNavigate(-1),
-      }),
-      position,
-      createNavButton({
-         className: 'species-overlay-nav-btn species-overlay-nav-next',
-         label: Strings.common.nextAnimal,
-         symbol: Strings.common.nextSymbol,
-         onClick: () => onNavigate(1),
-      })
-   );
-   header.appendChild(nav);
-   return header;
-}
-
-function createOverlayScrollContent(animal) {
-   const scroll = document.createElement('div');
-   scroll.className = 'species-overlay-scroll';
-   scroll.appendChild(SpeciesOverlayContent.buildSpeciesContent(animal));
-   return scroll;
-}
 
 let speciesOverlayController = null;
 
@@ -98,7 +22,7 @@ export class SpeciesOverlay {
       };
 
       function close() {
-         resolveOverlayElements().overlay?.classList.add('hidden');
+         SpeciesOverlayBuilder.resolveOverlayElements().overlay?.classList.add('hidden');
       }
 
       function bindShell({ overlay, closeButton }) {
@@ -126,7 +50,7 @@ export class SpeciesOverlay {
       }
 
       function render(animal) {
-         const { overlay, content, closeButton } = resolveOverlayElements();
+         const { overlay, content, closeButton } = SpeciesOverlayBuilder.resolveOverlayElements();
 
          if (!overlay || !content || !animal) {
             return;
@@ -134,14 +58,14 @@ export class SpeciesOverlay {
 
          bindShell({ overlay, closeButton });
          content.replaceChildren(
-            createOverlayHeader({
+            SpeciesOverlayBuilder.createOverlayHeader({
                linkedAnimals: state.linkedAnimals,
                index: state.index,
                onNavigate: (delta) => {
                   void navigate(delta);
                },
             }),
-            createOverlayScrollContent(animal)
+            SpeciesOverlayBuilder.createOverlayScrollContent(animal)
          );
          overlay.classList.remove('hidden');
       }
@@ -185,7 +109,7 @@ export class SpeciesOverlay {
          state.linkedAnimals = NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(
             options.linkedAnimals
          );
-         const matchedIndex = findLinkedAnimalIndex(state.linkedAnimals, animal);
+         const matchedIndex = SpeciesOverlayBuilder.findLinkedAnimalIndex(state.linkedAnimals, animal);
          state.index = matchedIndex >= 0 ? matchedIndex : 0;
          state.isNavigating = false;
          state.navigationToken += 1;

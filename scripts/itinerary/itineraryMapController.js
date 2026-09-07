@@ -1,86 +1,8 @@
-import { ItineraryService } from './itineraryService.js';
+import { ItineraryMapControllerBootstrap } from './itineraryMapControllerBootstrap.js';
 import { ItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
-import { MapRuntime } from '../map/mapRuntime.js';
 import { TransportationRouteOverlay } from '../map/transportationRouteOverlay.js';
 
-const ITINERARY_MAP_FILTERS = Object.freeze({
-   getIncludeOffDisplay: () => false,
-   getIncludeClosedRestaurants: () => false,
-   getIncludeClosedGiftShops: () => false,
-   getIncludeClosedAttractions: () => false,
-   getTransportationRoute: () => 'none',
-   getSelectedTypes: () => [],
-});
-
 let itineraryMapRuntime = null;
-
-function getTodayISO() {
-   const date = new Date();
-   const year = date.getFullYear();
-   const month = String(date.getMonth() + 1).padStart(2, '0');
-   const day = String(date.getDate()).padStart(2, '0');
-
-   return `${year}-${month}-${day}`;
-}
-
-function getItineraryMapElements() {
-   return {
-      mapInner: document.getElementById('mapInner'),
-      tooltipEl: document.getElementById('tooltip'),
-      hoverTooltipEl: document.getElementById('hoverTooltip'),
-      showMapLabelsCheckbox: document.getElementById('showMapLabels'),
-   };
-}
-
-function isCoordinateEditingEnabled() {
-   const urlParams = new URLSearchParams(window.location.search);
-   return urlParams.get('editCoords') === '1';
-}
-
-function createItineraryMapRuntime() {
-   return MapRuntime.createMapRuntime({
-      ...getItineraryMapElements(),
-      enableCoordinateEditing: isCoordinateEditingEnabled(),
-      ...ITINERARY_MAP_FILTERS,
-   });
-}
-
-function getItineraryMapDate(itinerary) {
-   return String(itinerary?.date || getTodayISO());
-}
-
-async function refreshItineraryMap(runtime) {
-   try {
-      const itinerary = await ItineraryService.getItinerary();
-
-      if (!itinerary || ItineraryService.isItineraryEmpty(itinerary)) {
-         ItineraryMapController.clearItineraryMapDisplay(runtime);
-         return;
-      }
-
-      await runtime.updater.updateMap(
-         'custom',
-         getItineraryMapDate(itinerary),
-         { itinerary }
-      );
-   }
-   catch (err) {
-      console.error('Failed to load itinerary:', err);
-      ItineraryMapController.clearItineraryMapDisplay(runtime);
-   }
-}
-
-function bindItineraryMapEvents(runtime) {
-   const { mapInner } = getItineraryMapElements();
-   const { repositionTooltips } = runtime;
-   const refreshMap = () => refreshItineraryMap(runtime);
-
-   mapInner?.addEventListener('panzoomchange', repositionTooltips);
-   window.addEventListener('resize', repositionTooltips);
-   window.addEventListener('tzg:itineraryUpdated', refreshMap);
-
-   return refreshMap;
-}
 
 export class ItineraryMapController {
    static clearItineraryMapDisplay(runtime) {
@@ -94,13 +16,13 @@ export class ItineraryMapController {
          return itineraryMapRuntime;
       }
 
-      const runtime = createItineraryMapRuntime();
+      const runtime = ItineraryMapControllerBootstrap.createItineraryMapRuntime();
 
       if (!runtime) return;
 
       itineraryMapRuntime = runtime;
 
-      const refreshMap = bindItineraryMapEvents(runtime);
+      const refreshMap = ItineraryMapControllerBootstrap.bindItineraryMapEvents(runtime);
       void refreshMap();
 
       return runtime;
