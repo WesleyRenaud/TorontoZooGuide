@@ -1,31 +1,11 @@
 import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
 import { AttractionSelectorRenderer } from './attractionSelector/attractionSelectorRenderer.js';
+import { AttractionSelectorPrompts } from './attractionSelectorPrompts.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { Strings } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
-
-function promptForClosedAttractionSelection(row, proceed) {
-   ConfirmPopup.showItineraryConfirmPopup({
-      title: Strings.itinerary.confirmation.attractionMayBeClosed,
-      message: AttractionSelectorModel.buildClosedAttractionMessage(row),
-      confirmText: Strings.itinerary.actions.add,
-      cancelText: Strings.itinerary.actions.cancel,
-      onConfirm: proceed,
-   });
-}
-
-function promptForAlsoTransportationAttractionSelection(row, proceed) {
-   ConfirmPopup.showItineraryConfirmPopup({
-      title: Strings.itinerary.confirmation.attractionAlsoTransportationTitle,
-      message: AttractionSelectorModel.buildAlsoTransportationAttractionMessage(row),
-      confirmText: Strings.itinerary.actions.confirm,
-      cancelText: Strings.animalsPage.back,
-      onConfirm: proceed,
-   });
-}
 
 export class AttractionSelector {
    static createItineraryAttractionSelectorController({
@@ -88,7 +68,7 @@ export class AttractionSelector {
                   return;
                }
 
-               promptForAlsoTransportationAttractionSelection(row, proceed);
+               AttractionSelectorPrompts.promptForAlsoTransportationAttractionSelection(row, proceed);
             };
 
             if (!AttractionSelectorModel.shouldConfirmClosedAttraction({
@@ -100,7 +80,7 @@ export class AttractionSelector {
                return;
             }
 
-            promptForClosedAttractionSelection(row, continueAdd);
+            AttractionSelectorPrompts.promptForClosedAttractionSelection(row, continueAdd);
          },
 
          renderExtraControls: ({ bodyEl, rerunSearch }) => {
