@@ -1,28 +1,15 @@
-function asRows(value) {
-   return Array.isArray(value) ? value : [];
-}
-
-function ensureStaticCache(store, type) {
-   if (!store.cache[type]) {
-      store.cache[type] = {
-         loaded: false,
-         inFlight: null,
-      };
-   }
-
-   return store.cache[type];
-}
+import { SourceHelpersInternals } from './sourceHelpersInternals.js';
 
 export class SourceHelpers {
    static normalizeTypedRows(rows, type) {
-      return asRows(rows).map((row) => ({
+      return SourceHelpersInternals.asRows(rows).map((row) => ({
          ...row,
          type,
       }));
    }
 
    static setSourceRows(store, type, rows) {
-      const normalizedRows = asRows(rows);
+      const normalizedRows = SourceHelpersInternals.asRows(rows);
       store.byType[type] = normalizedRows;
       return normalizedRows;
    }
@@ -40,7 +27,7 @@ export class SourceHelpers {
    static createStaticTypedSource(store, type, fetchRows) {
       return {
          fetch: async (ctx) => {
-            const cache = ensureStaticCache(store, type);
+            const cache = SourceHelpersInternals.ensureStaticCache(store, type);
 
             if (cache.loaded) {
                return store.byType[type] || [];

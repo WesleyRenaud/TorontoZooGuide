@@ -1,20 +1,11 @@
-function itemHasScheduleTimes(item) {
-   return Boolean(String(item?.start_time ?? '').trim())
-      && Boolean(String(item?.end_time ?? '').trim());
-}
-
-function collectionHasScheduledItems(items) {
-   return Array.isArray(items)
-      && items.some(itemHasScheduleTimes);
-}
-
+import { DayPlannerPlanActionsHelpers } from './dayPlannerPlanActionsHelpers.js';
 export class DayPlannerPlanActions {
    static hasScheduledItineraryItems(itinerary = {}) {
-      return collectionHasScheduledItems(itinerary.animals)
-         || collectionHasScheduledItems(itinerary.attractions)
-         || collectionHasScheduledItems(itinerary.guardiansTalks)
-         || collectionHasScheduledItems(itinerary.wildEncounters)
-         || collectionHasScheduledItems(itinerary.transportations)
-         || collectionHasScheduledItems(itinerary.events);
+      return DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.animals)
+         || DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.attractions)
+         || DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.guardiansTalks)
+         || DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.wildEncounters)
+         || DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.transportations)
+         || DayPlannerPlanActionsHelpers.collectionHasScheduledItems(itinerary.events);
    }
 }
