@@ -3,7 +3,6 @@ import path from 'node:path';
 import process from 'node:process';
 
 const ROOT = process.cwd();
-const ONE_CLASS_CONFIG = path.join(ROOT, 'tools/lint/jsOneClassPerFile.json');
 const UNIT_TEST_CONFIG = path.join(ROOT, 'tools/lint/jsUnitTestStyle.json');
 const WEAK_NAMES_CONFIG = path.join(ROOT, 'tools/lint/jsWeakClassNames.json');
 
@@ -102,7 +101,6 @@ function hasTopLevelFunction(source) {
 }
 
 function main() {
-   const oneClass = loadConfig(ONE_CLASS_CONFIG);
    const unitTest = loadConfig(UNIT_TEST_CONFIG);
    const weakConfig = loadConfig(WEAK_NAMES_CONFIG);
    const weakNames = new Set(weakConfig.names ?? DEFAULT_WEAK_NAMES);
@@ -116,19 +114,19 @@ function main() {
       (fullPath) => fullPath.endsWith('.test.mjs')
    ).sort();
 
-   const scriptExclude = oneClass.exclude ?? [];
-   const scriptInclude = oneClass.include ?? [];
-   const scriptCandidates = scripts.filter((file) => !matchesAny(file, scriptExclude));
-   const scriptsConverted = scriptCandidates.filter((file) => matchesAny(file, scriptInclude));
-   const scriptsRemaining = scriptCandidates.length - scriptsConverted.length;
+   const scriptCandidates = scripts;
 
    const testExclude = unitTest.exclude ?? [];
    const testInclude = unitTest.include ?? [];
    const testCandidates = tests.filter((file) => !matchesAny(file, testExclude));
-   const testsStyled = testCandidates.filter((file) => matchesAny(file, testInclude));
+   const testsStyled = testInclude.length === 0
+      ? testCandidates
+      : testCandidates.filter((file) => matchesAny(file, testInclude));
    const flatTests = testCandidates.filter(isFlatTestPath);
    const nestedTests = testCandidates.filter((file) => !isFlatTestPath(file));
-   const flatTestsRemaining = flatTests.filter((file) => !matchesAny(file, testInclude));
+   const flatTestsRemaining = testInclude.length === 0
+      ? []
+      : flatTests.filter((file) => !matchesAny(file, testInclude));
 
    let classPure = 0;
    let withHelpers = 0;
@@ -163,10 +161,7 @@ function main() {
       .sort(([left], [right]) => left.localeCompare(right));
 
    console.log('JS class / test-style progress');
-   console.log(
-      `  scripts: ${scriptsConverted.length}/${scriptCandidates.length} under one-class lint`
-      + ` (${scriptsRemaining} remaining; ${scriptExclude.length} excluded patterns)`
-   );
+   console.log(`  scripts: ${scriptCandidates.length} one-class (all scripts)`);
    console.log(
       `  tests:   ${testsStyled.length}/${testCandidates.length} under unit-test-style lint`
       + ` (${flatTestsRemaining.length} flat remaining; ${nestedTests.length} nested)`
