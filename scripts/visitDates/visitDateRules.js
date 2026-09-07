@@ -1,44 +1,7 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { VisitDateRuleHelpers } from './visitDateRuleHelpers.js';
 
-const LOCAL_NOON_HOUR = 12;
 const MS_PER_DAY = 86400000;
-
-function createInvalidDate() {
-   return new Date(Number.NaN);
-}
-
-function isValidDate(date) {
-   return Number.isFinite(date?.getTime?.());
-}
-
-function createLocalNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, LOCAL_NOON_HOUR, 0, 0, 0);
-}
-
-function matchesDateParts(date, {
-   year,
-   monthIndex,
-   day,
-} = {}) {
-   return date.getFullYear() === year
-      && date.getMonth() === monthIndex
-      && date.getDate() === day;
-}
-
-function createAllowedVisitDateRange(
-   daysAhead = VisitDateRules.DEFAULT_DAYS_AHEAD,
-   referenceToday = null
-) {
-   const today = VisitDateRules.normalizeDate(referenceToday) ?? VisitDateRules.getToday();
-   const maxDate = new Date(today);
-
-   maxDate.setDate(today.getDate() + daysAhead);
-
-   return {
-      today,
-      maxDate,
-   };
-}
 
 export class VisitDateRules {
    static DEFAULT_DAYS_AHEAD = 360;
@@ -47,7 +10,7 @@ export class VisitDateRules {
       const parts = String(dateStr).split('-');
 
       if (parts.length !== 3) {
-         return createInvalidDate();
+         return VisitDateRuleHelpers.createInvalidDate();
       }
 
       const [year, month, day] = parts.map(Number);
@@ -58,17 +21,17 @@ export class VisitDateRules {
          || !Number.isInteger(month)
          || !Number.isInteger(day)
       ) {
-         return createInvalidDate();
+         return VisitDateRuleHelpers.createInvalidDate();
       }
 
-      const parsed = createLocalNoonDate(year, monthIndex, day);
+      const parsed = VisitDateRuleHelpers.createLocalNoonDate(year, monthIndex, day);
 
-      if (!isValidDate(parsed)) {
-         return createInvalidDate();
+      if (!VisitDateRuleHelpers.isValidDate(parsed)) {
+         return VisitDateRuleHelpers.createInvalidDate();
       }
 
-      if (!matchesDateParts(parsed, { year, monthIndex, day })) {
-         return createInvalidDate();
+      if (!VisitDateRuleHelpers.matchesDateParts(parsed, { year, monthIndex, day })) {
+         return VisitDateRuleHelpers.createInvalidDate();
       }
 
       return parsed;
@@ -89,7 +52,7 @@ export class VisitDateRules {
    static getMonth(dateStr) {
       const date = VisitDateRules.parseLocalDate(dateStr);
 
-      if (!isValidDate(date)) {
+      if (!VisitDateRuleHelpers.isValidDate(date)) {
          return null;
       }
 
@@ -98,18 +61,18 @@ export class VisitDateRules {
 
    static getDay(dateStr) {
       const date = VisitDateRules.parseLocalDate(dateStr);
-      return isValidDate(date) ? date.getDate() : null;
+      return VisitDateRuleHelpers.isValidDate(date) ? date.getDate() : null;
    }
 
    static getYear(dateStr) {
       const date = VisitDateRules.parseLocalDate(dateStr);
-      return isValidDate(date) ? date.getFullYear() : null;
+      return VisitDateRuleHelpers.isValidDate(date) ? date.getFullYear() : null;
    }
 
    static isoDateToMonFirstDow(iso) {
       const date = iso ? VisitDateRules.parseLocalDate(iso) : VisitDateRules.getToday();
 
-      if (!isValidDate(date)) {
+      if (!VisitDateRuleHelpers.isValidDate(date)) {
          return 1;
       }
 
@@ -127,7 +90,7 @@ export class VisitDateRules {
    static getToday() {
       const today = new Date();
 
-      return createLocalNoonDate(
+      return VisitDateRuleHelpers.createLocalNoonDate(
          today.getFullYear(),
          today.getMonth(),
          today.getDate()
@@ -143,7 +106,7 @@ export class VisitDateRules {
          ? value
          : VisitDateRules.parseLocalDate(value);
 
-      if (!isValidDate(date)) {
+      if (!VisitDateRuleHelpers.isValidDate(date)) {
          return '';
       }
 
@@ -170,15 +133,15 @@ export class VisitDateRules {
    }
 
    static getMaxDate(daysAhead = VisitDateRules.DEFAULT_DAYS_AHEAD, referenceToday = null) {
-      return createAllowedVisitDateRange(daysAhead, referenceToday).maxDate;
+      return VisitDateRuleHelpers.createAllowedVisitDateRange(daysAhead, referenceToday).maxDate;
    }
 
    static normalizeDate(d) {
-      if (!isValidDate(d)) {
+      if (!VisitDateRuleHelpers.isValidDate(d)) {
          return null;
       }
 
-      return createLocalNoonDate(
+      return VisitDateRuleHelpers.createLocalNoonDate(
          d.getFullYear(),
          d.getMonth(),
          d.getDate()

@@ -1,114 +1,6 @@
-import { TransportationSelectorModel } from '../itinerary/selectors/transportationSelector/transportationSelectorModel.js';
+import { LayerRequestBuilder } from './layerRequestBuilder.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
 import { SourceHelpers } from './sourceHelpers.js';
-
-function uniqStrings(values) {
-   return Array.from(
-      new Set(
-         (values || [])
-            .map((value) => String(value || '').trim())
-            .filter(Boolean)
-      )
-   );
-}
-
-function buildFocusIncludes(focusType, focusRow) {
-   const includes = {
-      speciesToInclude: [],
-      restaurantsToInclude: [],
-      giftShopsToInclude: [],
-      attractionsToInclude: [],
-      transportationStationsToInclude: [],
-   };
-
-   if (!focusRow) {
-      return includes;
-   }
-
-   if (focusType === 'animal') {
-      const species = String(focusRow.species || '').trim();
-
-      if (species) {
-         includes.speciesToInclude = uniqStrings([species]);
-      }
-   }
-
-   if (focusType === 'restaurant' && focusRow.name != null) {
-      includes.restaurantsToInclude = uniqStrings([focusRow.name]);
-   }
-
-   if (focusType === 'giftShop' && focusRow.name != null) {
-      includes.giftShopsToInclude = uniqStrings([focusRow.name]);
-   }
-
-   if (focusType === 'attraction' && focusRow.name != null) {
-      includes.attractionsToInclude = uniqStrings([focusRow.name]);
-   }
-
-   if (focusType === 'transportationStation' && focusRow.name != null) {
-      includes.transportationStationsToInclude = uniqStrings([focusRow.name]);
-   }
-
-   return includes;
-}
-
-function transportationNamesWithStations(transportationStations) {
-   return new Set(
-      uniqStrings((transportationStations || []).map((station) => station.transportation))
-   );
-}
-
-function isFullyUnscheduledTransportationName(
-   name,
-   transportations,
-   scheduledTransportationNames
-) {
-   if (scheduledTransportationNames.has(name)) {
-      return false;
-   }
-
-   const rows = (transportations || []).filter(
-      (transportation) => TransportationSelectorModel.getTransportationName(transportation) === name
-   );
-
-   if (rows.length === 0) {
-      return false;
-   }
-
-   return rows.every((transportation) => !TransportationSelectorModel.isTransportationScheduled(transportation));
-}
-
-function buildFullyUnscheduledTransportationRows(
-   transportations,
-   transportationStations
-) {
-   const scheduledTransportationNames = transportationNamesWithStations(
-      transportationStations
-   );
-   const seenNames = new Set();
-   const rows = [];
-
-   (transportations || []).forEach((transportation) => {
-      const name = TransportationSelectorModel.getTransportationName(transportation);
-
-      if (!name || seenNames.has(name)) {
-         return;
-      }
-
-      if (!isFullyUnscheduledTransportationName(
-         name,
-         transportations,
-         scheduledTransportationNames
-      )) {
-         return;
-      }
-
-      seenNames.add(name);
-      rows.push(transportation);
-   });
-
-   return SourceHelpers.normalizeTypedRows(rows, 'transportation');
-}
 
 export class LayerRequest {
    static buildItineraryRows(itinerary) {
@@ -117,7 +9,7 @@ export class LayerRequest {
       return [
          ...SourceHelpers.normalizeTypedRows(itinerary?.animals, 'animal'),
          ...SourceHelpers.normalizeTypedRows(itinerary?.attractions, 'attraction'),
-         ...buildFullyUnscheduledTransportationRows(
+         ...LayerRequestBuilder.buildFullyUnscheduledTransportationRows(
             itinerary?.transportations,
             transportationStations
          ),
@@ -146,7 +38,7 @@ export class LayerRequest {
    }
 
    static buildSelectedTypes(selectedTypes, focusType, transportationRoute) {
-      const normalizedTypes = uniqStrings(selectedTypes);
+      const normalizedTypes = LayerRequestBuilder.uniqStrings(selectedTypes);
       const routeActive = transportationRoute !== 'none';
       const focusIsTransportationStation = focusType === 'transportationStation';
 
@@ -155,7 +47,7 @@ export class LayerRequest {
          !normalizedTypes.includes(focusType) &&
          !(routeActive && focusIsTransportationStation && normalizedTypes.includes('transportationRoute'))
       ) {
-         return uniqStrings([focusType, ...normalizedTypes]);
+         return LayerRequestBuilder.uniqStrings([focusType, ...normalizedTypes]);
       }
 
       return normalizedTypes;
@@ -173,7 +65,7 @@ export class LayerRequest {
       includeClosedGiftShops,
       includeClosedAttractions,
    }) {
-      const includes = buildFocusIncludes(focusType, focusRow);
+      const includes = LayerRequestBuilder.buildFocusIncludes(focusType, focusRow);
 
       return {
          selectedTypes: LayerRequest.buildSelectedTypes(selectedTypes, focusType, transportationRoute),
