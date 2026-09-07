@@ -1,69 +1,25 @@
-import { Strings } from '../strings.js';
-
-const ZOO_MAP_SVG_URL = '../images/map/zoo-map.svg';
-
-let cachedSvgTextPromise = null;
-
-function getZooMapMount() {
-   return document.getElementById('zooMapMount');
-}
-
-function getMountedSvg(mount) {
-   return mount?.querySelector('svg') ?? null;
-}
-
-function configureInlineSvg(svg) {
-   svg.setAttribute('width', '100%');
-   svg.setAttribute('height', '100%');
-   svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-
-   return svg;
-}
-
-async function fetchZooMapSvgText() {
-   if (!cachedSvgTextPromise) {
-      cachedSvgTextPromise = fetch(ZOO_MAP_SVG_URL)
-         .then((response) => {
-            if (!response.ok) {
-               throw new Error(Strings.map.loadSvgFailed(response.status));
-            }
-
-            return response.text();
-         })
-         .catch((error) => {
-            cachedSvgTextPromise = null;
-            throw error;
-         });
-   }
-
-   return await cachedSvgTextPromise;
-}
-
-async function mountInlineSvg(mount) {
-   mount.innerHTML = await fetchZooMapSvgText();
-   return getMountedSvg(mount);
-}
+import { InlineZooMapLoader } from './inlineZooMapLoader.js';
 
 export class LoadInlineZooMap {
    static async loadInlineZooMap() {
-      const mount = getZooMapMount();
+      const mount = InlineZooMapLoader.getZooMapMount();
 
       if (!mount) {
          return null;
       }
 
-      const existingSvg = getMountedSvg(mount);
+      const existingSvg = InlineZooMapLoader.getMountedSvg(mount);
 
       if (existingSvg) {
-         return configureInlineSvg(existingSvg);
+         return InlineZooMapLoader.configureInlineSvg(existingSvg);
       }
 
-      const svg = await mountInlineSvg(mount);
+      const svg = await InlineZooMapLoader.mountInlineSvg(mount);
 
       if (!svg) {
          return null;
       }
 
-      return configureInlineSvg(svg);
+      return InlineZooMapLoader.configureInlineSvg(svg);
    }
 }

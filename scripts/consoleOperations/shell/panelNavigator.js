@@ -1,46 +1,4 @@
-function getDefaultLocation() {
-   return globalThis.location ?? null;
-}
-
-function getDefaultHistory() {
-   return globalThis.history ?? null;
-}
-
-function updateConsolePanelUrl(panelId, {
-   location = getDefaultLocation(),
-   history = getDefaultHistory(),
-} = {}) {
-   if (!location || !history?.replaceState) {
-      return;
-   }
-
-   const url = new URL(location.href);
-
-   if (panelId) {
-      url.searchParams.set(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM, panelId);
-   }
-   else {
-      url.searchParams.delete(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM);
-   }
-
-   history.replaceState(null, '', url);
-}
-
-function getPanelIdFromUrl(location = getDefaultLocation()) {
-   if (!location) {
-      return '';
-   }
-
-   return new URL(location.href).searchParams.get(
-      PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM
-   ) ?? '';
-}
-
-function findMenuButtonForPanel(doc, panelId) {
-   return Array.from(doc.querySelectorAll('.console-operations-menu-btn'))
-      .find(button => button.dataset.panelTarget === panelId);
-}
-
+import { PanelNavigatorUrlHelpers } from './panelNavigatorUrlHelpers.js';
 export class PanelNavigator {
    static ACTIVE_CONSOLE_PANEL_QUERY_PARAM = 'panel';
 
@@ -54,7 +12,7 @@ export class PanelNavigator {
    }
 
    static clearConsolePanelUrlParam(options = {}) {
-      updateConsolePanelUrl('', options);
+      PanelNavigatorUrlHelpers.updateConsolePanelUrl('', options);
    }
 
    static createConsolePanelNavigator(
@@ -67,7 +25,7 @@ export class PanelNavigator {
             .forEach(panel => panel.classList.remove('active'));
 
          panelEl?.classList.add('active');
-         updateConsolePanelUrl(panelEl?.id, urlOptions);
+         PanelNavigatorUrlHelpers.updateConsolePanelUrl(panelEl?.id, urlOptions);
 
          doc
             .querySelectorAll('.console-operations-menu-btn')
@@ -96,8 +54,8 @@ export class PanelNavigator {
       }
 
       function restorePanelFromUrl() {
-         const panelId = getPanelIdFromUrl(urlOptions.location);
-         const button = findMenuButtonForPanel(doc, panelId);
+         const panelId = PanelNavigatorUrlHelpers.getPanelIdFromUrl(urlOptions.location);
+         const button = PanelNavigatorUrlHelpers.findMenuButtonForPanel(doc, panelId);
 
          if (button) {
             button.click();

@@ -1,55 +1,5 @@
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-
-function resolvePillStrip(pill) {
-   return pill.closest?.('.itinerary-day-pill-strip') ?? null;
-}
-
-function buildPillMenuButtonDots() {
-   const dots = ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dots');
-
-   for (let index = 0; index < 3; index += 1) {
-      dots.appendChild(ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dot'));
-   }
-
-   return dots;
-}
-
-function clearMenuPanel(menuPanel) {
-   while (menuPanel.children.length > 0) {
-      menuPanel.removeChild(menuPanel.children[0]);
-   }
-}
-
-function renderMenuPanel(menuPanel, menuItems = []) {
-   clearMenuPanel(menuPanel);
-
-   menuItems.forEach(({ label }) => {
-      const actionButton = document.createElement('button');
-      actionButton.type = 'button';
-      actionButton.className = 'itinerary-day-open-pill-menu-item';
-      actionButton.setAttribute('role', 'menuitem');
-      actionButton.textContent = label;
-      menuPanel.appendChild(actionButton);
-   });
-}
-
-function bindMenuPanelActions(menuPanel, menuItems, closeMenu) {
-   menuItems.forEach((menuItem, index) => {
-      const actionButton = menuPanel.querySelectorAll(
-         '.itinerary-day-open-pill-menu-item'
-      )[index];
-
-      if (typeof menuItem?.onAction !== 'function') {
-         return;
-      }
-
-      actionButton?.addEventListener('click', async (event) => {
-         event.stopPropagation();
-         closeMenu();
-         await menuItem.onAction();
-      });
-   });
-}
+import { ItineraryPillMenuBuilder } from './itineraryPillMenuBuilder.js';
 
 export class ItineraryPillMenu {
    static buildPillMenuNodes(menuAriaLabel, menuItems = []) {
@@ -61,7 +11,7 @@ export class ItineraryPillMenu {
       menuButton.setAttribute('aria-label', menuAriaLabel);
       menuButton.setAttribute('aria-haspopup', 'menu');
       menuButton.setAttribute('aria-expanded', 'false');
-      menuButton.appendChild(buildPillMenuButtonDots());
+      menuButton.appendChild(ItineraryPillMenuBuilder.buildPillMenuButtonDots());
 
       const menuPanel = ItineraryPanelDom.el('div', 'itinerary-day-open-pill-menu-panel');
       menuPanel.setAttribute('role', 'menu');
@@ -100,7 +50,7 @@ export class ItineraryPillMenu {
 
       function setMenuOpen(isOpen) {
          pill.classList.toggle(menuOpenClass, isOpen);
-         resolvePillStrip(pill)?.classList.toggle('itinerary-day-pill-strip--menu-open', isOpen);
+         ItineraryPillMenuBuilder.resolvePillStrip(pill)?.classList.toggle('itinerary-day-pill-strip--menu-open', isOpen);
       }
 
       function closeMenu() {
@@ -112,8 +62,8 @@ export class ItineraryPillMenu {
       function openMenu() {
          const activeMenuItems = resolveMenuItems();
 
-         renderMenuPanel(menuPanel, activeMenuItems);
-         bindMenuPanelActions(menuPanel, activeMenuItems, closeMenu);
+         ItineraryPillMenuBuilder.renderMenuPanel(menuPanel, activeMenuItems);
+         ItineraryPillMenuBuilder.bindMenuPanelActions(menuPanel, activeMenuItems, closeMenu);
          menuPanel.hidden = false;
          menuButton.setAttribute('aria-expanded', 'true');
          setMenuOpen(true);
@@ -134,7 +84,7 @@ export class ItineraryPillMenu {
          event.stopPropagation();
       });
 
-      bindMenuPanelActions(menuPanel, resolveMenuItems(), closeMenu);
+      ItineraryPillMenuBuilder.bindMenuPanelActions(menuPanel, resolveMenuItems(), closeMenu);
 
       const handleDocumentClick = (event) => {
          if (!pill.contains(event.target)) {
