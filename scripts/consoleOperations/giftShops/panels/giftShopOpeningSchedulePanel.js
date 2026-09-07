@@ -1,27 +1,34 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSchedulePresetFieldBuilder } from '../../templates/consoleSchedulePresetFieldBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
+import { ConsoleWeeklyScheduleCheckboxesBuilder } from '../../templates/consoleWeeklyScheduleCheckboxesBuilder.js';
 
 export class GiftShopOpeningSchedulePanel {
    static createGiftShopOpeningSchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'giftShopOpeningSchedulePanel',
          title: Strings.panelTitles.giftShopOpeningSchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.giftShop,
                inputId: 'giftShopOpeningScheduleGiftShop',
                emptyOptionLabel: Strings.placeholders.giftShop,
             }),
-            Fragments.createSchedulePresetField({
+            ConsoleSchedulePresetFieldBuilder.createSchedulePresetField({
                inputId: 'giftShopOpeningSchedulePreset',
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'giftShopOpeningScheduleStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'giftShopOpeningScheduleEndDate',
                endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            Fragments.createWeeklyScheduleCheckboxes({
+            ConsoleWeeklyScheduleCheckboxesBuilder.createWeeklyScheduleCheckboxes({
                dayIds: {
                   monday: 'giftShopOpeningScheduleMonday',
                   tuesday: 'giftShopOpeningScheduleTuesday',
@@ -33,15 +40,15 @@ export class GiftShopOpeningSchedulePanel {
                   holidays: 'giftShopOpeningScheduleHolidaysOnly',
                },
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.scheduleMessage,
                inputId: 'giftShopOpeningScheduleMessage',
                placeholder: Strings.textareas.scheduledClosedMessage('gift shop'),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitGiftShopOpeningSchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'giftShopOpeningScheduleStatus',
             }),
          ],

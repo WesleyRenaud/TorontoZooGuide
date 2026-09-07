@@ -1,5 +1,5 @@
 import { AnimalSelectorModel } from './animalSelector/animalSelectorModel.js';
-import { View } from './animalSelector/view.js';
+import { AnimalSelectorRenderer } from './animalSelector/animalSelectorRenderer.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
@@ -47,7 +47,7 @@ function promptForOffDisplayAnimalSelection(row, proceed) {
 }
 
 function renderOffDisplayAnimalControls({ bodyEl, rerunSearch, onChange }) {
-   View.renderIncludeOffDisplayToggle({
+   AnimalSelectorRenderer.renderIncludeOffDisplayToggle({
       bodyEl,
       rerunSearch,
       onChange,
@@ -86,7 +86,7 @@ export class AnimalSelector {
          subtitle: Strings.itinerary.selectors.animalSubtitle,
          emptyText: Strings.itinerary.emptyText.animals,
 
-         renderRowLeft: View.renderAnimalSelectorRowLeft,
+         renderRowLeft: AnimalSelectorRenderer.renderAnimalSelectorRowLeft,
 
          onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
             const completeToggle = () => {

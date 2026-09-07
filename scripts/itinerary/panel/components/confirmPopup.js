@@ -1,20 +1,20 @@
-import { Dom } from '../dom.js';
-import { Popup } from './popup.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelPopup } from './itineraryPanelPopup.js';
 import { Strings } from '../../../strings.js';
 
 function createConfirmPopupBody(message, doNotShowAgainLabel) {
-   const body = Dom.el('div', 'tzg-popup-confirm-body');
+   const body = ItineraryPanelDom.el('div', 'tzg-popup-confirm-body');
 
    body.appendChild(
-      Dom.el('div', 'tzg-popup-message', message)
+      ItineraryPanelDom.el('div', 'tzg-popup-message', message)
    );
 
    if (!doNotShowAgainLabel) {
       return body;
    }
 
-   const label = Dom.el('label', 'toggle-row tzg-popup-do-not-show-again');
-   const checkbox = Dom.el('input');
+   const label = ItineraryPanelDom.el('label', 'toggle-row tzg-popup-do-not-show-again');
+   const checkbox = ItineraryPanelDom.el('input');
    checkbox.type = 'checkbox';
 
    label.append(checkbox, ` ${doNotShowAgainLabel}`);
@@ -34,7 +34,7 @@ export class ConfirmPopup {
       confirmText = Strings.itinerary.actions.confirm,
       cancelText = Strings.itinerary.actions.cancel,
       doNotShowAgainLabel = null,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
       onConfirm,
       onCancel,
    } = {}) {
@@ -50,7 +50,7 @@ export class ConfirmPopup {
          root,
          overlay,
          buttonEls,
-      } = Popup.createItineraryPopupLayout({
+      } = ItineraryPanelPopup.createItineraryPopupLayout({
          popupClassName: 'tzg-confirm',
          title,
          bodyContent: confirmBody.body ?? confirmBody,
@@ -69,7 +69,7 @@ export class ConfirmPopup {
          ],
       });
 
-      const { close, dismiss } = Popup.mountDismissablePopup({
+      const { close, dismiss } = ItineraryPanelPopup.mountDismissablePopup({
          mountEl,
          root,
          overlay,

@@ -1,22 +1,25 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class RemoveRestroomAlertPanel {
    static createRemoveRestroomAlertPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'removeRestroomAlertPanel',
          title: Strings.panelTitles.removeRestroomAlert,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.restroom,
                inputId: 'removeRestroomAlertRestroom',
                emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRemoveRestroomAlert',
                submitLabel: Strings.actions.removeAlert,
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'removeRestroomAlertStatus',
             }),
          ],

@@ -5,6 +5,29 @@ import process from 'node:process';
 const ROOT = process.cwd();
 const ONE_CLASS_CONFIG = path.join(ROOT, 'tools/lint/jsOneClassPerFile.json');
 const UNIT_TEST_CONFIG = path.join(ROOT, 'tools/lint/jsUnitTestStyle.json');
+const WEAK_NAMES_CONFIG = path.join(ROOT, 'tools/lint/jsWeakClassNames.json');
+
+const DEFAULT_WEAK_NAMES = [
+   'View',
+   'Shell',
+   'State',
+   'Popup',
+   'Dom',
+   'Controllers',
+   'Refs',
+   'Controls',
+   'Sources',
+   'Updater',
+   'Panels',
+   'Format',
+   'Rows',
+   'Section',
+   'Summary',
+   'Status',
+   'Loaders',
+   'Dropdowns',
+   'Constants',
+];
 
 function loadConfig(configPath) {
    if (!fs.existsSync(configPath)) {
@@ -61,9 +84,28 @@ function isFlatTestPath(relativePath) {
    return !rel.includes('/');
 }
 
+function topLevelExportedClassNames(source) {
+   const names = [];
+   const classPattern = /^export\s+class\s+([A-Za-z_$][\w$]*)/gm;
+   let match = classPattern.exec(source);
+
+   while (match) {
+      names.push(match[1]);
+      match = classPattern.exec(source);
+   }
+
+   return names;
+}
+
+function hasTopLevelFunction(source) {
+   return /^(?:async\s+)?function\s+[A-Za-z_$]/gm.test(source);
+}
+
 function main() {
    const oneClass = loadConfig(ONE_CLASS_CONFIG);
    const unitTest = loadConfig(UNIT_TEST_CONFIG);
+   const weakConfig = loadConfig(WEAK_NAMES_CONFIG);
+   const weakNames = new Set(weakConfig.names ?? DEFAULT_WEAK_NAMES);
 
    const scripts = walkFiles(
       path.join(ROOT, 'scripts'),
@@ -88,6 +130,38 @@ function main() {
    const nestedTests = testCandidates.filter((file) => !isFlatTestPath(file));
    const flatTestsRemaining = flatTests.filter((file) => !matchesAny(file, testInclude));
 
+   let classPure = 0;
+   let withHelpers = 0;
+   const classNameToFiles = new Map();
+   const weakHits = [];
+
+   scriptCandidates.forEach((relativePath) => {
+      const source = fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+      const classNames = topLevelExportedClassNames(source);
+      const hasHelpers = hasTopLevelFunction(source);
+
+      if (classNames.length === 1 && !hasHelpers) {
+         classPure += 1;
+      }
+      else if (hasHelpers) {
+         withHelpers += 1;
+      }
+
+      classNames.forEach((className) => {
+         const files = classNameToFiles.get(className) ?? [];
+         files.push(relativePath);
+         classNameToFiles.set(className, files);
+
+         if (weakNames.has(className)) {
+            weakHits.push(`${className} (${relativePath})`);
+         }
+      });
+   });
+
+   const collisions = [...classNameToFiles.entries()]
+      .filter(([, files]) => files.length > 1)
+      .sort(([left], [right]) => left.localeCompare(right));
+
    console.log('JS class / test-style progress');
    console.log(
       `  scripts: ${scriptsConverted.length}/${scriptCandidates.length} under one-class lint`
@@ -97,6 +171,29 @@ function main() {
       `  tests:   ${testsStyled.length}/${testCandidates.length} under unit-test-style lint`
       + ` (${flatTestsRemaining.length} flat remaining; ${nestedTests.length} nested)`
    );
+   console.log('JS class hygiene progress');
+   console.log(
+      `  class-pure: ${classPure}/${scriptCandidates.length}`
+      + ` (${withHelpers} with top-level helpers remaining)`
+   );
+
+   if (collisions.length === 0) {
+      console.log('  unique-names: OK');
+   }
+   else {
+      console.log(`  unique-names: ${collisions.length} collision(s)`);
+      collisions.forEach(([className, files]) => {
+         console.log(`    ${className}: ${files.join(', ')}`);
+      });
+   }
+
+   console.log(`  weak-names: ${weakHits.length} remaining`);
+
+   if (weakHits.length > 0 && weakHits.length <= 40) {
+      weakHits.sort().forEach((hit) => {
+         console.log(`    ${hit}`);
+      });
+   }
 
    return 0;
 }

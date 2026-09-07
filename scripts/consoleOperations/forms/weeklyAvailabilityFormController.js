@@ -1,7 +1,7 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
-import { Status } from '../shell/status.js';
+import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
 export class WeeklyAvailabilityFormController {
@@ -133,7 +133,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
 
@@ -141,7 +141,7 @@ export class WeeklyAvailabilityFormController {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -161,7 +161,7 @@ export class WeeklyAvailabilityFormController {
       async function onShowClick() {
          await ControllerUtils.loadOptionsAndShowPanel({
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
             loadOptions,
             populateOptions,
             targetEl: entityEl,
@@ -193,7 +193,7 @@ export class WeeklyAvailabilityFormController {
       function handleSubmitSuccess(result, entity) {
          const name = resultName(result) || entity;
 
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             Strings.status.openingScheduleSaved(name),
             'is-success'
@@ -209,22 +209,22 @@ export class WeeklyAvailabilityFormController {
          const endDate = ControllerUtils.getFieldValue(endDateEl);
          const message = ControllerUtils.getFieldValue(messageEl);
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          if (!entity) {
-            Status.setStatus(statusEl, Strings.validation.entityRequired(entityLabel), 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.validation.entityRequired(entityLabel), 'is-error');
             return;
          }
 
          if (!hasAtLeastOneOpenDay()) {
-            Status.setStatus(statusEl, Strings.validation.weeklyAvailability, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.validation.weeklyAvailability, 'is-error');
             return;
          }
 
          const dateError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
 
          if (dateError) {
-            Status.setStatus(statusEl, dateError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, dateError, 'is-error');
             return;
          }
 
@@ -250,7 +250,7 @@ export class WeeklyAvailabilityFormController {
                   return;
                }
 
-               Status.setStatus(
+               ConsoleStatusPresenter.setStatus(
                   statusEl,
                   resolvedResult.error || Strings.common.genericFailed,
                   'is-error'
@@ -258,10 +258,10 @@ export class WeeklyAvailabilityFormController {
                return;
             }
 
-            Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

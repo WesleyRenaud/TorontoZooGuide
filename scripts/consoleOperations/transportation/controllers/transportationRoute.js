@@ -1,7 +1,7 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class TransportationRoute {
@@ -56,7 +56,7 @@ export class TransportationRoute {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          resetForm();
          activatePanel?.(panelEl);
       }
@@ -65,7 +65,7 @@ export class TransportationRoute {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -78,7 +78,7 @@ export class TransportationRoute {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             Strings.status.transportationRouteSet(result),
             'is-success'
@@ -90,12 +90,12 @@ export class TransportationRoute {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const dateError = validateForm(formValues);
 
          if (dateError) {
-            Status.setStatus(statusEl, dateError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, dateError, 'is-error');
             return;
          }
 
@@ -106,11 +106,11 @@ export class TransportationRoute {
                handleSubmitSuccess(result);
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch(err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { ResultsView } from '../autocomplete/resultsView.js';
+import { AnimalSpeciesResultsView } from '../autocomplete/animalSpeciesResultsView.js';
 import { SpeciesMatcher } from '../autocomplete/speciesMatcher.js';
 import { SpeciesSource } from '../autocomplete/speciesSource.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
@@ -26,7 +26,7 @@ export class AnimalSpeciesAutocomplete {
       }
 
       const speciesSource = SpeciesSource.createAnimalSpeciesSource();
-      const resultsView = ResultsView.createAnimalSpeciesResultsView({
+      const resultsView = AnimalSpeciesResultsView.createAnimalSpeciesResultsView({
          inputEl,
          resultsEl,
       });

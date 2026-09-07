@@ -1,26 +1,26 @@
-import { Dom } from '../dom.js';
 import { DraftStorage } from '../../draftStorage.js';
-import { Format } from '../format.js';
+import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 
 export class DateCard {
    static makeDateCard(itin = {}) {
       const date = itin.date || DraftStorage.getStoredItineraryDate();
-      const prettyDate = Format.formatISODateLong(date);
+      const prettyDate = ItineraryItemFormatter.formatISODateLong(date);
 
       if (!prettyDate) return null;
 
-      const dateWrap = Dom.el('div', 'itin-panel-date');
+      const dateWrap = ItineraryPanelDom.el('div', 'itin-panel-date');
 
-      const topRow = Dom.el('div', 'itin-panel-date-top');
-      const textWrap = Dom.el('div', 'itin-panel-date-text');
+      const topRow = ItineraryPanelDom.el('div', 'itin-panel-date-top');
+      const textWrap = ItineraryPanelDom.el('div', 'itin-panel-date-text');
 
-      textWrap.appendChild(Dom.el('div', 'itin-panel-date-label', Strings.itinerary.selectors.visitDate));
-      textWrap.appendChild(Dom.el('div', 'itin-panel-date-value', prettyDate));
+      textWrap.appendChild(ItineraryPanelDom.el('div', 'itin-panel-date-label', Strings.itinerary.selectors.visitDate));
+      textWrap.appendChild(ItineraryPanelDom.el('div', 'itin-panel-date-value', prettyDate));
 
-      const actionsWrap = Dom.el('div', 'itin-panel-header-actions');
+      const actionsWrap = ItineraryPanelDom.el('div', 'itin-panel-header-actions');
 
-      const editBtn = Dom.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
+      const editBtn = ItineraryPanelDom.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
       editBtn.type = 'button';
 
       editBtn.addEventListener('click', (e) => {

@@ -1,5 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { ItineraryPillMenu } from './itineraryPillMenu.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
 
@@ -37,7 +37,7 @@ export class OpenTimelinePill {
       }
 
       if (typeof onRemove !== 'function') {
-         const pill = Dom.el('span', 'itinerary-day-open-pill');
+         const pill = ItineraryPanelDom.el('span', 'itinerary-day-open-pill');
          pill.appendChild(
             OpenTimelinePill.createPillLabelNode(
                label,
@@ -48,7 +48,7 @@ export class OpenTimelinePill {
          return pill;
       }
 
-      const pill = Dom.el('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');
+      const pill = ItineraryPanelDom.el('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');
       const labelNode = OpenTimelinePill.createPillLabelNode(
          label,
          'itinerary-day-open-pill-label',
@@ -80,7 +80,7 @@ export class OpenTimelinePill {
          return null;
       }
 
-      const marker = Dom.el('span', 'itinerary-day-boundary-marker');
+      const marker = ItineraryPanelDom.el('span', 'itinerary-day-boundary-marker');
       const markerKind = visitBoundaryPlacement === 'starts-at-anchor'
          ? 'departure'
          : 'arrival';
@@ -91,7 +91,7 @@ export class OpenTimelinePill {
       if (typeof onRemove === 'function') {
          const menuItems = [{ label: removeLabel, onAction: onRemove }];
          const menuButton = document.createElement('button');
-         const menuPanel = Dom.el('div', 'itinerary-day-open-pill-menu-panel');
+         const menuPanel = ItineraryPanelDom.el('div', 'itinerary-day-open-pill-menu-panel');
 
          menuButton.type = 'button';
          menuButton.className = 'itinerary-day-boundary-marker-btn';
@@ -124,7 +124,7 @@ export class OpenTimelinePill {
          return marker;
       }
 
-      marker.appendChild(Dom.el('span', 'itinerary-day-boundary-marker-icon'));
+      marker.appendChild(ItineraryPanelDom.el('span', 'itinerary-day-boundary-marker-icon'));
 
       return marker;
    }

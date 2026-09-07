@@ -1,4 +1,4 @@
-import { Popup } from './popup.js';
+import { ItineraryPanelPopup } from './itineraryPanelPopup.js';
 import { Strings } from '../../../strings.js';
 
 export class NoticePopup {
@@ -7,7 +7,7 @@ export class NoticePopup {
       message = '',
       bodyContent = null,
       buttonText = Strings.itinerary.noItemsSelected.button,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
       onConfirm = null,
       showCloseButton = false,
       onClose = null,
@@ -22,7 +22,7 @@ export class NoticePopup {
          overlay,
          buttonEls,
          closeButton,
-      } = Popup.createItineraryPopupLayout({
+      } = ItineraryPanelPopup.createItineraryPopupLayout({
          popupClassName: 'tzg-notice',
          title,
          message,
@@ -38,7 +38,7 @@ export class NoticePopup {
          ],
       });
 
-      const { close } = Popup.mountDismissablePopup({
+      const { close } = ItineraryPanelPopup.mountDismissablePopup({
          mountEl,
          root,
          overlay,

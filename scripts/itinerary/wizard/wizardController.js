@@ -5,8 +5,8 @@ import { DateSelector } from '../../itinerary/selectors/dateSelector.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryService } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
+import { ItineraryWizardStore } from './itineraryWizardStore.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
-import { State } from './state.js';
 import { Strings } from '../../strings.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 import { WizardDraft } from './wizardDraft.js';
@@ -40,7 +40,7 @@ export class WizardController {
       const {
          loadItinerary = ItineraryService.getItinerary,
          resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
-         createWizardState = State.createItineraryWizardState,
+         createWizardState = ItineraryWizardStore.createItineraryWizardState,
          createDateStepController = DateSelector.createItineraryDateSelectorController,
          finalizeWizard = WizardFinalizer.finalizeItineraryWizard,
          showConfirmPopup = ConfirmPopup.showItineraryConfirmPopup,

@@ -2,7 +2,7 @@ import { DayPlannerTimelinePillPlacement } from './dayPlannerTimelinePillPlaceme
 import { ItineraryEventTypes } from '../../itineraryEventTypes.js';
 import { OpenTimelinePill } from './openTimelinePill.js';
 import { ScheduledTimelinePill } from './scheduledTimelinePill.js';
-import { Constants } from '../../../shared/constants.js';
+import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 
 function applyPointPillStripPlacement(pillStrip, placement = '') {
    if (!pillStrip || !placement) {
@@ -90,7 +90,7 @@ export class DayPlannerTimelinePillAppend {
          offsetFraction = 0,
          durationMinutes,
          displayDurationMinutes = durationMinutes,
-         slotSpanMinutes = Constants.TIMELINE_SLOT_MINUTES,
+         slotSpanMinutes = TimelineLayoutConstants.TIMELINE_SLOT_MINUTES,
          startTime,
          endTime,
          groupItems = [],

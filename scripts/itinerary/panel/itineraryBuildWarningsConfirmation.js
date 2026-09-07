@@ -1,12 +1,12 @@
 import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Dom } from './dom.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
-import { Format } from './format.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ItineraryPanelDom } from './itineraryPanelDom.js';
 import { Strings } from '../../strings.js';
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
@@ -69,7 +69,7 @@ function buildGuardiansTalkUnscheduleSection(issues, strings) {
       return null;
    }
 
-   const talkName = Format.normalizeText(talk.talkName);
+   const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
    const message = talk.talkTime
       ? strings.buildWarningScheduleOverlapMessage(talkName, talk.talkTime)
       : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
@@ -89,7 +89,7 @@ function buildWildEncounterUnscheduleSection(issues, strings) {
       return null;
    }
 
-   const encounterName = Format.normalizeText(encounter.encounterName);
+   const encounterName = ItineraryItemFormatter.normalizeText(encounter.encounterName);
    const message = encounter.encounterTime
       ? strings.buildWarningWildEncounterOverlapMessage(
          encounterName,
@@ -112,7 +112,7 @@ function buildGuardiansTalkWithoutAnimalSections(issues, strings) {
    }
 
    return GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
-      const talkName = Format.normalizeText(talk.talkName);
+      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
       const message = talk.talkTime
          ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
          : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
@@ -147,7 +147,7 @@ function buildFixedTimeItemLongWaitSections(issues, strings) {
    }
 
    return FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
-      const itemName = Format.normalizeText(item.itemName);
+      const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
       const message = item.itemTime
          ? strings.buildWarningLongWaitMessage(
             itemName,
@@ -180,13 +180,13 @@ const BUILD_WARNING_SECTION_LIST_BUILDERS = Object.freeze([
 ]);
 
 function createBuildWarningsContent(sections) {
-   const content = Dom.el('div', 'itin-build-warnings tzg-popup-confirm-body');
+   const content = ItineraryPanelDom.el('div', 'itin-build-warnings tzg-popup-confirm-body');
 
    sections.forEach((section) => {
-      const moduleEl = Dom.el('div', 'itin-build-warning-module');
+      const moduleEl = ItineraryPanelDom.el('div', 'itin-build-warning-module');
       moduleEl.append(
-         Dom.el('div', 'itin-build-warning-module-title', section.title),
-         Dom.el('div', 'itin-build-warning-module-message', section.message)
+         ItineraryPanelDom.el('div', 'itin-build-warning-module-title', section.title),
+         ItineraryPanelDom.el('div', 'itin-build-warning-module-message', section.message)
       );
       content.appendChild(moduleEl);
    });
@@ -236,7 +236,7 @@ export class ItineraryBuildWarningsConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const sections = ItineraryBuildWarningsConfirmation.buildItineraryBuildWarningSections(issues);
 

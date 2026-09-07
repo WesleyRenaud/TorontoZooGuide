@@ -1,6 +1,6 @@
 import { AnimalIdentity } from './animalIdentity.js';
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { Format } from './panel/format.js';
+import { ItineraryItemFormatter } from './panel/itineraryItemFormatter.js';
 import { TransportationSelectorModel } from './selectors/transportationSelector/transportationSelectorModel.js';
 
 function asItineraryDraftSource(value) {
@@ -71,7 +71,7 @@ function areDraftValuesEqual(left, right) {
 
 function normalizeGuardiansTalkListForSave(items) {
    return ItineraryShape.normalizeItineraryItems(items)
-      .map(Format.normalizeGuardiansTalkForSave)
+      .map(ItineraryItemFormatter.normalizeGuardiansTalkForSave)
       .filter((talk) => talk.name);
 }
 
@@ -147,7 +147,7 @@ function normalizeTransportationsForSave(draft = {}) {
 }
 
 function normalizeAttractionsForSave(attractions = []) {
-   return Format.normalizeItineraryNamesForSave(
+   return ItineraryItemFormatter.normalizeItineraryNamesForSave(
       ItineraryShape.normalizeItineraryItems(attractions).filter((item) => (
          !isAttractionAddedAsAttraction(item)
       ))
@@ -325,7 +325,7 @@ export class ItineraryShape {
          attractions: normalizeAttractionsForSave(base.attractions),
          transportations: normalizeTransportationsForSave(base),
          guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
-         wildEncounters: Format.normalizeWildEncounterListForSave(base.wildEncounters),
+         wildEncounters: ItineraryItemFormatter.normalizeWildEncounterListForSave(base.wildEncounters),
       };
    }
 

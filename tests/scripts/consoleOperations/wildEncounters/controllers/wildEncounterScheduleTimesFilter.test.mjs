@@ -1,17 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { Fragments } from '../../../../../scripts/consoleOperations/templates/fragments.js';
 import { ScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { WildEncounterScheduleTimesFilter } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleScheduleTimesCheckboxFieldBuilder.js';
 
 test.describe('wild encounter schedule times filter', () => {
    installDomTestHooks();
 
    test('Test_CreateWildEncounterScheduleTimesFilterController_TestSelectedEncounter_ExpectTimesLoaded', async () => {
       const wildEncounterEl = document.createElement('select');
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testWildEncounterScheduleTimes',
       });
@@ -44,7 +44,7 @@ test.describe('wild encounter schedule times filter', () => {
 
    test('Test_CreateWildEncounterScheduleTimesFilterController_TestSingleTime_ExpectAutoSelect', async () => {
       const wildEncounterEl = document.createElement('select');
-      const fieldEl = Fragments.createScheduleTimesCheckboxField({
+      const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
          label: 'Encounter times',
          inputId: 'testWildEncounterScheduleTimesSingle',
       });

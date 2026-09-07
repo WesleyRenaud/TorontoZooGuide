@@ -1,4 +1,4 @@
-import { Constants } from '../../../scripts/shared/constants.js';
+import { TimelineLayoutConstants } from '../../../scripts/shared/timelineLayoutConstants.js';
 import {
    nodeMatchesSelector,
    queryNode,
@@ -120,18 +120,18 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
       },
       get offsetHeight() {
          if (classes.has('itinerary-day-open-pill')) {
-            return Constants.TIMELINE_POINT_PILL_HEIGHT_PX;
+            return TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX;
          }
 
          if (classes.has('itinerary-day-grid-line')) {
-            return Constants.TIMELINE_SLOT_HEIGHT_PX;
+            return TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX;
          }
 
          return 0;
       },
       getBoundingClientRect() {
          const height = classes.has('itinerary-day-open-pill')
-            ? Constants.TIMELINE_POINT_PILL_HEIGHT_PX
+            ? TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
             : 0;
 
          return {

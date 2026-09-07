@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
-import { State } from '../../../../scripts/itinerary/wizard/state.js';
+import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
@@ -35,7 +35,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: () => dateController,
             selectionStepConfigs: [
                {
@@ -70,7 +70,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: ({ onClose }) => {
                closeHandler = onClose;
                return dateController;
@@ -100,7 +100,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
                animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [],
             finalizeWizard: async () => {},
@@ -134,7 +134,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
                isActive: false,
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: () => ({ show() {} }),
             selectionStepConfigs: [],
             finalizeWizard: async () => {},
@@ -156,7 +156,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: () => {
-               const wizard = State.createItineraryWizardState({
+               const wizard = ItineraryWizardStore.createItineraryWizardState({
                   date: '',
                   animals: [],
                   attractions: [],
@@ -219,7 +219,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
                wildEncounters: [],
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 6, 4),
-            createWizardState: (existing = {}) => State.createItineraryWizardState(existing),
+            createWizardState: (existing = {}) => ItineraryWizardStore.createItineraryWizardState(existing),
             createDateStepController: ({ onSave, onClose }) => {
                saveHandler = onSave;
                closeHandler = onClose;
@@ -265,7 +265,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: ({ onSave }) => {
                saveHandler = onSave;
                return {
@@ -319,7 +319,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
                wildEncounters: [],
             }),
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: (existing = {}) => State.createItineraryWizardState(existing),
+            createWizardState: (existing = {}) => ItineraryWizardStore.createItineraryWizardState(existing),
             createDateStepController: ({ onSave }) => {
                saveHandler = onSave;
                return { show() {} };
@@ -375,7 +375,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: () => ({
                show() {
                   shownSteps.push('date');
@@ -427,7 +427,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: () => ({
                show() {
                   shownSteps.push('date');
@@ -467,7 +467,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
                date: '2026-06-15',
                animals: [],
                attractions: [],
@@ -517,7 +517,7 @@ test.describe('WizardController.openItineraryWizard lifecycle', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({}),
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
             createDateStepController: ({ onFinish }) => {
                finishHandler = onFinish;
                return { show() {} };

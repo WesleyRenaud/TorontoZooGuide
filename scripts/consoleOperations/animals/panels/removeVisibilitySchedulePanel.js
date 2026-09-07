@@ -1,27 +1,31 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class RemoveVisibilitySchedulePanel {
    static createRemoveVisibilitySchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'removeVisibilitySchedulePanel',
          title: Strings.panelTitles.removeVisibilitySchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.exhibit,
                inputId: 'removeVisibilityScheduleExhibit',
                emptyOptionLabel: Strings.placeholders.exhibit,
             }),
-            Fragments.createAutocompleteField({
+            ConsoleAutocompleteFieldBuilder.createAutocompleteField({
                label: Strings.labels.species,
                inputId: 'removeVisibilityScheduleSpecies',
                resultsId: 'removeVisibilityScheduleSpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRemoveVisibilitySchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'removeVisibilityScheduleStatus',
             }),
          ],

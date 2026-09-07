@@ -1,32 +1,37 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class RestroomClosedPanel {
    static createRestroomClosedPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'restroomClosedPanel',
          title: Strings.panelTitles.restroomClosed,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.restroom,
                inputId: 'restroomClosedRestroom',
                emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'restroomClosedStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'restroomClosedEndDate',
                endHelpText: Strings.help.continueUntilReopened('restroom'),
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.closedMessage,
                inputId: 'restroomClosedMessage',
                placeholder: Strings.textareas.closedMessage('restroom'),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRestroomClosed',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'restroomClosedStatus',
             }),
          ],

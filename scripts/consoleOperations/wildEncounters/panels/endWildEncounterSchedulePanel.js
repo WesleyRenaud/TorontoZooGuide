@@ -1,32 +1,37 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateFieldBuilder } from '../../templates/consoleDateFieldBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../templates/consoleScheduleTimesCheckboxFieldBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class EndWildEncounterSchedulePanel {
    static createEndWildEncounterSchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'endWildEncounterSchedulePanel',
          title: Strings.panelTitles.endWildEncounterSchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.wildEncounter,
                inputId: 'endWildEncounterScheduleName',
                emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            Fragments.createScheduleTimesCheckboxField({
+            ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
                label: Strings.labels.encounterTimes,
                inputId: 'endWildEncounterScheduleTimes',
                helpText: Strings.help.endScheduleTimes,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.endDate,
                inputId: 'endWildEncounterScheduleDate',
                placeholder: Strings.placeholders.scheduleEndDate,
                helpText: Strings.help.endScheduleToday,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitEndWildEncounterSchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'endWildEncounterScheduleStatus',
             }),
          ],

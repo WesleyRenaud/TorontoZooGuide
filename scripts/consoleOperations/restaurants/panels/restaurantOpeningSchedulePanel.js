@@ -1,27 +1,34 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSchedulePresetFieldBuilder } from '../../templates/consoleSchedulePresetFieldBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
+import { ConsoleWeeklyScheduleCheckboxesBuilder } from '../../templates/consoleWeeklyScheduleCheckboxesBuilder.js';
 
 export class RestaurantOpeningSchedulePanel {
    static createRestaurantOpeningSchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'restaurantOpeningSchedulePanel',
          title: Strings.panelTitles.restaurantOpeningSchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.restaurant,
                inputId: 'restaurantOpeningScheduleRestaurant',
                emptyOptionLabel: Strings.placeholders.restaurant,
             }),
-            Fragments.createSchedulePresetField({
+            ConsoleSchedulePresetFieldBuilder.createSchedulePresetField({
                inputId: 'restaurantOpeningSchedulePreset',
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'restaurantOpeningScheduleStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'restaurantOpeningScheduleEndDate',
                endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            Fragments.createWeeklyScheduleCheckboxes({
+            ConsoleWeeklyScheduleCheckboxesBuilder.createWeeklyScheduleCheckboxes({
                dayIds: {
                   monday: 'restaurantOpeningScheduleMonday',
                   tuesday: 'restaurantOpeningScheduleTuesday',
@@ -33,15 +40,15 @@ export class RestaurantOpeningSchedulePanel {
                   holidays: 'restaurantOpeningScheduleHolidaysOnly',
                },
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.scheduleMessage,
                inputId: 'restaurantOpeningScheduleMessage',
                placeholder: Strings.textareas.scheduledClosedMessage('restaurant'),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRestaurantOpeningSchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'restaurantOpeningScheduleStatus',
             }),
          ],

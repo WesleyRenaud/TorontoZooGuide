@@ -3,8 +3,8 @@ import { ActionsBar } from './components/actionsBar.js';
 import { BuildOnly } from './components/buildOnly.js';
 import { DateCard } from './components/dateCard.js';
 import { DayPlanner } from './components/dayPlanner.js';
-import { Popup } from './components/popup.js';
-import { Section } from './components/section.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
+import { ItineraryPanelSectionBuilder } from './components/itineraryPanelSectionBuilder.js';
 import { DayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { ItineraryBuildWarningsConfirmation } from './itineraryBuildWarningsConfirmation.js';
@@ -96,7 +96,7 @@ function appendDayPlannerViewWithHours(
                });
             };
 
-            const mountEl = Popup.getItineraryPanelMountEl() ?? document.body;
+            const mountEl = ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body;
             const confirmRebuildWithOptions = (confirmedOptions) => (
                async () => {
                   try {
@@ -204,7 +204,7 @@ export class ItineraryPanelContent {
          makeActions = ActionsBar.makeActionsBar,
          createDateCard = DateCard.makeDateCard,
          buildSections = SectionConfigs.buildSectionConfigs,
-         createSection = Section.makeSection,
+         createSection = ItineraryPanelSectionBuilder.makeSection,
          buildScheduleHandlers = ItineraryPanelScheduleHandlers.buildItineraryPanelScheduleHandlers,
          onAfterClear = null,
          setArrivalTime = ItineraryServiceTime.setItineraryArrivalTime,

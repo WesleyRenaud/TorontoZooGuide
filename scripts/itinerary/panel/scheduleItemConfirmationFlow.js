@@ -1,6 +1,6 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
 import { AttractionOutsideOperatingHoursConfirmation } from './attractionOutsideOperatingHoursConfirmation.js';
-import { Popup } from './components/popup.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
@@ -13,7 +13,7 @@ import { ScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItine
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
 function getConfirmationMountEl() {
-   return Popup.getItineraryPanelMountEl() ?? document.body;
+   return ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body;
 }
 
 function requestScheduleItemConfirmation({

@@ -1,6 +1,6 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkLocationFilter {
@@ -21,7 +21,7 @@ export class GuardiansTalkLocationFilter {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b));
 
-         Dropdowns.populateValueDropdown(
+         ConsoleDropdownPopulator.populateValueDropdown(
             locationEl,
             locationNames,
             Strings.placeholders.location
@@ -30,7 +30,7 @@ export class GuardiansTalkLocationFilter {
 
       function clearTalkDropdown() {
          if (talkNameEl?.tagName === 'SELECT') {
-            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
+            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';
@@ -68,7 +68,7 @@ export class GuardiansTalkLocationFilter {
             const guardiansTalks = result?.guardians_talks ?? [];
 
             if (talkNameEl?.tagName === 'SELECT') {
-               Dropdowns.populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
+               ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
             }
          }
          catch(err) {

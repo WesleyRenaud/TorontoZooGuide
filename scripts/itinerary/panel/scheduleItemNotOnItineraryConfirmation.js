@@ -1,5 +1,5 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { Strings } from '../../strings.js';
 
 export class ScheduleItemNotOnItineraryConfirmation {
@@ -13,7 +13,7 @@ export class ScheduleItemNotOnItineraryConfirmation {
          confirmText: Strings.itinerary.confirmation.scheduleItemNotOnItineraryConfirm,
          doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
+         mountEl: ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,
          onCancel,
       });

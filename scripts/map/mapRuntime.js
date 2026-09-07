@@ -8,14 +8,14 @@ import { AppConfig } from '../config/appConfig.js';
 import { FocusController } from '../focus/focusController.js';
 import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { LabelVisibility } from './labelVisibility.js';
+import { MapDataSourceFactory } from './mapDataSourceFactory.js';
+import { MapUpdater } from './mapUpdater.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { Panzoom } from './panzoom.js';
-import { Sources } from './sources.js';
 import { Store } from './store.js';
 import { TooltipController } from '../tooltips/tooltipController.js';
-import { Updater } from './updater.js';
 
 function hasRequiredRuntimeElements({
    mapInner,
@@ -123,7 +123,7 @@ export class MapRuntime {
 
       const panzoom = Panzoom.createPanzoom(mapInner, { contain: AppConfig.DEFAULT_MAP_CONTAIN });
       const store = Store.createMapStore();
-      const sources = Sources.createDataSources(store);
+      const sources = MapDataSourceFactory.createDataSources(store);
       const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
       const speciesOverlay = SpeciesOverlay.initSpeciesOverlay();
 
@@ -148,7 +148,7 @@ export class MapRuntime {
          viewportEl,
       });
 
-      const updater = Updater.createMapUpdater({
+      const updater = MapUpdater.createMapUpdater({
          store,
          sources,
          markers,

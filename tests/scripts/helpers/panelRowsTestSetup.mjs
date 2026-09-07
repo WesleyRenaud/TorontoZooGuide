@@ -1,7 +1,7 @@
 import { afterEach, beforeEach } from 'node:test';
 
 import { ItineraryAdjustmentTypes } from '../../../scripts/itinerary/itineraryAdjustmentTypes.js';
-import { Constants } from '../../../scripts/shared/constants.js';
+import { TimelineLayoutConstants } from '../../../scripts/shared/timelineLayoutConstants.js';
 import { installTestWindow } from './domMock.mjs';
 
 const EMPTY_ITINERARY = {
@@ -146,11 +146,11 @@ function createNode(tagName, className = '', textContent = '') {
       },
       get offsetHeight() {
          if (classes.has('itinerary-day-open-pill')) {
-            return Constants.TIMELINE_POINT_PILL_HEIGHT_PX;
+            return TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX;
          }
 
          if (classes.has('itinerary-day-grid-line')) {
-            return Constants.TIMELINE_SLOT_HEIGHT_PX;
+            return TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX;
          }
 
          return 0;
@@ -179,7 +179,7 @@ function createNode(tagName, className = '', textContent = '') {
       getBoundingClientRect() {
          return {
             height: classes.has('itinerary-day-open-pill')
-               ? Constants.TIMELINE_POINT_PILL_HEIGHT_PX
+               ? TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
                : 100,
          };
       },

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
-import { State } from '../../../../scripts/itinerary/wizard/state.js';
+import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -32,7 +32,7 @@ test.describe('WizardController.openItineraryWizard draft sync', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => selectedDate,
-            createWizardState: () => State.createItineraryWizardState({
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
                date: '',
                animals: [],
                attractions: [],
@@ -73,7 +73,7 @@ test.describe('WizardController.openItineraryWizard draft sync', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => selectedDate,
             createWizardState: () => {
-               const wizard = State.createItineraryWizardState({
+               const wizard = ItineraryWizardStore.createItineraryWizardState({
                   date: '2026-06-15',
                   animals: [],
                   attractions: [],
@@ -117,7 +117,7 @@ test.describe('WizardController.openItineraryWizard draft sync', () => {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
             createWizardState: () => {
-               const wizard = State.createItineraryWizardState({
+               const wizard = ItineraryWizardStore.createItineraryWizardState({
                   date: '',
                   animals: [],
                   attractions: [],
@@ -175,7 +175,7 @@ test.describe('WizardController.openItineraryWizard draft sync', () => {
          deps: {
             loadItinerary: async () => null,
             resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
-            createWizardState: () => State.createItineraryWizardState({
+            createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
                date: '2026-06-15',
                animals: [],
                attractions: [],

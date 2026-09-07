@@ -1,13 +1,13 @@
 import { WarningIcon } from '../../assets/warningIcon.js';
-import { Popup } from '../../itinerary/panel/components/popup.js';
-import { Dom } from '../../itinerary/panel/dom.js';
+import { ItineraryPanelPopup } from '../../itinerary/panel/components/itineraryPanelPopup.js';
+import { ItineraryPanelDom } from '../../itinerary/panel/itineraryPanelDom.js';
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { Strings } from '../../strings.js';
 
 const ROOT_SELECTOR = '.console-overlap-dialog-root';
 
 function createDialogWarningIcon() {
-   const warning = Dom.el(
+   const warning = ItineraryPanelDom.el(
       'span',
       'itin-likelihood-warning medium console-overlap-dialog-icon-wrap'
    );
@@ -22,18 +22,18 @@ function createDialogWarningIcon() {
 }
 
 function createDialogButton(className, text) {
-   const button = Dom.el('button', className, text);
+   const button = ItineraryPanelDom.el('button', className, text);
    button.type = 'button';
    return button;
 }
 
 function createDialogLayout() {
-   const root = Dom.el('div', 'console-overlap-dialog-root');
-   const overlay = Dom.el('div', 'console-overlap-dialog-overlay');
-   const card = Dom.el('section', 'console-overlap-dialog-card');
-   const header = Dom.el('div', 'console-overlap-dialog-header');
-   const body = Dom.el('div', 'console-overlap-dialog-body');
-   const actions = Dom.el('div', 'console-overlap-dialog-actions');
+   const root = ItineraryPanelDom.el('div', 'console-overlap-dialog-root');
+   const overlay = ItineraryPanelDom.el('div', 'console-overlap-dialog-overlay');
+   const card = ItineraryPanelDom.el('section', 'console-overlap-dialog-card');
+   const header = ItineraryPanelDom.el('div', 'console-overlap-dialog-header');
+   const body = ItineraryPanelDom.el('div', 'console-overlap-dialog-body');
+   const actions = ItineraryPanelDom.el('div', 'console-overlap-dialog-actions');
    const cancelButton = createDialogButton(
       'console-overlap-dialog-cancel',
       Strings.itinerary.actions.cancel
@@ -53,10 +53,10 @@ function createDialogLayout() {
 
    header.append(
       createDialogWarningIcon(),
-      Dom.el('h2', 'console-overlap-dialog-title', Strings.confirm.openingScheduleOverlapTitle)
+      ItineraryPanelDom.el('h2', 'console-overlap-dialog-title', Strings.confirm.openingScheduleOverlapTitle)
    );
    body.appendChild(
-      Dom.el('p', 'console-overlap-dialog-message', Strings.confirm.openingScheduleOverlapMessage)
+      ItineraryPanelDom.el('p', 'console-overlap-dialog-message', Strings.confirm.openingScheduleOverlapMessage)
    );
    actions.append(cancelButton, replaceButton, trimButton);
    card.append(header, body, actions);
@@ -80,7 +80,7 @@ export class OpeningScheduleOverlapDialog {
 
       return new Promise((resolve) => {
          const { root, overlay, buttons } = createDialogLayout();
-         const { close, dismiss } = Popup.mountDismissablePopup({
+         const { close, dismiss } = ItineraryPanelPopup.mountDismissablePopup({
             mountEl: document.body,
             root,
             overlay,

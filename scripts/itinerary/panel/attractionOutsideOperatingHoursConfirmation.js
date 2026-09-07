@@ -1,5 +1,5 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionOutsideOperatingHoursConfirmation {
@@ -12,7 +12,7 @@ export class AttractionOutsideOperatingHoursConfirmation {
          message: Strings.itinerary.confirmation.attractionOutsideOperatingHoursMessage,
          confirmText: Strings.itinerary.actions.adjust,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
+         mountEl: ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,
          onCancel,
       });

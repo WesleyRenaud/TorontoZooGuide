@@ -1,5 +1,5 @@
 import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
-import { View } from './attractionSelector/view.js';
+import { AttractionSelectorRenderer } from './attractionSelector/attractionSelectorRenderer.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { ConfirmPopup } from '../panel/components/confirmPopup.js';
@@ -105,7 +105,7 @@ export class AttractionSelector {
 
          renderExtraControls: ({ bodyEl, rerunSearch }) => {
             includeClosedAttractions = false;
-            View.renderIncludeClosedAttractionsToggle({
+            AttractionSelectorRenderer.renderIncludeClosedAttractionsToggle({
                bodyEl,
                rerunSearch,
                onChange: (checked) => {

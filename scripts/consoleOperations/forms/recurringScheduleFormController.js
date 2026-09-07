@@ -1,6 +1,6 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../helpers/controllerUtils.js';
-import { Status } from '../shell/status.js';
+import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
 export class RecurringScheduleFormController {
@@ -66,7 +66,7 @@ export class RecurringScheduleFormController {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
 
@@ -74,7 +74,7 @@ export class RecurringScheduleFormController {
          ControllerUtils.hideConsolePanel({
             panelEl,
             statusEl,
-            setStatus: Status.setStatus,
+            setStatus: ConsoleStatusPresenter.setStatus,
          });
       }
 
@@ -112,7 +112,7 @@ export class RecurringScheduleFormController {
       }
 
       function handleSubmitSuccess(result) {
-         Status.setStatus(
+         ConsoleStatusPresenter.setStatus(
             statusEl,
             successMessage(result),
             'is-success'
@@ -122,7 +122,7 @@ export class RecurringScheduleFormController {
       }
 
       async function onShowClick() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
             resetForm();
@@ -130,7 +130,7 @@ export class RecurringScheduleFormController {
             show();
          }
          catch (err) {
-            Status.setStatus(statusEl, loadErrorMessage, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, loadErrorMessage, 'is-error');
             show();
          }
       }
@@ -138,12 +138,12 @@ export class RecurringScheduleFormController {
       async function onSubmitClick() {
          const formValues = getFormValues();
 
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const validationError = validateForm(formValues);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -154,11 +154,11 @@ export class RecurringScheduleFormController {
                handleSubmitSuccess(result);
             }
             else if (shouldReportSubmitFailure?.(result) ?? true) {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

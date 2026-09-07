@@ -1,5 +1,5 @@
 import { DayPlannerSchedule } from '../dayPlannerSchedule.js';
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { ItineraryTimeInput } from './itineraryTimeInput.js';
 
 export class DayPlannerControls {
@@ -13,11 +13,11 @@ export class DayPlannerControls {
       strings = {},
       zooHours = {}
    ) {
-      const controls = Dom.el('div', 'itinerary-day-module-controls');
+      const controls = ItineraryPanelDom.el('div', 'itinerary-day-module-controls');
       const arrivalBounds = DayPlannerSchedule.buildArrivalTimeBounds(zooHours);
       const departureBounds = DayPlannerSchedule.buildDepartureTimeBounds(zooHours);
 
-      controls.appendChild(Dom.el('span', 'itinerary-day-module-date', date));
+      controls.appendChild(ItineraryPanelDom.el('span', 'itinerary-day-module-date', date));
       controls.appendChild(
          ItineraryTimeInput.makeItineraryTimeInput({
             label: strings.arrivalInputLabel,

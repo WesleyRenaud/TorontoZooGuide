@@ -1,5 +1,5 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { TransportationScheduleItemKey } from '../selectors/transportationSelector/transportationScheduleItemKey.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
@@ -37,7 +37,7 @@ export class RemoveItineraryItemConfirmation {
          message: removeConfirmationMessage(itemType, key),
          confirmText: Strings.itinerary.dayPlanner.remove,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: Popup.getItineraryPanelMountEl() ?? document.body,
+         mountEl: ItineraryPanelPopup.getItineraryPanelMountEl() ?? document.body,
          onConfirm,
          onCancel,
       });

@@ -6,13 +6,13 @@ import { DayPlannerScheduledItems } from '../dayPlannerScheduledItems.js';
 import { DayPlannerTimeline } from './dayPlannerTimeline.js';
 import { DayPlannerTimelineMarkers } from '../dayPlannerTimelineMarkers.js';
 import { DayPlannerTimelinePillAppend } from './dayPlannerTimelinePillAppend.js';
-import { Dom } from '../dom.js';
-import { Format } from '../format.js';
+import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelSectionBuilder } from './itineraryPanelSectionBuilder.js';
 import { ScheduledPillRenderPlan } from './scheduledPillRenderPlan.js';
 import { ScheduleItemButton } from './scheduleItemButton.js';
-import { Section } from './section.js';
 import { SectionConfigs } from '../sectionConfigs.js';
-import { Constants } from '../../../shared/constants.js';
+import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
 
 function resolveSectionShowEditButton(
@@ -54,12 +54,12 @@ function makeItemsListSection(
       return null;
    }
 
-   const wrapper = Dom.el('section', 'itinerary-day-items-sections');
-   const title = Dom.el('h4', 'itinerary-day-items-title', sectionTitle);
+   const wrapper = ItineraryPanelDom.el('section', 'itinerary-day-items-sections');
+   const title = ItineraryPanelDom.el('h4', 'itinerary-day-items-title', sectionTitle);
 
    wrapper.appendChild(title);
    sectionConfigs.forEach((sectionConfig) => {
-      wrapper.appendChild(Section.makeSection({
+      wrapper.appendChild(ItineraryPanelSectionBuilder.makeSection({
          ...sectionConfig,
          showEditButton: resolveSectionShowEditButton(sectionConfig.key, {
             showEditButton,
@@ -186,15 +186,15 @@ export class DayPlannerPreview {
       const hours = zooHours && typeof zooHours === 'object'
          ? zooHours
          : {};
-      const root = Dom.el('div', 'itinerary-day-planner-content');
-      const section = Dom.el('section', 'itinerary-day-module');
-      const header = Dom.el('div', 'itinerary-day-module-header');
-      const headerAside = Dom.el('div', 'itinerary-day-module-header-aside');
-      const scheduleActions = Dom.el('div', 'itinerary-day-module-schedule-actions');
-      const titleWrap = Dom.el('div');
-      const title = Dom.el('h3', '', strings.title);
-      const date = Format.formatISODateFull(hours.date, strings.date);
-      const timeline = Dom.el('div', 'itinerary-day-timeline');
+      const root = ItineraryPanelDom.el('div', 'itinerary-day-planner-content');
+      const section = ItineraryPanelDom.el('section', 'itinerary-day-module');
+      const header = ItineraryPanelDom.el('div', 'itinerary-day-module-header');
+      const headerAside = ItineraryPanelDom.el('div', 'itinerary-day-module-header-aside');
+      const scheduleActions = ItineraryPanelDom.el('div', 'itinerary-day-module-schedule-actions');
+      const titleWrap = ItineraryPanelDom.el('div');
+      const title = ItineraryPanelDom.el('h3', '', strings.title);
+      const date = ItineraryItemFormatter.formatISODateFull(hours.date, strings.date);
+      const timeline = ItineraryPanelDom.el('div', 'itinerary-day-timeline');
 
       section.setAttribute('aria-label', strings.aria);
       timeline.setAttribute('aria-hidden', 'true');
@@ -269,7 +269,7 @@ export class DayPlannerPreview {
          const nextSlotStart = timelineSlotStarts[slotIndex + 1];
          const slotSpanMinutes = Number.isFinite(nextSlotStart)
             ? nextSlotStart - slotStart
-            : Constants.TIMELINE_SLOT_MINUTES;
+            : TimelineLayoutConstants.TIMELINE_SLOT_MINUTES;
          const pillLabel = DayPlannerTimelineMarkers.resolveTimelinePillLabel(slotStart, pillContext, strings);
          const [timeCell, gridLine] = DayPlannerTimeline.makeTimelineRow(
             DayPlannerSchedule.formatMinutesAsClockTime(slotStart),

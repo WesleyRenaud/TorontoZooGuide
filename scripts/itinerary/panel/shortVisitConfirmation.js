@@ -1,5 +1,5 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { Strings } from '../../strings.js';
 
 export class ShortVisitConfirmation {
@@ -9,7 +9,7 @@ export class ShortVisitConfirmation {
          message: Strings.itinerary.confirmation.shortVisitMessage,
          doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: Popup.getItineraryPanelMountEl()
+         mountEl: ItineraryPanelPopup.getItineraryPanelMountEl()
             ?? document.body,
          onConfirm,
          onCancel,

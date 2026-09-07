@@ -1,32 +1,37 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class RestroomAlertPanel {
    static createRestroomAlertPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'restroomAlertPanel',
          title: Strings.panelTitles.restroomAlert,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.restroom,
                inputId: 'restroomAlertRestroom',
                emptyOptionLabel: Strings.placeholders.restroom,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'restroomAlertStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'restroomAlertEndDate',
                endHelpText: Strings.help.keepAlertActiveUntilRemoved,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.alertMessage,
                inputId: 'restroomAlertMessage',
                placeholder: Strings.placeholders.restroomAlertExample,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitRestroomAlert',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'restroomAlertStatus',
             }),
          ],

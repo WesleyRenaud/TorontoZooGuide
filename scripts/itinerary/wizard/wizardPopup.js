@@ -1,4 +1,4 @@
-import { Popup } from '../panel/components/popup.js';
+import { ItineraryPanelPopup } from '../panel/components/itineraryPanelPopup.js';
 import { Strings } from '../../strings.js';
 
 export class WizardPopup {
@@ -18,7 +18,7 @@ export class WizardPopup {
          root,
          overlay,
          buttonEls,
-      } = Popup.createItineraryPopupLayout({
+      } = ItineraryPanelPopup.createItineraryPopupLayout({
          title,
          message,
          actionButtons: [
@@ -30,7 +30,7 @@ export class WizardPopup {
          ],
       });
 
-      const { close } = Popup.mountDismissablePopup({
+      const { close } = ItineraryPanelPopup.mountDismissablePopup({
          mountEl,
          root,
          overlay,

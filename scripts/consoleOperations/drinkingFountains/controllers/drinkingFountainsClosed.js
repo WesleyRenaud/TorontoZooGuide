@@ -2,7 +2,7 @@ import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Status } from '../../shell/status.js';
+import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class DrinkingFountainsClosed {
@@ -21,20 +21,20 @@ export class DrinkingFountainsClosed {
       }
 
       function show() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
          resetForm();
          activatePanel?.(panelEl);
       }
 
       async function onSubmitClick() {
-         Status.setStatus(statusEl, '');
+         ConsoleStatusPresenter.setStatus(statusEl, '');
 
          const startDate = ValueNormalizer.asTrimmedString(startDateEl?.value);
          const endDate = ValueNormalizer.asTrimmedString(endDateEl?.value);
          const validationError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
 
          if (validationError) {
-            Status.setStatus(statusEl, validationError, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
             return;
          }
 
@@ -46,15 +46,15 @@ export class DrinkingFountainsClosed {
             });
 
             if (result.success) {
-               Status.setStatus(statusEl, Strings.status.drinkingFountainsClosed, 'is-success');
+               ConsoleStatusPresenter.setStatus(statusEl, Strings.status.drinkingFountainsClosed, 'is-success');
                resetForm();
             }
             else {
-               Status.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
+               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
             }
          }
          catch (err) {
-            Status.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
       }
 

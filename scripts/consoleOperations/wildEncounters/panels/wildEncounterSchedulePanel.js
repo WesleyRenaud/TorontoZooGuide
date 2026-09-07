@@ -1,37 +1,43 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
+import { ConsoleWildEncounterScheduleRowsFieldBuilder } from '../../templates/consoleWildEncounterScheduleRowsFieldBuilder.js';
 
 export class WildEncounterSchedulePanel {
    static createWildEncounterSchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'wildEncounterSchedulePanel',
          title: Strings.panelTitles.wildEncounterSchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.wildEncounter,
                inputId: 'wildEncounterScheduleName',
                emptyOptionLabel: Strings.placeholders.wildEncounter,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'wildEncounterScheduleStartDate',
                endDateId: 'wildEncounterScheduleEndDate',
                endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
-            Fragments.createWildEncounterScheduleRowsField({
+            ConsoleWildEncounterScheduleRowsFieldBuilder.createWildEncounterScheduleRowsField({
                rowsId: 'wildEncounterScheduleScheduleRows',
                addRowButtonId: 'wildEncounterScheduleAddScheduleRow',
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.scheduleMessage,
                inputId: 'wildEncounterScheduleMessage',
                placeholder: Strings.textareas.optionalScheduleMessage(
                   Strings.entityLabels.wildEncounter
                ),
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitWildEncounterSchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'wildEncounterScheduleStatus',
             }),
          ],

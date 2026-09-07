@@ -1,13 +1,17 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class DrinkingFountainsClosedPanel {
    static createDrinkingFountainsClosedPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'drinkingFountainsClosedPanel',
          title: Strings.panelTitles.drinkingFountainsClosed,
          bodyChildren: [
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'drinkingFountainsClosedStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'drinkingFountainsClosedEndDate',
@@ -15,15 +19,15 @@ export class DrinkingFountainsClosedPanel {
                   'drinking fountains'
                ),
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.closedMessage,
                inputId: 'drinkingFountainsClosedMessage',
                placeholder: Strings.textareas.drinkingFountainsClosedMessage,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitDrinkingFountainsClosed',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'drinkingFountainsClosedStatus',
             }),
          ],

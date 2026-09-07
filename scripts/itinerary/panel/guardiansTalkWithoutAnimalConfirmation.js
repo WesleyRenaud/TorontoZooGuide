@@ -1,6 +1,6 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Format } from './format.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
 const GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE = 'guardiansTalkWithoutAnimal';
@@ -26,13 +26,13 @@ export class GuardiansTalkWithoutAnimalConfirmation {
          .filter((issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
-            const talkName = Format.normalizeText(item?.name);
+            const talkName = ItineraryItemFormatter.normalizeText(item?.name);
 
             if (!talkName) {
                return;
             }
 
-            const talkTime = Format.formatClockTime(item?.start_time);
+            const talkTime = ItineraryItemFormatter.formatClockTime(item?.start_time);
 
             talksByName.set(
                talkName,
@@ -57,7 +57,7 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const talks = GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues);
 
@@ -67,7 +67,7 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       }
 
       const [talk] = talks;
-      const talkName = Format.normalizeText(talk.talkName);
+      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
       const message = talk.talkTime
          ? Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
          : Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);

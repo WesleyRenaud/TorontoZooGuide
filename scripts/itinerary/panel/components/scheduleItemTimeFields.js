@@ -1,19 +1,19 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
-import { Dom } from '../dom.js';
-import { Format } from '../format.js';
+import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 
 function createFieldLabel(text) {
-   return Dom.el('label', 'schedule-item-field-label', text);
+   return ItineraryPanelDom.el('label', 'schedule-item-field-label', text);
 }
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
-   return Format.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
+   return ItineraryItemFormatter.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
 }
 
 export class ScheduleItemTimeFields {
    static makeScheduleItemTimeFields(strings = {}) {
-      const timeField = Dom.el('div', 'schedule-item-field schedule-item-time-field');
-      const durationField = Dom.el('div', 'schedule-item-field schedule-item-duration-field');
+      const timeField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-time-field');
+      const durationField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-duration-field');
       const timeLabel = createFieldLabel(strings.timeLabel ?? '');
       const durationLabel = createFieldLabel(strings.durationLabel ?? '');
       const timeInput = document.createElement('input');
@@ -149,7 +149,7 @@ export class ScheduleItemTimeFields {
             }
 
             const startTime = resolveSelectedStartTime();
-            const durationMinutes = Format.parseDurationMinutes(durationInput.value);
+            const durationMinutes = ItineraryItemFormatter.parseDurationMinutes(durationInput.value);
 
             return {
                startTime,

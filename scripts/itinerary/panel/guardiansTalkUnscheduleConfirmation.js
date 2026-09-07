@@ -1,6 +1,6 @@
 import { ConfirmPopup } from './components/confirmPopup.js';
-import { Popup } from './components/popup.js';
-import { Format } from './format.js';
+import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
+import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
 const GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
@@ -10,7 +10,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       return issues
          .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
-            .map((item) => Format.normalizeText(item?.name))
+            .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
             .filter(Boolean));
 
    }
@@ -25,9 +25,9 @@ export class GuardiansTalkUnscheduleConfirmation {
       const talkItem = issues
          .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
-         .find((item) => Format.normalizeText(item?.name) === talkName);
+         .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === talkName);
 
-      const talkTime = Format.formatClockTime(talkItem?.start_time);
+      const talkTime = ItineraryItemFormatter.formatClockTime(talkItem?.start_time);
 
       if (!talkTime) {
          return { talkName };
@@ -41,7 +41,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       issues = [],
       onConfirm,
       onCancel,
-      mountEl = Popup.getItineraryOverlayMountEl() ?? document.body,
+      mountEl = ItineraryPanelPopup.getItineraryOverlayMountEl() ?? document.body,
    } = {}) {
       const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
 
@@ -49,7 +49,7 @@ export class GuardiansTalkUnscheduleConfirmation {
          return;
       }
 
-      const talkName = Format.normalizeText(talk.talkName);
+      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
       const message = talk.talkTime
          ? Strings.itinerary.confirmation.guardiansTalkRescheduleMessage(
             talkName,

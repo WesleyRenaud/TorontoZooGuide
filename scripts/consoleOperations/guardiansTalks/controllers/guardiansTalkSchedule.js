@@ -4,7 +4,7 @@ import { OpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlap
 import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-import { Dropdowns } from '../../options/dropdowns.js';
+import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkSchedule {
@@ -32,7 +32,7 @@ export class GuardiansTalkSchedule {
          }
 
          if (talkNameEl?.tagName === 'SELECT') {
-            Dropdowns.populateGuardiansTalkDropdown(talkNameEl, []);
+            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
          }
          else if (talkNameEl) {
             talkNameEl.value = '';

@@ -1,42 +1,47 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
+import { ConsoleTextInputFieldBuilder } from '../../templates/consoleTextInputFieldBuilder.js';
 
 export class CreateEventPanel {
    static createCreateEventPanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'createEventPanel',
          title: Strings.panelTitles.createEvent,
          bodyChildren: [
-            Fragments.createTextInputField({
+            ConsoleTextInputFieldBuilder.createTextInputField({
                label: Strings.labels.name,
                inputId: 'createEventName',
                placeholder: Strings.textareas.eventNameExample,
             }),
-            Fragments.createTextInputField({
+            ConsoleTextInputFieldBuilder.createTextInputField({
                label: Strings.labels.location,
                inputId: 'createEventLocation',
                placeholder: Strings.textareas.eventLocationExample,
             }),
-            Fragments.createTextareaField({
+            ConsoleTextareaFieldBuilder.createTextareaField({
                label: Strings.labels.description,
                inputId: 'createEventDescription',
                placeholder: Strings.textareas.eventDescription,
             }),
-            Fragments.createTextInputField({
+            ConsoleTextInputFieldBuilder.createTextInputField({
                label: Strings.labels.link,
                inputId: 'createEventLink',
                placeholder: Strings.textareas.eventLinkExample,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'createEventStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'createEventEndDate',
                endHelpText: Strings.help.keepEventActiveWithoutEndDate,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitCreateEvent',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'createEventStatus',
             }),
          ],

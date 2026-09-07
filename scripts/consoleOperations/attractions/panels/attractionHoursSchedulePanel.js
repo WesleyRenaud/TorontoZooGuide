@@ -1,18 +1,23 @@
 import { Strings } from '../../../strings.js';
-import { Fragments } from '../../templates/fragments.js';
+import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
+import { ConsoleDateFieldBuilder } from '../../templates/consoleDateFieldBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class AttractionHoursSchedulePanel {
    static createAttractionHoursSchedulePanel() {
-      return Fragments.createPanelShell({
+      return ConsolePanelShellBuilder.createPanelShell({
          panelId: 'attractionHoursSchedulePanel',
          title: Strings.panelTitles.attractionHoursSchedule,
          bodyChildren: [
-            Fragments.createSelectField({
+            ConsoleSelectFieldBuilder.createSelectField({
                label: Strings.entityLabels.attraction,
                inputId: 'attractionHoursScheduleAttraction',
                emptyOptionLabel: Strings.placeholders.attraction,
             }),
-            Fragments.createDateRangeFields({
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'attractionHoursScheduleStartDate',
                startLabel: Strings.labels.scheduleStartDate,
                startHelpText: Strings.help.startImmediately,
@@ -20,30 +25,30 @@ export class AttractionHoursSchedulePanel {
                endLabel: Strings.labels.scheduleEndDate,
                endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.weekdayStartTime,
                inputId: 'attractionHoursScheduleWeekdayStartTime',
                placeholder: Strings.placeholders.weekdayStartTime,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.weekdayEndTime,
                inputId: 'attractionHoursScheduleWeekdayEndTime',
                placeholder: Strings.placeholders.weekdayEndTime,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.weekendHolidayStartTime,
                inputId: 'attractionHoursScheduleWeekendHolidayStartTime',
                placeholder: Strings.placeholders.weekendHolidayStartTime,
             }),
-            Fragments.createDateField({
+            ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.weekendHolidayEndTime,
                inputId: 'attractionHoursScheduleWeekendHolidayEndTime',
                placeholder: Strings.placeholders.weekendHolidayEndTime,
             }),
-            Fragments.createActions({
+            ConsoleActionsBuilder.createActions({
                submitId: 'submitAttractionHoursSchedule',
             }),
-            Fragments.createStatus({
+            ConsoleStatusBuilder.createStatus({
                statusId: 'attractionHoursScheduleStatus',
             }),
          ],

@@ -1,10 +1,10 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { Strings } from '../../../strings.js';
 
 export class BuildOnly {
    static renderBuildOnly(body) {
-      const wrap = Dom.el('div', 'itin-panel-actions-wrap');
-      const buildBtn = Dom.el(
+      const wrap = ItineraryPanelDom.el('div', 'itin-panel-actions-wrap');
+      const buildBtn = ItineraryPanelDom.el(
          'button',
          'itin-panel-build-btn',
          Strings.itinerary.actions.build

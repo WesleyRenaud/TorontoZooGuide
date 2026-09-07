@@ -1,4 +1,4 @@
-import { Dom } from '../dom.js';
+import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { RemovedItemsPopupKeepButtonState } from './removedItemsPopupKeepButtonState.js';
 import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { Strings } from '../../../strings.js';
@@ -8,7 +8,7 @@ function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopup
       return null;
    }
 
-   const btn = Dom.el(
+   const btn = ItineraryPanelDom.el(
       'button',
       'itin-removed-alt-btn',
       Strings.itinerary.removedItems.viewAlternatives
@@ -43,7 +43,7 @@ function addKeepOverrideButton(
       return null;
    }
 
-   const btn = Dom.el('button', 'itin-removed-alt-btn itin-removed-keep-btn');
+   const btn = ItineraryPanelDom.el('button', 'itin-removed-alt-btn itin-removed-keep-btn');
 
    btn.type = 'button';
 
@@ -73,19 +73,19 @@ function makeSection(title, subtitle, rowNodes = []) {
       return null;
    }
 
-   const section = Dom.el('div', 'itin-removed-section');
+   const section = ItineraryPanelDom.el('div', 'itin-removed-section');
 
    section.appendChild(
-      Dom.el('div', 'itin-removed-section-title', title)
+      ItineraryPanelDom.el('div', 'itin-removed-section-title', title)
    );
 
    if (subtitle) {
       section.appendChild(
-         Dom.el('div', 'itin-removed-section-subtitle', subtitle)
+         ItineraryPanelDom.el('div', 'itin-removed-section-subtitle', subtitle)
       );
    }
 
-   const list = Dom.el('div', 'itin-removed-list');
+   const list = ItineraryPanelDom.el('div', 'itin-removed-list');
 
    validRows.forEach((node) => {
       list.appendChild(node);
@@ -114,7 +114,7 @@ function buildSectionRows(
 
       row.classList.add('itin-removed-row');
 
-      const actions = Dom.el('div', 'itin-removed-row-actions');
+      const actions = ItineraryPanelDom.el('div', 'itin-removed-row-actions');
 
       if (showViewAlternatives) {
          const alternativesButton = addAlternativesButton(
