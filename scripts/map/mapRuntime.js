@@ -1,103 +1,12 @@
-import { AttractionClosedBanner } from '../banners/attractionClosedBanner.js';
-import { DrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
-import { GiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
-import { OffDisplayBanner } from '../banners/offDisplayBanner.js';
-import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
-import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { AppConfig } from '../config/appConfig.js';
-import { FocusController } from '../focus/focusController.js';
-import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
-import { LabelVisibility } from './labelVisibility.js';
 import { MapDataSourceFactory } from './mapDataSourceFactory.js';
+import { MapRuntimeFactory } from './mapRuntimeFactory.js';
 import { MapUpdater } from './mapUpdater.js';
 import { HoverTooltip } from '../markers/hoverTooltip.js';
 import { Markers } from '../markers/markers.js';
 import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { Panzoom } from './panzoom.js';
 import { Store } from './store.js';
-import { TooltipController } from '../tooltips/tooltipController.js';
-
-function hasRequiredRuntimeElements({
-   mapInner,
-   tooltipEl,
-   viewportEl,
-} = {}) {
-   return Boolean(mapInner && tooltipEl && viewportEl);
-}
-
-function createMapBannerSet() {
-   return {
-      offDisplayBanner: OffDisplayBanner.createOffDisplayBanner(),
-      restaurantClosedBanner: RestaurantClosedBanner.createRestaurantClosedBanner(),
-      restroomMessageBanner: RestroomMessageBanner.createRestroomMessageBanner(),
-      giftShopClosedBanner: GiftShopClosedBanner.createGiftShopClosedBanner(),
-      attractionClosedBanner: AttractionClosedBanner.createAttractionClosedBanner(),
-      drinkingFountainClosedBanner: DrinkingFountainClosedBanner.createDrinkingFountainClosedBanner(),
-   };
-}
-
-function createAnimalCardClickHandler(speciesOverlay) {
-   return (item) => {
-      const itemType = String(item?.type || '');
-
-      if (itemType === 'animal') {
-         speciesOverlay.openFromAnimal(item);
-         return;
-      }
-
-      if (itemType === 'guardiansTalk') {
-         void OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal(item);
-      }
-   };
-}
-
-function createMapTooltip({
-   tooltipEl,
-   speciesOverlay,
-} = {}) {
-   return TooltipController.createTooltipController({
-      tooltipEl,
-      onAnimalCardClick: createAnimalCardClickHandler(speciesOverlay),
-      ...createMapBannerSet(),
-   });
-}
-
-function initMapLabels(showMapLabelsCheckbox) {
-   LabelVisibility.initLabelVisibilityToggle({
-      checkboxEl: showMapLabelsCheckbox,
-      rootEl: document.body,
-   });
-}
-
-function createMapFocus({
-   panzoom,
-   markers,
-   tooltip,
-   viewportEl,
-} = {}) {
-   return FocusController.createFocusController({
-      panzoom,
-      getMarkerByCoord: (key) => markers.getMarkerByCoord(key),
-      getViewportEl: () => viewportEl,
-      tooltip,
-      getAllMarkers: () => markers.getAllMarkers(),
-   });
-}
-
-function createTooltipRepositioner({
-   tooltip,
-   hover,
-} = {}) {
-   return function repositionTooltips() {
-      tooltip?.reposition?.();
-      hover?.reposition?.();
-
-      requestAnimationFrame(() => {
-         tooltip?.reposition?.();
-         hover?.reposition?.();
-      });
-   };
-}
 
 export class MapRuntime {
    static createMapRuntime({
@@ -117,7 +26,7 @@ export class MapRuntime {
 } = {}) {
       const viewportEl = mapInner?.parentElement;
 
-      if (!hasRequiredRuntimeElements({ mapInner, tooltipEl, viewportEl })) {
+      if (!MapRuntimeFactory.hasRequiredRuntimeElements({ mapInner, tooltipEl, viewportEl })) {
          return null;
       }
 
@@ -127,12 +36,12 @@ export class MapRuntime {
       const hover = HoverTooltip.createHoverTooltip(hoverTooltipEl);
       const speciesOverlay = SpeciesOverlay.initSpeciesOverlay();
 
-      const tooltip = createMapTooltip({
+      const tooltip = MapRuntimeFactory.createMapTooltip({
          tooltipEl,
          speciesOverlay,
       });
 
-      initMapLabels(showMapLabelsCheckbox);
+      MapRuntimeFactory.initMapLabels(showMapLabelsCheckbox);
 
       const markers = Markers.createMarkerLayer({
          mapInner,
@@ -141,7 +50,7 @@ export class MapRuntime {
          enableCoordinateEditing,
       });
 
-      const focus = createMapFocus({
+      const focus = MapRuntimeFactory.createMapFocus({
          panzoom,
          markers,
          tooltip,
@@ -172,7 +81,7 @@ export class MapRuntime {
          markers,
          focus,
          updater,
-         repositionTooltips: createTooltipRepositioner({
+         repositionTooltips: MapRuntimeFactory.createTooltipRepositioner({
             tooltip,
             hover,
          }),

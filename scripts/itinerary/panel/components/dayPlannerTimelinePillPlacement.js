@@ -1,97 +1,6 @@
-import { DayPlannerTimelineMetrics } from '../dayPlannerTimelineMetrics.js';
+import { DayPlannerTimelinePillPlacementRegistry } from './dayPlannerTimelinePillPlacementRegistry.js';
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
-
-const timelinePlacementsByGridLine = new WeakMap();
-
-function getTimelinePlacements(gridLine) {
-   let placements = timelinePlacementsByGridLine.get(gridLine);
-
-   if (!placements) {
-      placements = [];
-      timelinePlacementsByGridLine.set(gridLine, placements);
-   }
-
-   return placements;
-}
-
-function applyHorizontalOffsetIndex(element, horizontalOffsetIndex) {
-   element.setAttribute('data-horizontal-offset-index', String(horizontalOffsetIndex));
-   element.style.setProperty(
-      '--itinerary-pill-horizontal-offset-index',
-      String(horizontalOffsetIndex)
-   );
-}
-
-function markScheduledPillStrip(pillStrip) {
-   pillStrip.setAttribute('data-scheduled-column', 'true');
-}
-
-function registerTimelinePlacement(
-   gridLine,
-   {
-      offsetFraction,
-      durationFraction,
-      horizontalOffsetIndex,
-      anchorOffsetFraction,
-   }
-) {
-   getTimelinePlacements(gridLine).push({
-      offsetFraction,
-      durationFraction,
-      horizontalOffsetIndex,
-      anchorOffsetFraction,
-   });
-}
-
-function isScheduledPillStrip(strip) {
-   return (
-      strip.getAttribute?.('data-scheduled-column')
-      ?? strip.attributes?.['data-scheduled-column']
-   ) === 'true';
-}
-
-function findPointPillStrip(gridLine, offsetFraction = 0) {
-   const offsetKey = String(offsetFraction);
-
-   for (const child of gridLine.children) {
-      if (child.className !== 'itinerary-day-pill-strip' || isScheduledPillStrip(child)) {
-         continue;
-      }
-
-      const childOffset = child.getAttribute?.('data-offset-fraction')
-         ?? child.attributes?.['data-offset-fraction']
-         ?? '0';
-
-      if (childOffset === offsetKey) {
-         return child;
-      }
-   }
-
-   return null;
-}
-
-function resolveStripPlacementBand(
-   gridLine,
-   offsetFraction = 0,
-   durationMinutes = null,
-   slotSpanMinutes = TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
-) {
-   const pointBand = DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, offsetFraction);
-
-   if (Number.isFinite(durationMinutes) && durationMinutes > 0) {
-      const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
-         ? slotSpanMinutes
-         : TimelineLayoutConstants.TIMELINE_SLOT_MINUTES;
-
-      return {
-         offsetFraction: pointBand.offsetFraction,
-         durationFraction: durationMinutes / slotSpan,
-      };
-   }
-
-   return pointBand;
-}
 
 export class DayPlannerTimelinePillPlacement {
    static computeTimelineHorizontalOffsetIndex(
@@ -114,15 +23,14 @@ export class DayPlannerTimelinePillPlacement {
       return maxIndex >= 0 ? maxIndex + 1 : 0;
    }
 
-
    static getOrCreatePointPillStrip(gridLine, offsetFraction = 0) {
-      const existingStrip = findPointPillStrip(gridLine, offsetFraction);
+      const existingStrip = DayPlannerTimelinePillPlacementRegistry.findPointPillStrip(gridLine, offsetFraction);
 
       if (existingStrip) {
          return existingStrip;
       }
 
-      const placementBand = resolveStripPlacementBand(gridLine, offsetFraction);
+      const placementBand = DayPlannerTimelinePillPlacementRegistry.resolveStripPlacementBand(gridLine, offsetFraction);
       const pillStrip = ItineraryPanelDom.el('div', 'itinerary-day-pill-strip');
 
       if (offsetFraction > 0) {
@@ -133,8 +41,8 @@ export class DayPlannerTimelinePillPlacement {
          );
       }
 
-      applyHorizontalOffsetIndex(pillStrip, 0);
-      registerTimelinePlacement(gridLine, {
+      DayPlannerTimelinePillPlacementRegistry.applyHorizontalOffsetIndex(pillStrip, 0);
+      DayPlannerTimelinePillPlacementRegistry.registerTimelinePlacement(gridLine, {
          ...placementBand,
          anchorOffsetFraction: offsetFraction,
          horizontalOffsetIndex: 0,
@@ -144,14 +52,13 @@ export class DayPlannerTimelinePillPlacement {
       return pillStrip;
    }
 
-
    static createScheduledPillStrip(
       gridLine,
       offsetFraction = 0,
       durationMinutes = 0,
       slotSpanMinutes = TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
    ) {
-      const placementBand = resolveStripPlacementBand(
+      const placementBand = DayPlannerTimelinePillPlacementRegistry.resolveStripPlacementBand(
          gridLine,
          offsetFraction,
          durationMinutes,
@@ -167,8 +74,8 @@ export class DayPlannerTimelinePillPlacement {
          );
       }
 
-      markScheduledPillStrip(pillStrip);
-      registerTimelinePlacement(gridLine, {
+      DayPlannerTimelinePillPlacementRegistry.markScheduledPillStrip(pillStrip);
+      DayPlannerTimelinePillPlacementRegistry.registerTimelinePlacement(gridLine, {
          ...placementBand,
          anchorOffsetFraction: offsetFraction,
          horizontalOffsetIndex: 0,
@@ -177,7 +84,6 @@ export class DayPlannerTimelinePillPlacement {
 
       return pillStrip;
    }
-
 
    static computeStripHorizontalOffsetIndex(
       placedStrips,
@@ -194,7 +100,6 @@ export class DayPlannerTimelinePillPlacement {
          pointPillVerticalSpanFraction
       );
    }
-
 
    /** @deprecated */
    static computeSpanHorizontalOffsetIndex(...args) {

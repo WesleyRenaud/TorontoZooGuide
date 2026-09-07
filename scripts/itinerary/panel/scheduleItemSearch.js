@@ -1,44 +1,13 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ItineraryShape } from '../itineraryShape.js';
+import { ScheduleItemSearchRowTagger } from './scheduleItemSearchRowTagger.js';
 import { ScheduleItemTypes } from './scheduleItemTypes.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
 import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
-import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { WildEncounterSelectorModel } from '../selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-
-function itineraryWildEncounterId(encounter) {
-   return WildEncounterScheduleItemKey.fromRow(encounter)?.toWire() ?? null;
-}
-
-function tagRows(rows = [], scheduleItemKind) {
-   return rows.map((row) => ({
-      ...row,
-      scheduleItemKind,
-   }));
-}
-
-function tagAnimalRows(rows = []) {
-   return tagRows(rows, ScheduleItemKind.ANIMAL.itemType);
-}
-
-function tagAttractionRows(rows = []) {
-   return tagRows(rows, ScheduleItemKind.ATTRACTION.itemType);
-}
-
-function tagTransportationRows(rows = []) {
-   return tagRows(rows, ScheduleItemKind.TRANSPORTATION.itemType);
-}
-
-function tagGuardiansTalkRows(rows = []) {
-   return tagRows(rows, ScheduleItemKind.GUARDIANS_TALK.itemType);
-}
-
-function tagWildEncounterRows(rows = []) {
-   return tagRows(rows, ScheduleItemKind.WILD_ENCOUNTER.itemType);
-}
 
 export class ScheduleItemSearch {
    static isUnscheduledItineraryItem(item) {
@@ -85,26 +54,26 @@ export class ScheduleItemSearch {
       }
 
       if (itemType === ScheduleItemKind.ATTRACTION.itemType) {
-         return tagAttractionRows([row])[0];
+         return ScheduleItemSearchRowTagger.tagAttractionRows([row])[0];
       }
 
       if (itemType === ScheduleItemKind.TRANSPORTATION.itemType) {
          if (TransportationSelectorModel.isTransportationAddedAsAttraction(row)) {
-            return tagAttractionRows([row])[0];
+            return ScheduleItemSearchRowTagger.tagAttractionRows([row])[0];
          }
 
-         return tagTransportationRows([row])[0];
+         return ScheduleItemSearchRowTagger.tagTransportationRows([row])[0];
       }
 
       if (itemType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-         return tagGuardiansTalkRows([row])[0];
+         return ScheduleItemSearchRowTagger.tagGuardiansTalkRows([row])[0];
       }
 
       if (itemType === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return tagWildEncounterRows([row])[0];
+         return ScheduleItemSearchRowTagger.tagWildEncounterRows([row])[0];
       }
 
-      return tagAnimalRows([row])[0];
+      return ScheduleItemSearchRowTagger.tagAnimalRows([row])[0];
    }
 
    static getScheduleItemRowId(row) {
@@ -258,7 +227,7 @@ export class ScheduleItemSearch {
          ),
          wildEncounterIds: new Set(
             pickItems(itinerary.wildEncounters)
-               .map(itineraryWildEncounterId)
+               .map(ScheduleItemSearchRowTagger.itineraryWildEncounterId)
                .filter(Boolean)
          ),
       };
@@ -368,47 +337,47 @@ export class ScheduleItemSearch {
 
    static extractScheduleItemSearchRows(moduleType, response = {}) {
       if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
-         return tagAnimalRows(
+         return ScheduleItemSearchRowTagger.tagAnimalRows(
             Array.isArray(response.animals) ? response.animals : []
          );
       }
 
       if (moduleType === ScheduleItemKind.ATTRACTION.itemType) {
-         return tagAttractionRows(
+         return ScheduleItemSearchRowTagger.tagAttractionRows(
             Array.isArray(response.attractions) ? response.attractions : []
          );
       }
 
       if (moduleType === ScheduleItemKind.TRANSPORTATION.itemType) {
-         return tagTransportationRows(
+         return ScheduleItemSearchRowTagger.tagTransportationRows(
             Array.isArray(response.transportations) ? response.transportations : []
          );
       }
 
       if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-         return tagGuardiansTalkRows(
+         return ScheduleItemSearchRowTagger.tagGuardiansTalkRows(
             Array.isArray(response.guardians_talks) ? response.guardians_talks : []
          );
       }
 
       if (moduleType === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return tagWildEncounterRows(
+         return ScheduleItemSearchRowTagger.tagWildEncounterRows(
             Array.isArray(response.wild_encounters) ? response.wild_encounters : []
          );
       }
 
       if (ScheduleItemTypes.isScheduleItemTypeUnset(moduleType)) {
          return [
-            ...tagAnimalRows(
+            ...ScheduleItemSearchRowTagger.tagAnimalRows(
                Array.isArray(response.animals) ? response.animals : []
             ),
-            ...tagAttractionRows(
+            ...ScheduleItemSearchRowTagger.tagAttractionRows(
                Array.isArray(response.attractions) ? response.attractions : []
             ),
-            ...tagGuardiansTalkRows(
+            ...ScheduleItemSearchRowTagger.tagGuardiansTalkRows(
                Array.isArray(response.guardians_talks) ? response.guardians_talks : []
             ),
-            ...tagWildEncounterRows(
+            ...ScheduleItemSearchRowTagger.tagWildEncounterRows(
                Array.isArray(response.wild_encounters) ? response.wild_encounters : []
             ),
          ];
