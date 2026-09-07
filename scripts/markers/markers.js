@@ -1,25 +1,14 @@
 import { CoordinateEditing } from './coordinateEditing.js';
 import { MarkerElement } from './markerElement.js';
 import { MarkerGroups } from './markerGroups.js';
-
-const MARKER_SELECTOR = '.marker';
-
-function removeRenderedMarkers(mapInner) {
-   mapInner.querySelectorAll(MARKER_SELECTOR).forEach((markerEl) => {
-      markerEl.remove();
-   });
-}
-
-function shouldRenderMarkerGroup(group) {
-   return group.items.length > 0;
-}
+import { MarkersHelpers } from './markersHelpers.js';
 
 export class Markers {
    static createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEditing = false }) {
       const markerElsByCoord = new Map();
 
       function clear() {
-         removeRenderedMarkers(mapInner);
+         MarkersHelpers.removeRenderedMarkers(mapInner);
          markerElsByCoord.clear();
       }
 
@@ -46,7 +35,7 @@ export class Markers {
          const markerMap = MarkerGroups.groupMarkersByCoordinate(items);
 
          markerMap.forEach((group) => {
-            if (shouldRenderMarkerGroup(group)) {
+            if (MarkersHelpers.shouldRenderMarkerGroup(group)) {
                fragment.appendChild(createMarkerGroupElement(group));
             }
          });

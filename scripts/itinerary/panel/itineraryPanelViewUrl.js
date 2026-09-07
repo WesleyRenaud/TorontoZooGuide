@@ -1,16 +1,9 @@
 import { ItineraryPanelViews } from './components/itineraryPanelViews.js';
+import { ItineraryPanelViewUrlHelpers } from './itineraryPanelViewUrlHelpers.js';
 
 const VALID_ITINERARY_PANEL_VIEWS = new Set(
    Object.values(ItineraryPanelViews.ITINERARY_PANEL_VIEWS)
 );
-
-function getDefaultLocation() {
-   return globalThis.location ?? null;
-}
-
-function getDefaultHistory() {
-   return globalThis.history ?? null;
-}
 
 export class ItineraryPanelViewUrl {
    static ITINERARY_PANEL_VIEW_QUERY_PARAM = 'view';
@@ -22,7 +15,7 @@ export class ItineraryPanelViewUrl {
    }
 
    static getItineraryPanelViewFromUrl(
-      location = getDefaultLocation()
+      location = ItineraryPanelViewUrlHelpers.getDefaultLocation()
    ) {
       if (!location) {
          return ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
@@ -38,8 +31,8 @@ export class ItineraryPanelViewUrl {
    static setItineraryPanelViewInUrl(
       view,
       {
-         location = getDefaultLocation(),
-         history = getDefaultHistory(),
+         location = ItineraryPanelViewUrlHelpers.getDefaultLocation(),
+         history = ItineraryPanelViewUrlHelpers.getDefaultHistory(),
       } = {}
    ) {
       if (!location || !history?.replaceState) {

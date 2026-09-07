@@ -1,18 +1,6 @@
 import { AnimalsApi } from '../../../api/animalsApi.js';
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
-
-function normalizeSpeciesList(species) {
-   return [...new Set(
-      (species || [])
-         .map((value) => ValueNormalizer.asTrimmedString(value))
-         .filter(Boolean)
-   )].sort((a, b) => a.localeCompare(b));
-}
-
-function normalizeExhibitKey(exhibit) {
-   return ValueNormalizer.asTrimmedString(exhibit);
-}
+import { SpeciesSourceNormalizer } from './speciesSourceNormalizer.js';
 
 export class SpeciesSource {
    static createAnimalSpeciesSource() {
@@ -26,13 +14,13 @@ export class SpeciesSource {
          }
 
          const rawSpecies = await ConsoleOptionsLoader.loadSpecies();
-         allSpecies = normalizeSpeciesList(rawSpecies);
+         allSpecies = SpeciesSourceNormalizer.normalizeSpeciesList(rawSpecies);
          allSpeciesLoaded = true;
          return allSpecies;
       }
 
       async function loadForExhibit(exhibit) {
-         const exhibitKey = normalizeExhibitKey(exhibit);
+         const exhibitKey = SpeciesSourceNormalizer.normalizeExhibitKey(exhibit);
 
          if (!exhibitKey) {
             return ensureAllSpeciesLoaded();
@@ -43,7 +31,7 @@ export class SpeciesSource {
          }
 
          const animals = await AnimalsApi.getAnimalsInExhibit(exhibitKey);
-         const species = normalizeSpeciesList(
+         const species = SpeciesSourceNormalizer.normalizeSpeciesList(
             animals.map((animal) => String(animal || ''))
          );
 
