@@ -6,7 +6,7 @@
       "build": "npm run coverage && npm run lint && echo 'Build complete!' && node tools/coverageSummary.js --print-last-summary",
       "clean": "node tools/cleanBuildArtifacts.js",
       "coverage": "node tools/coverageSummary.js",
-      "coverage:js": "node --test --experimental-test-coverage --test-coverage-include='scripts/**/*.js' \"tests/scripts/**/*.test.mjs\"",
+      "coverage:js": "node tools/coverage/runJsCoverage.js",
       "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/api -n auto --cov=api --cov-report=term:skip-covered --cov-precision=2",
       "clear:itinerary": "python3 -m api.seed.user_itinerary_data_cleaner",
       "clear:itinerary-config": "python3 -m api.seed.user_itinerary_config_cleaner",

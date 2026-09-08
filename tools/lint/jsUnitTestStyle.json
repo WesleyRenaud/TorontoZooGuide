@@ -155,7 +155,18 @@
       "tests/scripts/itinerary/wizard/wizardController.lifecycle.test.mjs",
       "tests/scripts/itinerary/wizard/wizardFinalizer.test.mjs",
       "tests/scripts/itinerary/wizard/itineraryWizardStore.test.mjs",
-      "tests/scripts/strings/strings.test.mjs"
+      "tests/scripts/strings/strings.test.mjs",
+      "tests/scripts/consoleOperations/animals/autocomplete/speciesSourceNormalizer.test.mjs",
+      "tests/scripts/consoleOperations/animals/autocomplete/speciesMatcher.test.mjs",
+      "tests/scripts/guardians/guardiansTalkLinkedAnimalNormalizer.test.mjs",
+      "tests/scripts/consoleOperations/forms/openingScheduleChecker.test.mjs",
+      "tests/scripts/consoleOperations/updates/controllers/updateOptionsFormatter.test.mjs",
+      "tests/scripts/api/itinerarySelectorApiNormalizer.test.mjs",
+      "tests/scripts/itinerary/itineraryPathNormalizer.test.mjs",
+      "tests/scripts/markers/markerHoverTextFormatter.test.mjs",
+      "tests/scripts/api/animalsApiNormalizer.test.mjs",
+      "tests/scripts/api/searchApiNormalizer.test.mjs",
+      "tests/scripts/itinerary/itineraryDraftEqualityComparer.test.mjs"
    ],
    "exclude": [
       "tests/scripts/helpers/**"
