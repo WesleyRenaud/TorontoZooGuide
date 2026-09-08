@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { PanelNavigator } from '../../../../scripts/consoleOperations/shell/panelNavigator.js';
 
-function createClassList() {
+function _createClassList() {
    const classes = new Set();
 
    return {
@@ -22,19 +22,19 @@ function createClassList() {
    };
 }
 
-function createPanel(id) {
+function _createPanel(id) {
    return {
       id,
-      classList: createClassList(),
+      classList: _createClassList(),
    };
 }
 
-function createButton(panelId) {
+function _createButton(panelId) {
    return {
       dataset: {
          panelTarget: panelId,
       },
-      classList: createClassList(),
+      classList: _createClassList(),
       clickCount: 0,
       ariaCurrent: undefined,
       setAttribute(name, value) {
@@ -53,7 +53,7 @@ function createButton(panelId) {
    };
 }
 
-function createDocumentMock({ panels, buttons }) {
+function _createDocumentMock({ panels, buttons }) {
    return {
       querySelectorAll(selector) {
          if (selector === '.console-operations-panel') {
@@ -69,7 +69,7 @@ function createDocumentMock({ panels, buttons }) {
    };
 }
 
-function createUrlState(href = 'https://example.test/console-operations.html') {
+function _createUrlState(href = 'https://example.test/console-operations.html') {
    const location = { href };
    const history = {
       replaceState(_state, _title, url) {
@@ -84,12 +84,12 @@ function createUrlState(href = 'https://example.test/console-operations.html') {
 }
 
 test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => {
-   const urlState = createUrlState();
-   const restaurantPanel = createPanel('restaurantOpeningSchedulePanel');
-   const giftShopPanel = createPanel('giftShopOpeningSchedulePanel');
-   const restaurantButton = createButton('restaurantOpeningSchedulePanel');
-   const giftShopButton = createButton('giftShopOpeningSchedulePanel');
-   const doc = createDocumentMock({
+   const urlState = _createUrlState();
+   const restaurantPanel = _createPanel('restaurantOpeningSchedulePanel');
+   const giftShopPanel = _createPanel('giftShopOpeningSchedulePanel');
+   const restaurantButton = _createButton('restaurantOpeningSchedulePanel');
+   const giftShopButton = _createButton('giftShopOpeningSchedulePanel');
+   const doc = _createDocumentMock({
       panels: [restaurantPanel, giftShopPanel],
       buttons: [restaurantButton, giftShopButton],
    });
@@ -116,10 +116,10 @@ test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => 
 });
 
 test('Test_CreateConsolePanelNavigator_TestHide_ExpectUrlCleared', () => {
-   const urlState = createUrlState();
-   const panel = createPanel('giftShopOpeningSchedulePanel');
-   const button = createButton('giftShopOpeningSchedulePanel');
-   const doc = createDocumentMock({
+   const urlState = _createUrlState();
+   const panel = _createPanel('giftShopOpeningSchedulePanel');
+   const button = _createButton('giftShopOpeningSchedulePanel');
+   const doc = _createDocumentMock({
       panels: [panel],
       buttons: [button],
    });
@@ -139,7 +139,7 @@ test('Test_CreateConsolePanelNavigator_TestHide_ExpectUrlCleared', () => {
 });
 
 test('Test_ClearConsolePanelUrlParam_TestClear_ExpectRemoved', () => {
-   const urlState = createUrlState(
+   const urlState = _createUrlState(
       'https://example.test/console-operations.html?panel=giftShopOpeningSchedulePanel'
    );
 

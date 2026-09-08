@@ -13,7 +13,7 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-function toLocalISODate(date) {
+function _toLocalISODate(date) {
    const year = date.getFullYear();
    const month = String(date.getMonth() + 1).padStart(2, '0');
    const day = String(date.getDate()).padStart(2, '0');
@@ -73,10 +73,10 @@ test('Test_IsStoredItineraryStale_TestPastDate_ExpectDetected', () => {
    const yesterday = new Date(today);
    yesterday.setDate(today.getDate() - 1);
 
-   DraftStorage.writeStoredItineraryDraft({ date: toLocalISODate(yesterday) });
+   DraftStorage.writeStoredItineraryDraft({ date: _toLocalISODate(yesterday) });
    assert.equal(DraftStorage.isStoredItineraryStale(), true);
 
-   DraftStorage.writeStoredItineraryDraft({ date: toLocalISODate(today) });
+   DraftStorage.writeStoredItineraryDraft({ date: _toLocalISODate(today) });
    assert.equal(DraftStorage.isStoredItineraryStale(), false);
 });
 

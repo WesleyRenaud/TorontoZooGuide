@@ -6,7 +6,7 @@ import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalVi
 
 const originalFetch = globalThis.fetch;
 
-function createField(value = '') {
+function _createField(value = '') {
    const listeners = {};
 
    return {
@@ -21,7 +21,7 @@ function createField(value = '') {
    };
 }
 
-function mockViewingScopesResponse(viewingScopes) {
+function _mockViewingScopesResponse(viewingScopes) {
    globalThis.fetch = async () => new Response(JSON.stringify({ viewingScopes }), {
       status: 200,
       headers: {
@@ -35,11 +35,11 @@ afterEach(() => {
 });
 
 test('Test_CreateAnimalViewingScopeControl_TestIndoorAndOutdoor_ExpectSelectEnabled', async () => {
-   const speciesEl = createField('Southern White Rhinoceros');
-   const exhibitEl = createField('Africa Savanna');
-   const viewingScopeEl = createField('');
+   const speciesEl = _createField('Southern White Rhinoceros');
+   const exhibitEl = _createField('Africa Savanna');
+   const viewingScopeEl = _createField('');
 
-   mockViewingScopesResponse([
+   _mockViewingScopesResponse([
       AnimalViewingScope.INDOOR,
       AnimalViewingScope.OUTDOOR,
    ]);
@@ -60,11 +60,11 @@ test('Test_CreateAnimalViewingScopeControl_TestIndoorAndOutdoor_ExpectSelectEnab
 });
 
 test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async () => {
-   const speciesEl = createField('African Lion');
-   const exhibitEl = createField('Africa Savanna');
-   const viewingScopeEl = createField('');
+   const speciesEl = _createField('African Lion');
+   const exhibitEl = _createField('Africa Savanna');
+   const viewingScopeEl = _createField('');
 
-   mockViewingScopesResponse([
+   _mockViewingScopesResponse([
       AnimalViewingScope.OUTDOOR,
    ]);
 

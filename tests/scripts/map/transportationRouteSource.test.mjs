@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { TransportationRouteSource } from '../../../scripts/map/transportationRouteSource.js';
 
-function createStore() {
+function _createStore() {
    return {
       byType: {
          transportationStation: [],
@@ -14,7 +14,7 @@ function createStore() {
 }
 
 test('Test_CreateTransportationRouteSource_TestSelectedRoute_ExpectStationsStored', async () => {
-   const store = createStore();
+   const store = _createStore();
    const shownRoutes = [];
    const source = TransportationRouteSource.createTransportationRouteSource(store, {
       fetchTransportationRoute: async (payload) => {
@@ -52,7 +52,7 @@ test('Test_CreateTransportationRouteSource_TestSelectedRoute_ExpectStationsStore
 });
 
 test('Test_CreateTransportationRouteSource_TestNoRoute_ExpectStationsCleared', async () => {
-   const store = createStore();
+   const store = _createStore();
    store.byType.transportationStation = [{ name: 'Main Station', type: 'transportationStation' }];
    store.byType.transportationRoute = [{ name: 'Main Station', type: 'transportationStation' }];
 

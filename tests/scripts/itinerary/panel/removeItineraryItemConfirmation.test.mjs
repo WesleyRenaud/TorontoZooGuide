@@ -7,60 +7,58 @@ import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
-test.describe('removeItineraryItemConfirmation', () => {
-   installDomTestHooks({
-      after: () => {
-         cleanupConfirmPopup();
+installDomTestHooks({
+   after: () => {
+      cleanupConfirmPopup();
+   },
+});
+
+test('Test_ShowRemoveItineraryItemConfirmation_TestDefault_ExpectConfirmPopup', () => {
+   const confirmCalls = [];
+
+   RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
+      onConfirm: () => {
+         confirmCalls.push('confirmed');
       },
    });
 
-   test('Test_ShowRemoveItineraryItemConfirmation_TestDefault_ExpectConfirmPopup', () => {
-      const confirmCalls = [];
+   const popup = document.querySelector('.tzg-confirm');
+   const title = popup?.querySelector('.itin-top-title');
+   const message = popup?.querySelector('.tzg-popup-message');
+   const confirmButton = popup?.querySelector('.tzg-popup-confirm');
 
-      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
-         onConfirm: () => {
-            confirmCalls.push('confirmed');
-         },
-      });
+   assert.ok(popup);
+   assert.equal(title?.textContent, Strings.itinerary.confirmation.removeItemTitle);
+   assert.equal(message?.textContent, Strings.itinerary.confirmation.removeItemMessage);
+   assert.equal(popup.querySelector('.tzg-popup-do-not-show-again'), null);
+   assert.equal(confirmButton?.textContent, Strings.itinerary.dayPlanner.remove);
 
-      const popup = document.querySelector('.tzg-confirm');
-      const title = popup?.querySelector('.itin-top-title');
-      const message = popup?.querySelector('.tzg-popup-message');
-      const confirmButton = popup?.querySelector('.tzg-popup-confirm');
+   confirmButton?.click();
 
-      assert.ok(popup);
-      assert.equal(title?.textContent, Strings.itinerary.confirmation.removeItemTitle);
-      assert.equal(message?.textContent, Strings.itinerary.confirmation.removeItemMessage);
-      assert.equal(popup.querySelector('.tzg-popup-do-not-show-again'), null);
-      assert.equal(confirmButton?.textContent, Strings.itinerary.dayPlanner.remove);
+   assert.deepEqual(confirmCalls, ['confirmed']);
+});
 
-      confirmButton?.click();
-
-      assert.deepEqual(confirmCalls, ['confirmed']);
+test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage', () => {
+   RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
+      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+      key: 'Zoomobile||0',
    });
 
-   test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage', () => {
-      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
-         itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-         key: 'Zoomobile||0',
-      });
+   const message = document.querySelector('.tzg-popup-message');
 
-      const message = document.querySelector('.tzg-popup-message');
+   assert.equal(
+      message?.textContent,
+      Strings.itinerary.confirmation.removeTransitTransportationMessage
+   );
+});
 
-      assert.equal(
-         message?.textContent,
-         Strings.itinerary.confirmation.removeTransitTransportationMessage
-      );
+test('Test_ShowRemoveItineraryItemConfirmation_TestAttractionTransport_ExpectDefaultMessage', () => {
+   RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
+      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+      key: 'Zoomobile||1',
    });
 
-   test('Test_ShowRemoveItineraryItemConfirmation_TestAttractionTransport_ExpectDefaultMessage', () => {
-      RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation({
-         itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-         key: 'Zoomobile||1',
-      });
+   const message = document.querySelector('.tzg-popup-message');
 
-      const message = document.querySelector('.tzg-popup-message');
-
-      assert.equal(message?.textContent, Strings.itinerary.confirmation.removeItemMessage);
-   });
+   assert.equal(message?.textContent, Strings.itinerary.confirmation.removeItemMessage);
 });

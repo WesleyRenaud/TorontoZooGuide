@@ -3,7 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import { SearchApi } from '../../../scripts/api/searchApi.js';
 
-function mockResponse(text = '{}') {
+function _mockResponse(text = '{}') {
    return {
       ok: true,
       status: 200,
@@ -24,7 +24,7 @@ test('Test_SearchZoo_TestAttractionPayload_ExpectNormalizedResponse', async () =
          includeAnimals: true,
       });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          animals: [{ species: 'African Lion' }],
          attractions: [
             {
@@ -74,7 +74,7 @@ test('Test_SearchItineraryItems_TestUnknownEndpoint_ExpectUnnormalized', async (
       assert.equal(url, '/search-animals');
       assert.deepEqual(JSON.parse(options.body), { query: 'lion' });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          animals: [{ species: 'African Lion' }],
       }));
    };

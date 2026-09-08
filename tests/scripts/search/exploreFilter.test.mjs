@@ -6,7 +6,7 @@ import { Strings } from '../../../scripts/strings.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
-function createCheckboxOption({ value, label, checked = false }) {
+function _createCheckboxOption({ value, label, checked = false }) {
    const labelEl = createDomNode('label');
    const checkbox = createDomNode('input');
    const labelText = createDomNode('#text', '', label);
@@ -26,7 +26,7 @@ function createCheckboxOption({ value, label, checked = false }) {
    return { checkbox, labelEl };
 }
 
-function createExploreTypeFilterDom({
+function _createExploreTypeFilterDom({
    selected = [],
 } = {}) {
    const multiSelect = createDomNode('div', 'multi-select');
@@ -38,7 +38,7 @@ function createExploreTypeFilterDom({
       { value: 'restaurant', label: 'Restaurants' },
    ];
    const checkboxes = options.map((option) => {
-      const { checkbox, labelEl } = createCheckboxOption({
+      const { checkbox, labelEl } = _createCheckboxOption({
          value: option.value,
          label: option.label,
          checked: selected.includes(option.value),
@@ -83,6 +83,8 @@ function createExploreTypeFilterDom({
    };
 }
 
+installDomTestHooks();
+
 test('Test_BuildExploreSearchIncludeFlags_TestSelectedTypes_ExpectSearchFlags', () => {
    assert.deepEqual(
       ExploreFilter.buildExploreSearchIncludeFlags(
@@ -121,109 +123,105 @@ test('Test_BuildExploreSearchIncludeFlags_TestRouteSelected_ExpectStations', () 
    );
 });
 
-test.describe('initExploreTypeFilter DOM integration', () => {
-   installDomTestHooks();
-
-   test('Test_InitExploreTypeFilter_TestMissingFilter_ExpectFallback', () => {
-      const filter = ExploreFilter.initExploreTypeFilter({
-         multiSelect: null,
-      });
-
-      assert.deepEqual(filter.getSelectedTypes(), ['animal']);
-      assert.deepEqual(filter.buildSearchIncludeFlags(), {
-         includeAnimals: true,
-         includePavilions: false,
-         includeRestaurants: false,
-         includeRestrooms: false,
-         includeGiftShops: false,
-         includeAttractions: false,
-         includeGuardiansTalks: false,
-         includeWildEncounters: false,
-         includeTransportationStations: false,
-      });
+test('Test_InitExploreTypeFilter_TestMissingFilter_ExpectFallback', () => {
+   const filter = ExploreFilter.initExploreTypeFilter({
+      multiSelect: null,
    });
 
-   test('Test_InitExploreTypeFilter_TestCheckboxAndRoute_ExpectSelection', () => {
-      const changeCalls = [];
-      const animalsUncheckedCalls = [];
-      const { multiSelect, checkboxes, chipContainer } = createExploreTypeFilterDom({
-         selected: ['animal'],
-      });
+   assert.deepEqual(filter.getSelectedTypes(), ['animal']);
+   assert.deepEqual(filter.buildSearchIncludeFlags(), {
+      includeAnimals: true,
+      includePavilions: false,
+      includeRestaurants: false,
+      includeRestrooms: false,
+      includeGiftShops: false,
+      includeAttractions: false,
+      includeGuardiansTalks: false,
+      includeWildEncounters: false,
+      includeTransportationStations: false,
+   });
+});
 
-      const filter = ExploreFilter.initExploreTypeFilter({
-         multiSelect,
-         getTransportationRoute: () => 'current',
-         onChange: () => {
-            changeCalls.push('changed');
-         },
-         onAnimalsUnchecked: () => {
-            animalsUncheckedCalls.push('unchecked');
-         },
-      });
-
-      assert.deepEqual(filter.getSelectedTypes(), ['animal', 'transportationRoute']);
-      assert.deepEqual(filter.buildSearchIncludeFlags(), {
-         includeAnimals: true,
-         includePavilions: false,
-         includeRestaurants: false,
-         includeRestrooms: false,
-         includeGiftShops: false,
-         includeAttractions: false,
-         includeGuardiansTalks: false,
-         includeWildEncounters: false,
-         includeTransportationStations: true,
-         transportationRoute: 'current',
-      });
-      assert.equal(chipContainer.children.length, 1);
-      assert.equal(chipContainer.children[0].className, 'filter-chip');
-      assert.equal(chipContainer.children[0].textContent, 'Animals');
-
-      checkboxes[0].checked = false;
-      checkboxes[0].dispatchChange();
-
-      assert.deepEqual(filter.getSelectedTypes(), ['transportationRoute']);
-      assert.deepEqual(changeCalls, ['changed']);
-      assert.deepEqual(animalsUncheckedCalls, ['unchecked']);
-      assert.equal(chipContainer.children[0].className, 'filter-none');
-      assert.equal(
-         chipContainer.children[0].textContent,
-         Strings.map.transportationRoute.none
-      );
-
-      checkboxes[1].checked = true;
-      checkboxes[1].dispatchChange();
-
-      assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'transportationRoute']);
-      assert.deepEqual(changeCalls, ['changed', 'changed']);
-      assert.equal(chipContainer.children[0].textContent, 'Restaurants');
+test('Test_InitExploreTypeFilter_TestCheckboxAndRoute_ExpectSelection', () => {
+   const changeCalls = [];
+   const animalsUncheckedCalls = [];
+   const { multiSelect, checkboxes, chipContainer } = _createExploreTypeFilterDom({
+      selected: ['animal'],
    });
 
-   test('Test_InitExploreTypeFilter_TestDropdownToggle_ExpectOpenClose', () => {
-      const documentListeners = {};
-      const originalAddEventListener = document.addEventListener;
-
-      document.addEventListener = (eventName, handler) => {
-         documentListeners[eventName] = handler;
-         originalAddEventListener(eventName, handler);
-      };
-
-      const { multiSelect, button } = createExploreTypeFilterDom({
-         selected: ['animal'],
-      });
-
-      ExploreFilter.initExploreTypeFilter({
-         multiSelect,
-         getTransportationRoute: () => 'none',
-      });
-
-      assert.equal(multiSelect.classList.contains('open'), false);
-
-      button.listeners.click?.({
-         stopPropagation() {},
-      });
-      assert.equal(multiSelect.classList.contains('open'), true);
-
-      documentListeners.click?.();
-      assert.equal(multiSelect.classList.contains('open'), false);
+   const filter = ExploreFilter.initExploreTypeFilter({
+      multiSelect,
+      getTransportationRoute: () => 'current',
+      onChange: () => {
+         changeCalls.push('changed');
+      },
+      onAnimalsUnchecked: () => {
+         animalsUncheckedCalls.push('unchecked');
+      },
    });
+
+   assert.deepEqual(filter.getSelectedTypes(), ['animal', 'transportationRoute']);
+   assert.deepEqual(filter.buildSearchIncludeFlags(), {
+      includeAnimals: true,
+      includePavilions: false,
+      includeRestaurants: false,
+      includeRestrooms: false,
+      includeGiftShops: false,
+      includeAttractions: false,
+      includeGuardiansTalks: false,
+      includeWildEncounters: false,
+      includeTransportationStations: true,
+      transportationRoute: 'current',
+   });
+   assert.equal(chipContainer.children.length, 1);
+   assert.equal(chipContainer.children[0].className, 'filter-chip');
+   assert.equal(chipContainer.children[0].textContent, 'Animals');
+
+   checkboxes[0].checked = false;
+   checkboxes[0].dispatchChange();
+
+   assert.deepEqual(filter.getSelectedTypes(), ['transportationRoute']);
+   assert.deepEqual(changeCalls, ['changed']);
+   assert.deepEqual(animalsUncheckedCalls, ['unchecked']);
+   assert.equal(chipContainer.children[0].className, 'filter-none');
+   assert.equal(
+      chipContainer.children[0].textContent,
+      Strings.map.transportationRoute.none
+   );
+
+   checkboxes[1].checked = true;
+   checkboxes[1].dispatchChange();
+
+   assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'transportationRoute']);
+   assert.deepEqual(changeCalls, ['changed', 'changed']);
+   assert.equal(chipContainer.children[0].textContent, 'Restaurants');
+});
+
+test('Test_InitExploreTypeFilter_TestDropdownToggle_ExpectOpenClose', () => {
+   const documentListeners = {};
+   const originalAddEventListener = document.addEventListener;
+
+   document.addEventListener = (eventName, handler) => {
+      documentListeners[eventName] = handler;
+      originalAddEventListener(eventName, handler);
+   };
+
+   const { multiSelect, button } = _createExploreTypeFilterDom({
+      selected: ['animal'],
+   });
+
+   ExploreFilter.initExploreTypeFilter({
+      multiSelect,
+      getTransportationRoute: () => 'none',
+   });
+
+   assert.equal(multiSelect.classList.contains('open'), false);
+
+   button.listeners.click?.({
+      stopPropagation() {},
+   });
+   assert.equal(multiSelect.classList.contains('open'), true);
+
+   documentListeners.click?.();
+   assert.equal(multiSelect.classList.contains('open'), false);
 });

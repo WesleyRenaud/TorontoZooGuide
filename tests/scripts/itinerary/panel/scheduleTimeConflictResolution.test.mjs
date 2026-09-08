@@ -31,7 +31,7 @@ const thirdEncounter = {
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
-function createConfirmationRecorder() {
+function _createConfirmationRecorder() {
    const calls = [];
 
    return {
@@ -52,8 +52,15 @@ function createConfirmationRecorder() {
    };
 }
 
+installDomTestHooks({
+   after: () => {
+      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
+      document.querySelector('.tzg-confirm')?.remove();
+   },
+});
+
 test('Test_ResolveScheduleTimeConflictSelection_TestNothingSelected_ExpectPrompt', async () => {
-   const { calls, confirmations } = createConfirmationRecorder();
+   const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
 
    const resolved = await ScheduleTimeConflictResolution.resolveScheduleTimeConflictSelection(
@@ -73,7 +80,7 @@ test('Test_ResolveScheduleTimeConflictSelection_TestNothingSelected_ExpectPrompt
 });
 
 test('Test_ResolveScheduleTimeConflictSelection_TestUnresolvedGroups_ExpectPrompt', async () => {
-   const { calls, confirmations } = createConfirmationRecorder();
+   const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const firstSelection = ScheduleConflictCompatibility.createConflictSelection();
    const secondSelection = ScheduleConflictCompatibility.createConflictSelection();
@@ -103,7 +110,7 @@ test('Test_ResolveScheduleTimeConflictSelection_TestUnresolvedGroups_ExpectPromp
 });
 
 test('Test_ResolveScheduleTimeConflictSelection_TestAdditionalActivities_ExpectPrompt', async () => {
-   const { calls, confirmations } = createConfirmationRecorder();
+   const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
@@ -126,7 +133,7 @@ test('Test_ResolveScheduleTimeConflictSelection_TestAdditionalActivities_ExpectP
 });
 
 test('Test_ResolveScheduleTimeConflictSelection_TestAllSettled_ExpectResolved', async () => {
-   const { calls, confirmations } = createConfirmationRecorder();
+   const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictCompatibility.createConflictSelection();
 
@@ -151,102 +158,93 @@ test('Test_ResolveScheduleTimeConflictSelection_TestAllSettled_ExpectResolved', 
    );
 });
 
-test.describe('Test_CreateScheduleTimeConflictResolutionConfirmations', () => {
-   installDomTestHooks({
-      after: () => {
-         document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-         document.querySelector('.tzg-confirm')?.remove();
+test('Test_ShowProceedWithoutSelection_TestDefaultHandler_ExpectNoOp', () => {
+   const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+
+   confirmations.showProceedWithoutSelection();
+
+   const popup = document.querySelector('.tzg-confirm');
+
+   assert.doesNotThrow(() => {
+      popup?.querySelector('.tzg-popup-confirm')?.click();
+   });
+});
+
+test('Test_ShowProceedWithoutSelection_TestCustomHandler_ExpectConfirmation', () => {
+   const confirmCalls = [];
+   const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+
+   confirmations.showProceedWithoutSelection({
+      onConfirm: () => {
+         confirmCalls.push('confirmed');
       },
    });
 
-   test('Test_ShowProceedWithoutSelection_TestDefaultHandler_ExpectNoOp', () => {
-      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+   const popup = document.querySelector('.tzg-confirm');
+   const confirmButton = popup?.querySelector('.tzg-popup-confirm');
 
-      confirmations.showProceedWithoutSelection();
+   assert.equal(
+      popup?.querySelector('.itin-top-title')?.textContent,
+      Strings.itinerary.confirmation.proceedWithoutConflictSelectionTitle
+   );
+   assert.equal(
+      popup?.querySelector('.tzg-popup-message')?.textContent,
+      Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage
+   );
 
-      const popup = document.querySelector('.tzg-confirm');
+   confirmButton?.click();
 
-      assert.doesNotThrow(() => {
-         popup?.querySelector('.tzg-popup-confirm')?.click();
-      });
+   assert.deepEqual(confirmCalls, ['confirmed']);
+});
+
+test('Test_ShowProceedWithUnresolved_TestConfirm_ExpectConfirmation', () => {
+   const confirmCalls = [];
+   const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+
+   confirmations.showProceedWithUnresolved({
+      onConfirm: () => {
+         confirmCalls.push('confirmed');
+      },
    });
 
-   test('Test_ShowProceedWithoutSelection_TestCustomHandler_ExpectConfirmation', () => {
-      const confirmCalls = [];
-      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+   const popup = document.querySelector('.tzg-confirm');
 
-      confirmations.showProceedWithoutSelection({
-         onConfirm: () => {
-            confirmCalls.push('confirmed');
-         },
-      });
+   assert.equal(
+      popup?.querySelector('.itin-top-title')?.textContent,
+      Strings.itinerary.confirmation.proceedWithUnresolvedConflictsTitle
+   );
+   assert.equal(
+      popup?.querySelector('.tzg-popup-message')?.textContent,
+      Strings.itinerary.confirmation.proceedWithUnresolvedConflictsMessage
+   );
 
-      const popup = document.querySelector('.tzg-confirm');
-      const confirmButton = popup?.querySelector('.tzg-popup-confirm');
+   popup?.querySelector('.tzg-popup-confirm')?.click();
 
-      assert.equal(
-         popup?.querySelector('.itin-top-title')?.textContent,
-         Strings.itinerary.confirmation.proceedWithoutConflictSelectionTitle
-      );
-      assert.equal(
-         popup?.querySelector('.tzg-popup-message')?.textContent,
-         Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage
-      );
+   assert.deepEqual(confirmCalls, ['confirmed']);
+});
 
-      confirmButton?.click();
+test('Test_ShowProceedWithAdditional_TestConfirm_ExpectConfirmation', () => {
+   const confirmCalls = [];
+   const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
 
-      assert.deepEqual(confirmCalls, ['confirmed']);
+   confirmations.showProceedWithAdditional({
+      onConfirm: () => {
+         confirmCalls.push('confirmed');
+      },
    });
 
-   test('Test_ShowProceedWithUnresolved_TestConfirm_ExpectConfirmation', () => {
-      const confirmCalls = [];
-      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
+   const popup = document.querySelector('.tzg-confirm');
 
-      confirmations.showProceedWithUnresolved({
-         onConfirm: () => {
-            confirmCalls.push('confirmed');
-         },
-      });
+   assert.equal(
+      popup?.querySelector('.itin-top-title')?.textContent,
+      Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle
+   );
+   assert.equal(
+      popup?.querySelector('.tzg-popup-message')?.textContent,
+      Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage
+   );
 
-      const popup = document.querySelector('.tzg-confirm');
+   popup?.querySelector('.tzg-popup-confirm')?.click();
 
-      assert.equal(
-         popup?.querySelector('.itin-top-title')?.textContent,
-         Strings.itinerary.confirmation.proceedWithUnresolvedConflictsTitle
-      );
-      assert.equal(
-         popup?.querySelector('.tzg-popup-message')?.textContent,
-         Strings.itinerary.confirmation.proceedWithUnresolvedConflictsMessage
-      );
-
-      popup?.querySelector('.tzg-popup-confirm')?.click();
-
-      assert.deepEqual(confirmCalls, ['confirmed']);
-   });
-
-   test('Test_ShowProceedWithAdditional_TestConfirm_ExpectConfirmation', () => {
-      const confirmCalls = [];
-      const confirmations = ScheduleTimeConflictResolution.createScheduleTimeConflictResolutionConfirmations();
-
-      confirmations.showProceedWithAdditional({
-         onConfirm: () => {
-            confirmCalls.push('confirmed');
-         },
-      });
-
-      const popup = document.querySelector('.tzg-confirm');
-
-      assert.equal(
-         popup?.querySelector('.itin-top-title')?.textContent,
-         Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle
-      );
-      assert.equal(
-         popup?.querySelector('.tzg-popup-message')?.textContent,
-         Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage
-      );
-
-      popup?.querySelector('.tzg-popup-confirm')?.click();
-
-      assert.deepEqual(confirmCalls, ['confirmed']);
-   });
+   assert.deepEqual(confirmCalls, ['confirmed']);
 });

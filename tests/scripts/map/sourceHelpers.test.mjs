@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { SourceHelpers } from '../../../scripts/map/sourceHelpers.js';
 
-function createStore() {
+function _createStore() {
    return {
       byType: {},
       cache: {},
@@ -22,7 +22,7 @@ test('Test_NormalizeTypedRows_TestValidRows_ExpectTypedRows', () => {
 });
 
 test('Test_SetSourceRows_TestArrayRows_ExpectStored', () => {
-   const store = createStore();
+   const store = _createStore();
 
    assert.deepEqual(SourceHelpers.setSourceRows(store, 'animal', [{ species: 'African Lion' }]), [
       { species: 'African Lion' },
@@ -32,7 +32,7 @@ test('Test_SetSourceRows_TestArrayRows_ExpectStored', () => {
 });
 
 test('Test_CreateDynamicTypedSource_TestRepeatedFetch_ExpectRefetchEachTime', async () => {
-   const store = createStore();
+   const store = _createStore();
    let calls = 0;
    const source = SourceHelpers.createDynamicTypedSource(store, 'attraction', async () => {
       calls += 1;
@@ -49,7 +49,7 @@ test('Test_CreateDynamicTypedSource_TestRepeatedFetch_ExpectRefetchEachTime', as
 });
 
 test('Test_CreateStaticTypedSource_TestSuccessfulFetch_ExpectCached', async () => {
-   const store = createStore();
+   const store = _createStore();
    let calls = 0;
    const source = SourceHelpers.createStaticTypedSource(store, 'giftShop', async () => {
       calls += 1;
@@ -63,7 +63,7 @@ test('Test_CreateStaticTypedSource_TestSuccessfulFetch_ExpectCached', async () =
 });
 
 test('Test_CreateStaticTypedSource_TestInFlightFailure_ExpectDedupeThenReset', async () => {
-   const store = createStore();
+   const store = _createStore();
    let calls = 0;
    let rejectFirstCall;
    const firstCall = new Promise((resolve, reject) => {

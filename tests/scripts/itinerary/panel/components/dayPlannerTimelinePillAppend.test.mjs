@@ -5,7 +5,7 @@ import { DayPlannerTimelinePillAppend } from '../../../../../scripts/itinerary/p
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-function makeTimelineGridLine() {
+function _makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
    const gridLine = createDomNode('div', 'itinerary-day-grid-line');
 
@@ -14,87 +14,85 @@ function makeTimelineGridLine() {
    return { gridLine };
 }
 
-test.describe('Test_DayPlannerTimelinePillAppend', () => {
-   installDomTestHooks();
+installDomTestHooks();
 
-   test('Test_AppendTimelinePill_TestOpenPill_ExpectPointStrip', () => {
-      const { gridLine } = makeTimelineGridLine();
+test('Test_AppendTimelinePill_TestOpenPill_ExpectPointStrip', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-      DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Lunch', 0);
+   DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Lunch', 0);
 
-      const strip = gridLine.querySelector('.itinerary-day-pill-strip');
-      const pill = strip?.querySelector('.itinerary-day-open-pill');
+   const strip = gridLine.querySelector('.itinerary-day-pill-strip');
+   const pill = strip?.querySelector('.itinerary-day-open-pill');
 
-      assert.ok(strip);
-      assert.equal(
-         pill?.querySelector('.itinerary-day-open-pill-label')?.textContent,
-         'Lunch'
-      );
-      assert.equal(strip?.getAttribute('data-scheduled-column'), null);
+   assert.ok(strip);
+   assert.equal(
+      pill?.querySelector('.itinerary-day-open-pill-label')?.textContent,
+      'Lunch'
+   );
+   assert.equal(strip?.getAttribute('data-scheduled-column'), null);
+});
+
+test('Test_AppendTimelinePill_TestBoundaryPlacement_ExpectMarker', () => {
+   const { gridLine } = _makeTimelineGridLine();
+
+   DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Arrival', 0, {
+      visitBoundaryPlacement: 'ends-at-anchor',
+      onRemove: () => {},
+      menuAriaLabel: 'Arrival options',
+      removeLabel: 'Clear arrival',
    });
 
-   test('Test_AppendTimelinePill_TestBoundaryPlacement_ExpectMarker', () => {
-      const { gridLine } = makeTimelineGridLine();
+   const marker = gridLine.querySelector('.itinerary-day-boundary-marker');
 
-      DayPlannerTimelinePillAppend.appendTimelinePill(gridLine, 'Arrival', 0, {
-         visitBoundaryPlacement: 'ends-at-anchor',
-         onRemove: () => {},
-         menuAriaLabel: 'Arrival options',
-         removeLabel: 'Clear arrival',
-      });
+   assert.ok(marker);
+   assert.equal(marker?.getAttribute('data-boundary-marker-kind'), 'arrival');
+   assert.equal(
+      gridLine.querySelector('.itinerary-day-pill-strip')?.getAttribute('data-visit-boundary-placement'),
+      'ends-at-anchor'
+   );
+});
 
-      const marker = gridLine.querySelector('.itinerary-day-boundary-marker');
+test('Test_AppendScheduledDurationPill_TestDuration_ExpectStripAndPill', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-      assert.ok(marker);
-      assert.equal(marker?.getAttribute('data-boundary-marker-kind'), 'arrival');
-      assert.equal(
-         gridLine.querySelector('.itinerary-day-pill-strip')?.getAttribute('data-visit-boundary-placement'),
-         'ends-at-anchor'
-      );
+   DayPlannerTimelinePillAppend.appendScheduledDurationPill(gridLine, {
+      label: 'African Lion',
+      durationMinutes: 30,
+      startTime: '12:00 PM',
+      endTime: '12:30 PM',
    });
 
-   test('Test_AppendScheduledDurationPill_TestDuration_ExpectStripAndPill', () => {
-      const { gridLine } = makeTimelineGridLine();
+   const strip = gridLine.querySelector('.itinerary-day-pill-strip');
+   const pill = strip?.querySelector('.itinerary-day-scheduled-pill');
 
-      DayPlannerTimelinePillAppend.appendScheduledDurationPill(gridLine, {
-         label: 'African Lion',
-         durationMinutes: 30,
-         startTime: '12:00 PM',
-         endTime: '12:30 PM',
-      });
+   assert.equal(strip?.getAttribute('data-scheduled-column'), 'true');
+   assert.ok(pill);
+});
 
-      const strip = gridLine.querySelector('.itinerary-day-pill-strip');
-      const pill = strip?.querySelector('.itinerary-day-scheduled-pill');
+test('Test_AppendItineraryTimeMarkers_TestArrivalSlot_ExpectAppended', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const markersByAnchorSlot = new Map([
+      [720, [{
+         label: 'Arrival',
+         kind: 'arrival',
+         offsetFraction: 0,
+      }]],
+   ]);
 
-      assert.equal(strip?.getAttribute('data-scheduled-column'), 'true');
-      assert.ok(pill);
-   });
+   DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
+      gridLine,
+      markersByAnchorSlot,
+      720,
+      {},
+      { remove: 'Remove' },
+      {
+         arrival: 'arrival',
+         departure: 'departure',
+      }
+   );
 
-   test('Test_AppendItineraryTimeMarkers_TestArrivalSlot_ExpectAppended', () => {
-      const { gridLine } = makeTimelineGridLine();
-      const markersByAnchorSlot = new Map([
-         [720, [{
-            label: 'Arrival',
-            kind: 'arrival',
-            offsetFraction: 0,
-         }]],
-      ]);
+   const marker = gridLine.querySelector('.itinerary-day-boundary-marker');
 
-      DayPlannerTimelinePillAppend.appendItineraryTimeMarkers(
-         gridLine,
-         markersByAnchorSlot,
-         720,
-         {},
-         { remove: 'Remove' },
-         {
-            arrival: 'arrival',
-            departure: 'departure',
-         }
-      );
-
-      const marker = gridLine.querySelector('.itinerary-day-boundary-marker');
-
-      assert.equal(marker?.getAttribute('aria-label'), 'Arrival');
-      assert.equal(marker?.getAttribute('data-boundary-marker-kind'), 'arrival');
-   });
+   assert.equal(marker?.getAttribute('aria-label'), 'Arrival');
+   assert.equal(marker?.getAttribute('data-boundary-marker-kind'), 'arrival');
 });

@@ -6,41 +6,39 @@ import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
 
-test.describe('shortVisitConfirmation', () => {
-   installDomTestHooks({
-      after: () => {
-         cleanupConfirmPopup();
+installDomTestHooks({
+   after: () => {
+      cleanupConfirmPopup();
+   },
+});
+
+test('Test_ShowShortVisitConfirmation_TestDoNotShowAgain_ExpectConfirmPopup', () => {
+   const confirmCalls = [];
+   const cancelCalls = [];
+
+   ShortVisitConfirmation.showShortVisitConfirmation({
+      onConfirm: () => {
+         confirmCalls.push('confirmed');
+      },
+      onCancel: () => {
+         cancelCalls.push('cancelled');
       },
    });
 
-   test('Test_ShowShortVisitConfirmation_TestDoNotShowAgain_ExpectConfirmPopup', () => {
-      const confirmCalls = [];
-      const cancelCalls = [];
+   const popup = document.querySelector('.tzg-confirm');
+   const title = popup?.querySelector('.itin-top-title');
+   const message = popup?.querySelector('.tzg-popup-message');
+   const confirmButton = popup?.querySelector('.tzg-popup-confirm');
+   const cancelButton = popup?.querySelector('.tzg-popup-cancel');
 
-      ShortVisitConfirmation.showShortVisitConfirmation({
-         onConfirm: () => {
-            confirmCalls.push('confirmed');
-         },
-         onCancel: () => {
-            cancelCalls.push('cancelled');
-         },
-      });
+   assert.ok(popup);
+   assert.equal(title?.textContent, Strings.itinerary.confirmation.shortVisitTitle);
+   assert.equal(message?.textContent, Strings.itinerary.confirmation.shortVisitMessage);
+   assert.ok(popup.querySelector('.tzg-popup-do-not-show-again'));
 
-      const popup = document.querySelector('.tzg-confirm');
-      const title = popup?.querySelector('.itin-top-title');
-      const message = popup?.querySelector('.tzg-popup-message');
-      const confirmButton = popup?.querySelector('.tzg-popup-confirm');
-      const cancelButton = popup?.querySelector('.tzg-popup-cancel');
+   cancelButton?.click();
+   confirmButton?.click();
 
-      assert.ok(popup);
-      assert.equal(title?.textContent, Strings.itinerary.confirmation.shortVisitTitle);
-      assert.equal(message?.textContent, Strings.itinerary.confirmation.shortVisitMessage);
-      assert.ok(popup.querySelector('.tzg-popup-do-not-show-again'));
-
-      cancelButton?.click();
-      confirmButton?.click();
-
-      assert.deepEqual(cancelCalls, ['cancelled']);
-      assert.deepEqual(confirmCalls, ['confirmed']);
-   });
+   assert.deepEqual(cancelCalls, ['cancelled']);
+   assert.deepEqual(confirmCalls, ['confirmed']);
 });

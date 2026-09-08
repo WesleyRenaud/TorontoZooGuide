@@ -7,18 +7,18 @@ import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js'
 import { ItineraryDiff } from '../../../../scripts/itinerary/wizard/itineraryDiff.js';
 import { WizardDiffSummary } from '../../../../scripts/itinerary/wizard/diff/wizardDiffSummary.js';
 
-function draft(overrides = {}) {
+function _draft(overrides = {}) {
    return ItineraryShape.normalizeItineraryDraft(overrides);
 }
 
 test('Test_BuildItineraryDiff_TestSeededRemoved_ExpectRemovedAttractionsAndEncounters', () => {
-   const previous = draft({
+   const previous = _draft({
       animals: [{ species: 'African Lion' }],
       attractions: [{ name: 'Conservation Carousel' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
    });
-   const validated = draft({
+   const validated = _draft({
       animals: [{ species: ' african lion ' }],
       attractions: [{ name: 'Greenhouse' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
@@ -36,11 +36,11 @@ test('Test_BuildItineraryDiff_TestSeededRemoved_ExpectRemovedAttractionsAndEncou
 
 test('Test_BuildItineraryDiff_TestBackendProvided_ExpectBackendRows', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          animals: [{ species: 'African Lion' }],
          attractions: [{ name: 'Conservation Carousel' }],
       }),
-      draft({
+      _draft({
          animals: [{ species: 'African Lion' }],
          attractions: [{ name: 'Conservation Carousel' }],
       }),
@@ -54,12 +54,12 @@ test('Test_BuildItineraryDiff_TestBackendProvided_ExpectBackendRows', () => {
 });
 
 test('Test_BuildItineraryDiff_TestEmptyBackendTalks_ExpectInferredRemoved', () => {
-   const previous = draft({
+   const previous = _draft({
       guardiansTalks: [{ name: 'Only On Mondays' }],
    });
-   const validated = draft();
+   const validated = _draft();
 
-   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, draft(), {
+   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, _draft(), {
       animalVisibilityChangeThreshold: 20,
    });
 
@@ -69,13 +69,13 @@ test('Test_BuildItineraryDiff_TestEmptyBackendTalks_ExpectInferredRemoved', () =
 
 test('Test_BuildItineraryDiff_TestBackendTalkMerge_ExpectMerged', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          guardiansTalks: [
             { name: 'Not On New Day Schedule' },
             { name: 'Cancelled On Schedule' },
          ],
       }),
-      draft(),
+      _draft(),
       {
          guardiansTalks: [
             {
@@ -97,14 +97,14 @@ test('Test_BuildItineraryDiff_TestBackendTalkMerge_ExpectMerged', () => {
 });
 
 test('Test_BuildItineraryDiff_TestVisibilityDelta_ExpectReducedAndImproved', () => {
-   const previous = draft({
+   const previous = _draft({
       animals: [
          { species: 'African Lion', likelihood: 90 },
          { species: 'Amur Tiger', likelihood: 0.25 },
          { species: 'Snow Leopard', likelihood: 70 },
       ],
    });
-   const validated = draft({
+   const validated = _draft({
       animals: [
          { species: 'African Lion', likelihood: 60 },
          { species: 'Amur Tiger', likelihood: 0.7 },
@@ -128,7 +128,7 @@ test('Test_BuildItineraryDiff_TestVisibilityDelta_ExpectReducedAndImproved', () 
 
 test('Test_BuildItineraryDiff_TestLostTimes_ExpectUnscheduled', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          animals: [
             {
                species: 'African Lion',
@@ -145,7 +145,7 @@ test('Test_BuildItineraryDiff_TestLostTimes_ExpectUnscheduled', () => {
             },
          ],
       }),
-      draft({
+      _draft({
          animals: [
             {
                species: 'African Lion',
@@ -179,7 +179,7 @@ test('Test_BuildItineraryDiff_TestLostTimes_ExpectUnscheduled', () => {
 
 test('Test_BuildItineraryDiff_TestDeletedTalks_ExpectNotUnscheduled', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          guardiansTalks: [
             {
                name: 'Spotted Hyena',
@@ -189,7 +189,7 @@ test('Test_BuildItineraryDiff_TestDeletedTalks_ExpectNotUnscheduled', () => {
             },
          ],
       }),
-      draft({
+      _draft({
          guardiansTalks: [
             {
                name: 'Spotted Hyena',
@@ -208,7 +208,7 @@ test('Test_BuildItineraryDiff_TestDeletedTalks_ExpectNotUnscheduled', () => {
 
 test('Test_BuildItineraryDiff_TestDeletedEncounters_ExpectNotUnscheduled', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          wildEncounters: [
             {
                name: 'African Rainforest',
@@ -217,7 +217,7 @@ test('Test_BuildItineraryDiff_TestDeletedEncounters_ExpectNotUnscheduled', () =>
             },
          ],
       }),
-      draft({
+      _draft({
          wildEncounters: [
             {
                name: 'African Rainforest',
@@ -234,7 +234,7 @@ test('Test_BuildItineraryDiff_TestDeletedEncounters_ExpectNotUnscheduled', () =>
 });
 
 test('Test_ApplyItineraryDiffToValidation_TestPriorRemoved_ExpectPreserved', () => {
-   const previous = draft({
+   const previous = _draft({
       date: '2026-06-21',
       guardiansTalks: [
          {
@@ -275,7 +275,7 @@ test('Test_ApplyItineraryDiffToValidation_TestPriorRemoved_ExpectPreserved', () 
 
 test('Test_BuildItineraryDiff_TestDroppedTalksEncounters_ExpectRemoved', () => {
    const diff = ItineraryDiff.buildItineraryDiff(
-      draft({
+      _draft({
          guardiansTalks: [
             {
                name: 'African Lion',
@@ -291,7 +291,7 @@ test('Test_BuildItineraryDiff_TestDroppedTalksEncounters_ExpectRemoved', () => {
             },
          ],
       }),
-      draft(),
+      _draft(),
       {},
       { animalVisibilityChangeThreshold: 20 }
    );
@@ -309,10 +309,10 @@ test('Test_BuildItineraryDiff_TestDroppedTalksEncounters_ExpectRemoved', () => {
 });
 
 test('Test_BuildItineraryDiff_TestMatchingAttraction_ExpectTransportKept', () => {
-   const previous = draft({
+   const previous = _draft({
       attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
    });
-   const validated = draft({
+   const validated = _draft({
       transportations: [{
          name: 'Zoomobile',
          added_as_attraction: true,
@@ -327,10 +327,10 @@ test('Test_BuildItineraryDiff_TestMatchingAttraction_ExpectTransportKept', () =>
 });
 
 test('Test_BuildItineraryDiff_TestTransportOnly_ExpectAttractionRemoved', () => {
-   const previous = draft({
+   const previous = _draft({
       attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
    });
-   const validated = draft({
+   const validated = _draft({
       transportations: [{
          name: 'Zoomobile',
          added_as_attraction: false,
@@ -345,11 +345,11 @@ test('Test_BuildItineraryDiff_TestTransportOnly_ExpectAttractionRemoved', () => 
 
 test('Test_SummaryHelpers_TestEmptyResults_ExpectSafeDefaults', () => {
    assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(null), true);
-   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(draft()), true);
-   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(draft({
+   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(_draft()), true);
+   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(_draft({
       animals: [{ species: 'African Lion' }],
    })), false);
-   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(draft({
+   assert.equal(WizardDiffSummary.isValidatedItineraryEmpty(_draft({
       transportations: [{ name: 'Zoomobile' }],
    })), false);
    assert.equal(WizardDiffSummary.hasRemovedItems(null), false);

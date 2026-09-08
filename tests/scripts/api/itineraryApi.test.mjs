@@ -15,7 +15,7 @@ const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
 });
 
-function normalizedItineraryConfig(overrides = {}) {
+function _normalizedItineraryConfig(overrides = {}) {
    return {
       animalVisibilityChangeThreshold: overrides.animalVisibilityChangeThreshold,
       itineraryAnimalMinLikelihood: overrides.itineraryAnimalMinLikelihood,
@@ -41,7 +41,7 @@ function normalizedItineraryConfig(overrides = {}) {
    };
 }
 
-function normalizedItineraryResultFields(status, reasons = []) {
+function _normalizedItineraryResultFields(status, reasons = []) {
    return {
       status,
       reasons,
@@ -52,7 +52,7 @@ function normalizedItineraryResultFields(status, reasons = []) {
    };
 }
 
-function normalizedItineraryPath(overrides = {}) {
+function _normalizedItineraryPath(overrides = {}) {
    return {
       stops: overrides.stops ?? [],
       legs: overrides.legs ?? [],
@@ -60,7 +60,7 @@ function normalizedItineraryPath(overrides = {}) {
    };
 }
 
-function mockItineraryPathResponse(overrides = {}) {
+function _mockItineraryPathResponse(overrides = {}) {
    return {
       itinerary_path: {
          stops: overrides.stops ?? [
@@ -94,7 +94,7 @@ function mockItineraryPathResponse(overrides = {}) {
    };
 }
 
-function mockItineraryConfigResponse(overrides = {}) {
+function _mockItineraryConfigResponse(overrides = {}) {
    return {
       itinerary_config: {
          animal_visibility_change_threshold:
@@ -165,13 +165,13 @@ test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => 
             wild_encounters: [{ name: 'African Rainforest' }],
             events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
          },
-         ...mockItineraryConfigResponse(),
-         ...mockItineraryPathResponse(),
+         ..._mockItineraryConfigResponse(),
+         ..._mockItineraryPathResponse(),
       });
    };
 
    assert.deepEqual(await ItineraryApi.getItineraryRequest(), {
-      ...normalizedItineraryResultFields('success'),
+      ..._normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '09:30',
@@ -185,7 +185,7 @@ test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => 
          transportationStations: [],
          events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
       },
-      itineraryPath: normalizedItineraryPath({
+      itineraryPath: _normalizedItineraryPath({
          stops: [
             {
                scheduleItemKind: 'animals',
@@ -214,7 +214,7 @@ test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => 
             },
          ],
       }),
-      itineraryConfig: normalizedItineraryConfig(),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
@@ -225,12 +225,12 @@ test('Test_SetItineraryRequest_TestMissingPath_ExpectEmptyArrays', async () => {
          date: '2026-06-15',
          animals: [],
       },
-      ...mockItineraryConfigResponse(),
+      ..._mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(
       (await ItineraryApi.setItineraryRequest({ date: '2026-06-15' })).itineraryPath,
-      normalizedItineraryPath()
+      _normalizedItineraryPath()
    );
 });
 
@@ -243,11 +243,11 @@ test('Test_SetItineraryRequest_TestFailurePayload_ExpectItineraryKept', async ()
          animals: 'African Lion',
          attractions: [{ name: 'Conservation Carousel' }],
       },
-      ...mockItineraryConfigResponse(),
+      ..._mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(await ItineraryApi.setItineraryRequest({ date: '2026-06-15' }), {
-      ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
+      ..._normalizedItineraryResultFields('arrivalDepartureTooClose'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '',
@@ -261,8 +261,8 @@ test('Test_SetItineraryRequest_TestFailurePayload_ExpectItineraryKept', async ()
          transportationStations: [],
          events: [],
       },
-      itineraryPath: normalizedItineraryPath(),
-      itineraryConfig: normalizedItineraryConfig(),
+      itineraryPath: _normalizedItineraryPath(),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
@@ -273,17 +273,17 @@ test('Test_SetItineraryArrivalTimeRequest_TestFocusedEndpoints_ExpectNormalized'
       calls.push([url, JSON.parse(options.body)]);
       return mockJsonResponse({
          status: 'success',
-         ...mockItineraryConfigResponse(),
+         ..._mockItineraryConfigResponse(),
       });
    };
 
    assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest(' 09:45 '), {
-      ...normalizedItineraryResultFields('success'),
-      itineraryConfig: normalizedItineraryConfig(),
+      ..._normalizedItineraryResultFields('success'),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
    assert.deepEqual(await ItineraryApi.setItineraryDepartureTimeRequest(''), {
-      ...normalizedItineraryResultFields('success'),
-      itineraryConfig: normalizedItineraryConfig(),
+      ..._normalizedItineraryResultFields('success'),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
    assert.deepEqual(calls, [
       [
@@ -314,7 +314,7 @@ test('Test_SuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async 
       return mockJsonResponse({
          status: 'success',
          suppressed_warnings: [],
-         ...mockItineraryConfigResponse({
+         ..._mockItineraryConfigResponse({
             suppressedErrorTypes: ['arrivalDepartureTooClose'],
          }),
       });
@@ -323,8 +323,8 @@ test('Test_SuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async 
    assert.deepEqual(
       await ItineraryApi.suppressItineraryWarningRequest('arrivalDepartureTooClose'),
       {
-         ...normalizedItineraryResultFields('success'),
-         itineraryConfig: normalizedItineraryConfig({
+         ..._normalizedItineraryResultFields('success'),
+         itineraryConfig: _normalizedItineraryConfig({
             suppressedErrorTypes: ['arrivalDepartureTooClose'],
          }),
       }
@@ -335,13 +335,13 @@ test('Test_SetItineraryArrivalTimeRequest_TestSuppressedWarnings_ExpectNormalize
    globalThis.fetch = async () => mockJsonResponse({
       status: 'success',
       suppressed_warnings: ['arrivalDepartureTooClose'],
-      ...mockItineraryConfigResponse(),
+      ..._mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest('09:45'), {
-      ...normalizedItineraryResultFields('success'),
+      ..._normalizedItineraryResultFields('success'),
       suppressedWarnings: ['arrivalDepartureTooClose'],
-      itineraryConfig: normalizedItineraryConfig(),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
@@ -366,7 +366,7 @@ test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
          guardians_talks: [],
          wild_encounters: [],
       },
-      ...mockItineraryConfigResponse(),
+      ..._mockItineraryConfigResponse(),
    });
 
    const result = await ItineraryApi.setItineraryRequest({
@@ -395,14 +395,14 @@ test('Test_SetItineraryArrivalTimeRequest_TestShortVisit_ExpectWarning', async (
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
       status: 'arrivalDepartureTooClose',
-      ...mockItineraryConfigResponse(),
+      ..._mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(await ItineraryApi.setItineraryArrivalTimeRequest('11:35', {
       confirmingShortVisit: true,
    }), {
-      ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
-      itineraryConfig: normalizedItineraryConfig(),
+      ..._normalizedItineraryResultFields('arrivalDepartureTooClose'),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
@@ -445,12 +445,12 @@ test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
             guardians_talks: [],
             wild_encounters: [],
          },
-         ...mockItineraryConfigResponse(),
+         ..._mockItineraryConfigResponse(),
       });
    };
 
    assert.deepEqual(await ItineraryApi.acceptItineraryRequest(), {
-      ...normalizedItineraryResultFields('success', [
+      ..._normalizedItineraryResultFields('success', [
          {
             code: 'wildEncounterTimeConflict',
             type: 'wildEncounterTimeConflict',
@@ -485,8 +485,8 @@ test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
          transportationStations: [],
          events: [],
       },
-      itineraryPath: normalizedItineraryPath(),
-      itineraryConfig: normalizedItineraryConfig(),
+      itineraryPath: _normalizedItineraryPath(),
+      itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
@@ -501,7 +501,7 @@ test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
          guardians_talks: [],
          wild_encounters: [],
       },
-      ...mockItineraryConfigResponse({
+      ..._mockItineraryConfigResponse({
          animalVisibilityChangeThreshold: 25,
          itineraryAnimalMinLikelihood: 40,
          eventTypes: [
@@ -518,7 +518,7 @@ test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
    });
 
    assert.deepEqual(await ItineraryApi.getItineraryRequest(), {
-      ...normalizedItineraryResultFields('success'),
+      ..._normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '',
@@ -532,8 +532,8 @@ test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
          transportationStations: [],
          events: [],
       },
-      itineraryPath: normalizedItineraryPath(),
-      itineraryConfig: normalizedItineraryConfig({
+      itineraryPath: _normalizedItineraryPath(),
+      itineraryConfig: _normalizedItineraryConfig({
          animalVisibilityChangeThreshold: 25,
          itineraryAnimalMinLikelihood: 40,
          eventTypes: [
@@ -602,7 +602,7 @@ test('Test_UnscheduleItineraryItemRequest_TestResponse_ExpectNormalized', async 
          itemType: 'animals',
          key: 'African Lion||Africa Savanna',
       }),
-      normalizedItineraryResultFields('success')
+      _normalizedItineraryResultFields('success')
    );
 });
 
@@ -624,7 +624,7 @@ test('Test_RemoveItemFromItineraryRequest_TestResponse_ExpectNormalized', async 
          itemType: 'attractions',
          key: 'Conservation Carousel',
       }),
-      normalizedItineraryResultFields('success')
+      _normalizedItineraryResultFields('success')
    );
 });
 
@@ -649,7 +649,7 @@ test('Test_ScheduleItineraryItemRequest_TestResponse_ExpectNormalized', async ()
 
    assert.deepEqual(
       await ItineraryApi.scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
-      normalizedItineraryResultFields('noAvailableSlot')
+      _normalizedItineraryResultFields('noAvailableSlot')
    );
 });
 
@@ -692,7 +692,7 @@ test('Test_BulkScheduleItineraryRequest_TestAnimals_ExpectNormalized', async () 
             wild_encounters: [],
             events: [],
          },
-         ...mockItineraryConfigResponse(),
+         ..._mockItineraryConfigResponse(),
       });
    };
 
@@ -722,7 +722,7 @@ test('Test_UnscheduleAllItineraryItemsRequest_TestResponse_ExpectNormalized', as
             wild_encounters: [],
             events: [],
          },
-         ...mockItineraryConfigResponse(),
+         ..._mockItineraryConfigResponse(),
       });
    };
 
