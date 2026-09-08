@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmFragment } from './components/confirmFragment.js';
 import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
@@ -10,7 +11,7 @@ export class WildEncounterUnscheduleFragment {
       return issues
          .filter((issue) => issue?.type === WildEncounterUnscheduleFragment.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
-            .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
+            .map((item) => ValueNormalizer.asTrimmedString(item?.name))
             .filter(Boolean));
 
    }
@@ -25,7 +26,7 @@ export class WildEncounterUnscheduleFragment {
       const encounterItem = issues
          .filter((issue) => issue?.type === WildEncounterUnscheduleFragment.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
-         .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === encounterName);
+         .find((item) => ValueNormalizer.asTrimmedString(item?.name) === encounterName);
 
       const encounterTime = ItineraryItemFormatter.formatClockTime(encounterItem?.start_time);
 
@@ -49,7 +50,7 @@ export class WildEncounterUnscheduleFragment {
          return;
       }
 
-      const encounterName = ItineraryItemFormatter.normalizeText(encounter.encounterName);
+      const encounterName = ValueNormalizer.asTrimmedString(encounter.encounterName);
       const message = encounter.encounterTime
          ? Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
             encounterName,

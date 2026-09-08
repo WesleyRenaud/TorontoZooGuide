@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { AttractionSelectorStoredAttractionFactory } from './attractionSelectorStoredAttractionFactory.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
@@ -26,7 +27,7 @@ export class AttractionSelectorModel {
 
    static getAttractionInfoLink(row) {
       const value = row?.info_link ?? null;
-      const link = typeof value === 'string' ? value.trim() : '';
+      const link = ValueNormalizer.asTrimmedString(value);
       return link || null;
    }
 

@@ -27,12 +27,23 @@ test('Test_AsObject_TestMissingValues_ExpectEmptyObject', () => {
 
 test('Test_AsTrimmedString_TestWhitespace_ExpectTrimmed', () => {
    assert.equal(ValueNormalizer.asTrimmedString('  Amur Tiger  '), 'Amur Tiger');
-   assert.equal(ValueNormalizer.asTrimmedString(42), '');
+});
+
+test('Test_AsTrimmedString_TestNullish_ExpectEmpty', () => {
+   assert.equal(ValueNormalizer.asTrimmedString(null), '');
+   assert.equal(ValueNormalizer.asTrimmedString(undefined), '');
+});
+
+test('Test_AsTrimmedString_TestNonStrings_ExpectCoerced', () => {
+   assert.equal(ValueNormalizer.asTrimmedString(42), '42');
+   assert.equal(ValueNormalizer.asTrimmedString(false), 'false');
+   assert.equal(ValueNormalizer.asTrimmedString(true), 'true');
 });
 
 test('Test_AsNullableString_TestBlank_ExpectNull', () => {
    assert.equal(ValueNormalizer.asNullableString('  Snow Leopard  '), 'Snow Leopard');
    assert.equal(ValueNormalizer.asNullableString('  '), null);
+   assert.equal(ValueNormalizer.asNullableString(null), null);
 });
 
 test('Test_AsBoolean_TestTruthyInputs_ExpectStrictTrueOnly', () => {
@@ -50,8 +61,8 @@ test('Test_NormalizeNumber_TestValidAndInvalid_ExpectNumberOrNull', () => {
 
 test('Test_AsTrimmedStringList_TestMixedValues_ExpectTrimmedNonEmpty', () => {
    assert.deepEqual(
-      ValueNormalizer.asTrimmedStringList([ ' 2:00 PM ', '', null, '3:30 PM' ]),
-      [ '2:00 PM', '3:30 PM' ]
+      ValueNormalizer.asTrimmedStringList([ ' 2:00 PM ', '', null, '3:30 PM', 42 ]),
+      [ '2:00 PM', '3:30 PM', '42' ]
    );
    assert.deepEqual(ValueNormalizer.asTrimmedStringList(null), []);
 });

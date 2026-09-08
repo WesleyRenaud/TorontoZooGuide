@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { ClosedExhibitFragment } from './closedExhibitFragment.js';
 import { DateContext } from './dateContext.js';
 import { FocusRequest } from './focusRequest.js';
@@ -73,7 +74,7 @@ export class MapUpdater {
 
       function buildFocusContext(options) {
          const focusRow = options?.focus?.row || null;
-         const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
+         const focusType = ValueNormalizer.asTrimmedString(options?.focus?.type || focusRow?.type);
 
          return {
             focusRow,

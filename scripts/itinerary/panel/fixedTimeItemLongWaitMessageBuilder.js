@@ -1,5 +1,5 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../strings.js';
 import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
@@ -43,7 +43,7 @@ export class FixedTimeItemLongWaitMessageBuilder {
    }
 
    static longWaitConfirmMessage(item, strings) {
-      const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
+      const itemName = ValueNormalizer.asTrimmedString(item.itemName);
 
       return item.itemTime
          ? strings.fixedTimeItemLongWaitMessage(

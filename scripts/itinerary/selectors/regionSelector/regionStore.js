@@ -1,5 +1,5 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { RegionSelectionNormalizer } from './regionSelectionNormalizer.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 
 export class RegionStore {
    static createEmptyRegion() {
@@ -16,8 +16,8 @@ export class RegionStore {
       } = region;
 
       return {
-         name: RegionSelectionNormalizer.normalizeRegionName(name),
-         exhibits: RegionSelectionNormalizer.normalizeRegionExhibits(exhibits),
+         name: ValueNormalizer.asTrimmedString(name),
+         exhibits: ValueNormalizer.asTrimmedStringList(exhibits),
       };
    }
 
@@ -57,9 +57,7 @@ export class RegionStore {
          exhibit,
          enclosure_name: enclosureName,
       } = AnimalIdentity.normalizeAnimalIdentityFields(animal);
-      const imageSrc = typeof animal.imageSrc === 'string'
-         ? animal.imageSrc.trim()
-         : '';
+      const imageSrc = ValueNormalizer.asTrimmedString(animal.imageSrc);
 
       if (!species) {
          return null;
@@ -75,9 +73,7 @@ export class RegionStore {
          exhibit,
          ...(enclosureName ? { enclosure_name: enclosureName } : {}),
          imageSrc: imageSrc || null,
-         id: typeof animal.id === 'string' && animal.id.trim()
-            ? animal.id.trim()
-            : defaultId,
+         id: ValueNormalizer.asTrimmedString(animal.id) || defaultId,
       };
    }
 
@@ -97,7 +93,7 @@ export class RegionStore {
          return '';
       }
 
-      const id = normalizedAnimal.id.trim().toLowerCase();
+      const id = ValueNormalizer.asTrimmedString(normalizedAnimal.id).toLowerCase();
       if (id) return id;
 
       return AnimalIdentity.buildAnimalIdentityStorageKey(normalizedAnimal);

@@ -1,12 +1,7 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 
 export class SpeciesOverlayContentBuilder {
-   static readText(value) {
-      return typeof value === 'string'
-         ? value.trim()
-         : '';
-   }
-
    static createTextElement(tagName, className, text) {
       const element = document.createElement(tagName);
       element.className = className;
@@ -18,12 +13,12 @@ export class SpeciesOverlayContentBuilder {
       const image = document.createElement('img');
       image.className = 'new-animal-image';
       image.src = `images/details/animals/${AssetKeyNormalizer.normalize(animal.exhibit)}/${AssetKeyNormalizer.normalize(animal.species)}.png`;
-      image.alt = SpeciesOverlayContentBuilder.readText(animal.species);
+      image.alt = ValueNormalizer.asTrimmedString(animal.species);
       return image;
    }
 
    static createDetailSection(title, value) {
-      const text = SpeciesOverlayContentBuilder.readText(value);
+      const text = ValueNormalizer.asTrimmedString(value);
 
       if (!text) {
          return null;

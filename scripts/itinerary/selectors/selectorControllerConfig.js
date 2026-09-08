@@ -1,3 +1,5 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
+
 export class SelectorControllerConfig {
    static defaultMigrateSelected(items) {
       return items;
@@ -5,7 +7,7 @@ export class SelectorControllerConfig {
 
    static buildSelectionFingerprint(items = []) {
       return items
-         .map((item) => String(item.id).trim())
+         .map((item) => ValueNormalizer.asTrimmedString(item.id))
          .filter(Boolean)
          .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: 'base' }))
          .join('\0');

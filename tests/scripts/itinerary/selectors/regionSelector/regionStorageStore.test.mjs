@@ -21,6 +21,7 @@ test('Test_LoadSelectedNames_TestWhitespaceAndNonStrings_ExpectTrimmedNames', ()
 
    assert.deepEqual(RegionStorageStore.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY), [
       'Africa Savanna',
+      '42',
       'Eurasia Wilds',
    ]);
 });

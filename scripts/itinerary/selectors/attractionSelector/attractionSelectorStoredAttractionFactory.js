@@ -1,8 +1,9 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 
 export class AttractionSelectorStoredAttractionFactory {
    static createStoredAttractionFromString(item) {
-      const name = StoredSelectionNormalizer.normalizeStoredString(item);
+      const name = ValueNormalizer.asTrimmedString(item);
 
       if (!name) {
          return null;
@@ -22,7 +23,7 @@ export class AttractionSelectorStoredAttractionFactory {
    }
 
    static createStoredAttractionFromObject(item) {
-      const name = StoredSelectionNormalizer.normalizeStoredString(item.name);
+      const name = ValueNormalizer.asTrimmedString(item.name);
       const id = StoredSelectionNormalizer.normalizeStoredId(item.id, name);
 
       if (!id) {
@@ -32,7 +33,7 @@ export class AttractionSelectorStoredAttractionFactory {
       return {
          id,
          name,
-         subtitle: StoredSelectionNormalizer.normalizeStoredString(item.subtitle),
+         subtitle: ValueNormalizer.asTrimmedString(item.subtitle),
          freeWithAdmission: StoredSelectionNormalizer.normalizeStoredBoolean(item.freeWithAdmission),
          seasonal: StoredSelectionNormalizer.normalizeStoredBoolean(item.seasonal),
          isClosed: StoredSelectionNormalizer.normalizeStoredBoolean(item.isClosed),

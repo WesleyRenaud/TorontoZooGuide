@@ -1,6 +1,7 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 export class ScheduleItemEventFormatter {
    static formatItineraryEventTypeLabel(eventType) {
-      const normalized = String(eventType ?? '').trim();
+      const normalized = ValueNormalizer.asTrimmedString(eventType);
 
       if (!normalized) {
          return '';

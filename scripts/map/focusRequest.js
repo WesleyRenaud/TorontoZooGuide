@@ -6,7 +6,7 @@ export class FocusRequest {
          return;
       }
 
-      const type = ValueNormalizer.asTrimmedString(String(focusRequest.type || ''));
+      const type = ValueNormalizer.asTrimmedString(focusRequest.type);
 
       setTimeout(() => {
          focus.focus({
@@ -21,7 +21,7 @@ export class FocusRequest {
          return null;
       }
 
-      const type = ValueNormalizer.asTrimmedString(String(payload.type || ''));
+      const type = ValueNormalizer.asTrimmedString(payload.type);
 
       if (!type) {
          return null;
@@ -42,7 +42,7 @@ export class FocusRequest {
       }
 
       if (payload && typeof payload === 'object' && payload.row) {
-         const type = ValueNormalizer.asTrimmedString(String(payload.row.type || ''));
+         const type = ValueNormalizer.asTrimmedString(payload.row.type);
 
          if (!type) {
             return null;

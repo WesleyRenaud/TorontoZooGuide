@@ -1,13 +1,8 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 import { Strings } from '../strings.js';
 
 export class AnimalDetailViewBuilder {
-   static readText(value = '') {
-      return typeof value === 'string'
-         ? value.trim()
-         : '';
-   }
-
    static buildBackButton(onBack) {
       const button = document.createElement('button');
       button.className = 'animal-info-back-button';
@@ -18,7 +13,7 @@ export class AnimalDetailViewBuilder {
    }
 
    static buildDetailSection(title, value) {
-      const text = AnimalDetailViewBuilder.readText(value);
+      const text = ValueNormalizer.asTrimmedString(value);
 
       if (!text) {
          return null;
@@ -40,8 +35,8 @@ export class AnimalDetailViewBuilder {
    }
 
    static buildAnimalImage(animal) {
-      const exhibitFile = AssetKeyNormalizer.normalize(AnimalDetailViewBuilder.readText(animal?.exhibit));
-      const species = AnimalDetailViewBuilder.readText(animal?.species);
+      const exhibitFile = AssetKeyNormalizer.normalize(ValueNormalizer.asTrimmedString(animal?.exhibit));
+      const species = ValueNormalizer.asTrimmedString(animal?.species);
       const speciesFile = AssetKeyNormalizer.normalize(species);
 
       if (!exhibitFile || !speciesFile) {
@@ -57,7 +52,7 @@ export class AnimalDetailViewBuilder {
    }
 
    static buildHeading(tagName, className, text) {
-      const value = AnimalDetailViewBuilder.readText(text);
+      const value = ValueNormalizer.asTrimmedString(text);
 
       if (!value) {
          return null;
@@ -70,8 +65,8 @@ export class AnimalDetailViewBuilder {
    }
 
    static buildViewOnMapButton(animal, exhibitName) {
-      const species = AnimalDetailViewBuilder.readText(animal?.species);
-      const exhibit = AnimalDetailViewBuilder.readText(exhibitName) || AnimalDetailViewBuilder.readText(animal?.exhibit);
+      const species = ValueNormalizer.asTrimmedString(animal?.species);
+      const exhibit = ValueNormalizer.asTrimmedString(exhibitName) || ValueNormalizer.asTrimmedString(animal?.exhibit);
 
       const button = document.createElement('button');
       button.className = 'view-on-map-button';

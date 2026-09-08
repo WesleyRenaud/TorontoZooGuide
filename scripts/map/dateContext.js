@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { SearchContext } from '../search/searchContext.js';
 import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
@@ -20,11 +21,11 @@ export class DateContext {
    };
 
    static async buildMapDateContext(preset, dateStr) {
-      const presetKey = String(preset || '').trim().toLowerCase();
+      const presetKey = ValueNormalizer.asTrimmedString(preset).toLowerCase();
       const presetDateCtx = DateContext.PRESET_DATE_CONTEXTS[presetKey];
 
       if (presetDateCtx) {
-         const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
+         const trimmed = ValueNormalizer.asTrimmedString(dateStr);
          const anchorIso = VisitDateValidator.getYear(trimmed) != null ? trimmed : VisitDateValidator.toISODate(VisitDateValidator.getToday());
 
          const anchorCtx = await SearchContext.buildDateSearchContext(anchorIso, { includeTemp: false });

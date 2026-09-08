@@ -1,3 +1,5 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
+
 export class ItineraryEventTypes {
    static isScheduleItemEventType(selection, eventTypes = []) {
       return eventTypes.includes(selection);
@@ -33,7 +35,7 @@ export class ItineraryEventTypes {
       const boundaries = ItineraryEventTypes.normalizeVisitBoundaryEventTypes(
          visitBoundaryEventTypes
       );
-      const normalizedValue = String(value ?? '').trim();
+      const normalizedValue = ValueNormalizer.asTrimmedString(value);
 
       return normalizedValue === boundaries.arrival
          || normalizedValue === boundaries.departure;

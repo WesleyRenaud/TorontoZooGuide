@@ -10,14 +10,16 @@ export class ValueNormalizer {
    }
 
    static asTrimmedString(value) {
-      return typeof value === 'string'
-         ? value.trim()
-         : '';
+      if (value == null) {
+         return '';
+      }
+
+      return String(value).trim();
    }
 
    static asTrimmedStringList(values) {
       return ValueNormalizer.asArray(values)
-         .map((value) => String(value ?? '').trim())
+         .map(ValueNormalizer.asTrimmedString)
          .filter(Boolean);
    }
 

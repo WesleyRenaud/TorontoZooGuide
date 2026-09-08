@@ -1,4 +1,4 @@
-import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { GuardiansTalkScheduleItemKey } from './guardiansTalkScheduleItemKey.js';
 import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
 import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
@@ -52,7 +52,7 @@ export class GuardiansTalkSelectorModel {
    }
 
    static getGuardiansTalkScheduleStart(row) {
-      return StoredSelectionNormalizer.normalizeStoredString(row?.start_time);
+      return ValueNormalizer.asTrimmedString(row?.start_time);
    }
 
    static getGuardiansTalkSubtitle(row) {
@@ -71,9 +71,9 @@ export class GuardiansTalkSelectorModel {
 
    static readGuardiansTalkStoredFields(item) {
       return {
-         location: StoredSelectionNormalizer.normalizeStoredString(item?.location),
-         start_time: StoredSelectionNormalizer.normalizeStoredString(item?.start_time),
-         end_time: StoredSelectionNormalizer.normalizeStoredString(item?.end_time),
+         location: ValueNormalizer.asTrimmedString(item?.location),
+         start_time: ValueNormalizer.asTrimmedString(item?.start_time),
+         end_time: ValueNormalizer.asTrimmedString(item?.end_time),
       };
    }
 
@@ -81,7 +81,7 @@ export class GuardiansTalkSelectorModel {
       return {
          location: GuardiansTalkSelectorModel.getGuardiansTalkLocation(row),
          start_time: GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart(row),
-         end_time: StoredSelectionNormalizer.normalizeStoredString(row?.end_time),
+         end_time: ValueNormalizer.asTrimmedString(row?.end_time),
       };
    }
 }

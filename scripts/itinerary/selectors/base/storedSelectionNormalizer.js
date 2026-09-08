@@ -1,23 +1,19 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelectionHelper } from './storedSelectionHelper.js';
+
 export class StoredSelectionNormalizer {
    static normalizeStoredBoolean(value) {
       return value === true;
    }
 
-   static normalizeStoredString(value) {
-      return typeof value === 'string'
-         ? value.trim()
-         : '';
-   }
-
    static normalizeStoredLink(value) {
-      const link = StoredSelectionNormalizer.normalizeStoredString(value);
+      const link = ValueNormalizer.asTrimmedString(value);
       return link || null;
    }
 
    static normalizeStoredId(value, fallback = '') {
-      return StoredSelectionNormalizer.normalizeStoredString(value)
-         || StoredSelectionNormalizer.normalizeStoredString(fallback);
+      return ValueNormalizer.asTrimmedString(value)
+         || ValueNormalizer.asTrimmedString(fallback);
    }
 
    static migrateStoredSelectionItems(items, {

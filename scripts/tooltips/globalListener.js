@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 export class GlobalListener {
    static createTooltipGlobalListeners({
    tooltipEl,
@@ -16,7 +17,7 @@ export class GlobalListener {
       function handleSpeciesLinkClick(speciesLink, event) {
          event.stopPropagation();
 
-         const externalHref = String(speciesLink.dataset.externalHref ?? '').trim();
+         const externalHref = ValueNormalizer.asTrimmedString(speciesLink.dataset.externalHref);
 
          if (externalHref) {
             window.open(externalHref, '_blank');

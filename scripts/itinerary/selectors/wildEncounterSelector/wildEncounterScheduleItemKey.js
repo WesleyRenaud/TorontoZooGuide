@@ -1,30 +1,33 @@
-import { WildEncounterScheduleItemKeyHelper } from './wildEncounterScheduleItemKeyHelper.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 
 export class WildEncounterScheduleItemKey {
    static WILD_ENCOUNTER_ITEM_KEY_SEPARATOR = '||';
    constructor(name = '', startTime = '', endTime = '') {
-      this.name = String(name ?? '').trim();
-      this.startTime = String(startTime ?? '').trim();
-      this.endTime = String(endTime ?? '').trim();
+      this.name = ValueNormalizer.asTrimmedString(name);
+      this.startTime = ValueNormalizer.asTrimmedString(startTime);
+      this.endTime = ValueNormalizer.asTrimmedString(endTime);
       Object.freeze(this);
    }
 
    static fromWire(wire) {
-      const parts = String(wire ?? '').split(WildEncounterScheduleItemKey.WILD_ENCOUNTER_ITEM_KEY_SEPARATOR, 3);
-      const name = parts[0]?.trim() ?? '';
+      const parts = ValueNormalizer.asTrimmedString(wire).split(
+         WildEncounterScheduleItemKey.WILD_ENCOUNTER_ITEM_KEY_SEPARATOR,
+         3
+      );
+      const name = ValueNormalizer.asTrimmedString(parts[0]);
 
       if (!name || parts.length < 2) {
          return null;
       }
 
-      const startTime = WildEncounterScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[1]);
+      const startTime = ValueNormalizer.asTrimmedString(parts[1]);
 
       if (!startTime) {
          return null;
       }
 
       if (parts.length > 2) {
-         const endTime = WildEncounterScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[2]);
+         const endTime = ValueNormalizer.asTrimmedString(parts[2]);
 
          if (!endTime) {
             return null;
@@ -38,10 +41,10 @@ export class WildEncounterScheduleItemKey {
 
    static fromRow(row) {
       const name = row?.name ?? row?.wild_encounter ?? '';
-      const startTime = String(row?.start_time ?? '').trim();
-      const endTime = String(row?.end_time ?? '').trim();
+      const startTime = ValueNormalizer.asTrimmedString(row?.start_time);
+      const endTime = ValueNormalizer.asTrimmedString(row?.end_time);
 
-      if (!String(name).trim() || !startTime) {
+      if (!ValueNormalizer.asTrimmedString(name) || !startTime) {
          return null;
       }
 
