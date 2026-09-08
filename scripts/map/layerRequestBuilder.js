@@ -1,5 +1,5 @@
 import { TransportationSelectorModel } from '../itinerary/selectors/transportationSelector/transportationSelectorModel.js';
-import { SourceHelpers } from './sourceHelpers.js';
+import { SourceHelper } from './sourceHelper.js';
 
 export class LayerRequestBuilder {
    static uniqStrings(values) {
@@ -107,6 +107,6 @@ export class LayerRequestBuilder {
          rows.push(transportation);
       });
 
-      return SourceHelpers.normalizeTypedRows(rows, 'transportation');
+      return SourceHelper.normalizeTypedRows(rows, 'transportation');
    }
 }

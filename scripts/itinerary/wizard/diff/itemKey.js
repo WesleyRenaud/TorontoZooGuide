@@ -1,7 +1,7 @@
-import { ItemKeyHelpers } from './itemKeyHelpers.js';
+import { ItemKeyHelper } from './itemKeyHelper.js';
 
 export class ItemKey {
    static buildItemKey(item, field) {
-      return ItemKeyHelpers.normalizeKeyPart(item?.[field]);
+      return ItemKeyHelper.normalizeKeyPart(item?.[field]);
    }
 }

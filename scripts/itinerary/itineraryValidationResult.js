@@ -1,4 +1,4 @@
-import { WizardDiffSummary } from './wizard/diff/wizardDiffSummary.js';
+import { WizardDiffPresenter } from './wizard/diff/wizardDiffPresenter.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 export class ItineraryValidationResult {
@@ -15,11 +15,11 @@ export class ItineraryValidationResult {
          diff.removed);
       validation.adjustments = adjustments;
       validation.hasChanges = (
-         WizardDiffSummary.hasAddedItems(validation.added)
-         || WizardDiffSummary.hasRemovedItems(validation.removed)
-         || WizardDiffSummary.hasUnscheduledItems(validation.unscheduled)
-         || WizardDiffSummary.hasReducedVisibility(validation.reducedVisibility)
-         || WizardDiffSummary.hasImprovedVisibility(validation.improvedVisibility)
+         WizardDiffPresenter.hasAddedItems(validation.added)
+         || WizardDiffPresenter.hasRemovedItems(validation.removed)
+         || WizardDiffPresenter.hasUnscheduledItems(validation.unscheduled)
+         || WizardDiffPresenter.hasReducedVisibility(validation.reducedVisibility)
+         || WizardDiffPresenter.hasImprovedVisibility(validation.improvedVisibility)
          || validation.adjustments.length > 0
       );
    }

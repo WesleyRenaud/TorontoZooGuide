@@ -2,11 +2,11 @@ import { ItineraryMapController } from '../itinerary/itineraryMapController.js';
 import { ItineraryRenderer } from '../itinerary/itineraryRenderer.js';
 import { ItineraryService } from '../itinerary/itineraryService.js';
 import { ItineraryShape } from '../itinerary/itineraryShape.js';
-import { OfferPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
-import { WizardDiffSummary } from '../itinerary/wizard/diff/wizardDiffSummary.js';
-import { ValidationPopup } from '../itinerary/wizard/validationPopup.js';
+import { OfferPastItineraryClearOrRecoverer } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecoverer.js';
+import { WizardDiffPresenter } from '../itinerary/wizard/diff/wizardDiffPresenter.js';
+import { ValidationFragment } from '../itinerary/wizard/validationFragment.js';
 import { WizardController } from '../itinerary/wizard/wizardController.js';
-import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { LoadInlineZooMapLoader } from '../map/loadInlineZooMapLoader.js';
 
 export class ItineraryPageBootstrap {
    static DEFAULT_WIZARD_STEP = 'date';
@@ -47,7 +47,7 @@ export class ItineraryPageBootstrap {
 
       ItineraryPageBootstrap.lastShownValidationSignature = validationSignature;
 
-      ValidationPopup.showWizardValidationPopupIfNeeded({
+      ValidationFragment.showWizardValidationPopupIfNeeded({
          mountEl,
          pendingValidation: {
             added: itinerary.validation.added,
@@ -56,7 +56,7 @@ export class ItineraryPageBootstrap {
             reducedVisibility: itinerary.validation.reducedVisibility,
             improvedVisibility: itinerary.validation.improvedVisibility,
             adjustments: itinerary.validation.adjustments,
-            isEmptyItinerary: WizardDiffSummary.isValidatedItineraryEmpty(itinerary),
+            isEmptyItinerary: WizardDiffPresenter.isValidatedItineraryEmpty(itinerary),
          },
          onViewAlternatives: (step) => openWizard({ startAt: step }),
       });
@@ -70,7 +70,7 @@ export class ItineraryPageBootstrap {
       const itinerary = providedItinerary ?? await ItineraryService.getItinerary();
 
       if (!skipStaleCheck) {
-         const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
+         const pastDatePromptShown = await OfferPastItineraryClearOrRecoverer.offerPastItineraryClearOrRecovery({
             mountEl,
             itinerary,
             onCleared: () => {
@@ -136,7 +136,7 @@ export class ItineraryPageBootstrap {
       }
 
       try {
-         await LoadInlineZooMap.loadInlineZooMap();
+         await LoadInlineZooMapLoader.loadInlineZooMap();
          ItineraryMapController.initItineraryMap();
       } catch (err) {
          console.warn('ItineraryMapController.initItineraryMap() failed:', err);

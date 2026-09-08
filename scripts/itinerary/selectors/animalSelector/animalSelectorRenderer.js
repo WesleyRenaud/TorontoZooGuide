@@ -1,6 +1,6 @@
-import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
+import { SpeciesLinkTitleBuilder } from '../../../animals/speciesLinkTitleBuilder.js';
 import { AnimalSelectorModel } from './animalSelectorModel.js';
-import { AnimalSelectorRendererHelpers } from './animalSelectorRendererHelpers.js';
+import { AnimalSelectorRendererHelper } from './animalSelectorRendererHelper.js';
 import { ResultRenderer } from '../base/resultRenderer.js';
 import { Strings } from '../../../strings.js';
 
@@ -13,7 +13,7 @@ export class AnimalSelectorRenderer {
       const titleWrap = document.createElement('div');
       titleWrap.className = 'itin-animal-title-wrap';
 
-      const titleEl = CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
+      const titleEl = SpeciesLinkTitleBuilder.createAnimalTitleLinkElement({
          species,
          enclosureName: AnimalSelectorModel.getAnimalEnclosureName(row),
          className: 'animal-result-species',
@@ -21,7 +21,7 @@ export class AnimalSelectorRenderer {
 
       titleWrap.appendChild(titleEl);
 
-      const warning = AnimalSelectorRendererHelpers.createLikelihoodWarning(
+      const warning = AnimalSelectorRendererHelper.createLikelihoodWarning(
          AnimalSelectorModel.getAnimalLikelihoodLevel(row)
       );
 

@@ -1,12 +1,12 @@
-import { FocusTargetFinderHelpers } from './focusTargetFinderHelpers.js';
+import { FocusTargetFinderHelper } from './focusTargetFinderHelper.js';
 import { CoordKey } from '../map/coordKey.js';
-import { TooltipRenderers } from '../tooltips/tooltipRenderers.js';
+import { TooltipRenderer } from '../tooltips/tooltipRenderer.js';
 
 export class FocusTargetFinder {
    static createFocusMatch(row, type) {
       const typeKey = String(type || row?.type || '');
-      const renderer = TooltipRenderers.TYPE_REGISTRY?.[typeKey]
-         ?? TooltipRenderers.TYPE_REGISTRY?.animal
+      const renderer = TooltipRenderer.TYPE_REGISTRY?.[typeKey]
+         ?? TooltipRenderer.TYPE_REGISTRY?.animal
          ?? null;
 
       const matchFn = renderer?.isMatch
@@ -53,12 +53,12 @@ export class FocusTargetFinder {
             continue;
          }
 
-         const distance = FocusTargetFinderHelpers.distToViewportCenter(marker, viewportEl);
+         const distance = FocusTargetFinderHelper.distToViewportCenter(marker, viewportEl);
 
          let bestScoreHere = -Infinity;
 
          for (const item of matches) {
-            const score = (FocusTargetFinderHelpers.itemLikelihood(item) * 1000) - distance;
+            const score = (FocusTargetFinderHelper.itemLikelihood(item) * 1000) - distance;
             if (score > bestScoreHere) {
                bestScoreHere = score;
             }

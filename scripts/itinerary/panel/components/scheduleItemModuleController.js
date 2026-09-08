@@ -1,15 +1,15 @@
-import { SearchApi } from '../../../api/searchApi.js';
+import { SearchClient } from '../../../api/searchClient.js';
 import { ItineraryConfirmationResult } from '../../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
-import { ScheduleItemActions } from '../scheduleItemActions.js';
-import { ScheduleItemModuleSelection } from './scheduleItemModuleSelection.js';
+import { ScheduleItemController } from '../scheduleItemController.js';
+import { ScheduleItemModuleStore } from './scheduleItemModuleStore.js';
 import { ScheduleItemResults } from '../scheduleItemResults.js';
-import { ScheduleItemSearch } from '../scheduleItemSearch.js';
+import { ScheduleItemSearcher } from '../scheduleItemSearcher.js';
 import { ScheduleItemTypes } from '../scheduleItemTypes.js';
 import { TransportationSelectorModel } from '../../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
-import { ShowScheduleItemNotice } from '../showScheduleItemNotice.js';
+import { ShowScheduleItemNoticeFragment } from '../showScheduleItemNoticeFragment.js';
 import { Strings } from '../../../strings.js';
 
 export class ScheduleItemModuleController {
@@ -40,10 +40,10 @@ export class ScheduleItemModuleController {
       } = refs;
 
       const {
-         searchItineraryItems: searchItems = SearchApi.searchItineraryItems,
+         searchItineraryItems: searchItems = SearchClient.searchItineraryItems,
          getSearchContext = ItinerarySearchContext.getItineraryDateSearchContext,
-         scheduleSelectedItem = ScheduleItemActions.scheduleSelectedItineraryItem,
-         showNotice = ShowScheduleItemNotice.showScheduleItemNotice,
+         scheduleSelectedItem = ScheduleItemController.scheduleSelectedItineraryItem,
+         showNotice = ShowScheduleItemNoticeFragment.showScheduleItemNotice,
          renderSearchResults = ScheduleItemResults.renderScheduleItemSearchResults,
          itinerarySuccess = ItineraryErrorTypes.isItinerarySuccess,
          requiresNotOnItineraryConfirmation = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation,
@@ -67,7 +67,7 @@ export class ScheduleItemModuleController {
       }
 
       function canScheduleSelection() {
-         return ScheduleItemModuleSelection.canScheduleModuleSelection({
+         return ScheduleItemModuleStore.canScheduleModuleSelection({
             selection: getSelection(),
             selectedRow,
             eventTypes,
@@ -88,7 +88,7 @@ export class ScheduleItemModuleController {
             return;
          }
 
-         const rowKind = ScheduleItemSearch.getScheduleItemRowKind(selectedRow);
+         const rowKind = ScheduleItemSearcher.getScheduleItemRowKind(selectedRow);
 
          if (ScheduleItemKind.isFixedTimeScheduleItemKind(rowKind)) {
             scheduleTimeFields.setFixedDurationScheduleMode?.({ lockDuration: false });
@@ -159,9 +159,9 @@ export class ScheduleItemModuleController {
             resultsEl,
             rows,
             emptyText: strings.emptyResults,
-            getId: ScheduleItemSearch.getScheduleItemRowId,
+            getId: ScheduleItemSearcher.getScheduleItemRowId,
             selectedRowId,
-            renderRowLeft: (row) => ScheduleItemModuleSelection.resolveScheduleModuleSearchRowRenderer({
+            renderRowLeft: (row) => ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
                row,
                renderAnimalRowLeft,
                renderAttractionRowLeft,
@@ -183,7 +183,7 @@ export class ScheduleItemModuleController {
                   selectedRow = row;
 
                   if (typeSelect && ScheduleItemTypes.isScheduleItemTypeUnset(getSelection())) {
-                     typeSelect.value = ScheduleItemSearch.getScheduleItemRowKind(row);
+                     typeSelect.value = ScheduleItemSearcher.getScheduleItemRowKind(row);
                   }
                }
 
@@ -195,13 +195,13 @@ export class ScheduleItemModuleController {
 
       function displaySearchResults(rows = []) {
          latestSearchRows = rows;
-         const visibleRows = ScheduleItemModuleSelection.filterVisibleScheduleModuleRows({
+         const visibleRows = ScheduleItemModuleStore.filterVisibleScheduleModuleRows({
             rows,
             itinerary,
             onlyItineraryItemsEnabled: isOnlyItineraryItemsEnabled(),
          });
 
-         if (ScheduleItemModuleSelection.shouldClearSelectedScheduleRow({ selectedRowId, visibleRows })) {
+         if (ScheduleItemModuleStore.shouldClearSelectedScheduleRow({ selectedRowId, visibleRows })) {
             clearSelectedRow();
          }
 
@@ -217,15 +217,15 @@ export class ScheduleItemModuleController {
             return;
          }
 
-         selectedRowId = ScheduleItemSearch.getScheduleItemRowId(preselectedRow);
+         selectedRowId = ScheduleItemSearcher.getScheduleItemRowId(preselectedRow);
          selectedRow = preselectedRow;
 
          if (typeSelect) {
-            typeSelect.value = ScheduleItemSearch.getScheduleItemRowKind(preselectedRow);
+            typeSelect.value = ScheduleItemSearcher.getScheduleItemRowKind(preselectedRow);
          }
 
          if (searchInput) {
-            searchInput.value = ScheduleItemModuleSelection.resolveScheduleModuleSearchLabel(preselectedRow);
+            searchInput.value = ScheduleItemModuleStore.resolveScheduleModuleSearchLabel(preselectedRow);
          }
 
          displaySearchResults([preselectedRow]);
@@ -254,11 +254,11 @@ export class ScheduleItemModuleController {
             const response = await searchItems(
                '/search',
                {
-                  ...ScheduleItemSearch.buildScheduleItemSearchPayload(selection, query),
+                  ...ScheduleItemSearcher.buildScheduleItemSearchPayload(selection, query),
                   ...context,
                }
             );
-            const rows = ScheduleItemSearch.extractScheduleItemSearchRows(selection, response);
+            const rows = ScheduleItemSearcher.extractScheduleItemSearchRows(selection, response);
 
             if (requestId !== latestSearchRequestId) {
                return;
@@ -280,7 +280,7 @@ export class ScheduleItemModuleController {
             return;
          }
 
-         const selection = ScheduleItemSearch.resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
+         const selection = ScheduleItemSearcher.resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
          const scheduleOptions = scheduleTimeFields.getScheduleTimeOptions?.() ?? {};
 
          isSubmitting = true;

@@ -1,4 +1,4 @@
-import { RegionSelectorShellBuilderHelpers } from './regionSelectorShellBuilderHelpers.js';
+import { RegionSelectorShellBuilderHelper } from './regionSelectorShellBuilderHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class RegionSelectorShellBuilder {
@@ -19,7 +19,7 @@ export class RegionSelectorShellBuilder {
       topTitleEl.className = 'itin-top-title';
       topTitleEl.textContent = Strings.itinerary.selectors.builderTitle;
 
-      const closeButton = RegionSelectorShellBuilderHelpers.createButton({
+      const closeButton = RegionSelectorShellBuilderHelper.createButton({
          className: 'itin-close',
          text: Strings.common.closeSymbol,
          ariaLabel: Strings.itinerary.aria.closeBuilder,
@@ -42,7 +42,7 @@ export class RegionSelectorShellBuilder {
       const actions = document.createElement('div');
       actions.className = 'itin-card-actions-dual';
 
-      const prevButton = RegionSelectorShellBuilderHelpers.createButton({
+      const prevButton = RegionSelectorShellBuilderHelper.createButton({
          className: 'itin-prev',
          text: Strings.animalsPage.back,
       });
@@ -50,12 +50,12 @@ export class RegionSelectorShellBuilder {
       const actionsRight = document.createElement('div');
       actionsRight.className = 'itin-actions-right';
 
-      const nextButton = RegionSelectorShellBuilderHelpers.createButton({
+      const nextButton = RegionSelectorShellBuilderHelper.createButton({
          className: 'itin-next',
          text: Strings.itinerary.actions.next,
       });
 
-      const finishButton = RegionSelectorShellBuilderHelpers.createButton({
+      const finishButton = RegionSelectorShellBuilderHelper.createButton({
          className: 'itin-next itin-finish',
          text: Strings.itinerary.actions.finish,
       });

@@ -1,5 +1,5 @@
 import { RegionRenderer } from './regionRenderer.js';
-import { RegionSelectorRendererHelpers } from './regionSelectorRendererHelpers.js';
+import { RegionSelectorRendererHelper } from './regionSelectorRendererHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class RegionSelectorRenderer {
@@ -10,7 +10,7 @@ export class RegionSelectorRenderer {
 
       if (regions.length === 0) {
          resultsEl.replaceChildren(
-            RegionSelectorRendererHelpers.createEmptyState(Strings.itinerary.emptyText.regions)
+            RegionSelectorRendererHelper.createEmptyState(Strings.itinerary.emptyText.regions)
          );
          return;
       }

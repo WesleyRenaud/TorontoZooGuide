@@ -1,4 +1,4 @@
-import { WheelBlockerHelpers } from './wheelBlockerHelpers.js';
+import { WheelBlockerHelper } from './wheelBlockerHelper.js';
 export class WheelBlocker {
    static blockMapWheelWhileWizardOpen(mountEl) {
       if (!mountEl) return;
@@ -11,7 +11,7 @@ export class WheelBlocker {
 
             if (!overlay.contains(e.target)) return;
 
-            const scroller = WheelBlockerHelpers.findScrollableAncestor(e.target, overlay);
+            const scroller = WheelBlockerHelper.findScrollableAncestor(e.target, overlay);
 
             if (scroller) {
                e.stopPropagation();

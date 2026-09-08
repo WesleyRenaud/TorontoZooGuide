@@ -1,7 +1,7 @@
-import { MapApi } from '../api/mapApi.js';
-import { SourceHelpers } from './sourceHelpers.js';
-import { TransportationRouteOverlay } from './transportationRouteOverlay.js';
-import { TransportationRouteSource } from './transportationRouteSource.js';
+import { MapClient } from '../api/mapClient.js';
+import { SourceHelper } from './sourceHelper.js';
+import { TransportationRouteFragment } from './transportationRouteFragment.js';
+import { TransportationRouteProvider } from './transportationRouteProvider.js';
 
 export class MapDataSourceFactory {
    static createNoCacheSource(fetchRows) {
@@ -21,21 +21,21 @@ export class MapDataSourceFactory {
    }
 
    static createTypedDynamicApiSource(store, type, fetchRows, buildPayload) {
-      return SourceHelpers.createDynamicTypedSource(store, type, async (ctx) => {
+      return SourceHelper.createDynamicTypedSource(store, type, async (ctx) => {
          const rows = await fetchRows(buildPayload(ctx));
-         return SourceHelpers.normalizeTypedRows(rows, type);
+         return SourceHelper.normalizeTypedRows(rows, type);
       });
    }
 
    static createTypedStaticApiSource(store, type, fetchRows) {
-      return SourceHelpers.createStaticTypedSource(store, type, async () => (
-         SourceHelpers.normalizeTypedRows(await fetchRows(), type)
+      return SourceHelper.createStaticTypedSource(store, type, async () => (
+         SourceHelper.normalizeTypedRows(await fetchRows(), type)
       ));
    }
 
    static createClosedExhibitSource() {
       return MapDataSourceFactory.createNoCacheSource(async (ctx) => {
-         return await MapApi.getClosedExhibits({
+         return await MapClient.getClosedExhibits({
             month: ctx.month,
             day: ctx.day,
             year: ctx.year,
@@ -49,7 +49,7 @@ export class MapDataSourceFactory {
          animal: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'animal',
-            MapApi.getVisibleAnimals,
+            MapClient.getVisibleAnimals,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                temp: ctx.temp,
                includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
@@ -59,12 +59,12 @@ export class MapDataSourceFactory {
             })
          ),
 
-         pavilion: MapDataSourceFactory.createTypedStaticApiSource(store, 'pavilion', MapApi.getPavilions),
+         pavilion: MapDataSourceFactory.createTypedStaticApiSource(store, 'pavilion', MapClient.getPavilions),
 
          restaurant: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'restaurant',
-            MapApi.getRestaurants,
+            MapClient.getRestaurants,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                includeClosedRestaurants: ctx.includeClosedRestaurants,
                restaurantsToInclude: ctx.restaurantsToInclude,
@@ -74,7 +74,7 @@ export class MapDataSourceFactory {
          restroom: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'restroom',
-            MapApi.getRestrooms,
+            MapClient.getRestrooms,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                includeClosedRestrooms: ctx.includeClosedRestrooms,
             })
@@ -83,7 +83,7 @@ export class MapDataSourceFactory {
          giftShop: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'giftShop',
-            MapApi.getGiftShops,
+            MapClient.getGiftShops,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                includeClosedGiftShops: ctx.includeClosedGiftShops,
                giftShopsToInclude: ctx.giftShopsToInclude,
@@ -93,7 +93,7 @@ export class MapDataSourceFactory {
          attraction: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'attraction',
-            MapApi.getAttractions,
+            MapClient.getAttractions,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                includeClosedAttractions: ctx.includeClosedAttractions,
                attractionsToInclude: ctx.attractionsToInclude,
@@ -101,16 +101,16 @@ export class MapDataSourceFactory {
             })
          ),
 
-         transportationRoute: TransportationRouteSource.createTransportationRouteSource(store, {
-            fetchTransportationRoute: MapApi.getTransportationRoute,
-            hideRouteLayers: TransportationRouteOverlay.hideTransportationRouteLayers,
-            showRouteLayer: TransportationRouteOverlay.showTransportationRouteLayer,
+         transportationRoute: TransportationRouteProvider.createTransportationRouteSource(store, {
+            fetchTransportationRoute: MapClient.getTransportationRoute,
+            hideRouteLayers: TransportationRouteFragment.hideTransportationRouteLayers,
+            showRouteLayer: TransportationRouteFragment.showTransportationRouteLayer,
          }),
 
          guardiansTalk: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'guardiansTalk',
-            MapApi.getGuardiansTalks,
+            MapClient.getGuardiansTalks,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                guardiansTalksToInclude: ctx.guardiansTalksToInclude,
                itineraryMode: ctx.itineraryMode,
@@ -120,7 +120,7 @@ export class MapDataSourceFactory {
          wildEncounter: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'wildEncounter',
-            MapApi.getWildEncounters,
+            MapClient.getWildEncounters,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx, {
                wildEncountersToInclude: ctx.wildEncountersToInclude,
                itineraryMode: ctx.itineraryMode,
@@ -130,37 +130,37 @@ export class MapDataSourceFactory {
          drinkingFountain: MapDataSourceFactory.createTypedDynamicApiSource(
             store,
             'drinkingFountain',
-            MapApi.getDrinkingFountains,
+            MapClient.getDrinkingFountains,
             (ctx) => MapDataSourceFactory.buildDatePayload(ctx)
          ),
 
-         defibrillator: MapDataSourceFactory.createTypedStaticApiSource(store, 'defibrillator', MapApi.getDefibrillators),
+         defibrillator: MapDataSourceFactory.createTypedStaticApiSource(store, 'defibrillator', MapClient.getDefibrillators),
 
          emergencyIntercom: MapDataSourceFactory.createTypedStaticApiSource(
             store,
             'emergencyIntercom',
-            MapApi.getEmergencyIntercoms
+            MapClient.getEmergencyIntercoms
          ),
 
          guestService: MapDataSourceFactory.createTypedStaticApiSource(
             store,
             'guestService',
-            MapApi.getGuestServices
+            MapClient.getGuestServices
          ),
 
          picnicSite: MapDataSourceFactory.createTypedStaticApiSource(
             store,
             'picnicSite',
-            MapApi.getPicnicSites
+            MapClient.getPicnicSites
          ),
 
          eventSite: MapDataSourceFactory.createTypedStaticApiSource(
             store,
             'eventSite',
-            MapApi.getEventSites
+            MapClient.getEventSites
          ),
 
-         exhibit: MapDataSourceFactory.createTypedStaticApiSource(store, 'exhibit', MapApi.getExhibits),
+         exhibit: MapDataSourceFactory.createTypedStaticApiSource(store, 'exhibit', MapClient.getExhibits),
 
          closedExhibit: MapDataSourceFactory.createClosedExhibitSource(),
       };

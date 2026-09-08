@@ -1,5 +1,5 @@
 import { SearchContext } from '../search/searchContext.js';
-import { VisitDateRules } from '../visitDates/visitDateRules.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class DateContext {
    static PRESET_DATE_CONTEXTS = {
@@ -25,7 +25,7 @@ export class DateContext {
 
       if (presetDateCtx) {
          const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
-         const anchorIso = VisitDateRules.getYear(trimmed) != null ? trimmed : VisitDateRules.toISODate(VisitDateRules.getToday());
+         const anchorIso = VisitDateValidator.getYear(trimmed) != null ? trimmed : VisitDateValidator.toISODate(VisitDateValidator.getToday());
 
          const anchorCtx = await SearchContext.buildDateSearchContext(anchorIso, { includeTemp: false });
 

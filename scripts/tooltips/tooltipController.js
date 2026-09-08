@@ -1,9 +1,9 @@
-import { BannerSync } from './bannerSync.js';
+import { BannerSynchronizer } from './bannerSynchronizer.js';
 import { CarouselView } from './carouselView.js';
-import { GlobalListeners } from './globalListeners.js';
-import { MarkerVisuals } from '../markers/markerVisuals.js';
-import { PositionTooltip } from './positionTooltip.js';
-import { TooltipRenderers } from './tooltipRenderers.js';
+import { GlobalListener } from './globalListener.js';
+import { MarkerHelper } from '../markers/markerHelper.js';
+import { PositionFragment } from './positionFragment.js';
+import { TooltipRenderer } from './tooltipRenderer.js';
 
 export class TooltipController {
    static createTooltipController({
@@ -47,7 +47,7 @@ export class TooltipController {
          openState = createEmptyOpenState();
       }
 
-      const banners = BannerSync.createTooltipBannerSync({
+      const banners = BannerSynchronizer.createTooltipBannerSync({
          offDisplayBanner,
          restaurantClosedBanner,
          restroomMessageBanner,
@@ -58,14 +58,14 @@ export class TooltipController {
 
       const carousel = CarouselView.createTooltipCarouselView({
          tooltipEl,
-         getRendererForItem: TooltipRenderers.getRendererForItem,
+         getRendererForItem: TooltipRenderer.getRendererForItem,
          onIndexChange: (index) => {
             syncMarkerToIndex(index);
             banners.sync(getOpenItem(index));
          },
       });
 
-      const globalListeners = GlobalListeners.createTooltipGlobalListeners({
+      const globalListeners = GlobalListener.createTooltipGlobalListeners({
          tooltipEl,
          isOpen,
          close,
@@ -98,7 +98,7 @@ export class TooltipController {
             return;
          }
 
-         MarkerVisuals.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
+         MarkerHelper.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
       }
 
       function addMarkerClickHandler(markerEl, items, clickable) {
@@ -157,7 +157,7 @@ export class TooltipController {
          setTooltipVisibility(true);
          globalListeners.install();
          carousel.showFirst();
-         PositionTooltip.positionTooltip(tooltipEl, markerEl);
+         PositionFragment.positionTooltip(tooltipEl, markerEl);
       }
 
       function close() {
@@ -187,7 +187,7 @@ export class TooltipController {
             return;
          }
 
-         MarkerVisuals.setMarkerToAnimalIcon(marker, item);
+         MarkerHelper.setMarkerToAnimalIcon(marker, item);
       }
 
       function jumpTo(matchFn) {
@@ -201,7 +201,7 @@ export class TooltipController {
             return;
          }
 
-         PositionTooltip.positionTooltip(tooltipEl, marker);
+         PositionFragment.positionTooltip(tooltipEl, marker);
       }
 
       return {

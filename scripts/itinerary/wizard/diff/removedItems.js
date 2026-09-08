@@ -1,5 +1,5 @@
 import { ItemKey } from './itemKey.js';
-import { RemovedItemsHelpers } from './removedItemsHelpers.js';
+import { RemovedItemsHelper } from './removedItemsHelper.js';
 
 /**
  * Combines backend "removed" rows (with removalReason when present) with items
@@ -53,7 +53,7 @@ export class RemovedItems {
       validatedItems = [],
       field
    ) {
-      const validatedKeys = RemovedItemsHelpers.buildValidatedItemKeySet(validatedItems, field);
+      const validatedKeys = RemovedItemsHelper.buildValidatedItemKeySet(validatedItems, field);
 
       return previousItems.filter((item) => {
          const key = ItemKey.buildItemKey(item, field);

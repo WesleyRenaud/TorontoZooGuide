@@ -1,5 +1,5 @@
-import { DayPlannerSchedule } from '../panel/dayPlannerSchedule.js';
-import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
+import { DayPlannerScheduleController } from '../panel/dayPlannerScheduleController.js';
+import { ScheduleConflictChecker } from './scheduleConflictChecker.js';
 
 export class ScheduleConflictBlockerAnalyzer {
    static trimRangeAgainstBlocker(start, end, blockerStart, blockerEnd) {
@@ -27,12 +27,12 @@ export class ScheduleConflictBlockerAnalyzer {
    }
 
    static getTrimmedGuardiansTalkMinutes(talk, blockers = []) {
-      let start = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
-      let end = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
+      let start = DayPlannerScheduleController.parseClockTimeMinutes(talk.start_time);
+      let end = DayPlannerScheduleController.parseClockTimeMinutes(talk.end_time);
 
       for (const blocker of blockers) {
-         const blockerStart = DayPlannerSchedule.parseClockTimeMinutes(blocker.start_time);
-         const blockerEnd = DayPlannerSchedule.parseClockTimeMinutes(blocker.end_time);
+         const blockerStart = DayPlannerScheduleController.parseClockTimeMinutes(blocker.start_time);
+         const blockerEnd = DayPlannerScheduleController.parseClockTimeMinutes(blocker.end_time);
          const trimmedRange = ScheduleConflictBlockerAnalyzer.trimRangeAgainstBlocker(
             start,
             end,
@@ -75,7 +75,7 @@ export class ScheduleConflictBlockerAnalyzer {
             continue;
          }
 
-         if (ScheduleConflictCompatibility.isWildEncounterConflictItem(selectedItem)) {
+         if (ScheduleConflictChecker.isWildEncounterConflictItem(selectedItem)) {
             blockers.push(selectedItem);
             continue;
          }
@@ -85,9 +85,9 @@ export class ScheduleConflictBlockerAnalyzer {
          }
 
          if (
-            ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)
-            && ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
-            && ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, item)
+            ScheduleConflictChecker.isGuardiansTalkConflictItem(selectedItem)
+            && ScheduleConflictChecker.isGuardiansTalkConflictItem(item)
+            && ScheduleConflictChecker.scheduleTimesOverlap(selectedItem, item)
          ) {
             blockers.push(selectedItem);
          }
@@ -103,8 +103,8 @@ export class ScheduleConflictBlockerAnalyzer {
          return false;
       }
 
-      const originalStart = DayPlannerSchedule.parseClockTimeMinutes(talk.start_time);
-      const originalEnd = DayPlannerSchedule.parseClockTimeMinutes(talk.end_time);
+      const originalStart = DayPlannerScheduleController.parseClockTimeMinutes(talk.start_time);
+      const originalEnd = DayPlannerScheduleController.parseClockTimeMinutes(talk.end_time);
 
       return (
          trimmedRange.start !== originalStart
@@ -130,11 +130,11 @@ export class ScheduleConflictBlockerAnalyzer {
    static encounterHasScheduleExceptionWithSelectedTalks(selection, encounter) {
       return selection.items.some(
          (selectedItem) => {
-            if (!ScheduleConflictCompatibility.isGuardiansTalkConflictItem(selectedItem)) {
+            if (!ScheduleConflictChecker.isGuardiansTalkConflictItem(selectedItem)) {
                return false;
             }
 
-            if (!ScheduleConflictCompatibility.scheduleTimesOverlap(selectedItem, encounter)) {
+            if (!ScheduleConflictChecker.scheduleTimesOverlap(selectedItem, encounter)) {
                return false;
             }
 

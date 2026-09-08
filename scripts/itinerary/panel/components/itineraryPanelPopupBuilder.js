@@ -1,4 +1,4 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 
 export class ItineraryPanelPopupBuilder {
    static joinClassNames(...classNames) {
@@ -9,7 +9,7 @@ export class ItineraryPanelPopupBuilder {
       className,
       text,
    } = {}) {
-      const button = ItineraryPanelDom.el('button', className, text);
+      const button = ItineraryPanelHelper.el('button', className, text);
       button.type = 'button';
       return button;
    }

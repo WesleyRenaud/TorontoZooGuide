@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { RegionSelectorStore } from '../../../../../scripts/itinerary/selectors/regionSelector/regionSelectorStore.js';
 import { StorageKeys } from '../../../../../scripts/itinerary/storageKeys.js';
-import { DraftStorage } from '../../../../../scripts/itinerary/draftStorage.js';
+import { DraftStore } from '../../../../../scripts/itinerary/draftStore.js';
 import { createLocalStorageMock } from '../../../helpers/localStorageMock.mjs';
 import { createFetchMock } from '../../../helpers/fetchMock.mjs';
 
@@ -103,7 +103,7 @@ test('Test_BuildUpdatedAnimalsFromSelection_TestBuildUpdatedAnimalsFromSelection
       }),
    });
 
-   DraftStorage.removeAnimalFromItineraryAnimalDraft(
+   DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );
@@ -147,7 +147,7 @@ test('Test_HydrateSelectionsFromStorage_TestHydrateSelectionsFromStorageDeselect
       }),
    });
 
-   DraftStorage.removeAnimalFromItineraryAnimalDraft(
+   DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'Watusi Cattle||Africa Savanna'
    );
@@ -235,7 +235,7 @@ test('Test_Re_TestReSelectingAnExhibitReHydratesPreviouslyRemoved_ExpectOk', asy
       }),
    });
 
-   DraftStorage.removeAnimalFromItineraryAnimalDraft(
+   DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );

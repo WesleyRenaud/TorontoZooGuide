@@ -1,5 +1,5 @@
 import { AppConfig } from '../config/appConfig.js';
-import { VisitDateRules } from '../visitDates/visitDateRules.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class WeatherApiFetcher {
    static weatherApiUrl(path) {
@@ -13,7 +13,7 @@ export class WeatherApiFetcher {
    }
 
    static isTodayDate(dateStr) {
-      return dateStr === VisitDateRules.toISODate(VisitDateRules.getToday());
+      return dateStr === VisitDateValidator.toISODate(VisitDateValidator.getToday());
    }
 
    static fetchCurrentTemp() {

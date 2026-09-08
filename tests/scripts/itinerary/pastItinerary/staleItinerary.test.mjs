@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict';
 import { test, beforeEach } from 'node:test';
 
-import { OfferPastItineraryClearOrRecovery } from '../../../../scripts/itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
-import { PromptSession } from '../../../../scripts/itinerary/pastItinerary/promptSession.js';
+import { OfferPastItineraryClearOrRecoverer } from '../../../../scripts/itinerary/pastItinerary/offerPastItineraryClearOrRecoverer.js';
+import { PastItineraryPromptTracker } from '../../../../scripts/itinerary/pastItinerary/pastItineraryPromptTracker.js';
 
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
 const tomorrow = makeNoonDate(2026, 5, 16);
 
 beforeEach(() => {
-   PromptSession.resetPastItineraryPromptSessionForTests();
+   PastItineraryPromptTracker.resetPastItineraryPromptSessionForTests();
 });
 
 test('Test_OfferPastItineraryClearOrRecovery_TestEmpty_ExpectNoPrompt', async () => {
-   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecoverer.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '',
          animals: [],
@@ -34,7 +34,7 @@ test('Test_OfferPastItineraryClearOrRecovery_TestPastDate_ExpectPrompt', async (
    const calls = [];
    const mountEl = { replaceChildren() {} };
 
-   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecoverer.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-10',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],
@@ -67,7 +67,7 @@ test('Test_OfferPastItineraryClearOrRecovery_TestChooseClear_ExpectCleared', asy
    const calls = [];
    const mountEl = { replaceChildren() {} };
 
-   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecoverer.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-10',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],
@@ -91,7 +91,7 @@ test('Test_OfferPastItineraryClearOrRecovery_TestChooseClear_ExpectCleared', asy
 });
 
 test('Test_OfferPastItineraryClearOrRecovery_TestCurrent_ExpectNoPrompt', async () => {
-   const pastDatePromptShown = await OfferPastItineraryClearOrRecovery.offerPastItineraryClearOrRecovery({
+   const pastDatePromptShown = await OfferPastItineraryClearOrRecoverer.offerPastItineraryClearOrRecovery({
       itinerary: {
          date: '2026-06-20',
          animals: [{ species: 'Cheetah', exhibit: 'Africa Savanna' }],

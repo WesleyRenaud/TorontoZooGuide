@@ -1,8 +1,8 @@
 import { AttractionSelectorModel } from './attractionSelector/attractionSelectorModel.js';
 import { AttractionSelectorRenderer } from './attractionSelector/attractionSelectorRenderer.js';
-import { AttractionSelectorPrompts } from './attractionSelectorPrompts.js';
-import { CreateSelectorController } from './createSelectorController.js';
+import { AttractionSelectorPrompter } from './attractionSelectorPrompter.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
+import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionSelector {
@@ -17,7 +17,7 @@ export class AttractionSelector {
 } = {}) {
       let includeClosedAttractions = false;
 
-      return CreateSelectorController.createItinerarySelectorController({
+      return SelectorControllerFactory.createItinerarySelectorController({
          mountEl,
          onNext,
          onPrev,
@@ -68,7 +68,7 @@ export class AttractionSelector {
                   return;
                }
 
-               AttractionSelectorPrompts.promptForAlsoTransportationAttractionSelection(row, proceed);
+               AttractionSelectorPrompter.promptForAlsoTransportationAttractionSelection(row, proceed);
             };
 
             if (!AttractionSelectorModel.shouldConfirmClosedAttraction({
@@ -80,7 +80,7 @@ export class AttractionSelector {
                return;
             }
 
-            AttractionSelectorPrompts.promptForClosedAttractionSelection(row, continueAdd);
+            AttractionSelectorPrompter.promptForClosedAttractionSelection(row, continueAdd);
          },
 
          renderExtraControls: ({ bodyEl, rerunSearch }) => {

@@ -1,5 +1,5 @@
-import { VisitDateFlatpickr } from '../visitDates/visitDateFlatpickr.js';
-import { VisitDateRules } from '../visitDates/visitDateRules.js';
+import { VisitDateAdapter } from '../visitDates/visitDateAdapter.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class MapControlsBinder {
    static blurMapDateInput(mapDateInput) {
@@ -66,9 +66,9 @@ export class MapControlsBinder {
       onSpecificDayChange,
       earliestSelectableNoon,
    } = {}) {
-      const floor = earliestSelectableNoon ?? VisitDateRules.getToday();
+      const floor = earliestSelectableNoon ?? VisitDateValidator.getToday();
 
-      return VisitDateFlatpickr.initVisitDateFlatpickr(mapDateInput, {
+      return VisitDateAdapter.initVisitDateFlatpickr(mapDateInput, {
          defaultDate: floor,
          earliestNoon: floor,
          clickOpens: false,

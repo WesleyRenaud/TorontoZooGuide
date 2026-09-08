@@ -1,6 +1,6 @@
-import { ItineraryPathArrows } from './itineraryPathArrows.js';
+import { ItineraryPathCalculator } from './itineraryPathCalculator.js';
 import { ItineraryPathConstants } from './itineraryPathConstants.js';
-import { ItineraryPathGeometry } from './itineraryPathGeometry.js';
+import { ItineraryPathRenderer } from './itineraryPathRenderer.js';
 import { ZooMapConstants } from '../shared/zooMapConstants.js';
 
 export class ItineraryPathOverlayRenderer {
@@ -40,19 +40,19 @@ export class ItineraryPathOverlayRenderer {
 
    static buildPathD(itineraryPath) {
       if (itineraryPath.legs.length > 0) {
-         return ItineraryPathGeometry.buildItineraryPathDFromWalkLegs(
+         return ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
             itineraryPath.legs,
             itineraryPath.points,
             { pointToMapPx: ItineraryPathOverlayRenderer.pointToMapPx }
          );
       }
 
-      const routePoints = ItineraryPathGeometry.buildRouteMapPoints(itineraryPath.points, {
+      const routePoints = ItineraryPathCalculator.buildRouteMapPoints(itineraryPath.points, {
          withEntranceLandmark: (normalizedPoints) => normalizedPoints,
          pointToMapPx: ItineraryPathOverlayRenderer.pointToMapPx,
       });
 
-      return ItineraryPathGeometry.buildItineraryPathD(routePoints);
+      return ItineraryPathCalculator.buildItineraryPathD(routePoints);
    }
 
    static createArrowMarker({ x, y, angleDeg }) {
@@ -75,9 +75,9 @@ export class ItineraryPathOverlayRenderer {
          return;
       }
 
-      for (const placement of ItineraryPathArrows.buildPathArrowPlacements(pathD)) {
+      for (const placement of ItineraryPathRenderer.buildPathArrowPlacements(pathD)) {
          markersLayer.appendChild(ItineraryPathOverlayRenderer.createArrowMarker(
-            ItineraryPathArrows.offsetArrowPlacement(
+            ItineraryPathRenderer.offsetArrowPlacement(
                placement,
                ItineraryPathConstants.ITINERARY_PATH_ARROW_SIDE_OFFSET_PX,
                'left'

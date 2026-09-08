@@ -1,4 +1,4 @@
-import { WildEncounterScheduleRows } from './wildEncounterScheduleRows.js';
+import { WildEncounterScheduleBuilder } from './wildEncounterScheduleBuilder.js';
 import { WildEncounterScheduleRowsBuilder } from './wildEncounterScheduleRowsBuilder.js';
 
 export class WildEncounterScheduleRowsController {
@@ -14,11 +14,11 @@ export class WildEncounterScheduleRowsController {
             time: rowController.timeInputEl.value,
          };
 
-         WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+         WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
             row[dayKey] = Boolean(rowController.dayInputEls[dayKey]?.checked);
          });
 
-         return WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(row);
+         return WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow(row);
       }
 
       function render() {
@@ -67,7 +67,7 @@ export class WildEncounterScheduleRowsController {
       }
 
       function validate() {
-         return WildEncounterScheduleRows.validateWildEncounterScheduleRows(getRows());
+         return WildEncounterScheduleBuilder.validateWildEncounterScheduleRows(getRows());
       }
 
       function setRows(rows = []) {

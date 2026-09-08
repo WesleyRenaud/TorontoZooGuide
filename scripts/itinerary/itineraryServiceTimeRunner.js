@@ -3,9 +3,9 @@ import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItineraryService } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
-import { EarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
-import { ShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
-import { PersistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
+import { EarlyAdmissionFragment } from './panel/earlyAdmissionFragment.js';
+import { ShortVisitFragment } from './panel/shortVisitFragment.js';
+import { PersistItineraryWarningSuppressor } from './persistItineraryWarningSuppressor.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 export class ItineraryServiceTimeRunner {
@@ -27,7 +27,7 @@ export class ItineraryServiceTimeRunner {
             onConfirm: async ({ doNotShowAgain = false } = {}) => {
                try {
                   if (doNotShowAgain) {
-                     await PersistItineraryWarningSuppression.persistItineraryWarningSuppression(suppressionType);
+                     await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(suppressionType);
                   }
 
                   const confirmedResult = await requestFn(
@@ -64,7 +64,7 @@ export class ItineraryServiceTimeRunner {
 
       if (ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
          return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-            showConfirmation: EarlyAdmissionConfirmation.showEarlyAdmissionConfirmation,
+            showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
             requestFn,
             timeValue,
             suppressionType: (
@@ -81,7 +81,7 @@ export class ItineraryServiceTimeRunner {
       }
 
       return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-         showConfirmation: ShortVisitConfirmation.showShortVisitConfirmation,
+         showConfirmation: ShortVisitFragment.showShortVisitConfirmation,
          requestFn,
          timeValue,
          suppressionType: ItineraryErrorTypes.getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,

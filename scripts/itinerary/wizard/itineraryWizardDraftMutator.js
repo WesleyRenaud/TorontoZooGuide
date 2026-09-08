@@ -1,5 +1,5 @@
-import { WizardDiffSummary } from './diff/wizardDiffSummary.js';
-import { DraftStorage } from '../draftStorage.js';
+import { WizardDiffPresenter } from './diff/wizardDiffPresenter.js';
+import { DraftStore } from '../draftStore.js';
 import { ItineraryShape } from '../itineraryShape.js';
 
 export class ItineraryWizardDraftMutator {
@@ -18,7 +18,7 @@ export class ItineraryWizardDraftMutator {
    }
 
    static writeDraftState(draft) {
-      DraftStorage.writeStoredItineraryDraft(draft);
+      DraftStore.writeStoredItineraryDraft(draft);
    }
 
    static assignWizardDraft(state, draft) {
@@ -82,12 +82,12 @@ export class ItineraryWizardDraftMutator {
          });
       }
 
-      state.pendingRemovedItems = WizardDiffSummary.hasRemovedItems(removed) ? removed : null;
-      state.pendingUnscheduledItems = WizardDiffSummary.hasUnscheduledItems(unscheduled) ? unscheduled : null;
-      state.pendingReducedVisibility = WizardDiffSummary.hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
-      state.pendingImprovedVisibility = WizardDiffSummary.hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
+      state.pendingRemovedItems = WizardDiffPresenter.hasRemovedItems(removed) ? removed : null;
+      state.pendingUnscheduledItems = WizardDiffPresenter.hasUnscheduledItems(unscheduled) ? unscheduled : null;
+      state.pendingReducedVisibility = WizardDiffPresenter.hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
+      state.pendingImprovedVisibility = WizardDiffPresenter.hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
       state.pendingValidatedEmpty = validated != null
-         ? WizardDiffSummary.isValidatedItineraryEmpty(validated)
+         ? WizardDiffPresenter.isValidatedItineraryEmpty(validated)
          : false;
    }
 }

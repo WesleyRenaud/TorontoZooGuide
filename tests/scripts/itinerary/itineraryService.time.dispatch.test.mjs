@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItineraryServiceTime } from '../../../scripts/itinerary/itineraryServiceTime.js';
+import { ItineraryServiceFormatter } from '../../../scripts/itinerary/itineraryServiceFormatter.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
@@ -82,7 +82,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const result = await ItineraryServiceTime.setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceFormatter.setItineraryDepartureTime('16:15');
 
    assert.equal(result.validation.hasChanges, true);
    assert.deepEqual(
@@ -172,7 +172,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const result = await ItineraryServiceTime.setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceFormatter.setItineraryDepartureTime('16:15');
 
    assert.equal(result.validation.hasChanges, true);
    assert.deepEqual(

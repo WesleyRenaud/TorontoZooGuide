@@ -1,8 +1,8 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { AnimalDisplayLines } from '../../../animals/animalDisplayLines.js';
+import { AnimalDisplayFormatter } from '../../../animals/animalDisplayFormatter.js';
 import { AnimalSelectorStoredAnimalFactory } from './animalSelectorStoredAnimalFactory.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
-import { StoredSelection } from '../base/storedSelection.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 import { EnclosureType } from '../../../shared/enums/enclosureType.js';
 
 export class AnimalSelectorModel {
@@ -29,7 +29,7 @@ export class AnimalSelectorModel {
    }
 
    static getAnimalTitleLine(row) {
-      return AnimalDisplayLines.formatSpeciesEnclosureLine(
+      return AnimalDisplayFormatter.formatSpeciesEnclosureLine(
          AnimalSelectorModel.getAnimalSpecies(row),
          AnimalSelectorModel.getAnimalEnclosureName(row)
       );
@@ -96,7 +96,7 @@ export class AnimalSelectorModel {
    }
 
    static migrateStoredAnimals(items) {
-      return StoredSelection.migrateStoredSelectionItems(items, {
+      return StoredSelectionNormalizer.migrateStoredSelectionItems(items, {
          fromString: AnimalSelectorStoredAnimalFactory.createStoredAnimalFromString,
          fromObject: AnimalSelectorStoredAnimalFactory.createStoredAnimalFromObject,
       });

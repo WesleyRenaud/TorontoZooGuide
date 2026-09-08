@@ -1,5 +1,5 @@
-import { ScheduledPillLayoutUnits } from './scheduledPillLayoutUnits.js';
-import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
+import { ScheduledPillChecker } from './scheduledPillChecker.js';
+import { ScheduledPillLayoutHelper } from './scheduledPillLayoutHelper.js';
 
 export class ScheduledPillRenderPlanBuilder {
    static appendRenderGroup(groupsByAnchor, anchorSlotMinutes, renderGroup) {
@@ -10,20 +10,20 @@ export class ScheduledPillRenderPlanBuilder {
    }
 
    static buildRenderGroup(layoutUnit, horizontalOffsetIndex) {
-      const items = ScheduledPillLayoutUnits.getLayoutUnitItems(layoutUnit);
-      const { slotSpanMinutes } = ScheduledPillLayoutUnits.getLayoutUnitSlotContext(layoutUnit);
+      const items = ScheduledPillLayoutHelper.getLayoutUnitItems(layoutUnit);
+      const { slotSpanMinutes } = ScheduledPillLayoutHelper.getLayoutUnitSlotContext(layoutUnit);
       const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-      const endMinutes = Math.max(...items.map(ScheduledPillOverlap.getScheduledItemEndMinutes));
+      const endMinutes = Math.max(...items.map(ScheduledPillChecker.getScheduledItemEndMinutes));
       const wallDurationMinutes = endMinutes - startMinutes;
-      const minDisplayMinutes = ScheduledPillOverlap.getScheduledPillMinDisplayMinutes();
+      const minDisplayMinutes = ScheduledPillChecker.getScheduledPillMinDisplayMinutes();
       const grouped = items.length > 1;
-      const visualBand = ScheduledPillOverlap.getScheduledPillVisualBand({
+      const visualBand = ScheduledPillChecker.getScheduledPillVisualBand({
          summaryItems: items,
       });
 
       return {
          items,
-         offsetFraction: ScheduledPillLayoutUnits.getLayoutUnitScheduleOffsetFraction(layoutUnit),
+         offsetFraction: ScheduledPillLayoutHelper.getLayoutUnitScheduleOffsetFraction(layoutUnit),
          slotSpanMinutes,
          horizontalOffsetIndex,
          durationMinutes: wallDurationMinutes,
@@ -31,7 +31,7 @@ export class ScheduledPillRenderPlanBuilder {
          visualStartMinutes: visualBand.startMinutes,
          visualEndMinutes: visualBand.endMinutes,
          label: grouped
-            ? ScheduledPillOverlap.formatScheduledPillGroupLabel(items)
+            ? ScheduledPillChecker.formatScheduledPillGroupLabel(items)
             : undefined,
       };
    }
@@ -52,7 +52,7 @@ export class ScheduledPillRenderPlanBuilder {
 
    static assignLayoutUnitsByRenderAnchor(layoutUnits = []) {
       return layoutUnits.reduce((unitsByAnchor, layoutUnit) => {
-         const { anchorSlotMinutes } = ScheduledPillLayoutUnits.getLayoutUnitSlotContext(layoutUnit);
+         const { anchorSlotMinutes } = ScheduledPillLayoutHelper.getLayoutUnitSlotContext(layoutUnit);
 
          if (!Number.isFinite(anchorSlotMinutes)) {
             return unitsByAnchor;

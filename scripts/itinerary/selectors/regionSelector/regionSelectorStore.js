@@ -1,9 +1,9 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { ItinerarySelectorApi } from '../../../api/itinerarySelectorApi.js';
-import { DraftStorage } from '../../draftStorage.js';
-import { RegionSelection } from './regionSelection.js';
-import { RegionSelectorStoreHelpers } from './regionSelectorStoreHelpers.js';
-import { RegionStorage } from './regionStorage.js';
+import { ItinerarySelectorClient } from '../../../api/itinerarySelectorClient.js';
+import { DraftStore } from '../../draftStore.js';
+import { RegionSelectorStoreHelper } from './regionSelectorStoreHelper.js';
+import { RegionStorageStore } from './regionStorageStore.js';
+import { RegionStore } from './regionStore.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { StorageKeys } from '../../storageKeys.js';
 
@@ -33,15 +33,15 @@ export class RegionSelectorStore {
       }
 
       function persistSelectionState() {
-         RegionStorage.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
-         RegionStorage.saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
+         RegionStorageStore.saveSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY, selectedExhibitNames);
+         RegionStorageStore.saveSelectedNames(StorageKeys.SELECTED_REGIONS_KEY, selectedRegionNames);
       }
 
       function syncAllRegionSelections() {
          selectedRegionNames.clear();
 
          regions.forEach((region) => {
-            RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+            RegionStore.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
          });
       }
 
@@ -50,7 +50,7 @@ export class RegionSelectorStore {
       }
 
       function setRegions(nextRegions = []) {
-         regions = RegionSelection.normalizeRegions(nextRegions);
+         regions = RegionStore.normalizeRegions(nextRegions);
 
          return regions.slice();
       }
@@ -60,10 +60,10 @@ export class RegionSelectorStore {
          selectedRegionNames.clear();
          bulkManagedExhibitNames.clear();
 
-         const storedExhibits = new Set(RegionStorage.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
+         const storedExhibits = new Set(RegionStorageStore.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY));
 
          regions.forEach((region) => {
-            const exhibits = RegionSelection.getRegionExhibits(region);
+            const exhibits = RegionStore.getRegionExhibits(region);
 
             exhibits.forEach((exhibitName) => {
                if (storedExhibits.has(exhibitName)) {
@@ -90,12 +90,12 @@ export class RegionSelectorStore {
          }
 
          const selectedExhibits = Array.from(selectedExhibitNames);
-         const draftAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
-            .map(RegionSelection.normalizeSelectedAnimal)
+         const draftAnimals = DraftStore.loadArray(StorageKeys.ANIMALS_KEY)
+            .map(RegionStore.normalizeSelectedAnimal)
             .filter(Boolean);
-         const removedKeys = RegionStorage.loadRemovedAnimalKeys();
-         const { month, day, temp } = await RegionSelectorStoreHelpers.resolveAnimalsByExhibitQueryContext();
-         const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
+         const removedKeys = RegionStorageStore.loadRemovedAnimalKeys();
+         const { month, day, temp } = await RegionSelectorStoreHelper.resolveAnimalsByExhibitQueryContext();
+         const catalogAnimals = await ItinerarySelectorClient.getAnimalsByExhibit(selectedExhibits, {
             month,
             day,
             temp,
@@ -110,12 +110,12 @@ export class RegionSelectorStore {
                AnimalIdentity.normalizeAnimalIdentitySearchFields(animal).exhibit === exhibitKey
             ));
 
-            if (RegionSelection.draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
+            if (RegionStore.draftAnimalsCoverCatalogAnimals(draftAnimals, catalogForExhibit)) {
                continue;
             }
 
             const catalogHasRemovedAnimal = catalogForExhibit.some((animal) => {
-               const animalKey = RegionSelection.buildSelectedAnimalKey(animal);
+               const animalKey = RegionStore.buildSelectedAnimalKey(animal);
 
                return animalKey && removedKeys.has(animalKey);
             });
@@ -138,26 +138,26 @@ export class RegionSelectorStore {
             return false;
          }
 
-         const exhibits = RegionSelection.getRegionExhibits(region);
+         const exhibits = RegionStore.getRegionExhibits(region);
 
          if (!exhibits.length) {
             return false;
          }
 
-         const shouldSelect = !RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
+         const shouldSelect = !RegionStore.isRegionFullySelected(region, selectedExhibitNames);
 
          exhibits.forEach((exhibitName) => {
             if (shouldSelect) {
                selectedExhibitNames.add(exhibitName);
                markExhibitBulkManaged(exhibitName);
-               RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
+               RegionStorageStore.clearRemovedAnimalKeysForExhibit(exhibitName);
             }
             else {
                selectedExhibitNames.delete(exhibitName);
             }
          });
 
-         RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+         RegionStore.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
          persistSelectionState();
 
          return true;
@@ -176,10 +176,10 @@ export class RegionSelectorStore {
          else {
             selectedExhibitNames.add(exhibitName);
             markExhibitBulkManaged(exhibitName);
-            RegionStorage.clearRemovedAnimalKeysForExhibit(exhibitName);
+            RegionStorageStore.clearRemovedAnimalKeysForExhibit(exhibitName);
          }
 
-         RegionSelection.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
+         RegionStore.syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
          persistSelectionState();
 
          return true;
@@ -196,7 +196,7 @@ export class RegionSelectorStore {
             return !isBulkManagedExhibit(exhibit);
          });
 
-         DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
+         DraftStore.saveArray(StorageKeys.ANIMALS_KEY, remainingAnimals);
 
          return remainingAnimals;
       }
@@ -204,8 +204,8 @@ export class RegionSelectorStore {
       async function buildUpdatedAnimalsFromSelection() {
          const selectedExhibits = Array.from(selectedExhibitNames);
 
-         const currentAnimals = DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
-            .map(RegionSelection.normalizeSelectedAnimal)
+         const currentAnimals = DraftStore.loadArray(StorageKeys.ANIMALS_KEY)
+            .map(RegionStore.normalizeSelectedAnimal)
             .filter(Boolean);
 
          if (!selectedExhibits.length) {
@@ -213,16 +213,16 @@ export class RegionSelectorStore {
             return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
          }
 
-         const { month, day, temp } = await RegionSelectorStoreHelpers.resolveAnimalsByExhibitQueryContext();
-         const fullAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
+         const { month, day, temp } = await RegionSelectorStoreHelper.resolveAnimalsByExhibitQueryContext();
+         const fullAnimals = await ItinerarySelectorClient.getAnimalsByExhibit(selectedExhibits, {
             month,
             day,
             temp,
             forItinerary: true,
          });
-         const selectedAnimals = RegionSelection.omitRemovedAnimals(
-            fullAnimals.map(RegionSelection.makeSelectedAnimal).filter(Boolean),
-            RegionStorage.loadRemovedAnimalKeys()
+         const selectedAnimals = RegionStore.omitRemovedAnimals(
+            fullAnimals.map(RegionStore.makeSelectedAnimal).filter(Boolean),
+            RegionStorageStore.loadRemovedAnimalKeys()
          );
 
          const selectedExhibitSet = new Set(
@@ -250,8 +250,8 @@ export class RegionSelectorStore {
             return !rebuiltSpeciesExhibitKeys.has(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
          });
 
-         const mergedAnimals = RegionSelection.mergeAnimals(preservedAnimals, selectedAnimals);
-         DraftStorage.saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
+         const mergedAnimals = RegionStore.mergeAnimals(preservedAnimals, selectedAnimals);
+         DraftStore.saveArray(StorageKeys.ANIMALS_KEY, mergedAnimals);
          selectedExhibitsNeedCatalogRebuild = false;
 
          return mergedAnimals;

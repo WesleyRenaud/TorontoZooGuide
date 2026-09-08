@@ -1,6 +1,6 @@
 import { ConsoleControllersBootstrap } from '../consoleOperations/bootstrap/consoleControllersBootstrap.js';
 import { ConsoleOperationPanelsBootstrap } from '../consoleOperations/bootstrap/consoleOperationPanelsBootstrap.js';
-import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
+import { DateFactory } from '../consoleOperations/bootstrap/dateFactory.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
 export class ConsoleOperationsPageBootstrap {
@@ -37,6 +37,6 @@ export class ConsoleOperationsPageBootstrap {
    }
 
    static initConsoleOperationDateControls(refs) {
-      DatePickers.wireConsoleOperationDatePickers(refs);
+      DateFactory.wireConsoleOperationDatePickers(refs);
    }
 }

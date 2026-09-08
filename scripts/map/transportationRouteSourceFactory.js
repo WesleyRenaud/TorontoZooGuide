@@ -1,4 +1,4 @@
-import { SourceHelpers } from './sourceHelpers.js';
+import { SourceHelper } from './sourceHelper.js';
 
 export class TransportationRouteSourceFactory {
    static createNoCacheSource(fetchRows) {
@@ -17,11 +17,11 @@ export class TransportationRouteSourceFactory {
    }
 
    static clearTransportationRouteRows(store) {
-      SourceHelpers.setSourceRows(store, 'transportationStation', []);
-      SourceHelpers.setSourceRows(store, 'transportationRoute', []);
+      SourceHelper.setSourceRows(store, 'transportationStation', []);
+      SourceHelper.setSourceRows(store, 'transportationRoute', []);
    }
 
    static normalizeTransportationStations(transportationStations) {
-      return SourceHelpers.normalizeTypedRows(transportationStations, 'transportationStation');
+      return SourceHelper.normalizeTypedRows(transportationStations, 'transportationStation');
    }
 }

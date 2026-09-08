@@ -1,4 +1,4 @@
-import { ConsoleOperationPanelsBootstrapHelpers } from './consoleOperationPanelsBootstrapHelpers.js';
+import { ConsoleOperationPanelsBootstrapHelper } from './consoleOperationPanelsBootstrapHelper.js';
 
 export class ConsoleOperationPanelsBootstrap {
    static mountConsoleOperationPanels(workspaceEl) {
@@ -7,6 +7,6 @@ export class ConsoleOperationPanelsBootstrap {
       }
 
       const doc = workspaceEl.ownerDocument || document;
-      workspaceEl.replaceChildren(ConsoleOperationPanelsBootstrapHelpers.createConsoleOperationPanelsFragment(doc));
+      workspaceEl.replaceChildren(ConsoleOperationPanelsBootstrapHelper.createConsoleOperationPanelsFragment(doc));
    }
 }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { RegionColors } from '../../../scripts/shared/regionColors.js';
-import { ScheduledTimelinePill } from '../../../scripts/itinerary/panel/components/scheduledTimelinePill.js';
+import { ScheduledTimelineView } from '../../../scripts/itinerary/panel/components/scheduledTimelineView.js';
 import {
    createNode,
    installPanelRowsTestHooks,
@@ -83,7 +83,7 @@ test('Test_ApplyRegionColorsToElement_TestSlug_ExpectClassAndData', () => {
 });
 
 test('Test_MakeScheduledPill_TestAnimalExhibit_ExpectRegionColored', () => {
-   const pill = ScheduledTimelinePill.makeScheduledPill('African Lion', 30, {
+   const pill = ScheduledTimelineView.makeScheduledPill('African Lion', 30, {
       item: {
          species: 'African Lion',
          exhibit: 'Africa Savanna',
@@ -97,7 +97,7 @@ test('Test_MakeScheduledPill_TestAnimalExhibit_ExpectRegionColored', () => {
 });
 
 test('Test_MakeScheduledPill_TestNonAnimal_ExpectUncolored', () => {
-   const pill = ScheduledTimelinePill.makeScheduledPill('Lunch', 40, {
+   const pill = ScheduledTimelineView.makeScheduledPill('Lunch', 40, {
       item: {
          event_type: 'lunch',
       },

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItineraryServiceSave } from '../../../scripts/itinerary/itineraryServiceSave.js';
+import { ItineraryServiceSaver } from '../../../scripts/itinerary/itineraryServiceSaver.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
@@ -47,7 +47,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSel
       };
    };
 
-   await ItineraryServiceSave.saveItinerary({
+   await ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -85,7 +85,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelect
       };
    };
 
-   await ItineraryServiceSave.saveItinerary({
+   await ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -146,7 +146,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -228,7 +228,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-20',
       animals: [],
       attractions: ['Kangaroo Walk-Thru'],
@@ -306,7 +306,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -372,7 +372,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
       }),
    });
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -448,7 +448,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -561,7 +561,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -682,7 +682,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -806,7 +806,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
       };
    };
 
-   const savePromise = ItineraryServiceSave.saveItinerary({
+   const savePromise = ItineraryServiceSaver.saveItinerary({
       date: '2026-06-15',
       animals: [],
       attractions: [],
@@ -870,7 +870,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
       };
    };
 
-   const result = await ItineraryServiceSave.saveItinerary({
+   const result = await ItineraryServiceSaver.saveItinerary({
       date: '2026-08-17',
       animals: [],
       attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],

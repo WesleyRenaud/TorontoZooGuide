@@ -1,4 +1,4 @@
-import { WildEncounterScheduleItemKeyHelpers } from './wildEncounterScheduleItemKeyHelpers.js';
+import { WildEncounterScheduleItemKeyHelper } from './wildEncounterScheduleItemKeyHelper.js';
 
 export class WildEncounterScheduleItemKey {
    static WILD_ENCOUNTER_ITEM_KEY_SEPARATOR = '||';
@@ -17,14 +17,14 @@ export class WildEncounterScheduleItemKey {
          return null;
       }
 
-      const startTime = WildEncounterScheduleItemKeyHelpers.scheduleTimeFromWirePart(parts[1]);
+      const startTime = WildEncounterScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[1]);
 
       if (!startTime) {
          return null;
       }
 
       if (parts.length > 2) {
-         const endTime = WildEncounterScheduleItemKeyHelpers.scheduleTimeFromWirePart(parts[2]);
+         const endTime = WildEncounterScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[2]);
 
          if (!endTime) {
             return null;

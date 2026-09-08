@@ -1,6 +1,6 @@
 import { ItineraryMapController } from './itineraryMapController.js';
 import { ItineraryService } from './itineraryService.js';
-import { MapRuntime } from '../map/mapRuntime.js';
+import { MapFactory } from '../map/mapFactory.js';
 
 export class ItineraryMapControllerBootstrap {
    static ITINERARY_MAP_FILTERS = Object.freeze({
@@ -36,7 +36,7 @@ export class ItineraryMapControllerBootstrap {
    }
 
    static createItineraryMapRuntime() {
-      return MapRuntime.createMapRuntime({
+      return MapFactory.createMapRuntime({
          ...ItineraryMapControllerBootstrap.getItineraryMapElements(),
          enableCoordinateEditing: ItineraryMapControllerBootstrap.isCoordinateEditingEnabled(),
          ...ItineraryMapControllerBootstrap.ITINERARY_MAP_FILTERS,

@@ -1,10 +1,10 @@
-import { ItineraryApi } from '../api/itineraryApi.js';
+import { ItineraryClient } from '../api/itineraryClient.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
-import { ItineraryServiceHelpers } from './itineraryServiceHelpers.js';
+import { ItineraryServiceHelper } from './itineraryServiceHelper.js';
 import { ItineraryShape } from './itineraryShape.js';
-import { VisitDateRules } from '../visitDates/visitDateRules.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class ItineraryService {
    static isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
@@ -26,9 +26,9 @@ export class ItineraryService {
    }
 
    static async getItinerary() {
-      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-      const result = await ItineraryApi.getItineraryRequest(temp);
+      const result = await ItineraryClient.getItineraryRequest(temp);
       return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
    }
 
@@ -37,20 +37,20 @@ export class ItineraryService {
          return null;
       }
 
-      const month = VisitDateRules.getMonth(date);
-      const day = VisitDateRules.getDay(date);
-      const year = VisitDateRules.getYear(date);
+      const month = VisitDateValidator.getMonth(date);
+      const day = VisitDateValidator.getDay(date);
+      const year = VisitDateValidator.getYear(date);
 
       if (month == null || day == null || year == null) {
          return null;
       }
 
-      const result = await ItineraryApi.getZooHoursRequest({ day, month, year });
+      const result = await ItineraryClient.getZooHoursRequest({ day, month, year });
       return result?.hours || null;
    }
 
    static async clearItinerary() {
-      const result = await ItineraryApi.clearItineraryRequest();
+      const result = await ItineraryClient.clearItineraryRequest();
       const clearedItinerary = ItineraryNormalizer.createEmptyItinerary();
 
       window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
@@ -62,9 +62,9 @@ export class ItineraryService {
    static async bulkScheduleItinerary({
    confirmingFixedTimeItemLongWait = false,
 } = {}) {
-      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-      const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
+      const result = await ItineraryClient.bulkScheduleItineraryRequest(temp, {
          confirmingFixedTimeItemLongWait,
       });
 
@@ -86,9 +86,9 @@ export class ItineraryService {
    }
 
    static async unscheduleAllItineraryItems() {
-      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-      const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
+      const result = await ItineraryClient.unscheduleAllItineraryItemsRequest(temp);
 
       if (!ItineraryErrorTypes.isItinerarySuccess(result.errorType)) {
          return {
@@ -109,9 +109,9 @@ export class ItineraryService {
    animalsToKeep = [],
    attractionsToKeep = [],
 } = {}) {
-      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
-      const result = await ItineraryApi.acceptItineraryRequest(
+      const result = await ItineraryClient.acceptItineraryRequest(
          temp,
          { animalsToKeep, attractionsToKeep }
       );
