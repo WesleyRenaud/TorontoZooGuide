@@ -165,3 +165,46 @@ test('Test_Hydrates_TestHydratesAlsoTransportationAttractionsWhenOpeningWizardSt
       addedAsAttraction: true,
    }]);
 });
+
+test('Test_UpdateSelection_TestPreserveOnInvalidRejected_ExpectNoPersist', () => {
+   const wizard = ItineraryWizardStore.createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.updateSelection('animals', null, { preserveOnInvalid: true });
+   assert.equal(wizard.state.animals.length, 1);
+});
+
+test('Test_AllowEmptyFinish_TestPendingValidatedEmpty_ExpectTrue', () => {
+   const wizard = ItineraryWizardStore.createItineraryWizardState({
+      date: '',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   assert.equal(wizard.allowEmptyFinish(true), true);
+   assert.equal(wizard.allowEmptyFinish(false), false);
+});
+
+test('Test_DiscardChanges_TestRestoresInitialDraft_ExpectOk', () => {
+   const wizard = ItineraryWizardStore.createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.updateSelection('animals', []);
+   assert.equal(wizard.hasUnsavedChanges(), true);
+
+   wizard.discardChanges();
+   assert.equal(wizard.hasUnsavedChanges(), false);
+   assert.equal(wizard.state.animals.length, 1);
+});

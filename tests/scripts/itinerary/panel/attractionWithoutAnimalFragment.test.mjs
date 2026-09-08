@@ -68,3 +68,25 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', 
 
    assert.equal(document.querySelector('.tzg-popup'), null);
 });
+
+test('Test_GetAttractionNamesFromWithoutAnimalIssues_TestNamesTimesAndBlanks_ExpectFiltered', () => {
+   assert.deepEqual(
+      AttractionWithoutAnimalFragment.getAttractionNamesFromWithoutAnimalIssues([{
+         type: 'attractionWithoutAnimal',
+         items: [
+            { name: '  Kangaroo Walk-Thru  ', start_time: '11:00' },
+            { name: '   ' },
+            { name: 'Splash Island', start_time: '2:00 PM' },
+         ],
+      }]),
+      ['Kangaroo Walk-Thru', 'Splash Island']
+   );
+
+   assert.match(
+      AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage({
+         attractionName: 'Splash Island',
+         attractionTime: '2:00 PM',
+      }),
+      /Splash Island.*2:00 PM/
+   );
+});

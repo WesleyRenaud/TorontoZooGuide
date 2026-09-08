@@ -45,3 +45,23 @@ test('Test_CreateStoredAnimalFromObject_TestFields_ExpectStored', () => {
       }
    );
 });
+
+test('Test_CreateStoredAnimalFromObject_TestMissingId_ExpectNull', async () => {
+   const { StoredSelectionNormalizer } = await import(
+      '../../../../../scripts/itinerary/selectors/base/storedSelectionNormalizer.js'
+   );
+   const originalNormalize = StoredSelectionNormalizer.normalizeStoredId;
+   StoredSelectionNormalizer.normalizeStoredId = () => '';
+
+   try {
+      assert.equal(
+         AnimalSelectorStoredAnimalFactory.createStoredAnimalFromObject({
+            species: 'African Lion',
+            exhibit: 'Savanna',
+         }),
+         null
+      );
+   } finally {
+      StoredSelectionNormalizer.normalizeStoredId = originalNormalize;
+   }
+});

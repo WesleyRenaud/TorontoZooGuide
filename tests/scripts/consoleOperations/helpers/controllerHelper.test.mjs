@@ -105,6 +105,10 @@ test('Test_ValidateOptionalDateRange_TestBounds_ExpectMessageOrNull', () => {
          Strings.validation.endDateBeforeStartDate
       );
       assert.equal(ControllerHelper.validateOptionalDateRange('2026-06-10', '2026-06-20'), null);
+      assert.equal(
+         ControllerHelper.validateOptionalDateRange('not-a-date', 'also-bad'),
+         Strings.validation.dateRangeInvalid
+      );
    } finally {
       VisitDateValidator.resolveOptionalStartDate = original;
    }

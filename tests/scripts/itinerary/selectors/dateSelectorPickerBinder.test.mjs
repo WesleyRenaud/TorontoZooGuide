@@ -67,4 +67,9 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    assert.equal(syncedDates.length, 3);
    assert.equal(syncedMaxDate, maxDate);
    assert.ok(flatpickrCalls.includes('close'));
+
+   currentDate = null;
+   const beforeNullSync = flatpickrCalls.length;
+   binding.syncBounds();
+   assert.equal(flatpickrCalls.length, beforeNullSync);
 });

@@ -26,4 +26,11 @@ test('Test_NormalizeItineraryAdjustmentType_TestValues_ExpectMatchedOrPassthroug
       ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('custom'),
       'custom'
    );
+   assert.equal(ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType(''), '');
+
+   ItineraryAdjustmentTypes.itineraryAdjustmentTypes = null;
+   assert.equal(
+      ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('early_admission'),
+      'early_admission'
+   );
 });

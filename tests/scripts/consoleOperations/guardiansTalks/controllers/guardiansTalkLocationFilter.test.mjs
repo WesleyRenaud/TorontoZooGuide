@@ -115,3 +115,48 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestChangeClearsTalk_Expe
       ConsoleOperationsClient.getGuardiansTalkNamesAtLocation = originalGetTalks;
    }
 });
+
+test('Test_CreateGuardiansTalkLocationFilterController_TestNonSelectAndErrors_ExpectNoThrow', async () => {
+   const originalGetLocations = ConsoleOperationsClient.getGuardiansTalkLocations;
+   const originalGetTalks = ConsoleOperationsClient.getGuardiansTalkNamesAtLocation;
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalPopulateTalks = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
+
+   ConsoleOperationsClient.getGuardiansTalkLocations = async () => {
+      throw new Error('locations failed');
+   };
+   ConsoleOperationsClient.getGuardiansTalkNamesAtLocation = async () => {
+      throw new Error('talks failed');
+   };
+   ControllerHelper.getFieldValue = () => 'Eurasia';
+   ConsoleDropdownPopulator.populateGuardiansTalkDropdown = () => {};
+
+   try {
+      const locationInputEl = document.createElement('input');
+      const talkInputEl = document.createElement('input');
+      talkInputEl.value = 'Talk';
+      const nonSelectController = GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+         locationEl: locationInputEl,
+         talkNameEl: talkInputEl,
+      });
+
+      await nonSelectController.refreshLocations();
+      nonSelectController.clear();
+      assert.equal(talkInputEl.value, '');
+
+      const locationEl = document.createElement('select');
+      const talkNameEl = document.createElement('select');
+      const controller = GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+         locationEl,
+         talkNameEl,
+      });
+
+      await controller.refreshLocations();
+      await controller.refresh();
+   } finally {
+      ConsoleOperationsClient.getGuardiansTalkLocations = originalGetLocations;
+      ConsoleOperationsClient.getGuardiansTalkNamesAtLocation = originalGetTalks;
+      ControllerHelper.getFieldValue = originalGetField;
+      ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulateTalks;
+   }
+});

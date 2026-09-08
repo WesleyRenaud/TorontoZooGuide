@@ -75,3 +75,29 @@ test('Test_WireTimePickerEnterCommit_TestMissingArgs_ExpectNoop', () => {
    TimePickerEnterHandler.wireTimePickerEnterCommit({}, null, () => {});
    TimePickerEnterHandler.wireTimePickerEnterCommit({}, {}, null);
 });
+
+test('Test_WireTimePickerEnterCommit_TestEnterEmpty_ExpectNoCommit', () => {
+   const original = ReadOpenPickerFormatter.readOpenPickerTime;
+   ReadOpenPickerFormatter.readOpenPickerTime = () => '';
+   const commits = [];
+   const inputEl = document.createElement('input');
+   inputEl.value = '';
+   const instance = {
+      calendarContainer: document.createElement('div'),
+   };
+
+   try {
+      TimePickerEnterHandler.wireTimePickerEnterCommit(inputEl, instance, (time) => {
+         commits.push(time);
+      });
+
+      inputEl.listeners.keydown({
+         key: 'Enter',
+         preventDefault() {},
+         stopImmediatePropagation() {},
+      });
+      assert.deepEqual(commits, []);
+   } finally {
+      ReadOpenPickerFormatter.readOpenPickerTime = original;
+   }
+});

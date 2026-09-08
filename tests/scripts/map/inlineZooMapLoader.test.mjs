@@ -73,3 +73,22 @@ test('Test_MountInlineSvg_TestMount_ExpectInnerHtmlAndSvg', async () => {
       InlineZooMapLoader.fetchZooMapSvgText = originalFetch;
    }
 });
+
+test('Test_FetchZooMapSvgText_TestFailedResponse_ExpectClearsCacheAndThrows', async () => {
+   const originalFetch = globalThis.fetch;
+   const originalCache = InlineZooMapLoader.cachedSvgTextPromise;
+   InlineZooMapLoader.cachedSvgTextPromise = null;
+   globalThis.fetch = async () => ({
+      ok: false,
+      status: 500,
+      text: async () => '',
+   });
+
+   try {
+      await assert.rejects(() => InlineZooMapLoader.fetchZooMapSvgText());
+      assert.equal(InlineZooMapLoader.cachedSvgTextPromise, null);
+   } finally {
+      globalThis.fetch = originalFetch;
+      InlineZooMapLoader.cachedSvgTextPromise = originalCache;
+   }
+});

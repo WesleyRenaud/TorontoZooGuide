@@ -27,6 +27,14 @@ test('Test_ReadTimeFromPickerControls_TestMissingControls_ExpectEmpty', () => {
       OpenPickerTimeHelper.readTimeFromPickerControls({ hourElement: null, minuteElement: null }, 'H:i'),
       ''
    );
+   assert.equal(
+      OpenPickerTimeHelper.readTimeFromPickerControls({
+         hourElement: { value: 'x' },
+         minuteElement: { value: '05' },
+         config: { time_24hr: true },
+      }, 'H:i'),
+      ''
+   );
 });
 
 test('Test_ReadTimeFromPickerControls_Test24HourValues_ExpectFormatted', () => {
@@ -53,4 +61,23 @@ test('Test_ReadTimeFromPickerControls_Test12HourPm_ExpectConverted', () => {
    };
 
    assert.equal(OpenPickerTimeHelper.readTimeFromPickerControls(instance, 'H:i'), '13:30');
+});
+
+test('Test_ReadTimeFromPickerControls_TestNaNValues_ExpectEmpty', () => {
+   assert.equal(
+      OpenPickerTimeHelper.readTimeFromPickerControls({
+         hourElement: { value: 'abc' },
+         minuteElement: { value: '05' },
+         config: { time_24hr: true },
+      }, 'H:i'),
+      ''
+   );
+   assert.equal(
+      OpenPickerTimeHelper.readTimeFromPickerControls({
+         hourElement: { value: '9' },
+         minuteElement: { value: 'xyz' },
+         config: { time_24hr: true },
+      }, 'H:i'),
+      ''
+   );
 });

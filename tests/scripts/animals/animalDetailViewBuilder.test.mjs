@@ -74,7 +74,11 @@ test('Test_BuildAnimalDetailContent_TestAnimal_ExpectFragmentChildren', () => {
       latin_name: 'Panthera leo',
       exhibit: 'African Savanna',
       habitat: 'Grassland',
+      habitat_and_range: 'Africa',
+      identification: 'Mane',
    }, { exhibitName: 'African Savanna' });
 
    assert.ok(fragment.children.length >= 4);
+   assert.match(fragment.textContent, /Identification:/);
+   assert.match(fragment.textContent, /Habitat And Range:/);
 });

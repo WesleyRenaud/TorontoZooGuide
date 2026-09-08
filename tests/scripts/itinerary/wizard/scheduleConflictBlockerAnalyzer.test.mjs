@@ -26,6 +26,10 @@ test('Test_TrimRangeAgainstBlocker_TestOverlapCases_ExpectTrimmedOrNull', () => 
       ScheduleConflictBlockerAnalyzer.trimRangeAgainstBlocker(100, 200, 120, 160),
       { start: 160, end: 200 }
    );
+   assert.equal(
+      ScheduleConflictBlockerAnalyzer.trimRangeAgainstBlocker(Number.NaN, Number.NaN, Number.NaN, Number.NaN),
+      null
+   );
 });
 
 test('Test_GetTrimmedGuardiansTalkMinutes_TestBlockers_ExpectTrimOrNull', () => {
@@ -77,6 +81,13 @@ test('Test_IsGuardiansTalkFullyCoveredAndRequiresTrim_TestRanges_ExpectFlags', (
          true
       );
       assert.equal(
+         ScheduleConflictBlockerAnalyzer.isGuardiansTalkFullyCoveredByBlockers(
+            { start_time: '10:00 AM', end_time: '10:00 AM' },
+            []
+         ),
+         true
+      );
+      assert.equal(
          ScheduleConflictBlockerAnalyzer.guardiansTalkRequiresTrimOverride(
             { start_time: '10:00 AM', end_time: '11:00 AM' },
             [{ start_time: '10:00 AM', end_time: '10:30 AM' }]
@@ -87,6 +98,13 @@ test('Test_IsGuardiansTalkFullyCoveredAndRequiresTrim_TestRanges_ExpectFlags', (
          ScheduleConflictBlockerAnalyzer.guardiansTalkRequiresTrimOverride(
             { start_time: '10:00 AM', end_time: '11:00 AM' },
             []
+         ),
+         false
+      );
+      assert.equal(
+         ScheduleConflictBlockerAnalyzer.guardiansTalkRequiresTrimOverride(
+            { start_time: '10:00 AM', end_time: '11:00 AM' },
+            [{ start_time: '10:00 AM', end_time: '11:00 AM' }]
          ),
          false
       );
@@ -163,6 +181,54 @@ test('Test_EncounterHasScheduleExceptionWithSelectedTalks_TestTrimRequired_Expec
             },
          ],
       };
+      assert.equal(
+         ScheduleConflictBlockerAnalyzer.encounterHasScheduleExceptionWithSelectedTalks(
+            selection,
+            {
+               item_type: 'encounter',
+               name: 'Giraffe',
+               start_time: '10:00 AM',
+               end_time: '10:30 AM',
+            }
+         ),
+         true
+      );
+
+      assert.equal(
+         ScheduleConflictBlockerAnalyzer.encounterHasScheduleExceptionWithSelectedTalks(
+            {
+               items: [{ item_type: 'encounter', name: 'Other' }],
+            },
+            {
+               item_type: 'encounter',
+               name: 'Giraffe',
+               start_time: '10:00 AM',
+               end_time: '10:30 AM',
+            }
+         ),
+         false
+      );
+
+      ScheduleConflictChecker.scheduleTimesOverlap = () => false;
+      assert.equal(
+         ScheduleConflictBlockerAnalyzer.encounterHasScheduleExceptionWithSelectedTalks(
+            selection,
+            {
+               item_type: 'encounter',
+               name: 'Giraffe',
+               start_time: '10:00 AM',
+               end_time: '10:30 AM',
+            }
+         ),
+         false
+      );
+
+      ScheduleConflictChecker.scheduleTimesOverlap = () => true;
+      DayPlannerScheduleController.parseClockTimeMinutes = (value) => ({
+         '10:00 AM': 600,
+         '11:00 AM': 660,
+         '10:30 AM': 700,
+      }[value]);
       assert.equal(
          ScheduleConflictBlockerAnalyzer.encounterHasScheduleExceptionWithSelectedTalks(
             selection,

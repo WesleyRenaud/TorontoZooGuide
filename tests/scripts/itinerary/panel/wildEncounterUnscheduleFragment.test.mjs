@@ -56,3 +56,44 @@ test('Test_ShowWildEncounterUnscheduleConfirmation_TestIssues_ExpectPopup', () =
       ItineraryItemFormatter.formatClockTime = originalFormat;
    }
 });
+
+test('Test_GetPrimaryWildEncounterFromUnscheduleIssues_TestMissingName_ExpectNull', () => {
+   assert.equal(
+      WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues([
+         { type: issueType, items: [{ name: ' ' }] },
+      ]),
+      null
+   );
+});
+
+test('Test_GetPrimaryWildEncounterFromUnscheduleIssues_TestMissingTime_ExpectNameOnly', () => {
+   const original = ItineraryItemFormatter.formatClockTime;
+   ItineraryItemFormatter.formatClockTime = () => '';
+
+   try {
+      assert.deepEqual(
+         WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues([
+            { type: issueType, items: [{ name: 'Giraffe Encounter' }] },
+         ]),
+         { encounterName: 'Giraffe Encounter' }
+      );
+   } finally {
+      ItineraryItemFormatter.formatClockTime = original;
+   }
+});
+
+test('Test_ShowWildEncounterUnscheduleConfirmation_TestNoEncounter_ExpectNoPopup', () => {
+   const calls = [];
+   const originalShow = ConfirmFragment.showItineraryConfirmPopup;
+   ConfirmFragment.showItineraryConfirmPopup = (args) => { calls.push(args); };
+
+   try {
+      WildEncounterUnscheduleFragment.showWildEncounterUnscheduleConfirmation({
+         issues: [],
+         mountEl: { id: 'mount' },
+      });
+      assert.equal(calls.length, 0);
+   } finally {
+      ConfirmFragment.showItineraryConfirmPopup = originalShow;
+   }
+});

@@ -90,4 +90,10 @@ test('Test_BuildPathArrowPlacementsForPolyline_TestShortAndLong_ExpectPlacements
 
    assert.ok(placements.length >= 2);
    assert.ok(placements.every((placement) => Number.isFinite(placement.angleDeg)));
+
+   const skippedNearEnds = ItineraryPathArrowCalculator.buildPathArrowPlacementsForPolyline(
+      [{ x: 0, y: 0 }, { x: 100, y: 0 }],
+      { intervalPx: 5, skipEndPx: 12, minPathLengthPx: 20 }
+   );
+   assert.ok(skippedNearEnds.length >= 1);
 });

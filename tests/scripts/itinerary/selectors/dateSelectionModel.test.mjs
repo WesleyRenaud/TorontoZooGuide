@@ -93,6 +93,33 @@ test('Test_CreateDateSelectionModel_TestPersist_ExpectPayload', () => {
    assert.equal(model.persistCurrentDate()?.date, '2026-06-16');
 });
 
+test('Test_CreateDateSelectionModel_TestInvalidNormalize_ExpectRejected', () => {
+   const originalNormalize = VisitDateValidator.normalizeDate;
+   const model = DateSelectionModel.createDateSelectionModel({
+      earliestDateFloor: floor,
+      getTodayFn: () => floor,
+   });
+
+   let normalizeCalls = 0;
+   VisitDateValidator.normalizeDate = (date) => {
+      normalizeCalls += 1;
+      if (normalizeCalls === 1) {
+         return date;
+      }
+
+      return null;
+   };
+
+   try {
+      assert.equal(model.setDate(makeNoonDate(2026, 5, 16)), false);
+      assert.equal(model.getDate(), null);
+   } finally {
+      VisitDateValidator.normalizeDate = originalNormalize;
+   }
+
+   assert.equal(model.persistCurrentDate(), null);
+});
+
 test('Test_CreateDateSelectionModel_TestSavedOutOfRange_ExpectClamped', () => {
    const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
@@ -102,4 +129,21 @@ test('Test_CreateDateSelectionModel_TestSavedOutOfRange_ExpectClamped', () => {
    });
 
    assert.equal(VisitDateValidator.toISODate(model.getDisplayDate()), '2026-06-17');
+});
+
+test('Test_CreateDateSelectionModel_TestStaleCurrentDatePayload_ExpectNull', () => {
+   let todayCalls = 0;
+   const model = DateSelectionModel.createDateSelectionModel({
+      earliestDateFloor: floor,
+      getTodayFn: () => {
+         todayCalls += 1;
+         // First setDate + persist setDate succeed; buildCurrentDatePayload fails.
+         return todayCalls >= 3 ? makeNoonDate(2026, 5, 1) : floor;
+      },
+      daysAhead: 2,
+      setStoredDate: () => {},
+   });
+
+   assert.equal(model.setDate(makeNoonDate(2026, 5, 16)), true);
+   assert.equal(model.persistCurrentDate(), null);
 });

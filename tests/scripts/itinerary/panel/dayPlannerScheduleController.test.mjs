@@ -16,6 +16,9 @@ test('Test_ParseClockTimeMinutes_TestFormats_ExpectMinutes', () => {
    assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('25:00'), null);
    assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('bad'), null);
    assert.equal(DayPlannerScheduleController.parseClockTimeMinutes(''), null);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:99 PM'), null);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('0:00 AM'), null);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:00:99 PM'), null);
 });
 
 test('Test_FormatMinutesHelpers_TestKeysAndClock_ExpectStrings', () => {
@@ -241,5 +244,11 @@ test('Test_BuildHalfHourSlotStarts_TestRange_ExpectSlots', () => {
       slots.at(-1),
       Math.floor((11 * 60 - 1) / TimelineLayoutConstants.TIMELINE_SLOT_MINUTES)
          * TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
+   );
+
+   // Open on a half-hour boundary so the first loop candidate equals openMinutes.
+   assert.deepEqual(
+      DayPlannerScheduleController.buildHalfHourSlotStarts(9 * 60, 10 * 60 + 30),
+      [9 * 60, 9 * 60 + 30, 10 * 60]
    );
 });

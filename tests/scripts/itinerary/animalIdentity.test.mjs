@@ -73,6 +73,8 @@ test('Test_NormalizeAnimalForSave_TestInvalidAndBlank_ExpectFiltered', () => {
       }
    );
    assert.equal(AnimalIdentity.normalizeAnimalForSave({ species: '  ', exhibit: 'Africa Savanna' }), null);
+   assert.equal(AnimalIdentity.normalizeAnimalForSave(null), null);
+   assert.equal(AnimalIdentity.normalizeAnimalForSave('lion'), null);
    assert.deepEqual(
       AnimalIdentity.normalizeAnimalForSave({
          species: 'African Lion',
@@ -82,5 +84,15 @@ test('Test_NormalizeAnimalForSave_TestInvalidAndBlank_ExpectFiltered', () => {
          species: 'African Lion',
          exhibit: 'Africa Savanna',
       }
+   );
+});
+
+test('Test_BuildAnimalIdentityStorageKey_TestMissingSpecies_ExpectEmpty', () => {
+   assert.equal(
+      AnimalIdentity.buildAnimalIdentityStorageKey({
+         species: '  ',
+         exhibit: 'Africa Savanna',
+      }),
+      ''
    );
 });

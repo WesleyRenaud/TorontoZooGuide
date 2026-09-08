@@ -423,3 +423,72 @@ test('Test_Region_TestRegionSelectorReusesTheBuiltViewOnSubsequent_ExpectOk', as
 
    assert.equal(mountEl.children[0], firstRoot);
 });
+
+test('Test_Region_TestRegionSelectorRenderWithoutResultsEl_ExpectNoOp', async () => {
+   const { RegionSelectorView } = await import(
+      '../../../../scripts/itinerary/selectors/regionSelectorView.js'
+   );
+   const originalBuild = RegionSelectorView.createRegionSelectorElements;
+   RegionSelectorView.createRegionSelectorElements = () => ({
+      rootEl: createDomNode('div', 'root'),
+      resultsEl: null,
+   });
+
+   try {
+      mockRegionSelectorFetch();
+      const mountEl = createDomNode('div');
+      const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
+      await controller.show();
+      assert.equal(mountEl.children.length, 1);
+   } finally {
+      RegionSelectorView.createRegionSelectorElements = originalBuild;
+   }
+});
+
+test('Test_Region_TestRegionSelectorMountWithoutRootEl_ExpectNoMount', async () => {
+   const { RegionSelectorView } = await import(
+      '../../../../scripts/itinerary/selectors/regionSelectorView.js'
+   );
+   const originalBuild = RegionSelectorView.createRegionSelectorElements;
+   RegionSelectorView.createRegionSelectorElements = () => ({
+      rootEl: null,
+      resultsEl: createDomNode('div', 'results'),
+   });
+
+   try {
+      mockRegionSelectorFetch();
+      const mountEl = createDomNode('div');
+      const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
+      await controller.show();
+      assert.equal(mountEl.children.length, 0);
+   } finally {
+      RegionSelectorView.createRegionSelectorElements = originalBuild;
+   }
+});
+
+test('Test_Region_TestRegionSelectorShouldSkipWhenAnimalsNeedRebuild_ExpectFalse', async () => {
+   const { RegionStore } = await import(
+      '../../../../scripts/itinerary/selectors/regionSelector/regionStore.js'
+   );
+   const originalNeedRebuild = RegionStore.selectedExhibitsNeedAnimalRebuild;
+   RegionStore.selectedExhibitsNeedAnimalRebuild = () => true;
+
+   try {
+      localStorage.setItem(
+         StorageKeys.ANIMALS_KEY,
+         JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+      );
+      localStorage.setItem(
+         StorageKeys.SELECTED_EXHIBITS_KEY,
+         JSON.stringify(['Africa Savanna'])
+      );
+      mockRegionSelectorFetch();
+
+      const mountEl = createDomNode('div');
+      const controller = RegionSelector.createItineraryRegionSelectorController({ mountEl });
+      await controller.show();
+      assert.equal(controller.shouldSkipClosingSelectionSync(), false);
+   } finally {
+      RegionStore.selectedExhibitsNeedAnimalRebuild = originalNeedRebuild;
+   }
+});

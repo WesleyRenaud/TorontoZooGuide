@@ -116,3 +116,25 @@ test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () 
       null
    );
 });
+
+test('Test_RenderItineraryPathOverlay_TestMissingSvgRoot_ExpectNoOp', async () => {
+   const { ItineraryPathOverlayRenderer } = await import(
+      '../../../scripts/map/itineraryPathOverlayRenderer.js'
+   );
+   const originalGet = ItineraryPathOverlayRenderer.getSvgRoot;
+   ItineraryPathOverlayRenderer.getSvgRoot = () => null;
+
+   try {
+      assert.doesNotThrow(() => {
+         ItineraryPathFragment.renderItineraryPathOverlay({
+            legs: [],
+            points: [
+               { xPx: 100, yPx: 200 },
+               { xPx: 300, yPx: 400 },
+            ],
+         });
+      });
+   } finally {
+      ItineraryPathOverlayRenderer.getSvgRoot = originalGet;
+   }
+});

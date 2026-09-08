@@ -101,9 +101,17 @@ test('Test_GetAnimalLikelihoodLevel_TestThresholds_ExpectLevelsAndWarnings', () 
    assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 20 }), 'low');
    assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 60 }), 'medium');
    assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 90 }), null);
+   assert.equal(AnimalSelectorModel.getAnimalLikelihoodLevel({ likelihood: 'na' }), null);
    assert.equal(AnimalSelectorModel.isLikelyOffDisplayAnimal({ likelihood: 79 }), true);
    assert.equal(AnimalSelectorModel.isLikelyOffDisplayAnimal({ likelihood: 80 }), false);
    assert.equal(AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD, 80);
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureType(africanLionRow), 'Outdoor');
+   assert.equal(AnimalSelectorModel.getAnimalEnclosureType({ enclosure_type: 'Unknown' }), '');
+   assert.equal(AnimalSelectorModel.buildAnimalImageSrc({ species: '', exhibit: 'Africa' }), null);
+   assert.match(
+      AnimalSelectorModel.buildOffDisplayWarningMessage({ species: 'African Lion', likelihood: 'na' }),
+      /may be off display on your visit date/
+   );
 });
 
 test('Test_BuildOffDisplayWarningMessage_TestMissingAndLowLikelihood_ExpectMessages', () => {

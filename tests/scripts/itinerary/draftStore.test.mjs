@@ -190,3 +190,40 @@ test('Test_SyncItineraryAnimalDraftFromItinerary_TestRemovedKeys_ExpectCleared',
 
    assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.REMOVED_ANIMALS_KEY)), []);
 });
+
+test('Test_SetStoredItineraryDate_TestEmpty_ExpectRemoved', () => {
+   DraftStore.setStoredItineraryDate('2026-06-15');
+   assert.equal(localStorage.getItem(StorageKeys.DATE_KEY), '2026-06-15');
+
+   DraftStore.setStoredItineraryDate('');
+   assert.equal(localStorage.getItem(StorageKeys.DATE_KEY), null);
+});
+
+test('Test_NormalizeDateToLocalMidnight_TestInvalid_ExpectNull', () => {
+   assert.equal(DraftStore.normalizeDateToLocalMidnight('not-a-date'), null);
+});
+
+test('Test_ClearItinerarySelectionStorage_TestKeys_ExpectCleared', () => {
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, '["Africa"]');
+   localStorage.setItem(StorageKeys.SELECTED_REGIONS_KEY, '["Africa"]');
+   localStorage.setItem(StorageKeys.REMOVED_ANIMALS_KEY, '["lion"]');
+   localStorage.setItem(StorageKeys.DATE_KEY, '2026-06-15');
+
+   DraftStore.clearItinerarySelectionStorage();
+
+   assert.equal(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY), null);
+   assert.equal(localStorage.getItem(StorageKeys.SELECTED_REGIONS_KEY), null);
+   assert.equal(localStorage.getItem(StorageKeys.REMOVED_ANIMALS_KEY), null);
+   assert.equal(localStorage.getItem(StorageKeys.DATE_KEY), '2026-06-15');
+});
+
+test('Test_RemoveAnimalFromItineraryAnimalDraft_TestUnparseableKey_ExpectIgnored', () => {
+   localStorage.setItem(
+      StorageKeys.ANIMALS_KEY,
+      JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+   );
+
+   DraftStore.removeAnimalFromItineraryAnimalDraft('animals', '||Africa Savanna');
+
+   assert.equal(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)).length, 1);
+});

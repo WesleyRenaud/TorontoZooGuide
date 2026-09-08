@@ -169,6 +169,56 @@ test('Test_ShowTransportationRouteMarkers_TestSelectedCircles_ExpectVisibleOnly'
    delete globalThis.document;
 });
 
+test('Test_ShowTransportationRouteLayer_TestMissingRoute_ExpectHiddenOnly', () => {
+   const summerGroup = _createGroup('zoomobile-route-summer', []);
+   const winterGroup = _createGroup('zoomobile-route-winter', []);
+   const svgRoot = _createSvgRoot({
+      summerGroup,
+      winterGroup,
+      summerCircles: [],
+      winterCircles: [],
+   });
+
+   globalThis.document = {
+      querySelector(selector) {
+         return selector === '#zooMapMount svg' ? svgRoot : null;
+      },
+   };
+
+   TransportationRouteFragment.showTransportationRouteLayer('');
+   assert.equal(summerGroup.style.values.get('display'), 'none');
+   assert.equal(winterGroup.style.values.get('display'), 'none');
+
+   delete globalThis.document;
+});
+
+test('Test_ShowTransportationRouteMarkers_TestMissingRouteOrGroup_ExpectEarlyReturn', () => {
+   const summerGroup = _createGroup('zoomobile-route-summer', [
+      _createCircle('zm-s-005'),
+   ]);
+   const winterGroup = _createGroup('zoomobile-route-winter', []);
+   const svgRoot = _createSvgRoot({
+      summerGroup,
+      winterGroup,
+      summerCircles: [_createCircle('zm-s-005')],
+      winterCircles: [],
+   });
+
+   globalThis.document = {
+      querySelector(selector) {
+         return selector === '#zooMapMount svg' ? svgRoot : null;
+      },
+   };
+
+   TransportationRouteFragment.showTransportationRouteMarkers('', [['zm-s-005']]);
+   TransportationRouteFragment.showTransportationRouteMarkers('summer', []);
+   TransportationRouteFragment.showTransportationRouteMarkers('missing', [['zm-s-005']]);
+
+   assert.equal(summerGroup.style.values.get('display'), 'none');
+
+   delete globalThis.document;
+});
+
 test('Test_ShowTransportationRouteMarkers_TestMarkerPairs_ExpectArrows', () => {
    const summerCircles = [
       _createCircle('zm-s-005', { cx: 10, cy: 10 }),

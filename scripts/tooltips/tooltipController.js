@@ -83,10 +83,6 @@ export class TooltipController {
       }
 
       function setTooltipVisibility(isVisible) {
-         if (!tooltipEl) {
-            return;
-         }
-
          tooltipEl.style.display = isVisible ? 'flex' : 'none';
          tooltipEl.style.pointerEvents = isVisible ? 'auto' : 'none';
       }

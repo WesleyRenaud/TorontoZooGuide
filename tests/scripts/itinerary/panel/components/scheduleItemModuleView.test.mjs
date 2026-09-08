@@ -47,6 +47,20 @@ test('Test_BuildSearchRowRenderer_TestModuleTypes_ExpectConfiguredRenderers', ()
          AttractionSelectorModel.getAttractionTitle
       );
 
+      const animalConfig = configs.find(
+         (config) => config.getTitle === AnimalSelectorModel.getAnimalTitleLine
+      );
+      const originalSpecies = AnimalSelectorModel.getAnimalSpecies;
+      const originalEnclosure = AnimalSelectorModel.getAnimalEnclosureName;
+      AnimalSelectorModel.getAnimalSpecies = () => 'Tiger';
+      AnimalSelectorModel.getAnimalEnclosureName = () => 'Indoor';
+      assert.deepEqual(animalConfig.getTitleParts({}), {
+         species: 'Tiger',
+         enclosureName: 'Indoor',
+      });
+      AnimalSelectorModel.getAnimalSpecies = originalSpecies;
+      AnimalSelectorModel.getAnimalEnclosureName = originalEnclosure;
+
       const transportationConfig = configs.find(
          (config) => config.getTitle === TransportationSelectorModel.getTransportationName
       );

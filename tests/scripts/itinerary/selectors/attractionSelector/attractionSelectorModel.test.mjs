@@ -11,6 +11,15 @@ const carouselRow = {
    info_link: ' https://example.com/carousel ',
 };
 
+test('Test_GetAttractionTitleAndImage_TestMissingName_ExpectFallbackAndNull', () => {
+   assert.equal(
+      AttractionSelectorModel.getAttractionTitle({}),
+      AttractionSelectorModel.DEFAULT_ATTRACTION_TITLE
+   );
+   assert.equal(AttractionSelectorModel.buildAttractionImageSrc({ name: ' ' }), null);
+   assert.equal(AttractionSelectorModel.buildAttractionImageSrc({}), null);
+});
+
 test('Test_GetAttractionSubtitle_TestPresentationFields_ExpectDerivedValues', () => {
    assert.equal(AttractionSelectorModel.getAttractionSubtitle(carouselRow), 'Free With Admission');
    assert.equal(

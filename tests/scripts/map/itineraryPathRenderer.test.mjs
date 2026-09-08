@@ -13,11 +13,19 @@ test('Test_BuildPathPolylines_TestCommands_ExpectPolylines', () => {
 
 test('Test_BuildPathPolylines_TestCurveAndEmpty_ExpectSamplesOrEmpty', () => {
    assert.deepEqual(ItineraryPathRenderer.buildPathPolylines(''), []);
+   assert.deepEqual(ItineraryPathRenderer.buildPathPolylines('L 10 0'), []);
 
    const curved = ItineraryPathRenderer.buildPathPolylines('M 0 0 C 0 0 10 0 10 0', 5);
    assert.ok(curved.length === 1);
    assert.ok(curved[0].length >= 3);
    assert.deepEqual(curved[0].at(-1), { x: 10, y: 0 });
+});
+
+test('Test_BuildPathPolylines_TestLineBeforeMove_ExpectSkipped', () => {
+   assert.deepEqual(
+      ItineraryPathRenderer.buildPathPolylines('L 10 10 M 0 0 L 20 0'),
+      [[{ x: 0, y: 0 }, { x: 20, y: 0 }]]
+   );
 });
 
 test('Test_OffsetArrowPlacement_TestSides_ExpectOffset', () => {

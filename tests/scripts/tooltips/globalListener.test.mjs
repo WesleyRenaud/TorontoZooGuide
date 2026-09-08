@@ -83,3 +83,36 @@ test('Test_CreateTooltipGlobalListeners_TestInstallUninstallAndEvents_ExpectHand
       window.open = originalOpen;
    }
 });
+
+test('Test_CreateTooltipGlobalListeners_TestClosedState_ExpectNoClose', () => {
+   const listeners = { click: null, keydown: null };
+   const originalAdd = document.addEventListener;
+   const closes = [];
+   const steps = [];
+
+   document.addEventListener = (type, handler) => { listeners[type] = handler; };
+
+   const api = GlobalListener.createTooltipGlobalListeners({
+      tooltipEl: { contains: () => false },
+      isOpen: () => false,
+      close: () => { closes.push(true); },
+      step: (delta) => { steps.push(delta); },
+      getItemAtIndex: () => null,
+      onAnimalCardClick: () => {},
+   });
+
+   try {
+      api.install();
+
+      listeners.click({
+         target: { closest: () => null },
+      });
+      listeners.keydown({ key: 'Escape', preventDefault() {} });
+      listeners.keydown({ key: 'ArrowRight', preventDefault() {} });
+
+      assert.deepEqual(closes, []);
+      assert.deepEqual(steps, []);
+   } finally {
+      document.addEventListener = originalAdd;
+   }
+});

@@ -39,6 +39,24 @@ test('Test_BuildFocusIncludes_TestFocusTypes_ExpectIncludes', () => {
    assert.deepEqual(LayerRequestBuilder.buildFocusIncludes('animal', null).speciesToInclude, []);
 });
 
+test('Test_IsFullyUnscheduledTransportationName_TestMissingRows_ExpectFalse', () => {
+   const originalName = TransportationSelectorModel.getTransportationName;
+   TransportationSelectorModel.getTransportationName = (row) => row.name;
+
+   try {
+      assert.equal(
+         LayerRequestBuilder.isFullyUnscheduledTransportationName(
+            'Missing',
+            [{ name: 'Zoomobile' }],
+            new Set()
+         ),
+         false
+      );
+   } finally {
+      TransportationSelectorModel.getTransportationName = originalName;
+   }
+});
+
 test('Test_BuildFullyUnscheduledTransportationRows_TestMix_ExpectUnscheduledOnly', () => {
    const originalScheduled = TransportationSelectorModel.isTransportationScheduled;
    const originalName = TransportationSelectorModel.getTransportationName;
@@ -59,6 +77,20 @@ test('Test_BuildFullyUnscheduledTransportationRows_TestMix_ExpectUnscheduledOnly
       assert.deepEqual(rows, [{ name: 'Zoomobile', scheduled: false, type: 'transportation' }]);
    } finally {
       TransportationSelectorModel.isTransportationScheduled = originalScheduled;
+      TransportationSelectorModel.getTransportationName = originalName;
+   }
+});
+
+test('Test_IsFullyUnscheduledTransportationName_TestMissingRows_ExpectFalse', () => {
+   const originalName = TransportationSelectorModel.getTransportationName;
+   TransportationSelectorModel.getTransportationName = (row) => row.name;
+
+   try {
+      assert.equal(
+         LayerRequestBuilder.isFullyUnscheduledTransportationName('Missing', [], new Set()),
+         false
+      );
+   } finally {
       TransportationSelectorModel.getTransportationName = originalName;
    }
 });

@@ -41,3 +41,26 @@ test('Test_ReadOpenPickerTime_TestSelectedDatesPresent_ExpectSelectedOverControl
 
    assert.equal(time, '2:30 PM');
 });
+
+test('Test_ReadOpenPickerTime_TestClosedPicker_ExpectEmpty', () => {
+   assert.equal(
+      ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance({ isOpen: false })),
+      ''
+   );
+   assert.equal(ReadOpenPickerFormatter.readOpenPickerTime(null), '');
+});
+
+test('Test_ReadOpenPickerTime_TestLatestSelectedFallback_ExpectFormatted', () => {
+   const latestSelectedDateObj = new Date();
+   latestSelectedDateObj.setHours(9, 15, 0, 0);
+
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance({
+      selectedDates: [],
+      hourElement: { value: '' },
+      minuteElement: { value: '' },
+      amPM: { textContent: '' },
+      latestSelectedDateObj,
+   }));
+
+   assert.equal(time, '9:15 AM');
+});

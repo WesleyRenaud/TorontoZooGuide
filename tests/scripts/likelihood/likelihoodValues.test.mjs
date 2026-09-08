@@ -57,4 +57,16 @@ test('Test_LikelihoodToPercent_TestMissingValues_ExpectNull', () => {
    assert.equal(LikelihoodValues.likelihoodToPercent(null), null);
    assert.equal(LikelihoodValues.likelihoodToPercent(undefined), null);
    assert.equal(LikelihoodValues.likelihoodToPercent(''), null);
+   assert.equal(LikelihoodValues.likelihoodToPercent('not-a-number'), null);
+   assert.equal(LikelihoodValues.likelihoodToPercent(Number.NaN), null);
+});
+
+test('Test_LikelihoodToPercent_TestNonIntegerOutsideUnit_ExpectClamped', () => {
+   assert.equal(LikelihoodValues.likelihoodToPercent(12.5), 12.5);
+   assert.equal(LikelihoodValues.likelihoodToPercent(150.5), 100);
+});
+
+test('Test_LikelihoodToFraction_TestNullPercent_ExpectNull', () => {
+   assert.equal(LikelihoodValues.likelihoodToFraction(null), null);
+   assert.equal(LikelihoodValues.likelihoodToFraction(''), null);
 });

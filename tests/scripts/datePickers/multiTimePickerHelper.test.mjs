@@ -85,3 +85,64 @@ test('Test_WireMultiTimeInputEvents_TestBackspace_ExpectRemoveLast', () => {
    assert.deepEqual(closes, [true]);
    assert.deepEqual(prevented, ['default', 'stop']);
 });
+
+test('Test_CreateMultiTimeCommitController_TestCommitAfterInputSettles_ExpectPendingCommit', async () => {
+   const commits = [];
+   const inputEl = document.createElement('input');
+   const original = TimePickerEnterHandler.resolveOpenTimePickerValue;
+   TimePickerEnterHandler.resolveOpenTimePickerValue = () => '6:00 PM';
+
+   try {
+      const controller = MultiTimePickerHelper.createMultiTimeCommitController({
+         inputEl,
+         onCommitTime: (time) => { commits.push(time); },
+      });
+
+      inputEl.value = '';
+      controller.commitAfterInputSettles({ setDate() {} }, '3:00 PM');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.deepEqual(commits, ['3:00 PM']);
+
+      commits.length = 0;
+      inputEl.value = 'typed';
+      controller.commitAfterInputSettles({ setDate() {} }, '4:00 PM');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.deepEqual(commits, ['6:00 PM']);
+   } finally {
+      TimePickerEnterHandler.resolveOpenTimePickerValue = original;
+   }
+});
+
+test('Test_WireMultiTimeInputEvents_TestBlurOpenAndPending_ExpectGuards', async () => {
+   const inputEl = document.createElement('input');
+   const settles = [];
+   const openPicker = { isOpen: true };
+   const closedPicker = { isOpen: false };
+
+   MultiTimePickerHelper.wireMultiTimeInputEvents(
+      inputEl,
+      openPicker,
+      {
+         commitAfterInputSettles: (...args) => { settles.push(args); },
+      }
+   );
+
+   inputEl.value = '4:00 PM';
+   inputEl.listeners.blur();
+   await new Promise((resolve) => setTimeout(resolve, 0));
+   assert.deepEqual(settles, []);
+
+   MultiTimePickerHelper.wireMultiTimeInputEvents(
+      inputEl,
+      closedPicker,
+      {
+         commitAfterInputSettles: (...args) => { settles.push(args); },
+      }
+   );
+
+   inputEl.value = '5:00 PM';
+   inputEl.listeners.blur();
+   await new Promise((resolve) => setTimeout(resolve, 0));
+   assert.equal(settles.length, 1);
+   assert.equal(settles[0][1], '5:00 PM');
+});

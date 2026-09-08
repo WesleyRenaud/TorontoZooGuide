@@ -149,3 +149,32 @@ test('Test_ConfirmSaveIssuesConflictSelection_TestConfirmSaveIssuesConflictSelec
       [['From Howls to Honks', 'Great Barrier Reef']]
    );
 });
+
+test('Test_ShowScheduleTimeConflictConfirmation_TestUnresolvedSelection_ExpectKeepOpen', async () => {
+   const { ScheduleTimeConflictResolver } = await import(
+      '../../../../scripts/itinerary/panel/scheduleTimeConflictResolver.js'
+   );
+   const originalResolve = ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection;
+   ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection = async () => false;
+
+   try {
+      ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation({
+         issues: [{
+            type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+            items: [firstEncounter, secondEncounter],
+         }],
+         onConfirm: async () => {},
+      });
+
+      const noticePopup = document.querySelector('.tzg-notice');
+      noticePopup?.querySelector('.tzg-popup-confirm')?.click();
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.ok(document.querySelector('.tzg-notice'));
+   } finally {
+      ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection = originalResolve;
+   }
+});

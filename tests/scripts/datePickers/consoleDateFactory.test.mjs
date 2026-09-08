@@ -153,3 +153,78 @@ test('Test_InitScheduleDateTimePickers_TestFourInputs_ExpectInitialized', () => 
    assert.ok(pickers.startDatePicker);
    assert.ok(pickers.dailyEndTimePicker);
 });
+
+test('Test_InitTimePicker_TestMissingInput_ExpectNull', () => {
+   assert.equal(ConsoleDateFactory.initTimePicker(null), null);
+});
+
+test('Test_ApplyScheduleTimePickerBounds_TestMissingPicker_ExpectNoOp', () => {
+   assert.doesNotThrow(() => {
+      ConsoleDateFactory.applyScheduleTimePickerBounds(null, {
+         openTime: '09:00 AM',
+         closeTime: '05:00 PM',
+      });
+   });
+});
+
+test('Test_ApplyScheduleTimePickerBounds_TestMissingBounds_ExpectCleared', () => {
+   const picker = { sets: [], set(property, value) { this.sets.push([property, value]); } };
+
+   ConsoleDateFactory.applyScheduleTimePickerBounds(picker, null);
+   assert.deepEqual(picker.sets, [
+      ['minTime', null],
+      ['maxTime', null],
+   ]);
+
+   picker.sets.length = 0;
+   ConsoleDateFactory.applyScheduleTimePickerBounds(picker, { openTime: '09:00 AM' });
+   assert.deepEqual(picker.sets, [
+      ['minTime', null],
+      ['maxTime', null],
+   ]);
+});
+
+test('Test_ApplyScheduleTimePickerBounds_TestBounds_ExpectSet', () => {
+   const picker = { sets: [], set(property, value) { this.sets.push([property, value]); } };
+
+   ConsoleDateFactory.applyScheduleTimePickerBounds(picker, {
+      openTime: '09:00 AM',
+      closeTime: '05:00 PM',
+   });
+
+   assert.deepEqual(picker.sets, [
+      ['minTime', '09:00 AM'],
+      ['maxTime', '05:00 PM'],
+   ]);
+});
+
+test('Test_InitAttractionHoursSchedulePickers_TestSixInputs_ExpectInitialized', () => {
+   const startDateEl = createDomNode('input');
+   const endDateEl = createDomNode('input');
+   const weekdayStartTimeEl = createDomNode('input');
+   const weekdayEndTimeEl = createDomNode('input');
+   const weekendHolidayStartTimeEl = createDomNode('input');
+   const weekendHolidayEndTimeEl = createDomNode('input');
+   const { calls, initFlatpickrFn } = _createFlatpickrSpy();
+
+   const pickers = ConsoleDateFactory.initAttractionHoursSchedulePickers({
+      startDateEl,
+      endDateEl,
+      weekdayStartTimeEl,
+      weekdayEndTimeEl,
+      weekendHolidayStartTimeEl,
+      weekendHolidayEndTimeEl,
+   }, { initFlatpickrFn });
+
+   assert.equal(calls.length, 6);
+   assert.equal(calls[0].inputEl, startDateEl);
+   assert.equal(calls[1].inputEl, endDateEl);
+   assert.equal(calls[2].inputEl, weekdayStartTimeEl);
+   assert.equal(calls[3].inputEl, weekdayEndTimeEl);
+   assert.equal(calls[4].inputEl, weekendHolidayStartTimeEl);
+   assert.equal(calls[5].inputEl, weekendHolidayEndTimeEl);
+   assert.ok(pickers.startPicker);
+   assert.ok(pickers.endPicker);
+   assert.ok(pickers.weekdayStartTimePicker);
+   assert.ok(pickers.weekendHolidayEndTimePicker);
+});

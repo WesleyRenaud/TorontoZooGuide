@@ -107,7 +107,10 @@ test('Test_CreateWildEncounterScheduleRowsController_TestRemoveRow_ExpectKeepsFi
    const rowControllers = [];
 
    WildEncounterScheduleRowsBuilder.createScheduleRow = (options) => {
-      const row = _createRowController(options);
+      const row = _createRowController({
+         ...options,
+         allowRemove: true,
+      });
       rowControllers.push(row);
       return row;
    };
@@ -124,12 +127,16 @@ test('Test_CreateWildEncounterScheduleRowsController_TestRemoveRow_ExpectKeepsFi
       controller.addRow({ time: '2:00 PM' });
       assert.equal(controller.getRows().length, 3);
 
-      rowControllers[0].removeButtonEl?.listeners?.click?.();
+      rowControllers[0].removeButtonEl.listeners.click();
       assert.equal(controller.getRows().length, 3);
 
       rowControllers[2].removeButtonEl.listeners.click();
       assert.equal(controller.getRows().length, 2);
       assert.equal(rowsEl.children.length, 2);
+
+      WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
+         addRowButtonEl: document.createElement('button'),
+      });
    } finally {
       WildEncounterScheduleRowsBuilder.createScheduleRow = originalCreate;
       WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow = originalNormalize;

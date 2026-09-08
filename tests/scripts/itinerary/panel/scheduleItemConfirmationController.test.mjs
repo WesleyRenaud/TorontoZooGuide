@@ -160,6 +160,23 @@ test('Test_ScheduleItineraryItemWithConfirmation_TestConfirmationBranches_Expect
       });
       await notOnCall.beforeConfirm({ doNotShowAgain: true });
 
+      assert.deepEqual(helperCalls[1].buildConfirmedOptions(), {
+         confirmingAttractionOutsideOperatingHours: true,
+      });
+      assert.deepEqual(helperCalls[2].buildConfirmedOptions(), { multi: true });
+      assert.deepEqual(helperCalls[3].buildConfirmedOptions(), {
+         confirmingGuardiansTalkUnschedule: true,
+      });
+      assert.deepEqual(helperCalls[4].buildConfirmedOptions(), {
+         confirmingGuardiansTalkWithoutAnimal: true,
+      });
+      assert.deepEqual(helperCalls[5].buildConfirmedOptions(), {
+         confirmingFixedTimeItemLongWait: true,
+      });
+      assert.deepEqual(helperCalls[6].buildConfirmedOptions(), {
+         confirmingWildEncounterUnschedule: true,
+      });
+
       ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => false;
       ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'OTHER' });
       assert.deepEqual(

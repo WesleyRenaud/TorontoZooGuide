@@ -168,6 +168,31 @@ test('Test_CreateRecurringScheduleFormController_TestScheduleTimesAndCustomValid
       assert.ok(statuses.some((entry) => entry[1] === 'bad recurring'));
 
       statuses.length = 0;
+      const emptyTimeSubmitEl = document.createElement('button');
+      ControllerHelper.getFieldValue = () => '';
+      ControllerHelper.hasCheckedField = () => true;
+      RecurringScheduleFormController.createRecurringScheduleFormController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl: emptyTimeSubmitEl,
+         panelEl: {},
+         statusEl: {},
+         startDateEl: document.createElement('input'),
+         endDateEl: document.createElement('input'),
+         timeEl: document.createElement('input'),
+         dayFieldEls: [document.createElement('input')],
+         getSelectionValues: () => ({}),
+         validateSelection: () => null,
+         submitSchedule: async () => ({ success: true }),
+         successMessage: () => 'saved',
+      });
+      await emptyTimeSubmitEl.listeners.click();
+      assert.ok(
+         statuses.some((entry) => (
+            entry[1] === Strings.validation.entityRequired(Strings.labels.time)
+         ))
+      );
+
+      statuses.length = 0;
       ControllerHelper.hasCheckedField = () => true;
       ControllerHelper.validateOptionalDateRange = () => 'bad range';
       const rangeSubmitEl = document.createElement('button');

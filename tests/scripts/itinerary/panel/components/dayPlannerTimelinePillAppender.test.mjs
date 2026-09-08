@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { DayPlannerTimelinePillAppender } from '../../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillAppender.js';
+import { OpenTimelineView } from '../../../../../scripts/itinerary/panel/components/openTimelineView.js';
+import { ScheduledTimelineView } from '../../../../../scripts/itinerary/panel/components/scheduledTimelineView.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -95,4 +97,32 @@ test('Test_AppendItineraryTimeMarkers_TestArrivalSlot_ExpectAppended', () => {
 
    assert.equal(marker?.getAttribute('aria-label'), 'Arrival');
    assert.equal(marker?.getAttribute('data-boundary-marker-kind'), 'arrival');
+});
+
+test('Test_AppendTimelinePill_TestMissingLabelOrPill_ExpectNoOp', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const originalOpenPill = OpenTimelineView.makeOpenPill;
+   const originalScheduledPill = ScheduledTimelineView.makeScheduledPill;
+
+   DayPlannerTimelinePillAppender.appendTimelinePill(gridLine, '', 0);
+   assert.equal(gridLine.querySelector('.itinerary-day-pill-strip'), null);
+
+   OpenTimelineView.makeOpenPill = () => null;
+   try {
+      DayPlannerTimelinePillAppender.appendTimelinePill(gridLine, 'Lunch', 0);
+      assert.equal(gridLine.querySelector('.itinerary-day-pill-strip'), null);
+   } finally {
+      OpenTimelineView.makeOpenPill = originalOpenPill;
+   }
+
+   ScheduledTimelineView.makeScheduledPill = () => null;
+   try {
+      DayPlannerTimelinePillAppender.appendScheduledDurationPill(gridLine, {
+         label: 'African Lion',
+         durationMinutes: 30,
+      });
+      assert.equal(gridLine.querySelector('.itinerary-day-pill-strip'), null);
+   } finally {
+      ScheduledTimelineView.makeScheduledPill = originalScheduledPill;
+   }
 });

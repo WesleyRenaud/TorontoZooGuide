@@ -16,7 +16,7 @@ test('Test_AppendDayPlannerActionFeedbackSlot_TestContainer_ExpectSlot', () => {
    assert.equal(container.children.length, 1);
 });
 
-test('Test_AppendDayPlannerActionFeedbackBanner_TestMessage_ExpectBannerAndCleanup', () => {
+test('Test_AppendDayPlannerActionFeedbackBanner_TestMessage_ExpectBannerAndCleanup', async () => {
    const slot = document.createElement('div');
    assert.equal(DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(slot, {}), null);
 
@@ -30,5 +30,31 @@ test('Test_AppendDayPlannerActionFeedbackBanner_TestMessage_ExpectBannerAndClean
    assert.match(banner.className, /itinerary-day-action-feedback--success/);
    assert.equal(banner.classList.contains('is-visible'), true);
    banner.__tzgCleanup();
+   assert.equal(slot.children.length, 0);
+
+   const autoBanner = DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(
+      slot,
+      { variant: 'success', message: 'Auto dismiss' },
+      { dismissMs: 5, fadeMs: 5 }
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 20);
+   });
+
+   assert.equal(slot.contains(autoBanner), false);
+
+   const midFadeBanner = DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(
+      slot,
+      { variant: 'success', message: 'Mid fade' },
+      { dismissMs: 5, fadeMs: 10_000 }
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 15);
+   });
+
+   assert.equal(midFadeBanner.classList.contains('is-dismissing'), true);
+   midFadeBanner.__tzgCleanup();
    assert.equal(slot.children.length, 0);
 });

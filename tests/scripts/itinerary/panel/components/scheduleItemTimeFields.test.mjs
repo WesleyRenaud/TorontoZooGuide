@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ScheduleItemTimeFields } from '../../../../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
+import { ConsoleDateFactory } from '../../../../../scripts/datePickers/consoleDateFactory.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 function _getTimeInput(fields) {
@@ -138,4 +139,44 @@ test('Test_MakeScheduleItemTimeFields_TestFixedDuration_ExpectEditableStart', ()
       startTime: '10:00 AM',
       durationMinutes: null,
    });
+});
+
+test('Test_MakeScheduleItemTimeFields_TestPickerReadyCommitAndLockedResolve_ExpectSynced', () => {
+   const originalInit = ConsoleDateFactory.initTimePicker;
+   let capturedOptions = null;
+   const calendarContainer = { classList: { add() {} } };
+   const instance = {
+      calendarContainer,
+      input: { value: '1:15 PM' },
+      clear() {},
+      set() {},
+   };
+
+   ConsoleDateFactory.initTimePicker = (_inputEl, options) => {
+      capturedOptions = options;
+      options.onReady([], '', instance);
+      return instance;
+   };
+
+   try {
+      const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
+         timeLabel: 'Schedule time',
+         durationLabel: 'Duration',
+      });
+
+      capturedOptions.onChange([], '2:30 PM', instance);
+      assert.deepEqual(fields.getScheduleTimeOptions(), {
+         startTime: '2:30 PM',
+         durationMinutes: null,
+      });
+
+      fields.setFixedTimeScheduleMode({ lockTimes: true });
+      capturedOptions.onChange([], '3:00 PM', instance);
+      assert.deepEqual(fields.getScheduleTimeOptions(), {
+         startTime: '',
+         durationMinutes: null,
+      });
+   } finally {
+      ConsoleDateFactory.initTimePicker = originalInit;
+   }
 });

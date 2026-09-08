@@ -71,4 +71,14 @@ test('Test_CreateScheduledPillStrip_TestMarksScheduledStripsSeparatelyFromPointS
 
    assert.equal(scheduledStrip.getAttribute('data-scheduled-column'), 'true');
    assert.equal(gridLine.querySelectorAll('.itinerary-day-pill-strip').length, 2);
+
+   const offsetStrip = DayPlannerTimelinePillPlacer.createScheduledPillStrip(gridLine, 0.4, 20);
+   assert.equal(offsetStrip.getAttribute('data-offset-fraction'), '0.4');
+});
+
+test('Test_ComputeSpanHorizontalOffsetIndex_TestDeprecatedAlias_ExpectDelegates', () => {
+   assert.equal(
+      DayPlannerTimelinePillPlacer.computeSpanHorizontalOffsetIndex([], 0.5, 0.5),
+      DayPlannerTimelinePillPlacer.computeTimelineHorizontalOffsetIndex([], 0.5, 0.5)
+   );
 });

@@ -321,3 +321,64 @@ test('Test_Deselecting_TestDeselectingABulkExhibitKeepsManuallyAddedAnimals_Expe
 
    assert.deepEqual(species, ['Red Panda']);
 });
+
+test('Test_RegionSelectorStore_TestGuardPathsAndPreserve_ExpectFallbacks', async () => {
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+         ],
+      }),
+   });
+
+   const state = RegionSelectorStore.createRegionSelectorState();
+   assert.deepEqual(state.getRegions(), []);
+   assert.equal(state.toggleRegion('Missing'), false);
+
+   state.setRegions([
+      { name: 'Empty', exhibits: [] },
+      { name: 'Africa', exhibits: ['Africa Savanna', 'Tundra'] },
+   ]);
+   assert.equal(state.toggleRegion('Empty'), false);
+   assert.equal(state.toggleExhibit('Missing', 'Africa Savanna'), false);
+   assert.equal(state.toggleExhibit('Africa', ''), false);
+
+   await state.hydrateSelectionsFromStorage();
+
+   assert.equal(state.toggleRegion('Africa'), true);
+   assert.equal(state.toggleRegion('Africa'), true);
+
+   localStorage.setItem(
+      StorageKeys.ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'Mystery Bird' },
+         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ])
+   );
+
+   const preserved = await state.buildUpdatedAnimalsFromSelection();
+   assert.deepEqual(
+      preserved.map((animal) => animal.species).sort(),
+      ['Mystery Bird', 'Red Panda']
+   );
+
+   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+   localStorage.setItem(
+      StorageKeys.ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'Mystery Bird' },
+         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ])
+   );
+
+   const merged = await state.buildUpdatedAnimalsFromSelection();
+   const species = merged.map((animal) => animal.species).sort();
+   assert.ok(species.includes('Mystery Bird'));
+   assert.ok(species.includes('Red Panda'));
+   assert.ok(species.includes('African Lion'));
+});

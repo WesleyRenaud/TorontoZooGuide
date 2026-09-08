@@ -136,7 +136,7 @@ export class ScheduleItemTimeFields {
          getScheduleTimeOptions() {
             if (areTimesLocked || isDurationLocked) {
                return {
-                  startTime: areTimesLocked ? '' : resolveSelectedStartTime(),
+                  startTime: resolveSelectedStartTime(),
                   durationMinutes: null,
                };
             }

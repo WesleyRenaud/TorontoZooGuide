@@ -241,6 +241,78 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
    );
    assert.deepEqual(ItineraryItemFormatter.normalizeTalk({ name: 'Unmapped Talk' }).linked_animals, []);
    assert.equal(ItineraryItemFormatter.normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
+   assert.equal(ItineraryItemFormatter.normalizeNonNegativeNumber(-1), null);
+   assert.equal(ItineraryItemFormatter.normalizeNonNegativeNumber('4'), 4);
+   assert.equal(ItineraryItemFormatter.parseDurationMinutes(''), null);
+   assert.equal(ItineraryItemFormatter.parseDurationMinutes('0'), null);
+   assert.equal(ItineraryItemFormatter.parseDurationMinutes('abc'), null);
+   assert.equal(ItineraryItemFormatter.parseDurationMinutes('25.4'), 25);
+   assert.equal(ItineraryItemFormatter.formatClockTime('not-a-clock'), 'not-a-clock');
+   assert.deepEqual(
+      ItineraryItemFormatter.normalizeTransportation({
+         name: 'Zoomobile',
+         legs: [{
+            from_station: '  A  ',
+            to_station: '  B  ',
+            start_time: ' 10:00 AM ',
+            end_time: ' 10:15 AM ',
+         }],
+         stations: [{
+            name: '  Main Station  ',
+            transportation: '  Zoomobile  ',
+            role: ' hub ',
+            type: ' stop ',
+            description: '  Board here  ',
+            x_coord: '12',
+            y_coord: '34',
+         }],
+      }).legs,
+      [{
+         from_station: 'A',
+         to_station: 'B',
+         start_time: '10:00 AM',
+         end_time: '10:15 AM',
+      }]
+   );
+   assert.deepEqual(
+      ItineraryItemFormatter.normalizeGuardiansTalkForSave({
+         name: '  Lion Talk  ',
+         start_time: ' 11:00 AM ',
+         end_time: ' 11:20 AM ',
+         location: 'ignored',
+      }),
+      {
+         name: 'Lion Talk',
+         start_time: '11:00 AM',
+         end_time: '11:20 AM',
+      }
+   );
+   assert.deepEqual(ItineraryItemFormatter.normalizeItineraryNamesForSave(null), []);
+   assert.deepEqual(
+      ItineraryItemFormatter.normalizeItineraryNamesForSave(['  Carousel  ', '']),
+      ['Carousel']
+   );
+   assert.equal(
+      ItineraryItemFormatter.normalizeWildEncounterForSave('Mornings in Malaysia||8:45 AM||9:45 AM'),
+      'Mornings in Malaysia||8:45 AM||9:45 AM'
+   );
+   assert.equal(ItineraryItemFormatter.normalizeWildEncounterForSave(''), '');
+   assert.equal(
+      ItineraryItemFormatter.normalizeWildEncounterForSave({
+         name: 'Mornings in Malaysia',
+         start_time: '8:45 AM',
+         end_time: '9:45 AM',
+      }),
+      'Mornings in Malaysia||8:45 AM||9:45 AM'
+   );
+   assert.deepEqual(ItineraryItemFormatter.normalizeWildEncounterListForSave(null), []);
+   assert.deepEqual(
+      ItineraryItemFormatter.normalizeWildEncounterListForSave([
+         'Mornings in Malaysia||8:45 AM||9:45 AM',
+         '',
+      ]),
+      ['Mornings in Malaysia||8:45 AM||9:45 AM']
+   );
 });
 
 test('Test_FindTimelineAnchorSlot_TestPrecedingHalfHour_ExpectAnchored', () => {

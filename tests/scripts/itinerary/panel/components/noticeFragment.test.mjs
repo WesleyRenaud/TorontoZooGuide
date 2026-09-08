@@ -46,3 +46,43 @@ test('Test_ShowItineraryNoticePopup_TestConfirm_ExpectClose', async () => {
       ItineraryPanelFragment.mountDismissablePopup = originalMount;
    }
 });
+
+test('Test_ShowItineraryNoticePopup_TestConfirmErrorAndClose_ExpectHandlers', async () => {
+   const originalCreate = ItineraryPanelFragment.createItineraryPopupLayout;
+   const originalMount = ItineraryPanelFragment.mountDismissablePopup;
+   const closes = [];
+   const okButton = document.createElement('button');
+   const closeButton = document.createElement('button');
+
+   ItineraryPanelFragment.createItineraryPopupLayout = () => ({
+      root: document.createElement('div'),
+      overlay: document.createElement('div'),
+      buttonEls: { ok: okButton },
+      closeButton,
+   });
+   ItineraryPanelFragment.mountDismissablePopup = () => ({
+      close: () => { closes.push(true); },
+   });
+
+   try {
+      NoticeFragment.showItineraryNoticePopup({
+         message: 'Hello',
+         showCloseButton: true,
+         onConfirm: async () => {
+            throw new Error('confirm failed');
+         },
+         onClose: ({ close }) => {
+            close();
+         },
+      });
+
+      await assert.rejects(() => okButton.listeners.click(), /confirm failed/);
+      assert.equal(okButton.disabled, false);
+
+      closeButton.listeners.click();
+      assert.deepEqual(closes, [true]);
+   } finally {
+      ItineraryPanelFragment.createItineraryPopupLayout = originalCreate;
+      ItineraryPanelFragment.mountDismissablePopup = originalMount;
+   }
+});

@@ -218,6 +218,16 @@ test('Test_HydrateWizardDraftFromSavedItinerary_TestAddedAsAttraction_ExpectMove
    });
 });
 
+test('Test_HydrateWizardDraftFromSavedItinerary_TestBlankOrDuplicateAttractionNames_ExpectSkipped', () => {
+   assert.deepEqual(ItineraryShape.hydrateWizardDraftFromSavedItinerary({
+      attractions: [{ name: 'Zoomobile' }],
+      transportations: [
+         { name: ' ', added_as_attraction: true },
+         { name: 'Zoomobile', added_as_attraction: true },
+      ],
+   }).attractions, [{ name: 'Zoomobile' }]);
+});
+
 test('Test_ToSetItineraryPayload_TestSameNameRoles_ExpectBothKept', () => {
    assert.deepEqual(ItineraryShape.toSetItineraryPayload({
       date: '2026-08-17',

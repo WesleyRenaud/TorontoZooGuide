@@ -127,6 +127,17 @@ test('Test_SyncExploreCollapsedState_TestCollapsed_ExpectAria', () => {
    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
 });
 
+test('Test_SyncExploreCollapsedState_TestMissingToggle_ExpectSectionOnly', () => {
+   const section = document.createElement('section');
+   section.className = 'explore-updates';
+   const listEl = document.createElement('div');
+   section.appendChild(listEl);
+   document.body.appendChild(section);
+
+   ExploreUpdatesView.syncExploreCollapsedState({ listEl, isCollapsed: true });
+   assert.equal(section.classList.contains('is-collapsed'), true);
+});
+
 test('Test_SyncExploreTabs_TestActiveAndDisabled_ExpectState', () => {
    const { updatesTab, eventsTab, listEl } = _buildExploreDom();
 

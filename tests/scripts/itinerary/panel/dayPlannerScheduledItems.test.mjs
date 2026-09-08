@@ -453,3 +453,96 @@ test('Test_BuildScheduledItemRowsContext_TestDeletedGuardiansTalks_ExpectOmitted
    assert.equal([...context.itemsByStart.values()].flat().length, 0);
    assert.equal(context.scheduledGuardiansTalkIndexes.size, 0);
 });
+
+test('Test_BuildScheduledItemRowsContext_TestTalksAttractionsAndFilters_ExpectRows', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [
+            { species: 'Cheetah', exhibit: 'Africa Savanna' },
+         ],
+         attractions: [
+            {
+               name: 'Conservation Carousel',
+               start_time: '11:00 AM',
+               end_time: '11:20 AM',
+            },
+         ],
+         guardiansTalks: [
+            {
+               name: 'African Lion',
+               location: 'Africa Savanna',
+               start_time: '1:00 PM',
+               end_time: '1:15 PM',
+               maximum_duration: 15,
+            },
+         ],
+         wildEncounters: [
+            {
+               name: 'Kangaroo',
+               meeting_spot: 'Eurasia',
+               start_time: '3:00 PM',
+               end_time: '3:45 PM',
+               maximum_duration: 45,
+            },
+         ],
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: true,
+            },
+         ],
+         events: [],
+      },
+      [660, 780, 900],
+      1140
+   );
+
+   const items = [...context.itemsByStart.values()].flat();
+   assert.ok(items.some((item) => item.scheduleItemKind === 'guardians_talks'));
+   assert.ok(items.some((item) => item.scheduleItemKind === 'wild_encounters'));
+   assert.ok(items.some((item) => item.scheduleItemKind === ScheduleItemKind.ATTRACTION.itemType));
+   assert.equal(context.scheduledTransportationIndexes.size, 0);
+   assert.equal(context.scheduledAnimalIndexes.size, 0);
+});
+
+test('Test_MergeScheduledItemsByAnchorSlot_TestNoAnchor_ExpectSkipped', () => {
+   const merged = DayPlannerScheduledItems.mergeScheduledItemsByAnchorSlot(
+      [{ startMinutes: 100, label: 'X' }],
+      [],
+      200
+   );
+   assert.equal(merged.size, 0);
+});
+
+test('Test_BuildScheduledAndUnscheduledItinerary_TestIndexes_ExpectFiltered', () => {
+   const itinerary = {
+      animals: [{ species: 'A' }, { species: 'B' }],
+      attractions: [{ name: 'C' }, { name: 'D' }],
+      transportations: [{ name: 'E' }, { name: 'F' }],
+      guardiansTalks: [{ name: 'G' }, { name: 'H' }],
+      wildEncounters: [{ name: 'I' }, { name: 'J' }],
+   };
+   const indexes = {
+      scheduledAnimalIndexes: new Set([0]),
+      scheduledAttractionIndexes: new Set([1]),
+      scheduledTransportationIndexes: new Set([0]),
+      scheduledGuardiansTalkIndexes: new Set([1]),
+      scheduledWildEncounterIndexes: new Set([0]),
+   };
+
+   assert.deepEqual(DayPlannerScheduledItems.buildScheduledItinerary(itinerary, indexes), {
+      animals: [{ species: 'A' }],
+      attractions: [{ name: 'D' }],
+      transportations: [{ name: 'E' }],
+      guardiansTalks: [{ name: 'H' }],
+      wildEncounters: [{ name: 'I' }],
+   });
+   assert.deepEqual(DayPlannerScheduledItems.buildUnscheduledItinerary(itinerary, indexes), {
+      ...itinerary,
+      animals: [{ species: 'B' }],
+      attractions: [{ name: 'C' }],
+      transportations: [{ name: 'F' }],
+      guardiansTalks: [{ name: 'G' }],
+      wildEncounters: [{ name: 'J' }],
+   });
+});

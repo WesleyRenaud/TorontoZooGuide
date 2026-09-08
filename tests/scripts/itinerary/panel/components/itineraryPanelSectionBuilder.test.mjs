@@ -9,6 +9,10 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 installDomTestHooks({
    before: () => {
       globalThis.cancelAnimationFrame = () => {};
+      globalThis.requestAnimationFrame = (callback) => {
+         callback();
+         return 1;
+      };
       globalThis.CustomEvent = class CustomEvent {
          constructor(type, options = {}) {
             this.type = type;
@@ -18,6 +22,7 @@ installDomTestHooks({
    },
    after: () => {
       delete globalThis.cancelAnimationFrame;
+      delete globalThis.requestAnimationFrame;
       delete globalThis.CustomEvent;
       delete globalThis.ResizeObserver;
    },
@@ -34,9 +39,16 @@ test('Test_MakeSection_TestHeaderToggleEditCleanup_ExpectSection', () => {
    globalThis.window.dispatchEvent = (event) => { events.push(event); };
 
    const observed = [];
+   const resizeCallbacks = [];
    globalThis.ResizeObserver = class ResizeObserver {
+      constructor(callback) {
+         this.callback = callback;
+         resizeCallbacks.push(callback);
+      }
+
       observe(item) {
          observed.push(item);
+         this.callback?.();
       }
 
       disconnect() {
@@ -60,6 +72,10 @@ test('Test_MakeSection_TestHeaderToggleEditCleanup_ExpectSection', () => {
       assert.match(section.textContent, /Animals/);
       assert.match(section.textContent, /\(2\)/);
       assert.equal(observed.length, 1);
+
+      image.listeners?.load?.();
+      image.listeners?.error?.();
+      resizeCallbacks[0]?.();
 
       const editBtn = section.querySelector('.itin-panel-section-edit-btn');
       editBtn.listeners.click({

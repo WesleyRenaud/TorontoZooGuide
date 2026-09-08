@@ -264,6 +264,41 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestValidationAndFailur
       assert.equal(populateCalls.length, 1);
       assert.deepEqual(populateCalls[0][1], []);
 
+      const talkInputEl = document.createElement('input');
+      talkInputEl.value = 'Old Talk';
+      const inputShowButtonEl = document.createElement('button');
+      CancelGuardiansTalkController.createCancelGuardiansTalkOccurrenceController({
+         talkNameEl: talkInputEl,
+         locationEl: document.createElement('select'),
+         dateEl: document.createElement('input'),
+         timesEl: {},
+         panelEl: {},
+         statusEl: {},
+         showButtonEl: inputShowButtonEl,
+         submitButtonEl: document.createElement('button'),
+         cancelButtonEl: document.createElement('button'),
+         activatePanel: () => {},
+      });
+      await inputShowButtonEl.listeners.click();
+      assert.equal(talkInputEl.value, '');
+
+      const talkNameForChange = document.createElement('select');
+      CancelGuardiansTalkController.createCancelGuardiansTalkOccurrenceController({
+         talkNameEl: talkNameForChange,
+         locationEl: document.createElement('select'),
+         dateEl: document.createElement('input'),
+         timesEl: {},
+         panelEl: {},
+         statusEl: {},
+         showButtonEl: document.createElement('button'),
+         submitButtonEl: document.createElement('button'),
+         cancelButtonEl: document.createElement('button'),
+         activatePanel: () => {},
+      });
+      ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => ['11:00 AM'];
+      talkNameForChange.value = 'Tiger';
+      await talkNameForChange.listeners.change();
+
       controller.hide();
       cancelButtonEl.listeners.click();
       assert.equal(hides.length, 2);

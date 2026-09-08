@@ -682,3 +682,98 @@ test('Test_TagScheduleItemRow_TestModuleKinds_ExpectTagged', () => {
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||1:30 PM');
    assert.equal(ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, null), null);
 });
+
+test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithoutRow_ExpectSelection', () => {
+   assert.equal(ScheduleItemSearcher.resolveEffectiveScheduleItemSelection('', null), '');
+   assert.equal(ScheduleItemSearcher.resolveEffectiveScheduleItemSelection('', undefined), '');
+});
+
+test('Test_TagScheduleItemRow_TestWildEncounter_ExpectTagged', () => {
+   const wildEncounterRow = ScheduleItemSearcher.tagScheduleItemRow(
+      ScheduleItemKind.WILD_ENCOUNTER.itemType,
+      { name: 'African Rainforest', meeting_spot: 'Africa', start_time: '2:00 PM' }
+   );
+
+   assert.equal(wildEncounterRow.scheduleItemKind, ScheduleItemKind.WILD_ENCOUNTER.itemType);
+});
+
+test('Test_GetItineraryItemKey_TestModuleKinds_ExpectKeys', () => {
+   assert.equal(
+      ScheduleItemSearcher.getItineraryItemKey(
+         ScheduleItemKind.ANIMAL.itemType,
+         { species: 'Tiger', exhibit: 'Savanna' }
+      ),
+      'Tiger||Savanna'
+   );
+   assert.equal(
+      ScheduleItemSearcher.getItineraryItemKey(
+         ScheduleItemKind.ATTRACTION.itemType,
+         { name: 'Carousel' }
+      ),
+      'Carousel'
+   );
+   assert.equal(
+      ScheduleItemSearcher.getItineraryItemKey(
+         ScheduleItemKind.TRANSPORTATION.itemType,
+         { name: 'Zoomobile', added_as_attraction: false }
+      ),
+      'Zoomobile||0'
+   );
+   assert.equal(
+      ScheduleItemSearcher.getItineraryItemKey(
+         ScheduleItemKind.GUARDIANS_TALK.itemType,
+         { name: 'Amur Tiger', start_time: '1:30 PM' }
+      ),
+      'Amur Tiger||1:30 PM'
+   );
+   assert.equal(
+      ScheduleItemSearcher.getItineraryItemKey(
+         ScheduleItemKind.WILD_ENCOUNTER.itemType,
+         { name: 'African Rainforest', start_time: '2:00 PM' }
+      ).toWire(),
+      'African Rainforest||2:00 PM'
+   );
+   assert.equal(ScheduleItemSearcher.getItineraryItemKey('', { name: 'x' }), '');
+});
+
+test('Test_ExtractScheduleItemSearchRows_TestGuardiansAndWild_ExpectTagged', () => {
+   assert.deepEqual(
+      ScheduleItemSearcher.extractScheduleItemSearchRows(
+         ScheduleItemKind.GUARDIANS_TALK.itemType,
+         { guardians_talks: [{ name: 'Tiger Talk', location: 'Eurasia' }] }
+      ),
+      [{
+         name: 'Tiger Talk',
+         location: 'Eurasia',
+         scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
+      }]
+   );
+   assert.deepEqual(
+      ScheduleItemSearcher.extractScheduleItemSearchRows(
+         ScheduleItemKind.WILD_ENCOUNTER.itemType,
+         { wild_encounters: [{ name: 'Rainforest', meeting_spot: 'Africa' }] }
+      ),
+      [{
+         name: 'Rainforest',
+         meeting_spot: 'Africa',
+         scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
+      }]
+   );
+});
+
+test('Test_FilterScheduleItemRowsExcludingScheduledOccurrences_TestUnknownKind_ExpectKept', () => {
+   const originalKind = ScheduleItemSearcher.getScheduleItemRowKind;
+   ScheduleItemSearcher.getScheduleItemRowKind = () => 'unknown';
+
+   try {
+      assert.deepEqual(
+         ScheduleItemSearcher.filterScheduleItemRowsExcludingScheduledOccurrences(
+            [{ name: 'Mystery' }],
+            {}
+         ),
+         [{ name: 'Mystery' }]
+      );
+   } finally {
+      ScheduleItemSearcher.getScheduleItemRowKind = originalKind;
+   }
+});

@@ -2,9 +2,14 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { AttractionHoursController } from '../../../../../scripts/consoleOperations/attractions/controllers/attractionHoursController.js';
+import { OpeningScheduleChecker } from '../../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
+import { OpeningScheduleOverlapFragment } from '../../../../../scripts/consoleOperations/forms/openingScheduleOverlapFragment.js';
 import { ConsoleDateFactory } from '../../../../../scripts/datePickers/consoleDateFactory.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
+import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+
+installDomTestHooks();
 
 const WEEKDAY_BOUNDS = {
    openTime: '9:30 AM',
@@ -270,6 +275,114 @@ test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError
       statusEl.textContent,
       'Attraction hours must fall within regular zoo hours for the selected date range.'
    );
+});
+
+test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapAndValidation_ExpectBranches', async () => {
+   const statusEl = _createStatusEl();
+
+   const boundsFail = _createController({
+      statusEl,
+      loadTimeBounds: async () => ({
+         success: false,
+         apiErrorType: 'couldNotResolveAttractionHoursTimeBounds',
+      }),
+   });
+   assert.equal(await boundsFail.refreshTimeBounds(), false);
+   assert.ok(statusEl.textContent);
+
+   const showFail = _createController({
+      statusEl,
+      loadAttractions: async () => {
+         throw new Error('load fail');
+      },
+      activatePanel: () => {},
+   });
+   await showFail.show();
+   assert.ok(statusEl.textContent);
+
+   const hideController = _createController({
+      statusEl,
+      panelEl: createDomNode('div'),
+   });
+   hideController.hide();
+
+   const validationSubmit = _createController({
+      statusEl,
+      attractionEl: _createField(''),
+   });
+   await validationSubmit.submit();
+   assert.ok(statusEl.textContent);
+
+   const originalShow = OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog;
+   const originalHasOverlap = OpeningScheduleChecker.resultHasOpeningScheduleOverlap;
+
+   try {
+      OpeningScheduleChecker.resultHasOpeningScheduleOverlap = () => true;
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
+         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE
+      );
+
+      const overlapReplace = _createController({
+         statusEl,
+         saveSchedule: async () => ({ success: false }),
+         replaceScheduleOverlaps: async () => ({
+            success: true,
+            attraction: 'Conservation Carousel',
+         }),
+      });
+      await overlapReplace.submit();
+
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
+         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM
+      );
+      const overlapTrimFail = _createController({
+         statusEl,
+         saveSchedule: async () => ({ success: false }),
+         trimScheduleOverlaps: async () => ({
+            success: false,
+            apiErrorType: 'invalidAttractionHours',
+         }),
+      });
+      await overlapTrimFail.submit();
+      assert.ok(statusEl.textContent);
+
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => null;
+      const overlapCancel = _createController({
+         statusEl,
+         saveSchedule: async () => ({ success: false }),
+      });
+      await overlapCancel.submit();
+
+      OpeningScheduleChecker.resultHasOpeningScheduleOverlap = () => false;
+      const submitThrow = _createController({
+         statusEl,
+         saveSchedule: async () => {
+            throw new Error('network');
+         },
+      });
+      await submitThrow.submit();
+      assert.equal(statusEl.textContent, Strings.common.requestFailed);
+   } finally {
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = originalShow;
+      OpeningScheduleChecker.resultHasOpeningScheduleOverlap = originalHasOverlap;
+   }
+
+   const showButtonEl = { listeners: {}, addEventListener(name, handler) { this.listeners[name] = handler; } };
+   const cancelButtonEl = { listeners: {}, addEventListener(name, handler) { this.listeners[name] = handler; } };
+   const submitButtonEl = { listeners: {}, addEventListener(name, handler) { this.listeners[name] = handler; } };
+   const startDateEl = { value: '', listeners: {}, addEventListener(name, handler) { this.listeners[name] = handler; } };
+   _createController({
+      showButtonEl,
+      cancelButtonEl,
+      submitButtonEl,
+      startDateEl,
+      panelEl: createDomNode('div'),
+      saveSchedule: async () => ({ success: true, attraction: 'Conservation Carousel' }),
+   });
+   showButtonEl.listeners.click?.();
+   cancelButtonEl.listeners.click?.();
+   submitButtonEl.listeners.click?.();
+   await startDateEl.listeners.change?.();
 });
 
 test('Test_ApplyScheduleTimePickerBounds_TestSetAndClear_ExpectLimits', () => {

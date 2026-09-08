@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { MapClient } from '../../../scripts/api/mapClient.js';
 import { TransportationRouteControlsController } from '../../../scripts/map/transportationRouteControlsController.js';
 import { Strings } from '../../../scripts/strings.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
@@ -51,4 +52,32 @@ test('Test_RenderTransportationRouteControls_TestRoutes_ExpectRadios', () => {
       Strings.map.transportationRoute.route('summer'),
       Strings.map.transportationRoute.route('winter'),
    ]);
+});
+
+test('Test_RenderTransportationRouteControls_TestMissingContainer_ExpectNoOp', () => {
+   assert.doesNotThrow(() => {
+      TransportationRouteControlsController.renderTransportationRouteControls(null, [
+         { name: 'Zoomobile', routes: ['summer'] },
+      ]);
+   });
+});
+
+test('Test_InitTransportationRouteControls_TestRoutes_ExpectRenderedAndReturned', async () => {
+   const originalGet = MapClient.getTransportationRoutes;
+   const container = createDomNode('div');
+   const routes = [{ name: 'Zoomobile', routes: ['summer'] }];
+
+   MapClient.getTransportationRoutes = async () => routes;
+
+   try {
+      const result = await TransportationRouteControlsController.initTransportationRouteControls(
+         container,
+      );
+
+      assert.equal(result, routes);
+      assert.equal(container.children.length, 1);
+      assert.equal(container.children[0].dataset.transportation, 'Zoomobile');
+   } finally {
+      MapClient.getTransportationRoutes = originalGet;
+   }
 });

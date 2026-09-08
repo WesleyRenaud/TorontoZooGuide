@@ -52,3 +52,33 @@ test('Test_FindMenuButtonForPanel_TestMatchingButton_ExpectButton', () => {
       button
    );
 });
+
+test('Test_GetDefaultLocationAndHistory_TestGlobals_ExpectValues', () => {
+   const originalLocation = globalThis.location;
+   const originalHistory = globalThis.history;
+   const location = { href: 'https://example.test/' };
+   const history = { replaceState() {} };
+
+   try {
+      globalThis.location = location;
+      globalThis.history = history;
+      assert.equal(PanelNavigatorUrlHelper.getDefaultLocation(), location);
+      assert.equal(PanelNavigatorUrlHelper.getDefaultHistory(), history);
+   } finally {
+      globalThis.location = originalLocation;
+      globalThis.history = originalHistory;
+   }
+});
+
+test('Test_UpdateConsolePanelUrl_TestMissingLocationOrHistory_ExpectNoOp', () => {
+   assert.doesNotThrow(() => {
+      PanelNavigatorUrlHelper.updateConsolePanelUrl('animals', {
+         location: null,
+         history: { replaceState() {} },
+      });
+      PanelNavigatorUrlHelper.updateConsolePanelUrl('animals', {
+         location: _createLocation('https://example.test/'),
+         history: {},
+      });
+   });
+});

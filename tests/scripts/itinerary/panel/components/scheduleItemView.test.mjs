@@ -206,3 +206,32 @@ test('Test_RunScheduleItemButtonAction_TestAwait_ExpectBusyUntilDone', async () 
    assert.equal(button.disabled, false);
    assert.equal(button.classList.contains('is-busy'), false);
 });
+
+test('Test_RunScheduleItemButtonAction_TestAlreadyDisabled_ExpectNoOp', async () => {
+   installTestWindow();
+   installDocument();
+
+   const button = ScheduleItemView.makeScheduleItemButton({
+      label: 'Rebuild schedule',
+   });
+   button.disabled = true;
+   let ran = false;
+
+   await ScheduleItemView.runScheduleItemButtonAction(button, async () => {
+      ran = true;
+   });
+
+   assert.equal(ran, false);
+});
+
+test('Test_SetScheduleItemButtonBusy_TestExistingDefaultLabel_ExpectPreserved', () => {
+   installTestWindow();
+   installDocument();
+
+   const button = document.createElement('button');
+   button.textContent = 'Fresh';
+   ScheduleItemView.setScheduleItemButtonBusy(button, true, 'Busy…');
+   assert.equal(button.dataset.defaultLabel, 'Fresh');
+   ScheduleItemView.setScheduleItemButtonBusy(button, false);
+   assert.equal(button.textContent, 'Fresh');
+});

@@ -184,4 +184,76 @@ test('Test_ResolveScheduleModuleSearchLabel_TestKinds_ExpectTitles', () => {
       ScheduleItemModuleStore.resolveScheduleModuleSearchLabel(TRANSPORTATION_ROW),
       'Zoomobile'
    );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchLabel(GUARDIANS_TALK_ROW),
+      'Amur Tiger'
+   );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchLabel(WILD_ENCOUNTER_ROW),
+      'African Rainforest'
+   );
+});
+
+test('Test_ShouldClearSelectedScheduleRow_TestMissingId_ExpectFalse', () => {
+   assert.equal(
+      ScheduleItemModuleStore.shouldClearSelectedScheduleRow({
+         selectedRowId: '',
+         visibleRows: [ANIMAL_ROW],
+      }),
+      false
+   );
+});
+
+test('Test_ResolveScheduleModuleSearchRowRenderer_TestKinds_ExpectDelegates', () => {
+   const calls = [];
+   const renderers = {
+      renderAnimalRowLeft: (row) => { calls.push(['animal', row]); return 'animal'; },
+      renderAttractionRowLeft: (row) => { calls.push(['attraction', row]); return 'attraction'; },
+      renderTransportationRowLeft: (row) => { calls.push(['transportation', row]); return 'transportation'; },
+      renderGuardiansTalkRowLeft: (row) => { calls.push(['talk', row]); return 'talk'; },
+      renderWildEncounterRowLeft: (row) => { calls.push(['wild', row]); return 'wild'; },
+   };
+
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
+         row: ATTRACTION_ROW,
+         ...renderers,
+      }),
+      'attraction'
+   );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
+         row: TRANSPORTATION_ROW,
+         ...renderers,
+      }),
+      'transportation'
+   );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
+         row: GUARDIANS_TALK_ROW,
+         ...renderers,
+      }),
+      'talk'
+   );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
+         row: WILD_ENCOUNTER_ROW,
+         ...renderers,
+      }),
+      'wild'
+   );
+   assert.equal(
+      ScheduleItemModuleStore.resolveScheduleModuleSearchRowRenderer({
+         row: ANIMAL_ROW,
+         ...renderers,
+      }),
+      'animal'
+   );
+   assert.deepEqual(calls.map(([kind]) => kind), [
+      'attraction',
+      'transportation',
+      'talk',
+      'wild',
+      'animal',
+   ]);
 });

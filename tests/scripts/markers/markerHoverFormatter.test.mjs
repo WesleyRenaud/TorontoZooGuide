@@ -30,9 +30,29 @@ test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => 
          expected: 'African Lion + 1',
       },
       {
+         type: 'pavilion',
+         items: [{ type: 'pavilion', name: 'Americas Pavilion' }],
+         expected: 'Americas Pavilion',
+      },
+      {
+         type: 'restaurant',
+         items: [{ type: 'restaurant', name: 'Peaks Cafe' }],
+         expected: 'Peaks Cafe',
+      },
+      {
          type: 'restroom',
          items: [{ type: 'restroom', title: 'Americas Restroom' }],
          expected: 'Americas Restroom',
+      },
+      {
+         type: 'giftShop',
+         items: [{ type: 'giftShop', name: 'Zootique' }],
+         expected: 'Zootique',
+      },
+      {
+         type: 'attraction',
+         items: [{ type: 'attraction', name: 'Carousel' }],
+         expected: 'Carousel',
       },
       {
          type: 'transportation',
@@ -40,14 +60,39 @@ test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => 
          expected: 'Zoomobile',
       },
       {
+         type: 'transportationStation',
+         items: [{ type: 'transportationStation', name: 'Station 1' }],
+         expected: 'Station 1',
+      },
+      {
          type: 'drinkingFountain',
          items: [{ type: 'drinkingFountain' }, { type: 'drinkingFountain' }],
          expected: `${Strings.map.hover.drinkingFountain} + 1`,
       },
       {
+         type: 'defibrillator',
+         items: [{ type: 'defibrillator' }],
+         expected: Strings.map.hover.defibrillator,
+      },
+      {
+         type: 'emergencyIntercom',
+         items: [{ type: 'emergencyIntercom' }],
+         expected: Strings.map.hover.emergencyIntercom,
+      },
+      {
          type: 'guestService',
          items: [{ type: 'guestService', service_type: 'First Aid' }],
          expected: 'First Aid',
+      },
+      {
+         type: 'picnicSite',
+         items: [{ type: 'picnicSite' }],
+         expected: Strings.map.hover.picnicSite,
+      },
+      {
+         type: 'eventSite',
+         items: [{ type: 'eventSite', name: 'Tundra Trek' }],
+         expected: 'Tundra Trek',
       },
    ];
 
@@ -55,7 +100,6 @@ test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => 
       assert.equal(MarkerHoverFormatter.buildHoverText(items), expected);
    }
 });
-
 test('Test_BuildHoverText_TestGuardiansTalkSingle_ExpectNamedHover', () => {
    assert.equal(
       MarkerHoverFormatter.buildHoverText([
