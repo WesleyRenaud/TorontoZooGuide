@@ -9,7 +9,7 @@ import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 import { clickExhibitToggle, clickRegionToggle } from '../../helpers/regionSelectorDom.mjs';
 import { mockRegionSelectorFetch } from '../../helpers/fetchMock.mjs';
 
-async function flushAsyncWork() {
+async function _flushAsyncWork() {
    await new Promise((resolve) => {
       setImmediate(resolve);
    });
@@ -77,7 +77,7 @@ test('Test_Region_TestRegionSelectorSkipsAnimalRebuildWhenExhibitSelection_Expec
    assert.equal(controller.shouldSkipClosingSelectionSync(), true);
 
    mountEl.querySelector('.itin-next').click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.equal(nextPayload, null);
 });
@@ -131,7 +131,7 @@ test('Test_Region_TestRegionSelectorRebuildsAnimalsAfterReSelectingAn_ExpectOk',
    );
 
    mountEl.querySelector('.itin-next').click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.deepEqual(
       nextPayload.map((animal) => animal.species).sort(),
@@ -181,7 +181,7 @@ test('Test_Region_TestRegionSelectorRoutesCloseAndPrevActions_ExpectOk', async (
 
    mountEl.querySelector('.itin-close')?.click();
    mountEl.querySelector('.itin-prev')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.deepEqual(closeCalls, ['close']);
    assert.deepEqual(prevCalls, [null]);
@@ -230,7 +230,7 @@ test('Test_Region_TestRegionSelectorPrevRebuildsAnimalsAfterTogglingAn_ExpectOk'
    clickExhibitToggle(resultsEl, 'Americas Outdoor Mayan Temple Ruins');
 
    mountEl.querySelector('.itin-prev')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.ok(Array.isArray(prevPayload));
    assert.deepEqual(
@@ -269,7 +269,7 @@ test('Test_Region_TestRegionSelectorFinishSkipsRebuildWhenStoredAnimals_ExpectOk
    assert.equal(controller.shouldSkipClosingSelectionSync(), true);
 
    mountEl.querySelector('.itin-finish')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.deepEqual(finishCalls, [null]);
 });
@@ -305,7 +305,7 @@ test('Test_Region_TestRegionSelectorFinishRebuildsAnimalsWhenCatalogGrew_ExpectO
    assert.equal(controller.shouldSkipClosingSelectionSync(), false);
 
    mountEl.querySelector('.itin-finish')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.equal(finishCalls.length, 1);
    assert.deepEqual(
@@ -338,7 +338,7 @@ test('Test_Region_TestRegionSelectorFinishRebuildsAnimalsWhenExhibitsAre_ExpectO
    assert.equal(controller.shouldSkipClosingSelectionSync(), false);
 
    mountEl.querySelector('.itin-finish')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.equal(finishCalls.length, 1);
    assert.deepEqual(
@@ -401,7 +401,7 @@ test('Test_Region_TestRegionSelectorFinishCommitsAnimalsWhenSelectionChanged_Exp
 
    clickExhibitToggle(resultsEl, 'Africa Savanna');
    mountEl.querySelector('.itin-finish')?.click();
-   await flushAsyncWork();
+   await _flushAsyncWork();
 
    assert.equal(finishCalls.length, 1);
    assert.deepEqual(

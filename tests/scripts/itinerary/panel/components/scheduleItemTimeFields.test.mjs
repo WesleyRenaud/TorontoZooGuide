@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { ScheduleItemTimeFields } from '../../../../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-function getTimeInput(fields) {
+function _getTimeInput(fields) {
    const timeField = fields.fields[0];
 
    return timeField.children.find((child) => (
@@ -12,7 +12,7 @@ function getTimeInput(fields) {
    ));
 }
 
-function getDurationInput(fields) {
+function _getDurationInput(fields) {
    const durationField = fields.fields[1];
 
    return durationField.children.find((child) => (
@@ -20,11 +20,11 @@ function getDurationInput(fields) {
    ));
 }
 
-function getTimeField(fields) {
+function _getTimeField(fields) {
    return fields.fields[0];
 }
 
-function getDurationField(fields) {
+function _getDurationField(fields) {
    return fields.fields[1];
 }
 
@@ -39,7 +39,7 @@ test('Test_MakeScheduleItemTimeFields_TestSubmit_ExpectInputValue', () => {
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
-   const timeInput = getTimeInput(fields);
+   const timeInput = _getTimeInput(fields);
 
    timeInput.value = '12:00 PM';
 
@@ -54,10 +54,10 @@ test('Test_MakeScheduleItemTimeFields_TestFixedTime_ExpectDisabledEmpty', () => 
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
-   const timeInput = getTimeInput(fields);
-   const durationInput = getDurationInput(fields);
-   const timeField = getTimeField(fields);
-   const durationField = getDurationField(fields);
+   const timeInput = _getTimeInput(fields);
+   const durationInput = _getDurationInput(fields);
+   const timeField = _getTimeField(fields);
+   const durationField = _getDurationField(fields);
 
    timeInput.value = '12:00 PM';
    durationInput.value = '30';
@@ -81,10 +81,10 @@ test('Test_MakeScheduleItemTimeFields_TestClearFixedTime_ExpectEnabled', () => {
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
-   const timeInput = getTimeInput(fields);
-   const durationInput = getDurationInput(fields);
-   const timeField = getTimeField(fields);
-   const durationField = getDurationField(fields);
+   const timeInput = _getTimeInput(fields);
+   const durationInput = _getDurationInput(fields);
+   const timeField = _getTimeField(fields);
+   const durationField = _getDurationField(fields);
 
    fields.setFixedTimeScheduleMode({ lockTimes: true });
    fields.reset();
@@ -102,7 +102,7 @@ test('Test_MakeScheduleItemTimeFields_TestDurationOnly_ExpectAllowed', () => {
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
-   const durationInput = getDurationInput(fields);
+   const durationInput = _getDurationInput(fields);
 
    durationInput.value = '25';
 
@@ -118,9 +118,9 @@ test('Test_MakeScheduleItemTimeFields_TestFixedDuration_ExpectEditableStart', ()
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
-   const timeInput = getTimeInput(fields);
-   const durationInput = getDurationInput(fields);
-   const durationField = getDurationField(fields);
+   const timeInput = _getTimeInput(fields);
+   const durationInput = _getDurationInput(fields);
+   const durationField = _getDurationField(fields);
 
    timeInput.value = '10:00 AM';
    durationInput.value = '30';

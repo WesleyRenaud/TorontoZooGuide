@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { ConsoleDatePickers } from '../../../scripts/datePickers/consoleDatePickers.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 
-function createMockPickerInstance(inputEl, overrides = {}) {
+function _createMockPickerInstance(inputEl, overrides = {}) {
    return {
       close() {
          this.isOpen = false;
@@ -38,7 +38,7 @@ function createMockPickerInstance(inputEl, overrides = {}) {
    };
 }
 
-function createFlatpickrSpy() {
+function _createFlatpickrSpy() {
    const calls = [];
 
    return {
@@ -46,14 +46,14 @@ function createFlatpickrSpy() {
       initFlatpickrFn: (inputEl, options) => {
          calls.push({ inputEl, options });
 
-         const instance = createMockPickerInstance(inputEl);
+         const instance = _createMockPickerInstance(inputEl);
          options.onReady?.([], '', instance);
          return instance;
       },
    };
 }
 
-function dispatchKeydown(target, key) {
+function _dispatchKeydown(target, key) {
    target.listeners.keydown?.({
       key,
       preventDefault() {},
@@ -63,7 +63,7 @@ function dispatchKeydown(target, key) {
 
 test('Test_InitTimePicker_TestDefaults_ExpectConsoleOptions', () => {
    const inputEl = createDomNode('input');
-   const { calls, initFlatpickrFn } = createFlatpickrSpy();
+   const { calls, initFlatpickrFn } = _createFlatpickrSpy();
 
    ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
@@ -75,10 +75,10 @@ test('Test_InitTimePicker_TestDefaults_ExpectConsoleOptions', () => {
 
 test('Test_InitTimePicker_TestEnterFromPicker_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
-   const { initFlatpickrFn } = createFlatpickrSpy();
+   const { initFlatpickrFn } = _createFlatpickrSpy();
    const picker = ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
-   dispatchKeydown(inputEl, 'Enter');
+   _dispatchKeydown(inputEl, 'Enter');
 
    assert.equal(inputEl.value, '12:00 PM');
    assert.equal(picker.isOpen, false);
@@ -86,10 +86,10 @@ test('Test_InitTimePicker_TestEnterFromPicker_ExpectPopulated', () => {
 
 test('Test_InitTimePicker_TestCalendarEnterEmpty_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
-   const { initFlatpickrFn } = createFlatpickrSpy();
+   const { initFlatpickrFn } = _createFlatpickrSpy();
    const picker = ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
 
-   dispatchKeydown(picker.calendarContainer, 'Enter');
+   _dispatchKeydown(picker.calendarContainer, 'Enter');
 
    assert.equal(inputEl.value, '12:00 PM');
    assert.equal(picker.isOpen, false);
@@ -97,11 +97,11 @@ test('Test_InitTimePicker_TestCalendarEnterEmpty_ExpectPopulated', () => {
 
 test('Test_InitTimePicker_TestEnterTyped_ExpectKept', () => {
    const inputEl = createDomNode('input');
-   const { initFlatpickrFn } = createFlatpickrSpy();
+   const { initFlatpickrFn } = _createFlatpickrSpy();
 
    ConsoleDatePickers.initTimePicker(inputEl, {}, initFlatpickrFn);
    inputEl.value = '2:30 PM';
-   dispatchKeydown(inputEl, 'Enter');
+   _dispatchKeydown(inputEl, 'Enter');
 
    assert.equal(inputEl.value, '2:30 PM');
 });
@@ -109,7 +109,7 @@ test('Test_InitTimePicker_TestEnterTyped_ExpectKept', () => {
 test('Test_InitDateRangePickers_TestStartChange_ExpectEndMinDate', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
-   const { calls, initFlatpickrFn } = createFlatpickrSpy();
+   const { calls, initFlatpickrFn } = _createFlatpickrSpy();
 
    startDateEl.value = '2026-06-15';
 
@@ -134,7 +134,7 @@ test('Test_InitScheduleDateTimePickers_TestFourInputs_ExpectInitialized', () => 
    const endDateEl = createDomNode('input');
    const dailyStartTimeEl = createDomNode('input');
    const dailyEndTimeEl = createDomNode('input');
-   const { calls, initFlatpickrFn } = createFlatpickrSpy();
+   const { calls, initFlatpickrFn } = _createFlatpickrSpy();
 
    const pickers = ConsoleDatePickers.initScheduleDateTimePickers(
       startDateEl,

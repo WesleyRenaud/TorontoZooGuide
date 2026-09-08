@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { TransportationRouteOverlay } from '../../../scripts/map/transportationRouteOverlay.js';
 
-function createCircle(id, { cx = 0, cy = 0 } = {}) {
+function _createCircle(id, { cx = 0, cy = 0 } = {}) {
    const attributes = new Map([
       ['cx', String(cx)],
       ['cy', String(cy)],
@@ -26,7 +26,7 @@ function createCircle(id, { cx = 0, cy = 0 } = {}) {
    };
 }
 
-function createGroup(id, circles) {
+function _createGroup(id, circles) {
    return {
       id,
       style: {
@@ -45,7 +45,7 @@ function createGroup(id, circles) {
    };
 }
 
-function createSvgRoot({ summerGroup, winterGroup, summerCircles, winterCircles }) {
+function _createSvgRoot({ summerGroup, winterGroup, summerCircles, winterCircles }) {
    const children = [];
 
    return {
@@ -82,16 +82,16 @@ function createSvgRoot({ summerGroup, winterGroup, summerCircles, winterCircles 
 
 test('Test_ShowTransportationRouteMarkers_TestSelectedCircles_ExpectVisibleOnly', () => {
    const summerCircles = [
-      createCircle('zm-s-005', { cx: 10, cy: 10 }),
-      createCircle('zm-s-006', { cx: 200, cy: 10 }),
-      createCircle('zm-s-086', { cx: 400, cy: 10 }),
+      _createCircle('zm-s-005', { cx: 10, cy: 10 }),
+      _createCircle('zm-s-006', { cx: 200, cy: 10 }),
+      _createCircle('zm-s-086', { cx: 400, cy: 10 }),
    ];
    const winterCircles = [
-      createCircle('zm-w-006'),
+      _createCircle('zm-w-006'),
    ];
-   const summerGroup = createGroup('zoomobile-route-summer', summerCircles);
-   const winterGroup = createGroup('zoomobile-route-winter', winterCircles);
-   const svgRoot = createSvgRoot({
+   const summerGroup = _createGroup('zoomobile-route-summer', summerCircles);
+   const winterGroup = _createGroup('zoomobile-route-winter', winterCircles);
+   const svgRoot = _createSvgRoot({
       summerGroup,
       winterGroup,
       summerCircles,
@@ -171,16 +171,16 @@ test('Test_ShowTransportationRouteMarkers_TestSelectedCircles_ExpectVisibleOnly'
 
 test('Test_ShowTransportationRouteMarkers_TestMarkerPairs_ExpectArrows', () => {
    const summerCircles = [
-      createCircle('zm-s-005', { cx: 10, cy: 10 }),
-      createCircle('zm-s-006', { cx: 100, cy: 10 }),
-      createCircle('zm-s-007', { cx: 200, cy: 10 }),
-      createCircle('zm-s-008', { cx: 300, cy: 10 }),
-      createCircle('zm-s-185', { cx: 10, cy: 200 }),
-      createCircle('zm-s-186', { cx: 200, cy: 200 }),
+      _createCircle('zm-s-005', { cx: 10, cy: 10 }),
+      _createCircle('zm-s-006', { cx: 100, cy: 10 }),
+      _createCircle('zm-s-007', { cx: 200, cy: 10 }),
+      _createCircle('zm-s-008', { cx: 300, cy: 10 }),
+      _createCircle('zm-s-185', { cx: 10, cy: 200 }),
+      _createCircle('zm-s-186', { cx: 200, cy: 200 }),
    ];
-   const summerGroup = createGroup('zoomobile-route-summer', summerCircles);
-   const winterGroup = createGroup('zoomobile-route-winter', []);
-   const svgRoot = createSvgRoot({
+   const summerGroup = _createGroup('zoomobile-route-summer', summerCircles);
+   const winterGroup = _createGroup('zoomobile-route-winter', []);
+   const svgRoot = _createSvgRoot({
       summerGroup,
       winterGroup,
       summerCircles,

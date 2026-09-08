@@ -6,7 +6,7 @@ import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installSched
 
 installScheduleItemActionsTestHooks();
 
-function mockItineraryDateResponse() {
+function _mockItineraryDateResponse() {
    return mockJsonResponse({ date: '2026-06-15' });
 }
 
@@ -15,7 +15,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -93,7 +93,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -144,7 +144,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -213,7 +213,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -322,7 +322,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -390,7 +390,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({
@@ -475,7 +475,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
-         return mockItineraryDateResponse();
+         return _mockItineraryDateResponse();
       }
 
       requests.push({

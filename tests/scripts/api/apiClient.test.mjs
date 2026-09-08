@@ -3,7 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import { ApiClient } from '../../../scripts/api/apiClient.js';
 
-function mockResponse({
+function _mockResponse({
    ok = true,
    status = 200,
    statusText = 'OK',
@@ -36,7 +36,7 @@ test('Test_PostJson_TestValidPayload_ExpectParsedResponse', async () => {
          }),
       });
 
-      return mockResponse({
+      return _mockResponse({
          text: '{"success":true}',
       });
    };
@@ -50,13 +50,13 @@ test('Test_PostJson_TestValidPayload_ExpectParsedResponse', async () => {
 });
 
 test('Test_PostJson_TestEmptyBody_ExpectEmptyObject', async () => {
-   globalThis.fetch = async () => mockResponse({ text: '   ' });
+   globalThis.fetch = async () => _mockResponse({ text: '   ' });
 
    assert.deepEqual(await ApiClient.postJson('/clear-itinerary'), {});
 });
 
 test('Test_PostJson_TestInvalidJson_ExpectThrows', async () => {
-   globalThis.fetch = async () => mockResponse({ text: '{not-json' });
+   globalThis.fetch = async () => _mockResponse({ text: '{not-json' });
 
    await assert.rejects(
       () => ApiClient.postJson('/get-itinerary'),
@@ -65,7 +65,7 @@ test('Test_PostJson_TestInvalidJson_ExpectThrows', async () => {
 });
 
 test('Test_PostJson_TestHttpError_ExpectApiClientErrorMetadata', async () => {
-   globalThis.fetch = async () => mockResponse({
+   globalThis.fetch = async () => _mockResponse({
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',

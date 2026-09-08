@@ -8,7 +8,7 @@ import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { querySelectorInNode } from '../helpers/domSelectorMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
-function installItineraryMapDom() {
+function _installItineraryMapDom() {
    const svgRoot = createDomNode('svg');
    const mapMount = createDomNode('div');
    mapMount.id = 'zooMapMount';
@@ -43,78 +43,76 @@ function installItineraryMapDom() {
    return { svgRoot, mapMount };
 }
 
-test.describe('itinerary path overlay', () => {
-   installDomTestHooks({
-      before: () => {
-         installItineraryMapDom();
-      },
+installDomTestHooks({
+   before: () => {
+      _installItineraryMapDom();
+   },
+});
+
+test('Test_RenderItineraryPathOverlay_TestExactPath_ExpectLayerInSvg', () => {
+   ItineraryPathOverlay.renderItineraryPathOverlay({
+      legs: [],
+      points: [
+         { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
+         { nodeId: 'v-0012', xPx: 2515.5, yPx: 2434.9 },
+         { nodeId: 'v-0011', xPx: 2600, yPx: 2500 },
+      ],
    });
 
-   test('Test_RenderItineraryPathOverlay_TestExactPath_ExpectLayerInSvg', () => {
-      ItineraryPathOverlay.renderItineraryPathOverlay({
-         legs: [],
-         points: [
-            { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
-            { nodeId: 'v-0012', xPx: 2515.5, yPx: 2434.9 },
-            { nodeId: 'v-0011', xPx: 2600, yPx: 2500 },
-         ],
-      });
+   const svgRoot = document.querySelector('#zooMapMount svg');
+   const path = svgRoot?.querySelector('.itinerary-path-line');
+   const layer = path?.parentElement ?? path?.parent;
 
-      const svgRoot = document.querySelector('#zooMapMount svg');
-      const path = svgRoot?.querySelector('.itinerary-path-line');
-      const layer = path?.parentElement ?? path?.parent;
+   assert.equal(layer?.getAttribute('id'), 'itinerary-path');
+   assert.equal(path?.getAttribute('fill'), 'none');
+   assert.equal(
+      path?.getAttribute('d'),
+      ItineraryPathGeometry.buildItineraryPathD([
+         { x: 2515.5, y: 2434.9 },
+         { x: 2515.5, y: 2434.9 },
+         { x: 2600, y: 2500 },
+      ])
+   );
+});
 
-      assert.equal(layer?.getAttribute('id'), 'itinerary-path');
-      assert.equal(path?.getAttribute('fill'), 'none');
-      assert.equal(
-         path?.getAttribute('d'),
-         ItineraryPathGeometry.buildItineraryPathD([
-            { x: 2515.5, y: 2434.9 },
-            { x: 2515.5, y: 2434.9 },
-            { x: 2600, y: 2500 },
-         ])
-      );
+test('Test_RenderItineraryPathOverlay_TestRoute_ExpectArrows', () => {
+   ItineraryPathOverlay.renderItineraryPathOverlay({
+      legs: [],
+      points: [
+         { nodeId: 'v-0001', xPx: 100, yPx: 200 },
+         { nodeId: 'v-0002', xPx: 500, yPx: 200 },
+      ],
    });
 
-   test('Test_RenderItineraryPathOverlay_TestRoute_ExpectArrows', () => {
-      ItineraryPathOverlay.renderItineraryPathOverlay({
-         legs: [],
-         points: [
-            { nodeId: 'v-0001', xPx: 100, yPx: 200 },
-            { nodeId: 'v-0002', xPx: 500, yPx: 200 },
-         ],
-      });
+   const svgRoot = document.querySelector('#zooMapMount svg');
+   const arrows = svgRoot?.querySelectorAll('.itinerary-path-arrow') ?? [];
 
-      const svgRoot = document.querySelector('#zooMapMount svg');
-      const arrows = svgRoot?.querySelectorAll('.itinerary-path-arrow') ?? [];
+   assert.equal(arrows.length, 6);
+});
 
-      assert.equal(arrows.length, 6);
+test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () => {
+   ItineraryPathOverlay.renderItineraryPathOverlay({
+      legs: [],
+      points: [{ xPx: 100, yPx: 200 }],
    });
 
-   test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () => {
-      ItineraryPathOverlay.renderItineraryPathOverlay({
-         legs: [],
-         points: [{ xPx: 100, yPx: 200 }],
-      });
+   assert.equal(
+      document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
+      null
+   );
 
-      assert.equal(
-         document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
-         null
-      );
-
-      ItineraryPathOverlay.renderItineraryPathOverlay({
-         legs: [],
-         points: [
-            { xPx: 100, yPx: 200 },
-            { xPx: 300, yPx: 400 },
-         ],
-      });
-
-      ItineraryPathOverlay.clearItineraryPathOverlay();
-
-      assert.equal(
-         document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
-         null
-      );
+   ItineraryPathOverlay.renderItineraryPathOverlay({
+      legs: [],
+      points: [
+         { xPx: 100, yPx: 200 },
+         { xPx: 300, yPx: 400 },
+      ],
    });
+
+   ItineraryPathOverlay.clearItineraryPathOverlay();
+
+   assert.equal(
+      document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
+      null
+   );
 });

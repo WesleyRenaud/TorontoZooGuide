@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ReadOpenPickerTime } from '../../../scripts/datePickers/readOpenPickerTime.js';
-function createMockPickerInstance(overrides = {}) {
+function _createMockPickerInstance(overrides = {}) {
    return {
       isOpen: true,
       config: {
@@ -26,7 +26,7 @@ function createMockPickerInstance(overrides = {}) {
 }
 
 test('Test_ReadOpenPickerTime_TestOpenDefaultControls_ExpectControlTime', () => {
-   const time = ReadOpenPickerTime.readOpenPickerTime(createMockPickerInstance());
+   const time = ReadOpenPickerTime.readOpenPickerTime(_createMockPickerInstance());
 
    assert.equal(time, '12:00 PM');
 });
@@ -35,7 +35,7 @@ test('Test_ReadOpenPickerTime_TestSelectedDatesPresent_ExpectSelectedOverControl
    const selectedDate = new Date();
    selectedDate.setHours(14, 30, 0, 0);
 
-   const time = ReadOpenPickerTime.readOpenPickerTime(createMockPickerInstance({
+   const time = ReadOpenPickerTime.readOpenPickerTime(_createMockPickerInstance({
       selectedDates: [ selectedDate ],
    }));
 

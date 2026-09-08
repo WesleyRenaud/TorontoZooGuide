@@ -3,7 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import { AnimalsApi } from '../../../scripts/api/animalsApi.js';
 
-function mockResponse(text = '{}') {
+function _mockResponse(text = '{}') {
    return {
       ok: true,
       status: 200,
@@ -21,7 +21,7 @@ test('Test_GetRegions_TestMixedRows_ExpectNormalizedNames', async () => {
       assert.equal(url, '/get-regions');
       assert.deepEqual(JSON.parse(options.body), {});
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          regions: [
             { name: '  Americas  ', hasExhibits: true },
             { name: ' ', hasExhibits: true },
@@ -41,7 +41,7 @@ test('Test_GetExhibitsInRegion_TestNames_ExpectNormalized', async () => {
       assert.equal(url, '/get-exhibits-in-region');
       assert.deepEqual(JSON.parse(options.body), { region: 'Americas' });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          exhibits: ['  African Savanna  ', '', null],
       }));
    };
@@ -54,7 +54,7 @@ test('Test_GetAnimalsInExhibit_TestNames_ExpectNormalized', async () => {
       assert.equal(url, '/get-animal-names-by-exhibit');
       assert.deepEqual(JSON.parse(options.body), { exhibit: 'African Savanna' });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          animals: ['  African Lion  ', '  '],
       }));
    };
@@ -70,7 +70,7 @@ test('Test_GetAnimalViewingScopes_TestMixedScopes_ExpectValidOnly', async () => 
          exhibit: 'African Savanna',
       });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          viewingScopes: ['all', 'indoor', 'invalid', '  outdoor  '],
       }));
    };
@@ -89,7 +89,7 @@ test('Test_GetAnimalInformation_TestRows_ExpectFirstNormalized', async () => {
          exhibit: 'Africa Savanna',
       });
 
-      return mockResponse(JSON.stringify({
+      return _mockResponse(JSON.stringify({
          information: [
             { species: ' ', exhibit: 'African Savanna' },
             {
@@ -127,7 +127,7 @@ test('Test_GetAnimalInformation_TestRows_ExpectFirstNormalized', async () => {
 });
 
 test('Test_GetAnimalInformation_TestBlankRows_ExpectNull', async () => {
-   globalThis.fetch = async () => mockResponse(JSON.stringify({
+   globalThis.fetch = async () => _mockResponse(JSON.stringify({
       information: [{ species: ' ' }],
    }));
 

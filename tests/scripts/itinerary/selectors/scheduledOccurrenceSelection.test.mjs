@@ -8,7 +8,7 @@ import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 
-function createGuardiansTalkSelectionState() {
+function _createGuardiansTalkSelectionState() {
    return SelectionState.createSelectorSelectionState({
       storageKey: STORAGE_KEY,
       getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
@@ -32,62 +32,60 @@ function createGuardiansTalkSelectionState() {
    });
 }
 
-test.describe('scheduled occurrence selection migration', () => {
-   beforeEach(() => {
-      globalThis.localStorage = createLocalStorageMock();
-   });
+beforeEach(() => {
+   globalThis.localStorage = createLocalStorageMock();
+});
 
-   afterEach(() => {
-      delete globalThis.localStorage;
-   });
+afterEach(() => {
+   delete globalThis.localStorage;
+});
 
-   test('Test_API_TestAPITalkWithoutIdMatchesCatalogWireId_ExpectOk', () => {
-      localStorage.setItem(
-         STORAGE_KEY,
-         JSON.stringify([
-            {
-               name: 'New World Primates',
-               location: 'Americas Pavilion',
-               start_time: '11:30 AM',
-               end_time: '12:00 PM',
-            },
-         ])
-      );
+test('Test_API_TestAPITalkWithoutIdMatchesCatalogWireId_ExpectOk', () => {
+   localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+         {
+            name: 'New World Primates',
+            location: 'Americas Pavilion',
+            start_time: '11:30 AM',
+            end_time: '12:00 PM',
+         },
+      ])
+   );
 
-      const state = createGuardiansTalkSelectionState();
-      const catalogRow = {
-         name: 'New World Primates',
-         location: 'Americas Pavilion',
-         start_time: '11:30 AM',
-         end_time: '12:00 PM',
-      };
-      const catalogId = GuardiansTalkSelectorModel.getGuardiansTalkId(catalogRow);
+   const state = _createGuardiansTalkSelectionState();
+   const catalogRow = {
+      name: 'New World Primates',
+      location: 'Americas Pavilion',
+      start_time: '11:30 AM',
+      end_time: '12:00 PM',
+   };
+   const catalogId = GuardiansTalkSelectorModel.getGuardiansTalkId(catalogRow);
 
-      assert.equal(catalogId, 'New World Primates||11:30 AM||12:00 PM');
-      assert.equal(state.isSelected(catalogId), true);
-      assert.equal(state.getSelectedSnapshot()[0].id, catalogId);
-   });
+   assert.equal(catalogId, 'New World Primates||11:30 AM||12:00 PM');
+   assert.equal(state.isSelected(catalogId), true);
+   assert.equal(state.getSelectedSnapshot()[0].id, catalogId);
+});
 
-   test('Test_Name_TestNameOnlyStoredIdIsUpgradedWhenStart_ExpectOk', () => {
-      localStorage.setItem(
-         STORAGE_KEY,
-         JSON.stringify([
-            {
-               id: 'New World Primates',
-               name: 'New World Primates',
-               location: 'Americas Pavilion',
-               start_time: '11:30 AM',
-               end_time: '12:00 PM',
-            },
-         ])
-      );
+test('Test_Name_TestNameOnlyStoredIdIsUpgradedWhenStart_ExpectOk', () => {
+   localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+         {
+            id: 'New World Primates',
+            name: 'New World Primates',
+            location: 'Americas Pavilion',
+            start_time: '11:30 AM',
+            end_time: '12:00 PM',
+         },
+      ])
+   );
 
-      const state = createGuardiansTalkSelectionState();
+   const state = _createGuardiansTalkSelectionState();
 
-      assert.equal(
-         state.isSelected('New World Primates||11:30 AM||12:00 PM'),
-         true
-      );
-      assert.equal(state.isSelected('New World Primates'), false);
-   });
+   assert.equal(
+      state.isSelected('New World Primates||11:30 AM||12:00 PM'),
+      true
+   );
+   assert.equal(state.isSelected('New World Primates'), false);
 });

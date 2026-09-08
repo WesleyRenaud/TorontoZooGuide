@@ -2,7 +2,7 @@
 
 Enforced in CI by `tools/lint/jsUnitTestStyle.js` (`npm run lint:js`).
 
-Test **case** names follow the same rule as Python
+Test **case** names and file layout follow the same rules as Python
 ([`docs/python-unit-test-style.md`](python-unit-test-style.md)). The name is the
 string passed to Node’s `test()` (or `it()`).
 
@@ -17,6 +17,36 @@ string passed to Node’s `test()` (or `it()`).
 |---|---|
 | `scripts/shared/joinedTimesFormatter.js` | `tests/scripts/shared/joinedTimesFormatter.test.mjs` |
 | `scripts/api/valueNormalizer.js` | `tests/scripts/api/valueNormalizer.test.mjs` |
+
+## File layout
+
+Keep this top-to-bottom order. Do not use `test.describe` / `describe` suites.
+
+```
+imports
+constants
+private helpers (function _... / const _... =)
+installDomTestHooks / beforeEach / afterEach
+all test('Test_...', ...) cases
+```
+
+Private helpers use a leading underscore, matching Python’s `def _...` helpers.
+
+```js
+function _cleanupPopups() {
+   document.querySelector('.tzg-confirm')?.remove();
+}
+
+installDomTestHooks({
+   after: () => {
+      _cleanupPopups();
+   },
+});
+
+test('Test_Shows_TestRendersPopup_ExpectOk', () => {
+   ...
+});
+```
 
 ## Test case names
 
@@ -52,8 +82,6 @@ test('Test_AsBoolean', () => {
    }
 });
 ```
-
-`describe(...)` suite titles are not checked.
 
 ## Opt-in enforcement
 

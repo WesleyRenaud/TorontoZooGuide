@@ -7,118 +7,116 @@ import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleIt
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-test.describe('showScheduleItemModule', () => {
-   installDomTestHooks({
-      after: () => {
-         document.querySelector('.schedule-item-module')?.__tzgPopupCleanup?.();
-         document.querySelector('.schedule-item-module')?.remove?.();
-      },
+installDomTestHooks({
+   after: () => {
+      document.querySelector('.schedule-item-module')?.__tzgPopupCleanup?.();
+      document.querySelector('.schedule-item-module')?.remove?.();
+   },
+});
+
+test('Test_Mounts_TestMountsTheSchedulePopupWithFormFields_ExpectOk', () => {
+   const popup = ShowScheduleItemModule.showScheduleItemModule({
+      eventTypes: ['lunch', 'break'],
    });
 
-   test('Test_Mounts_TestMountsTheSchedulePopupWithFormFields_ExpectOk', () => {
-      const popup = ShowScheduleItemModule.showScheduleItemModule({
-         eventTypes: ['lunch', 'break'],
-      });
+   const root = document.querySelector('.schedule-item-module');
+   assert.ok(popup);
+   assert.ok(root);
+   assert.equal(root?.querySelector('.itin-top-title')?.textContent, Strings.itinerary.scheduleItem.title);
+   assert.ok(root?.querySelector('.schedule-item-select'));
+   assert.equal(root?.querySelector('.schedule-item-select')?.disabled, false);
+   assert.ok(root?.querySelector('.schedule-item-search-input'));
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, false);
+   assert.ok(root?.querySelector('.schedule-item-only-itinerary-checkbox'));
+   assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, false);
+   assert.ok(root?.querySelector('.schedule-item-time-input'));
+   assert.ok(root?.querySelector('.schedule-item-duration-input'));
+   assert.ok(root?.querySelector('.schedule-item-results'));
+   assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), null);
+   assert.equal(root?.querySelector('.itin-finish')?.textContent, Strings.itinerary.scheduleItem.scheduleButton);
+   assert.equal(
+      root?.querySelector('.itin-prev')?.textContent,
+      Strings.itinerary.actions.cancel
+   );
+});
 
-      const root = document.querySelector('.schedule-item-module');
-      assert.ok(popup);
-      assert.ok(root);
-      assert.equal(root?.querySelector('.itin-top-title')?.textContent, Strings.itinerary.scheduleItem.title);
-      assert.ok(root?.querySelector('.schedule-item-select'));
-      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, false);
-      assert.ok(root?.querySelector('.schedule-item-search-input'));
-      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, false);
-      assert.ok(root?.querySelector('.schedule-item-only-itinerary-checkbox'));
-      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, false);
-      assert.ok(root?.querySelector('.schedule-item-time-input'));
-      assert.ok(root?.querySelector('.schedule-item-duration-input'));
-      assert.ok(root?.querySelector('.schedule-item-results'));
-      assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), null);
-      assert.equal(root?.querySelector('.itin-finish')?.textContent, Strings.itinerary.scheduleItem.scheduleButton);
-      assert.equal(
-         root?.querySelector('.itin-prev')?.textContent,
-         Strings.itinerary.actions.cancel
-      );
-   });
-
-   test('Test_Preselects_TestPreselectsUnscheduledZoomobileAsAnAttraction_ExpectOk', () => {
-      ShowScheduleItemModule.showScheduleItemModule({
-         eventTypes: ['lunch'],
-         itinerary: {
-            transportations: [{
-               name: 'Zoomobile',
-               added_as_attraction: true,
-            }],
-         },
-         preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+test('Test_Preselects_TestPreselectsUnscheduledZoomobileAsAnAttraction_ExpectOk', () => {
+   ShowScheduleItemModule.showScheduleItemModule({
+      eventTypes: ['lunch'],
+      itinerary: {
+         transportations: [{
             name: 'Zoomobile',
             added_as_attraction: true,
-            route_duration_minutes: 75,
-         }),
-      });
-
-      const root = document.querySelector('.schedule-item-module');
-      const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
-
-      assert.equal(
-         root?.querySelector('.schedule-item-select')?.value,
-         ScheduleItemKind.ATTRACTION.itemType
-      );
-      assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
-      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
-      assert.equal(root?.querySelector('.schedule-item-time-input')?.disabled, false);
-      assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
-      assert.match(resultText, /Zoomobile/);
-      assert.match(resultText, new RegExp(Strings.search.extraCharge));
-      assert.doesNotMatch(resultText, /round trip/);
-      assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
+         }],
+      },
+      preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+         name: 'Zoomobile',
+         added_as_attraction: true,
+         route_duration_minutes: 75,
+      }),
    });
 
-   test('Test_Preselects_TestPreselectsTransportationWithStationSubtext_ExpectOk', () => {
-      ShowScheduleItemModule.showScheduleItemModule({
-         eventTypes: ['lunch'],
-         itinerary: {
-            transportations: [{
-               name: 'Zoomobile',
-               added_as_attraction: false,
-            }],
-         },
-         preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+   const root = document.querySelector('.schedule-item-module');
+   const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
+
+   assert.equal(
+      root?.querySelector('.schedule-item-select')?.value,
+      ScheduleItemKind.ATTRACTION.itemType
+   );
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+   assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
+   assert.equal(root?.querySelector('.schedule-item-time-input')?.disabled, false);
+   assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
+   assert.match(resultText, /Zoomobile/);
+   assert.match(resultText, new RegExp(Strings.search.extraCharge));
+   assert.doesNotMatch(resultText, /round trip/);
+   assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
+});
+
+test('Test_Preselects_TestPreselectsTransportationWithStationSubtext_ExpectOk', () => {
+   ShowScheduleItemModule.showScheduleItemModule({
+      eventTypes: ['lunch'],
+      itinerary: {
+         transportations: [{
             name: 'Zoomobile',
             added_as_attraction: false,
-            route_duration_minutes: 75,
-            legs: [
-               {
-                  from_station: 'Main Zoomobile Station',
-                  to_station: 'Canadian Domain Zoomobile Station',
-               },
-               {
-                  from_station: 'Canadian Domain Zoomobile Station',
-                  to_station: 'Main Zoomobile Station',
-               },
-            ],
-         }),
-      });
-
-      const root = document.querySelector('.schedule-item-module');
-      const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
-
-      assert.equal(
-         root?.querySelector('.schedule-item-select')?.value,
-         ScheduleItemKind.TRANSPORTATION.itemType
-      );
-      assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
-      assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
-      assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
-      assert.match(resultText, /Zoomobile/);
-      assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
-      assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
+         }],
+      },
+      preselectedRow: ScheduleItemSearch.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         route_duration_minutes: 75,
+         legs: [
+            {
+               from_station: 'Main Zoomobile Station',
+               to_station: 'Canadian Domain Zoomobile Station',
+            },
+            {
+               from_station: 'Canadian Domain Zoomobile Station',
+               to_station: 'Main Zoomobile Station',
+            },
+         ],
+      }),
    });
+
+   const root = document.querySelector('.schedule-item-module');
+   const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
+
+   assert.equal(
+      root?.querySelector('.schedule-item-select')?.value,
+      ScheduleItemKind.TRANSPORTATION.itemType
+   );
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+   assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
+   assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
+   assert.match(resultText, /Zoomobile/);
+   assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
+   assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
 });

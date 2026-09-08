@@ -41,13 +41,6 @@ const amurTigerTalk = {
    location: 'Eurasia Wilds',
 };
 
-test('Test_ScheduleTimesOverlap_TestHalfOpen_ExpectBackendRule', () => {
-   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(greatBarrierReef, grizzly), true);
-   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(greatBarrierReef, capybara), false);
-   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(grizzly, capybara), true);
-   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(capybara, grizzly), true);
-});
-
 const gibbonTalk = {
    name: 'White-Handed Gibbon',
    start_time: '13:10',
@@ -55,6 +48,18 @@ const gibbonTalk = {
    item_type: ItinerarySaveIssueItemType.guardiansTalk,
    location: 'Indo-Malaya',
 };
+const gibbonTalkAtOne = {
+   ...gibbonTalk,
+   start_time: '13:00',
+   end_time: '13:30',
+};
+
+test('Test_ScheduleTimesOverlap_TestHalfOpen_ExpectBackendRule', () => {
+   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(greatBarrierReef, grizzly), true);
+   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(greatBarrierReef, capybara), false);
+   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(grizzly, capybara), true);
+   assert.equal(ScheduleConflictCompatibility.scheduleTimesOverlap(capybara, grizzly), true);
+});
 
 test('Test_CanSelectConflictItem_TestPartialTalk_ExpectAllowed', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();
@@ -72,12 +77,6 @@ test('Test_ConflictItemRequiresTrimOverride_TestPartialTalk_ExpectTrue', () => {
    assert.equal(ScheduleConflictCompatibility.canSelectConflictItem(selection, gibbonTalk), true);
    assert.equal(ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, gibbonTalk), true);
 });
-
-const gibbonTalkAtOne = {
-   ...gibbonTalk,
-   start_time: '13:00',
-   end_time: '13:30',
-};
 
 test('Test_ConflictItemRequiresTrimOverride_TestTalkThenEncounter_ExpectTrue', () => {
    const selection = ScheduleConflictCompatibility.createConflictSelection();

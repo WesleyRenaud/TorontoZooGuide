@@ -12,13 +12,13 @@ afterEach(() => {
    teardownDocument();
 });
 
-function findSelectButton(row) {
+function _findSelectButton(row) {
    return row.children.find((child) => (
       child.className?.includes('schedule-item-select-btn')
    ));
 }
 
-function createSingleSelectHandler() {
+function _createSingleSelectHandler() {
    let selectedRowId = '';
 
    return {
@@ -27,6 +27,23 @@ function createSingleSelectHandler() {
          selectedRowId = selectedRowId === id ? '' : id;
       },
    };
+}
+
+function _renderRows(resultsEl, rows, selection) {
+   ScheduleItemResults.renderScheduleItemSearchResults({
+      resultsEl,
+      rows,
+      emptyText: 'No matching items',
+      getId: (row) => (
+         row.species ? `${row.species}||${row.exhibit}` : row.name
+      ),
+      selectedRowId: selection.getSelectedRowId(),
+      renderRowLeft: () => createDomNode('div', 'row-left'),
+      onSelectRow: (row, id) => {
+         selection.onSelectRow(row, id);
+         _renderRows(resultsEl, rows, selection);
+      },
+   });
 }
 
 test('Test_RenderScheduleItemSearchResults_TestNoRows_ExpectEmptyState', () => {
@@ -46,37 +63,20 @@ test('Test_RenderScheduleItemSearchResults_TestNoRows_ExpectEmptyState', () => {
    assert.equal(resultsEl.children[0].textContent, 'No matching items');
 });
 
-function renderRows(resultsEl, rows, selection) {
-   ScheduleItemResults.renderScheduleItemSearchResults({
-      resultsEl,
-      rows,
-      emptyText: 'No matching items',
-      getId: (row) => (
-         row.species ? `${row.species}||${row.exhibit}` : row.name
-      ),
-      selectedRowId: selection.getSelectedRowId(),
-      renderRowLeft: () => createDomNode('div', 'row-left'),
-      onSelectRow: (row, id) => {
-         selection.onSelectRow(row, id);
-         renderRows(resultsEl, rows, selection);
-      },
-   });
-}
-
 test('Test_RenderScheduleItemSearchResults_TestSelectedRow_ExpectMarked', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
    const rows = [{ species: 'Tiger', exhibit: 'Savanna' }];
-   const selection = createSingleSelectHandler();
+   const selection = _createSingleSelectHandler();
 
-   renderRows(resultsEl, rows, selection);
+   _renderRows(resultsEl, rows, selection);
    resultsEl.children[0].listeners.click();
 
    const activeRow = resultsEl.children[0];
    assert.equal(selection.getSelectedRowId(), 'Tiger||Savanna');
    assert.equal(activeRow.getAttribute('aria-pressed'), 'true');
-   assert.match(findSelectButton(activeRow).className, /is-added/);
+   assert.match(_findSelectButton(activeRow).className, /is-added/);
 });
 
 test('Test_RenderScheduleItemSearchResults_TestReselectSame_ExpectCleared', () => {
@@ -84,9 +84,9 @@ test('Test_RenderScheduleItemSearchResults_TestReselectSame_ExpectCleared', () =
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
    const rows = [{ species: 'Tiger', exhibit: 'Savanna' }];
-   const selection = createSingleSelectHandler();
+   const selection = _createSingleSelectHandler();
 
-   renderRows(resultsEl, rows, selection);
+   _renderRows(resultsEl, rows, selection);
    resultsEl.children[0].listeners.click();
    resultsEl.children[0].listeners.click();
 
@@ -98,7 +98,7 @@ test('Test_RenderScheduleItemSearchResults_TestKeyboard_ExpectSelected', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'schedule-item-results');
-   const selection = createSingleSelectHandler();
+   const selection = _createSingleSelectHandler();
 
    ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,

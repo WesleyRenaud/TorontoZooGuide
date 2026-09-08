@@ -8,7 +8,7 @@ afterEach(() => {
    teardownDocument();
 });
 
-function findDescendant(node, className) {
+function _findDescendant(node, className) {
    const stack = [node];
 
    while (stack.length > 0) {
@@ -45,8 +45,8 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForAnima
    assert.equal(resultsEl.children.length, 2);
 
    const animalRow = resultsEl.children[0];
-   const animalContent = findDescendant(animalRow, 'itin-animal-content');
-   const animalImg = findDescendant(animalRow, 'itin-animal-thumb-img');
+   const animalContent = _findDescendant(animalRow, 'itin-animal-content');
+   const animalImg = _findDescendant(animalRow, 'itin-animal-thumb-img');
 
    assert.ok(animalContent);
    assert.equal(
@@ -54,11 +54,11 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForAnima
       '../images/details/animals/african-savanna/african-lion.png'
    );
 
-   assert.ok(findDescendant(animalRow, 'species-link'));
+   assert.ok(_findDescendant(animalRow, 'species-link'));
 
    const attractionRow = resultsEl.children[1];
-   const attractionContent = findDescendant(attractionRow, 'itin-animal-content');
-   const attractionImg = findDescendant(attractionRow, 'itin-animal-thumb-img');
+   const attractionContent = _findDescendant(attractionRow, 'itin-animal-content');
+   const attractionImg = _findDescendant(attractionRow, 'itin-animal-thumb-img');
 
    assert.ok(attractionContent);
    assert.equal(
@@ -66,7 +66,7 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForAnima
       '../images/details/attractions/conservation-carousel.png'
    );
 
-   const attractionTitle = findDescendant(attractionRow, 'animal-result-species');
+   const attractionTitle = _findDescendant(attractionRow, 'animal-result-species');
    assert.equal(attractionTitle?.querySelector('.species-link'), null);
 });
 
@@ -91,12 +91,12 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksAttractionTitlesWh
    ]);
 
    const row = resultsEl.children[0];
-   const title = findDescendant(row, 'animal-result-species');
+   const title = _findDescendant(row, 'animal-result-species');
    const titleLink = title?.querySelector('.species-link');
 
    assert.ok(titleLink);
    assert.equal(titleLink.textContent, 'Conservation Carousel');
-   assert.equal(findDescendant(row, 'tooltip-link'), null);
+   assert.equal(_findDescendant(row, 'tooltip-link'), null);
 
    titleLink.click();
    assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
@@ -117,24 +117,24 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksWildEncounterTitle
    ]);
 
    const row = resultsEl.children[0];
-   const title = findDescendant(row, 'animal-result-species');
-   const img = findDescendant(row, 'itin-animal-thumb-img');
+   const title = _findDescendant(row, 'animal-result-species');
+   const img = _findDescendant(row, 'itin-animal-thumb-img');
 
-   assert.ok(findDescendant(row, 'species-link'));
+   assert.ok(_findDescendant(row, 'species-link'));
    assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
    assert.equal(
       title?.querySelector('.species-link')?.textContent,
       'African Rainforest'
    );
    assert.equal(
-      findDescendant(row, 'animal-result-exhibit')?.textContent,
+      _findDescendant(row, 'animal-result-exhibit')?.textContent,
       'Wild Encounter - Africa Meeting Spot'
    );
    assert.equal(
       img?.src,
       '../images/details/wild-encounters/african-rainforest.png'
    );
-   assert.equal(findDescendant(row, 'tooltip-link'), null);
+   assert.equal(_findDescendant(row, 'tooltip-link'), null);
 });
 
 test('Test_ResultsView_TestResultsViewRenderSearchResultsFormatsWildEncounterSubtitlesLikeSchedule_ExpectOk', () => {
@@ -152,7 +152,7 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsFormatsWildEncounterSub
       },
    ]);
 
-   const subtitle = findDescendant(
+   const subtitle = _findDescendant(
       resultsEl.children[0],
       'animal-result-exhibit'
    );
@@ -174,9 +174,9 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsKeepsTextOnlyRowsForRes
 
    const row = resultsEl.children[0];
 
-   assert.equal(findDescendant(row, 'itin-animal-content'), null);
-   assert.ok(findDescendant(row, 'animal-result-left'));
-   assert.ok(findDescendant(row, 'animal-result-map-btn'));
+   assert.equal(_findDescendant(row, 'itin-animal-content'), null);
+   assert.ok(_findDescendant(row, 'animal-result-left'));
+   assert.ok(_findDescendant(row, 'animal-result-map-btn'));
 });
 
 test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamedMapDetail_ExpectOk', () => {
@@ -203,14 +203,14 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamed
    ];
 
    resultsEl.children.forEach((row, index) => {
-      assert.ok(findDescendant(row, 'itin-animal-content'));
+      assert.ok(_findDescendant(row, 'itin-animal-content'));
       assert.equal(
-         findDescendant(row, 'itin-animal-thumb-img')?.src,
+         _findDescendant(row, 'itin-animal-thumb-img')?.src,
          expectedImageSrcs[index]
       );
    });
 
-   const guardiansTalkTitle = findDescendant(
+   const guardiansTalkTitle = _findDescendant(
       resultsEl.children[2],
       'animal-result-species'
    );
@@ -224,7 +224,7 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamed
       null
    );
    assert.equal(
-      findDescendant(resultsEl.children[2], 'animal-result-exhibit')?.textContent,
+      _findDescendant(resultsEl.children[2], 'animal-result-exhibit')?.textContent,
       'Eurasia Wilds'
    );
 });

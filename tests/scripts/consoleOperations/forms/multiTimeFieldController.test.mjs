@@ -7,7 +7,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-function createMultiTimeFieldDom() {
+function _createMultiTimeFieldDom() {
    const fieldEl = createDomNode('div', 'console-operations-multi-time-field');
    const listEl = createDomNode('div');
    const inputEl = createDomNode('input');
@@ -19,7 +19,7 @@ function createMultiTimeFieldDom() {
 }
 
 test('Test_CreateMultiTimeFieldController_TestSavedTimes_ExpectChips', () => {
-   const { fieldEl, listEl, inputEl } = createMultiTimeFieldDom();
+   const { fieldEl, listEl, inputEl } = _createMultiTimeFieldDom();
    const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,
@@ -115,7 +115,7 @@ test('Test_CreateMultiTimeFieldController_TestRemoveTime_ExpectRemoved', () => {
 });
 
 test('Test_CreateMultiTimeFieldController_TestRemoveLast_ExpectRemoved', () => {
-   const { listEl, inputEl } = createMultiTimeFieldDom();
+   const { listEl, inputEl } = _createMultiTimeFieldDom();
    const controller = MultiTimeFieldController.createMultiTimeFieldController({
       listEl,
       inputEl,

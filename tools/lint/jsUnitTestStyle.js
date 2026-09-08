@@ -93,9 +93,85 @@ function isValidTestTitle(title) {
       return true;
    }
 
-   // Short form for table-driven / single-method coverage, matching Python's
-   // parametrized Test_[Method] exemption.
    return SHORT_TEST_NAME_RE.test(title);
+}
+
+function checkStructure(relativePath, source) {
+   const violations = [];
+
+   const describeMatch = source.match(/\btest\.describe\s*\(|(?<![\w.])describe\s*\(/);
+   if (describeMatch) {
+      const index = describeMatch.index ?? source.search(/\b(?:test\.)?describe\s*\(/);
+      violations.push(
+         `${relativePath}:${lineNumberAtIndex(source, index)}: `
+         + 'test.describe / describe suites are not allowed; use flat test() cases'
+      );
+   }
+
+   const lines = source.split('\n');
+   let seenTest = false;
+   let depth = 0;
+
+   lines.forEach((line, index) => {
+      const lineNumber = index + 1;
+      const trimmed = line.trim();
+      const isTopLevel = depth === 0;
+
+      for (const character of line) {
+         if (character === '{') {
+            depth += 1;
+         } else if (character === '}') {
+            depth = Math.max(0, depth - 1);
+         }
+      }
+
+      if (!isTopLevel || !trimmed || trimmed.startsWith('//')) {
+         return;
+      }
+
+      if (/^(?:test|it)\s*\(/.test(trimmed)) {
+         seenTest = true;
+         return;
+      }
+
+      if (!seenTest) {
+         const helperFn = trimmed.match(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/);
+         if (helperFn && !helperFn[1].startsWith('_')) {
+            violations.push(
+               `${relativePath}:${lineNumber}: helper ${helperFn[1]} must be named _${helperFn[1]} `
+               + '(private helpers use a leading underscore, like Python)'
+            );
+         }
+
+         const helperConst = trimmed.match(/^const\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:function\b|\()/);
+         if (helperConst && !helperConst[1].startsWith('_')) {
+            violations.push(
+               `${relativePath}:${lineNumber}: helper ${helperConst[1]} must be named _${helperConst[1]} `
+               + '(private helpers use a leading underscore, like Python)'
+            );
+         }
+
+         return;
+      }
+
+      if (/^installDomTestHooks\s*\(/.test(trimmed)
+         || /^(?:beforeEach|afterEach|before|after)\s*\(/.test(trimmed)) {
+         violations.push(
+            `${relativePath}:${lineNumber}: setup hooks must appear before all test() cases`
+         );
+         return;
+      }
+
+      if (/^(?:async\s+)?function\s+/.test(trimmed)
+         || /^const\s+[A-Za-z_$][\w$]*\s*=\s*(?:async\s*)?(?:function\b|\()/.test(trimmed)
+         || /^(?:const|let)\s+[A-Za-z_$][\w$]*\s*=/.test(trimmed)) {
+         violations.push(
+            `${relativePath}:${lineNumber}: helpers/constants must appear before all test() cases`
+         );
+      }
+   });
+
+   return violations;
 }
 
 function checkFile(fullPath) {
@@ -115,6 +191,8 @@ function checkFile(fullPath) {
          + '(table-driven tests may use Test_[Method] only)'
       );
    });
+
+   violations.push(...checkStructure(relativePath, source));
 
    return violations;
 }

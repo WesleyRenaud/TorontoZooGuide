@@ -8,6 +8,17 @@ import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhib
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
+installDomTestHooks({
+   before: () => {
+      ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
+         adjustmentTypes: {
+            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+         },
+      });
+   },
+});
+
 test('Test_RemovedItemsPopupSectionSpecs_TestRemovedItemsPopupSectionSpecsHasRemovedItemsPopupContentReportsRemovedAnimals_ExpectOk', () => {
    assert.equal(
       RemovedItemsPopupSectionSpecs.hasRemovedItemsPopupContent({
@@ -19,104 +30,91 @@ test('Test_RemovedItemsPopupSectionSpecs_TestRemovedItemsPopupSectionSpecsHasRem
    );
 });
 
-test.describe('removedItemsPopupContent', () => {
-   installDomTestHooks({
-      before: () => {
-         ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-            adjustmentTypes: {
-               ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-               DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-            },
-         });
+test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsRendersAdjustmentAndUnscheduledSections_ExpectOk', () => {
+   const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
+      adjustments: [{
+         type: 'arrivalTimeAdjusted',
+         previousValue: '09:00',
+         value: '09:30',
+      }],
+      unscheduled: {
+         animals: [{
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+         }],
       },
    });
 
-   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsRendersAdjustmentAndUnscheduledSections_ExpectOk', () => {
-      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
-         adjustments: [{
-            type: 'arrivalTimeAdjusted',
-            previousValue: '09:00',
-            value: '09:30',
+   assert.equal(sections.length, 2);
+   assert.equal(
+      sections[0]?.querySelector('.itin-removed-section-title')?.textContent,
+      Strings.itinerary.removedItems.itineraryTimesTitle
+   );
+   assert.equal(
+      sections[1]?.querySelector('.itin-removed-section-title')?.textContent,
+      Strings.itinerary.dayPlanner.unscheduledTitle
+   );
+   assert.ok(sections[0]?.querySelector('.itin-panel-item'));
+   assert.ok(sections[1]?.querySelector('.itin-panel-item'));
+});
+
+test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsAddsKeepButtonsForRemovedAnimals_ExpectOk', () => {
+   const keptKeys = new Set();
+   const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
+      removed: {
+         animals: [{
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
          }],
-         unscheduled: {
-            animals: [{
-               species: 'African Lion',
-               exhibit: 'Africa Savanna',
-            }],
-         },
-      });
-
-      assert.equal(sections.length, 2);
-      assert.equal(
-         sections[0]?.querySelector('.itin-removed-section-title')?.textContent,
-         Strings.itinerary.removedItems.itineraryTimesTitle
-      );
-      assert.equal(
-         sections[1]?.querySelector('.itin-removed-section-title')?.textContent,
-         Strings.itinerary.dayPlanner.unscheduledTitle
-      );
-      assert.ok(sections[0]?.querySelector('.itin-panel-item'));
-      assert.ok(sections[1]?.querySelector('.itin-panel-item'));
+      },
+      onToggleKeepAnimal: (animal) => {
+         keptKeys.add(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
+      },
+      isKeepAnimalSelected: (key) => keptKeys.has(key),
    });
 
-   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsAddsKeepButtonsForRemovedAnimals_ExpectOk', () => {
-      const keptKeys = new Set();
-      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
-         removed: {
-            animals: [{
-               species: 'African Lion',
-               exhibit: 'Africa Savanna',
-            }],
-         },
-         onToggleKeepAnimal: (animal) => {
-            keptKeys.add(SpeciesExhibitKey.buildSpeciesExhibitKey(animal));
-         },
-         isKeepAnimalSelected: (key) => keptKeys.has(key),
-      });
+   const keepButton = sections[0]?.querySelector('.itin-removed-keep-btn');
 
-      const keepButton = sections[0]?.querySelector('.itin-removed-keep-btn');
+   assert.ok(keepButton);
+   assert.equal(
+      keepButton?.textContent,
+      Strings.itinerary.removedItems.keepInItinerary
+   );
 
-      assert.ok(keepButton);
-      assert.equal(
-         keepButton?.textContent,
-         Strings.itinerary.removedItems.keepInItinerary
-      );
+   keepButton?.click();
 
-      keepButton?.click();
+   assert.equal(
+      keepButton?.textContent,
+      Strings.itinerary.dayPlanner.remove
+   );
+   assert.equal(keepButton?.classList.contains('is-selected'), true);
+});
 
-      assert.equal(
-         keepButton?.textContent,
-         Strings.itinerary.dayPlanner.remove
-      );
-      assert.equal(keepButton?.classList.contains('is-selected'), true);
+test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsWiresViewAlternativesActions_ExpectOk', () => {
+   const viewedSteps = [];
+
+   const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
+      removed: {
+         guardiansTalks: [{
+            name: 'African Lion',
+            location: 'Africa Savanna',
+         }],
+      },
+      removePopupOnly: () => {},
+      onViewAlternatives: (stepKey) => {
+         viewedSteps.push(stepKey);
+      },
    });
 
-   test('Test_BuildRemovedItemsPopupSections_TestBuildRemovedItemsPopupSectionsWiresViewAlternativesActions_ExpectOk', () => {
-      const viewedSteps = [];
+   const alternativesButton = sections[0]?.querySelector('.itin-removed-alt-btn');
 
-      const sections = RemovedItemsPopupContent.buildRemovedItemsPopupSections({
-         removed: {
-            guardiansTalks: [{
-               name: 'African Lion',
-               location: 'Africa Savanna',
-            }],
-         },
-         removePopupOnly: () => {},
-         onViewAlternatives: (stepKey) => {
-            viewedSteps.push(stepKey);
-         },
-      });
+   assert.ok(alternativesButton);
+   assert.equal(
+      alternativesButton?.textContent,
+      Strings.itinerary.removedItems.viewAlternatives
+   );
 
-      const alternativesButton = sections[0]?.querySelector('.itin-removed-alt-btn');
+   alternativesButton?.click();
 
-      assert.ok(alternativesButton);
-      assert.equal(
-         alternativesButton?.textContent,
-         Strings.itinerary.removedItems.viewAlternatives
-      );
-
-      alternativesButton?.click();
-
-      assert.deepEqual(viewedSteps, ['guardiansTalks']);
-   });
+   assert.deepEqual(viewedSteps, ['guardiansTalks']);
 });

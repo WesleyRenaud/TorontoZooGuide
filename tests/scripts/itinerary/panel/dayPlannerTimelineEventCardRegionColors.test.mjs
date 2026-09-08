@@ -6,7 +6,7 @@ import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemK
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
-function makeTimelineGridLine() {
+function _makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
    const gridLine = createDomNode('div', 'itinerary-day-grid-line');
 
@@ -15,84 +15,82 @@ function makeTimelineGridLine() {
    return { gridLine };
 }
 
-function makeEventCardRow(className = 'itin-panel-item') {
+function _makeEventCardRow(className = 'itin-panel-item') {
    return createDomNode('div', className);
 }
 
-test.describe('dayPlannerTimeline event card region colours', () => {
-   installDomTestHooks();
+installDomTestHooks();
 
-   test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
-      const row = makeEventCardRow();
+test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const row = _makeEventCardRow();
 
-      DayPlannerTimeline.appendScheduledItems(gridLine, [{
-         items: [{
-            row,
-            maximumDuration: 30,
-            offsetFraction: 0,
-            scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
-            item: {
-               name: 'Komodo Dragon',
-               location: 'Australasia Pavilion',
-            },
-         }],
-      }]);
+   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+      items: [{
+         row,
+         maximumDuration: 30,
+         offsetFraction: 0,
+         scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
+         item: {
+            name: 'Komodo Dragon',
+            location: 'Australasia Pavilion',
+         },
+      }],
+   }]);
 
-      const card = gridLine.querySelector('.itinerary-day-event-card');
+   const card = gridLine.querySelector('.itinerary-day-event-card');
 
-      assert.ok(card);
-      assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-colored'));
-      assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-australasia'));
-      assert.equal(card.getAttribute('data-region-slug'), 'australasia');
-   });
+   assert.ok(card);
+   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-colored'));
+   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-australasia'));
+   assert.equal(card.getAttribute('data-region-slug'), 'australasia');
+});
 
-   test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
-      const row = makeEventCardRow();
+test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const row = _makeEventCardRow();
 
-      DayPlannerTimeline.appendScheduledItems(gridLine, [{
-         items: [{
-            row,
-            maximumDuration: 15,
-            offsetFraction: 0,
-            scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
-            item: {
-               name: 'Zoomobile',
-               region: 'Front Courtyard',
-            },
-         }],
-      }]);
+   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+      items: [{
+         row,
+         maximumDuration: 15,
+         offsetFraction: 0,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+         item: {
+            name: 'Zoomobile',
+            region: 'Front Courtyard',
+         },
+      }],
+   }]);
 
-      const card = gridLine.querySelector('.itinerary-day-event-card');
+   const card = gridLine.querySelector('.itinerary-day-event-card');
 
-      assert.ok(card);
-      assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-front-courtyard'));
-      assert.equal(card.getAttribute('data-region-slug'), 'front-courtyard');
-   });
+   assert.ok(card);
+   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-front-courtyard'));
+   assert.equal(card.getAttribute('data-region-slug'), 'front-courtyard');
+});
 
-   test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
-      const row = makeEventCardRow();
+test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const row = _makeEventCardRow();
 
-      DayPlannerTimeline.appendScheduledItems(gridLine, [{
-         items: [{
-            row,
-            maximumDuration: 30,
-            offsetFraction: 0,
-            scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
-            item: {
-               name: 'Capybara',
-               meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
-               region: 'Americas',
-            },
-         }],
-      }]);
+   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+      items: [{
+         row,
+         maximumDuration: 30,
+         offsetFraction: 0,
+         scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
+         item: {
+            name: 'Capybara',
+            meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
+            region: 'Americas',
+         },
+      }],
+   }]);
 
-      const card = gridLine.querySelector('.itinerary-day-event-card');
+   const card = gridLine.querySelector('.itinerary-day-event-card');
 
-      assert.ok(card);
-      assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-americas'));
-      assert.equal(card.getAttribute('data-region-slug'), 'americas');
-   });
+   assert.ok(card);
+   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-americas'));
+   assert.equal(card.getAttribute('data-region-slug'), 'americas');
 });

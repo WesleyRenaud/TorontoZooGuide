@@ -7,7 +7,7 @@ import { DayPlannerTimelineMetrics } from '../../../../scripts/itinerary/panel/d
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
-function makeTimelineGridLine() {
+function _makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
    const gridLine = createDomNode('div', 'itinerary-day-grid-line');
 
@@ -15,6 +15,8 @@ function makeTimelineGridLine() {
 
    return { timeline, gridLine };
 }
+
+installDomTestHooks();
 
 test('Test_ReadCssLengthPx_TestParsesPositiveCSSLengthsAndRejectsInvalidValues_ExpectOk', () => {
    const style = {
@@ -117,57 +119,53 @@ test('Test_ComputePointPillVerticalSpanFraction_TestReturnsPillHeightRelativeToS
    assert.equal(DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(0, 10), null);
 });
 
-test.describe('day planner timeline measurements', () => {
-   installDomTestHooks();
+test('Test_GetTimelineSlotHeightPx_TestReadsTheTimelineSlotHeightFromCSSVariables_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-   test('Test_GetTimelineSlotHeightPx_TestReadsTheTimelineSlotHeightFromCSSVariables_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
+   assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine), TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX);
+});
 
-      assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine), TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX);
-   });
+test('Test_MeasurePointPillHeightPx_TestAndStripOffsetUseTimelineCSSVariables_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-   test('Test_MeasurePointPillHeightPx_TestAndStripOffsetUseTimelineCSSVariables_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
+   assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine), TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX);
+   assert.equal(
+      DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
+   );
+});
 
-      assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine), TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX);
-      assert.equal(
-         DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),
-         TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
-      );
-   });
+test('Test_GetPointPillVerticalSpanFraction_TestUsesMeasuredPillAndSlotHeights_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-   test('Test_GetPointPillVerticalSpanFraction_TestUsesMeasuredPillAndSlotHeights_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
+   assert.equal(
+      DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
+      TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
+   );
+});
 
-      assert.equal(
-         DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
-         TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
-      );
-   });
+test('Test_GetPointPillStripPlacementBand_TestMatchesComputedPlacementFractions_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
 
-   test('Test_GetPointPillStripPlacementBand_TestMatchesComputedPlacementFractions_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
+   assert.deepEqual(
+      DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, 0),
+      DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+         slotHeight: TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
+         pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
+         stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+         offsetFraction: 0,
+      })
+   );
+});
 
-      assert.deepEqual(
-         DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, 0),
-         DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
-            slotHeight: TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
-            pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
-            stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
-            offsetFraction: 0,
-         })
-      );
-   });
+test('Test_GetPointPillVerticalSpanFraction_TestFallsBackToAnExistingOpenPillHeight_ExpectOk', () => {
+   const { gridLine } = _makeTimelineGridLine();
+   const pill = createDomNode('span', 'itinerary-day-open-pill');
 
-   test('Test_GetPointPillVerticalSpanFraction_TestFallsBackToAnExistingOpenPillHeight_ExpectOk', () => {
-      const { gridLine } = makeTimelineGridLine();
-      const pill = createDomNode('span', 'itinerary-day-open-pill');
+   gridLine.appendChild(pill);
 
-      gridLine.appendChild(pill);
-
-      assert.equal(
-         DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
-         TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
-      );
-   });
+   assert.equal(
+      DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
+      TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
+   );
 });

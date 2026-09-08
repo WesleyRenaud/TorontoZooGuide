@@ -16,7 +16,7 @@ const WEEKEND_BOUNDS = {
    closeTime: '7:00 PM',
 };
 
-function createFlatpickrSpy() {
+function _createFlatpickrSpy() {
    const calls = [];
 
    return {
@@ -37,14 +37,14 @@ function createFlatpickrSpy() {
    };
 }
 
-function createField(value = '') {
+function _createField(value = '') {
    return {
       value,
       addEventListener() {},
    };
 }
 
-function createStatusEl() {
+function _createStatusEl() {
    return {
       textContent: '',
       classList: {
@@ -54,16 +54,16 @@ function createStatusEl() {
    };
 }
 
-function createController(overrides = {}) {
+function _createController(overrides = {}) {
    return AttractionHoursSchedule.createAttractionHoursScheduleController({
-      attractionEl: createField('Conservation Carousel'),
-      startDateEl: createField(),
-      endDateEl: createField(),
-      weekdayStartTimeEl: createField('10:00 AM'),
-      weekdayEndTimeEl: createField('4:00 PM'),
-      weekendHolidayStartTimeEl: createField('10:00 AM'),
-      weekendHolidayEndTimeEl: createField('5:00 PM'),
-      statusEl: createStatusEl(),
+      attractionEl: _createField('Conservation Carousel'),
+      startDateEl: _createField(),
+      endDateEl: _createField(),
+      weekdayStartTimeEl: _createField('10:00 AM'),
+      weekdayEndTimeEl: _createField('4:00 PM'),
+      weekendHolidayStartTimeEl: _createField('10:00 AM'),
+      weekendHolidayEndTimeEl: _createField('5:00 PM'),
+      statusEl: _createStatusEl(),
       loadAttractions: async () => [ 'Conservation Carousel' ],
       loadTimeBounds: async () => ( {
          success: true,
@@ -75,7 +75,7 @@ function createController(overrides = {}) {
 }
 
 test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValidationError', () => {
-   const controller = createController({
+   const controller = _createController({
       weekdayStartTimeEl: { value: '' },
    });
 
@@ -86,7 +86,7 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValida
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectValidationError', () => {
-   const controller = createController({
+   const controller = _createController({
       attractionEl: { value: '' },
    });
 
@@ -99,7 +99,7 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectV
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValidationError', () => {
-   const controller = createController({
+   const controller = _createController({
       weekdayStartTimeEl: { value: '4:00 PM' },
       weekdayEndTimeEl: { value: '10:00 AM' },
    });
@@ -111,7 +111,7 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValida
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValidationError', () => {
-   const controller = createController({
+   const controller = _createController({
       weekendHolidayStartTimeEl: { value: '5:00 PM' },
       weekendHolidayEndTimeEl: { value: '10:00 AM' },
    });
@@ -123,26 +123,26 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValida
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestValidPayload_ExpectAccepted', () => {
-   const controller = createController();
+   const controller = _createController();
 
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestOutOfBoundsTimes_ExpectNoClientValidation', () => {
-   const controller = createController({
-      weekdayStartTimeEl: createField('8:00 AM'),
-      weekdayEndTimeEl: createField('8:00 PM'),
-      weekendHolidayStartTimeEl: createField('8:00 AM'),
-      weekendHolidayEndTimeEl: createField('8:00 PM'),
+   const controller = _createController({
+      weekdayStartTimeEl: _createField('8:00 AM'),
+      weekdayEndTimeEl: _createField('8:00 PM'),
+      weekendHolidayStartTimeEl: _createField('8:00 AM'),
+      weekendHolidayEndTimeEl: _createField('8:00 PM'),
    });
 
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestEndBeforeStart_ExpectValidationError', () => {
-   const controller = createController({
-      startDateEl: createField('2026-06-20'),
-      endDateEl: createField('2026-06-15'),
+   const controller = _createController({
+      startDateEl: _createField('2026-06-20'),
+      endDateEl: _createField('2026-06-15'),
    });
 
    assert.equal(
@@ -158,7 +158,7 @@ test('Test_CreateAttractionHoursScheduleController_TestShow_ExpectPickerBounds',
          applied.push({ property, value });
       },
    };
-   const controller = createController({
+   const controller = _createController({
       weekdayStartTimePicker,
       weekdayEndTimePicker: weekdayStartTimePicker,
       weekendHolidayStartTimePicker: weekdayStartTimePicker,
@@ -190,7 +190,7 @@ test('Test_CreateAttractionHoursScheduleController_TestEndDateChange_ExpectBound
    };
 
    const boundCloses = [];
-   const controller = createController({
+   const controller = _createController({
       endDateEl,
       loadTimeBounds: async ({ scheduleEndDate } = {}) => ( {
          success: true,
@@ -220,15 +220,15 @@ test('Test_CreateAttractionHoursScheduleController_TestEndDateChange_ExpectBound
 
 test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendPayload', async () => {
    const savedPayloads = [];
-   const statusEl = createStatusEl();
-   const controller = createController({
-      attractionEl: createField('Face Painting, Caricatures and Henna! - Front Gates'),
-      startDateEl: createField('2026-07-29'),
-      endDateEl: createField('2026-09-07'),
-      weekdayStartTimeEl: createField('11:00 AM'),
-      weekdayEndTimeEl: createField('4:00 PM'),
-      weekendHolidayStartTimeEl: createField('11:00 AM'),
-      weekendHolidayEndTimeEl: createField('5:00 PM'),
+   const statusEl = _createStatusEl();
+   const controller = _createController({
+      attractionEl: _createField('Face Painting, Caricatures and Henna! - Front Gates'),
+      startDateEl: _createField('2026-07-29'),
+      endDateEl: _createField('2026-09-07'),
+      weekdayStartTimeEl: _createField('11:00 AM'),
+      weekdayEndTimeEl: _createField('4:00 PM'),
+      weekendHolidayStartTimeEl: _createField('11:00 AM'),
+      weekendHolidayEndTimeEl: _createField('5:00 PM'),
       statusEl,
       saveSchedule: async (payload) => {
          savedPayloads.push(payload);
@@ -255,8 +255,8 @@ test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendPaylo
 });
 
 test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError', async () => {
-   const statusEl = createStatusEl();
-   const controller = createController({
+   const statusEl = _createStatusEl();
+   const controller = _createController({
       statusEl,
       saveSchedule: async () => ( {
          success: false,
@@ -301,7 +301,7 @@ test('Test_InitAttractionHoursSchedulePickers_TestInit_ExpectPickers', () => {
    const weekdayEndTimeEl = createDomNode('input');
    const weekendHolidayStartTimeEl = createDomNode('input');
    const weekendHolidayEndTimeEl = createDomNode('input');
-   const { calls, initFlatpickrFn } = createFlatpickrSpy();
+   const { calls, initFlatpickrFn } = _createFlatpickrSpy();
 
    const pickers = ConsoleDatePickers.initAttractionHoursSchedulePickers({
       startDateEl,

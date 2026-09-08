@@ -8,6 +8,8 @@ import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
 import { makeScheduledItem } from '../../helpers/scheduledPillTestSetup.mjs';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
+installDomTestHooks();
+
 test('Test_ResolveScheduledPillOptions_TestPureTransportations_ExpectHideUnschedule', () => {
    const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
@@ -182,86 +184,82 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
    });
 });
 
-test.describe('Test_BuildScheduledItemRowsContext_TestScheduledAnimals', () => {
-   installDomTestHooks();
+test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [
+            {
+               species: 'Western Lowland Gorilla',
+               exhibit: 'African Rainforest Pavilion',
+               enclosure_name: 'Indoor',
+               start_time: '9:30 AM',
+               end_time: '9:35 AM',
+            },
+            {
+               species: 'Western Lowland Gorilla',
+               exhibit: 'African Rainforest Pavilion',
+               enclosure_name: 'Outdoor',
+               start_time: '9:40 AM',
+               end_time: '9:45 AM',
+            },
+         ],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         events: [],
+      },
+      [570, 600],
+      1140
+   );
+   const animalItems = [...context.itemsByStart.values()].flat()
+      .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
 
-   test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct', () => {
-      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
-         {
-            animals: [
-               {
-                  species: 'Western Lowland Gorilla',
-                  exhibit: 'African Rainforest Pavilion',
-                  enclosure_name: 'Indoor',
-                  start_time: '9:30 AM',
-                  end_time: '9:35 AM',
-               },
-               {
-                  species: 'Western Lowland Gorilla',
-                  exhibit: 'African Rainforest Pavilion',
-                  enclosure_name: 'Outdoor',
-                  start_time: '9:40 AM',
-                  end_time: '9:45 AM',
-               },
-            ],
-            attractions: [],
-            guardiansTalks: [],
-            wildEncounters: [],
-            events: [],
-         },
-         [570, 600],
-         1140
-      );
-      const animalItems = [...context.itemsByStart.values()].flat()
-         .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
+   assert.equal(animalItems.length, 2);
+   assert.deepEqual(
+      animalItems.map((item) => item.scheduleItemKey).sort(),
+      [
+         'Western Lowland Gorilla||African Rainforest Pavilion||Indoor',
+         'Western Lowland Gorilla||African Rainforest Pavilion||Outdoor',
+      ]
+   );
+   assert.equal(context.scheduledAnimalIndexes.size, 2);
+});
 
-      assert.equal(animalItems.length, 2);
-      assert.deepEqual(
-         animalItems.map((item) => item.scheduleItemKey).sort(),
-         [
-            'Western Lowland Gorilla||African Rainforest Pavilion||Indoor',
-            'Western Lowland Gorilla||African Rainforest Pavilion||Outdoor',
-         ]
-      );
-      assert.equal(context.scheduledAnimalIndexes.size, 2);
-   });
+test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepScheduled', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               enclosure_name: null,
+               start_time: '11:00 AM',
+               end_time: '11:30 AM',
+               covered_by_talk: true,
+            },
+            {
+               species: 'Cheetah',
+               exhibit: 'Africa Savanna',
+               enclosure_name: null,
+               start_time: '11:40 AM',
+               end_time: '11:45 AM',
+               covered_by_talk: false,
+            },
+         ],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         events: [],
+      },
+      [660, 690, 720],
+      1140
+   );
+   const animalItems = [...context.itemsByStart.values()].flat()
+      .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
 
-   test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepScheduled', () => {
-      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
-         {
-            animals: [
-               {
-                  species: 'African Lion',
-                  exhibit: 'Africa Savanna',
-                  enclosure_name: null,
-                  start_time: '11:00 AM',
-                  end_time: '11:30 AM',
-                  covered_by_talk: true,
-               },
-               {
-                  species: 'Cheetah',
-                  exhibit: 'Africa Savanna',
-                  enclosure_name: null,
-                  start_time: '11:40 AM',
-                  end_time: '11:45 AM',
-                  covered_by_talk: false,
-               },
-            ],
-            attractions: [],
-            guardiansTalks: [],
-            wildEncounters: [],
-            events: [],
-         },
-         [660, 690, 720],
-         1140
-      );
-      const animalItems = [...context.itemsByStart.values()].flat()
-         .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
-
-      assert.equal(animalItems.length, 1);
-      assert.equal(animalItems[0].item.species, 'Cheetah');
-      assert.equal(context.scheduledAnimalIndexes.size, 2);
-   });
+   assert.equal(animalItems.length, 1);
+   assert.equal(animalItems[0].item.species, 'Cheetah');
+   assert.equal(context.scheduledAnimalIndexes.size, 2);
 });
 
 test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
@@ -274,138 +272,134 @@ test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
    });
 });
 
-test.describe('Test_BuildScheduledItemRowsContext_TestTransportation', () => {
-   installDomTestHooks();
+test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: false,
+               bulk_transit_evaluated: true,
+               start_time: '2:30 PM',
+               end_time: '3:00 PM',
+               legs: [
+                  {
+                     from_station: 'Main Station',
+                     to_station: 'Canadian Domain',
+                     start_time: '2:30 PM',
+                     end_time: '2:40 PM',
+                  },
+                  {
+                     from_station: 'Canadian Domain',
+                     to_station: 'Wildlife Health',
+                     start_time: '2:40 PM',
+                     end_time: '3:00 PM',
+                  },
+               ],
+            },
+         ],
+         events: [],
+      },
+      [870, 900],
+      1140
+   );
+   const transportationItems = [...context.itemsByStart.values()].flat()
+      .filter((item) => (
+         item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
+      ));
 
-   test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () => {
-      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
-         {
-            animals: [],
-            attractions: [],
-            guardiansTalks: [],
-            wildEncounters: [],
-            transportations: [
-               {
-                  name: 'Zoomobile',
-                  added_as_attraction: false,
-                  bulk_transit_evaluated: true,
-                  start_time: '2:30 PM',
-                  end_time: '3:00 PM',
-                  legs: [
-                     {
-                        from_station: 'Main Station',
-                        to_station: 'Canadian Domain',
-                        start_time: '2:30 PM',
-                        end_time: '2:40 PM',
-                     },
-                     {
-                        from_station: 'Canadian Domain',
-                        to_station: 'Wildlife Health',
-                        start_time: '2:40 PM',
-                        end_time: '3:00 PM',
-                     },
-                  ],
-               },
-            ],
-            events: [],
-         },
-         [870, 900],
-         1140
-      );
-      const transportationItems = [...context.itemsByStart.values()].flat()
-         .filter((item) => (
-            item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
-         ));
+   assert.equal(transportationItems.length, 1);
+   assert.equal(transportationItems[0].label, 'Zoomobile');
+   assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile||0');
+   assert.equal(context.scheduledTransportationIndexes.size, 1);
+   assert.match(
+      allTextFor(transportationItems[0].row),
+      /Main Station → Wildlife Health/
+   );
+});
 
-      assert.equal(transportationItems.length, 1);
-      assert.equal(transportationItems[0].label, 'Zoomobile');
-      assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile||0');
-      assert.equal(context.scheduledTransportationIndexes.size, 1);
-      assert.match(
-         allTextFor(transportationItems[0].row),
-         /Main Station → Wildlife Health/
-      );
-   });
+test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+         transportations: [
+            {
+               name: 'Zoomobile',
+               added_as_attraction: false,
+               bulk_transit_evaluated: true,
+               start_time: '9:00 AM',
+               end_time: '11:19 AM',
+               legs: [
+                  {
+                     from_station: 'Main Zoomobile Station',
+                     to_station: 'Canadian Domain Zoomobile Station',
+                     start_time: '9:00 AM',
+                     end_time: '9:20 AM',
+                  },
+                  {
+                     from_station: 'Canadian Domain Zoomobile Station',
+                     to_station: 'Africa Zoomobile Station',
+                     start_time: '9:20 AM',
+                     end_time: '9:30 AM',
+                  },
+                  {
+                     from_station: 'Canadian Domain Zoomobile Station',
+                     to_station: 'Africa Zoomobile Station',
+                     start_time: '10:24 AM',
+                     end_time: '10:34 AM',
+                  },
+                  {
+                     from_station: 'Africa Zoomobile Station',
+                     to_station: 'Tundra Zoomobile Station',
+                     start_time: '10:34 AM',
+                     end_time: '10:49 AM',
+                  },
+                  {
+                     from_station: 'Tundra Zoomobile Station',
+                     to_station: 'Eurasia Zoomobile Station',
+                     start_time: '10:49 AM',
+                     end_time: '11:04 AM',
+                  },
+                  {
+                     from_station: 'Eurasia Zoomobile Station',
+                     to_station: 'Main Zoomobile Station',
+                     start_time: '11:04 AM',
+                     end_time: '11:19 AM',
+                  },
+               ],
+            },
+         ],
+         events: [],
+      },
+      [540, 570, 600, 630, 660, 690],
+      1140
+   );
+   const transportationItems = [...context.itemsByStart.values()].flat()
+      .filter((item) => (
+         item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
+      ))
+      .sort((left, right) => left.startMinutes - right.startMinutes);
 
-   test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills', () => {
-      const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
-         {
-            animals: [],
-            attractions: [],
-            guardiansTalks: [],
-            wildEncounters: [],
-            transportations: [
-               {
-                  name: 'Zoomobile',
-                  added_as_attraction: false,
-                  bulk_transit_evaluated: true,
-                  start_time: '9:00 AM',
-                  end_time: '11:19 AM',
-                  legs: [
-                     {
-                        from_station: 'Main Zoomobile Station',
-                        to_station: 'Canadian Domain Zoomobile Station',
-                        start_time: '9:00 AM',
-                        end_time: '9:20 AM',
-                     },
-                     {
-                        from_station: 'Canadian Domain Zoomobile Station',
-                        to_station: 'Africa Zoomobile Station',
-                        start_time: '9:20 AM',
-                        end_time: '9:30 AM',
-                     },
-                     {
-                        from_station: 'Canadian Domain Zoomobile Station',
-                        to_station: 'Africa Zoomobile Station',
-                        start_time: '10:24 AM',
-                        end_time: '10:34 AM',
-                     },
-                     {
-                        from_station: 'Africa Zoomobile Station',
-                        to_station: 'Tundra Zoomobile Station',
-                        start_time: '10:34 AM',
-                        end_time: '10:49 AM',
-                     },
-                     {
-                        from_station: 'Tundra Zoomobile Station',
-                        to_station: 'Eurasia Zoomobile Station',
-                        start_time: '10:49 AM',
-                        end_time: '11:04 AM',
-                     },
-                     {
-                        from_station: 'Eurasia Zoomobile Station',
-                        to_station: 'Main Zoomobile Station',
-                        start_time: '11:04 AM',
-                        end_time: '11:19 AM',
-                     },
-                  ],
-               },
-            ],
-            events: [],
-         },
-         [540, 570, 600, 630, 660, 690],
-         1140
-      );
-      const transportationItems = [...context.itemsByStart.values()].flat()
-         .filter((item) => (
-            item.scheduleItemKind === ScheduleItemKind.TRANSPORTATION.itemType
-         ))
-         .sort((left, right) => left.startMinutes - right.startMinutes);
-
-      assert.equal(transportationItems.length, 2);
-      assert.equal(transportationItems[0].startMinutes, 540);
-      assert.equal(transportationItems[0].maximumDuration, 30);
-      assert.equal(transportationItems[1].startMinutes, 624);
-      assert.equal(transportationItems[1].maximumDuration, 55);
-      assert.match(
-         allTextFor(transportationItems[0].row),
-         /Main Zoomobile Station → Africa Zoomobile Station/
-      );
-      assert.match(
-         allTextFor(transportationItems[1].row),
-         /Canadian Domain Zoomobile Station → Main Zoomobile Station/
-      );
-   });
+   assert.equal(transportationItems.length, 2);
+   assert.equal(transportationItems[0].startMinutes, 540);
+   assert.equal(transportationItems[0].maximumDuration, 30);
+   assert.equal(transportationItems[1].startMinutes, 624);
+   assert.equal(transportationItems[1].maximumDuration, 55);
+   assert.match(
+      allTextFor(transportationItems[0].row),
+      /Main Zoomobile Station → Africa Zoomobile Station/
+   );
+   assert.match(
+      allTextFor(transportationItems[1].row),
+      /Canadian Domain Zoomobile Station → Main Zoomobile Station/
+   );
 });
 
 test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted', () => {
