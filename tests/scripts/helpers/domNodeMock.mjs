@@ -32,7 +32,11 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          }
 
          return children
-            .map((child) => child.textContent ?? '')
+            .map((child) => (
+               typeof child === 'string' || typeof child === 'number'
+                  ? String(child)
+                  : (child.textContent ?? '')
+            ))
             .join('');
       },
       set textContent(value) {
@@ -158,6 +162,9 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          setProperty(name, value) {
             this[name] = value;
          },
+         getPropertyValue(name) {
+            return this[name] ?? '';
+         },
       },
       append(...items) {
          for (const item of items) {
@@ -204,6 +211,32 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
             existingHandler(event);
             handler(event);
          };
+      },
+      dispatchEvent(event) {
+         const handler = listeners[event?.type];
+
+         if (!handler) {
+            return true;
+         }
+
+         const normalizedEvent = event && typeof event === 'object'
+            ? event
+            : { type: event };
+         let defaultPrevented = Boolean(normalizedEvent.defaultPrevented);
+
+         if (typeof normalizedEvent.preventDefault !== 'function') {
+            normalizedEvent.preventDefault = () => {
+               defaultPrevented = true;
+               normalizedEvent.defaultPrevented = true;
+            };
+         }
+
+         if (typeof normalizedEvent.stopPropagation !== 'function') {
+            normalizedEvent.stopPropagation = () => {};
+         }
+
+         handler(normalizedEvent);
+         return !defaultPrevented && !normalizedEvent.defaultPrevented;
       },
       click() {
          const event = {
