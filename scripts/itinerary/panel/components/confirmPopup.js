@@ -1,30 +1,6 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ConfirmPopupHelpers } from './confirmPopupHelpers.js';
 import { ItineraryPanelPopup } from './itineraryPanelPopup.js';
 import { Strings } from '../../../strings.js';
-
-function createConfirmPopupBody(message, doNotShowAgainLabel) {
-   const body = ItineraryPanelDom.el('div', 'tzg-popup-confirm-body');
-
-   body.appendChild(
-      ItineraryPanelDom.el('div', 'tzg-popup-message', message)
-   );
-
-   if (!doNotShowAgainLabel) {
-      return body;
-   }
-
-   const label = ItineraryPanelDom.el('label', 'toggle-row tzg-popup-do-not-show-again');
-   const checkbox = ItineraryPanelDom.el('input');
-   checkbox.type = 'checkbox';
-
-   label.append(checkbox, ` ${doNotShowAgainLabel}`);
-   body.appendChild(label);
-
-   return {
-      body,
-      checkbox,
-   };
-}
 
 export class ConfirmPopup {
    static showItineraryConfirmPopup({
@@ -44,7 +20,7 @@ export class ConfirmPopup {
 
       const confirmBody = bodyContent
          ? { body: bodyContent }
-         : createConfirmPopupBody(message, doNotShowAgainLabel);
+         : ConfirmPopupHelpers.createConfirmPopupBody(message, doNotShowAgainLabel);
 
       const {
          root,

@@ -1,39 +1,9 @@
 import { ConsoleOperationsApi } from '../../api/consoleOperationsApi.js';
-import { NamedItems } from './namedItems.js';
-
-const cachedOptionSets = {
-   species: null,
-   exhibits: null,
-   restaurants: null,
-   restrooms: null,
-   giftShops: null,
-   attractions: null,
-   transportationStations: null,
-   guardiansTalks: null,
-   wildEncounters: null,
-};
-
-async function loadCachedOptions({
-   cacheKey,
-   fetchOptions,
-   resultKey,
-   sortOptions = NamedItems.sortNamedOptions,
-} = {}) {
-   if (cachedOptionSets[cacheKey]) {
-      return cachedOptionSets[cacheKey];
-   }
-
-   const result = await fetchOptions();
-   const options = result?.[resultKey] ?? [];
-
-   cachedOptionSets[cacheKey] = sortOptions(options);
-
-   return cachedOptionSets[cacheKey];
-}
+import { ConsoleOptionsLoaderHelpers } from './consoleOptionsLoaderHelpers.js';
 
 export class ConsoleOptionsLoader {
    static async loadSpecies() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'species',
          fetchOptions: ConsoleOperationsApi.getSpeciesOptions,
          resultKey: 'species',
@@ -41,7 +11,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadExhibits() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'exhibits',
          fetchOptions: ConsoleOperationsApi.getExhibitOptions,
          resultKey: 'exhibits',
@@ -49,7 +19,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadRestaurants() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'restaurants',
          fetchOptions: ConsoleOperationsApi.getRestaurantNameOptions,
          resultKey: 'restaurants',
@@ -57,7 +27,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadRestrooms() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'restrooms',
          fetchOptions: ConsoleOperationsApi.getRestroomNameOptions,
          resultKey: 'restrooms',
@@ -65,7 +35,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadGiftShops() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'giftShops',
          fetchOptions: ConsoleOperationsApi.getGiftShopNameOptions,
          resultKey: 'gift_shops',
@@ -73,7 +43,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadAttractions() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'attractions',
          fetchOptions: ConsoleOperationsApi.getAttractionNameOptions,
          resultKey: 'attractions',
@@ -81,7 +51,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadTransportationStations() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'transportationStations',
          fetchOptions: ConsoleOperationsApi.getTransportationStationNameOptions,
          resultKey: 'transportation_stations',
@@ -89,7 +59,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadGuardiansTalks() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'guardiansTalks',
          fetchOptions: ConsoleOperationsApi.getGuardiansTalkNameOptions,
          resultKey: 'guardians_talks',
@@ -97,7 +67,7 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadWildEncounters() {
-      return loadCachedOptions({
+      return ConsoleOptionsLoaderHelpers.loadCachedOptions({
          cacheKey: 'wildEncounters',
          fetchOptions: ConsoleOperationsApi.getWildEncounterNameOptions,
          resultKey: 'wild_encounters',

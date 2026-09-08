@@ -1,5 +1,5 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
-import { WarningIcon } from '../../../assets/warningIcon.js';
+import { AnimalSelectorRendererHelpers } from './animalSelectorRendererHelpers.js';
 import { ResultRenderer } from '../base/resultRenderer.js';
 import {
    buildAnimalImageSrc,
@@ -9,21 +9,6 @@ import {
    getAnimalSubtitle,
 } from './model.js';
 import { Strings } from '../../../strings.js';
-
-function createLikelihoodWarning(level) {
-   if (!level) {
-      return null;
-   }
-
-   const warning = document.createElement('span');
-   warning.className = `itin-likelihood-warning ${level}`;
-   warning.appendChild(WarningIcon.createWarningIcon());
-   warning.title = level === 'low'
-      ? Strings.itinerary.selectors.lowVisibilityHint
-      : Strings.itinerary.confirmation.animalMayBeOffDisplay;
-
-   return warning;
-}
 
 export class AnimalSelectorRenderer {
    static renderAnimalSelectorRowLeft(row) {
@@ -42,7 +27,7 @@ export class AnimalSelectorRenderer {
 
       titleWrap.appendChild(titleEl);
 
-      const warning = createLikelihoodWarning(getAnimalLikelihoodLevel(row));
+      const warning = AnimalSelectorRendererHelpers.createLikelihoodWarning(getAnimalLikelihoodLevel(row));
 
       if (warning) {
          titleWrap.appendChild(warning);
