@@ -1,23 +1,9 @@
 import { RemovedItemsPopupContent } from './removedItemsPopupContent.js';
+import { RemovedItemsPopupHelpers } from './removedItemsPopupHelpers.js';
 import { RemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
 import { RemovedItemsPopupSectionSpecs } from './removedItemsPopupSectionSpecs.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
-
-function toggleKeptItem(keptItemsByKey, item, buildKey, normalizeItem) {
-   const key = buildKey(item);
-
-   if (!key) {
-      return;
-   }
-
-   if (keptItemsByKey.has(key)) {
-      keptItemsByKey.delete(key);
-      return;
-   }
-
-   keptItemsByKey.set(key, normalizeItem(item));
-}
 
 export class RemovedItemsPopup {
    static showRemovedItemsPopup({
@@ -87,7 +73,7 @@ export class RemovedItemsPopup {
          onViewAlternatives,
          removePopupOnly,
          onToggleKeepAnimal: (animal) => {
-            toggleKeptItem(
+            RemovedItemsPopupHelpers.toggleKeptItem(
                keptAnimalsByKey,
                animal,
                SpeciesExhibitKey.buildSpeciesExhibitKey,
@@ -99,7 +85,7 @@ export class RemovedItemsPopup {
          },
          isKeepAnimalSelected: (key) => keptAnimalsByKey.has(key),
          onToggleKeepAttraction: (attraction) => {
-            toggleKeptItem(
+            RemovedItemsPopupHelpers.toggleKeptItem(
                keptAttractionsByKey,
                attraction,
                (value) => ItemKey.buildItemKey(value, 'name'),

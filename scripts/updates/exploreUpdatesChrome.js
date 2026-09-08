@@ -1,19 +1,6 @@
 import { ExploreTabs } from './exploreTabs.js';
+import { ExploreUpdatesChromeHelpers } from './exploreUpdatesChromeHelpers.js';
 import { Strings } from '../strings.js';
-
-function createArrowButton({
-   label,
-   symbol,
-   onClick,
-} = {}) {
-   const buttonEl = document.createElement('button');
-   buttonEl.type = 'button';
-   buttonEl.className = 'explore-update-arrow';
-   buttonEl.textContent = symbol;
-   buttonEl.setAttribute('aria-label', label);
-   buttonEl.addEventListener('click', onClick);
-   return buttonEl;
-}
 
 export class ExploreUpdatesChrome {
    static getExploreSectionEl(listEl) {
@@ -73,12 +60,12 @@ export class ExploreUpdatesChrome {
       const isEventsTab = activeTab === ExploreTabs.EXPLORE_TAB.EVENTS;
 
       navEl.append(
-         createArrowButton({
+         ExploreUpdatesChromeHelpers.createArrowButton({
             label: isEventsTab ? Strings.map.previousEvent : Strings.map.previousUpdate,
             symbol: Strings.common.previousSymbol,
             onClick: () => onStep(-1),
          }),
-         createArrowButton({
+         ExploreUpdatesChromeHelpers.createArrowButton({
             label: isEventsTab ? Strings.map.nextEvent : Strings.map.nextUpdate,
             symbol: Strings.common.nextSymbol,
             onClick: () => onStep(1),

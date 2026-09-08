@@ -1,20 +1,10 @@
 import { ItineraryApi } from '../api/itineraryApi.js';
-import { DraftStorage } from './draftStorage.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
+import { ItineraryServiceHelpers } from './itineraryServiceHelpers.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
-
-async function fetchSavedItineraryVisitDate() {
-   const { date } = await ItineraryApi.getItineraryDateRequest();
-
-   if (date) {
-      DraftStorage.setStoredItineraryDate(date);
-   }
-
-   return date;
-}
 
 export class ItineraryService {
    static isItineraryEmpty = ItineraryNormalizer.isItineraryEmpty;
@@ -36,7 +26,7 @@ export class ItineraryService {
    }
 
    static async getItinerary() {
-      const date = await fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
       const result = await ItineraryApi.getItineraryRequest(temp);
       return ItineraryNormalizer.normalizeItineraryFromApiResult(result);
@@ -72,7 +62,7 @@ export class ItineraryService {
    static async bulkScheduleItinerary({
    confirmingFixedTimeItemLongWait = false,
 } = {}) {
-      const date = await fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
       const result = await ItineraryApi.bulkScheduleItineraryRequest(temp, {
          confirmingFixedTimeItemLongWait,
@@ -96,7 +86,7 @@ export class ItineraryService {
    }
 
    static async unscheduleAllItineraryItems() {
-      const date = await fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
       const result = await ItineraryApi.unscheduleAllItineraryItemsRequest(temp);
 
@@ -119,7 +109,7 @@ export class ItineraryService {
    animalsToKeep = [],
    attractionsToKeep = [],
 } = {}) {
-      const date = await fetchSavedItineraryVisitDate();
+      const date = await ItineraryServiceHelpers.fetchSavedItineraryVisitDate();
       const { temp } = await ItinerarySearchContext.getItineraryDateSearchContext({ date });
       const result = await ItineraryApi.acceptItineraryRequest(
          temp,

@@ -1,29 +1,5 @@
-import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
+import { ItemRowHelpers } from './itemRowHelpers.js';
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-
-function createItemNameElement({
-   name,
-   nameSuffix = '',
-   species,
-   enclosureName,
-   onNameClick,
-} = {}) {
-   if (species !== undefined) {
-      return CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
-         species,
-         enclosureName,
-         className: 'itin-panel-name',
-         onClick: onNameClick,
-      });
-   }
-
-   return CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
-      text: name,
-      suffix: nameSuffix,
-      className: 'itin-panel-name',
-      onClick: onNameClick,
-   });
-}
 
 export class ItemRow {
    static makeItemRow({
@@ -54,7 +30,7 @@ export class ItemRow {
       }
 
       const text = ItineraryPanelDom.el('div', 'itin-panel-text');
-      text.appendChild(createItemNameElement({
+      text.appendChild(ItemRowHelpers.createItemNameElement({
          name,
          nameSuffix,
          species,
