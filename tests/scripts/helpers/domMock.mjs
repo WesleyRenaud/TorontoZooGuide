@@ -85,6 +85,7 @@ export function installTestWindow() {
       callback();
       return 0;
    };
+   globalThis.cancelAnimationFrame = () => {};
 
    const getComputedStyle = (element) => ({
       gap: '0',

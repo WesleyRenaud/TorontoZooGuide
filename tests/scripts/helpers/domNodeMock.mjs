@@ -62,12 +62,23 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
             classes.delete(value);
          },
          toggle(value, shouldAdd) {
-            if (shouldAdd) {
+            if (shouldAdd === true) {
                classes.add(value);
+               return true;
             }
-            else {
+
+            if (shouldAdd === false) {
                classes.delete(value);
+               return false;
             }
+
+            if (classes.has(value)) {
+               classes.delete(value);
+               return false;
+            }
+
+            classes.add(value);
+            return true;
          },
       },
       appendChild(child) {
