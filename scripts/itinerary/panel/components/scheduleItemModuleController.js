@@ -1,4 +1,5 @@
 import { SearchClient } from '../../../api/searchClient.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ItineraryConfirmationResult } from '../../itineraryConfirmationResult.js';
 import { ItineraryErrorTypes } from '../../itineraryErrorTypes.js';
 import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
@@ -240,7 +241,7 @@ export class ScheduleItemModuleController {
             return;
          }
 
-         const query = searchInput?.value?.trim() ?? '';
+         const query = ValueNormalizer.asTrimmedString(searchInput?.value);
 
          if (!query) {
             clearSearchResults();

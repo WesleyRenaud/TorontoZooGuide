@@ -1,9 +1,9 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { AttractionWithoutAnimalFragment } from './attractionWithoutAnimalFragment.js';
 import { FixedTimeItemLongWaitFragment } from './fixedTimeItemLongWaitFragment.js';
 import { GuardiansTalkUnscheduleFragment } from './guardiansTalkUnscheduleFragment.js';
 import { GuardiansTalkWithoutAnimalFragment } from './guardiansTalkWithoutAnimalFragment.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
 import { WildEncounterUnscheduleFragment } from './wildEncounterUnscheduleFragment.js';
 
@@ -79,7 +79,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return null;
       }
 
-      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+      const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
       const message = talk.talkTime
          ? strings.buildWarningScheduleOverlapMessage(talkName, talk.talkTime)
          : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
@@ -99,7 +99,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return null;
       }
 
-      const encounterName = ItineraryItemFormatter.normalizeText(encounter.encounterName);
+      const encounterName = ValueNormalizer.asTrimmedString(encounter.encounterName);
       const message = encounter.encounterTime
          ? strings.buildWarningWildEncounterOverlapMessage(
             encounterName,
@@ -122,7 +122,7 @@ export class ItineraryBuildWarningsContentBuilder {
       }
 
       return GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
-         const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+         const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
          const message = talk.talkTime
             ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
             : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
@@ -157,7 +157,7 @@ export class ItineraryBuildWarningsContentBuilder {
       }
 
       return FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
-         const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
+         const itemName = ValueNormalizer.asTrimmedString(item.itemName);
          const message = item.itemTime
             ? strings.buildWarningLongWaitMessage(
                itemName,

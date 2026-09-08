@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmFragment } from './components/confirmFragment.js';
 import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
@@ -26,7 +27,7 @@ export class AttractionWithoutAnimalFragment {
          .filter((issue) => issue?.type === AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
-            const attractionName = ItineraryItemFormatter.normalizeText(item?.name);
+            const attractionName = ValueNormalizer.asTrimmedString(item?.name);
 
             if (!attractionName) {
                return;
@@ -60,7 +61,7 @@ export class AttractionWithoutAnimalFragment {
       strings = Strings.itinerary.confirmation,
       } = {}
    ) {
-      const attractionName = ItineraryItemFormatter.normalizeText(attraction.attractionName);
+      const attractionName = ValueNormalizer.asTrimmedString(attraction.attractionName);
       const body = attraction.attractionTime
          ? strings.attractionWithoutAnimalBody(
             attractionName,

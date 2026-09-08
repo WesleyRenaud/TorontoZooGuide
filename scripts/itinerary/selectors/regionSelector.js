@@ -1,4 +1,5 @@
 import { ItinerarySelectorClient } from '../../api/itinerarySelectorClient.js';
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { DraftStore } from '../draftStore.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionSelectorRenderer } from './regionSelector/regionSelectorRenderer.js';
@@ -34,7 +35,7 @@ export class RegionSelector {
 
       function buildExhibitSelectionFingerprint() {
          return [...state.getSelectedExhibitNamesSet()]
-            .map((name) => String(name).trim())
+            .map(ValueNormalizer.asTrimmedString)
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
             .join('\0');

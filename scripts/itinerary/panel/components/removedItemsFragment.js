@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { RemovedItemsPopupHelper } from './removedItemsPopupHelper.js';
 import { RemovedItemsPopupLayoutView } from './removedItemsPopupLayoutView.js';
 import { RemovedItemsPopupSectionBuilder } from './removedItemsPopupSectionBuilder.js';
@@ -78,8 +79,8 @@ export class RemovedItemsFragment {
                animal,
                SpeciesExhibitKey.buildSpeciesExhibitKey,
                (value) => ({
-                  species: String(value?.species ?? '').trim(),
-                  exhibit: String(value?.exhibit ?? '').trim(),
+                  species: ValueNormalizer.asTrimmedString(value?.species),
+                  exhibit: ValueNormalizer.asTrimmedString(value?.exhibit),
                })
             );
          },
@@ -89,7 +90,7 @@ export class RemovedItemsFragment {
                keptAttractionsByKey,
                attraction,
                (value) => ItemKey.buildItemKey(value, 'name'),
-               (value) => String(value?.name ?? '').trim()
+               (value) => ValueNormalizer.asTrimmedString(value?.name)
             );
          },
          isKeepAttractionSelected: (key) => keptAttractionsByKey.has(key),

@@ -1,16 +1,10 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 
 export class ItineraryItemFormatterHelper {
    static asObject(value) {
       return value && typeof value === 'object'
          ? value
          : {};
-   }
-
-   static normalizeOptionalText(value) {
-      const text = ItineraryItemFormatter.normalizeText(value);
-      return text || null;
    }
 
    static normalizeMaximumDuration(value) {
@@ -20,9 +14,9 @@ export class ItineraryItemFormatterHelper {
 
    static normalizeItineraryNameForSave(value) {
       if (typeof value === 'string') {
-         return ItineraryItemFormatter.normalizeText(value);
+         return ValueNormalizer.asTrimmedString(value);
       }
 
-      return ItineraryItemFormatter.normalizeText(ItineraryItemFormatterHelper.asObject(value).name);
+      return ValueNormalizer.asTrimmedString(ValueNormalizer.asObject(value).name);
    }
 }

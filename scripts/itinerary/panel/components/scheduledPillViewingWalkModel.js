@@ -1,14 +1,12 @@
-export class ScheduledPillViewingWalkModel {
-   static normalizeViewingWalkNodeId(value) {
-      return String(value ?? '').trim();
-   }
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 
+export class ScheduledPillViewingWalkModel {
    static getAnimalViewingWalkNodeId(animal = {}) {
-      return ScheduledPillViewingWalkModel.normalizeViewingWalkNodeId(animal.viewing_walk_node_id);
+      return ValueNormalizer.asTrimmedString(animal.viewing_walk_node_id);
    }
 
    static getScheduledItemViewingWalkNodeId(scheduledItem = {}) {
-      return ScheduledPillViewingWalkModel.normalizeViewingWalkNodeId(
+      return ValueNormalizer.asTrimmedString(
          scheduledItem.viewingWalkNodeId
          ?? scheduledItem.item?.viewing_walk_node_id
       );

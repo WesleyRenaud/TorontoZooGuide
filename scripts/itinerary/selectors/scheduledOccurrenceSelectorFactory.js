@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { StoredSelectionNormalizer } from './base/storedSelectionNormalizer.js';
 
 export class ScheduledOccurrenceSelectorFactory {
@@ -9,7 +10,7 @@ export class ScheduledOccurrenceSelectorFactory {
       emptyStoredFields,
       buildImageSrc,
    } = {}) {
-      const name = StoredSelectionNormalizer.normalizeStoredString(item);
+      const name = ValueNormalizer.asTrimmedString(item);
 
       if (!name) {
          return null;
@@ -29,8 +30,8 @@ export class ScheduledOccurrenceSelectorFactory {
       readStoredFields,
       getId,
    } = {}) {
-      const name = StoredSelectionNormalizer.normalizeStoredString(item.name);
-      const id = StoredSelectionNormalizer.normalizeStoredString(getId(item));
+      const name = ValueNormalizer.asTrimmedString(item.name);
+      const id = ValueNormalizer.asTrimmedString(getId(item));
 
       if (!id) {
          return null;
@@ -40,20 +41,20 @@ export class ScheduledOccurrenceSelectorFactory {
          id,
          name,
          ...readStoredFields(item),
-         imageSrc: StoredSelectionNormalizer.normalizeStoredString(item.imageSrc) || buildImageSrc(name),
+         imageSrc: ValueNormalizer.asTrimmedString(item.imageSrc) || buildImageSrc(name),
       };
 
       if (includeLink) {
          storedOccurrence.link = StoredSelectionNormalizer.normalizeStoredLink(item.link);
       }
 
-      const startTime = StoredSelectionNormalizer.normalizeStoredString(item.start_time);
+      const startTime = ValueNormalizer.asTrimmedString(item.start_time);
 
       if (startTime) {
          storedOccurrence.start_time = startTime;
       }
 
-      const endTime = StoredSelectionNormalizer.normalizeStoredString(item.end_time);
+      const endTime = ValueNormalizer.asTrimmedString(item.end_time);
 
       if (endTime) {
          storedOccurrence.end_time = endTime;
@@ -77,7 +78,7 @@ export class ScheduledOccurrenceSelectorFactory {
       getTimeOfDay,
    } = {}) {
       const name = getName(row);
-      const startTime = StoredSelectionNormalizer.normalizeStoredString(getTimeOfDay(row));
+      const startTime = ValueNormalizer.asTrimmedString(getTimeOfDay(row));
       const selection = {
          id: getId(row),
          name,
@@ -101,7 +102,7 @@ export class ScheduledOccurrenceSelectorFactory {
          selection.start_time = startTime;
       }
 
-      const endTime = StoredSelectionNormalizer.normalizeStoredString(row?.end_time);
+      const endTime = ValueNormalizer.asTrimmedString(row?.end_time);
 
       if (endTime) {
          selection.end_time = endTime;

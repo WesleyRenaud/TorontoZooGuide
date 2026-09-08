@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 /**
  * Visit-day defaults shared by the map (specific-day picker), itinerary wizard (date floor),
  * and panel day planner (which ISO day to load zoo hours for when nothing is saved).
@@ -51,13 +52,13 @@ export class VisitDateResolver {
          toIso = VisitDateValidator.toISODate,
       } = deps;
 
-      const fromItin = typeof itinerary?.date === 'string' && itinerary.date.trim();
+      const fromItin = ValueNormalizer.asTrimmedString(itinerary?.date);
 
       if (fromItin) {
          return fromItin;
       }
 
-      const stored = getStoredDate()?.trim?.();
+      const stored = ValueNormalizer.asTrimmedString(getStoredDate());
 
       if (stored) {
          return stored;

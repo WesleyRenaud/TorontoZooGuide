@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ScheduledPillOverlapHelper } from './scheduledPillOverlapHelper.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
@@ -145,7 +146,7 @@ export class ScheduledPillChecker {
       }
 
       const sortedItems = ScheduledPillChecker.sortScheduledItemsForGroupDisplay(items);
-      const firstLabel = (sortedItems[0]?.label ?? '').trim();
+      const firstLabel = ValueNormalizer.asTrimmedString(sortedItems[0]?.label);
 
       if (sortedItems.length === 1) {
          return firstLabel;

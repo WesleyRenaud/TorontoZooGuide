@@ -1,13 +1,12 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { DraftStore } from '../../draftStore.js';
-import { RegionStorageHelper } from './regionStorageHelper.js';
 import { StorageKeys } from '../../storageKeys.js';
 
 export class RegionStorageStore {
    static loadSelectedNames(storageKey) {
       return DraftStore.loadArray(storageKey)
-         .map((name) => StoredSelectionNormalizer.normalizeStoredString(name))
+         .map((name) => ValueNormalizer.asTrimmedString(name))
          .filter(Boolean);
    }
 
@@ -15,7 +14,7 @@ export class RegionStorageStore {
       DraftStore.saveArray(
          storageKey,
          Array.from(names)
-            .map((name) => StoredSelectionNormalizer.normalizeStoredString(name))
+            .map((name) => ValueNormalizer.asTrimmedString(name))
             .filter(Boolean)
       );
    }
@@ -23,13 +22,13 @@ export class RegionStorageStore {
    static loadRemovedAnimalKeys() {
       return new Set(
          DraftStore.loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
-            .map(RegionStorageHelper.normalizeStoredAnimalKey)
+            .map((key) => ValueNormalizer.asTrimmedString(key).toLowerCase())
             .filter(Boolean)
       );
    }
 
    static addRemovedAnimalKey(key) {
-      const normalizedKey = RegionStorageHelper.normalizeStoredAnimalKey(key);
+      const normalizedKey = ValueNormalizer.asTrimmedString(key).toLowerCase();
 
       if (!normalizedKey) {
          return;
@@ -41,7 +40,7 @@ export class RegionStorageStore {
    }
 
    static restoreRemovedAnimalKey(key) {
-      const normalizedKey = RegionStorageHelper.normalizeStoredAnimalKey(key);
+      const normalizedKey = ValueNormalizer.asTrimmedString(key).toLowerCase();
       const removedKeys = RegionStorageStore.loadRemovedAnimalKeys();
 
       if (!removedKeys.delete(normalizedKey)) {
