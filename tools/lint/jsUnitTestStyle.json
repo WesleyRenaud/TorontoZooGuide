@@ -180,6 +180,25 @@
       "tests/scripts/animals/createSpeciesLinkTitleHelper.test.mjs",
       "tests/scripts/animals/speciesLinkTitleBuilder.test.mjs",
       "tests/scripts/consoleOperations/shell/panelNavigatorUrlHelper.test.mjs",
-      "tests/scripts/api/itineraryApiNormalizer.test.mjs"
+      "tests/scripts/api/itineraryApiNormalizer.test.mjs",
+      "tests/scripts/map/coordKey.test.mjs",
+      "tests/scripts/map/svgPathParsingHelper.test.mjs",
+      "tests/scripts/map/itineraryPathGeometryHelper.test.mjs",
+      "tests/scripts/itinerary/wizard/diff/itemKey.test.mjs",
+      "tests/scripts/itinerary/wizard/diff/wizardDiffSummaryHelper.test.mjs",
+      "tests/scripts/itinerary/wizard/diff/removedItemsHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledPillOverlapHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/itineraryTimeInputHelper.test.mjs",
+      "tests/scripts/search/searchResultPresentationHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/selectorSearchRunnerHelper.test.mjs",
+      "tests/scripts/shared/enums/animalViewingModel.test.mjs",
+      "tests/scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKeyHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/transportationSelector/groupConsecutiveTransportationLegSequencesHelper.test.mjs",
+      "tests/scripts/itinerary/panel/dayPlannerPlanActionsHelper.test.mjs",
+      "tests/scripts/itinerary/scheduledOccurrenceTimeModel.test.mjs",
+      "tests/scripts/itinerary/panel/rowPresentationHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduledPillViewingWalkModel.test.mjs",
+      "tests/scripts/consoleOperations/templates/consoleStatusBuilder.test.mjs",
+      "tests/scripts/updates/exploreUpdateCardHelper.test.mjs"
    ]
 }
