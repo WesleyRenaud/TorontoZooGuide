@@ -79,3 +79,36 @@ test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async 
    assert.equal(viewingScopeEl.disabled, true);
    assert.equal(viewingScopeEl.value, AnimalViewingModel.OUTDOOR);
 });
+
+test('Test_CreateAnimalViewingScopeControl_TestMissingFieldsAndErrors_ExpectReset', async () => {
+   const speciesEl = _createField('');
+   const exhibitEl = _createField('');
+   const viewingScopeEl = _createField('stale');
+
+   const control = AnimalViewingScopeController.createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+   });
+
+   assert.equal(viewingScopeEl.value, '');
+   assert.equal(viewingScopeEl.disabled, true);
+
+   await control.refresh();
+   assert.equal(viewingScopeEl.value, '');
+
+   AnimalViewingScopeController.createAnimalViewingScopeControl({});
+
+   speciesEl.value = 'Lion';
+   exhibitEl.value = 'Savanna';
+   globalThis.fetch = async () => {
+      throw new Error('network');
+   };
+   await control.refresh();
+   assert.equal(viewingScopeEl.value, '');
+   assert.equal(viewingScopeEl.disabled, true);
+
+   _mockViewingScopesResponse([]);
+   await control.refresh();
+   assert.equal(viewingScopeEl.value, '');
+});

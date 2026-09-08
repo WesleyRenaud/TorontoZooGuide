@@ -211,6 +211,26 @@ test('Test_CreateEditUpdateController_TestValidationAndFailures_ExpectErrorStatu
       controller.hide();
       cancelButtonEl.listeners.click();
       assert.equal(hides.length, 2);
+
+      UpdateOptions.getSelectedUpdateData = () => ({
+         description: 'Ignored',
+         type: 'info',
+         endDate: '2026-02-01',
+      });
+      const updateEl = document.createElement('select');
+      UpdateEditController.createEditUpdateController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl: document.createElement('button'),
+         cancelButtonEl: document.createElement('button'),
+         panelEl: {},
+         statusEl: {},
+         updateEl,
+         descriptionEl: null,
+         typeEl: {},
+         endDateEl: document.createElement('input'),
+         activatePanel: () => {},
+      });
+      await updateEl.listeners.change();
    } finally {
       ConsoleStatusPresenter.setStatus = originalStatus;
       UpdateOptions.getSelectedUpdateData = originalIdentity;

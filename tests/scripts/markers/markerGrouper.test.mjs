@@ -16,3 +16,18 @@ test('Test_GroupMarkersByCoordinate_TestItems_ExpectGrouped', () => {
    assert.equal(first.items.length, 2);
    assert.equal(first.items[0].id, 'a');
 });
+
+test('Test_GroupMarkersByCoordinate_TestInvalidCoordKey_ExpectSkipped', async () => {
+   const { CoordKey } = await import('../../../scripts/map/coordKey.js');
+   const original = CoordKey.coordKey;
+   CoordKey.coordKey = () => '';
+
+   try {
+      const groups = MarkerGrouper.groupMarkersByCoordinate([
+         { id: 'a', x_coord: 10, y_coord: 20 },
+      ]);
+      assert.equal(groups.size, 0);
+   } finally {
+      CoordKey.coordKey = original;
+   }
+});

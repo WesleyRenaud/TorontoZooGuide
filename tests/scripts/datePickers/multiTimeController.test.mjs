@@ -51,6 +51,14 @@ function _dispatchKeydown(inputEl, key) {
    });
 }
 
+test('Test_InitMultiTimePicker_TestMissingInput_ExpectNull', () => {
+   assert.equal(MultiTimeController.initMultiTimePicker(null, {}), null);
+});
+
+test('Test_InitMultiTimePicker_TestMissingInput_ExpectNull', () => {
+   assert.equal(MultiTimeController.initMultiTimePicker(null), null);
+});
+
 test('Test_InitMultiTimePicker_TestPickerCloses_ExpectCommit', async () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];

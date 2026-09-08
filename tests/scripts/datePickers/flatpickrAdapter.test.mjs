@@ -29,3 +29,21 @@ test('Test_InitFlatpickr_TestAvailableLibrary_ExpectInstance', () => {
    assert.equal(calls[0].options.allowInput, true);
    assert.equal(calls[0].options.dateFormat, 'Y-m-d');
 });
+
+test('Test_InitFlatpickr_TestLibraryThrows_ExpectNull', () => {
+   const originalError = console.error;
+   const errors = [];
+   console.error = (...args) => { errors.push(args); };
+
+   window.flatpickr = () => {
+      throw new Error('flatpickr boom');
+   };
+
+   try {
+      assert.equal(FlatpickrAdapter.initFlatpickr(document.createElement('input')), null);
+      assert.equal(errors.length, 1);
+      assert.match(String(errors[0][0]), /flatpickr/);
+   } finally {
+      console.error = originalError;
+   }
+});

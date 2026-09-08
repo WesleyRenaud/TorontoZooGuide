@@ -78,6 +78,16 @@ test('Test_BuildMarkersByAnchorSlot_TestMarkers_ExpectGroupedOffsets', () => {
    ]);
 });
 
+test('Test_BuildMarkersByAnchorSlot_TestNoAnchorSlot_ExpectUnchangedMap', () => {
+   const markersMap = DayPlannerTimelineRenderer.buildMarkersByAnchorSlot(
+      [{ startMinutes: 45, label: 'Arrive', kind: 'arrival' }],
+      [],
+      120
+   );
+
+   assert.equal(markersMap.size, 0);
+});
+
 test('Test_ResolveTimelinePillLabel_TestBoundarySlots_ExpectLabels', () => {
    const hours = {
       earlyAdmissionMinutes: 480,

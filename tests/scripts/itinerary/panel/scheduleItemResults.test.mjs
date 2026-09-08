@@ -63,6 +63,15 @@ test('Test_RenderScheduleItemSearchResults_TestNoRows_ExpectEmptyState', () => {
    assert.equal(resultsEl.children[0].textContent, 'No matching items');
 });
 
+test('Test_RenderScheduleItemSearchResults_TestMissingResultsEl_ExpectNoOp', () => {
+   assert.doesNotThrow(() => {
+      ScheduleItemResults.renderScheduleItemSearchResults({
+         resultsEl: null,
+         rows: [{ name: 'Carousel' }],
+      });
+   });
+});
+
 test('Test_RenderScheduleItemSearchResults_TestSelectedRow_ExpectMarked', () => {
    installDocument();
 

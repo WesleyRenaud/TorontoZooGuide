@@ -24,4 +24,10 @@ test('Test_CalculateAndApplyTooltipPosition_TestEvent_ExpectStyle', () => {
    HoverTooltipPositioner.applyTooltipPosition(el, position);
    assert.match(el.style.left, /px$/);
    assert.match(el.style.top, /px$/);
+
+   const flipped = HoverTooltipPositioner.calculateTooltipPosition(
+      { clientX: 100, clientY: 10 },
+      { width: 80, height: 40 }
+   );
+   assert.ok(flipped.y > 10);
 });

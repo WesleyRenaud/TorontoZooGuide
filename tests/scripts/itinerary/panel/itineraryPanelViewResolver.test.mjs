@@ -25,6 +25,10 @@ test('Test_GetItineraryPanelViewFromUrl_TestViewQueryParam_ExpectDayPlanner', ()
       ItineraryPanelViewResolver.getItineraryPanelViewFromUrl(location),
       ItineraryPanelView.ITINERARY_PANEL_VIEWS.dayPlanner
    );
+   assert.equal(
+      ItineraryPanelViewResolver.getItineraryPanelViewFromUrl(null),
+      ItineraryPanelView.ITINERARY_PANEL_VIEWS.list
+   );
 });
 
 test('Test_SetItineraryPanelViewInUrl_TestViewQueryParam_ExpectUpdated', () => {
@@ -43,4 +47,13 @@ test('Test_SetItineraryPanelViewInUrl_TestViewQueryParam_ExpectUpdated', () => {
       ItineraryPanelViewResolver.getItineraryPanelViewFromUrl(location),
       ItineraryPanelView.ITINERARY_PANEL_VIEWS.dayPlanner
    );
+
+   ItineraryPanelViewResolver.setItineraryPanelViewInUrl('dayPlanner', {
+      location: null,
+      history,
+   });
+   ItineraryPanelViewResolver.setItineraryPanelViewInUrl('dayPlanner', {
+      location,
+      history: {},
+   });
 });

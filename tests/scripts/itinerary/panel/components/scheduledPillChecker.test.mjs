@@ -159,6 +159,20 @@ test('Test_FormatScheduledPillGroupLabel_TestPrefersTheLongestVisitDuration_Expe
    );
 });
 
+test('Test_GetScheduledItemMaximumDuration_TestEndMinusStart_ExpectDuration', () => {
+   assert.equal(
+      ScheduledPillChecker.getScheduledItemMaximumDuration({
+         startMinutes: 600,
+         endMinutes: 630,
+      }),
+      30
+   );
+});
+
+test('Test_FormatScheduledPillGroupLabel_TestEmpty_ExpectBlank', () => {
+   assert.equal(ScheduledPillChecker.formatScheduledPillGroupLabel([]), '');
+});
+
 test('Test_SortScheduledItemsForGroupDisplay_TestOrdersGroupedAnimalsByMaxDuration_ExpectOk', () => {
    assert.deepEqual(
       ScheduledPillChecker.sortScheduledItemsForGroupDisplay([

@@ -59,3 +59,16 @@ test('Test_MakeScheduledPill_TestMakeScheduledPillKeepsCompactLayoutForShortVisi
    assert.equal(pill.classList.contains('itinerary-day-scheduled-pill--extended'), false);
    assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
 });
+
+test('Test_MakeScheduledPill_TestInvalidOrMenuless_ExpectNullOrPlainPill', () => {
+   assert.equal(ScheduledTimelineView.makeScheduledPill('', 15), null);
+   assert.equal(ScheduledTimelineView.makeScheduledPill('Lunch', 0), null);
+
+   const pill = ScheduledTimelineView.makeScheduledPill('African Lion', 15, {
+      startTime: '1:00 PM',
+      endTime: '1:15 PM',
+   });
+
+   assert.ok(pill);
+   assert.equal(pill.querySelectorAll('.itinerary-day-open-pill-menu-item').length, 0);
+});

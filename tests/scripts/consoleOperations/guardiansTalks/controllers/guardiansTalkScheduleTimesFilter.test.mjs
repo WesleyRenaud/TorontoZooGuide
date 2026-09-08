@@ -48,3 +48,34 @@ test('Test_CreateGuardiansTalkScheduleTimesFilterController_TestRefreshAndClear_
       ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = originalUpdate;
    }
 });
+
+test('Test_CreateGuardiansTalkScheduleTimesFilterController_TestDefaultLoader_ExpectClientTimes', async () => {
+   const { ConsoleOperationsClient } = await import(
+      '../../../../../scripts/api/consoleOperationsClient.js'
+   );
+   const originalGet = ConsoleOperationsClient.getGuardiansTalkScheduleTimes;
+   const updates = [];
+   const originalResolve = ScheduleTimesCheckboxField.resolveScheduleTimesListEl;
+   const originalUpdate = ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList;
+   ScheduleTimesCheckboxField.resolveScheduleTimesListEl = () => ({ id: 'times' });
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = (...args) => { updates.push(args); };
+   ConsoleOperationsClient.getGuardiansTalkScheduleTimes = async ({ talk, location }) => {
+      assert.equal(talk, 'Tiger');
+      assert.equal(location, 'Eurasia');
+      return { times: ['10:00 AM'] };
+   };
+
+   try {
+      const controller = GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
+         talkNameEl: { value: 'Tiger' },
+         locationEl: { value: 'Eurasia' },
+         timesEl: {},
+      });
+      await controller.refresh();
+      assert.deepEqual(updates.at(-1)[1].times, ['10:00 AM']);
+   } finally {
+      ConsoleOperationsClient.getGuardiansTalkScheduleTimes = originalGet;
+      ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = originalUpdate;
+   }
+});

@@ -10,6 +10,12 @@ test('Test_ResolveApiErrorMessage_TestCatalogTemplate_ExpectFormattedMessage', (
    );
 });
 
+test('Test_ResolveApiErrorMessage_TestInvalidTypeOrTemplate_ExpectNull', () => {
+   assert.equal(ApiErrorMessageResolver.resolveApiErrorMessage(null), null);
+   assert.equal(ApiErrorMessageResolver.resolveApiErrorMessage(12), null);
+   assert.equal(ApiErrorMessageResolver.resolveApiErrorMessage('unknownErrorType'), null);
+});
+
 test('Test_ResolveConsoleMutationError_TestSpeciesMissing_ExpectCatalogMessage', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({
@@ -44,6 +50,13 @@ test('Test_ResolveConsoleMutationError_TestHoursBounds_ExpectCatalogMessage', ()
 test('Test_ResolveConsoleMutationError_TestMissingApiError_ExpectFallback', () => {
    assert.equal(
       ApiErrorMessageResolver.resolveConsoleMutationError({ success: false }, 'fallback'),
+      'fallback'
+   );
+   assert.equal(
+      ApiErrorMessageResolver.resolveConsoleMutationError({
+         success: false,
+         apiErrorType: 'unknownErrorType',
+      }, 'fallback'),
       'fallback'
    );
 });

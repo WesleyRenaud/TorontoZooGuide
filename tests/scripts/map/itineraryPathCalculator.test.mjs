@@ -113,3 +113,122 @@ test('Test_BuildItineraryPathDFromWalkLegs_TestTransitStation_ExpectContinuousLe
    assert.match(pathD, /^M 0 0[\s\S]*20 0 M 200 200 L 210 200$/);
    assert.equal(pathD.includes('L 200 200'), false);
 });
+
+test('Test_BuildSmoothedPathD_TestTooFewPoints_ExpectEmpty', () => {
+   assert.equal(ItineraryPathCalculator.buildSmoothedPathD([]), '');
+   assert.equal(ItineraryPathCalculator.buildSmoothedPathD([{ x: 1, y: 1 }]), '');
+});
+
+test('Test_BuildExactPathD_TestPoints_ExpectPolyline', () => {
+   assert.equal(ItineraryPathCalculator.buildExactPathD([{ x: 1, y: 1 }]), '');
+   assert.equal(
+      ItineraryPathCalculator.buildExactPathD([
+         { x: 0, y: 0 },
+         { x: 5, y: 5 },
+         { x: 10, y: 0 },
+      ]),
+      'M 0 0 L 5 5 L 10 0'
+   );
+});
+
+test('Test_BuildRouteMapPoints_TestFilterAndEntrance_ExpectMapped', () => {
+   assert.deepEqual(
+      ItineraryPathCalculator.buildRouteMapPoints([{ x: 1, y: 1 }], {
+         withEntranceLandmark: (points) => points,
+      }),
+      []
+   );
+   assert.deepEqual(
+      ItineraryPathCalculator.buildRouteMapPoints(
+         [{ x: 1, y: 1 }, { x: 2, y: 2 }],
+         {
+            withEntranceLandmark: (points) => [{ x: 0, y: 0 }, ...points],
+            pointToMapPx: (point) => (point.x === 1 ? null : { x: point.x * 10, y: point.y * 10 }),
+         }
+      ),
+      [
+         { x: 0, y: 0 },
+         { x: 20, y: 20 },
+      ]
+   );
+});
+
+test('Test_BuildItineraryPathD_TestWalkGraphAndFallback_ExpectPath', () => {
+   const routePoints = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+   ];
+
+   assert.equal(ItineraryPathCalculator.buildItineraryPathD([{ x: 0, y: 0 }]), '');
+
+   const originalGet = WalkGraphPathCalculator.getWalkGraphPathSegments;
+   const originalBuild = WalkGraphPathCalculator.buildPathDFromWalkGraphSegments;
+
+   WalkGraphPathCalculator.getWalkGraphPathSegments = () => [{ tag: 'M' }];
+   WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = () => 'M 0 0 L 10 0';
+
+   try {
+      assert.equal(ItineraryPathCalculator.buildItineraryPathD(routePoints), 'M 0 0 L 10 0');
+   } finally {
+      WalkGraphPathCalculator.getWalkGraphPathSegments = originalGet;
+      WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = originalBuild;
+   }
+
+   assert.equal(
+      ItineraryPathCalculator.buildItineraryPathD(routePoints, []),
+      'M 0 0 L 10 0'
+   );
+});
+
+test('Test_BuildItineraryPathDFromWalkLegs_TestEmptyMappedAndSharedJoin_ExpectBranches', () => {
+   assert.equal(
+      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs([], [{ x: 0, y: 0 }]),
+      ''
+   );
+
+   const sharedPath = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+      [
+         { nodeIds: ['a', 'b'] },
+         { nodeIds: ['b', 'c'] },
+      ],
+      [
+         { nodeId: 'a', x: 0, y: 0 },
+         { nodeId: 'b', x: 10, y: 0 },
+         { nodeId: 'c', x: 20, y: 0 },
+      ]
+   );
+   assert.match(sharedPath, /M 0 0/);
+
+   assert.equal(
+      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+         [{ nodeIds: ['a', 'b', 'c'] }],
+         [
+            { nodeId: 'a', x: 0, y: 0 },
+            { nodeId: 'b', x: 10, y: 0 },
+         ]
+      ),
+      ''
+   );
+
+   assert.equal(
+      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+         [{ nodeIds: ['a', 'b'] }],
+         [
+            { nodeId: 'a', x: 0, y: 0 },
+            { nodeId: 'b', x: 10, y: 0 },
+         ],
+         {
+            pointToMapPx: (point) => (point.nodeId === 'b' ? null : point),
+         }
+      ),
+      ''
+   );
+
+   assert.equal(
+      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+         [{ nodeIds: ['a'] }],
+         [{ nodeId: 'a', x: 0, y: 0 }]
+      ),
+      ''
+   );
+});

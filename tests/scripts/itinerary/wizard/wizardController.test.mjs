@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
 import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
+import { WizardStepConfigs } from '../../../../scripts/itinerary/wizard/wizardStepConfigs.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -172,4 +173,60 @@ test('Test_OpenItineraryWizard_TestFinishWithChanges_ExpectFinalize', async () =
    await finishHandler?.(makeNoonDate(2026, 5, 15));
    assert.equal(finalized.length, 1);
    assert.equal(finalized[0].el, mountEl);
+});
+
+test('Test_OpenItineraryWizard_TestFinishOverrideNullSelection_ExpectSkipsUpdate', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   let finishHandler = null;
+   let wizard = null;
+   const originalBuild = WizardStepConfigs.buildSelectionStepHandlers;
+   let capturedFinish = null;
+
+   WizardStepConfigs.buildSelectionStepHandlers = (options) => {
+      capturedFinish = options.finish;
+      return originalBuild(options);
+   };
+
+   try {
+      await WizardController.openItineraryWizard({
+         mountEl,
+         startAt: 'animals',
+         deps: {
+            loadItinerary: async () => null,
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: () => {
+               wizard = ItineraryWizardStore.createItineraryWizardState({
+                  date: '2026-06-15',
+                  animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+               });
+               return wizard;
+            },
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [
+               {
+                  stepKey: 'animals',
+                  selectionKey: 'animals',
+                  factory: ({ onFinish }) => {
+                     finishHandler = onFinish;
+                     return {
+                        show() {},
+                        getSelectionSnapshot: async () => wizard.state.animals,
+                        shouldSkipClosingSelectionSync: () => false,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async () => ({}),
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      assert.equal(typeof capturedFinish, 'function');
+      await capturedFinish({ animals: null });
+      assert.equal(wizard.state.animals.length, 1);
+      assert.equal(typeof finishHandler, 'function');
+   } finally {
+      WizardStepConfigs.buildSelectionStepHandlers = originalBuild;
+   }
 });

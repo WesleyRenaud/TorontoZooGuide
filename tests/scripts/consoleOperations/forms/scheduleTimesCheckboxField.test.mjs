@@ -152,3 +152,99 @@ test('Test_GetSelectedScheduleTimes_TestChecked_ExpectValues', () => {
 
    assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
 });
+
+test('Test_ResolveScheduleTimesListEl_TestIdNestedAndFallback_ExpectResolved', () => {
+   const listEl = document.createElement('div');
+   listEl.className = ScheduleTimesCheckboxField.SCHEDULE_TIMES_LIST_CLASS;
+   listEl.id = 'resolvedScheduleTimesList';
+
+   const fallback = document.createElement('div');
+   fallback.id = 'endWildEncounterScheduleTimes';
+   fallback.className = ScheduleTimesCheckboxField.SCHEDULE_TIMES_LIST_CLASS;
+
+   const originalGetById = document.getElementById;
+   document.getElementById = (id) => {
+      if (id === listEl.id) {
+         return listEl;
+      }
+      if (id === fallback.id) {
+         return fallback;
+      }
+      return originalGetById.call(document, id);
+   };
+
+   try {
+      assert.equal(ScheduleTimesCheckboxField.resolveScheduleTimesListEl(listEl), listEl);
+
+      const wrapper = document.createElement('div');
+      wrapper.id = 'resolvedScheduleTimesList';
+      assert.equal(ScheduleTimesCheckboxField.resolveScheduleTimesListEl(wrapper), listEl);
+
+      const nestedHost = document.createElement('div');
+      nestedHost.appendChild(listEl);
+      assert.equal(ScheduleTimesCheckboxField.resolveScheduleTimesListEl(nestedHost), listEl);
+
+      assert.equal(
+         ScheduleTimesCheckboxField.resolveScheduleTimesListEl(document.createElement('div')),
+         fallback
+      );
+   } finally {
+      document.getElementById = originalGetById;
+   }
+});
+
+test('Test_ScheduleTimesCheckboxField_TestMissingListEl_ExpectNoOps', () => {
+   const originalGet = document.getElementById;
+   document.getElementById = () => null;
+
+   try {
+      assert.doesNotThrow(() => {
+         ScheduleTimesCheckboxField.setScheduleTimesCheckboxListMessage(null, 'msg');
+         ScheduleTimesCheckboxField.resetScheduleTimesCheckboxList(null);
+         ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(null, [ '1:00 PM' ]);
+         ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(null, {
+            times: [ '1:00 PM' ],
+            hasWildEncounter: true,
+            hasDate: true,
+         });
+         ScheduleTimesCheckboxField.clearScheduleTimesCheckboxList(null);
+      });
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(null), []);
+   } finally {
+      document.getElementById = originalGet;
+   }
+});
+
+test('Test_UpdateScheduleTimesCheckboxList_TestEncounterWithDateNoTimes_ExpectNoTimesMessage', () => {
+   const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
+      label: 'Encounter times',
+      inputId: 'testEncounterTimesNoTimesWithDate',
+   });
+   const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
+
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
+      times: [],
+      hasWildEncounter: true,
+      hasDate: true,
+   });
+
+   assert.equal(
+      listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
+      Strings.help.noScheduledEncounterTimes
+   );
+
+   ScheduleTimesCheckboxField.clearScheduleTimesCheckboxList(listEl);
+   assert.equal(
+      listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
+      Strings.placeholders.selectWildEncounterFirst
+   );
+
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
+      times: [],
+      hasWildEncounter: false,
+   });
+   assert.equal(
+      listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,
+      Strings.placeholders.selectWildEncounterFirst
+   );
+});

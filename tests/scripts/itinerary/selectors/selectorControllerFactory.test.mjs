@@ -221,3 +221,54 @@ test('Test_Show_TestShowReusesTheBuiltShellOnSubsequentOpens_ExpectOk', () => {
 
    assert.equal(mountEl.children[0], firstRoot);
 });
+
+test('Test_Show_TestMissingMountAndResults_ExpectEarlyReturns', async () => {
+   const onRowsCalls = [];
+   const controllerWithoutMount = SelectorControllerFactory.createItinerarySelectorController({
+      storageKey: 'tzg.test-selector-no-mount',
+      getId: (row) => row.id,
+      extractRows: () => [],
+      deps: {
+         createSearchRunner: () => ({
+            runCurrentQuery: async () => {
+               onRowsCalls.push('no-mount');
+            },
+            scheduleCurrentQuery: () => {},
+         }),
+      },
+   });
+
+   controllerWithoutMount.show();
+   controllerWithoutMount.hide();
+   assert.deepEqual(onRowsCalls, []);
+
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const controller = SelectorControllerFactory.createItinerarySelectorController({
+      mountEl,
+      storageKey: 'tzg.test-selector-no-results',
+      getId: (row) => row.id,
+      extractRows: () => [],
+      deps: {
+         buildElements: () => ({
+            ..._buildStubElements(),
+            resultsEl: null,
+            inputEl: null,
+            rootEl: null,
+         }),
+         createSearchRunner: (options) => ({
+            runCurrentQuery: async () => {
+               options.onRows([{ id: 'lion' }]);
+               onRowsCalls.push('with-mount');
+            },
+            scheduleCurrentQuery: () => {},
+         }),
+      },
+   });
+
+   controller.show();
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+   assert.ok(onRowsCalls.includes('with-mount'));
+   assert.equal(mountEl.children.length, 0);
+});

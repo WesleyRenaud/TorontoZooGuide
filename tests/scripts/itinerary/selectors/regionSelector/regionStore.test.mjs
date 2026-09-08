@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { RegionStore } from '../../../../../scripts/itinerary/selectors/regionSelector/regionStore.js';
+import { AnimalIdentity } from '../../../../../scripts/itinerary/animalIdentity.js';
 
 test('Test_GetExhibitNamesFromAnimals_TestNormalizedAnimals_ExpectDedupedExhibits', () => {
    assert.deepEqual(
@@ -147,4 +148,75 @@ test('Test_DraftAnimalsCoverCatalogAnimals_TestCoverage_ExpectEveryCatalogAnimal
       false
    );
    assert.equal(RegionStore.draftAnimalsCoverCatalogAnimals(draft, []), true);
+});
+
+test('Test_CreateEmptyRegionAndNormalizeSelectedAnimal_TestGuards_ExpectDefaults', () => {
+   assert.deepEqual(RegionStore.createEmptyRegion(), {
+      name: '',
+      exhibits: [],
+   });
+   assert.deepEqual(
+      RegionStore.normalizeRegion({ name: '  Africa  ', exhibits: [' Africa Savanna ', ''] }),
+      { name: 'Africa', exhibits: ['Africa Savanna'] }
+   );
+   assert.deepEqual(
+      RegionStore.normalizeRegions([
+         { name: '  Africa  ', exhibits: ['Africa Savanna'] },
+         { name: '   ', exhibits: ['Ignored'] },
+      ]),
+      [{ name: 'Africa', exhibits: ['Africa Savanna'] }]
+   );
+   assert.equal(RegionStore.normalizeSelectedAnimal(null), null);
+   assert.equal(RegionStore.normalizeSelectedAnimal('lion'), null);
+   assert.equal(RegionStore.normalizeSelectedAnimal({ exhibit: 'Africa' }), null);
+   assert.deepEqual(
+      RegionStore.makeSelectedAnimal({
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'Overlook',
+         imageSrc: ' ../images/lion.png ',
+      }),
+      {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'Overlook',
+         imageSrc: '../images/lion.png',
+         id: 'African Lion||Africa Savanna||Overlook',
+      }
+   );
+   assert.equal(RegionStore.buildSelectedAnimalKey(null), '');
+   assert.equal(RegionStore.parseAnimalWireKey(''), null);
+   assert.equal(RegionStore.parseAnimalWireKey('||Africa'), null);
+
+   const region = { name: 'Africa', exhibits: ['Africa Savanna', 'Africa Rainforest'] };
+   const selectedExhibits = new Set(['Africa Savanna', 'Africa Rainforest']);
+   assert.equal(RegionStore.isRegionFullySelected(region, selectedExhibits), true);
+   assert.equal(RegionStore.isRegionFullySelected({ name: 'Empty', exhibits: [] }, selectedExhibits), false);
+
+   const selectedRegionNames = new Set();
+   RegionStore.syncRegionSelection(region, selectedRegionNames, selectedExhibits);
+   assert.equal(selectedRegionNames.has('Africa'), true);
+   RegionStore.syncRegionSelection(region, selectedRegionNames, new Set(['Africa Savanna']));
+   assert.equal(selectedRegionNames.has('Africa'), false);
+   RegionStore.syncRegionSelection({ name: '', exhibits: [] }, selectedRegionNames, selectedExhibits);
+
+   assert.equal(RegionStore.selectedExhibitsNeedAnimalRebuild(new Set(), []), false);
+
+   const originalNormalize = RegionStore.normalizeSelectedAnimal;
+   RegionStore.normalizeSelectedAnimal = () => ({
+      species: 'African Lion',
+      exhibit: 'Africa Savanna',
+      id: '',
+   });
+   try {
+      assert.equal(
+         RegionStore.buildSelectedAnimalKey({ species: 'African Lion' }),
+         AnimalIdentity.buildAnimalIdentityStorageKey({
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+         })
+      );
+   } finally {
+      RegionStore.normalizeSelectedAnimal = originalNormalize;
+   }
 });

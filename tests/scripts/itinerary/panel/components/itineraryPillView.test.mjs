@@ -95,6 +95,35 @@ test('Test_BindPillMenu_TestOutsideClick_ExpectClosed', () => {
    assert.equal(menuButton.getAttribute('aria-expanded'), 'false');
 });
 
+test('Test_BindPillMenu_TestPanelClickAndCleanup_ExpectStopPropagationAndUnbind', () => {
+   const pill = createDomNode('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');
+   const { menu, menuButton, menuPanel } = ItineraryPillView.buildPillMenuNodes('Menu', [
+      { label: 'Remove', onAction: () => {} },
+   ]);
+
+   pill.appendChild(menu);
+   ItineraryPillView.bindPillMenu(pill, {
+      menuButton,
+      menuPanel,
+      menuItems: [{ label: 'Remove', onAction: () => {} }],
+   });
+
+   menuButton.click();
+   assert.equal(menuPanel.hidden, false);
+
+   const stopped = [];
+   menuPanel.listeners.click({
+      stopPropagation() {
+         stopped.push(true);
+      },
+   });
+   assert.deepEqual(stopped, [true]);
+
+   pill.__tzgCleanup?.();
+   assert.equal(menuPanel.hidden, true);
+   assert.equal(documentListeners.click, undefined);
+});
+
 test('Test_BindPillMenu_TestMenuItemAction_ExpectInvokeAndClose', async () => {
    let removed = false;
    const pill = createDomNode('span', 'itinerary-day-open-pill itinerary-day-open-pill--with-menu');

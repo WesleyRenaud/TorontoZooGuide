@@ -10,6 +10,15 @@ installDomTestHooks();
 test('Test_CreateValidationBubbleController_TestShowAndDismiss_ExpectBubble', () => {
    const originalPosition = ValidationBubbleHelper.positionValidationBubble;
    const positions = [];
+   const windowListeners = {};
+   const originalAdd = window.addEventListener;
+   const originalRemove = window.removeEventListener;
+   window.addEventListener = (type, handler) => {
+      windowListeners[type] = handler;
+   };
+   window.removeEventListener = (type) => {
+      delete windowListeners[type];
+   };
    ValidationBubbleHelper.positionValidationBubble = (...args) => { positions.push(args); };
 
    const anchorEl = document.createElement('button');
@@ -28,11 +37,16 @@ test('Test_CreateValidationBubbleController_TestShowAndDismiss_ExpectBubble', ()
       assert.equal(bubble.getAttribute('role'), 'alert');
       assert.match(bubble.textContent, /Required/);
 
+      windowListeners.scroll?.();
+      windowListeners.resize?.();
+      assert.ok(positions.length >= 3);
+
       controller.dismiss();
       controller.show('Again');
-      assert.equal(positions.length, 2);
-      assert.match(positions[1][0].textContent, /Again/);
+      assert.equal(positions.at(-1)[0].textContent.includes('Again'), true);
    } finally {
       ValidationBubbleHelper.positionValidationBubble = originalPosition;
+      window.addEventListener = originalAdd;
+      window.removeEventListener = originalRemove;
    }
 });

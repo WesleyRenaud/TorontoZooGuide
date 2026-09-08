@@ -273,3 +273,36 @@ test('Test_CreateTooltipController_TestRepositionAndMissingTooltip_ExpectGuards'
       stubs.restore();
    }
 });
+
+test('Test_CreateTooltipController_TestSyncMarkerGuards_ExpectNoop', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+
+   try {
+      const api = TooltipController.createTooltipController({
+         tooltipEl,
+         onAnimalCardClick: () => {},
+         offDisplayBanner: {},
+         restaurantClosedBanner: {},
+         restroomMessageBanner: {},
+         giftShopClosedBanner: {},
+         attractionClosedBanner: {},
+         drinkingFountainClosedBanner: {},
+      });
+
+      const onIndexChange = stubs.getOnIndexChange();
+      onIndexChange(99);
+      assert.equal(stubs.animalIconCalls.length, 0);
+
+      const markerEl = document.createElement('div');
+      api.open(markerEl, [{ type: 'animal', species: 'Lion' }]);
+      onIndexChange(99);
+      assert.equal(stubs.animalIconCalls.length, 0);
+
+      api.close();
+      onIndexChange(0);
+      assert.equal(stubs.animalIconCalls.length, 0);
+   } finally {
+      stubs.restore();
+   }
+});

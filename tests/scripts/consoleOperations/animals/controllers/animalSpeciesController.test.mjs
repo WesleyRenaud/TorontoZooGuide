@@ -93,3 +93,105 @@ test('Test_CreateAnimalSpeciesAutocompleteController_TestSearchAndEvents_ExpectR
       ValueNormalizer.asTrimmedString = originalTrim;
    }
 });
+
+test('Test_CreateAnimalSpeciesAutocompleteController_TestStaleErrorAndEmptyFocus_ExpectIgnored', async () => {
+   const originalSource = SpeciesProvider.createAnimalSpeciesSource;
+   const originalResultsView = AnimalSpeciesResultsView.createAnimalSpeciesResultsView;
+   const originalFilter = SpeciesMatcher.filterSpeciesMatches;
+   const originalDebounce = AnimalSpeciesAutocompleteHelper.debounce;
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalTrim = ValueNormalizer.asTrimmedString;
+   const renders = [];
+   const clears = [];
+   let resolveSlow;
+   let resolveThrowing;
+   let loadCalls = 0;
+   let mode = 'stale-success';
+
+   SpeciesProvider.createAnimalSpeciesSource = () => ({
+      loadForExhibit: async () => {
+         loadCalls += 1;
+         if (mode === 'stale-success') {
+            if (loadCalls === 1) {
+               await new Promise((resolve) => {
+                  resolveSlow = resolve;
+               });
+               return [{ species: 'Stale' }];
+            }
+            return [{ species: 'Fresh' }];
+         }
+
+         if (mode === 'error') {
+            throw new Error('lookup failed');
+         }
+
+         if (mode === 'stale-error' && loadCalls === 1) {
+            await new Promise((resolve) => {
+               resolveThrowing = resolve;
+            });
+            throw new Error('stale failure');
+         }
+
+         return [{ species: 'Ok' }];
+      },
+   });
+   AnimalSpeciesResultsView.createAnimalSpeciesResultsView = () => ({
+      clear: () => { clears.push(true); },
+      render: (matches) => { renders.push(matches); },
+      handleKeydown: () => {},
+   });
+   SpeciesMatcher.filterSpeciesMatches = (list) => list;
+   AnimalSpeciesAutocompleteHelper.debounce = (fn) => fn;
+   ControllerHelper.getFieldValue = () => 'Savanna';
+   ValueNormalizer.asTrimmedString = (value) => String(value || '').trim();
+
+   try {
+      const inputEl = document.createElement('input');
+      const resultsEl = document.createElement('div');
+      const exhibitEl = document.createElement('select');
+
+      AnimalSpeciesController.createAnimalSpeciesAutocompleteController({
+         inputEl,
+         resultsEl,
+         exhibitEl,
+      });
+
+      inputEl.value = '';
+      inputEl.listeners.focus();
+      assert.equal(loadCalls, 0);
+
+      inputEl.value = 'Li';
+      const staleSearch = inputEl.listeners.input();
+      await inputEl.listeners.input();
+      assert.deepEqual(renders.at(-1), [{ species: 'Fresh' }]);
+
+      const renderCountAfterFresh = renders.length;
+      resolveSlow();
+      await staleSearch;
+      assert.equal(renders.length, renderCountAfterFresh);
+
+      mode = 'error';
+      loadCalls = 0;
+      clears.length = 0;
+      inputEl.value = 'Er';
+      await inputEl.listeners.input();
+      assert.ok(clears.length >= 1);
+
+      mode = 'stale-error';
+      loadCalls = 0;
+      const staleErrorSearch = inputEl.listeners.input();
+      mode = 'ok-after-stale-error';
+      await inputEl.listeners.input();
+      const clearCountAfterOk = clears.length;
+      resolveThrowing();
+      await staleErrorSearch;
+      assert.equal(clears.length, clearCountAfterOk);
+   } finally {
+      SpeciesProvider.createAnimalSpeciesSource = originalSource;
+      AnimalSpeciesResultsView.createAnimalSpeciesResultsView = originalResultsView;
+      SpeciesMatcher.filterSpeciesMatches = originalFilter;
+      AnimalSpeciesAutocompleteHelper.debounce = originalDebounce;
+      ControllerHelper.getFieldValue = originalGetField;
+      ValueNormalizer.asTrimmedString = originalTrim;
+   }
+});

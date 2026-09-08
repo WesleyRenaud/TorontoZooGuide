@@ -44,3 +44,9 @@ test('Test_ParseSvgPathD_TestEmptyAndLeadingNumbers_ExpectEmptyOrSkip', () => {
       { tag: 'M', x: 3, y: 4, d: 'M 3 4' },
    ]);
 });
+
+test('Test_ParseSvgPathD_TestUnknownCommand_ExpectSkipsWithoutSegment', () => {
+   assert.deepEqual(SvgPathParser.parseSvgPathD('M 0 0 X'), [
+      { tag: 'M', x: 0, y: 0, d: 'M 0 0' },
+   ]);
+});

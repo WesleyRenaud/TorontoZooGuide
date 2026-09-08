@@ -56,3 +56,16 @@ test('Test_BindMenuPanelActions_TestClick_ExpectCloseAndAction', async () => {
    assert.deepEqual(closes, [true]);
    assert.deepEqual(actions, ['remove']);
 });
+
+test('Test_BindMenuPanelActions_TestMissingOnAction_ExpectSkipped', () => {
+   const menuPanel = document.createElement('div');
+
+   ItineraryPillMenuBuilder.renderMenuPanel(menuPanel, [{ label: 'Remove' }]);
+   ItineraryPillMenuBuilder.bindMenuPanelActions(
+      menuPanel,
+      [{ label: 'Remove' }],
+      () => {}
+   );
+
+   assert.equal(menuPanel.children[0].listeners?.click, undefined);
+});

@@ -110,12 +110,77 @@ test('Test_CreateSearchRunner_TestSuccessAndStale_ExpectRenderOrSkip', async () 
       await runSearch();
       assert.equal(resultsEl.children.length, 0);
 
+      inputEl.value = 'stale';
+      let resolveFirst;
+      SearchClient.searchZoo = () => new Promise((resolve) => {
+         resolveFirst = resolve;
+      });
+      const firstRun = runSearch();
+      inputEl.value = 'fresh';
+      SearchClient.searchZoo = async () => ({ animals: [{ species: 'Fresh' }] });
+      await runSearch();
+      resolveFirst({ animals: [{ species: 'Stale' }] });
+      await firstRun;
+      assert.deepEqual(renders.at(-1), [{ species: 'Fresh' }]);
+      assert.equal(renders.some((rows) => rows[0]?.species === 'Stale'), false);
+
       inputEl.value = 'tiger';
       SearchClient.searchZoo = async () => {
          throw new Error('network');
       };
       await runSearch();
       assert.equal(errors.length, 1);
+   } finally {
+      SearchClient.searchZoo = originalSearch;
+      SearchBuilder.flattenSearchRows = originalFlatten;
+      SearchResultsRenderer.renderSearchResults = originalRender;
+   }
+});
+
+test('Test_CreateSearchRunner_TestStaleSuccess_ExpectSkipRender', async () => {
+   const originalSearch = SearchClient.searchZoo;
+   const originalFlatten = SearchBuilder.flattenSearchRows;
+   const originalRender = SearchResultsRenderer.renderSearchResults;
+   const renders = [];
+   let resolveFirstSearch;
+   const lionResult = new Promise((resolve) => {
+      resolveFirstSearch = resolve;
+   });
+
+   SearchClient.searchZoo = async (request) => {
+      if (request.query === 'lion') {
+         return lionResult;
+      }
+
+      return { animals: [{ species: 'Tiger' }] };
+   };
+   SearchBuilder.flattenSearchRows = (response) => response.animals;
+   SearchResultsRenderer.renderSearchResults = (_resultsEl, rows) => {
+      renders.push(rows);
+   };
+
+   try {
+      const inputEl = document.createElement('input');
+      inputEl.value = 'lion';
+      const resultsEl = document.createElement('div');
+      const runSearch = SearchQueryRunner.createSearchRunner({
+         inputEl,
+         resultsEl,
+         getIncludeFlags: () => ({}),
+         getContext: async () => ({}),
+         onFocusRow: () => {},
+         allowEmptyQuery: false,
+         onError: () => {},
+      });
+
+      const firstSearch = runSearch();
+      inputEl.value = 'tiger';
+      const secondSearch = runSearch();
+      resolveFirstSearch({ animals: [{ species: 'Lion' }] });
+      await firstSearch;
+      await secondSearch;
+
+      assert.deepEqual(renders, [[{ species: 'Tiger' }]]);
    } finally {
       SearchClient.searchZoo = originalSearch;
       SearchBuilder.flattenSearchRows = originalFlatten;

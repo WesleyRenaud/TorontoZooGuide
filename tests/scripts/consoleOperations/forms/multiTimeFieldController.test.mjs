@@ -128,3 +128,45 @@ test('Test_CreateMultiTimeFieldController_TestRemoveLast_ExpectRemoved', () => {
    assert.deepEqual(controller.getTimes(), [ '1:00 PM' ]);
    assert.equal(listEl.children.length, 1);
 });
+
+test('Test_CreateMultiTimeFieldController_TestMissingListChipEventsAndReset_ExpectHandled', () => {
+   const inputEl = createDomNode('input');
+   const withoutList = MultiTimeFieldController.createMultiTimeFieldController({
+      inputEl,
+   });
+
+   assert.equal(withoutList.addTime('1:00 PM'), true);
+   assert.deepEqual(withoutList.getTimes(), [ '1:00 PM' ]);
+   assert.equal(withoutList.removeLastTime(), true);
+   assert.equal(withoutList.removeLastTime(), false);
+
+   const { listEl, inputEl: chipInputEl } = _createMultiTimeFieldDom();
+   const controller = MultiTimeFieldController.createMultiTimeFieldController({
+      listEl,
+      inputEl: chipInputEl,
+   });
+
+   controller.addTime('4:00 PM');
+   const removeButton = listEl.children[0].querySelector('.console-operations-time-chip-remove');
+   const prevented = [];
+   removeButton.listeners.mousedown({
+      preventDefault: () => { prevented.push(true); },
+   });
+   assert.deepEqual(prevented, [true]);
+
+   removeButton.listeners.click();
+   assert.deepEqual(controller.getTimes(), []);
+
+   chipInputEl.value = '5:00 PM';
+   controller.addTime('5:00 PM');
+   assert.equal(controller.commitPendingInput(), false);
+
+   chipInputEl.value = '';
+   assert.equal(controller.commitPendingInput(), false);
+
+   controller.addTime('6:00 PM');
+   chipInputEl.value = 'pending';
+   controller.reset();
+   assert.deepEqual(controller.getTimes(), []);
+   assert.equal(chipInputEl.value, '');
+});

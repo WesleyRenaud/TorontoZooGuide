@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { SpeciesFragment } from '../../../scripts/overlays/speciesFragment.js';
+import { AnimalsClient } from '../../../scripts/api/animalsClient.js';
+import { SpeciesOverlayBuilder } from '../../../scripts/overlays/speciesOverlayBuilder.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 import { createFetchMock } from '../helpers/fetchMock.mjs';
@@ -46,9 +48,11 @@ function _animalPayload({ species, exhibit, identification }) {
 
 installDomTestHooks({
    before: () => {
+      SpeciesFragment.speciesOverlayController = null;
       _installSpeciesOverlayDom();
    },
    after: () => {
+      SpeciesFragment.speciesOverlayController = null;
       delete globalThis.fetch;
    },
 });
@@ -191,4 +195,113 @@ test('Test_Species_TestSpeciesOverlayNextArrowFetchesAndSwapsTo_ExpectOk', async
       content?.querySelector('.species-overlay-nav-position')?.textContent,
       '2 of 3'
    );
+});
+
+test('Test_InitSpeciesOverlay_TestCloseMissingRenderNavigateGuards_ExpectHandled', async () => {
+   const overlay = document.getElementById('speciesOverlay');
+   const closeButton = overlay?.querySelector('.species-close');
+   const controller = SpeciesFragment.initSpeciesOverlay();
+
+   controller.openFromAnimal({
+      species: 'African Lion',
+      exhibit: 'Africa Savanna',
+      identification: 'Large cat',
+   });
+   assert.equal(overlay?.classList.contains('hidden'), false);
+
+   closeButton?.listeners.click?.({ stopPropagation() {} });
+   assert.equal(overlay?.classList.contains('hidden'), true);
+
+   controller.openFromAnimal(null);
+   assert.equal(overlay?.classList.contains('hidden'), true);
+
+   const originalResolve = SpeciesOverlayBuilder.resolveOverlayElements;
+   SpeciesOverlayBuilder.resolveOverlayElements = () => ({
+      overlay: null,
+      content: null,
+      closeButton: null,
+   });
+   try {
+      controller.openFromAnimal({
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+      });
+   } finally {
+      SpeciesOverlayBuilder.resolveOverlayElements = originalResolve;
+   }
+
+   const originalHeader = SpeciesOverlayBuilder.createOverlayHeader;
+   SpeciesOverlayBuilder.createOverlayHeader = (options) => {
+      const header = originalHeader(options);
+      if (options.linkedAnimals.length < 2) {
+         void options.onNavigate(1);
+      }
+      return header;
+   };
+   try {
+      controller.openFromAnimal({
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+      });
+   } finally {
+      SpeciesOverlayBuilder.createOverlayHeader = originalHeader;
+   }
+
+   const originalGet = AnimalsClient.getAnimalInformation;
+   let resolveSlow;
+   let fetchCount = 0;
+   AnimalsClient.getAnimalInformation = async () => {
+      fetchCount += 1;
+      await new Promise((resolve) => {
+         resolveSlow = resolve;
+      });
+      return fetchCount === 1
+         ? null
+         : {
+            species: 'Two-Toed Sloth',
+            exhibit: 'Americas Pavilion',
+         };
+   };
+
+   try {
+      controller.openFromAnimal(
+         {
+            species: 'Golden Lion Tamarin',
+            exhibit: 'Americas Pavilion',
+         },
+         {
+            linkedAnimals: [
+               { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' },
+               { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
+            ],
+         }
+      );
+
+      const nextButton = document.getElementById('speciesOverlay')
+         ?.querySelector('.species-overlay-nav-next');
+      nextButton.click();
+      nextButton.click();
+      resolveSlow();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      let resolveStale;
+      AnimalsClient.getAnimalInformation = async () => {
+         await new Promise((resolve) => {
+            resolveStale = resolve;
+         });
+         return {
+            species: 'Stale Animal',
+            exhibit: 'Americas Pavilion',
+         };
+      };
+      nextButton.click();
+      controller.openFromAnimal({
+         species: 'Golden Lion Tamarin',
+         exhibit: 'Americas Pavilion',
+      });
+      resolveStale();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+   } finally {
+      AnimalsClient.getAnimalInformation = originalGet;
+   }
 });

@@ -77,6 +77,19 @@ test('Test_RequestConfirmedItineraryTimeChange_TestCancelAndFailure_ExpectReject
       /failed/
    );
 
+   await assert.rejects(
+      () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
+         showConfirmation: ({ onConfirm }) => onConfirm({}),
+         requestFn: async () => {
+            throw new Error('persist boom');
+         },
+         timeValue: '09:00 AM',
+         suppressionType: 'EARLY',
+         confirmationOptions: {},
+      }),
+      /persist boom/
+   );
+
    ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
    ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
 });

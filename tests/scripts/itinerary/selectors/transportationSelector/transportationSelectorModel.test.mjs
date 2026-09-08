@@ -186,3 +186,40 @@ test('Test_MigrateStoredTransportations_TestStringAndObject_ExpectNormalized', (
       ]
    );
 });
+
+test('Test_TransportationSelectorModel_TestUncoveredHelpers_ExpectFallbacks', () => {
+   assert.equal(
+      TransportationSelectorModel.getTransportationScheduleItemKey({ name: '' }),
+      ''
+   );
+   assert.equal(
+      TransportationSelectorModel.isTransportationScheduled({
+         name: 'Zoomobile',
+         legs: [{ from_station: 'A', to_station: 'B' }],
+      }),
+      true
+   );
+   assert.equal(
+      TransportationSelectorModel.isTransitTransportationHandledForDayPlanner({
+         name: 'Zoomobile',
+         added_as_attraction: true,
+         start_time: '10:00 AM',
+         end_time: '10:30 AM',
+      }),
+      true
+   );
+   assert.equal(
+      TransportationSelectorModel.buildTransportationStationsLine({
+         name: 'Zoomobile',
+         added_as_attraction: false,
+         legs: [{ from_station: 'Main Station', to_station: '' }],
+      }),
+      'Main Station'
+   );
+   assert.equal(TransportationSelectorModel.isScheduleItemTransportationRow(null), false);
+   assert.equal(TransportationSelectorModel.isScheduleItemTransportationRow('row'), false);
+   assert.equal(
+      TransportationSelectorModel.getTransportationTitle({ name: '' }),
+      'Transportation'
+   );
+});

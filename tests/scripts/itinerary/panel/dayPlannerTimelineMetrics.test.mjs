@@ -159,13 +159,124 @@ test('Test_GetPointPillStripPlacementBand_TestMatchesComputedPlacementFractions_
 });
 
 test('Test_GetPointPillVerticalSpanFraction_TestFallsBackToAnExistingOpenPillHeight_ExpectOk', () => {
-   const { gridLine } = _makeTimelineGridLine();
-   const pill = createDomNode('span', 'itinerary-day-open-pill');
+   const { timeline, gridLine } = _makeTimelineGridLine();
+   DayPlannerTimelineMetrics.pointPillHeightByTimeline.delete(timeline);
 
-   gridLine.appendChild(pill);
+   const originalMeasure = DayPlannerTimelineMetrics.measurePointPillHeightPx;
+   DayPlannerTimelineMetrics.measurePointPillHeightPx = () => null;
+
+   try {
+      const pill = createDomNode('span', 'itinerary-day-open-pill');
+      Object.defineProperty(pill, 'offsetHeight', {
+         configurable: true,
+         get: () => TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
+      });
+      gridLine.appendChild(pill);
+
+      assert.equal(
+         DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
+         TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
+      );
+   } finally {
+      DayPlannerTimelineMetrics.measurePointPillHeightPx = originalMeasure;
+   }
+});
+
+test('Test_DayPlannerTimelineMetrics_TestMissingTimelineAndCaches_ExpectFallbacks', () => {
+   assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(null), null);
+   assert.equal(DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(null), null);
+   assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(null), null);
+   assert.equal(DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(null), null);
+
+   const { timeline, gridLine } = _makeTimelineGridLine();
 
    assert.equal(
-      DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine),
-      TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
+      DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
    );
+   assert.equal(
+      DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
+   );
+
+   assert.equal(
+      DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
+   );
+   assert.equal(
+      DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX
+   );
+
+   assert.equal(
+      DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
+   );
+   assert.equal(
+      DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine),
+      TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
+   );
+
+   DayPlannerTimelineMetrics.timelineSlotHeightByTimeline.delete(timeline);
+   DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.delete(timeline);
+   DayPlannerTimelineMetrics.pointPillHeightByTimeline.delete(timeline);
+
+   const originalGetComputedStyle = globalThis.getComputedStyle;
+   globalThis.getComputedStyle = () => ({
+      top: '-40px',
+      getPropertyValue() {
+         return '';
+      },
+   });
+
+   try {
+      Object.defineProperty(gridLine, 'offsetHeight', {
+         configurable: true,
+         get: () => 55,
+      });
+      assert.equal(DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine), 55);
+
+      const stripOffset = DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine);
+      assert.equal(stripOffset, 40);
+
+      const originalDocument = globalThis.document;
+      delete globalThis.document;
+      DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.delete(timeline);
+      assert.equal(DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine), null);
+      globalThis.document = originalDocument;
+
+      DayPlannerTimelineMetrics.pointPillHeightByTimeline.delete(timeline);
+      const originalCreate = document.createElement;
+      document.createElement = (tagName) => {
+         const node = originalCreate.call(document, tagName);
+         Object.defineProperty(node, 'offsetHeight', {
+            configurable: true,
+            get: () => 0,
+         });
+         node.getBoundingClientRect = () => ({ height: 0 });
+         return node;
+      };
+
+      try {
+         assert.equal(DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine), null);
+      } finally {
+         document.createElement = originalCreate;
+      }
+
+      const originalMeasure = DayPlannerTimelineMetrics.measurePointPillHeightPx;
+      DayPlannerTimelineMetrics.measurePointPillHeightPx = () => null;
+      try {
+         const emptyPill = createDomNode('span', 'itinerary-day-open-pill');
+         Object.defineProperty(emptyPill, 'offsetHeight', {
+            configurable: true,
+            get: () => 0,
+         });
+         gridLine.appendChild(emptyPill);
+         assert.equal(DayPlannerTimelineMetrics.getPointPillVerticalSpanFraction(gridLine), null);
+      } finally {
+         DayPlannerTimelineMetrics.measurePointPillHeightPx = originalMeasure;
+      }
+   } finally {
+      globalThis.getComputedStyle = originalGetComputedStyle;
+   }
 });

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
+import { VisitDateRuleHelper } from '../../../scripts/visitDates/visitDateRuleHelper.js';
 import { makeNoonDate } from '../helpers/visitDateMock.mjs';
 
 const referenceToday = makeNoonDate(2026, 5, 15);
@@ -173,4 +174,42 @@ test('Test_IsVisitDateBeforeEarliestFloor_TestMapFloor_ExpectMatched', () => {
    assert.equal(VisitDateValidator.isVisitDateBeforeEarliestFloor('2026-06-14', today), true);
    assert.equal(VisitDateValidator.isVisitDateBeforeEarliestFloor('2026-06-20', today), false);
    assert.equal(VisitDateValidator.isVisitDateBeforeEarliestFloor('  ', today), false);
+});
+
+test('Test_ParseLocalDate_TestNonIntegerParts_ExpectInvalidDate', () => {
+   assert.equal(Number.isNaN(VisitDateValidator.parseLocalDate('2026-6.5-15').getTime()), true);
+   assert.equal(Number.isNaN(VisitDateValidator.parseLocalDate('2026-06-1a').getTime()), true);
+});
+
+test('Test_ParseLocalDate_TestInvalidParsedDate_ExpectInvalidDate', () => {
+   const original = VisitDateRuleHelper.isValidDate;
+   VisitDateRuleHelper.isValidDate = () => false;
+
+   try {
+      assert.equal(Number.isNaN(VisitDateValidator.parseLocalDate('2026-06-15').getTime()), true);
+   } finally {
+      VisitDateRuleHelper.isValidDate = original;
+   }
+});
+
+test('Test_ParseZooClockTimeMinutes_TestInvalidDisplayHours_ExpectNull', () => {
+   assert.equal(VisitDateValidator.parseZooClockTimeMinutes('0:00 AM'), null);
+   assert.equal(VisitDateValidator.parseZooClockTimeMinutes('13:00 PM'), null);
+});
+
+test('Test_AddLocalCalendarDays_TestInvalidBase_ExpectToday', () => {
+   const invalid = VisitDateValidator.parseLocalDate('2026-02-30');
+   const shifted = VisitDateValidator.addLocalCalendarDays(invalid, 1);
+
+   assert.equal(
+      VisitDateValidator.toISODate(shifted),
+      VisitDateValidator.toISODate(VisitDateValidator.getToday())
+   );
+});
+
+test('Test_IsVisitDateBeforeEarliestFloor_TestInvalidInputs_ExpectFalse', () => {
+   const today = makeNoonDate(2026, 5, 15);
+
+   assert.equal(VisitDateValidator.isVisitDateBeforeEarliestFloor('bad-date', today), false);
+   assert.equal(VisitDateValidator.isVisitDateBeforeEarliestFloor('2026-06-15', 'bad-date'), false);
 });

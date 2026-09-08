@@ -26,3 +26,26 @@ test('Test_BuildMapDateContext_TestSummerAnchorAlt_ExpectYearFromIso', async () 
    assert.equal(ctx.day, 20);
    assert.equal(ctx.year, 2031);
 });
+
+test('Test_BuildMapDateContext_TestCustomDate_ExpectSearchContext', async () => {
+   const { SearchContext } = await import('../../../scripts/search/searchContext.js');
+   const originalBuild = SearchContext.buildDateSearchContext;
+   SearchContext.buildDateSearchContext = async (dateStr) => ({
+      date: dateStr,
+      month: 'MAR',
+      day: 15,
+      year: 2027,
+   });
+
+   try {
+      assert.deepEqual(await DateContext.buildMapDateContext('custom', '2027-03-15'), {
+         preset: 'custom',
+         date: '2027-03-15',
+         month: 'MAR',
+         day: 15,
+         year: 2027,
+      });
+   } finally {
+      SearchContext.buildDateSearchContext = originalBuild;
+   }
+});

@@ -138,6 +138,7 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
       animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
       saveIssues: [{ type: 'conflict', message: 'Conflict' }],
    };
+   const saveCalls = [];
 
    await WizardFinalizer.finalizeItineraryWizard(
       savedItinerary,
@@ -147,7 +148,10 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
             normalizeDraft: (draft) => draft,
             shouldBlockEmpty: () => false,
             shouldShowSaveIssues: () => true,
-            saveItineraryFn: async () => savedItinerary,
+            saveItineraryFn: async (draft, options) => {
+               saveCalls.push({ draft, options });
+               return savedItinerary;
+            },
             syncAnimalDraft: () => {},
             showSaveIssuesPopup: (itinerary, options) => {
                saveIssuesCalls.push({ itinerary, options });
@@ -159,4 +163,32 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
    assert.equal(saveIssuesCalls.length, 1);
    assert.deepEqual(saveIssuesCalls[0].itinerary, savedItinerary);
    assert.equal(typeof saveIssuesCalls[0].options.saveFinalItinerary, 'function');
+   await saveIssuesCalls[0].options.saveFinalItinerary(
+      { date: '2026-06-16' },
+      { overridingConflictingGuardiansTalks: true }
+   );
+   assert.equal(saveCalls.length, 2);
+   assert.deepEqual(saveCalls[1].options, {
+      overridingConflictingGuardiansTalks: true,
+      selectedExhibits: [],
+   });
+});
+
+test('Test_Returns_TestReturnsCancelledConfirmationResult_ExpectPassthrough', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const cancelled = { cancelled: true, reason: 'user' };
+
+   const result = await WizardFinalizer.finalizeItineraryWizard(
+      { date: '2026-06-15', animals: ['Lion'] },
+      mountEl,
+      {
+         deps: {
+            normalizeDraft: (draft) => draft,
+            shouldBlockEmpty: () => false,
+            saveItineraryFn: async () => cancelled,
+         },
+      }
+   );
+
+   assert.equal(result, cancelled);
 });

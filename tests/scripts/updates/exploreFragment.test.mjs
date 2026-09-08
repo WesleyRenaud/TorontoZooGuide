@@ -188,3 +188,142 @@ test('Test_CreateExploreUpdates_TestTabGuardsAndSingleStep_ExpectNoop', async ()
       MapClient.getEvents = originalEvents;
    }
 });
+
+test('Test_CreateExploreUpdates_TestEmptyUpdatesTab_ExpectNoop', async () => {
+   const tabs = [];
+   const updatesTabEl = document.createElement('button');
+   const eventsTabEl = document.createElement('button');
+
+   const originalTabs = ExploreUpdatesView.syncExploreTabs;
+   const originalNav = ExploreUpdatesView.renderExploreNav;
+   const originalVisibility = ExploreUpdatesView.setExploreSectionVisibility;
+   const originalCollapsed = ExploreUpdatesView.syncExploreCollapsedState;
+   const originalToggle = ExploreUpdatesView.getExploreToggleEl;
+   const originalTab = ExploreUpdatesView.getExploreTabEl;
+   const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
+   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalUpdateCard = ExploreUpdateView.createUpdateCard;
+   const originalEventCard = ExploreEventView.createEventCard;
+   const originalUpdates = MapClient.getUpdates;
+   const originalEvents = MapClient.getEvents;
+
+   ExploreUpdatesView.syncExploreTabs = (options) => { tabs.push(options.activeTab); };
+   ExploreUpdatesView.renderExploreNav = () => {};
+   ExploreUpdatesView.setExploreSectionVisibility = () => {};
+   ExploreUpdatesView.syncExploreCollapsedState = () => {};
+   ExploreUpdatesView.getExploreToggleEl = () => null;
+   ExploreUpdatesView.getExploreTabEl = (_list, tab) => (
+      tab === ExploreFragment.EXPLORE_TAB.UPDATES ? updatesTabEl : eventsTabEl
+   );
+   ExploreUpdatesHelper.resolveActiveTab = () => ExploreFragment.EXPLORE_TAB.EVENTS;
+   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdateView.createUpdateCard = () => document.createElement('div');
+   ExploreEventView.createEventCard = () => document.createElement('div');
+   MapClient.getUpdates = async () => [];
+   MapClient.getEvents = async () => [{ name: 'Show' }];
+
+   try {
+      const listEl = document.createElement('div');
+      const controller = ExploreFragment.createExploreUpdates({ listEl });
+      await controller.refresh({ month: 6, day: 1, year: 2026 });
+
+      const before = tabs.length;
+      updatesTabEl.click();
+      assert.equal(tabs.length, before);
+      assert.equal(tabs.at(-1), ExploreFragment.EXPLORE_TAB.EVENTS);
+   } finally {
+      ExploreUpdatesView.syncExploreTabs = originalTabs;
+      ExploreUpdatesView.renderExploreNav = originalNav;
+      ExploreUpdatesView.setExploreSectionVisibility = originalVisibility;
+      ExploreUpdatesView.syncExploreCollapsedState = originalCollapsed;
+      ExploreUpdatesView.getExploreToggleEl = originalToggle;
+      ExploreUpdatesView.getExploreTabEl = originalTab;
+      ExploreUpdatesHelper.resolveActiveTab = originalResolve;
+      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdateView.createUpdateCard = originalUpdateCard;
+      ExploreEventView.createEventCard = originalEventCard;
+      MapClient.getUpdates = originalUpdates;
+      MapClient.getEvents = originalEvents;
+   }
+});
+
+test('Test_CreateExploreUpdates_TestInvalidTab_ExpectNoop', async () => {
+   const tabs = [];
+   const updatesTabEl = document.createElement('button');
+   const eventsTabEl = document.createElement('button');
+   const originalUpdatesTab = ExploreFragment.EXPLORE_TAB.UPDATES;
+   let updatesTabReads = 0;
+   let allowInvalidReads = false;
+
+   Object.defineProperty(ExploreFragment.EXPLORE_TAB, 'UPDATES', {
+      configurable: true,
+      get() {
+         updatesTabReads += 1;
+
+         if (!allowInvalidReads || updatesTabReads === 1) {
+            return originalUpdatesTab;
+         }
+
+         return '__invalid__';
+      },
+   });
+
+   const originalTabs = ExploreUpdatesView.syncExploreTabs;
+   const originalNav = ExploreUpdatesView.renderExploreNav;
+   const originalVisibility = ExploreUpdatesView.setExploreSectionVisibility;
+   const originalCollapsed = ExploreUpdatesView.syncExploreCollapsedState;
+   const originalToggle = ExploreUpdatesView.getExploreToggleEl;
+   const originalTab = ExploreUpdatesView.getExploreTabEl;
+   const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
+   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalUpdateCard = ExploreUpdateView.createUpdateCard;
+   const originalEventCard = ExploreEventView.createEventCard;
+   const originalUpdates = MapClient.getUpdates;
+   const originalEvents = MapClient.getEvents;
+
+   ExploreUpdatesView.syncExploreTabs = (options) => { tabs.push(options.activeTab); };
+   ExploreUpdatesView.renderExploreNav = () => {};
+   ExploreUpdatesView.setExploreSectionVisibility = () => {};
+   ExploreUpdatesView.syncExploreCollapsedState = () => {};
+   ExploreUpdatesView.getExploreToggleEl = () => null;
+   ExploreUpdatesView.getExploreTabEl = (_list, tab) => (
+      tab === originalUpdatesTab ? updatesTabEl : eventsTabEl
+   );
+   ExploreUpdatesHelper.resolveActiveTab = () => ExploreFragment.EXPLORE_TAB.EVENTS;
+   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdateView.createUpdateCard = () => document.createElement('div');
+   ExploreEventView.createEventCard = () => document.createElement('div');
+   MapClient.getUpdates = async () => [{ title: 'Notice' }];
+   MapClient.getEvents = async () => [{ name: 'Show' }];
+
+   try {
+      const listEl = document.createElement('div');
+      const controller = ExploreFragment.createExploreUpdates({ listEl });
+      await controller.refresh({ month: 6, day: 1, year: 2026 });
+
+      allowInvalidReads = true;
+      updatesTabReads = 0;
+
+      const before = tabs.length;
+      updatesTabEl.click();
+      assert.equal(tabs.length, before);
+      assert.equal(tabs.at(-1), ExploreFragment.EXPLORE_TAB.EVENTS);
+   } finally {
+      Object.defineProperty(ExploreFragment.EXPLORE_TAB, 'UPDATES', {
+         configurable: true,
+         value: originalUpdatesTab,
+      });
+      ExploreUpdatesView.syncExploreTabs = originalTabs;
+      ExploreUpdatesView.renderExploreNav = originalNav;
+      ExploreUpdatesView.setExploreSectionVisibility = originalVisibility;
+      ExploreUpdatesView.syncExploreCollapsedState = originalCollapsed;
+      ExploreUpdatesView.getExploreToggleEl = originalToggle;
+      ExploreUpdatesView.getExploreTabEl = originalTab;
+      ExploreUpdatesHelper.resolveActiveTab = originalResolve;
+      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdateView.createUpdateCard = originalUpdateCard;
+      ExploreEventView.createEventCard = originalEventCard;
+      MapClient.getUpdates = originalUpdates;
+      MapClient.getEvents = originalEvents;
+   }
+});

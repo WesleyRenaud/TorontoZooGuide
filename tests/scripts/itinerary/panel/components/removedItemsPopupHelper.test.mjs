@@ -21,3 +21,14 @@ test('Test_ToggleKeptItem_TestAddAndRemove_ExpectMapUpdated', () => {
    );
    assert.equal(kept.has('Carousel'), false);
 });
+
+test('Test_ToggleKeptItem_TestMissingKey_ExpectNoChange', () => {
+   const kept = new Map();
+   RemovedItemsPopupHelper.toggleKeptItem(
+      kept,
+      { name: '' },
+      () => '',
+      (item) => item
+   );
+   assert.equal(kept.size, 0);
+});

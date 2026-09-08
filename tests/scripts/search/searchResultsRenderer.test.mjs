@@ -228,3 +228,17 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamed
       'Eurasia Wilds'
    );
 });
+
+test('Test_RenderSearchResults_TestEmptyOrInvalidRows_ExpectCleared', () => {
+   installDocument();
+
+   const resultsEl = createDomNode('div', 'animal-search-results');
+   resultsEl.appendChild(createDomNode('div', 'stale'));
+
+   SearchResultsRenderer.renderSearchResults(resultsEl, []);
+   assert.equal(resultsEl.children.length, 0);
+
+   resultsEl.appendChild(createDomNode('div', 'stale'));
+   SearchResultsRenderer.renderSearchResults(resultsEl, null);
+   assert.equal(resultsEl.children.length, 0);
+});

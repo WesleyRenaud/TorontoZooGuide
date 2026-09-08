@@ -251,3 +251,47 @@ test('Test_ToggleConflictItemSelection_TestToggleOff_ExpectRemoved', () => {
 
    assert.deepEqual(selection.items, []);
 });
+
+test('Test_ConflictItemRequiresTrimOverride_TestUnselectableTalk_ExpectFalse', () => {
+   const selection = ScheduleConflictChecker.createConflictSelection();
+   const fullyCoveredTalk = {
+      ...africanLionTalk,
+      start_time: '13:15',
+      end_time: '13:30',
+   };
+
+   ScheduleConflictChecker.toggleConflictItemSelection(selection, grizzly);
+
+   assert.equal(ScheduleConflictChecker.canSelectConflictItem(selection, fullyCoveredTalk), false);
+   assert.equal(
+      ScheduleConflictChecker.conflictItemRequiresTrimOverride(selection, fullyCoveredTalk),
+      false
+   );
+});
+
+test('Test_ConflictItemRequiresTrimOverride_TestUnknownItemType_ExpectFalse', () => {
+   const selection = ScheduleConflictChecker.createConflictSelection();
+   assert.equal(
+      ScheduleConflictChecker.conflictItemRequiresTrimOverride(selection, {
+         name: 'Lunch',
+         item_type: 'event',
+      }),
+      false
+   );
+});
+
+test('Test_ToggleConflictItemSelection_TestCannotSelect_ExpectUnchanged', () => {
+   const selection = ScheduleConflictChecker.createConflictSelection();
+   ScheduleConflictChecker.toggleConflictItemSelection(selection, grizzly);
+
+   const blocked = {
+      name: 'Blocked Encounter',
+      start_time: '13:00',
+      end_time: '13:20',
+      item_type: ItinerarySaveIssueItemType.wildEncounter,
+   };
+
+   assert.equal(ScheduleConflictChecker.canSelectConflictItem(selection, blocked), false);
+   ScheduleConflictChecker.toggleConflictItemSelection(selection, blocked);
+   assert.deepEqual(selection.items, [grizzly]);
+});

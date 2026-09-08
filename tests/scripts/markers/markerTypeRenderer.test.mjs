@@ -76,3 +76,16 @@ test('Test_MarkerTypeRenderers_TestMap_ExpectExpectedKeys', () => {
       MarkerTypeRenderer.attractionMarkerRenderer
    );
 });
+
+test('Test_AttractionMarkerRenderer_TestIconAndSize_ExpectCallbacks', () => {
+   const markerEl = {
+      style: { setProperty() {} },
+      classList: { add() {}, remove() {} },
+      setAttribute() {},
+   };
+   assert.doesNotThrow(() => {
+      MarkerTypeRenderer.attractionMarkerRenderer(markerEl, [
+         { type: 'attraction', name: 'Conservation Carousel' },
+      ]);
+   });
+});

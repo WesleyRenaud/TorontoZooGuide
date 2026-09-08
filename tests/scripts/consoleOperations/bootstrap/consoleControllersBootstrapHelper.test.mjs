@@ -24,6 +24,46 @@ test('Test_ControllerBindings_TestRegistry_ExpectCreateFunctions', () => {
    assert.ok(bindings.every((binding) => typeof binding.getRefs === 'function'));
 });
 
+test('Test_ControllerBindings_TestGetExtraOptions_ExpectSpecialControllersMapped', () => {
+   const specialControllers = {
+      guardiansTalkScheduleLocationFilterController: { id: 'gt-schedule-location' },
+      endGuardiansTalkScheduleLocationFilterController: { id: 'gt-end-location' },
+      guardiansTalkScheduleTimesFilterController: { id: 'gt-schedule-times' },
+      addGuardiansTalkOccurrenceLocationFilterController: { id: 'gt-add-location' },
+      cancelGuardiansTalkOccurrenceLocationFilterController: { id: 'gt-cancel-location' },
+      cancelGuardiansTalkOccurrenceFilterController: { id: 'gt-cancel-occurrence' },
+      wildEncounterScheduleTimesFilterController: { id: 'we-schedule-times' },
+      wildEncounterOccurrenceFilterController: { id: 'we-occurrence' },
+   };
+
+   const extras = ConsoleControllersBootstrapHelper.CONTROLLER_BINDINGS
+      .filter((binding) => typeof binding.getExtraOptions === 'function')
+      .map((binding) => binding.getExtraOptions(specialControllers));
+
+   assert.deepEqual(extras, [
+      {
+         talkLocationFilterController: specialControllers.guardiansTalkScheduleLocationFilterController,
+      },
+      {
+         talkLocationFilterController: specialControllers.endGuardiansTalkScheduleLocationFilterController,
+         scheduleTimesFilterController: specialControllers.guardiansTalkScheduleTimesFilterController,
+      },
+      {
+         talkLocationFilterController: specialControllers.addGuardiansTalkOccurrenceLocationFilterController,
+      },
+      {
+         talkLocationFilterController: specialControllers.cancelGuardiansTalkOccurrenceLocationFilterController,
+         occurrenceFilterController: specialControllers.cancelGuardiansTalkOccurrenceFilterController,
+      },
+      {
+         scheduleTimesFilterController: specialControllers.wildEncounterScheduleTimesFilterController,
+      },
+      {
+         occurrenceFilterController: specialControllers.wildEncounterOccurrenceFilterController,
+      },
+   ]);
+});
+
 test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreated', () => {
    const originalCreate = AnimalSpeciesController.createAnimalSpeciesAutocompleteController;
    const calls = [];

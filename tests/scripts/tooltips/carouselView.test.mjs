@@ -75,6 +75,21 @@ test('Test_CreateTooltipCarouselView_TestRenderStepJumpClear_ExpectCards', () =>
    view.jumpTo(() => true);
 });
 
+test('Test_CreateTooltipCarouselView_TestEmptyCarouselCards_ExpectShowIndexNoop', () => {
+   const indexChanges = [];
+   const tooltipEl = document.createElement('div');
+   const view = CarouselView.createTooltipCarouselView({
+      tooltipEl,
+      getRendererForItem: () => _createRenderer(),
+      onIndexChange: (index) => { indexChanges.push(index); },
+   });
+
+   assert.equal(view.render([{ name: 'Only' }]), true);
+   tooltipEl.querySelector('.tooltip-carousel').replaceChildren();
+   view.showIndex(0);
+   assert.deepEqual(indexChanges, []);
+});
+
 test('Test_CreateTooltipCarouselView_TestSingleCard_ExpectNoArrows', () => {
    const tooltipEl = document.createElement('div');
    const view = CarouselView.createTooltipCarouselView({

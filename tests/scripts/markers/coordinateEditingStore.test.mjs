@@ -77,6 +77,17 @@ test('Test_GetPointerPositionPercent_TestRect_ExpectPercentsOrNull', () => {
    );
 });
 
+test('Test_UpdateMarkerPosition_TestFalsyPointer_ExpectNull', () => {
+   const markerEl = document.createElement('div');
+   const position = CoordinateEditingStore.updateMarkerPosition(
+      markerEl,
+      { getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }) },
+      { clientX: 0, clientY: 0 }
+   );
+
+   assert.equal(position, null);
+});
+
 test('Test_UpdateMarkerPosition_TestValidPointer_ExpectApplied', () => {
    const markerEl = document.createElement('div');
    const mapInner = {
@@ -92,6 +103,15 @@ test('Test_UpdateMarkerPosition_TestValidPointer_ExpectApplied', () => {
    assert.deepEqual(position, { x: 50, y: 50 });
    assert.equal(markerEl.style.left, '50%');
    assert.equal(markerEl.style.top, '50%');
+
+   assert.equal(
+      CoordinateEditingStore.updateMarkerPosition(
+         markerEl,
+         { getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }) },
+         { clientX: 10, clientY: 10 }
+      ),
+      null
+   );
 });
 
 test('Test_BuildDraggedMarkerCoordinateRows_TestItems_ExpectFormattedRows', () => {

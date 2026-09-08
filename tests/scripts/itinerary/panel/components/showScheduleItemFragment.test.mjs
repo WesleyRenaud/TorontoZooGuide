@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ShowScheduleItemFragment } from '../../../../../scripts/itinerary/panel/components/showScheduleItemFragment.js';
+import { ShowScheduleItemModuleHelper } from '../../../../../scripts/itinerary/panel/components/showScheduleItemModuleHelper.js';
 import { ScheduleItemSearcher } from '../../../../../scripts/itinerary/panel/scheduleItemSearcher.js';
 import { ScheduleItemKind } from '../../../../../scripts/shared/enums/scheduleItemKind.js';
 import { Strings } from '../../../../../scripts/strings.js';
@@ -119,4 +120,44 @@ test('Test_Preselects_TestPreselectsTransportationWithStationSubtext_ExpectOk', 
    assert.match(resultText, /Zoomobile/);
    assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
    assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
+});
+
+test('Test_ShowScheduleItemModule_TestCancelCloseAndDebouncedSearch_ExpectHandlers', () => {
+   const originalDebounce = ShowScheduleItemModuleHelper.debounce;
+   let capturedSearchFn = null;
+
+   ShowScheduleItemModuleHelper.debounce = (fn) => {
+      capturedSearchFn = fn;
+      return () => {
+         fn();
+      };
+   };
+
+   try {
+      ShowScheduleItemFragment.showScheduleItemModule({ eventTypes: ['lunch'] });
+      const root = document.querySelector('.schedule-item-module');
+      assert.ok(root);
+      assert.equal(typeof capturedSearchFn, 'function');
+      capturedSearchFn();
+
+      root.querySelector('.itin-prev')?.listeners?.click?.();
+      assert.equal(document.querySelector('.schedule-item-module'), null);
+
+      capturedSearchFn = null;
+      ShowScheduleItemModuleHelper.debounce = (fn) => {
+         capturedSearchFn = fn;
+         return () => fn();
+      };
+      ShowScheduleItemFragment.showScheduleItemModule({ eventTypes: ['lunch'] });
+      const root2 = document.querySelector('.schedule-item-module');
+      const closeButton = root2?.querySelector('.itin-close')
+         || [...(root2?.querySelectorAll('button') || [])].find((button) => (
+            String(button.className || '').includes('close')
+            || button.getAttribute?.('aria-label')?.toLowerCase?.().includes('close')
+         ));
+      closeButton?.listeners?.click?.();
+      assert.equal(document.querySelector('.schedule-item-module'), null);
+   } finally {
+      ShowScheduleItemModuleHelper.debounce = originalDebounce;
+   }
 });

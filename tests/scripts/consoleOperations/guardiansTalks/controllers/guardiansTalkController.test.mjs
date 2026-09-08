@@ -221,6 +221,17 @@ test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPo
       captured.resetSelection();
       assert.equal(populateCalls.length, 1);
       assert.deepEqual(populateCalls[0][1], []);
+
+      const talkNameEl = document.createElement('input');
+      talkNameEl.value = 'Old Talk';
+      GuardiansTalkController.createGuardiansTalkScheduleController({
+         talkNameEl,
+         locationEl: document.createElement('select'),
+         scheduleRowsEl: {},
+         addScheduleRowEl: {},
+      });
+      captured.resetSelection();
+      assert.equal(talkNameEl.value, '');
    } finally {
       RecurringScheduleFormController.createRecurringScheduleFormController = originalCreate;
       WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = originalRows;

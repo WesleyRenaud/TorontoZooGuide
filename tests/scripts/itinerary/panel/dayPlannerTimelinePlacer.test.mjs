@@ -45,6 +45,12 @@ test('Test_ResolveTimelineElement_TestClosestAndWalk_ExpectTimeline', () => {
    row.classList = { contains: () => false };
 
    assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(child), nestedTimeline);
+
+   const orphan = {
+      parentElement: { classList: { contains: () => false }, parentElement: null, parent: null },
+      parent: null,
+   };
+   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(orphan), null);
 });
 
 test('Test_ParseStripTopOffsetFromProbeTop_TestValues_ExpectOffsetOrNull', () => {

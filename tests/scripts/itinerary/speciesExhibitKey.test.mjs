@@ -42,6 +42,17 @@ test('Test_BuildAnimalViewingSpotKey_TestEnclosureName_ExpectSuffix', () => {
       }),
       'giraffe|african savanna|indoor'
    );
+   assert.equal(
+      SpeciesExhibitKey.buildAnimalViewingSpotKey({ species: '' }),
+      ''
+   );
+   assert.equal(
+      SpeciesExhibitKey.buildAnimalViewingSpotKey({
+         species: 'Giraffe',
+         exhibit: 'African Savanna',
+      }),
+      'giraffe|african savanna'
+   );
 });
 
 test('Test_BuildUniqueSpeciesExhibitEntries_TestDuplicates_ExpectMerged', () => {
@@ -50,6 +61,7 @@ test('Test_BuildUniqueSpeciesExhibitEntries_TestDuplicates_ExpectMerged', () => 
          { species: 'Lion', exhibit: 'Savanna', likelihood: 0.4 },
          { species: 'Lion', exhibit: 'Savanna', likelihood: 0.8 },
          { species: 'Zebra', exhibit: 'Savanna' },
+         { species: 'Missing' },
       ],
       {
          mergeAnimals: (existing, animal) => ({
@@ -62,4 +74,10 @@ test('Test_BuildUniqueSpeciesExhibitEntries_TestDuplicates_ExpectMerged', () => 
    assert.equal(entries.length, 2);
    assert.equal(entries[0].item.likelihood, 0.8);
    assert.equal(entries[1].item.species, 'Zebra');
+
+   const filtered = SpeciesExhibitKey.buildUniqueSpeciesExhibitEntries(
+      [{ species: 'Lion', exhibit: 'Savanna' }],
+      { includeAnimal: () => false }
+   );
+   assert.deepEqual(filtered, []);
 });

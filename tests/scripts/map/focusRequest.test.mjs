@@ -45,6 +45,8 @@ test('Test_ResolveDeepLinkFocus_TestModes_ExpectDirectOrRefetch', () => {
       },
    });
    assert.equal(FocusRequest.resolveDeepLinkFocus({ row: { name: 'x' } }), null);
+   assert.equal(FocusRequest.resolveDeepLinkFocus({ exhibit: 'Savanna' }), null);
+   assert.equal(FocusRequest.resolveDeepLinkFocus({}), null);
 });
 
 test('Test_ScheduleFocusRequest_TestRow_ExpectDeferredFocus', () => {

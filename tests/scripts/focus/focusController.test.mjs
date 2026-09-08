@@ -74,6 +74,38 @@ test('Test_CreateFocusController_TestCoordinateAndScan_ExpectAnimator', () => {
       FocusTargetFinder.findBestMarkerByScan = () => null;
       controller.focus({ row: { species: 'Tiger' }, type: 'animal' });
       assert.equal(focuses.length, 0);
+
+      focuses.length = 0;
+      FocusTargetFinder.findMarkerByCoordinates = () => null;
+      controller.focus({
+         row: { x_coord: 3, y_coord: 4, species: 'Tiger' },
+         type: 'animal',
+      });
+      assert.equal(focuses.length, 0);
+
+      focuses.length = 0;
+      const emptyMarkersController = FocusController.createFocusController({
+         panzoom: { id: 'pz' },
+         getMarkerByCoord: () => ({}),
+         getViewportEl: () => ({ id: 'viewport' }),
+         tooltip: { id: 'tip' },
+         getAllMarkers: () => [],
+      });
+      emptyMarkersController.focus({ row: { species: 'Tiger' }, type: 'animal' });
+      assert.equal(focuses.length, 0);
+
+      FocusTargetFinder.findBestMarkerByScan = () => ({
+         items: [{ type: 'animal' }],
+      });
+      const noMarkerController = FocusController.createFocusController({
+         panzoom: { id: 'pz' },
+         getMarkerByCoord: () => ({}),
+         getViewportEl: () => ({ id: 'viewport' }),
+         tooltip: { id: 'tip' },
+         getAllMarkers: () => [{ id: 'm1' }],
+      });
+      noMarkerController.focus({ row: { species: 'Tiger' }, type: 'animal' });
+      assert.equal(focuses.length, 0);
    } finally {
       FocusAnimator.focusMarker = originalFocus;
       FocusTargetFinder.createFocusMatch = originalMatch;

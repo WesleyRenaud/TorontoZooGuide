@@ -24,10 +24,6 @@ export class CarouselView {
       }
 
       function setCurrentPosition(position) {
-         if (!carouselEl) {
-            return;
-         }
-
          carouselEl.dataset.position = String(position);
       }
 

@@ -140,3 +140,59 @@ test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async (
    assert.ok(result.date);
    assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);
 });
+
+test('Test_EnsureItineraryVisitDate_TestServerDateMismatch_ExpectUpdatedDate', async () => {
+   globalThis.fetch = async (url) => {
+      if (url === '/get-itinerary-date') {
+         return mockJsonResponse({ date: '2026-07-01' });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+   };
+
+   const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate({
+      date: '2026-06-15',
+      animals: [],
+   });
+
+   assert.deepEqual(result, {
+      date: '2026-07-01',
+      animals: [],
+   });
+});
+
+test('Test_EnsureItineraryVisitDate_TestSetItineraryFails_ExpectThrows', async () => {
+   globalThis.fetch = async (url) => {
+      if (url === '/get-itinerary-date') {
+         return mockJsonResponse({ date: null });
+      }
+
+      if (url === '/get-zoo-hours') {
+         return mockJsonResponse({
+            hours: {
+               openTime: '09:30',
+               closeTime: '19:00',
+            },
+         });
+      }
+
+      if (url === '/set-itinerary') {
+         return mockJsonResponse({
+            status: 'error',
+            errorType: 'saveFailed',
+            reasons: [],
+         });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+   };
+
+   await assert.rejects(
+      () => ItineraryVisitDateResolver.ensureItineraryVisitDate({ animals: [] }),
+      (error) => {
+         assert.equal(error instanceof Error, true);
+         assert.match(error.message, /itinerary/i);
+         return true;
+      }
+   );
+});

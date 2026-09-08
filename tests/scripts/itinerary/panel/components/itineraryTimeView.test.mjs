@@ -323,3 +323,86 @@ test('Test_MakeItineraryTimeInput_TestSuppressCloseAfterOutside_ExpectSkipSave',
       deps.restore();
    }
 });
+
+test('Test_MakeItineraryTimeInput_TestMissingFlatpickr_ExpectSyncNoOp', async () => {
+   const deps = _installTimeInputDeps();
+   ConsoleDateFactory.initTimePicker = () => null;
+   const changes = [];
+
+   try {
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Arrival',
+         value: '09:30 AM',
+         onChange: async (value) => {
+            changes.push(value);
+         },
+         clearAriaLabel: 'Clear',
+      });
+      const clearButton = field.querySelector('.itinerary-day-time-clear-btn');
+
+      await clearButton.listeners.click({
+         preventDefault() {},
+         stopPropagation() {},
+      });
+      assert.deepEqual(changes, ['']);
+      assert.equal(field.querySelector('.itinerary-day-time-input').value, '');
+   } finally {
+      deps.restore();
+   }
+});
+
+test('Test_MakeItineraryTimeInput_TestClearWithoutCommittedValue_ExpectNoOp', async () => {
+   const deps = _installTimeInputDeps();
+   const changes = [];
+
+   try {
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Arrival',
+         value: '',
+         onChange: async (value) => {
+            changes.push(value);
+         },
+         clearAriaLabel: 'Clear',
+      });
+      const clearButton = field.querySelector('.itinerary-day-time-clear-btn');
+
+      await clearButton.listeners.click({
+         preventDefault() {},
+         stopPropagation() {},
+      });
+      assert.deepEqual(changes, []);
+   } finally {
+      deps.restore();
+   }
+});
+
+test('Test_MakeItineraryTimeInput_TestOutsideClickOnPicker_ExpectIgnored', async () => {
+   const deps = _installTimeInputDeps();
+   const documentListeners = [];
+   const originalAdd = document.addEventListener;
+   const originalRemove = document.removeEventListener;
+
+   document.addEventListener = (type, handler) => {
+      documentListeners.push({ type, handler });
+   };
+   document.removeEventListener = () => {};
+   deps.flatpickrInstance.calendarContainer.contains = () => true;
+
+   try {
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Arrival',
+         value: '09:30 AM',
+         onChange: async () => {},
+         clearAriaLabel: 'Clear',
+      });
+
+      deps.getPickerOptions().onOpen();
+      const mouseDown = documentListeners.find((entry) => entry.type === 'mousedown');
+      mouseDown.handler({ target: field });
+      assert.equal(deps.flatpickrInstance.isOpen, false);
+   } finally {
+      document.addEventListener = originalAdd;
+      document.removeEventListener = originalRemove;
+      deps.restore();
+   }
+});

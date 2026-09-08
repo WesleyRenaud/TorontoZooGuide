@@ -39,3 +39,16 @@ test('Test_OpenGuardiansTalkLinkedAnimal_TestLinked_ExpectOverlayOpened', async 
       SpeciesFragment.openAnimalSpeciesOverlay = originalOpen;
    }
 });
+
+test('Test_OpenGuardiansTalkLinkedAnimal_TestMissingLinked_ExpectNoOp', async () => {
+   const originalOpen = SpeciesFragment.openAnimalSpeciesOverlay;
+   let opened = false;
+   SpeciesFragment.openAnimalSpeciesOverlay = () => { opened = true; };
+
+   try {
+      await GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal({});
+      assert.equal(opened, false);
+   } finally {
+      SpeciesFragment.openAnimalSpeciesOverlay = originalOpen;
+   }
+});

@@ -156,6 +156,17 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestResetWithoutFilter_Expec
       captured.resetSelection();
       assert.equal(populateCalls.length, 1);
       assert.deepEqual(populateCalls[0][1], []);
+
+      const talkInputEl = document.createElement('input');
+      talkInputEl.value = 'Old Talk';
+      EndGuardiansTalkController.createEndGuardiansTalkScheduleController({
+         talkNameEl: talkInputEl,
+         locationEl: document.createElement('select'),
+         timesEl: {},
+         endDateEl: {},
+      });
+      captured.resetSelection();
+      assert.equal(talkInputEl.value, '');
    } finally {
       EndRecurringScheduleFormController.createEndRecurringScheduleFormController = originalCreate;
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulate;

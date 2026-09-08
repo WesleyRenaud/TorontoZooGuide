@@ -879,3 +879,103 @@ test('Test_DisplaySearchResults_TestDisplaySearchResultsClearsASelectedRowHidden
 
    assert.equal(controller.canScheduleSelection(), false);
 });
+
+test('Test_DisplaySearchResults_TestRenderRowLeftResolvesModuleRenderer_ExpectOk', () => {
+   const refs = _createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
+   const rendered = [];
+   const controller = _createController({
+      refs,
+      renderAnimalRowLeft: () => createDomNode('span', 'animal-row'),
+      deps: {
+         renderSearchResults: ({ renderRowLeft, rows }) => {
+            rendered.push(renderRowLeft(rows[0]));
+         },
+      },
+   });
+
+   controller.displaySearchResults([ANIMAL_ROW]);
+   assert.equal(rendered.length, 1);
+   assert.ok(rendered[0]);
+});
+
+test('Test_ApplyPreselectedRow_TestMissingPreselected_ExpectNoOp', () => {
+   const refs = _createRefs();
+   const controller = _createController({ refs });
+
+   controller.applyPreselectedRow();
+   assert.equal(controller.canScheduleSelection(), false);
+});
+
+test('Test_RunSearch_TestStaleSearchFailure_ExpectIgnored', async () => {
+   const refs = _createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'tiger',
+   });
+   const renderedRows = [];
+   let searchCalls = 0;
+   const controller = _createController({
+      refs,
+      deps: {
+         getSearchContext: async () => ({}),
+         searchItineraryItems: async () => {
+            searchCalls += 1;
+
+            if (searchCalls === 1) {
+               await new Promise((resolve) => {
+                  setTimeout(resolve, 20);
+               });
+               throw new Error('stale failure');
+            }
+
+            return { animals: [ANIMAL_ROW] };
+         },
+         renderSearchResults: ({ rows }) => {
+            renderedRows.push(rows);
+         },
+      },
+   });
+
+   const firstSearch = controller.runSearch();
+   const secondSearch = controller.runSearch();
+   await Promise.all([firstSearch, secondSearch]);
+
+   assert.deepEqual(renderedRows.at(-1), [ANIMAL_ROW]);
+   assert.equal(renderedRows.some((rows) => rows.length === 0), false);
+});
+
+test('Test_HandleSchedule_TestCancelledConfirmation_ExpectSilentReturn', async () => {
+   const { ItineraryConfirmationResult } = await import(
+      '../../../../../scripts/itinerary/itineraryConfirmationResult.js'
+   );
+   const refs = _createRefs({ selection: 'lunch' });
+   const notices = [];
+   const originalIsCancelled = ItineraryConfirmationResult.isItineraryConfirmationCancelled;
+   ItineraryConfirmationResult.isItineraryConfirmationCancelled = () => true;
+
+   try {
+      const controller = _createController({
+         refs,
+         scheduleTimeFields: {
+            getScheduleTimeOptions: () => ({}),
+         },
+         deps: {
+            scheduleSelectedItem: async () => ({ cancelled: true }),
+            itinerarySuccess: () => false,
+            requiresNotOnItineraryConfirmation: () => false,
+            showNotice: (message) => {
+               notices.push(message);
+            },
+         },
+      });
+
+      await controller.handleSchedule({
+         dismissPopup: () => {
+            notices.push('dismissed');
+         },
+      });
+
+      assert.deepEqual(notices, []);
+   } finally {
+      ItineraryConfirmationResult.isItineraryConfirmationCancelled = originalIsCancelled;
+   }
+});

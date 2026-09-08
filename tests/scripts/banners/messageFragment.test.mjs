@@ -28,6 +28,16 @@ test('Test_CreateSingleMessageBanner_TestSyncAndHide_ExpectVisibility', () => {
    assert.equal(el.style.display, 'flex');
    assert.match(el.textContent, /Closed today/);
 
+   banner.sync({ closed_message: 'Still closed' });
+   assert.equal(document.body.children.at(-1), el);
+   assert.match(el.textContent, /Still closed/);
+
+   const closeButton = el.querySelector('.off-display-closed-close');
+   closeButton.listeners.click({
+      stopPropagation() {},
+   });
+   assert.equal(el.style.display, 'none');
+
    banner.hide();
    assert.equal(el.style.display, 'none');
 });

@@ -35,3 +35,21 @@ test('Test_BuildAnimalVisibilityChanges_TestBelowMinDelta_ExpectEmpty', () => {
 
    assert.deepEqual(result, { reduced: [], improved: [] });
 });
+
+test('Test_BuildAnimalVisibilityChanges_TestMissingValidatedOrLikelihood_ExpectSkipped', () => {
+   const result = AnimalPresenter.buildAnimalVisibilityChanges(
+      [
+         { species: 'African Lion', likelihood: 80 },
+         { species: 'Amur Tiger', likelihood: null },
+         { species: 'Giraffe' },
+      ],
+      [
+         { species: 'Amur Tiger', likelihood: null },
+         { species: 'Giraffe', likelihood: 40 },
+      ],
+      [],
+      0.2
+   );
+
+   assert.deepEqual(result, { reduced: [], improved: [] });
+});

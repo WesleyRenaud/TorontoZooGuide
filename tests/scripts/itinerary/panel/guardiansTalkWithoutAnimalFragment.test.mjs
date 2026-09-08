@@ -113,3 +113,17 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp
 
    assert.equal(document.querySelector('.tzg-popup'), null);
 });
+
+test('Test_GetGuardiansTalkNamesFromWithoutAnimalIssues_TestNamesAndBlanks_ExpectFiltered', () => {
+   assert.deepEqual(
+      GuardiansTalkWithoutAnimalFragment.getGuardiansTalkNamesFromWithoutAnimalIssues([{
+         type: 'guardiansTalkWithoutAnimal',
+         items: [
+            { name: '  Komodo Dragon  ', start_time: '11:00 AM' },
+            { name: '' },
+            { name: 'African Lion' },
+         ],
+      }]),
+      ['Komodo Dragon', 'African Lion']
+   );
+});

@@ -18,10 +18,14 @@ test('Test_ResolveRegionNameForExhibit_TestKnownExhibits_ExpectRegions', () => {
    );
    assert.equal(RegionColors.resolveRegionNameForExhibit('Kids Zoo'), 'Discovery Zone');
    assert.equal(RegionColors.resolveRegionNameForExhibit('Unknown Exhibit'), '');
+   assert.equal(RegionColors.resolveRegionNameForExhibit(''), '');
+   assert.equal(RegionColors.resolveRegionNameForExhibit('   '), '');
 });
 
 test('Test_ResolveRegionColorSlug_TestRegions_ExpectSlugs', () => {
    assert.equal(RegionColors.resolveRegionColorSlug('Africa'), 'africa');
+   assert.equal(RegionColors.resolveRegionColorSlug(''), '');
+   assert.equal(RegionColors.resolveRegionColorSlug('   '), '');
    assert.equal(
       RegionColors.resolveRegionColorSlugForExhibit('Canadian Domain'),
       RegionColors.REGION_COLOR_SLUGS['Canadian Domain']

@@ -64,3 +64,51 @@ test('Test_CreateWildEncounterScheduleTimesFilterController_TestSingleTime_Expec
    );
    assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), [ '1:30 AM' ]);
 });
+
+test('Test_CreateWildEncounterScheduleTimesFilterController_TestDefaultLoaderClearAndError_ExpectHandled', async () => {
+   const wildEncounterEl = document.createElement('select');
+   const fieldEl = ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
+      label: 'Encounter times',
+      inputId: 'testWildEncounterScheduleTimesDefault',
+   });
+   const timesEl = fieldEl.querySelector('.console-operations-schedule-times-list');
+   const { ConsoleOperationsClient } = await import(
+      '../../../../../scripts/api/consoleOperationsClient.js'
+   );
+   const originalGet = ConsoleOperationsClient.getWildEncounterScheduleTimes;
+   ConsoleOperationsClient.getWildEncounterScheduleTimes = async ({ wildEncounter }) => {
+      assert.equal(wildEncounter, 'Giraffe');
+      return { times: [ '4:00 PM' ] };
+   };
+
+   try {
+      const controller = WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
+         wildEncounterEl,
+         timesEl,
+      });
+
+      wildEncounterEl.value = 'Giraffe';
+      await controller.refresh();
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), [ '4:00 PM' ]);
+
+      controller.clear();
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), []);
+
+      wildEncounterEl.value = '';
+      await controller.refresh();
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), []);
+
+      const failing = WildEncounterScheduleTimesFilter.createWildEncounterScheduleTimesFilterController({
+         wildEncounterEl,
+         timesEl,
+         loadScheduleTimes: async () => {
+            throw new Error('load failed');
+         },
+      });
+      wildEncounterEl.value = 'Giraffe';
+      await failing.refresh();
+      assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), []);
+   } finally {
+      ConsoleOperationsClient.getWildEncounterScheduleTimes = originalGet;
+   }
+});
