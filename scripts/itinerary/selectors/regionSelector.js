@@ -3,22 +3,9 @@ import { DraftStorage } from '../draftStorage.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelector/regionSelection.js';
 import { RegionSelectorRenderer } from './regionSelector/regionSelectorRenderer.js';
-import { RegionSelectorShellBuilder } from './regionSelector/regionSelectorShellBuilder.js';
 import { RegionSelectorStore } from './regionSelector/regionSelectorStore.js';
+import { RegionSelectorElements } from './regionSelectorElements.js';
 import { StorageKeys } from '../storageKeys.js';
-
-function createRegionSelectorElements() {
-   const shell = RegionSelectorShellBuilder.buildRegionSelectorShell();
-
-   return {
-      rootEl: shell.root,
-      resultsEl: shell.resultsEl,
-      prevButtonEl: shell.prevButton,
-      nextButtonEl: shell.nextButton,
-      finishButtonEl: shell.finishButton,
-      closeButtonEl: shell.closeButton,
-   };
-}
 
 export class RegionSelector {
    static shouldSkipRegionSelectionSync({
@@ -152,7 +139,7 @@ export class RegionSelector {
             return;
          }
 
-         elements = createRegionSelectorElements();
+         elements = RegionSelectorElements.createRegionSelectorElements();
          bindEvents();
       }
 

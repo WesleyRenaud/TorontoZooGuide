@@ -1,19 +1,8 @@
+import { ItineraryErrorTypesHelpers } from './itineraryErrorTypesHelpers.js';
 import { Strings } from '../strings.js';
 
 let itineraryErrorTypes = null;
 let suppressedItineraryErrorTypes = [];
-
-function normalizeItineraryErrorType(errorType, legacySuccess) {
-   if (typeof errorType === 'string' && errorType.trim()) {
-      return errorType.trim();
-   }
-
-   if (legacySuccess === false) {
-      return itineraryErrorTypes?.SAVE_FAILED;
-   }
-
-   return itineraryErrorTypes?.SUCCESS;
-}
 
 export class ItineraryErrorTypes {
    static updateItineraryErrorTypesFromConfig(itineraryConfig = {}) {
@@ -166,7 +155,7 @@ export class ItineraryErrorTypes {
    }
 
    static normalizeItineraryErrorTypeFromResponse(source = {}) {
-      return normalizeItineraryErrorType(
+      return ItineraryErrorTypesHelpers.normalizeItineraryErrorType(
          source.status,
          source.success
       );

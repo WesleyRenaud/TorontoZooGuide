@@ -1,12 +1,9 @@
 import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryTimeInputHelpers } from './itineraryTimeInputHelpers.js';
 import { Strings } from '../../../strings.js';
 import { ValidationBubble } from '../../../validationBubble.js';
-
-function readPickerTimeValue(instance, dateStr, inputEl) {
-   return ItineraryItemFormatter.formatClockTime(dateStr || instance?.input?.value || inputEl.value || '');
-}
 
 export class ItineraryTimeInput {
    static makeItineraryTimeInput({
@@ -80,7 +77,7 @@ export class ItineraryTimeInput {
             flatpickrInstance = instance;
          }
 
-         const nextValue = readPickerTimeValue(instance, dateStr, input)
+         const nextValue = ItineraryTimeInputHelpers.readPickerTimeValue(instance, dateStr, input)
             || latestPickerValue;
 
          if (nextValue === committedValue) {
@@ -205,7 +202,7 @@ export class ItineraryTimeInput {
       flatpickrInstance = ConsoleDatePickers.initTimePicker(input, {
          allowInput: false,
          onChange(_selectedDates, dateStr, instance) {
-            latestPickerValue = readPickerTimeValue(instance, dateStr, input);
+            latestPickerValue = ItineraryTimeInputHelpers.readPickerTimeValue(instance, dateStr, input);
          },
          onOpen: () => {
             validationBubble.dismiss();

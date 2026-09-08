@@ -1,23 +1,11 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { ItinerarySelectorApi } from '../../../api/itinerarySelectorApi.js';
 import { DraftStorage } from '../../draftStorage.js';
-import { ItinerarySearchContext } from '../../itinerarySearchContext.js';
 import { RegionSelection } from './regionSelection.js';
+import { RegionSelectorStoreHelpers } from './regionSelectorStoreHelpers.js';
 import { RegionStorage } from './regionStorage.js';
-import { SearchContext } from '../../../search/searchContext.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { StorageKeys } from '../../storageKeys.js';
-import { VisitDateRules } from '../../../visitDates/visitDateRules.js';
-
-async function resolveAnimalsByExhibitQueryContext() {
-   let context = await ItinerarySearchContext.getItineraryDateSearchContext();
-
-   if (!context.month || context.day == null) {
-      context = await SearchContext.buildDateSearchContext(VisitDateRules.toISODate(VisitDateRules.getToday()));
-   }
-
-   return context;
-}
 
 export class RegionSelectorStore {
    static createRegionSelectorState() {
@@ -106,7 +94,7 @@ export class RegionSelectorStore {
             .map(RegionSelection.normalizeSelectedAnimal)
             .filter(Boolean);
          const removedKeys = RegionStorage.loadRemovedAnimalKeys();
-         const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+         const { month, day, temp } = await RegionSelectorStoreHelpers.resolveAnimalsByExhibitQueryContext();
          const catalogAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
             month,
             day,
@@ -225,7 +213,7 @@ export class RegionSelectorStore {
             return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
          }
 
-         const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+         const { month, day, temp } = await RegionSelectorStoreHelpers.resolveAnimalsByExhibitQueryContext();
          const fullAnimals = await ItinerarySelectorApi.getAnimalsByExhibit(selectedExhibits, {
             month,
             day,
