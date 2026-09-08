@@ -2,6 +2,9 @@
 
 Enforced in CI by `tools/lint/jsUnitTestStyle.js` (`npm run lint:js`).
 
+Coverage goals and omit policy for `scripts/` are in
+[`javascript-scripts-coverage.md`](javascript-scripts-coverage.md).
+
 Test **case** names and file layout follow the same rules as Python
 ([`docs/python-unit-test-style.md`](python-unit-test-style.md)). The name is the
 string passed to Node’s `test()` (or `it()`).
