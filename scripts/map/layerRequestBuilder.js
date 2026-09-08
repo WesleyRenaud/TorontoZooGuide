@@ -1,5 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { TransportationSelectorModel } from '../itinerary/selectors/transportationSelector/transportationSelectorModel.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { SourceHelper } from './sourceHelper.js';
 
 export class LayerRequestBuilder {
@@ -26,7 +27,7 @@ export class LayerRequestBuilder {
          return includes;
       }
 
-      if (focusType === 'animal') {
+      if (focusType === ItemType.ANIMAL) {
          const species = ValueNormalizer.asTrimmedString(focusRow.species);
 
          if (species) {
@@ -34,19 +35,19 @@ export class LayerRequestBuilder {
          }
       }
 
-      if (focusType === 'restaurant' && focusRow.name != null) {
+      if (focusType === ItemType.RESTAURANT && focusRow.name != null) {
          includes.restaurantsToInclude = LayerRequestBuilder.uniqStrings([focusRow.name]);
       }
 
-      if (focusType === 'giftShop' && focusRow.name != null) {
+      if (focusType === ItemType.GIFT_SHOP && focusRow.name != null) {
          includes.giftShopsToInclude = LayerRequestBuilder.uniqStrings([focusRow.name]);
       }
 
-      if (focusType === 'attraction' && focusRow.name != null) {
+      if (focusType === ItemType.ATTRACTION && focusRow.name != null) {
          includes.attractionsToInclude = LayerRequestBuilder.uniqStrings([focusRow.name]);
       }
 
-      if (focusType === 'transportationStation' && focusRow.name != null) {
+      if (focusType === ItemType.TRANSPORTATION_STATION && focusRow.name != null) {
          includes.transportationStationsToInclude = LayerRequestBuilder.uniqStrings([focusRow.name]);
       }
 
@@ -108,6 +109,6 @@ export class LayerRequestBuilder {
          rows.push(transportation);
       });
 
-      return SourceHelper.normalizeTypedRows(rows, 'transportation');
+      return SourceHelper.normalizeTypedRows(rows, ItemType.TRANSPORTATION);
    }
 }

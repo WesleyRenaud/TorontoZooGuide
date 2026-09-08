@@ -5,6 +5,7 @@ import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelectionNormalizer } from '../itinerary/selectors/base/storedSelectionNormalizer.js';
 import { SpeciesFragment } from '../overlays/speciesFragment.js';
 import { SearchResultPresenter } from './searchResultPresenter.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { Strings } from '../strings.js';
 
 export class SearchResultRowBuilder {
@@ -14,7 +15,7 @@ export class SearchResultRowBuilder {
       }
 
       SearchResultRowBuilder._rowLeftRenderers = {
-         animal: ResultRenderer.createDefaultSelectorRowLeftRenderer({
+         [ItemType.ANIMAL]: ResultRenderer.createDefaultSelectorRowLeftRenderer({
             getTitle: AnimalSelectorModel.getAnimalTitleLine,
             getTitleParts: (row) => ({
                species: AnimalSelectorModel.getAnimalSpecies(row),
@@ -25,7 +26,7 @@ export class SearchResultRowBuilder {
             getInfoLink: () => null,
             onTitleClick: SpeciesFragment.openAnimalSpeciesOverlay,
          }),
-         attraction: ResultRenderer.createDefaultSelectorRowLeftRenderer({
+         [ItemType.ATTRACTION]: ResultRenderer.createDefaultSelectorRowLeftRenderer({
             getTitle: AttractionSelectorModel.getAttractionTitle,
             getSubtitle: AttractionSelectorModel.getAttractionSubtitle,
             getImageSrc: AttractionSelectorModel.buildAttractionImageSrc,
@@ -33,23 +34,30 @@ export class SearchResultRowBuilder {
             onTitleClick: SearchResultRowBuilder.openAttractionInfoLink,
             shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
          }),
-         wildEncounter: SearchResultPresenter.createSearchImageRowRenderer({
+         [ItemType.WILD_ENCOUNTER]: SearchResultPresenter.createSearchImageRowRenderer({
             presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.wildEncounter,
             imageDirectory: 'wild-encounters',
             getInfoLink: () => null,
             onTitleClick: SearchResultRowBuilder.openWildEncounterLink,
          }),
-         guardiansTalk: SearchResultPresenter.createSearchImageRowRenderer({
+         [ItemType.GUARDIANS_TALK]: SearchResultPresenter.createSearchImageRowRenderer({
             presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
             imageDirectory: 'guardians-talks',
             onTitleClick: GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal,
             shouldEnableTitleClick: (row) => Boolean(GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(row)),
          }),
          ...SearchResultPresenter.createSearchImageRowRenderers([
-            { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: SearchResultPresenter.getRestaurantMenuLink },
-            { type: 'giftShop', imageDirectory: 'gift-shops' },
-            { type: 'pavilion', imageDirectory: 'pavilions' },
-            { type: 'transportationStation', imageDirectory: 'transportation-stations' },
+            {
+               type: ItemType.RESTAURANT,
+               imageDirectory: 'restaurants',
+               getInfoLink: SearchResultPresenter.getRestaurantMenuLink,
+            },
+            { type: ItemType.GIFT_SHOP, imageDirectory: 'gift-shops' },
+            { type: ItemType.PAVILION, imageDirectory: 'pavilions' },
+            {
+               type: ItemType.TRANSPORTATION_STATION,
+               imageDirectory: 'transportation-stations',
+            },
          ]),
       };
 

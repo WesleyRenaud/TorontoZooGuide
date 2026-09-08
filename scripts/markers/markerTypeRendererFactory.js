@@ -1,6 +1,7 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { IconUrlProvider } from '../assets/iconUrlProvider.js';
 import { MarkerVisualHelper } from './markerVisualHelper.js';
+import { ItemType } from '../shared/enums/itemType.js';
 
 export class MarkerTypeRendererFactory {
    static DEFAULT_ATTRACTION_MARKER_SIZE = 32;
@@ -12,32 +13,32 @@ export class MarkerTypeRendererFactory {
    static FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
 
    static GENERIC_ICON_PATHS = Object.freeze({
-      pavilion: '/images/icons/pavilion/pavilion-open.png',
-      restroom: '/images/icons/restroom/restroom-open.png',
-      transportationStation: '/images/icons/zoomobile-station/zoomobile-station.png',
-      guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
-      wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
-      defibrillator: '/images/icons/defibrillator/defibrillator.png',
-      emergencyIntercom: '/images/icons/emergency-intercom/emergency-intercom.png',
-      picnicSite: '/images/icons/picnic-site/picnic-site.png',
+      [ItemType.PAVILION]: '/images/icons/pavilion/pavilion-open.png',
+      [ItemType.RESTROOM]: '/images/icons/restroom/restroom-open.png',
+      [ItemType.TRANSPORTATION_STATION]: '/images/icons/zoomobile-station/zoomobile-station.png',
+      [ItemType.GUARDIANS_TALK]: '/images/icons/guardians-talk/guardians-talk.png',
+      [ItemType.WILD_ENCOUNTER]: '/images/icons/wild-encounter/wild-encounter.png',
+      [ItemType.DEFIBRILLATOR]: '/images/icons/defibrillator/defibrillator.png',
+      [ItemType.EMERGENCY_INTERCOM]: '/images/icons/emergency-intercom/emergency-intercom.png',
+      [ItemType.PICNIC_SITE]: '/images/icons/picnic-site/picnic-site.png',
    });
 
    static MARKER_CLASS_BY_TYPE = Object.freeze({
-      restaurant: 'marker-restaurant',
-      restroom: 'marker-restroom',
-      giftShop: 'marker-gift-shop',
-      attraction: 'marker-attraction',
-      transportationStation: 'marker-zoomobile-station',
-      transportationRouteMarker: 'marker-zoomobile-route-marker',
-      guardiansTalk: 'marker-guardians-talk',
-      wildEncounter: 'marker-wild-encounter',
-      drinkingFountain: 'marker-drinking-fountain',
-      defibrillator: 'marker-defibrillator',
-      emergencyIntercom: 'marker-emergency-intercom',
-      guestService: 'marker-guest-service',
+      [ItemType.RESTAURANT]: 'marker-restaurant',
+      [ItemType.RESTROOM]: 'marker-restroom',
+      [ItemType.GIFT_SHOP]: 'marker-gift-shop',
+      [ItemType.ATTRACTION]: 'marker-attraction',
+      [ItemType.TRANSPORTATION_STATION]: 'marker-zoomobile-station',
+      [ItemType.TRANSPORTATION_ROUTE_MARKER]: 'marker-zoomobile-route-marker',
+      [ItemType.GUARDIANS_TALK]: 'marker-guardians-talk',
+      [ItemType.WILD_ENCOUNTER]: 'marker-wild-encounter',
+      [ItemType.DRINKING_FOUNTAIN]: 'marker-drinking-fountain',
+      [ItemType.DEFIBRILLATOR]: 'marker-defibrillator',
+      [ItemType.EMERGENCY_INTERCOM]: 'marker-emergency-intercom',
+      [ItemType.GUEST_SERVICE]: 'marker-guest-service',
       firstAidGuestService: 'marker-guest-service-first-aid',
-      picnicSite: 'marker-picnic-site',
-      eventSite: 'marker-event-site',
+      [ItemType.PICNIC_SITE]: 'marker-picnic-site',
+      [ItemType.EVENT_SITE]: 'marker-event-site',
    });
 
    static ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -147,7 +148,7 @@ export class MarkerTypeRendererFactory {
       const likelihood = restroom?.is_closed ? 0 : 100;
       const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(likelihood);
 
-      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.restroom);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.RESTROOM]);
 
       if (count > 1) {
          MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
@@ -171,7 +172,7 @@ export class MarkerTypeRendererFactory {
          || MarkerTypeRendererFactory.ZOOMOBILE_ROUTE_COLORS.default;
 
       markerEl.style.backgroundColor = routeColor;
-      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.transportationRouteMarker);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.TRANSPORTATION_ROUTE_MARKER]);
    }
 
    static renderDrinkingFountainMarker(markerEl, items) {
@@ -182,7 +183,7 @@ export class MarkerTypeRendererFactory {
          : (drinkingFountain?.is_closed ? 0 : 100);
       const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(likelihood);
 
-      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.drinkingFountain);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.DRINKING_FOUNTAIN]);
 
       if (count > 1) {
          MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
@@ -199,7 +200,7 @@ export class MarkerTypeRendererFactory {
       const guestService = items[0];
       const serviceType = ValueNormalizer.asTrimmedString(guestService?.service_type);
 
-      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.guestService);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.GUEST_SERVICE]);
 
       if (serviceType === MarkerTypeRendererFactory.FIRST_AID_AND_FAMILY_CENTER_TYPE) {
          MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.firstAidGuestService);
@@ -219,7 +220,7 @@ export class MarkerTypeRendererFactory {
    static renderEventSiteMarker(markerEl, items) {
       const eventSite = items[0];
 
-      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.eventSite);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.EVENT_SITE]);
 
       if (items.length > 1) {
          MarkerVisualHelper.applyCountMarker(markerEl, items.length);

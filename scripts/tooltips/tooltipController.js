@@ -3,6 +3,7 @@ import { CarouselView } from './carouselView.js';
 import { GlobalListener } from './globalListener.js';
 import { MarkerHelper } from '../markers/markerHelper.js';
 import { PositionFragment } from './positionFragment.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { TooltipRenderer } from './tooltipRenderer.js';
 
 export class TooltipController {
@@ -179,7 +180,7 @@ export class TooltipController {
          }
 
          const type = String(item.type || '');
-         if (type !== 'animal') {
+         if (type !== ItemType.ANIMAL) {
             return;
          }
 

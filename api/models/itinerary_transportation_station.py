@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from ..shared.enums.item_type import ItemType
 from ..shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
-from ..shared.enums.map_item_type import MapItemType
 from ..types import Types
 
 
@@ -28,7 +28,7 @@ class ItineraryTransportationStation:
          'name': self.name,
          'transportation': self.transportation,
          'role': self.role.value,
-         'type': MapItemType.TRANSPORTATION_STATION.value,
+         'type': ItemType.TRANSPORTATION_STATION.value,
          'description': self.description,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,

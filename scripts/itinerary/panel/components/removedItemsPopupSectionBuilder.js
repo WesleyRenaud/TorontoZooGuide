@@ -1,5 +1,6 @@
 import { ItineraryPanelRowsBuilder } from '../itineraryPanelRowsBuilder.js';
 import { RemovedItemsPopupContentRowsBuilder } from './removedItemsPopupContentRowsBuilder.js';
+import { ItemType } from '../../../shared/enums/itemType.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { Strings } from '../../../strings.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
@@ -74,7 +75,7 @@ export class RemovedItemsPopupSectionBuilder {
             subtitle: strings.itinerary.removedItems.animalsRemovedSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
             stepKey: 'animals',
-            keepOverrideKey: 'animal',
+            keepOverrideKey: ItemType.ANIMAL,
          },
          {
             items: safeReduced.animals ?? [],
@@ -97,7 +98,7 @@ export class RemovedItemsPopupSectionBuilder {
             subtitle: strings.itinerary.removedItems.attractionsSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAttractionRows,
             stepKey: 'attractions',
-            keepOverrideKey: 'attraction',
+            keepOverrideKey: ItemType.ATTRACTION,
          },
          {
             items: safeRemoved.guardiansTalks ?? [],
@@ -127,7 +128,7 @@ export class RemovedItemsPopupSectionBuilder {
       onToggleKeepAttraction,
       isKeepAttractionSelected,
    } = {}) {
-      if (section.keepOverrideKey === 'animal') {
+      if (section.keepOverrideKey === ItemType.ANIMAL) {
          return {
             buildKey: SpeciesExhibitKey.buildSpeciesExhibitKey,
             onToggle: onToggleKeepAnimal,
@@ -135,7 +136,7 @@ export class RemovedItemsPopupSectionBuilder {
          };
       }
 
-      if (section.keepOverrideKey === 'attraction') {
+      if (section.keepOverrideKey === ItemType.ATTRACTION) {
          return {
             buildKey: (item) => ItemKey.buildItemKey(item, 'name'),
             onToggle: onToggleKeepAttraction,

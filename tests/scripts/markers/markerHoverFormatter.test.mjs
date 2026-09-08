@@ -14,7 +14,7 @@ test('Test_BuildHoverText_TestMissingOrHiddenTypes_ExpectEmpty', () => {
    assert.equal(MarkerHoverFormatter.buildHoverText([{ type: 'unknownType', name: 'Item' }]), '');
 });
 
-test('Test_BuildHoverText_TestCountedMapItemTypes_ExpectFormattedTitles', () => {
+test('Test_BuildHoverText_TestCountedItemTypes_ExpectFormattedTitles', () => {
    const cases = [
       {
          type: 'animal',

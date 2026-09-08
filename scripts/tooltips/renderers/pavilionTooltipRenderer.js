@@ -1,9 +1,10 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class PavilionTooltipRenderer {
-   static key = 'pavilion';
+   static key = ItemType.PAVILION;
 
    static createCard(p, index) {
       const name = p.name || Strings.entityLabels.pavilion;

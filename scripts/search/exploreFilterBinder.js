@@ -1,11 +1,12 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { ExploreFilter } from './exploreFilter.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { Strings } from '../strings.js';
 
 export class ExploreFilterBinder {
    static TRANSPORTATION_ROUTE_SELECTOR = 'input[name="transportationRoute-zoomobile"]:checked';
 
-   static DEFAULT_SELECTED_TYPES = ['animal'];
+   static DEFAULT_SELECTED_TYPES = [ItemType.ANIMAL];
 
    static getSelectedTransportationRoute() {
       const checked = document.querySelector(ExploreFilterBinder.TRANSPORTATION_ROUTE_SELECTOR);
@@ -142,7 +143,7 @@ export class ExploreFilterBinder {
          checkbox.addEventListener('change', () => {
             onSelectionChanged?.();
 
-            if (!getSelectedTypes().includes('animal')) {
+            if (!getSelectedTypes().includes(ItemType.ANIMAL)) {
                onAnimalsUnchecked?.();
             }
 

@@ -1,9 +1,10 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class TransportationStationTooltipRenderer {
-   static key = 'transportationStation';
+   static key = ItemType.TRANSPORTATION_STATION;
 
    static createCard(s, index) {
       const name = s.name || Strings.tooltips.defaultTransportationStationName;

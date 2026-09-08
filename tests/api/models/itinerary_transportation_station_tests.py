@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from api.models.itinerary_transportation_station import ItineraryTransportationStation
+from api.shared.enums.item_type import ItemType
 from api.shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
-from api.shared.enums.map_item_type import MapItemType
 
 def Test_ToDict_TestMainStation_ExpectSerializedFields() -> None:
    station = ItineraryTransportationStation(
@@ -18,4 +18,4 @@ def Test_ToDict_TestMainStation_ExpectSerializedFields() -> None:
    assert result[ 'name' ] == 'Main Zoomobile Station'
    assert result[ 'transportation' ] == 'Zoomobile'
    assert result[ 'role' ] == ItineraryTransportationStationRole.ONBOARDING.value
-   assert result[ 'type' ] == MapItemType.TRANSPORTATION_STATION.value
+   assert result[ 'type' ] == ItemType.TRANSPORTATION_STATION.value

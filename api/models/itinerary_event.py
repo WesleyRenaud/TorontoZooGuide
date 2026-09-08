@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..shared.enums import ItineraryEventType
+from ..shared.enums.item_type import ItemType
 from ..types import Types
 
 
@@ -20,5 +21,5 @@ class ItineraryEvent:
          'event_type': self.event_type.value,
          'start_time': self.start_time,
          'end_time': self.end_time,
-         'type': 'itineraryEvent',
+         'type': ItemType.ITINERARY_EVENT.value,
       }

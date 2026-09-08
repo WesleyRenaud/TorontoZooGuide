@@ -1,3 +1,4 @@
+import { ItemType } from '../shared/enums/itemType.js';
 import { SourceHelper } from './sourceHelper.js';
 import { TransportationRouteSourceFactory } from './transportationRouteSourceFactory.js';
 
@@ -29,8 +30,8 @@ export class TransportationRouteProvider {
          showRouteLayer?.(route);
 
          const stations = TransportationRouteSourceFactory.normalizeTransportationStations(transportationStations);
-         SourceHelper.setSourceRows(store, 'transportationStation', stations);
-         SourceHelper.setSourceRows(store, 'transportationRoute', stations);
+         SourceHelper.setSourceRows(store, ItemType.TRANSPORTATION_STATION, stations);
+         SourceHelper.setSourceRows(store, ItemType.TRANSPORTATION_ROUTE, stations);
 
          return stations;
       });

@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { ItemType } from '../shared/enums/itemType.js';
 
 export class FocusRequest {
    static scheduleFocusRequest(focus, focusRequest) {
@@ -64,9 +65,9 @@ export class FocusRequest {
       return {
          mode: 'refetch',
          focusRequest: {
-            type: 'animal',
+            type: ItemType.ANIMAL,
             row: {
-               type: 'animal',
+               type: ItemType.ANIMAL,
                species: payload.species,
                exhibit: payload.exhibit ?? null,
             },

@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+class SharedEnumValues:
+   @staticmethod
+   def repository_root() -> Path:
+      return Path( __file__ ).resolve().parents[ 3 ]
+
+
+   @staticmethod
+   def shared_enums_directory() -> Path:
+      return SharedEnumValues.repository_root() / 'shared' / 'enums'
+
+
+   @staticmethod
+   def load( json_name: str ) -> dict[ str, str ]:
+      path = SharedEnumValues.shared_enums_directory() / json_name
+      members = json.loads( path.read_text( encoding='utf-8' ) )
+
+      if not isinstance( members, dict ) or not members:
+         raise ValueError(
+            f'{ path }: expected a non-empty object of MEMBER -> wire value' )
+
+      for key, value in members.items():
+         if not isinstance( key, str ) or not key.isidentifier() or not key.isupper():
+            raise ValueError(
+               f'{ path }: member key must be SCREAMING_SNAKE identifier: '
+               f'{ repr( key ) }' )
+
+         if not isinstance( value, str ) or not value:
+            raise ValueError(
+               f'{ path }: wire value for { key } must be a non-empty string' )
+
+      return dict( sorted( members.items() ) )

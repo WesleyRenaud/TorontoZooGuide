@@ -4,10 +4,11 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { AnimalSelectorModel } from '../../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { LikelihoodPresenter } from '../../likelihood/likelihoodPresenter.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class AnimalTooltipRenderer {
-   static key = 'animal';
+   static key = ItemType.ANIMAL;
 
    static isMatch(item, row) {
       const s1 = ValueNormalizer.asTrimmedString(item?.species);

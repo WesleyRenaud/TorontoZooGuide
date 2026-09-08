@@ -1,0 +1,12 @@
+{
+   "enums": [
+      {
+         "id": "itemType",
+         "json": "itemType.json",
+         "pythonModule": "api/shared/enums/item_type.py",
+         "pythonClass": "ItemType",
+         "javascriptModule": "scripts/shared/enums/itemType.js",
+         "javascriptClass": "ItemType"
+      }
+   ]
+}

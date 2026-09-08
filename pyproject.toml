@@ -49,6 +49,9 @@ exclude = [
 include = [
    "api/**/*.py",
 ]
+exclude = [
+   "api/shared/enums/item_type.py",
+]
 
 [tool.tzg_python_unit_tests]
 include = [

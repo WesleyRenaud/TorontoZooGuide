@@ -2,10 +2,11 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { StoredSelectionNormalizer } from '../../itinerary/selectors/base/storedSelectionNormalizer.js';
 import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class WildEncounterTooltipRenderer {
-   static key = 'wildEncounter';
+   static key = ItemType.WILD_ENCOUNTER;
 
    static createCard(w, index) {
       const name = w.name || Strings.entityLabels.wildEncounter;

@@ -1,5 +1,5 @@
 import { LayerRequestBuilder } from './layerRequestBuilder.js';
-import { MapItemType } from '../shared/enums/mapItemType.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { SourceHelper } from './sourceHelper.js';
 
 export class LayerRequest {
@@ -7,17 +7,17 @@ export class LayerRequest {
       const transportationStations = itinerary?.transportationStations;
 
       return [
-         ...SourceHelper.normalizeTypedRows(itinerary?.animals, 'animal'),
-         ...SourceHelper.normalizeTypedRows(itinerary?.attractions, 'attraction'),
+         ...SourceHelper.normalizeTypedRows(itinerary?.animals, ItemType.ANIMAL),
+         ...SourceHelper.normalizeTypedRows(itinerary?.attractions, ItemType.ATTRACTION),
          ...LayerRequestBuilder.buildFullyUnscheduledTransportationRows(
             itinerary?.transportations,
             transportationStations
          ),
-         ...SourceHelper.normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
-         ...SourceHelper.normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
+         ...SourceHelper.normalizeTypedRows(itinerary?.guardiansTalks, ItemType.GUARDIANS_TALK),
+         ...SourceHelper.normalizeTypedRows(itinerary?.wildEncounters, ItemType.WILD_ENCOUNTER),
          ...SourceHelper.normalizeTypedRows(
             transportationStations,
-            MapItemType.TRANSPORTATION_STATION
+            ItemType.TRANSPORTATION_STATION
          ),
       ];
    }
@@ -40,12 +40,16 @@ export class LayerRequest {
    static buildSelectedTypes(selectedTypes, focusType, transportationRoute) {
       const normalizedTypes = LayerRequestBuilder.uniqStrings(selectedTypes);
       const routeActive = transportationRoute !== 'none';
-      const focusIsTransportationStation = focusType === 'transportationStation';
+      const focusIsTransportationStation = focusType === ItemType.TRANSPORTATION_STATION;
 
       if (
          focusType &&
          !normalizedTypes.includes(focusType) &&
-         !(routeActive && focusIsTransportationStation && normalizedTypes.includes('transportationRoute'))
+         !(
+            routeActive
+            && focusIsTransportationStation
+            && normalizedTypes.includes(ItemType.TRANSPORTATION_ROUTE)
+         )
       ) {
          return LayerRequestBuilder.uniqStrings([focusType, ...normalizedTypes]);
       }
