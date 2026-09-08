@@ -3,12 +3,12 @@ import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
-const ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
-
 export class AttractionWithoutAnimalConfirmation {
+   static ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
+
    static hasAttractionWithoutAnimalIssue(issues = []) {
       return issues.some(
-         (issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE
+         (issue) => issue?.type === AttractionWithoutAnimalConfirmation.ATTRACTION_WITHOUT_ANIMAL_ISSUE
       );
 
    }
@@ -23,7 +23,7 @@ export class AttractionWithoutAnimalConfirmation {
       const attractionsByName = new Map();
 
       issues
-         .filter((issue) => issue?.type === ATTRACTION_WITHOUT_ANIMAL_ISSUE)
+         .filter((issue) => issue?.type === AttractionWithoutAnimalConfirmation.ATTRACTION_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
             const attractionName = ItineraryItemFormatter.normalizeText(item?.name);

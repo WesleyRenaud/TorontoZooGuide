@@ -1,8 +1,7 @@
 import { GuardiansTalkScheduleItemKeyHelpers } from './guardiansTalkScheduleItemKeyHelpers.js';
 
-export const GUARDIANS_TALK_ITEM_KEY_SEPARATOR = '||';
-
 export class GuardiansTalkScheduleItemKey {
+   static GUARDIANS_TALK_ITEM_KEY_SEPARATOR = '||';
    constructor(name = '', startTime = '', endTime = '') {
       this.name = String(name ?? '').trim();
       this.startTime = String(startTime ?? '').trim();
@@ -11,7 +10,7 @@ export class GuardiansTalkScheduleItemKey {
    }
 
    static fromWire(wire) {
-      const parts = String(wire ?? '').split(GUARDIANS_TALK_ITEM_KEY_SEPARATOR, 3);
+      const parts = String(wire ?? '').split(GuardiansTalkScheduleItemKey.GUARDIANS_TALK_ITEM_KEY_SEPARATOR, 3);
       const name = parts[0]?.trim() ?? '';
 
       if (!name || parts.length < 2) {
@@ -56,7 +55,7 @@ export class GuardiansTalkScheduleItemKey {
          parts.push(this.endTime);
       }
 
-      return parts.join(GUARDIANS_TALK_ITEM_KEY_SEPARATOR);
+      return parts.join(GuardiansTalkScheduleItemKey.GUARDIANS_TALK_ITEM_KEY_SEPARATOR);
    }
 
    equals(other) {

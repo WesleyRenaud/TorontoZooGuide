@@ -1,8 +1,8 @@
 import { VisitDateRules } from './visitDateRules.js';
 
-const LOCAL_NOON_HOUR = 12;
-
 export class VisitDateRuleHelpers {
+   static LOCAL_NOON_HOUR = 12;
+
    static createInvalidDate() {
       return new Date(Number.NaN);
    }
@@ -12,7 +12,7 @@ export class VisitDateRuleHelpers {
    }
 
    static createLocalNoonDate(year, monthIndex, day) {
-      return new Date(year, monthIndex, day, LOCAL_NOON_HOUR, 0, 0, 0);
+      return new Date(year, monthIndex, day, VisitDateRuleHelpers.LOCAL_NOON_HOUR, 0, 0, 0);
    }
 
    static matchesDateParts(date, {

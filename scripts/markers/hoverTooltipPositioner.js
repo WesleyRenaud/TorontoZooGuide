@@ -1,10 +1,10 @@
-const HOVER_TOOLTIP_POSITION = Object.freeze({
-   viewportPadding: 14,
-   cursorOffsetX: 18,
-   cursorOffsetY: 22,
-});
-
 export class HoverTooltipPositioner {
+   static HOVER_TOOLTIP_POSITION = Object.freeze({
+      viewportPadding: 14,
+      cursorOffsetX: 18,
+      cursorOffsetY: 22,
+   });
+
    static isTooltipVisible(hoverTooltipEl) {
       return Boolean(
          hoverTooltipEl
@@ -13,7 +13,7 @@ export class HoverTooltipPositioner {
    }
 
    static clampToViewport(value, size, viewportSize) {
-      const { viewportPadding } = HOVER_TOOLTIP_POSITION;
+      const { viewportPadding } = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION;
 
       return Math.max(
          viewportPadding,
@@ -26,7 +26,7 @@ export class HoverTooltipPositioner {
          cursorOffsetX,
          cursorOffsetY,
          viewportPadding,
-      } = HOVER_TOOLTIP_POSITION;
+      } = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION;
 
       let x = event.clientX + cursorOffsetX;
       let y = event.clientY - tooltipRect.height - cursorOffsetY;

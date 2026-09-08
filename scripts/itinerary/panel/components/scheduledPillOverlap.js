@@ -2,10 +2,10 @@ import { ScheduledPillOverlapHelpers } from './scheduledPillOverlapHelpers.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
 
-export const MAX_TIMELINE_PILL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_COLUMNS;
-export const MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;
-
 export class ScheduledPillOverlap {
+   static MAX_TIMELINE_PILL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_COLUMNS;
+   static MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS = TimelineLayoutConstants.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS;
+
    static getScheduledPillMinDisplayMinutes() {
       return TimelineLayoutConstants.TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES;
    }

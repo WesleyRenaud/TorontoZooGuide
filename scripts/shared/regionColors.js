@@ -7,24 +7,25 @@ import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 
 // Keep in sync with api/seed/data/exhibit.json.
-const EXHIBIT_REGION_BY_NAME = Object.freeze({
-   'australasia pavilion': 'Australasia',
-   'australasia outdoor': 'Australasia',
-   'eurasia wilds': 'Eurasia Wilds',
-   'tundra trek': 'Tundra Trek',
-   'americas outdoor mayan temple ruins': 'Americas',
-   'americas pavilion': 'Americas',
-   'canadian domain': 'Canadian Domain',
-   'africa savanna': 'Africa',
-   'african rainforest pavilion': 'Africa',
-   'indo-malaya pavilion': 'Indo-Malaya',
-   'indo-malaya outdoor': 'Indo-Malaya',
-   'malayan woods pavilion': 'Indo-Malaya',
-   'goat world': 'Discovery Zone',
-   'kids zoo': 'Discovery Zone',
-});
 
 export class RegionColors {
+   static EXHIBIT_REGION_BY_NAME = Object.freeze({
+      'australasia pavilion': 'Australasia',
+      'australasia outdoor': 'Australasia',
+      'eurasia wilds': 'Eurasia Wilds',
+      'tundra trek': 'Tundra Trek',
+      'americas outdoor mayan temple ruins': 'Americas',
+      'americas pavilion': 'Americas',
+      'canadian domain': 'Canadian Domain',
+      'africa savanna': 'Africa',
+      'african rainforest pavilion': 'Africa',
+      'indo-malaya pavilion': 'Indo-Malaya',
+      'indo-malaya outdoor': 'Indo-Malaya',
+      'malayan woods pavilion': 'Indo-Malaya',
+      'goat world': 'Discovery Zone',
+      'kids zoo': 'Discovery Zone',
+   });
+
    static REGION_COLOR_SLUGS = Object.freeze({
       Africa: 'africa',
       'Indo-Malaya': 'indo-malaya',
@@ -47,7 +48,7 @@ export class RegionColors {
          return '';
       }
 
-      return EXHIBIT_REGION_BY_NAME[exhibitKey] ?? '';
+      return RegionColors.EXHIBIT_REGION_BY_NAME[exhibitKey] ?? '';
    }
 
    static resolveRegionColorSlug(regionName = '') {

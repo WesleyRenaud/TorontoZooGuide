@@ -1,12 +1,12 @@
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
 
-const CLOSED_EXHIBIT_OVERLAY_ID_PREFIX = 'closed-exhibit-overlay-';
-
-const CLOSED_EXHIBIT_OVERLAY_SELECTOR = `[id^="${CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}"]`;
-
 export class ClosedExhibitOverlayHelpers {
+   static CLOSED_EXHIBIT_OVERLAY_ID_PREFIX = 'closed-exhibit-overlay-';
+
+   static CLOSED_EXHIBIT_OVERLAY_SELECTOR = `[id^="${ClosedExhibitOverlayHelpers.CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}"]`;
+
    static getClosedExhibitOverlays() {
-      return document.querySelectorAll(CLOSED_EXHIBIT_OVERLAY_SELECTOR);
+      return document.querySelectorAll(ClosedExhibitOverlayHelpers.CLOSED_EXHIBIT_OVERLAY_SELECTOR);
    }
 
    static hideClosedExhibitOverlays(overlays) {
@@ -16,7 +16,7 @@ export class ClosedExhibitOverlayHelpers {
    }
 
    static getClosedExhibitOverlayId(exhibitKey) {
-      return `${CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}${exhibitKey}`;
+      return `${ClosedExhibitOverlayHelpers.CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}${exhibitKey}`;
    }
 
    static showClosedExhibitOverlay(exhibitKey) {

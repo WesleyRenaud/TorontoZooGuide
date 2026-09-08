@@ -5,9 +5,9 @@ import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { Strings } from '../../strings.js';
 
-const STORAGE_KEY = 'tzg.itineraryAttractions';
-
 export class AttractionSelector {
+   static STORAGE_KEY = 'tzg.itineraryAttractions';
+
    static createItineraryAttractionSelectorController({
    mountEl,
    onNext,
@@ -24,7 +24,7 @@ export class AttractionSelector {
          onFinish,
          onClose,
 
-         storageKey: STORAGE_KEY,
+         storageKey: AttractionSelector.STORAGE_KEY,
          migrateSelected: AttractionSelectorModel.migrateStoredAttractions,
 
          getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),

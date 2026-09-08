@@ -4,9 +4,9 @@ import { ItineraryService } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
 
-let latestRenderToken = 0;
-
 export class RenderPanel {
+   static latestRenderToken = 0;
+
    static async clearStoredItinerary(deps = {}) {
       const {
          clearSavedItinerary = ItineraryService.clearItinerary,
@@ -41,12 +41,12 @@ export class RenderPanel {
          onAfterClear = RenderPanel.clearStoredItinerary,
       } = deps;
 
-      const renderToken = ++latestRenderToken;
+      const renderToken = ++RenderPanel.latestRenderToken;
       const itinerary = await loadItinerary();
       const hoursDate = await resolveHoursDate(itinerary);
       const zooHours = await loadZooHours(hoursDate);
 
-      if (renderToken !== latestRenderToken) {
+      if (renderToken !== RenderPanel.latestRenderToken) {
          return;
       }
 

@@ -8,6 +8,8 @@ export class MainMap {
          MapPage.initMapPage();
       });
    }
-}
 
-MainMap.bind();
+   static {
+      MainMap.bind();
+   }
+}

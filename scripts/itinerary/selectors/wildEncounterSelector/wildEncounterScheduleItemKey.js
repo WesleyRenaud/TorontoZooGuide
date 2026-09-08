@@ -1,8 +1,7 @@
 import { WildEncounterScheduleItemKeyHelpers } from './wildEncounterScheduleItemKeyHelpers.js';
 
-export const WILD_ENCOUNTER_ITEM_KEY_SEPARATOR = '||';
-
 export class WildEncounterScheduleItemKey {
+   static WILD_ENCOUNTER_ITEM_KEY_SEPARATOR = '||';
    constructor(name = '', startTime = '', endTime = '') {
       this.name = String(name ?? '').trim();
       this.startTime = String(startTime ?? '').trim();
@@ -11,7 +10,7 @@ export class WildEncounterScheduleItemKey {
    }
 
    static fromWire(wire) {
-      const parts = String(wire ?? '').split(WILD_ENCOUNTER_ITEM_KEY_SEPARATOR, 3);
+      const parts = String(wire ?? '').split(WildEncounterScheduleItemKey.WILD_ENCOUNTER_ITEM_KEY_SEPARATOR, 3);
       const name = parts[0]?.trim() ?? '';
 
       if (!name || parts.length < 2) {
@@ -56,7 +55,7 @@ export class WildEncounterScheduleItemKey {
          parts.push(this.endTime);
       }
 
-      return parts.join(WILD_ENCOUNTER_ITEM_KEY_SEPARATOR);
+      return parts.join(WildEncounterScheduleItemKey.WILD_ENCOUNTER_ITEM_KEY_SEPARATOR);
    }
 
    equals(other) {

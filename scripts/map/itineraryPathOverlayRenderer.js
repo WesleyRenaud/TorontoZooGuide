@@ -3,19 +3,19 @@ import { ItineraryPathConstants } from './itineraryPathConstants.js';
 import { ItineraryPathGeometry } from './itineraryPathGeometry.js';
 import { ZooMapConstants } from '../shared/zooMapConstants.js';
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
-const ITINERARY_PATH_LAYER_ID = 'itinerary-path';
-
-const PATH_CLASS = 'itinerary-path-line';
-
-const ARROWS_CLASS = 'itinerary-path-arrows';
-
-const ARROW_CLASS = 'itinerary-path-arrow';
-
-const ARROW_HEAD_POINTS = '0,-2.5 12,0 0,2.5';
-
 export class ItineraryPathOverlayRenderer {
+   static SVG_NS = 'http://www.w3.org/2000/svg';
+
+   static ITINERARY_PATH_LAYER_ID = 'itinerary-path';
+
+   static PATH_CLASS = 'itinerary-path-line';
+
+   static ARROWS_CLASS = 'itinerary-path-arrows';
+
+   static ARROW_CLASS = 'itinerary-path-arrow';
+
+   static ARROW_HEAD_POINTS = '0,-2.5 12,0 0,2.5';
+
    static getSvgRoot() {
       return document.querySelector('#zooMapMount svg');
    }
@@ -56,15 +56,15 @@ export class ItineraryPathOverlayRenderer {
    }
 
    static createArrowMarker({ x, y, angleDeg }) {
-      const markerGroup = document.createElementNS(SVG_NS, 'g');
-      markerGroup.classList.add(ARROW_CLASS);
+      const markerGroup = document.createElementNS(ItineraryPathOverlayRenderer.SVG_NS, 'g');
+      markerGroup.classList.add(ItineraryPathOverlayRenderer.ARROW_CLASS);
       markerGroup.setAttribute(
          'transform',
          `translate(${x} ${y}) rotate(${angleDeg})`
       );
 
-      const head = document.createElementNS(SVG_NS, 'polygon');
-      head.setAttribute('points', ARROW_HEAD_POINTS);
+      const head = document.createElementNS(ItineraryPathOverlayRenderer.SVG_NS, 'polygon');
+      head.setAttribute('points', ItineraryPathOverlayRenderer.ARROW_HEAD_POINTS);
       markerGroup.appendChild(head);
 
       return markerGroup;
@@ -87,18 +87,18 @@ export class ItineraryPathOverlayRenderer {
    }
 
    static createPathLayer(pathD) {
-      const layer = document.createElementNS(SVG_NS, 'g');
-      layer.setAttribute('id', ITINERARY_PATH_LAYER_ID);
+      const layer = document.createElementNS(ItineraryPathOverlayRenderer.SVG_NS, 'g');
+      layer.setAttribute('id', ItineraryPathOverlayRenderer.ITINERARY_PATH_LAYER_ID);
       layer.setAttribute('aria-hidden', 'true');
 
-      const path = document.createElementNS(SVG_NS, 'path');
-      path.classList.add(PATH_CLASS);
+      const path = document.createElementNS(ItineraryPathOverlayRenderer.SVG_NS, 'path');
+      path.classList.add(ItineraryPathOverlayRenderer.PATH_CLASS);
       path.setAttribute('d', pathD);
       path.setAttribute('fill', 'none');
       layer.appendChild(path);
 
-      const markersLayer = document.createElementNS(SVG_NS, 'g');
-      markersLayer.classList.add(ARROWS_CLASS);
+      const markersLayer = document.createElementNS(ItineraryPathOverlayRenderer.SVG_NS, 'g');
+      markersLayer.classList.add(ItineraryPathOverlayRenderer.ARROWS_CLASS);
       ItineraryPathOverlayRenderer.appendArrowMarkers(markersLayer, pathD);
       layer.appendChild(markersLayer);
 
@@ -110,6 +110,6 @@ export class ItineraryPathOverlayRenderer {
          return;
       }
 
-      svgRoot.querySelector(`#${ITINERARY_PATH_LAYER_ID}`)?.remove();
+      svgRoot.querySelector(`#${ItineraryPathOverlayRenderer.ITINERARY_PATH_LAYER_ID}`)?.remove();
    }
 }

@@ -1,9 +1,9 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { VisitDateRuleHelpers } from './visitDateRuleHelpers.js';
 
-const MS_PER_DAY = 86400000;
-
 export class VisitDateRules {
+   static MS_PER_DAY = 86400000;
+
    static DEFAULT_DAYS_AHEAD = 360;
 
    static parseLocalDate(dateStr) {
@@ -45,7 +45,7 @@ export class VisitDateRules {
       }
 
       const today = VisitDateRules.normalizeDate(referenceToday) ?? VisitDateRules.getToday();
-      const diffDays = (target - today) / MS_PER_DAY;
+      const diffDays = (target - today) / VisitDateRules.MS_PER_DAY;
       return diffDays >= 0 && diffDays <= n;
    }
 

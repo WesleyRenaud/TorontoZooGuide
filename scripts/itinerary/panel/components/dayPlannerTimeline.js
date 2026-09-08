@@ -7,10 +7,6 @@ import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 
-export {
-   DayPlannerTimelinePillPlacement,
-} from './dayPlannerTimelinePillPlacement.js';
-
 export class DayPlannerTimeline {
    static attachScheduledEventCardMenu(itemRow, {
       menuAriaLabel = '',

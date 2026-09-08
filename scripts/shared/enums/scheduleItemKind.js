@@ -35,13 +35,13 @@ export class ScheduleItemKind {
          return null;
       }
 
-      for (const entry of SCHEDULE_ITEM_KIND_ENTRIES) {
+      for (const entry of ScheduleItemKind.SCHEDULE_ITEM_KIND_ENTRIES) {
          if (entry?.itemType === normalized) {
             return entry;
          }
       }
 
-      for (const entry of SCHEDULE_ITEM_KIND_ENTRIES) {
+      for (const entry of ScheduleItemKind.SCHEDULE_ITEM_KIND_ENTRIES) {
          if (entry?.kind === normalized) {
             return entry;
          }
@@ -82,24 +82,24 @@ export class ScheduleItemKind {
    }
 
    static scheduleItemModuleItemTypeForKind(kind) {
-      return ITEM_TYPE_BY_KIND[ScheduleItemKindHelpers.normalizeScheduleItemKindKey(kind)] ?? null;
+      return ScheduleItemKind.ITEM_TYPE_BY_KIND[ScheduleItemKindHelpers.normalizeScheduleItemKindKey(kind)] ?? null;
    }
+
+   static SCHEDULE_ITEM_KIND_ENTRIES = Object.freeze([
+      ScheduleItemKind.ENTRANCE,
+      ScheduleItemKind.ANIMAL,
+      ScheduleItemKind.ATTRACTION,
+      ScheduleItemKind.TRANSPORTATION,
+      ScheduleItemKind.GUARDIANS_TALK,
+      ScheduleItemKind.WILD_ENCOUNTER,
+      ScheduleItemKind.EVENT,
+   ]);
+
+   static ITEM_TYPE_BY_KIND = Object.freeze({
+      [ScheduleItemKind.ANIMAL.kind]: ScheduleItemKind.ANIMAL.itemType,
+      [ScheduleItemKind.ATTRACTION.kind]: ScheduleItemKind.ATTRACTION.itemType,
+      [ScheduleItemKind.TRANSPORTATION.kind]: ScheduleItemKind.TRANSPORTATION.itemType,
+      [ScheduleItemKind.GUARDIANS_TALK.kind]: ScheduleItemKind.GUARDIANS_TALK.itemType,
+      [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
+   });
 }
-
-const SCHEDULE_ITEM_KIND_ENTRIES = Object.freeze([
-   ScheduleItemKind.ENTRANCE,
-   ScheduleItemKind.ANIMAL,
-   ScheduleItemKind.ATTRACTION,
-   ScheduleItemKind.TRANSPORTATION,
-   ScheduleItemKind.GUARDIANS_TALK,
-   ScheduleItemKind.WILD_ENCOUNTER,
-   ScheduleItemKind.EVENT,
-]);
-
-const ITEM_TYPE_BY_KIND = Object.freeze({
-   [ScheduleItemKind.ANIMAL.kind]: ScheduleItemKind.ANIMAL.itemType,
-   [ScheduleItemKind.ATTRACTION.kind]: ScheduleItemKind.ATTRACTION.itemType,
-   [ScheduleItemKind.TRANSPORTATION.kind]: ScheduleItemKind.TRANSPORTATION.itemType,
-   [ScheduleItemKind.GUARDIANS_TALK.kind]: ScheduleItemKind.GUARDIANS_TALK.itemType,
-   [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
-});

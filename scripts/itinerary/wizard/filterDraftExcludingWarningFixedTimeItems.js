@@ -1,4 +1,3 @@
-
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
 import { WarningFixedTimeDraftFilter } from './warningFixedTimeDraftFilter.js';

@@ -1,15 +1,15 @@
 import { ItineraryPanelViews } from './components/itineraryPanelViews.js';
 import { ItineraryPanelViewUrlHelpers } from './itineraryPanelViewUrlHelpers.js';
 
-const VALID_ITINERARY_PANEL_VIEWS = new Set(
-   Object.values(ItineraryPanelViews.ITINERARY_PANEL_VIEWS)
-);
-
 export class ItineraryPanelViewUrl {
+   static VALID_ITINERARY_PANEL_VIEWS = new Set(
+      Object.values(ItineraryPanelViews.ITINERARY_PANEL_VIEWS)
+   );
+
    static ITINERARY_PANEL_VIEW_QUERY_PARAM = 'view';
 
    static normalizeItineraryPanelView(view) {
-      return VALID_ITINERARY_PANEL_VIEWS.has(view)
+      return ItineraryPanelViewUrl.VALID_ITINERARY_PANEL_VIEWS.has(view)
          ? view
          : ItineraryPanelViews.ITINERARY_PANEL_VIEWS.list;
    }

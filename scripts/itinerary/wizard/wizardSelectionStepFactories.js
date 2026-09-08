@@ -6,19 +6,19 @@ import { TransportationSelector } from '../selectors/transportationSelector.js';
 import { WildEncounterSelector } from '../selectors/wildEncounterSelector.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 
-const WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
-   transportations: TransportationSelector.createItineraryTransportationSelectorController,
-   wildEncounters: WildEncounterSelector.createItineraryWildEncounterSelectorController,
-   guardiansTalks: GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController,
-   attractions: AttractionSelector.createItineraryAttractionSelectorController,
-   animals: AnimalSelector.createItineraryAnimalSelectorController,
-   regions: RegionSelector.createItineraryRegionSelectorController,
-});
-
 export class WizardSelectionStepFactories {
+   static WIZARD_SELECTION_STEP_FACTORIES = Object.freeze({
+      transportations: TransportationSelector.createItineraryTransportationSelectorController,
+      wildEncounters: WildEncounterSelector.createItineraryWildEncounterSelectorController,
+      guardiansTalks: GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController,
+      attractions: AttractionSelector.createItineraryAttractionSelectorController,
+      animals: AnimalSelector.createItineraryAnimalSelectorController,
+      regions: RegionSelector.createItineraryRegionSelectorController,
+   });
+
    static buildWizardSelectionStepConfigs(
       definitions = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS,
-      factoriesByStepKey = WIZARD_SELECTION_STEP_FACTORIES
+      factoriesByStepKey = WizardSelectionStepFactories.WIZARD_SELECTION_STEP_FACTORIES
    ) {
       return definitions.map((definition) => ({
          ...definition,

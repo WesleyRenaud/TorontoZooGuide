@@ -4,12 +4,12 @@ import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 import { SpeciesOverlayBuilder } from './speciesOverlayBuilder.js';
 import { Strings } from '../strings.js';
 
-let speciesOverlayController = null;
-
 export class SpeciesOverlay {
+   static speciesOverlayController = null;
+
    static initSpeciesOverlay() {
-      if (speciesOverlayController) {
-         return speciesOverlayController;
+      if (SpeciesOverlay.speciesOverlayController) {
+         return SpeciesOverlay.speciesOverlayController;
       }
 
       let boundOverlay = null;
@@ -116,8 +116,8 @@ export class SpeciesOverlay {
          render(animal);
       }
 
-      speciesOverlayController = { openFromAnimal, close };
-      return speciesOverlayController;
+      SpeciesOverlay.speciesOverlayController = { openFromAnimal, close };
+      return SpeciesOverlay.speciesOverlayController;
 
    }
 

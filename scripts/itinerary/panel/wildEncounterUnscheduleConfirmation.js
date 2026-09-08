@@ -3,12 +3,12 @@ import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
-const WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE = 'wildEncounterWillUnscheduleItems';
-
 export class WildEncounterUnscheduleConfirmation {
+   static WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE = 'wildEncounterWillUnscheduleItems';
+
    static getWildEncounterNamesFromUnscheduleIssues(issues = []) {
       return issues
-         .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === WildEncounterUnscheduleConfirmation.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
             .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
             .filter(Boolean));
@@ -23,7 +23,7 @@ export class WildEncounterUnscheduleConfirmation {
       }
 
       const encounterItem = issues
-         .filter((issue) => issue?.type === WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === WildEncounterUnscheduleConfirmation.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === encounterName);
 

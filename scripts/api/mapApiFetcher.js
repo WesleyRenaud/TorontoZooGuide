@@ -1,9 +1,9 @@
 import { ApiClient } from './apiClient.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
-const EMPTY_PAYLOAD = Object.freeze({});
-
 export class MapApiFetcher {
+   static EMPTY_PAYLOAD = Object.freeze({});
+
    static asStringArray(value) {
       return ValueNormalizer.asArray(value)
          .map(ValueNormalizer.asTrimmedString)
@@ -23,12 +23,12 @@ export class MapApiFetcher {
       };
    }
 
-   static async fetchCollection(endpoint, responseKey, payload = EMPTY_PAYLOAD) {
+   static async fetchCollection(endpoint, responseKey, payload = MapApiFetcher.EMPTY_PAYLOAD) {
       const response = await ApiClient.postJson(endpoint, payload);
       return MapApiFetcher.readResponseCollection(response, responseKey);
    }
 
-   static async fetchStringCollection(endpoint, responseKey, payload = EMPTY_PAYLOAD) {
+   static async fetchStringCollection(endpoint, responseKey, payload = MapApiFetcher.EMPTY_PAYLOAD) {
       return MapApiFetcher.asStringArray(await MapApiFetcher.fetchCollection(endpoint, responseKey, payload));
    }
 

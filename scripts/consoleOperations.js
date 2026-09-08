@@ -6,6 +6,8 @@ export class ConsoleOperations {
          ConsoleOperationsPage.initConsoleOperationsPage();
       });
    }
-}
 
-ConsoleOperations.bind();
+   static {
+      ConsoleOperations.bind();
+   }
+}

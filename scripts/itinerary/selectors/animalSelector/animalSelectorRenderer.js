@@ -1,33 +1,29 @@
 import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
+import { AnimalSelectorModel } from './animalSelectorModel.js';
 import { AnimalSelectorRendererHelpers } from './animalSelectorRendererHelpers.js';
 import { ResultRenderer } from '../base/resultRenderer.js';
-import {
-   buildAnimalImageSrc,
-   getAnimalEnclosureName,
-   getAnimalLikelihoodLevel,
-   getAnimalSpecies,
-   getAnimalSubtitle,
-} from './model.js';
 import { Strings } from '../../../strings.js';
 
 export class AnimalSelectorRenderer {
    static renderAnimalSelectorRowLeft(row) {
-      const species = getAnimalSpecies(row);
-      const subtitle = getAnimalSubtitle(row);
-      const imageSrc = buildAnimalImageSrc(row);
+      const species = AnimalSelectorModel.getAnimalSpecies(row);
+      const subtitle = AnimalSelectorModel.getAnimalSubtitle(row);
+      const imageSrc = AnimalSelectorModel.buildAnimalImageSrc(row);
 
       const titleWrap = document.createElement('div');
       titleWrap.className = 'itin-animal-title-wrap';
 
       const titleEl = CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
          species,
-         enclosureName: getAnimalEnclosureName(row),
+         enclosureName: AnimalSelectorModel.getAnimalEnclosureName(row),
          className: 'animal-result-species',
       });
 
       titleWrap.appendChild(titleEl);
 
-      const warning = AnimalSelectorRendererHelpers.createLikelihoodWarning(getAnimalLikelihoodLevel(row));
+      const warning = AnimalSelectorRendererHelpers.createLikelihoodWarning(
+         AnimalSelectorModel.getAnimalLikelihoodLevel(row)
+      );
 
       if (warning) {
          titleWrap.appendChild(warning);

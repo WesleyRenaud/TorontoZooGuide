@@ -2,11 +2,11 @@ import { ItineraryPanelPopup } from '../../itinerary/panel/components/itineraryP
 import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { OpeningScheduleOverlapDialogBuilder } from './openingScheduleOverlapDialogBuilder.js';
 
-const ROOT_SELECTOR = '.console-overlap-dialog-root';
-
 export class OpeningScheduleOverlapDialog {
+   static ROOT_SELECTOR = '.console-overlap-dialog-root';
+
    static showOpeningScheduleOverlapDialog() {
-      document.querySelector(ROOT_SELECTOR)?.__tzgPopupCleanup?.();
+      document.querySelector(OpeningScheduleOverlapDialog.ROOT_SELECTOR)?.__tzgPopupCleanup?.();
 
       return new Promise((resolve) => {
          const { root, overlay, buttons } = OpeningScheduleOverlapDialogBuilder.createDialogLayout();

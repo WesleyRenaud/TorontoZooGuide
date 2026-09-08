@@ -3,11 +3,11 @@ import { ConsoleOperationPanelsBootstrap } from '../consoleOperations/bootstrap/
 import { DatePickers } from '../consoleOperations/bootstrap/datePickers.js';
 import { PanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
-const CONSOLE_OPERATIONS_WORKSPACE_ID = 'consoleOperationsWorkspace';
-
 export class ConsoleOperationsPageBootstrap {
+   static CONSOLE_OPERATIONS_WORKSPACE_ID = 'consoleOperationsWorkspace';
+
    static getConsoleOperationsWorkspace() {
-      return document.getElementById(CONSOLE_OPERATIONS_WORKSPACE_ID);
+      return document.getElementById(ConsoleOperationsPageBootstrap.CONSOLE_OPERATIONS_WORKSPACE_ID);
    }
 
    static createConsoleOperationSpecialControllers(refs) {

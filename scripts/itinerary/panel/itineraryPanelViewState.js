@@ -1,21 +1,21 @@
 import { ItineraryPanelViews } from './components/itineraryPanelViews.js';
 import { ItineraryPanelViewUrl } from './itineraryPanelViewUrl.js';
 
-let activePanelView = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl();
-
 export class ItineraryPanelViewState {
+   static activePanelView = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl();
+
    static getActiveItineraryPanelView() {
-      return activePanelView;
+      return ItineraryPanelViewState.activePanelView;
    }
 
    static setActiveItineraryPanelView(view) {
-      activePanelView = view;
+      ItineraryPanelViewState.activePanelView = view;
       ItineraryPanelViewUrl.setItineraryPanelViewInUrl(view);
    }
 
    static makeItineraryPanelViewShell() {
       return ItineraryPanelViews.makeItineraryPanelViews({
-         activeView: activePanelView,
+         activeView: ItineraryPanelViewState.activePanelView,
          onViewChange: ItineraryPanelViewState.setActiveItineraryPanelView,
       });
    }
@@ -23,6 +23,6 @@ export class ItineraryPanelViewState {
    static resetActiveItineraryPanelView(
       view = ItineraryPanelViewUrl.getItineraryPanelViewFromUrl()
    ) {
-      activePanelView = view;
+      ItineraryPanelViewState.activePanelView = view;
    }
 }

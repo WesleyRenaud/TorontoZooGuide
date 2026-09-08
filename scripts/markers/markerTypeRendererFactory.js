@@ -1,52 +1,59 @@
 import { IconUrls } from '../assets/iconUrls.js';
 import { MarkerVisualUtils } from './markerVisualUtils.js';
 
-const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
-const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
-const CLOSED_RESTROOM_ICON_TOKEN = 'closed';
-const FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
-const GENERIC_ICON_PATHS = Object.freeze({
-   pavilion: '/images/icons/pavilion/pavilion-open.png',
-   restroom: '/images/icons/restroom/restroom-open.png',
-   transportationStation: '/images/icons/zoomobile-station/zoomobile-station.png',
-   guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
-   wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
-   defibrillator: '/images/icons/defibrillator/defibrillator.png',
-   emergencyIntercom: '/images/icons/emergency-intercom/emergency-intercom.png',
-   picnicSite: '/images/icons/picnic-site/picnic-site.png',
-});
-const MARKER_CLASS_BY_TYPE = Object.freeze({
-   restaurant: 'marker-restaurant',
-   restroom: 'marker-restroom',
-   giftShop: 'marker-gift-shop',
-   attraction: 'marker-attraction',
-   transportationStation: 'marker-zoomobile-station',
-   transportationRouteMarker: 'marker-zoomobile-route-marker',
-   guardiansTalk: 'marker-guardians-talk',
-   wildEncounter: 'marker-wild-encounter',
-   drinkingFountain: 'marker-drinking-fountain',
-   defibrillator: 'marker-defibrillator',
-   emergencyIntercom: 'marker-emergency-intercom',
-   guestService: 'marker-guest-service',
-   firstAidGuestService: 'marker-guest-service-first-aid',
-   picnicSite: 'marker-picnic-site',
-   eventSite: 'marker-event-site',
-});
-const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
-   winter: '#003366',
-   default: '#556B2F',
-});
-const ATTRACTION_MARKER_SCALE_OVERRIDES = Object.freeze({
-   'Greenhouse': 2.5,
-   'Wildlife Health & Science Centre': 2.5,
-   'Splash Island': 2.5,
-   'Gorilla Climb Ropes Course': 1.35,
-   'TundraAir Ride': 2.0,
-   'Conservation Carousel': 2.5,
-   'Zoomobile': 2.0,
-});
-
 export class MarkerTypeRendererFactory {
+   static DEFAULT_ATTRACTION_MARKER_SIZE = 32;
+
+   static LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
+
+   static CLOSED_RESTROOM_ICON_TOKEN = 'closed';
+
+   static FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
+
+   static GENERIC_ICON_PATHS = Object.freeze({
+      pavilion: '/images/icons/pavilion/pavilion-open.png',
+      restroom: '/images/icons/restroom/restroom-open.png',
+      transportationStation: '/images/icons/zoomobile-station/zoomobile-station.png',
+      guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
+      wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
+      defibrillator: '/images/icons/defibrillator/defibrillator.png',
+      emergencyIntercom: '/images/icons/emergency-intercom/emergency-intercom.png',
+      picnicSite: '/images/icons/picnic-site/picnic-site.png',
+   });
+
+   static MARKER_CLASS_BY_TYPE = Object.freeze({
+      restaurant: 'marker-restaurant',
+      restroom: 'marker-restroom',
+      giftShop: 'marker-gift-shop',
+      attraction: 'marker-attraction',
+      transportationStation: 'marker-zoomobile-station',
+      transportationRouteMarker: 'marker-zoomobile-route-marker',
+      guardiansTalk: 'marker-guardians-talk',
+      wildEncounter: 'marker-wild-encounter',
+      drinkingFountain: 'marker-drinking-fountain',
+      defibrillator: 'marker-defibrillator',
+      emergencyIntercom: 'marker-emergency-intercom',
+      guestService: 'marker-guest-service',
+      firstAidGuestService: 'marker-guest-service-first-aid',
+      picnicSite: 'marker-picnic-site',
+      eventSite: 'marker-event-site',
+   });
+
+   static ZOOMOBILE_ROUTE_COLORS = Object.freeze({
+      winter: '#003366',
+      default: '#556B2F',
+   });
+
+   static ATTRACTION_MARKER_SCALE_OVERRIDES = Object.freeze({
+      'Greenhouse': 2.5,
+      'Wildlife Health & Science Centre': 2.5,
+      'Splash Island': 2.5,
+      'Gorilla Climb Ropes Course': 1.35,
+      'TundraAir Ride': 2.0,
+      'Conservation Carousel': 2.5,
+      'Zoomobile': 2.0,
+   });
+
    static shouldShowLimitedViewingIndicator(animal) {
       return Boolean(
          !animal?.off_display_message
@@ -66,11 +73,11 @@ export class MarkerTypeRendererFactory {
    }
 
    static applyAttractionMarkerSize(markerEl, attractionName) {
-      const scale = ATTRACTION_MARKER_SCALE_OVERRIDES[attractionName];
+      const scale = MarkerTypeRendererFactory.ATTRACTION_MARKER_SCALE_OVERRIDES[attractionName];
 
       if (!scale) return;
 
-      const size = Math.round(DEFAULT_ATTRACTION_MARKER_SIZE * scale);
+      const size = Math.round(MarkerTypeRendererFactory.DEFAULT_ATTRACTION_MARKER_SIZE * scale);
       markerEl.style.width = `${size}px`;
       markerEl.style.height = `${size}px`;
    }
@@ -83,8 +90,8 @@ export class MarkerTypeRendererFactory {
 
    static createGenericIconMarkerRenderer(type) {
       return (markerEl, items) => {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
-         MarkerVisualUtils.applyGenericIcon(markerEl, GENERIC_ICON_PATHS[type], items.length);
+         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
+         MarkerVisualUtils.applyGenericIcon(markerEl, MarkerTypeRendererFactory.GENERIC_ICON_PATHS[type], items.length);
       };
    }
 
@@ -98,7 +105,7 @@ export class MarkerTypeRendererFactory {
          const item = items[0];
          const count = items.length;
 
-         MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
+         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
          MarkerTypeRendererFactory.applyOptionalSize(markerEl, item, applySize);
 
          const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(getLikelihood(item));
@@ -129,7 +136,7 @@ export class MarkerTypeRendererFactory {
       }
 
       if (MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(animal)) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
+         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
       }
    }
 
@@ -139,7 +146,7 @@ export class MarkerTypeRendererFactory {
       const likelihood = restroom?.is_closed ? 0 : 100;
       const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.restroom);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.restroom);
 
       if (count > 1) {
          MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
@@ -147,23 +154,23 @@ export class MarkerTypeRendererFactory {
          MarkerVisualUtils.applyBackgroundImage(
             markerEl,
             IconUrls.getRestroomIconUrl(
-               restroom?.is_closed ? CLOSED_RESTROOM_ICON_TOKEN : iconToken
+               restroom?.is_closed ? MarkerTypeRendererFactory.CLOSED_RESTROOM_ICON_TOKEN : iconToken
             )
          );
       }
 
       if (items.some(MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator)) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
+         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
       }
    }
 
    static renderTransportationRouteMarker(markerEl, items) {
       const routeType = items[0]?.route_type;
-      const routeColor = ZOOMOBILE_ROUTE_COLORS[routeType]
-         || ZOOMOBILE_ROUTE_COLORS.default;
+      const routeColor = MarkerTypeRendererFactory.ZOOMOBILE_ROUTE_COLORS[routeType]
+         || MarkerTypeRendererFactory.ZOOMOBILE_ROUTE_COLORS.default;
 
       markerEl.style.backgroundColor = routeColor;
-      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.transportationRouteMarker);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.transportationRouteMarker);
    }
 
    static renderDrinkingFountainMarker(markerEl, items) {
@@ -174,7 +181,7 @@ export class MarkerTypeRendererFactory {
          : (drinkingFountain?.is_closed ? 0 : 100);
       const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.drinkingFountain);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.drinkingFountain);
 
       if (count > 1) {
          MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
@@ -191,10 +198,10 @@ export class MarkerTypeRendererFactory {
       const guestService = items[0];
       const serviceType = String(guestService?.service_type || '').trim();
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.guestService);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.guestService);
 
-      if (serviceType === FIRST_AID_AND_FAMILY_CENTER_TYPE) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.firstAidGuestService);
+      if (serviceType === MarkerTypeRendererFactory.FIRST_AID_AND_FAMILY_CENTER_TYPE) {
+         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.firstAidGuestService);
       }
 
       if (items.length > 1) {
@@ -211,7 +218,7 @@ export class MarkerTypeRendererFactory {
    static renderEventSiteMarker(markerEl, items) {
       const eventSite = items[0];
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.eventSite);
+      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.eventSite);
 
       if (items.length > 1) {
          MarkerVisualUtils.applyCountMarker(markerEl, items.length);

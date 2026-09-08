@@ -1,14 +1,14 @@
 import { PanzoomLabelVisibility } from './panzoomLabelVisibility.js';
 
-const PANZOOM_SCALE_RANGE = Object.freeze({
-   minScale: 1,
-   maxScale: 10,
-});
-
 export class Panzoom {
+   static PANZOOM_SCALE_RANGE = Object.freeze({
+      minScale: 1,
+      maxScale: 10,
+   });
+
    static createPanzoom(mapInner, { contain }) {
       const panzoom = globalThis.Panzoom(mapInner, {
-         ...PANZOOM_SCALE_RANGE,
+         ...Panzoom.PANZOOM_SCALE_RANGE,
          contain,
       });
 

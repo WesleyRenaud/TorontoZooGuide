@@ -3,12 +3,12 @@ import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
-const GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
-
 export class GuardiansTalkUnscheduleConfirmation {
+   static GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
+
    static getGuardiansTalkNamesFromUnscheduleIssues(issues = []) {
       return issues
-         .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === GuardiansTalkUnscheduleConfirmation.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
             .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
             .filter(Boolean));
@@ -23,7 +23,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       }
 
       const talkItem = issues
-         .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === GuardiansTalkUnscheduleConfirmation.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === talkName);
 

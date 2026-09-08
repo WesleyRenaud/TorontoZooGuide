@@ -2,23 +2,23 @@ import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ScheduleTimesCheckboxFieldRenderer } from './scheduleTimesCheckboxFieldRenderer.js';
 import { Strings } from '../../strings.js';
 
-const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
-
 export class ScheduleTimesCheckboxField {
+   static SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
+
    static resolveScheduleTimesListEl(el) {
-      if (el?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
+      if (el?.classList?.contains(ScheduleTimesCheckboxField.SCHEDULE_TIMES_LIST_CLASS)) {
          return el;
       }
 
       if (el?.id) {
          const byIdEl = document.getElementById(el.id);
 
-         if (byIdEl?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
+         if (byIdEl?.classList?.contains(ScheduleTimesCheckboxField.SCHEDULE_TIMES_LIST_CLASS)) {
             return byIdEl;
          }
       }
 
-      const nestedEl = el?.querySelector?.(`.${SCHEDULE_TIMES_LIST_CLASS}`);
+      const nestedEl = el?.querySelector?.(`.${ScheduleTimesCheckboxField.SCHEDULE_TIMES_LIST_CLASS}`);
 
       if (nestedEl) {
          return nestedEl;

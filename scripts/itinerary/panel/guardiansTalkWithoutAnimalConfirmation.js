@@ -3,12 +3,12 @@ import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { Strings } from '../../strings.js';
 
-const GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE = 'guardiansTalkWithoutAnimal';
-
 export class GuardiansTalkWithoutAnimalConfirmation {
+   static GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE = 'guardiansTalkWithoutAnimal';
+
    static hasGuardiansTalkWithoutAnimalIssue(issues = []) {
       return issues.some(
-         (issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE
+         (issue) => issue?.type === GuardiansTalkWithoutAnimalConfirmation.GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE
       );
 
    }
@@ -23,7 +23,7 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       const talksByName = new Map();
 
       issues
-         .filter((issue) => issue?.type === GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
+         .filter((issue) => issue?.type === GuardiansTalkWithoutAnimalConfirmation.GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
             const talkName = ItineraryItemFormatter.normalizeText(item?.name);

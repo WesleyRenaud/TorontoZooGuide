@@ -1,9 +1,9 @@
 import { SvgPathParsing } from './svgPathParsing.js';
 import { WalkGraphPathGeometryHelpers } from './walkGraphPathGeometryHelpers.js';
 
-let cachedWalkGraphPath = null;
-
 export class WalkGraphPathGeometry {
+   static cachedWalkGraphPath = null;
+
    static getWalkGraphPathSegments() {
       const pathElement = document.querySelector('#walk-graph-path');
       const pathD = pathElement?.getAttribute('d');
@@ -12,18 +12,18 @@ export class WalkGraphPathGeometry {
          return null;
       }
 
-      if (cachedWalkGraphPath?.pathD !== pathD) {
-         cachedWalkGraphPath = {
+      if (WalkGraphPathGeometry.cachedWalkGraphPath?.pathD !== pathD) {
+         WalkGraphPathGeometry.cachedWalkGraphPath = {
             pathD,
             segments: SvgPathParsing.parseSvgPathD(pathD),
          };
       }
 
-      return cachedWalkGraphPath.segments;
+      return WalkGraphPathGeometry.cachedWalkGraphPath.segments;
    }
 
    static resetWalkGraphPathCache() {
-      cachedWalkGraphPath = null;
+      WalkGraphPathGeometry.cachedWalkGraphPath = null;
    }
 
    static buildPathDFromWalkGraphSegments(segments, waypoints) {

@@ -2,9 +2,9 @@ import { ItineraryMapControllerBootstrap } from './itineraryMapControllerBootstr
 import { ItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
 import { TransportationRouteOverlay } from '../map/transportationRouteOverlay.js';
 
-let itineraryMapRuntime = null;
-
 export class ItineraryMapController {
+   static itineraryMapRuntime = null;
+
    static clearItineraryMapDisplay(runtime) {
       runtime?.markers?.render([]);
       ItineraryPathOverlay.clearItineraryPathOverlay();
@@ -12,15 +12,15 @@ export class ItineraryMapController {
    }
 
    static initItineraryMap() {
-      if (itineraryMapRuntime) {
-         return itineraryMapRuntime;
+      if (ItineraryMapController.itineraryMapRuntime) {
+         return ItineraryMapController.itineraryMapRuntime;
       }
 
       const runtime = ItineraryMapControllerBootstrap.createItineraryMapRuntime();
 
       if (!runtime) return;
 
-      itineraryMapRuntime = runtime;
+      ItineraryMapController.itineraryMapRuntime = runtime;
 
       const refreshMap = ItineraryMapControllerBootstrap.bindItineraryMapEvents(runtime);
       void refreshMap();

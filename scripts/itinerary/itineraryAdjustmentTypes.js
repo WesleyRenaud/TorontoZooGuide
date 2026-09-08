@@ -1,16 +1,16 @@
-let itineraryAdjustmentTypes = null;
-
 export class ItineraryAdjustmentTypes {
+   static itineraryAdjustmentTypes = null;
+
    static updateItineraryAdjustmentTypesFromConfig(itineraryConfig = {}) {
       const adjustmentTypes = itineraryConfig?.adjustmentTypes;
 
       if (adjustmentTypes && typeof adjustmentTypes === 'object') {
-         itineraryAdjustmentTypes = Object.freeze({ ...adjustmentTypes });
+         ItineraryAdjustmentTypes.itineraryAdjustmentTypes = Object.freeze({ ...adjustmentTypes });
       }
    }
 
    static getItineraryAdjustmentTypes() {
-      return itineraryAdjustmentTypes;
+      return ItineraryAdjustmentTypes.itineraryAdjustmentTypes;
    }
 
    static normalizeItineraryAdjustmentType(adjustmentType) {
@@ -18,11 +18,11 @@ export class ItineraryAdjustmentTypes {
          ? adjustmentType.trim()
          : '';
 
-      if (!normalizedAdjustmentType || !itineraryAdjustmentTypes) {
+      if (!normalizedAdjustmentType || !ItineraryAdjustmentTypes.itineraryAdjustmentTypes) {
          return normalizedAdjustmentType;
       }
 
-      const matchingEntry = Object.entries(itineraryAdjustmentTypes).find(
+      const matchingEntry = Object.entries(ItineraryAdjustmentTypes.itineraryAdjustmentTypes).find(
          ([, value]) => value === normalizedAdjustmentType
       );
 
