@@ -1,0 +1,24 @@
+export class SearchBuilder {
+   static SEARCH_GROUPS = [
+      ['animals', 'animal'],
+      ['pavilions', 'pavilion'],
+      ['restaurants', 'restaurant'],
+      ['restrooms', 'restroom'],
+      ['gift_shops', 'giftShop'],
+      ['attractions', 'attraction'],
+      ['transportation_stations', 'transportationStation'],
+      ['guardians_talks', 'guardiansTalk'],
+      ['wild_encounters', 'wildEncounter'],
+   ];
+
+   static flattenSearchRows(response) {
+      return SearchBuilder.SEARCH_GROUPS.flatMap(([key, type]) => {
+         const rows = Array.isArray(response?.[key]) ? response[key] : [];
+
+         return rows.map((row) => ({
+            ...row,
+            type,
+         }));
+      });
+   }
+}

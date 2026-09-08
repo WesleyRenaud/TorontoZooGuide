@@ -1,5 +1,5 @@
 import { AnimalIdentity } from './animalIdentity.js';
-import { SpeciesExhibitKeyHelpers } from './speciesExhibitKeyHelpers.js';
+import { SpeciesExhibitKeyHelper } from './speciesExhibitKeyHelper.js';
 
 export class SpeciesExhibitKey {
    static buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
@@ -19,7 +19,7 @@ export class SpeciesExhibitKey {
          return '';
       }
 
-      const viewingSpotSuffix = SpeciesExhibitKeyHelpers.buildViewingSpotSuffix(animal);
+      const viewingSpotSuffix = SpeciesExhibitKeyHelper.buildViewingSpotSuffix(animal);
 
       return viewingSpotSuffix ? `${baseKey}|${viewingSpotSuffix}` : baseKey;
    }

@@ -1,7 +1,7 @@
-import { ItineraryNormalizerHelpers } from './itineraryNormalizerHelpers.js';
+import { ItineraryNormalizerHelper } from './itineraryNormalizerHelper.js';
 import { ItineraryPathModel } from './itineraryPathModel.js';
 import { ItineraryShape } from './itineraryShape.js';
-import { ItineraryValidation } from './itineraryValidation.js';
+import { ItineraryValidator } from './itineraryValidator.js';
 
 export class ItineraryNormalizer {
    static createEmptyItinerary() {
@@ -13,7 +13,7 @@ export class ItineraryNormalizer {
 
    static isItineraryEmpty(itinerary) {
       return ItineraryShape.isItineraryEmptyDraft(
-         ItineraryNormalizerHelpers.normalizeItinerarySource(itinerary)
+         ItineraryNormalizerHelper.normalizeItinerarySource(itinerary)
       );
    }
 
@@ -27,14 +27,14 @@ export class ItineraryNormalizer {
 
    static normalizeItinerary(itinerary) {
       const normalizedDraft = ItineraryShape.normalizeItineraryDraft(
-         ItineraryNormalizerHelpers.normalizeItinerarySource(itinerary)
+         ItineraryNormalizerHelper.normalizeItinerarySource(itinerary)
       );
 
       return {
          ...normalizedDraft,
          itineraryConfig: itinerary?.itineraryConfig ?? null,
          itineraryPath: itinerary?.itineraryPath ?? ItineraryPathModel.EMPTY_ITINERARY_PATH,
-         validation: ItineraryValidation.buildItineraryValidationState(
+         validation: ItineraryValidator.buildItineraryValidationState(
             normalizedDraft,
             itinerary?.itineraryConfig ?? {}
          ),

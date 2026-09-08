@@ -1,0 +1,74 @@
+import { DateSelectionModel } from './dateSelectionModel.js';
+import { VisitDateAdapter } from '../../visitDates/visitDateAdapter.js';
+import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
+
+export class DateSelectorPickerBinder {
+   static createDatePickerBinding({
+      inputEl,
+      getDate,
+      setDate,
+      syncInputValue,
+      earliestDateFloor = null,
+      initFlatpickr = VisitDateAdapter.initVisitDateFlatpickr,
+      getTodayFn = VisitDateValidator.getToday,
+      getMaxDateFn = null,
+      daysAhead = VisitDateValidator.DEFAULT_DAYS_AHEAD,
+   } = {}) {
+      const floor = earliestDateFloor ?? getTodayFn();
+      const resolveMaxDate = getMaxDateFn
+         ?? ((ahead) => VisitDateValidator.addLocalCalendarDays(getTodayFn(), ahead));
+      let flatpickrInstance = null;
+
+      function applyPickerDate(date, instance) {
+         setDate(date, { updateInput: true, persist: false });
+         instance.input.value = DateSelectionModel.formatVisitDateLong(date);
+      }
+
+      function close() {
+         flatpickrInstance?.close();
+         inputEl?.blur();
+      }
+
+      function syncBounds() {
+         const currentDate = getDate();
+
+         if (!flatpickrInstance || !currentDate) {
+            return;
+         }
+
+         flatpickrInstance.set('minDate', floor);
+         flatpickrInstance.set('maxDate', resolveMaxDate(daysAhead));
+         flatpickrInstance.setDate(currentDate, false);
+         syncInputValue(currentDate);
+         close();
+      }
+
+      function init() {
+         flatpickrInstance = initFlatpickr(inputEl, {
+            defaultDate: getDate() || floor,
+            earliestNoon: floor,
+            daysAhead,
+            clickOpens: true,
+            getTodayFn,
+            getMaxDateFn: resolveMaxDate,
+            onReady: (safeDate, _isoDate, instance) => {
+               applyPickerDate(safeDate, instance);
+            },
+            onChange: (safeDate, _isoDate, instance) => {
+               applyPickerDate(safeDate, instance);
+               instance.close();
+               inputEl?.blur();
+            },
+            onClose: () => {
+               inputEl?.blur();
+            },
+         });
+      }
+
+      return {
+         init,
+         close,
+         syncBounds,
+      };
+   }
+}

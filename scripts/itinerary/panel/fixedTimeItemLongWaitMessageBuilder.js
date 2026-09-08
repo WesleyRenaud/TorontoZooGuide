@@ -2,11 +2,11 @@ import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../strings.js';
-import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
+import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
 
 export class FixedTimeItemLongWaitMessageBuilder {
    static resolveItemTypeMeta(item) {
-      if (ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)) {
+      if (ScheduleConflictChecker.isGuardiansTalkConflictItem(item)) {
          return {
             itemType: ItinerarySaveIssueItemType.guardiansTalk,
             typeLabel: Strings.entityLabels.guardiansTalk,
@@ -14,7 +14,7 @@ export class FixedTimeItemLongWaitMessageBuilder {
          };
       }
 
-      if (ScheduleConflictCompatibility.isWildEncounterConflictItem(item)) {
+      if (ScheduleConflictChecker.isWildEncounterConflictItem(item)) {
          return {
             itemType: ItinerarySaveIssueItemType.wildEncounter,
             typeLabel: Strings.entityLabels.wildEncounter,

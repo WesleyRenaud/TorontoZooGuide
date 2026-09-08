@@ -1,7 +1,6 @@
-import { SearchApi } from '../api/searchApi.js';
-import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { SearchClient } from '../api/searchClient.js';
+import { SearchBuilder } from './searchBuilder.js';
 import { SearchResultsRenderer } from './searchResultsRenderer.js';
-import { SearchRows } from './searchRows.js';
 
 export class SearchQueryRunner {
    static DEFAULT_DEBOUNCE_MS = 250;
@@ -20,7 +19,7 @@ export class SearchQueryRunner {
    }
 
    static getSearchQuery(inputEl) {
-      return ValueNormalizer.asTrimmedString(inputEl.value);
+      return (inputEl.value || '').trim();
    }
 
    static shouldClearForEmptyQuery(query, allowEmptyQuery) {
@@ -80,7 +79,7 @@ export class SearchQueryRunner {
          }
 
          try {
-            const response = await SearchApi.searchZoo(
+            const response = await SearchClient.searchZoo(
                await SearchQueryRunner.buildSearchRequest({
                   query,
                   getIncludeFlags,
@@ -92,7 +91,7 @@ export class SearchQueryRunner {
                return;
             }
 
-            SearchResultsRenderer.renderSearchResults(resultsEl, SearchRows.flattenSearchRows(response), onFocusRow);
+            SearchResultsRenderer.renderSearchResults(resultsEl, SearchBuilder.flattenSearchRows(response), onFocusRow);
          } catch (error) {
             if (requestTracker.isCurrentRequest(requestId)) {
                onError(error);

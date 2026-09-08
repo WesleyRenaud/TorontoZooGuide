@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DraftStorage } from '../../../scripts/itinerary/draftStorage.js';
+import { DraftStore } from '../../../scripts/itinerary/draftStore.js';
 import { ItinerarySearchContext } from '../../../scripts/itinerary/itinerarySearchContext.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
@@ -18,7 +18,7 @@ installDomTestHooks({
 });
 
 test('Test_GetItineraryDateSearchContext_TestStoredDate_ExpectContext', async () => {
-   DraftStorage.setStoredItineraryDate('2026-06-18');
+   DraftStore.setStoredItineraryDate('2026-06-18');
 
    const context = await ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false });
 

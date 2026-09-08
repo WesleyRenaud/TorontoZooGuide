@@ -1,6 +1,5 @@
-import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { IconUrls } from '../assets/iconUrls.js';
-import { MarkerVisualUtils } from './markerVisualUtils.js';
+import { IconUrlProvider } from '../assets/iconUrlProvider.js';
+import { MarkerVisualHelper } from './markerVisualHelper.js';
 
 export class MarkerTypeRendererFactory {
    static DEFAULT_ATTRACTION_MARKER_SIZE = 32;
@@ -91,8 +90,8 @@ export class MarkerTypeRendererFactory {
 
    static createGenericIconMarkerRenderer(type) {
       return (markerEl, items) => {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
-         MarkerVisualUtils.applyGenericIcon(markerEl, MarkerTypeRendererFactory.GENERIC_ICON_PATHS[type], items.length);
+         MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
+         MarkerVisualHelper.applyGenericIcon(markerEl, MarkerTypeRendererFactory.GENERIC_ICON_PATHS[type], items.length);
       };
    }
 
@@ -106,38 +105,38 @@ export class MarkerTypeRendererFactory {
          const item = items[0];
          const count = items.length;
 
-         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
+         MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
          MarkerTypeRendererFactory.applyOptionalSize(markerEl, item, applySize);
 
-         const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(getLikelihood(item));
+         const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(getLikelihood(item));
 
          if (count > 1) {
-            MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
+            MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
             return;
          }
 
-         MarkerVisualUtils.applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
+         MarkerVisualHelper.applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
       };
    }
 
    static renderAnimalMarker(markerEl, items) {
       const animal = items[0];
       const count = items.length;
-      const { colour } = MarkerVisualUtils.getLikelihoodVisual(animal?.likelihood);
+      const { colour } = MarkerVisualHelper.getLikelihoodVisual(animal?.likelihood);
       const colourForUrl = String(colour || '').replace('#', '');
 
       if (count > 1) {
-         MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
+         MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
       } else {
-         MarkerVisualUtils.applyBackgroundImage(
+         MarkerVisualHelper.applyBackgroundImage(
             markerEl,
-            IconUrls.getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
+            IconUrlProvider.getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
             colour
          );
       }
 
       if (MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(animal)) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
+         MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
       }
    }
 
@@ -145,23 +144,23 @@ export class MarkerTypeRendererFactory {
       const restroom = items[0];
       const count = items.length;
       const likelihood = restroom?.is_closed ? 0 : 100;
-      const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
+      const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(likelihood);
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.restroom);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.restroom);
 
       if (count > 1) {
-         MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
+         MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
       } else {
-         MarkerVisualUtils.applyBackgroundImage(
+         MarkerVisualHelper.applyBackgroundImage(
             markerEl,
-            IconUrls.getRestroomIconUrl(
+            IconUrlProvider.getRestroomIconUrl(
                restroom?.is_closed ? MarkerTypeRendererFactory.CLOSED_RESTROOM_ICON_TOKEN : iconToken
             )
          );
       }
 
       if (items.some(MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator)) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
+         MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
       }
    }
 
@@ -171,7 +170,7 @@ export class MarkerTypeRendererFactory {
          || MarkerTypeRendererFactory.ZOOMOBILE_ROUTE_COLORS.default;
 
       markerEl.style.backgroundColor = routeColor;
-      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.transportationRouteMarker);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.transportationRouteMarker);
    }
 
    static renderDrinkingFountainMarker(markerEl, items) {
@@ -180,55 +179,55 @@ export class MarkerTypeRendererFactory {
       const likelihood = Number.isFinite(Number(drinkingFountain?.likelihood))
          ? Number(drinkingFountain.likelihood) * 100
          : (drinkingFountain?.is_closed ? 0 : 100);
-      const { colour, iconToken } = MarkerVisualUtils.getLikelihoodVisual(likelihood);
+      const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(likelihood);
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.drinkingFountain);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.drinkingFountain);
 
       if (count > 1) {
-         MarkerVisualUtils.applyCountMarker(markerEl, count, colour);
+         MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
          return;
       }
 
-      MarkerVisualUtils.applyBackgroundImage(
+      MarkerVisualHelper.applyBackgroundImage(
          markerEl,
-         IconUrls.getDrinkingFountainIconUrl(iconToken)
+         IconUrlProvider.getDrinkingFountainIconUrl(iconToken)
       );
    }
 
    static renderGuestServiceMarker(markerEl, items) {
       const guestService = items[0];
-      const serviceType = ValueNormalizer.asTrimmedString(guestService?.service_type);
+      const serviceType = String(guestService?.service_type || '').trim();
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.guestService);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.guestService);
 
       if (serviceType === MarkerTypeRendererFactory.FIRST_AID_AND_FAMILY_CENTER_TYPE) {
-         MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.firstAidGuestService);
+         MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.firstAidGuestService);
       }
 
       if (items.length > 1) {
-         MarkerVisualUtils.applyCountMarker(markerEl, items.length);
+         MarkerVisualHelper.applyCountMarker(markerEl, items.length);
          return;
       }
 
-      MarkerVisualUtils.applyBackgroundImage(
+      MarkerVisualHelper.applyBackgroundImage(
          markerEl,
-         IconUrls.getGuestServiceIconUrl(serviceType)
+         IconUrlProvider.getGuestServiceIconUrl(serviceType)
       );
    }
 
    static renderEventSiteMarker(markerEl, items) {
       const eventSite = items[0];
 
-      MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.eventSite);
+      MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.eventSite);
 
       if (items.length > 1) {
-         MarkerVisualUtils.applyCountMarker(markerEl, items.length);
+         MarkerVisualHelper.applyCountMarker(markerEl, items.length);
          return;
       }
 
-      MarkerVisualUtils.applyBackgroundImage(
+      MarkerVisualHelper.applyBackgroundImage(
          markerEl,
-         IconUrls.getEventSiteIconUrl(eventSite?.name)
+         IconUrlProvider.getEventSiteIconUrl(eventSite?.name)
       );
    }
 }

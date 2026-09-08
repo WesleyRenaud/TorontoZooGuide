@@ -1,26 +1,25 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { StoredSelection } from '../base/storedSelection.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 
 export class AnimalSelectorStoredAnimalFactory {
    static normalizeLegacyStoredSpecies(item) {
-      return ValueNormalizer.asTrimmedString(item.species)
-         || ValueNormalizer.asTrimmedString(item.SPECIES);
+      return StoredSelectionNormalizer.normalizeStoredString(item.species)
+         || StoredSelectionNormalizer.normalizeStoredString(item.SPECIES);
    }
 
    static normalizeLegacyStoredExhibit(item) {
-      return ValueNormalizer.asTrimmedString(item.exhibit)
-         || ValueNormalizer.asTrimmedString(item.EXHIBIT);
+      return StoredSelectionNormalizer.normalizeStoredString(item.exhibit)
+         || StoredSelectionNormalizer.normalizeStoredString(item.EXHIBIT);
    }
 
    static normalizeLegacyStoredImageSrc(item) {
-      return StoredSelection.normalizeStoredLink(item.imageSrc)
-         || StoredSelection.normalizeStoredLink(item.image_src)
-         || StoredSelection.normalizeStoredLink(item.image);
+      return StoredSelectionNormalizer.normalizeStoredLink(item.imageSrc)
+         || StoredSelectionNormalizer.normalizeStoredLink(item.image_src)
+         || StoredSelectionNormalizer.normalizeStoredLink(item.image);
    }
 
    static createStoredAnimalFromString(item) {
-      const species = ValueNormalizer.asTrimmedString(item);
+      const species = StoredSelectionNormalizer.normalizeStoredString(item);
 
       if (!species) {
          return null;
@@ -41,7 +40,7 @@ export class AnimalSelectorStoredAnimalFactory {
       const defaultId = enclosureName
          ? `${species}||${exhibit}||${enclosureName}`
          : `${species}||${exhibit}`;
-      const id = StoredSelection.normalizeStoredId(item.id, defaultId);
+      const id = StoredSelectionNormalizer.normalizeStoredId(item.id, defaultId);
 
       if (!id) {
          return null;

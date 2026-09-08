@@ -1,5 +1,5 @@
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
-import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
+import { ScheduleItemEventFormatter } from './scheduleItemEventFormatter.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 
@@ -17,7 +17,7 @@ export class ScheduleItemTypes {
    static buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {
       const eventOptions = eventTypes.map((eventType) => ({
          value: eventType,
-         label: ScheduleItemEventLabels.formatItineraryEventTypeLabel(eventType),
+         label: ScheduleItemEventFormatter.formatItineraryEventTypeLabel(eventType),
       }));
 
       return [

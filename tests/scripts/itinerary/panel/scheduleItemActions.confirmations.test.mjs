@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduleItemActions } from '../../../../scripts/itinerary/panel/scheduleItemActions.js';
+import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
@@ -45,7 +45,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -111,7 +111,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -170,7 +170,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [],
@@ -238,7 +238,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
@@ -293,7 +293,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       },
    });
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '11:00' }],
@@ -347,7 +347,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '14:00' }],
@@ -427,7 +427,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', start_time: '11:00 AM' }],
@@ -493,7 +493,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
-   const schedulePromise = ScheduleItemActions.scheduleSelectedItineraryItem(
+   const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [],

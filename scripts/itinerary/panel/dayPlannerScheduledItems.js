@@ -1,10 +1,9 @@
-import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingWalkNode.js';
-import { DayPlannerSchedule } from './dayPlannerSchedule.js';
-import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
+import { ScheduledPillViewingWalkModel } from './components/scheduledPillViewingWalkModel.js';
+import { DayPlannerScheduleController } from './dayPlannerScheduleController.js';
+import { DayPlannerTimelineRenderer } from './dayPlannerTimelineRenderer.js';
 import { ItineraryPanelRowsBuilder } from './itineraryPanelRowsBuilder.js';
-import { RowActionProps } from './rowActionProps.js';
-import { ScheduleItemEventLabels } from './scheduleItemEventLabels.js';
+import { RowActionPresenter } from './rowActionPresenter.js';
+import { ScheduleItemEventFormatter } from './scheduleItemEventFormatter.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../selectors/attractionSelector/attractionSelectorModel.js';
 import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
@@ -22,7 +21,7 @@ export class DayPlannerScheduledItems {
 
    static getDurationMinutesFromScheduleTimes(item) {
       return (
-         DayPlannerSchedule.parseClockTimeMinutes(item.end_time) - DayPlannerSchedule.parseClockTimeMinutes(item.start_time)
+         DayPlannerScheduleController.parseClockTimeMinutes(item.end_time) - DayPlannerScheduleController.parseClockTimeMinutes(item.start_time)
       );
    }
 
@@ -39,20 +38,20 @@ export class DayPlannerScheduledItems {
          return AnimalSelectorModel.getAnimalTitleLine(item);
       }
 
-      return ValueNormalizer.asTrimmedString(item?.name);
+      return String(item?.name || '').trim();
    }
 
    static getItineraryEventType(item) {
-      return ValueNormalizer.asTrimmedString(item?.event_type);
+      return String(item?.event_type ?? '').trim();
    }
 
    static buildGenericEventScheduledRows(events = []) {
       return events.map((event, index) => {
          const eventType = DayPlannerScheduledItems.getItineraryEventType(event);
-         const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(event.start_time);
-         const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(event.end_time);
+         const startMinutes = DayPlannerScheduleController.parseClockTimeMinutes(event.start_time);
+         const endMinutes = DayPlannerScheduleController.parseClockTimeMinutes(event.end_time);
          const maximumDuration = DayPlannerScheduledItems.getDurationMinutesFromScheduleTimes(event);
-         const label = ScheduleItemEventLabels.formatItineraryEventTypeLabel(eventType);
+         const label = ScheduleItemEventFormatter.formatItineraryEventTypeLabel(eventType);
 
          return {
             index,
@@ -78,8 +77,8 @@ export class DayPlannerScheduledItems {
    static buildScheduledItemRows(items, buildRows, getDurationMinutes) {
       return items.map((item, index) => {
          const [row] = buildRows([item]);
-         const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
-         const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
+         const startMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.start_time);
+         const endMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.end_time);
          const maximumDuration = getDurationMinutes(item);
          const label = DayPlannerScheduledItems.getScheduledItemLabel(item);
 
@@ -104,17 +103,17 @@ export class DayPlannerScheduledItems {
    static buildScheduledAnimalRows(animals = []) {
       return SpeciesExhibitKey.buildUniqueSpeciesExhibitEntries(animals, {
          includeAnimal: (item) => (
-            RowActionProps.hasItineraryScheduleTimes(item) && !DayPlannerScheduledItems.isCoveredByTalk(item)
+            RowActionPresenter.hasItineraryScheduleTimes(item) && !DayPlannerScheduledItems.isCoveredByTalk(item)
          ),
          buildKey: SpeciesExhibitKey.buildAnimalViewingSpotKey,
          requireExhibit: false,
       }).map(({ item, index }) => {
          const [row] = ItineraryPanelRowsBuilder.buildAnimalRows([item]);
-         const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
-         const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
+         const startMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.start_time);
+         const endMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.end_time);
          const maximumDuration = DayPlannerScheduledItems.getDurationMinutesFromScheduleTimes(item);
          const label = DayPlannerScheduledItems.getScheduledItemLabel(item);
-         const viewingWalkNodeId = ScheduledPillViewingWalkNode.getAnimalViewingWalkNodeId(item);
+         const viewingWalkNodeId = ScheduledPillViewingWalkModel.getAnimalViewingWalkNodeId(item);
 
          return {
             index,
@@ -139,8 +138,8 @@ export class DayPlannerScheduledItems {
       return transportations.flatMap((transportation, index) => (
          TransportationSequenceItems.buildTransportationSequenceItems(transportation).map((item) => {
             const [row] = ItineraryPanelRowsBuilder.buildTransportationRows([item]);
-            const startMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.start_time);
-            const endMinutes = DayPlannerSchedule.parseClockTimeMinutes(item.end_time);
+            const startMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.start_time);
+            const endMinutes = DayPlannerScheduleController.parseClockTimeMinutes(item.end_time);
             const maximumDuration = DayPlannerScheduledItems.getDurationMinutesFromScheduleTimes(item);
             const label = DayPlannerScheduledItems.getScheduledItemLabel(item);
 
@@ -181,7 +180,7 @@ export class DayPlannerScheduledItems {
       const indexes = new Set();
 
       items.forEach((item, index) => {
-         if (!RowActionProps.hasItineraryScheduleTimes(item)) {
+         if (!RowActionPresenter.hasItineraryScheduleTimes(item)) {
             return;
          }
 
@@ -199,7 +198,7 @@ export class DayPlannerScheduledItems {
       const sortedSlotStarts = [...slotStarts].sort((left, right) => left - right);
 
       return scheduledItems.reduce((itemsByAnchorMap, scheduledItem) => {
-         const anchorSlot = DayPlannerTimelineMarkers.findTimelineAnchorSlot(
+         const anchorSlot = DayPlannerTimelineRenderer.findTimelineAnchorSlot(
             scheduledItem.startMinutes,
             sortedSlotStarts
          );
@@ -208,12 +207,12 @@ export class DayPlannerScheduledItems {
             return itemsByAnchorMap;
          }
 
-         const slotEndMinutes = DayPlannerTimelineMarkers.findTimelineSlotEndMinutes(
+         const slotEndMinutes = DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(
             anchorSlot,
             sortedSlotStarts,
             closeMinutes
          );
-         const offsetFraction = DayPlannerTimelineMarkers.computeMarkerOffsetFraction(
+         const offsetFraction = DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
             scheduledItem.startMinutes,
             anchorSlot,
             slotEndMinutes

@@ -1,7 +1,7 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { ItemKeyHelper } from './itemKeyHelper.js';
 
 export class ItemKey {
    static buildItemKey(item, field) {
-      return ValueNormalizer.asTrimmedString(item?.[field]).toLowerCase();
+      return ItemKeyHelper.normalizeKeyPart(item?.[field]);
    }
 }

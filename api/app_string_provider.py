@@ -11,12 +11,12 @@ class AppStringProvider():
    STRING_SOURCE_FILES = (
       STRING_EXPORT_SCRIPT,
       Path( './scripts/strings.js' ),
-      Path( './scripts/strings/guestStatus.js' ),
-      Path( './scripts/strings/common.js' ),
-      Path( './scripts/strings/itinerary.js' ),
-      Path( './scripts/strings/map.js' ),
-      Path( './scripts/strings/console.js' ),
-      Path( './scripts/strings/pages.js' ),
+      Path( './scripts/strings/guestStatusStrings.js' ),
+      Path( './scripts/strings/commonStrings.js' ),
+      Path( './scripts/strings/itineraryStrings.js' ),
+      Path( './scripts/strings/mapStrings.js' ),
+      Path( './scripts/strings/consoleStrings.js' ),
+      Path( './scripts/strings/pageStrings.js' ),
    )
 
    _cached_mtime: float | None = None

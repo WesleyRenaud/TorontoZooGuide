@@ -1,9 +1,8 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { StoredSelection } from '../base/storedSelection.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 
 export class AttractionSelectorStoredAttractionFactory {
    static createStoredAttractionFromString(item) {
-      const name = ValueNormalizer.asTrimmedString(item);
+      const name = StoredSelectionNormalizer.normalizeStoredString(item);
 
       if (!name) {
          return null;
@@ -23,8 +22,8 @@ export class AttractionSelectorStoredAttractionFactory {
    }
 
    static createStoredAttractionFromObject(item) {
-      const name = ValueNormalizer.asTrimmedString(item.name);
-      const id = StoredSelection.normalizeStoredId(item.id, name);
+      const name = StoredSelectionNormalizer.normalizeStoredString(item.name);
+      const id = StoredSelectionNormalizer.normalizeStoredId(item.id, name);
 
       if (!id) {
          return null;
@@ -33,13 +32,13 @@ export class AttractionSelectorStoredAttractionFactory {
       return {
          id,
          name,
-         subtitle: ValueNormalizer.asTrimmedString(item.subtitle),
-         freeWithAdmission: StoredSelection.normalizeStoredBoolean(item.freeWithAdmission),
-         seasonal: StoredSelection.normalizeStoredBoolean(item.seasonal),
-         isClosed: StoredSelection.normalizeStoredBoolean(item.isClosed),
-         addedAsAttraction: StoredSelection.normalizeStoredBoolean(item.addedAsAttraction),
-         infoLink: StoredSelection.normalizeStoredLink(item.infoLink),
-         imageSrc: StoredSelection.normalizeStoredLink(item.imageSrc),
+         subtitle: StoredSelectionNormalizer.normalizeStoredString(item.subtitle),
+         freeWithAdmission: StoredSelectionNormalizer.normalizeStoredBoolean(item.freeWithAdmission),
+         seasonal: StoredSelectionNormalizer.normalizeStoredBoolean(item.seasonal),
+         isClosed: StoredSelectionNormalizer.normalizeStoredBoolean(item.isClosed),
+         addedAsAttraction: StoredSelectionNormalizer.normalizeStoredBoolean(item.addedAsAttraction),
+         infoLink: StoredSelectionNormalizer.normalizeStoredLink(item.infoLink),
+         imageSrc: StoredSelectionNormalizer.normalizeStoredLink(item.imageSrc),
       };
    }
 }

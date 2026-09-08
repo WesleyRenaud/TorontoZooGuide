@@ -1,41 +1,41 @@
-import { ItineraryPanelDom } from './itineraryPanelDom.js';
-import { RowPresentation } from './rowPresentation.js';
-import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-import { ScheduleTimeConflictButtonState } from './scheduleTimeConflictButtonState.js';
-import { ScheduleTimeConflictContent } from './scheduleTimeConflictContent.js';
+import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
+import { RowPresenter } from './rowPresenter.js';
+import { ScheduledOccurrenceSorter } from '../scheduledOccurrenceSorter.js';
+import { ScheduleTimeConflictButtonStore } from './scheduleTimeConflictButtonStore.js';
+import { ScheduleTimeConflictView } from './scheduleTimeConflictView.js';
 import { ResultRenderer } from '../selectors/base/resultRenderer.js';
 import { Strings } from '../../strings.js';
-import { ScheduleConflictCompatibility } from '../wizard/scheduleConflictCompatibility.js';
-import { ScheduleOverrideSelectionConfirmation } from '../wizard/scheduleOverrideSelectionConfirmation.js';
+import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
+import { ScheduleOverrideSelectionFragment } from '../wizard/scheduleOverrideSelectionFragment.js';
 
 export class ScheduleTimeConflictContentBuilder {
    static refreshConflictSelectionButtons(buttonEntries, selection) {
       buttonEntries.forEach(({ button, item }) => {
-         ScheduleTimeConflictButtonState.applyConflictSelectionButtonState(
+         ScheduleTimeConflictButtonStore.applyConflictSelectionButtonState(
             button,
-            ScheduleTimeConflictButtonState.getConflictSelectionButtonState(selection, item)
+            ScheduleTimeConflictButtonStore.getConflictSelectionButtonState(selection, item)
          );
       });
    }
 
    static handleConflictItemButtonClick(selection, item, buttonEntries) {
-      if (ScheduleConflictCompatibility.isConflictItemSelected(selection, item)) {
-         ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
+      if (ScheduleConflictChecker.isConflictItemSelected(selection, item)) {
+         ScheduleConflictChecker.toggleConflictItemSelection(selection, item);
          ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons(buttonEntries, selection);
          return;
       }
 
-      if (ScheduleConflictCompatibility.conflictItemRequiresTrimOverride(selection, item)) {
-         ScheduleOverrideSelectionConfirmation.showScheduleOverrideSelectionConfirmation({
+      if (ScheduleConflictChecker.conflictItemRequiresTrimOverride(selection, item)) {
+         ScheduleOverrideSelectionFragment.showScheduleOverrideSelectionConfirmation({
             onConfirm: () => {
-               ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
+               ScheduleConflictChecker.toggleConflictItemSelection(selection, item);
                ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons(buttonEntries, selection);
             },
          });
          return;
       }
 
-      ScheduleConflictCompatibility.toggleConflictItemSelection(selection, item);
+      ScheduleConflictChecker.toggleConflictItemSelection(selection, item);
       ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons(buttonEntries, selection);
    }
 
@@ -44,7 +44,7 @@ export class ScheduleTimeConflictContentBuilder {
       selection,
       buttonEntries,
    } = {}) {
-      const button = ItineraryPanelDom.el(
+      const button = ItineraryPanelHelper.el(
          'button',
          'itin-add-btn itin-save-issue-select-btn',
          Strings.itinerary.actions.addSymbol
@@ -64,16 +64,16 @@ export class ScheduleTimeConflictContentBuilder {
    }
 
    static createScheduleConflictSubtitle(item) {
-      const subtitle = ItineraryPanelDom.el('div', 'animal-result-exhibit');
-      const time = ItineraryPanelDom.el(
+      const subtitle = ItineraryPanelHelper.el('div', 'animal-result-exhibit');
+      const time = ItineraryPanelHelper.el(
          'span',
          'itin-panel-time-conflict',
-         RowPresentation.buildScheduledTimeFieldLine(item)
+         RowPresenter.buildScheduledTimeFieldLine(item)
       );
-      const locationLabel = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
+      const locationLabel = ScheduleConflictChecker.isGuardiansTalkConflictItem(item)
          ? Strings.labels.location
          : Strings.itinerary.selectors.meetingSpot;
-      const locationValue = ScheduleConflictCompatibility.isGuardiansTalkConflictItem(item)
+      const locationValue = ScheduleConflictChecker.isGuardiansTalkConflictItem(item)
          ? item.location
          : item.meeting_spot;
 
@@ -90,9 +90,9 @@ export class ScheduleTimeConflictContentBuilder {
       selection,
       buttonEntries,
    } = {}) {
-      const row = ItineraryPanelDom.el('div', 'animal-result itin-save-issue-conflict-row');
+      const row = ItineraryPanelHelper.el('div', 'animal-result itin-save-issue-conflict-row');
       const content = ResultRenderer.createSelectorRowContent({
-         imageSrc: ScheduleTimeConflictContent.buildConflictItemImageSrc(item),
+         imageSrc: ScheduleTimeConflictView.buildConflictItemImageSrc(item),
          imageAlt: Strings.itinerary.itemImage(item.name),
          textColumnEl: ResultRenderer.createSelectorTextColumn({
             title: item.name,
@@ -115,13 +115,13 @@ export class ScheduleTimeConflictContentBuilder {
    }
 
    static createWildEncounterConflictBlock(issue) {
-      const selection = ScheduleConflictCompatibility.createConflictSelection();
-      const block = ItineraryPanelDom.el('div', 'itin-save-issue-conflict');
+      const selection = ScheduleConflictChecker.createConflictSelection();
+      const block = ItineraryPanelHelper.el('div', 'itin-save-issue-conflict');
       const buttonEntries = [];
-      const items = ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(issue.items);
+      const items = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(issue.items);
 
       block.appendChild(
-         ItineraryPanelDom.el(
+         ItineraryPanelHelper.el(
             'p',
             'itin-save-issue-conflict-message',
             Strings.itinerary.confirmation.scheduleConflictsMessage
@@ -148,11 +148,11 @@ export class ScheduleTimeConflictContentBuilder {
    }
 
    static createWildEncounterConflictSection(issues) {
-      const section = ItineraryPanelDom.el('section', 'itin-save-issue-section');
+      const section = ItineraryPanelHelper.el('section', 'itin-save-issue-section');
       const conflictGroups = [];
 
       section.appendChild(
-         ItineraryPanelDom.el(
+         ItineraryPanelHelper.el(
             'h3',
             'itin-save-issue-section-title',
             Strings.itinerary.confirmation.scheduleConflictsTitle

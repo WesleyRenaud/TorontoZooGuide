@@ -1,5 +1,5 @@
-import { WeatherApi } from '../api/weatherApi.js';
-import { VisitDateRules } from '../visitDates/visitDateRules.js';
+import { WeatherClient } from '../api/weatherClient.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class SearchContext {
    /**
@@ -13,22 +13,22 @@ export class SearchContext {
    static async buildDateSearchContext(iso, { includeTemp = true } = {}) {
       const date = typeof iso === 'string' ? iso : '';
 
-      const month = date ? VisitDateRules.getMonth(date) : null;
-      const day = date ? VisitDateRules.getDay(date) : null;
-      const year = date ? VisitDateRules.getYear(date) : null;
+      const month = date ? VisitDateValidator.getMonth(date) : null;
+      const day = date ? VisitDateValidator.getDay(date) : null;
+      const year = date ? VisitDateValidator.getYear(date) : null;
 
-      const dayOfWeek = date ? VisitDateRules.isoDateToMonFirstDow(date) : null;
+      const dayOfWeek = date ? VisitDateValidator.isoDateToMonFirstDow(date) : null;
 
       if (!includeTemp || !date) {
          return { date, month, day, year, dayOfWeek, temp: null };
       }
 
-      if (!VisitDateRules.isWithinNextNDays(date, 7)) {
+      if (!VisitDateValidator.isWithinNextNDays(date, 7)) {
          return { date, month, day, year, dayOfWeek, temp: null };
       }
 
       try {
-         const temp = await WeatherApi.fetchWeatherTempForDate(date);
+         const temp = await WeatherClient.fetchWeatherTempForDate(date);
          return { date, month, day, year, dayOfWeek, temp };
       } catch {
          return { date, month, day, year, dayOfWeek, temp: null };

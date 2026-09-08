@@ -1,7 +1,7 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 import { GuardiansTalkScheduleItemKey } from './guardiansTalkScheduleItemKey.js';
-import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
+import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
 import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkSelectorModel {
@@ -16,14 +16,14 @@ export class GuardiansTalkSelectorModel {
    }
 
    static formatGuardiansTalkTitleSuffix(name) {
-      return ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(
+      return ScheduledOccurrencePresenter.formatOccurrenceTitleSuffix(
          name,
          Strings.entityLabels.guardiansTalk
       );
    }
 
    static formatGuardiansTalkSearchTitle(name) {
-      return ScheduledOccurrencePresentation.formatOccurrenceSearchTitle(
+      return ScheduledOccurrencePresenter.formatOccurrenceSearchTitle(
          name,
          Strings.entityLabels.guardiansTalk
       );
@@ -52,18 +52,18 @@ export class GuardiansTalkSelectorModel {
    }
 
    static getGuardiansTalkScheduleStart(row) {
-      return ValueNormalizer.asTrimmedString(row?.start_time);
+      return StoredSelectionNormalizer.normalizeStoredString(row?.start_time);
    }
 
    static getGuardiansTalkSubtitle(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+      return ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
          primaryValue: GuardiansTalkSelectorModel.getGuardiansTalkLocation(row),
-         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
+         timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange(row),
       });
    }
 
    static buildGuardiansTalkImageSrc(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(
+      return ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
          'guardians-talks',
          GuardiansTalkSelectorModel.getGuardiansTalkName(row)
       );
@@ -71,9 +71,9 @@ export class GuardiansTalkSelectorModel {
 
    static readGuardiansTalkStoredFields(item) {
       return {
-         location: ValueNormalizer.asTrimmedString(item?.location),
-         start_time: ValueNormalizer.asTrimmedString(item?.start_time),
-         end_time: ValueNormalizer.asTrimmedString(item?.end_time),
+         location: StoredSelectionNormalizer.normalizeStoredString(item?.location),
+         start_time: StoredSelectionNormalizer.normalizeStoredString(item?.start_time),
+         end_time: StoredSelectionNormalizer.normalizeStoredString(item?.end_time),
       };
    }
 
@@ -81,7 +81,7 @@ export class GuardiansTalkSelectorModel {
       return {
          location: GuardiansTalkSelectorModel.getGuardiansTalkLocation(row),
          start_time: GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart(row),
-         end_time: ValueNormalizer.asTrimmedString(row?.end_time),
+         end_time: StoredSelectionNormalizer.normalizeStoredString(row?.end_time),
       };
    }
 }

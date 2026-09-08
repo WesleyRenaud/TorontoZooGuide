@@ -1,4 +1,4 @@
-import { ConsoleControllersBootstrapHelpers } from './consoleControllersBootstrapHelpers.js';
+import { ConsoleControllersBootstrapHelper } from './consoleControllersBootstrapHelper.js';
 import { GuardiansTalkLocationFilter } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
 import { GuardiansTalkOccurrenceFilter } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { GuardiansTalkScheduleTimesFilter } from '../guardiansTalks/controllers/guardiansTalkScheduleTimesFilter.js';
@@ -67,9 +67,9 @@ export class ConsoleControllersBootstrap {
    wildEncounterOccurrenceFilterController,
    wildEncounterScheduleTimesFilterController,
 }) {
-      ConsoleControllersBootstrapHelpers.initAnimalSpeciesAutocompletes(refs.animals);
+      ConsoleControllersBootstrapHelper.initAnimalSpeciesAutocompletes(refs.animals);
 
-      ConsoleControllersBootstrapHelpers.wireControllerBindings({
+      ConsoleControllersBootstrapHelper.wireControllerBindings({
          refs,
          activatePanel,
          specialControllers: {

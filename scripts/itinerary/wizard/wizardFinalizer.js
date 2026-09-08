@@ -1,14 +1,14 @@
-import { DraftStorage } from '../draftStorage.js';
+import { DraftStore } from '../draftStore.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
-import { ItineraryServiceSave } from '../itineraryServiceSave.js';
+import { ItineraryServiceSaver } from '../itineraryServiceSaver.js';
 import { ItineraryShape } from '../itineraryShape.js';
-import { NoticePopup } from '../panel/components/noticePopup.js';
-import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
+import { NoticeFragment } from '../panel/components/noticeFragment.js';
+import { SaveIssuesProceedFragment } from './saveIssuesProceedFragment.js';
 import { Strings } from '../../strings.js';
-import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
-import { WizardFinalizerHelpers } from './wizardFinalizerHelpers.js';
-import { WizardPopup } from './wizardPopup.js';
-import { WizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
+import { WizardFinalizePresenter } from './wizardFinalizePresenter.js';
+import { WizardFinalizerHelper } from './wizardFinalizerHelper.js';
+import { WizardFragment } from './wizardFragment.js';
+import { WizardSaveIssuesFragment } from './wizardSaveIssuesFragment.js';
 
 export class WizardFinalizer {
    static async finalizeItineraryWizard(
@@ -18,27 +18,27 @@ export class WizardFinalizer {
 ) {
       const {
          normalizeDraft = ItineraryShape.normalizeItineraryDraft,
-         saveItineraryFn = ItineraryServiceSave.saveItinerary,
-         syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
-         showWizardPopup = WizardPopup.showItineraryWizardPopup,
-         showNoticePopup = NoticePopup.showItineraryNoticePopup,
-         showProceedConfirmation = SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation,
-         showSaveIssuesPopup = WizardSaveIssuesPopup.showWizardSaveIssuesPopup,
-         shouldBlockEmpty = WizardFinalizeDecisions.shouldBlockEmptyFinish,
-         shouldShowSaveIssues = WizardFinalizeDecisions.shouldShowSaveIssuesPopup,
+         saveItineraryFn = ItineraryServiceSaver.saveItinerary,
+         syncAnimalDraft = DraftStore.syncItineraryAnimalDraftFromItinerary,
+         showWizardPopup = WizardFragment.showItineraryWizardPopup,
+         showNoticePopup = NoticeFragment.showItineraryNoticePopup,
+         showProceedConfirmation = SaveIssuesProceedFragment.showSaveIssuesProceedConfirmation,
+         showSaveIssuesPopup = WizardSaveIssuesFragment.showWizardSaveIssuesPopup,
+         shouldBlockEmpty = WizardFinalizePresenter.shouldBlockEmptyFinish,
+         shouldShowSaveIssues = WizardFinalizePresenter.shouldShowSaveIssuesPopup,
       } = deps;
 
-      const finalItinerary = WizardFinalizerHelpers.createFinalItineraryDraft(draft, normalizeDraft);
+      const finalItinerary = WizardFinalizerHelper.createFinalItineraryDraft(draft, normalizeDraft);
 
       if (shouldBlockEmpty(finalItinerary, allowEmpty)) {
-         WizardFinalizerHelpers.showEmptySelectionPopup(mountEl, showWizardPopup);
+         WizardFinalizerHelper.showEmptySelectionPopup(mountEl, showWizardPopup);
          return null;
       }
 
       let savedItinerary;
 
       try {
-         savedItinerary = await WizardFinalizerHelpers.saveFinalItinerary(
+         savedItinerary = await WizardFinalizerHelper.saveFinalItinerary(
             finalItinerary,
             {},
             saveItineraryFn,
@@ -68,7 +68,7 @@ export class WizardFinalizer {
          showSaveIssuesPopup(savedItinerary, {
             showNoticePopup,
             showProceedConfirmation,
-            saveFinalItinerary: (itinerary, options) => WizardFinalizerHelpers.saveFinalItinerary(
+            saveFinalItinerary: (itinerary, options) => WizardFinalizerHelper.saveFinalItinerary(
                itinerary,
                options,
                saveItineraryFn,
@@ -76,7 +76,7 @@ export class WizardFinalizer {
          });
       }
 
-      WizardFinalizerHelpers.clearWizardMount(mountEl);
+      WizardFinalizerHelper.clearWizardMount(mountEl);
 
       onDone?.(savedItinerary);
 

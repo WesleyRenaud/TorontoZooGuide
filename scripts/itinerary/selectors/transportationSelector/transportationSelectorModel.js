@@ -1,7 +1,6 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { StoredSelection } from '../base/storedSelection.js';
-import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
+import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../../strings.js';
 import { TransportationScheduleItemKey } from './transportationScheduleItemKey.js';
@@ -9,7 +8,7 @@ import { TransportationStationNameResolver } from './transportationStationNameRe
 
 export class TransportationSelectorModel {
    static getTransportationName(row) {
-      return ValueNormalizer.asTrimmedString(row?.name);
+      return StoredSelectionNormalizer.normalizeStoredString(row?.name);
    }
 
    static getTransportationId(row) {
@@ -21,11 +20,11 @@ export class TransportationSelectorModel {
    }
 
    static getTransportationInfoLink(row) {
-      return StoredSelection.normalizeStoredLink(row?.info_link);
+      return StoredSelectionNormalizer.normalizeStoredLink(row?.info_link);
    }
 
    static buildTransportationImageSrc(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(
+      return ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
          'transportations',
          TransportationSelectorModel.getTransportationName(row)
       );
@@ -122,11 +121,11 @@ export class TransportationSelectorModel {
    }
 
    static getTransportationSubtitle(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+      return ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
          primaryValue: TransportationSelectorModel.isFreeWithAdmissionTransportation(row)
             ? Strings.search.freeWithAdmission
             : Strings.search.extraCharge,
-         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange({
+         timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange({
             start_time: row?.open_time,
             end_time: row?.close_time,
          }),
@@ -134,7 +133,7 @@ export class TransportationSelectorModel {
    }
 
    static migrateStoredTransportations(items) {
-      return StoredSelection.migrateStoredSelectionItems(items, {
+      return StoredSelectionNormalizer.migrateStoredSelectionItems(items, {
          fromString: TransportationStationNameResolver.createStoredTransportationFromString,
          fromObject: TransportationStationNameResolver.createStoredTransportationFromObject,
       });

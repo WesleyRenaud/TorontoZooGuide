@@ -1,12 +1,12 @@
-import { AttractionClosedBanner } from '../banners/attractionClosedBanner.js';
-import { DrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
-import { GiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
-import { OffDisplayBanner } from '../banners/offDisplayBanner.js';
-import { RestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
-import { RestroomMessageBanner } from '../banners/restroomMessageBanner.js';
+import { AttractionClosedFragment } from '../banners/attractionClosedFragment.js';
+import { DrinkingFountainClosedFragment } from '../banners/drinkingFountainClosedFragment.js';
+import { GiftShopClosedFragment } from '../banners/giftShopClosedFragment.js';
+import { OffDisplayFragment } from '../banners/offDisplayFragment.js';
+import { RestaurantClosedFragment } from '../banners/restaurantClosedFragment.js';
+import { RestroomMessageFragment } from '../banners/restroomMessageFragment.js';
 import { FocusController } from '../focus/focusController.js';
-import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
-import { LabelVisibility } from './labelVisibility.js';
+import { GuardiansTalkLinkedAnimalOpener } from '../guardians/guardiansTalkLinkedAnimalOpener.js';
+import { LabelPresenter } from './labelPresenter.js';
 import { TooltipController } from '../tooltips/tooltipController.js';
 
 export class MapRuntimeFactory {
@@ -20,12 +20,12 @@ export class MapRuntimeFactory {
 
    static createMapBannerSet() {
       return {
-         offDisplayBanner: OffDisplayBanner.createOffDisplayBanner(),
-         restaurantClosedBanner: RestaurantClosedBanner.createRestaurantClosedBanner(),
-         restroomMessageBanner: RestroomMessageBanner.createRestroomMessageBanner(),
-         giftShopClosedBanner: GiftShopClosedBanner.createGiftShopClosedBanner(),
-         attractionClosedBanner: AttractionClosedBanner.createAttractionClosedBanner(),
-         drinkingFountainClosedBanner: DrinkingFountainClosedBanner.createDrinkingFountainClosedBanner(),
+         offDisplayBanner: OffDisplayFragment.createOffDisplayBanner(),
+         restaurantClosedBanner: RestaurantClosedFragment.createRestaurantClosedBanner(),
+         restroomMessageBanner: RestroomMessageFragment.createRestroomMessageBanner(),
+         giftShopClosedBanner: GiftShopClosedFragment.createGiftShopClosedBanner(),
+         attractionClosedBanner: AttractionClosedFragment.createAttractionClosedBanner(),
+         drinkingFountainClosedBanner: DrinkingFountainClosedFragment.createDrinkingFountainClosedBanner(),
       };
    }
 
@@ -39,7 +39,7 @@ export class MapRuntimeFactory {
          }
 
          if (itemType === 'guardiansTalk') {
-            void OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal(item);
+            void GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(item);
          }
       };
    }
@@ -56,7 +56,7 @@ export class MapRuntimeFactory {
    }
 
    static initMapLabels(showMapLabelsCheckbox) {
-      LabelVisibility.initLabelVisibilityToggle({
+      LabelPresenter.initLabelVisibilityToggle({
          checkboxEl: showMapLabelsCheckbox,
          rootEl: document.body,
       });

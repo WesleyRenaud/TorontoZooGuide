@@ -1,4 +1,4 @@
-import { CreateSpeciesLinkTitle } from '../../../animals/createSpeciesLinkTitle.js';
+import { SpeciesLinkTitleBuilder } from '../../../animals/speciesLinkTitleBuilder.js';
 import { SelectorResultRowBuilder } from './selectorResultRowBuilder.js';
 import { Strings } from '../../../strings.js';
 
@@ -49,7 +49,7 @@ export class ResultRenderer {
          left.appendChild(titleNode);
       }
       else if (titleParts) {
-         left.appendChild(CreateSpeciesLinkTitle.createAnimalTitleLinkElement({
+         left.appendChild(SpeciesLinkTitleBuilder.createAnimalTitleLinkElement({
             species: titleParts.species,
             enclosureName: titleParts.enclosureName,
             className: 'animal-result-species',
@@ -57,7 +57,7 @@ export class ResultRenderer {
          }));
       }
       else {
-         left.appendChild(CreateSpeciesLinkTitle.createSpeciesLinkTitleElement({
+         left.appendChild(SpeciesLinkTitleBuilder.createSpeciesLinkTitleElement({
             text: title,
             suffix: titleSuffix,
             className: 'animal-result-species',

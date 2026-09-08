@@ -1,4 +1,4 @@
-import { ItineraryErrorTypesHelpers } from './itineraryErrorTypesHelpers.js';
+import { ItineraryErrorTypesHelper } from './itineraryErrorTypesHelper.js';
 import { Strings } from '../strings.js';
 
 export class ItineraryErrorTypes {
@@ -156,7 +156,7 @@ export class ItineraryErrorTypes {
    }
 
    static normalizeItineraryErrorTypeFromResponse(source = {}) {
-      return ItineraryErrorTypesHelpers.normalizeItineraryErrorType(
+      return ItineraryErrorTypesHelper.normalizeItineraryErrorType(
          source.status,
          source.success
       );

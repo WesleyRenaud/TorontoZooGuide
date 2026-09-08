@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduledOccurrenceSort } from '../../../../scripts/itinerary/scheduledOccurrenceSort.js';
+import { ScheduledOccurrenceSorter } from '../../../../scripts/itinerary/scheduledOccurrenceSorter.js';
 
 test('Test_ScheduledOccurrenceSort_TestScheduledOccurrenceSortSortScheduledOccurrencesByStartTimeSortsSelectorRowsByStartTime_ExpectOk', () => {
    const rows = [
@@ -13,7 +13,7 @@ test('Test_ScheduledOccurrenceSort_TestScheduledOccurrenceSortSortScheduledOccur
    ];
 
    assert.deepEqual(
-      ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(rows).map((row) => row.name),
+      ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(rows).map((row) => row.name),
       [
          'Ballin\' with the Armadillos',
          'From Howls to Honks',
@@ -33,7 +33,7 @@ test('Test_ScheduledOccurrenceSort_TestScheduledOccurrenceSortSortScheduledOccur
    ];
 
    assert.deepEqual(
-      ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
+      ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(
          rows,
          (row) => row.time
       ).map((row) => row.name),

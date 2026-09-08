@@ -1,5 +1,5 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import { ControllerUtils } from '../helpers/controllerUtils.js';
+import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
@@ -40,7 +40,7 @@ export class RecurringScheduleFormController {
 
 
       function resetForm() {
-         ControllerUtils.resetFormFields(recurringFieldEls);
+         ControllerHelper.resetFormFields(recurringFieldEls);
          resetScheduleTimes?.();
          resetSelection?.();
       }
@@ -50,16 +50,16 @@ export class RecurringScheduleFormController {
             ...(typeof getSelectionValues === 'function'
                ? getSelectionValues()
                : {}),
-            startDate: ControllerUtils.getFieldValue(startDateEl),
-            endDate: ControllerUtils.getFieldValue(endDateEl),
-            message: ControllerUtils.getFieldValue(messageEl),
+            startDate: ControllerHelper.getFieldValue(startDateEl),
+            endDate: ControllerHelper.getFieldValue(endDateEl),
+            message: ControllerHelper.getFieldValue(messageEl),
          };
 
          if (getScheduleTimes) {
             formValues.times = getScheduleTimes();
          }
          else {
-            formValues.time = ControllerUtils.getFieldValue(timeEl);
+            formValues.time = ControllerHelper.getFieldValue(timeEl);
          }
 
          return formValues;
@@ -71,7 +71,7 @@ export class RecurringScheduleFormController {
       }
 
       function hide() {
-         ControllerUtils.hideConsolePanel({
+         ControllerHelper.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
@@ -101,11 +101,11 @@ export class RecurringScheduleFormController {
             return timeRequiredMessage;
          }
 
-         if (!validateRecurringSchedule && !ControllerUtils.hasCheckedField(dayFieldEls)) {
+         if (!validateRecurringSchedule && !ControllerHelper.hasCheckedField(dayFieldEls)) {
             return noDaysSelectedMessage;
          }
 
-         return ControllerUtils.validateOptionalDateRange(
+         return ControllerHelper.validateOptionalDateRange(
             formValues.startDate,
             formValues.endDate
          );

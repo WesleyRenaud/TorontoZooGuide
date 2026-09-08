@@ -1,5 +1,5 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-import { ItineraryPanelSectionBuilderHelpers } from './itineraryPanelSectionBuilderHelpers.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
+import { ItineraryPanelSectionBuilderHelper } from './itineraryPanelSectionBuilderHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class ItineraryPanelSectionBuilder {
@@ -10,19 +10,19 @@ export class ItineraryPanelSectionBuilder {
       stepKey,
       showEditButton = true,
    }) {
-      const section = ItineraryPanelDom.el('section', 'itin-panel-section');
+      const section = ItineraryPanelHelper.el('section', 'itin-panel-section');
 
-      const header = ItineraryPanelDom.el('div', 'itin-panel-section-header');
+      const header = ItineraryPanelHelper.el('div', 'itin-panel-section-header');
 
-      const titleEl = ItineraryPanelDom.el('div', 'itin-panel-section-title');
+      const titleEl = ItineraryPanelHelper.el('div', 'itin-panel-section-title');
       titleEl.appendChild(document.createTextNode(title));
 
-      const countEl = ItineraryPanelDom.el('span', 'itin-panel-count', `(${count})`);
+      const countEl = ItineraryPanelHelper.el('span', 'itin-panel-count', `(${count})`);
       titleEl.appendChild(countEl);
 
-      const headerActions = ItineraryPanelDom.el('div', 'itin-panel-header-actions');
+      const headerActions = ItineraryPanelHelper.el('div', 'itin-panel-header-actions');
 
-      const editBtn = ItineraryPanelDom.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
+      const editBtn = ItineraryPanelHelper.el('button', 'itin-panel-section-edit-btn', Strings.itinerary.actions.edit);
       editBtn.type = 'button';
       editBtn.setAttribute('aria-label', Strings.itinerary.panel.editSectionAria(title));
       editBtn.addEventListener('click', (e) => {
@@ -33,10 +33,10 @@ export class ItineraryPanelSectionBuilder {
          }));
       });
 
-      const toggleBtn = ItineraryPanelDom.el('button', 'itin-panel-toggle');
+      const toggleBtn = ItineraryPanelHelper.el('button', 'itin-panel-toggle');
       toggleBtn.type = 'button';
       toggleBtn.setAttribute('aria-label', Strings.itinerary.panel.toggleSectionAria(title));
-      toggleBtn.appendChild(ItineraryPanelDom.el('span', 'itin-panel-toggle-icon'));
+      toggleBtn.appendChild(ItineraryPanelHelper.el('span', 'itin-panel-toggle-icon'));
 
       if (showEditButton) {
          headerActions.appendChild(editBtn);
@@ -47,8 +47,8 @@ export class ItineraryPanelSectionBuilder {
       header.appendChild(titleEl);
       header.appendChild(headerActions);
 
-      const body = ItineraryPanelDom.el('div', 'itin-panel-section-body');
-      const bodyInner = ItineraryPanelDom.el('div', 'itin-panel-section-body-inner');
+      const body = ItineraryPanelHelper.el('div', 'itin-panel-section-body');
+      const bodyInner = ItineraryPanelHelper.el('div', 'itin-panel-section-body-inner');
 
       children.forEach(child => bodyInner.appendChild(child));
       body.appendChild(bodyInner);
@@ -66,7 +66,7 @@ export class ItineraryPanelSectionBuilder {
       let resizeObserver = null;
       let applyHeightFrame = null;
 
-      const applyHeight = () => ItineraryPanelSectionBuilderHelpers.updateSectionBodyHeight(body, bodyInner);
+      const applyHeight = () => ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight(body, bodyInner);
 
       function scheduleHeightUpdate() {
          cancelAnimationFrame(applyHeightFrame);

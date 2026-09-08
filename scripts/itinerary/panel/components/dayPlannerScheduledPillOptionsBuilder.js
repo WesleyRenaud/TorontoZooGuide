@@ -1,4 +1,4 @@
-import { RowActionProps } from '../rowActionProps.js';
+import { RowActionPresenter } from '../rowActionPresenter.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 export class DayPlannerScheduledPillOptionsBuilder {
@@ -27,7 +27,7 @@ export class DayPlannerScheduledPillOptionsBuilder {
          typeof scheduleHandlers.onUnscheduleItineraryItem === 'function'
          && scheduleItemKind !== ScheduleItemKind.EVENT.kind
          && !ScheduleItemKind.isFixedTimeScheduleItemKind(scheduleItemKind)
-         && RowActionProps.canShowItineraryItemScheduleControls(scheduleItemKind, item)
+         && RowActionPresenter.canShowItineraryItemScheduleControls(scheduleItemKind, item)
       ) {
          if (
             ScheduleItemKind.isScheduleItemModuleItemType(scheduleItemKind)

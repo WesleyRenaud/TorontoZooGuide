@@ -1,5 +1,5 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-import { RemovedItemsPopupKeepButtonState } from './removedItemsPopupKeepButtonState.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
+import { RemovedItemsPopupKeepButtonStore } from './removedItemsPopupKeepButtonStore.js';
 import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupContentBuilder {
@@ -8,7 +8,7 @@ export class RemovedItemsPopupContentBuilder {
          return null;
       }
 
-      const btn = ItineraryPanelDom.el(
+      const btn = ItineraryPanelHelper.el(
          'button',
          'itin-removed-alt-btn',
          Strings.itinerary.removedItems.viewAlternatives
@@ -43,14 +43,14 @@ export class RemovedItemsPopupContentBuilder {
          return null;
       }
 
-      const btn = ItineraryPanelDom.el('button', 'itin-removed-alt-btn itin-removed-keep-btn');
+      const btn = ItineraryPanelHelper.el('button', 'itin-removed-alt-btn itin-removed-keep-btn');
 
       btn.type = 'button';
 
       function sync() {
-         RemovedItemsPopupKeepButtonState.applyKeepOverrideButtonState(
+         RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState(
             btn,
-            RemovedItemsPopupKeepButtonState.getKeepOverrideButtonState(isKeepSelected?.(key))
+            RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(isKeepSelected?.(key))
          );
       }
 
@@ -73,19 +73,19 @@ export class RemovedItemsPopupContentBuilder {
          return null;
       }
 
-      const section = ItineraryPanelDom.el('div', 'itin-removed-section');
+      const section = ItineraryPanelHelper.el('div', 'itin-removed-section');
 
       section.appendChild(
-         ItineraryPanelDom.el('div', 'itin-removed-section-title', title)
+         ItineraryPanelHelper.el('div', 'itin-removed-section-title', title)
       );
 
       if (subtitle) {
          section.appendChild(
-            ItineraryPanelDom.el('div', 'itin-removed-section-subtitle', subtitle)
+            ItineraryPanelHelper.el('div', 'itin-removed-section-subtitle', subtitle)
          );
       }
 
-      const list = ItineraryPanelDom.el('div', 'itin-removed-list');
+      const list = ItineraryPanelHelper.el('div', 'itin-removed-list');
 
       validRows.forEach((node) => {
          list.appendChild(node);
@@ -114,7 +114,7 @@ export class RemovedItemsPopupContentBuilder {
 
          row.classList.add('itin-removed-row');
 
-         const actions = ItineraryPanelDom.el('div', 'itin-removed-row-actions');
+         const actions = ItineraryPanelHelper.el('div', 'itin-removed-row-actions');
 
          if (showViewAlternatives) {
             const alternativesButton = RemovedItemsPopupContentBuilder.addAlternativesButton(

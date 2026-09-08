@@ -1,20 +1,20 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 
 export class ScheduleItemModuleFormBuilder {
    static createFieldLabel(text) {
-      return ItineraryPanelDom.el('label', 'schedule-item-field-label', text);
+      return ItineraryPanelHelper.el('label', 'schedule-item-field-label', text);
    }
 
    static createOnlyItineraryItemsCheckbox(labelText) {
-      const wrap = ItineraryPanelDom.el('div', 'schedule-item-only-itinerary-wrap');
-      const label = ItineraryPanelDom.el('label', 'schedule-item-only-itinerary-row');
+      const wrap = ItineraryPanelHelper.el('div', 'schedule-item-only-itinerary-wrap');
+      const label = ItineraryPanelHelper.el('label', 'schedule-item-only-itinerary-row');
       const checkbox = document.createElement('input');
 
       checkbox.type = 'checkbox';
       checkbox.className = 'schedule-item-only-itinerary-checkbox';
       checkbox.checked = false;
 
-      const text = ItineraryPanelDom.el('span', 'schedule-item-only-itinerary-label', labelText);
+      const text = ItineraryPanelHelper.el('span', 'schedule-item-only-itinerary-label', labelText);
       label.append(checkbox, text);
       wrap.appendChild(label);
 
@@ -27,7 +27,7 @@ export class ScheduleItemModuleFormBuilder {
       getOptionValue = (option) => option,
       getOptionLabel = (option) => String(option),
    } = {}) {
-      const field = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-type-field');
+      const field = ItineraryPanelHelper.el('div', 'schedule-item-field schedule-item-type-field');
       const select = document.createElement('select');
       select.className = 'schedule-item-select';
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import {
@@ -23,7 +23,7 @@ installPanelRowsTestHooks();
 
 test('Test_Scheduled_TestScheduledGenericEventPillRendersOnTheTimeline_ExpectOk', () => {
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -74,7 +74,7 @@ test('Test_Scheduled_TestScheduledGenericEventPillRendersOnTheTimeline_ExpectOk'
 test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -136,7 +136,7 @@ test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_Expect
 test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -193,7 +193,7 @@ test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_Expect
 test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -266,7 +266,7 @@ test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_Expec
 test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -347,7 +347,7 @@ test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_E
 });
 
 test('Test_Scheduled_TestScheduledPureTransportationTimelineMenuOmitsUnschedule_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -405,7 +405,7 @@ test('Test_Scheduled_TestScheduledPureTransportationTimelineMenuOmitsUnschedule_
 });
 
 test('Test_Pre_TestPreOpenWildEncounterKeepsItsStartSlot_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-07-06',
          openTime: '09:30',
@@ -442,7 +442,7 @@ test('Test_Pre_TestPreOpenWildEncounterKeepsItsStartSlot_ExpectOk', () => {
 test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -501,7 +501,7 @@ test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_Expect
 test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -592,7 +592,7 @@ test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectO
 });
 
 test('Test_Day_TestDayPlannerStacksZooHoursAndArrivalMarkers_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -618,7 +618,7 @@ test('Test_Day_TestDayPlannerStacksZooHoursAndArrivalMarkers_ExpectOk', () => {
 });
 
 test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -718,7 +718,7 @@ test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', ()
 });
 
 test('Test_Day_TestDayPlannerPositionsOffSlotScheduledItemsBetween_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -749,7 +749,7 @@ test('Test_Day_TestDayPlannerPositionsOffSlotScheduledItemsBetween_ExpectOk', ()
 });
 
 test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -794,7 +794,7 @@ test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => 
 });
 
 test('Test_Day_TestDayPlannerKeepsShortScheduledVisitsReadable_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -829,7 +829,7 @@ test('Test_Day_TestDayPlannerKeepsShortScheduledVisitsReadable_ExpectOk', () => 
 });
 
 test('Test_Day_TestDayPlannerMergesOverlappingScheduledPillsIntoCarousel_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -864,7 +864,7 @@ test('Test_Day_TestDayPlannerMergesOverlappingScheduledPillsIntoCarousel_ExpectO
 });
 
 test('Test_Day_TestDayPlannerKeepsScheduledPillsWithinTheTimeline_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',

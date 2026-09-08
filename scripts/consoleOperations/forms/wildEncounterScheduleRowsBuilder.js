@@ -1,6 +1,6 @@
-import { ConsoleDatePickers } from '../../datePickers/consoleDatePickers.js';
+import { ConsoleDateFactory } from '../../datePickers/consoleDateFactory.js';
 import { Strings } from '../../strings.js';
-import { WildEncounterScheduleRows } from './wildEncounterScheduleRows.js';
+import { WildEncounterScheduleBuilder } from './wildEncounterScheduleBuilder.js';
 
 export class WildEncounterScheduleRowsBuilder {
    static createDayCheckbox({
@@ -46,7 +46,7 @@ export class WildEncounterScheduleRowsBuilder {
       timeInputEl.setAttribute('aria-label', Strings.labels.encounterTime);
       timeInputEl.autocomplete = 'off';
 
-      const normalizedRow = WildEncounterScheduleRows.normalizeWildEncounterScheduleRow(initialRow);
+      const normalizedRow = WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow(initialRow);
 
       if (normalizedRow.time) {
          timeInputEl.value = normalizedRow.time;
@@ -59,7 +59,7 @@ export class WildEncounterScheduleRowsBuilder {
 
       const dayInputEls = {};
 
-      WildEncounterScheduleRows.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+      WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
          const { inputEl, optionLabelEl } = WildEncounterScheduleRowsBuilder.createDayCheckbox({
             rowIndex,
             dayKey,
@@ -92,7 +92,7 @@ export class WildEncounterScheduleRowsBuilder {
 
       rowEl.appendChild(removeSlotEl);
 
-      ConsoleDatePickers.initTimePicker(timeInputEl);
+      ConsoleDateFactory.initTimePicker(timeInputEl);
 
       return {
          rowEl,

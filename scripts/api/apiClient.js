@@ -1,12 +1,12 @@
-import { ApiClientHttp } from './apiClientHttp.js';
+import { ApiClientHelper } from './apiClientHelper.js';
 
 export class ApiClient {
    static async postJson(url, data = {}) {
-      const response = await fetch(url, ApiClientHttp.buildJsonRequestOptions(data));
-      const payload = await ApiClientHttp.readJsonResponse(response, url);
+      const response = await fetch(url, ApiClientHelper.buildJsonRequestOptions(data));
+      const payload = await ApiClientHelper.readJsonResponse(response, url);
 
       if (!response.ok) {
-         throw ApiClientHttp.buildHttpError(response, payload, url);
+         throw ApiClientHelper.buildHttpError(response, payload, url);
       }
 
       return payload;

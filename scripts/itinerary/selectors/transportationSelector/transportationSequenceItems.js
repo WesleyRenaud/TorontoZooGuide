@@ -1,14 +1,14 @@
-import { GroupConsecutiveTransportationLegSequences } from './groupConsecutiveTransportationLegSequences.js';
-import { RowActionProps } from '../../panel/rowActionProps.js';
+import { GroupConsecutiveTransportationLegGrouper } from './groupConsecutiveTransportationLegGrouper.js';
+import { RowActionPresenter } from '../../panel/rowActionPresenter.js';
 
 export class TransportationSequenceItems {
    static buildTransportationSequenceItems(transportation) {
-      const sequences = GroupConsecutiveTransportationLegSequences.groupConsecutiveTransportationLegSequences(
+      const sequences = GroupConsecutiveTransportationLegGrouper.groupConsecutiveTransportationLegSequences(
          transportation?.legs
       );
 
       if (sequences.length === 0) {
-         return RowActionProps.hasItineraryScheduleTimes(transportation)
+         return RowActionPresenter.hasItineraryScheduleTimes(transportation)
             ? [transportation]
             : [];
       }

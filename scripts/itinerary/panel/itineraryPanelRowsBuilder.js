@@ -1,11 +1,11 @@
-import { OpenGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
+import { GuardiansTalkLinkedAnimalOpener } from '../../guardians/guardiansTalkLinkedAnimalOpener.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
-import { SpeciesOverlay } from '../../overlays/speciesOverlay.js';
-import { RowActionProps } from './rowActionProps.js';
-import { RowAlerts } from './rowAlerts.js';
-import { RowBuilders } from './rowBuilders.js';
-import { RowPresentation } from './rowPresentation.js';
-import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
+import { SpeciesFragment } from '../../overlays/speciesFragment.js';
+import { RowActionPresenter } from './rowActionPresenter.js';
+import { RowAlertPresenter } from './rowAlertPresenter.js';
+import { RowBuilder } from './rowBuilder.js';
+import { RowPresenter } from './rowPresenter.js';
+import { ScheduledOccurrenceSorter } from '../scheduledOccurrenceSorter.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
 import { GuardiansTalkSelectorModel } from '../selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
@@ -22,30 +22,30 @@ export class ItineraryPanelRowsBuilder {
          onRemoveItem = null,
       } = {}
    ) {
-      return RowBuilders.buildRows(animals, {
+      return RowBuilder.buildRows(animals, {
          normalizeItem: ItineraryItemFormatter.normalizeAnimal,
-         prepareItems: (normalizedItems) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
-            RowBuilders.buildUniqueAnimals(normalizedItems)
+         prepareItems: (normalizedItems) => ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(
+            RowBuilder.buildUniqueAnimals(normalizedItems)
          ),
          buildRowProps: (animal) => {
-            const alert = RowAlerts.buildAnimalAlert(animal);
+            const alert = RowAlertPresenter.buildAnimalAlert(animal);
 
             return {
                species: AnimalSelectorModel.getAnimalSpecies(animal),
                enclosureName: AnimalSelectorModel.getAnimalEnclosureName(animal),
-               imageSrc: RowPresentation.buildImageSrc(
+               imageSrc: RowPresenter.buildImageSrc(
                   'animals',
                   animal.exhibit,
                   AnimalSelectorModel.getAnimalSpecies(animal)
                ),
-               metaLines: RowPresentation.buildMetaLines([
+               metaLines: RowPresenter.buildMetaLines([
                   AnimalSelectorModel.getAnimalSubtitle(animal),
                ]),
                alertLine: alert.line,
                alertTone: alert.tone,
-               onNameClick: () => SpeciesOverlay.openAnimalSpeciesOverlay(animal),
-               ...RowPresentation.buildLinkRowProps(animal.link),
-               ...RowActionProps.buildRowScheduleActionProps(
+               onNameClick: () => SpeciesFragment.openAnimalSpeciesOverlay(animal),
+               ...RowPresenter.buildLinkRowProps(animal.link),
+               ...RowActionPresenter.buildRowScheduleActionProps(
                   ScheduleItemKind.ANIMAL.itemType,
                   animal,
                   { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -63,22 +63,22 @@ export class ItineraryPanelRowsBuilder {
          onRemoveItem = null,
       } = {}
    ) {
-      return RowBuilders.buildNamedRows(attractions, {
+      return RowBuilder.buildNamedRows(attractions, {
          normalizeItem: ItineraryItemFormatter.normalizeAttraction,
-         prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
+         prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.attraction,
          imageDirectory: 'attractions',
          getName: (attraction) => attraction.name,
          getMetaLines: (attraction) => [
             attraction.subtitle,
-            RowPresentation.buildFieldLine(Strings.labels.location, attraction.region),
-            RowPresentation.buildFieldLine(Strings.labels.price, attraction.price),
-            RowPresentation.buildApproximateStartTimeFieldLine(attraction),
+            RowPresenter.buildFieldLine(Strings.labels.location, attraction.region),
+            RowPresenter.buildFieldLine(Strings.labels.price, attraction.price),
+            RowPresenter.buildApproximateStartTimeFieldLine(attraction),
          ],
-         getAlertLine: RowAlerts.buildAttractionRemovalReasonLine,
+         getAlertLine: RowAlertPresenter.buildAttractionRemovalReasonLine,
          extendRowProps: (attraction) => ({
-            ...RowPresentation.buildTitleLinkRowProps(attraction.infoLink),
-            ...RowActionProps.buildRowScheduleActionProps(
+            ...RowPresenter.buildTitleLinkRowProps(attraction.infoLink),
+            ...RowActionPresenter.buildRowScheduleActionProps(
                ScheduleItemKind.ATTRACTION.itemType,
                attraction,
                { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -95,20 +95,20 @@ export class ItineraryPanelRowsBuilder {
          onRemoveItem = null,
       } = {}
    ) {
-      return RowBuilders.buildNamedRows(transportations, {
+      return RowBuilder.buildNamedRows(transportations, {
          normalizeItem: ItineraryItemFormatter.normalizeTransportation,
-         prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
+         prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.transportation,
          imageDirectory: 'transportations',
          getName: TransportationSelectorModel.getTransportationName,
          getMetaLines: (transportation) => [
             TransportationSelectorModel.buildTransportationStationsLine(transportation),
-            RowPresentation.buildApproximateStartTimeFieldLine(transportation),
+            RowPresenter.buildApproximateStartTimeFieldLine(transportation),
          ],
-         getAlertLine: RowAlerts.buildAttractionRemovalReasonLine,
+         getAlertLine: RowAlertPresenter.buildAttractionRemovalReasonLine,
          extendRowProps: (transportation) => ({
-            ...RowPresentation.buildTitleLinkRowProps(transportation.infoLink),
-            ...RowActionProps.buildRowScheduleActionProps(
+            ...RowPresenter.buildTitleLinkRowProps(transportation.infoLink),
+            ...RowActionPresenter.buildRowScheduleActionProps(
                ScheduleItemKind.TRANSPORTATION.itemType,
                transportation,
                { onUnscheduleItem, onScheduleItem, onRemoveItem }
@@ -121,31 +121,31 @@ export class ItineraryPanelRowsBuilder {
       guardiansTalks = [],
       { onRemoveItem = null } = {}
    ) {
-      return RowBuilders.buildNamedRows(guardiansTalks, {
+      return RowBuilder.buildNamedRows(guardiansTalks, {
          normalizeItem: ItineraryItemFormatter.normalizeTalk,
-         prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
+         prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.guardiansTalk,
          imageDirectory: 'guardians-talks',
          getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getNameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
          getMetaLines: (talk) => [
-            RowPresentation.buildFieldLine(Strings.labels.location, talk.location),
-            RowPresentation.buildScheduledTimeFieldLine(talk),
+            RowPresenter.buildFieldLine(Strings.labels.location, talk.location),
+            RowPresenter.buildScheduledTimeFieldLine(talk),
          ],
-         getAlertLine: RowAlerts.buildGuardiansRemovalReasonLine,
+         getAlertLine: RowAlertPresenter.buildGuardiansRemovalReasonLine,
          getLink: (talk) => talk.link,
          extendRowProps: (talk) => ({
             ...(
-               OpenGuardiansTalkLinkedAnimal.getGuardiansTalkLinkedAnimal(talk)
+               GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(talk)
                   ? {
                      onNameClick: () => {
-                        void OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal(talk);
+                        void GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(talk);
                      },
                   }
                   : {}
             ),
-            ...RowActionProps.buildRemoveRowProps(
+            ...RowActionPresenter.buildRemoveRowProps(
                'guardians_talks',
                talk,
                onRemoveItem,
@@ -159,25 +159,25 @@ export class ItineraryPanelRowsBuilder {
       wildEncounters = [],
       { onRemoveItem = null } = {}
    ) {
-      return RowBuilders.buildNamedRows(wildEncounters, {
+      return RowBuilder.buildNamedRows(wildEncounters, {
          normalizeItem: ItineraryItemFormatter.normalizeWild,
-         prepareItems: ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime,
+         prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.wildEncounter,
          imageDirectory: 'wild-encounters',
          getName: WildEncounterSelectorModel.getWildEncounterName,
          getImageName: WildEncounterSelectorModel.getWildEncounterName,
          getNameSuffix: WildEncounterSelectorModel.getWildEncounterTitleSuffix,
          getMetaLines: (wild) => [
-            RowPresentation.buildFieldLine(
+            RowPresenter.buildFieldLine(
                Strings.itinerary.selectors.meetingSpot,
                wild.meeting_spot
             ),
-            RowPresentation.buildScheduledTimeFieldLine(wild),
+            RowPresenter.buildScheduledTimeFieldLine(wild),
          ],
-         getAlertLine: RowAlerts.buildWildRemovalReasonLine,
+         getAlertLine: RowAlertPresenter.buildWildRemovalReasonLine,
          extendRowProps: (wild) => ({
-            ...RowPresentation.buildTitleLinkRowProps(wild.link),
-            ...RowActionProps.buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
+            ...RowPresenter.buildTitleLinkRowProps(wild.link),
+            ...RowActionPresenter.buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
          }),
       });
    }

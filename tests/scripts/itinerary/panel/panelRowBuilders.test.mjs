@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
-import { RemovedItemsPopup } from '../../../../scripts/itinerary/panel/components/removedItemsPopup.js';
+import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
+import { RemovedItemsFragment } from '../../../../scripts/itinerary/panel/components/removedItemsFragment.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import {
@@ -48,7 +48,7 @@ test('Test_BuildAnimalRows_TestUnscheduleHandler_ExpectAction', () => {
 test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove', () => {
    const scheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -421,7 +421,7 @@ test('Test_TransportationStationLine_TestRoundTrip_ExpectMarked', () => {
 test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
    const mount = document.createElement('div');
 
-   RemovedItemsPopup.showRemovedItemsPopup({
+   RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       adjustments: [
          {
@@ -453,7 +453,7 @@ test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
 test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
    const mount = document.createElement('div');
 
-   RemovedItemsPopup.showRemovedItemsPopup({
+   RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       adjustments: [
          {
@@ -485,7 +485,7 @@ test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
 test('Test_RemovedItemsPopup_TestUnscheduledItems_ExpectRendered', () => {
    const mount = document.createElement('div');
 
-   RemovedItemsPopup.showRemovedItemsPopup({
+   RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       unscheduled: {
          animals: [

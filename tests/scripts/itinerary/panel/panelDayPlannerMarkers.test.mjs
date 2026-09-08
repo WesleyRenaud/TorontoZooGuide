@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import {
@@ -22,7 +22,7 @@ import {
 installPanelRowsTestHooks();
 
 test('Test_Day_TestDayPlannerStartsAtEarlyAdmissionWhenAvailable_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview({
+   const planner = DayPlannerBuilder.makeDayPlannerPreview({
       date: '2026-06-20',
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
@@ -39,7 +39,7 @@ test('Test_Day_TestDayPlannerStartsAtEarlyAdmissionWhenAvailable_ExpectOk', () =
 
 test('Test_Arrival_TestArrivalMarkerRemoveMenuClearsArrivalTimeThrough_ExpectOk', () => {
    const arrivalRemovals = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -74,7 +74,7 @@ test('Test_Arrival_TestArrivalMarkerRemoveMenuClearsArrivalTimeThrough_ExpectOk'
 test('Test_Day_TestDayPlannerHeaderClearButtonsRemoveArrivalAnd_ExpectOk', async () => {
    const arrivalChanges = [];
    const departureChanges = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -112,7 +112,7 @@ test('Test_Day_TestDayPlannerHeaderClearButtonsRemoveArrivalAnd_ExpectOk', async
 });
 
 test('Test_Day_TestDayPlannerHeaderDisablesClearButtonsWhenTimes_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -164,7 +164,7 @@ test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', 
       return instance;
    };
 
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -199,7 +199,7 @@ test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', 
 
 test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_ExpectOk', () => {
    const departureRemovals = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-15',
          openTime: '09:30',
@@ -227,7 +227,7 @@ test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_Exp
 });
 
 test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -263,7 +263,7 @@ test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () =>
 });
 
 test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-15',
          openTime: '09:30',
@@ -293,7 +293,7 @@ test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () =>
 });
 
 test('Test_Day_TestDayPlannerPositionsOffSlotArrivalAndDeparture_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',

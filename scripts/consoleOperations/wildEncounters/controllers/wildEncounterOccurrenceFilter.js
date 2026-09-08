@@ -1,6 +1,6 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { OccurrenceFilterController } from '../../helpers/occurrenceFilterController.js';
 
 export class WildEncounterOccurrenceFilter {
@@ -17,8 +17,8 @@ export class WildEncounterOccurrenceFilter {
       function populateTimes(times = []) {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
-            hasWildEncounter: Boolean(ControllerUtils.getFieldValue(wildEncounterEl)),
-            hasDate: Boolean(ControllerUtils.getFieldValue(dateEl)),
+            hasWildEncounter: Boolean(ControllerHelper.getFieldValue(wildEncounterEl)),
+            hasDate: Boolean(ControllerHelper.getFieldValue(dateEl)),
             autoSelectSingleTime: true,
          });
       }
@@ -27,11 +27,11 @@ export class WildEncounterOccurrenceFilter {
          dateEl,
          populateTimes,
          getSelectionValues: () => ({
-            wildEncounter: ControllerUtils.getFieldValue(wildEncounterEl),
+            wildEncounter: ControllerHelper.getFieldValue(wildEncounterEl),
          }),
          isSelectionReady: ({ wildEncounter }) => Boolean(wildEncounter),
          loadOccurrences: async ({ wildEncounter }) => {
-            const result = await ConsoleOperationsApi.getWildEncounterOccurrences({
+            const result = await ConsoleOperationsClient.getWildEncounterOccurrences({
                wildEncounter,
             });
 

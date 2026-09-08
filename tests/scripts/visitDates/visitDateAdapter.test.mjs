@@ -1,0 +1,91 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import { VisitDateAdapter } from '../../../scripts/visitDates/visitDateAdapter.js';
+import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
+import { createDomNode } from '../helpers/domNodeMock.mjs';
+import { makeNoonDate } from '../helpers/visitDateMock.mjs';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
+const floor = makeNoonDate(2026, 5, 15);
+
+installDomTestHooks();
+
+test('Test_InitVisitDateFlatpickr_TestMissingInput_ExpectNull', () => {
+   assert.equal(VisitDateAdapter.initVisitDateFlatpickr(null), null);
+});
+
+test('Test_InitVisitDateFlatpickr_TestCallbacks_ExpectReadonlyWired', () => {
+   const inputEl = createDomNode('input', 'itin-date-input');
+   const readyCalls = [];
+   const changeCalls = [];
+   const closeCalls = [];
+   const flatpickrOptions = [];
+
+   const instance = VisitDateAdapter.initVisitDateFlatpickr(inputEl, {
+      defaultDate: makeNoonDate(2026, 5, 16),
+      daysAhead: 2,
+      earliestNoon: floor,
+      getTodayFn: () => floor,
+      getMaxDateFn: () => makeNoonDate(2026, 5, 17),
+      onReady: (...args) => {
+         readyCalls.push(args);
+      },
+      onChange: (...args) => {
+         changeCalls.push(args);
+      },
+      onClose: (...args) => {
+         closeCalls.push(args);
+      },
+      initFlatpickr: (_input, options) => {
+         flatpickrOptions.push(options);
+
+         const picker = {
+            setDate() {},
+         };
+
+         options.onReady(
+            [makeNoonDate(2026, 5, 16)],
+            '2026-06-16',
+            picker
+         );
+         options.onChange(
+            [makeNoonDate(2026, 5, 17)],
+            '2026-06-17',
+            picker
+         );
+         options.onClose([], '', picker);
+
+         return picker;
+      },
+   });
+
+   assert.ok(instance);
+   assert.equal(inputEl.getAttribute('readonly'), 'true');
+   assert.equal(flatpickrOptions.length, 1);
+   assert.equal(flatpickrOptions[0].minDate, floor);
+   assert.equal(flatpickrOptions[0].clickOpens, true);
+   assert.equal(readyCalls.length, 1);
+   assert.equal(changeCalls.length, 1);
+   assert.equal(closeCalls.length, 1);
+   assert.equal(readyCalls[0][1], '2026-06-16');
+   assert.equal(changeCalls[0][1], '2026-06-17');
+});
+
+test('Test_InitVisitDateFlatpickr_TestOmitMaxDateFn_ExpectDerivedMax', () => {
+   const inputEl = createDomNode('input', 'itin-date-input');
+   const flatpickrOptions = [];
+
+   VisitDateAdapter.initVisitDateFlatpickr(inputEl, {
+      defaultDate: makeNoonDate(2026, 5, 16),
+      daysAhead: 2,
+      earliestNoon: floor,
+      getTodayFn: () => floor,
+      initFlatpickr: (_input, options) => {
+         flatpickrOptions.push(options);
+         return { setDate() {} };
+      },
+   });
+
+   assert.equal(VisitDateValidator.toISODate(flatpickrOptions[0].maxDate), '2026-06-17');
+});

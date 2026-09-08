@@ -1,4 +1,4 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 
 export class ItineraryPillMenuBuilder {
    static resolvePillStrip(pill) {
@@ -6,10 +6,10 @@ export class ItineraryPillMenuBuilder {
    }
 
    static buildPillMenuButtonDots() {
-      const dots = ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dots');
+      const dots = ItineraryPanelHelper.el('span', 'itinerary-day-open-pill-menu-dots');
 
       for (let index = 0; index < 3; index += 1) {
-         dots.appendChild(ItineraryPanelDom.el('span', 'itinerary-day-open-pill-menu-dot'));
+         dots.appendChild(ItineraryPanelHelper.el('span', 'itinerary-day-open-pill-menu-dot'));
       }
 
       return dots;

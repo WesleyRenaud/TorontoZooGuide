@@ -1,5 +1,4 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-import { StoredSelection } from '../base/storedSelection.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 import { ItineraryTransportationStationRoles } from '../../itineraryTransportationStationRoles.js';
 import { TransportationSelectorModel } from './transportationSelectorModel.js';
 
@@ -30,7 +29,7 @@ export class TransportationStationNameResolver {
       return TransportationStationNameResolver.uniqueNames(
          stations
             .filter((station) => roles.includes(station.role))
-            .map((station) => ValueNormalizer.asTrimmedString(station.name))
+            .map((station) => StoredSelectionNormalizer.normalizeStoredString(station.name))
       );
    }
 
@@ -46,7 +45,7 @@ export class TransportationStationNameResolver {
       const legs = TransportationStationNameResolver.getTransportationLegs(row);
 
       if (legs.length > 0) {
-         const name = ValueNormalizer.asTrimmedString(pickFromLeg(legs));
+         const name = StoredSelectionNormalizer.normalizeStoredString(pickFromLeg(legs));
          return name ? [name] : [];
       }
 
@@ -54,7 +53,7 @@ export class TransportationStationNameResolver {
          return [];
       }
 
-      const mainStation = ValueNormalizer.asTrimmedString(row?.main_station);
+      const mainStation = StoredSelectionNormalizer.normalizeStoredString(row?.main_station);
       return mainStation ? [mainStation] : [];
    }
 
@@ -85,7 +84,7 @@ export class TransportationStationNameResolver {
    }
 
    static createStoredTransportationFromString(item) {
-      const name = ValueNormalizer.asTrimmedString(item);
+      const name = StoredSelectionNormalizer.normalizeStoredString(item);
 
       if (!name) {
          return null;
@@ -102,8 +101,8 @@ export class TransportationStationNameResolver {
    }
 
    static createStoredTransportationFromObject(item) {
-      const name = ValueNormalizer.asTrimmedString(item.name);
-      const id = StoredSelection.normalizeStoredId(item.id, name);
+      const name = StoredSelectionNormalizer.normalizeStoredString(item.name);
+      const id = StoredSelectionNormalizer.normalizeStoredId(item.id, name);
 
       if (!id) {
          return null;
@@ -112,10 +111,10 @@ export class TransportationStationNameResolver {
       return {
          id,
          name,
-         subtitle: ValueNormalizer.asTrimmedString(item.subtitle),
-         infoLink: StoredSelection.normalizeStoredLink(item.infoLink),
-         imageSrc: StoredSelection.normalizeStoredLink(item.imageSrc),
-         addedAsAttraction: StoredSelection.normalizeStoredBoolean(item.addedAsAttraction),
+         subtitle: StoredSelectionNormalizer.normalizeStoredString(item.subtitle),
+         infoLink: StoredSelectionNormalizer.normalizeStoredLink(item.infoLink),
+         imageSrc: StoredSelectionNormalizer.normalizeStoredLink(item.imageSrc),
+         addedAsAttraction: StoredSelectionNormalizer.normalizeStoredBoolean(item.addedAsAttraction),
       };
    }
 }

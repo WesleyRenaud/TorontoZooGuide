@@ -1,5 +1,5 @@
 import { SectionConfigs } from '../panel/sectionConfigs.js';
-import { ScheduleConflictCompatibility } from './scheduleConflictCompatibility.js';
+import { ScheduleConflictChecker } from './scheduleConflictChecker.js';
 import { WarningFixedTimeDraftFilter } from './warningFixedTimeDraftFilter.js';
 
 export class FilterDraftExcludingWarningFixedTimeItems {
@@ -7,11 +7,11 @@ export class FilterDraftExcludingWarningFixedTimeItems {
       const warningItems = issues.flatMap((issue) => issue.items ?? []);
       const rejectedTalkKeys = WarningFixedTimeDraftFilter.rejectedOccurrenceKeys(
          warningItems,
-         ScheduleConflictCompatibility.isGuardiansTalkConflictItem
+         ScheduleConflictChecker.isGuardiansTalkConflictItem
       );
       const rejectedEncounterKeys = WarningFixedTimeDraftFilter.rejectedOccurrenceKeys(
          warningItems,
-         ScheduleConflictCompatibility.isWildEncounterConflictItem
+         ScheduleConflictChecker.isWildEncounterConflictItem
       );
 
       return {

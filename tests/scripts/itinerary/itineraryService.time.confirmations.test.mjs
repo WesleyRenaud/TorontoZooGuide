@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItineraryServiceTime } from '../../../scripts/itinerary/itineraryServiceTime.js';
+import { ItineraryServiceFormatter } from '../../../scripts/itinerary/itineraryServiceFormatter.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
@@ -75,7 +75,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
       };
    };
 
-   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -178,7 +178,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const setPromise = ItineraryServiceTime.setItineraryDepartureTime('16:00');
+   const setPromise = ItineraryServiceFormatter.setItineraryDepartureTime('16:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -264,7 +264,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
       };
    };
 
-   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -330,7 +330,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeT
    };
 
    await assert.rejects(
-      ItineraryServiceTime.setItineraryArrivalTime('09:00'),
+      ItineraryServiceFormatter.setItineraryArrivalTime('09:00'),
       /outside operating hours/i
    );
 });
@@ -376,7 +376,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
       };
    };
 
-   const result = await ItineraryServiceTime.setItineraryArrivalTime('09:30');
+   const result = await ItineraryServiceFormatter.setItineraryArrivalTime('09:30');
 
    assert.equal(result.errorType, 'success');
    assert.equal(result.itinerary, undefined);
@@ -459,7 +459,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
       };
    };
 
-   const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -552,7 +552,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
    };
 
    await assert.rejects(async () => {
-      const setPromise = ItineraryServiceTime.setItineraryArrivalTime('09:00');
+      const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
 
       await new Promise((resolve) => {
          setTimeout(resolve, 0);
