@@ -1,3 +1,5 @@
+import { SvgPathParsingHelpers } from './svgPathParsingHelpers.js';
+
 const TOKEN_PATTERN = /[a-zA-Z]|[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?/g;
 
 const COMMAND_ARG_COUNTS = {
@@ -8,10 +10,6 @@ const COMMAND_ARG_COUNTS = {
    C: 6,
    Z: 0,
 };
-
-function readNumber(tokens, index) {
-   return Number.parseFloat(tokens[index]);
-}
 
 export class SvgPathParsing {
    static pointsNear(left, right, tolerance = 1.5) {
@@ -39,8 +37,8 @@ export class SvgPathParsing {
          const upperCommand = command.toUpperCase();
 
          if (upperCommand === 'M') {
-            x = readNumber(tokens, index);
-            y = readNumber(tokens, index + 1);
+            x = SvgPathParsingHelpers.readNumber(tokens, index);
+            y = SvgPathParsingHelpers.readNumber(tokens, index + 1);
             index += 2;
             segments.push({
                tag: 'M',
@@ -53,8 +51,8 @@ export class SvgPathParsing {
          }
 
          if (upperCommand === 'L') {
-            x = readNumber(tokens, index);
-            y = readNumber(tokens, index + 1);
+            x = SvgPathParsingHelpers.readNumber(tokens, index);
+            y = SvgPathParsingHelpers.readNumber(tokens, index + 1);
             index += 2;
             segments.push({
                tag: 'L',
@@ -66,7 +64,7 @@ export class SvgPathParsing {
          }
 
          if (upperCommand === 'H') {
-            x = readNumber(tokens, index);
+            x = SvgPathParsingHelpers.readNumber(tokens, index);
             index += 1;
             segments.push({
                tag: 'H',
@@ -78,7 +76,7 @@ export class SvgPathParsing {
          }
 
          if (upperCommand === 'V') {
-            y = readNumber(tokens, index);
+            y = SvgPathParsingHelpers.readNumber(tokens, index);
             index += 1;
             segments.push({
                tag: 'V',
@@ -90,12 +88,12 @@ export class SvgPathParsing {
          }
 
          if (upperCommand === 'C') {
-            const controlPoint1X = readNumber(tokens, index);
-            const controlPoint1Y = readNumber(tokens, index + 1);
-            const controlPoint2X = readNumber(tokens, index + 2);
-            const controlPoint2Y = readNumber(tokens, index + 3);
-            x = readNumber(tokens, index + 4);
-            y = readNumber(tokens, index + 5);
+            const controlPoint1X = SvgPathParsingHelpers.readNumber(tokens, index);
+            const controlPoint1Y = SvgPathParsingHelpers.readNumber(tokens, index + 1);
+            const controlPoint2X = SvgPathParsingHelpers.readNumber(tokens, index + 2);
+            const controlPoint2Y = SvgPathParsingHelpers.readNumber(tokens, index + 3);
+            x = SvgPathParsingHelpers.readNumber(tokens, index + 4);
+            y = SvgPathParsingHelpers.readNumber(tokens, index + 5);
             index += 6;
             segments.push({
                tag: 'C',

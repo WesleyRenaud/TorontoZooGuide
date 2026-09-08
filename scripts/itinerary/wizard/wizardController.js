@@ -9,27 +9,12 @@ import { ItineraryWizardStore } from './itineraryWizardStore.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { Strings } from '../../strings.js';
 import { VisitDateEarliest } from '../visitDateEarliest.js';
+import { WizardControllerHelpers } from './wizardControllerHelpers.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
 import { WizardFinalizer } from './wizardFinalizer.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 import { WizardStepDraftSync } from './wizardStepDraftSync.js';
-
-async function loadDefaultSelectionStepConfigs() {
-   const { WizardSelectionStepFactories } = await import(
-      './wizardSelectionStepFactories.js'
-   );
-
-   return WizardSelectionStepFactories.buildWizardSelectionStepConfigs();
-}
-
-function clearWizard(mountEl) {
-   mountEl?.replaceChildren();
-}
-
-function closeWizard(mountEl) {
-   clearWizard(mountEl);
-}
 
 export class WizardController {
    static async openItineraryWizard({
@@ -45,7 +30,7 @@ export class WizardController {
          finalizeWizard = WizardFinalizer.finalizeItineraryWizard,
          showConfirmPopup = ConfirmPopup.showItineraryConfirmPopup,
          syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
-         loadSelectionStepConfigs = loadDefaultSelectionStepConfigs,
+         loadSelectionStepConfigs = WizardControllerHelpers.loadDefaultSelectionStepConfigs,
          selectionStepConfigs = null,
       } = deps;
 
@@ -117,7 +102,7 @@ export class WizardController {
          ) {
             // Clear the overlay only. Do not remount the day planner — that jumps
             // scroll. Saved itinerary content is already on the page.
-            clearWizard(mountEl);
+            WizardControllerHelpers.clearWizard(mountEl);
             handleFinishDone();
             return existing;
          }
@@ -148,7 +133,7 @@ export class WizardController {
 
       function discardAndClose() {
          wizard.discardChanges();
-         closeWizard(mountEl);
+         WizardControllerHelpers.closeWizard(mountEl);
       }
 
       function applyWizardDate(date) {
@@ -211,7 +196,7 @@ export class WizardController {
          if (!wizard.hasUnsavedChanges()) {
             // Clear the overlay only. Remounting the day planner jumps scroll;
             // saved itinerary content is already on the page.
-            closeWizard(mountEl);
+            WizardControllerHelpers.closeWizard(mountEl);
             return;
          }
 

@@ -2,18 +2,8 @@ import { ItineraryPanelPopup } from './itineraryPanelPopup.js';
 import { ScheduleItemModuleController } from './scheduleItemModuleController.js';
 import { ScheduleItemModuleForm } from './scheduleItemModuleForm.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
+import { ShowScheduleItemModuleHelpers } from './showScheduleItemModuleHelpers.js';
 import { Strings } from '../../../strings.js';
-
-const SEARCH_DEBOUNCE_MS = 250;
-
-function debounce(fn, delay = SEARCH_DEBOUNCE_MS) {
-   let timeoutId = null;
-
-   return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn(...args), delay);
-   };
-}
 
 export class ShowScheduleItemModule {
    static showScheduleItemModule({
@@ -98,7 +88,7 @@ export class ShowScheduleItemModule {
          onDismiss: null,
       });
 
-      const scheduleSearch = debounce(() => {
+      const scheduleSearch = ShowScheduleItemModuleHelpers.debounce(() => {
          void controller.runSearch();
       });
 
