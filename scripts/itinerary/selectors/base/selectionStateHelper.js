@@ -9,7 +9,7 @@ export class SelectionStateHelper {
       return items.slice();
    }
 
-   static loadSelectedItems(storageKey, migrateSelected = identity) {
+   static loadSelectedItems(storageKey, migrateSelected = SelectionStateHelper.identity) {
       return migrateSelected(DraftStore.loadArray(storageKey));
    }
 
