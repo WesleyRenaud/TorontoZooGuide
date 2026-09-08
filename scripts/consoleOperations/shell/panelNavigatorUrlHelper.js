@@ -29,7 +29,7 @@ export class PanelNavigatorUrlHelper {
       history.replaceState(null, '', url);
    }
 
-   static getPanelIdFromUrl(location = getDefaultLocation()) {
+   static getPanelIdFromUrl(location = PanelNavigatorUrlHelper.getDefaultLocation()) {
       if (!location) {
          return '';
       }

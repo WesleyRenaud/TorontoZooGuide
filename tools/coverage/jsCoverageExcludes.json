@@ -3,6 +3,7 @@
    "exclude": [
       "scripts/strings.js",
       "scripts/strings/**",
+      "scripts/*Bootstrap.js",
       "scripts/**/*Bootstrap.js"
    ]
 }
