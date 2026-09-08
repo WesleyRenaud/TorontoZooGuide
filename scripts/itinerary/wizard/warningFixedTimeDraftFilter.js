@@ -1,8 +1,9 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ItineraryItemFormatter } from '../panel/itineraryItemFormatter.js';
 
 export class WarningFixedTimeDraftFilter {
    static fixedTimeOccurrenceKey(row = {}) {
-      const name = ItineraryItemFormatter.normalizeText(row.name).toLowerCase();
+      const name = ValueNormalizer.asTrimmedString(row.name).toLowerCase();
       const startTime = ItineraryItemFormatter.formatClockTime(row.start_time);
 
       if (!name) {
@@ -30,7 +31,7 @@ export class WarningFixedTimeDraftFilter {
          return false;
       }
 
-      const nameKey = `name:${ItineraryItemFormatter.normalizeText(row.name).toLowerCase()}`;
+      const nameKey = `name:${ValueNormalizer.asTrimmedString(row.name).toLowerCase()}`;
 
       return !rejectedKeys.has(nameKey);
    }

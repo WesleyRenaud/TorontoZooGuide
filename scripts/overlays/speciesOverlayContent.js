@@ -1,4 +1,5 @@
 import { AnimalDisplayLines } from '../animals/animalDisplayLines.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { SpeciesOverlayContentBuilder } from './speciesOverlayContentBuilder.js';
 import { Strings } from '../strings.js';
@@ -6,8 +7,8 @@ import { Strings } from '../strings.js';
 export class SpeciesOverlayContent {
    static buildSpeciesContent(animal) {
       const fragment = document.createDocumentFragment();
-      const species = SpeciesOverlayContentBuilder.readText(animal?.species);
-      const latinName = SpeciesOverlayContentBuilder.readText(animal?.latin_name);
+      const species = ValueNormalizer.asTrimmedString(animal?.species);
+      const latinName = ValueNormalizer.asTrimmedString(animal?.latin_name);
       const titleLine = AnimalDisplayLines.formatSpeciesEnclosureLine(species, AnimalSelectorModel.getAnimalEnclosureName(animal));
       const exhibitLine = AnimalSelectorModel.getAnimalExhibit(animal);
 

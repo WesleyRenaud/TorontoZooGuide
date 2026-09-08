@@ -1,10 +1,11 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConsoleDropdownOptionBuilder } from './consoleDropdownOptionBuilder.js';
 import { Strings } from '../../strings.js';
 
 export class ConsoleDropdownPopulator {
    static populateDropdown(selectEl, items, {
       emptyOptionLabel = Strings.placeholders.option,
-      getName = item => String(item ?? '').trim(),
+      getName = ValueNormalizer.asTrimmedString,
       sortItems = null,
    } = {}) {
       if (selectEl?.tagName !== 'SELECT') {

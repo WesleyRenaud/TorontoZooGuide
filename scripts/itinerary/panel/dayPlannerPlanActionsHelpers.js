@@ -1,7 +1,9 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
+
 export class DayPlannerPlanActionsHelpers {
    static itemHasScheduleTimes(item) {
-      return Boolean(String(item?.start_time ?? '').trim())
-         && Boolean(String(item?.end_time ?? '').trim());
+      return Boolean(ValueNormalizer.asTrimmedString(item?.start_time))
+         && Boolean(ValueNormalizer.asTrimmedString(item?.end_time));
    }
 
    static collectionHasScheduledItems(items) {

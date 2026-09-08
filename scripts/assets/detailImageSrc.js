@@ -1,10 +1,11 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from './assetKeyNormalizer.js';
 
 export class DetailImageSrc {
    static buildDetailImageSrc(imageDirectory, name, {
       basePath = 'images/details',
    } = {}) {
-      const file = AssetKeyNormalizer.normalize(String(name).trim());
+      const file = AssetKeyNormalizer.normalize(ValueNormalizer.asTrimmedString(name));
 
       if (!file) {
          return null;

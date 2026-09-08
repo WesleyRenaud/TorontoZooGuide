@@ -1,4 +1,5 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
@@ -11,8 +12,8 @@ export class GuardiansTalkLocationFilter {
 
       function getLocationName(location) {
          return typeof location === 'string'
-            ? location.trim()
-            : String(location?.location ?? location?.name ?? '').trim();
+            ? ValueNormalizer.asTrimmedString(location)
+            : ValueNormalizer.asTrimmedString(location?.location ?? location?.name);
       }
 
       function populateLocationDropdown(locations) {

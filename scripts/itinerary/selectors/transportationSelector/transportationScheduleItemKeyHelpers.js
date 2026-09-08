@@ -1,8 +1,8 @@
-import { StoredSelection } from '../base/storedSelection.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 
 export class TransportationScheduleItemKeyHelpers {
    static addedAsAttractionFromWire(part) {
-      const wire = StoredSelection.normalizeStoredString(part);
+      const wire = ValueNormalizer.asTrimmedString(part);
 
       if (wire === '1') {
          return true;

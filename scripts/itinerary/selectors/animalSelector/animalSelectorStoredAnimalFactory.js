@@ -1,15 +1,16 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelection } from '../base/storedSelection.js';
 
 export class AnimalSelectorStoredAnimalFactory {
    static normalizeLegacyStoredSpecies(item) {
-      return StoredSelection.normalizeStoredString(item.species)
-         || StoredSelection.normalizeStoredString(item.SPECIES);
+      return ValueNormalizer.asTrimmedString(item.species)
+         || ValueNormalizer.asTrimmedString(item.SPECIES);
    }
 
    static normalizeLegacyStoredExhibit(item) {
-      return StoredSelection.normalizeStoredString(item.exhibit)
-         || StoredSelection.normalizeStoredString(item.EXHIBIT);
+      return ValueNormalizer.asTrimmedString(item.exhibit)
+         || ValueNormalizer.asTrimmedString(item.EXHIBIT);
    }
 
    static normalizeLegacyStoredImageSrc(item) {
@@ -19,7 +20,7 @@ export class AnimalSelectorStoredAnimalFactory {
    }
 
    static createStoredAnimalFromString(item) {
-      const species = StoredSelection.normalizeStoredString(item);
+      const species = ValueNormalizer.asTrimmedString(item);
 
       if (!species) {
          return null;

@@ -1,6 +1,8 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+
 export class SpeciesMatcher {
    static filterSpeciesMatches(speciesList, query, maxResults = 12) {
-      const normalizedQuery = String(query || '').trim().toLowerCase();
+      const normalizedQuery = ValueNormalizer.asTrimmedString(query).toLowerCase();
 
       if (!normalizedQuery) {
          return [];

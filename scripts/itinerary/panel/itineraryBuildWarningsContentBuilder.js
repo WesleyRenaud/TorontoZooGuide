@@ -1,9 +1,9 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
 import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
 import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
 import { ItineraryPanelDom } from './itineraryPanelDom.js';
 import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
@@ -79,7 +79,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return null;
       }
 
-      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+      const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
       const message = talk.talkTime
          ? strings.buildWarningScheduleOverlapMessage(talkName, talk.talkTime)
          : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
@@ -99,7 +99,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return null;
       }
 
-      const encounterName = ItineraryItemFormatter.normalizeText(encounter.encounterName);
+      const encounterName = ValueNormalizer.asTrimmedString(encounter.encounterName);
       const message = encounter.encounterTime
          ? strings.buildWarningWildEncounterOverlapMessage(
             encounterName,
@@ -122,7 +122,7 @@ export class ItineraryBuildWarningsContentBuilder {
       }
 
       return GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
-         const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+         const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
          const message = talk.talkTime
             ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
             : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
@@ -157,7 +157,7 @@ export class ItineraryBuildWarningsContentBuilder {
       }
 
       return FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
-         const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
+         const itemName = ValueNormalizer.asTrimmedString(item.itemName);
          const message = item.itemTime
             ? strings.buildWarningLongWaitMessage(
                itemName,

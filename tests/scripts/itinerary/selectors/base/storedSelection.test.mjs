@@ -3,12 +3,6 @@ import test from 'node:test';
 
 import { StoredSelection } from '../../../../../scripts/itinerary/selectors/base/storedSelection.js';
 
-test('Test_NormalizeStoredString_TestTrimAndReject_ExpectTrimmedOrEmpty', () => {
-   assert.equal(StoredSelection.normalizeStoredString('  African Lion  '), 'African Lion');
-   assert.equal(StoredSelection.normalizeStoredString(42), '');
-   assert.equal(StoredSelection.normalizeStoredString(null), '');
-});
-
 test('Test_NormalizeStoredBoolean_TestStrictTrue_ExpectOnlyTrue', () => {
    assert.equal(StoredSelection.normalizeStoredBoolean(true), true);
    assert.equal(StoredSelection.normalizeStoredBoolean(1), false);

@@ -1,5 +1,5 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { DetailImageSrc } from '../assets/detailImageSrc.js';
-import { StoredSelection } from './selectors/base/storedSelection.js';
 
 export class ScheduledOccurrencePresentation {
    static buildOccurrenceDetailImageSrc(imageDirectory, name) {
@@ -13,13 +13,13 @@ export class ScheduledOccurrencePresentation {
    }
 
    static formatOccurrenceTitleSuffix(name, label) {
-      return StoredSelection.normalizeStoredString(name)
+      return ValueNormalizer.asTrimmedString(name)
          ? ` ${label}`
          : '';
    }
 
    static formatOccurrenceSearchTitle(name, label) {
-      const trimmed = StoredSelection.normalizeStoredString(name);
+      const trimmed = ValueNormalizer.asTrimmedString(name);
 
       return trimmed
          ? `${trimmed}${ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(trimmed, label)}`

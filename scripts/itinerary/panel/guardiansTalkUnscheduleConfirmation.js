@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
@@ -10,7 +11,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       return issues
          .filter((issue) => issue?.type === GuardiansTalkUnscheduleConfirmation.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => (issue.items ?? [])
-            .map((item) => ItineraryItemFormatter.normalizeText(item?.name))
+            .map((item) => ValueNormalizer.asTrimmedString(item?.name))
             .filter(Boolean));
 
    }
@@ -25,7 +26,7 @@ export class GuardiansTalkUnscheduleConfirmation {
       const talkItem = issues
          .filter((issue) => issue?.type === GuardiansTalkUnscheduleConfirmation.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
          .flatMap((issue) => issue.items ?? [])
-         .find((item) => ItineraryItemFormatter.normalizeText(item?.name) === talkName);
+         .find((item) => ValueNormalizer.asTrimmedString(item?.name) === talkName);
 
       const talkTime = ItineraryItemFormatter.formatClockTime(talkItem?.start_time);
 
@@ -49,7 +50,7 @@ export class GuardiansTalkUnscheduleConfirmation {
          return;
       }
 
-      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+      const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
       const message = talk.talkTime
          ? Strings.itinerary.confirmation.guardiansTalkRescheduleMessage(
             talkName,

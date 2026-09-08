@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from './assetKeyNormalizer.js';
 import { IconUrlBuilder } from './iconUrlBuilder.js';
 
@@ -27,7 +28,7 @@ export class IconUrls {
    }
 
    static getRestroomIconUrl(backgroundColourForUrl) {
-      const variantToken = IconUrlBuilder.normalizeIconVariantToken(backgroundColourForUrl);
+      const variantToken = ValueNormalizer.asTrimmedString(backgroundColourForUrl).toLowerCase();
 
       if (variantToken === 'closed') {
          return IconUrlBuilder.buildCssUrl('/images/icons/restroom/restroom-closed.png');
@@ -39,7 +40,7 @@ export class IconUrls {
    }
 
    static getDrinkingFountainIconUrl(backgroundColourForUrl) {
-      const variantToken = IconUrlBuilder.normalizeIconVariantToken(backgroundColourForUrl);
+      const variantToken = ValueNormalizer.asTrimmedString(backgroundColourForUrl).toLowerCase();
 
       if (variantToken === 'closed') {
          return IconUrlBuilder.buildCssUrl('/images/icons/drinking-fountain/drinking-fountain-closed.png');

@@ -1,4 +1,5 @@
 import { SearchApi } from '../api/searchApi.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { SearchResultsRenderer } from './searchResultsRenderer.js';
 import { SearchRows } from './searchRows.js';
 
@@ -19,7 +20,7 @@ export class SearchQueryRunner {
    }
 
    static getSearchQuery(inputEl) {
-      return (inputEl.value || '').trim();
+      return ValueNormalizer.asTrimmedString(inputEl.value);
    }
 
    static shouldClearForEmptyQuery(query, allowEmptyQuery) {

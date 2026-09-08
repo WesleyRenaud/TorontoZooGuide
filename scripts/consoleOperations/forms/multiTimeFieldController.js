@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { Strings } from '../../strings.js';
 import { VisitDateRules } from '../../visitDates/visitDateRules.js';
 
@@ -57,7 +58,7 @@ export class MultiTimeFieldController {
       }
 
       function addTime(time) {
-         const normalizedTime = VisitDateRules.formatZooDisplayClockTime(time?.trim() ?? '');
+         const normalizedTime = VisitDateRules.formatZooDisplayClockTime(ValueNormalizer.asTrimmedString(time));
 
          if (!normalizedTime || times.includes(normalizedTime)) {
             return false;
@@ -94,7 +95,7 @@ export class MultiTimeFieldController {
       }
 
       function commitPendingInput() {
-         const pendingTime = inputEl?.value?.trim() ?? '';
+         const pendingTime = ValueNormalizer.asTrimmedString(inputEl?.value);
 
          if (!pendingTime) {
             return false;

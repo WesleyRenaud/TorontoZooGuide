@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
@@ -56,7 +57,7 @@ export class WildEncounterSelectorModel {
    }
 
    static getWildEncounterScheduleStart(row) {
-      return StoredSelection.normalizeStoredString(row?.start_time);
+      return ValueNormalizer.asTrimmedString(row?.start_time);
    }
 
    static getWildEncounterSubtitle(row) {
@@ -75,9 +76,9 @@ export class WildEncounterSelectorModel {
 
    static readWildEncounterStoredFields(item) {
       return {
-         meeting_spot: StoredSelection.normalizeStoredString(item?.meeting_spot),
-         start_time: StoredSelection.normalizeStoredString(item?.start_time),
-         end_time: StoredSelection.normalizeStoredString(item?.end_time),
+         meeting_spot: ValueNormalizer.asTrimmedString(item?.meeting_spot),
+         start_time: ValueNormalizer.asTrimmedString(item?.start_time),
+         end_time: ValueNormalizer.asTrimmedString(item?.end_time),
       };
    }
 
@@ -85,7 +86,7 @@ export class WildEncounterSelectorModel {
       return {
          meeting_spot: WildEncounterSelectorModel.getWildEncounterMeetingSpot(row),
          start_time: WildEncounterSelectorModel.getWildEncounterScheduleStart(row),
-         end_time: StoredSelection.normalizeStoredString(row?.end_time),
+         end_time: ValueNormalizer.asTrimmedString(row?.end_time),
       };
    }
 }

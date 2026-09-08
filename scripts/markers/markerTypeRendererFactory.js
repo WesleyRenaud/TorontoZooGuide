@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { IconUrls } from '../assets/iconUrls.js';
 import { MarkerVisualUtils } from './markerVisualUtils.js';
 
@@ -196,7 +197,7 @@ export class MarkerTypeRendererFactory {
 
    static renderGuestServiceMarker(markerEl, items) {
       const guestService = items[0];
-      const serviceType = String(guestService?.service_type || '').trim();
+      const serviceType = ValueNormalizer.asTrimmedString(guestService?.service_type);
 
       MarkerVisualUtils.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.guestService);
 

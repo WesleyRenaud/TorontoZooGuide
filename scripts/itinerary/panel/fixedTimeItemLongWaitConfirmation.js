@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { FixedTimeItemLongWaitMessageBuilder } from './fixedTimeItemLongWaitMessageBuilder.js';
@@ -15,7 +16,7 @@ export class FixedTimeItemLongWaitConfirmation {
 
       return FixedTimeItemLongWaitMessageBuilder.longWaitItems(issues)
          .map((item) => {
-            const itemName = ItineraryItemFormatter.normalizeText(item?.name);
+            const itemName = ValueNormalizer.asTrimmedString(item?.name);
 
             if (!itemName) {
                return null;

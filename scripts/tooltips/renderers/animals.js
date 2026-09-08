@@ -10,12 +10,12 @@ export class Animals {
    static key = 'animal';
 
    static isMatch(item, row) {
-      const s1 = ValueNormalizer.asTrimmedString(String(item?.species || ''));
-      const s2 = ValueNormalizer.asTrimmedString(String(row?.species || ''));
+      const s1 = ValueNormalizer.asTrimmedString(item?.species);
+      const s2 = ValueNormalizer.asTrimmedString(row?.species);
       if (!s1 || !s2 || s1 !== s2) return false;
 
-      const e1 = ValueNormalizer.asTrimmedString(String(item?.exhibit || ''));
-      const e2 = ValueNormalizer.asTrimmedString(String(row?.exhibit || ''));
+      const e1 = ValueNormalizer.asTrimmedString(item?.exhibit);
+      const e2 = ValueNormalizer.asTrimmedString(row?.exhibit);
       return e2 ? e1 === e2 : true;
    }
 

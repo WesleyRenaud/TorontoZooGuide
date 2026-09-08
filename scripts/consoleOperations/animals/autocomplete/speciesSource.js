@@ -1,4 +1,5 @@
 import { AnimalsApi } from '../../../api/animalsApi.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { SpeciesSourceNormalizer } from './speciesSourceNormalizer.js';
 
@@ -20,7 +21,7 @@ export class SpeciesSource {
       }
 
       async function loadForExhibit(exhibit) {
-         const exhibitKey = SpeciesSourceNormalizer.normalizeExhibitKey(exhibit);
+         const exhibitKey = ValueNormalizer.asTrimmedString(exhibit);
 
          if (!exhibitKey) {
             return ensureAllSpeciesLoaded();

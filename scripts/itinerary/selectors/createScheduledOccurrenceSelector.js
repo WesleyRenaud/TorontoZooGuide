@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { StoredSelection } from './base/storedSelection.js';
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
@@ -47,7 +48,7 @@ export class CreateScheduledOccurrenceSelector {
    getName = ScheduledOccurrenceSelectorFactory.getOccurrenceName,
    getId = getName,
    getPrimaryValue,
-   getTimeOfDay = (row) => StoredSelection.normalizeStoredString(row?.start_time),
+   getTimeOfDay = (row) => ValueNormalizer.asTrimmedString(row?.start_time),
    getLink = null,
    emptyStoredFields = {},
    readStoredFields,

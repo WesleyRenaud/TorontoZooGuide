@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmPopup } from './components/confirmPopup.js';
 import { ItineraryPanelPopup } from './components/itineraryPanelPopup.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
@@ -26,7 +27,7 @@ export class GuardiansTalkWithoutAnimalConfirmation {
          .filter((issue) => issue?.type === GuardiansTalkWithoutAnimalConfirmation.GUARDIANS_TALK_WITHOUT_ANIMAL_ISSUE)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
-            const talkName = ItineraryItemFormatter.normalizeText(item?.name);
+            const talkName = ValueNormalizer.asTrimmedString(item?.name);
 
             if (!talkName) {
                return;
@@ -67,7 +68,7 @@ export class GuardiansTalkWithoutAnimalConfirmation {
       }
 
       const [talk] = talks;
-      const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
+      const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
       const message = talk.talkTime
          ? Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
          : Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);

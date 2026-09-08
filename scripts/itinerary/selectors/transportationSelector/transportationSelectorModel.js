@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
@@ -8,7 +9,7 @@ import { TransportationStationNameResolver } from './transportationStationNameRe
 
 export class TransportationSelectorModel {
    static getTransportationName(row) {
-      return StoredSelection.normalizeStoredString(row?.name);
+      return ValueNormalizer.asTrimmedString(row?.name);
    }
 
    static getTransportationId(row) {

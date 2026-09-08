@@ -4,6 +4,7 @@
  */
 import { DraftStorage } from './draftStorage.js';
 import { ItineraryService } from './itineraryService.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
 
 /**
@@ -51,13 +52,13 @@ export class VisitDateEarliest {
          toIso = VisitDateRules.toISODate,
       } = deps;
 
-      const fromItin = typeof itinerary?.date === 'string' && itinerary.date.trim();
+      const fromItin = ValueNormalizer.asTrimmedString(itinerary?.date);
 
       if (fromItin) {
          return fromItin;
       }
 
-      const stored = getStoredDate()?.trim?.();
+      const stored = ValueNormalizer.asTrimmedString(getStoredDate());
 
       if (stored) {
          return stored;

@@ -6,19 +6,15 @@ export class IconUrlBuilder {
       return `url("${path}")`;
    }
 
-   static normalizeIconVariantToken(token = '') {
-      return ValueNormalizer.asTrimmedString(token).toLowerCase();
-   }
-
    static isOpenIconVariant(token) {
-      const variantToken = IconUrlBuilder.normalizeIconVariantToken(token);
+      const variantToken = ValueNormalizer.asTrimmedString(token).toLowerCase();
       return !variantToken || variantToken === 'open';
    }
 
    static buildAnimalIconPath(exhibit, species, variantToken) {
       const normalizedExhibit = AssetKeyNormalizer.normalize(exhibit);
       const normalizedAnimal = AssetKeyNormalizer.normalize(species);
-      const normalizedVariant = IconUrlBuilder.normalizeIconVariantToken(variantToken);
+      const normalizedVariant = ValueNormalizer.asTrimmedString(variantToken).toLowerCase();
 
       return `/images/icons/animals/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${normalizedVariant}.png`;
    }
@@ -30,14 +26,14 @@ export class IconUrlBuilder {
          return `/images/icons/attractions/${normalizedAttraction}-open.png`;
       }
 
-      const normalizedVariant = IconUrlBuilder.normalizeIconVariantToken(variantToken);
+      const normalizedVariant = ValueNormalizer.asTrimmedString(variantToken).toLowerCase();
       return `/images/icons/attractions/${normalizedAttraction}/${normalizedAttraction}-${normalizedVariant}.png`;
    }
 
    static buildGenericIconPath(iconName, variantToken) {
       const normalizedVariant = IconUrlBuilder.isOpenIconVariant(variantToken)
          ? 'open'
-         : IconUrlBuilder.normalizeIconVariantToken(variantToken);
+         : ValueNormalizer.asTrimmedString(variantToken).toLowerCase();
 
       return `/images/icons/${iconName}/${iconName}-${normalizedVariant}.png`;
    }

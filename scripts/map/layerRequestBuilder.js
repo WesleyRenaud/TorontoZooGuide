@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { TransportationSelectorModel } from '../itinerary/selectors/transportationSelector/transportationSelectorModel.js';
 import { SourceHelpers } from './sourceHelpers.js';
 
@@ -6,7 +7,7 @@ export class LayerRequestBuilder {
       return Array.from(
          new Set(
             (values || [])
-               .map((value) => String(value || '').trim())
+               .map(ValueNormalizer.asTrimmedString)
                .filter(Boolean)
          )
       );
@@ -26,7 +27,7 @@ export class LayerRequestBuilder {
       }
 
       if (focusType === 'animal') {
-         const species = String(focusRow.species || '').trim();
+         const species = ValueNormalizer.asTrimmedString(focusRow.species);
 
          if (species) {
             includes.speciesToInclude = LayerRequestBuilder.uniqStrings([species]);

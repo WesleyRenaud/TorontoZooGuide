@@ -1,3 +1,5 @@
+import { ValueNormalizer } from '../api/valueNormalizer.js';
+
 export class ItineraryAdjustmentTypes {
    static itineraryAdjustmentTypes = null;
 
@@ -14,9 +16,7 @@ export class ItineraryAdjustmentTypes {
    }
 
    static normalizeItineraryAdjustmentType(adjustmentType) {
-      const normalizedAdjustmentType = typeof adjustmentType === 'string'
-         ? adjustmentType.trim()
-         : '';
+      const normalizedAdjustmentType = ValueNormalizer.asTrimmedString(adjustmentType);
 
       if (!normalizedAdjustmentType || !ItineraryAdjustmentTypes.itineraryAdjustmentTypes) {
          return normalizedAdjustmentType;

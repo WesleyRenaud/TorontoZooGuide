@@ -1,4 +1,5 @@
 import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
@@ -27,8 +28,8 @@ export class DrinkingFountainsOpen {
       async function onSubmitClick() {
          ConsoleStatusPresenter.setStatus(statusEl, '');
 
-         const startDate = startDateEl?.value.trim() || '';
-         const endDate = endDateEl?.value.trim() || '';
+         const startDate = ValueNormalizer.asTrimmedString(startDateEl?.value);
+         const endDate = ValueNormalizer.asTrimmedString(endDateEl?.value);
          const validationError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
 
          if (validationError) {

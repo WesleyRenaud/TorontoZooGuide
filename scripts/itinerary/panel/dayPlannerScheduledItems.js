@@ -1,3 +1,4 @@
+import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ScheduledPillViewingWalkNode } from './components/scheduledPillViewingWalkNode.js';
 import { DayPlannerSchedule } from './dayPlannerSchedule.js';
 import { DayPlannerTimelineMarkers } from './dayPlannerTimelineMarkers.js';
@@ -38,11 +39,11 @@ export class DayPlannerScheduledItems {
          return AnimalSelectorModel.getAnimalTitleLine(item);
       }
 
-      return String(item?.name || '').trim();
+      return ValueNormalizer.asTrimmedString(item?.name);
    }
 
    static getItineraryEventType(item) {
-      return String(item?.event_type ?? '').trim();
+      return ValueNormalizer.asTrimmedString(item?.event_type);
    }
 
    static buildGenericEventScheduledRows(events = []) {
