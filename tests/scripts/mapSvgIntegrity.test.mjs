@@ -12,13 +12,13 @@ import {
    validateMapSvg,
 } from '../../tools/lint/mapSvgIntegrity.js';
 
-test( 'validateMapSvg accepts the committed zoo map SVG', () => {
+test('Test_ValidateMapSvg_TestCommittedZooMap_ExpectNoViolations', () => {
    const violations = validateMapSvg( MAP_SVG_PATH );
 
    assert.deepEqual( violations, [] );
 } );
 
-test( 'every Zoomobile route marker is mapped to one seeded leg', () => {
+test('Test_ZoomobileRouteMarkers_TestSeededLegs_ExpectOneToOneMapping', () => {
    const svg = fs.readFileSync( MAP_SVG_PATH, 'utf8' );
    const markerRows = JSON.parse(
       fs.readFileSync(
@@ -41,7 +41,7 @@ test( 'every Zoomobile route marker is mapped to one seeded leg', () => {
    );
 } );
 
-test( 'validateMapSvg reports truncation and missing fragments', () => {
+test('Test_ValidateMapSvg_TestTruncationAndMissingFragments_ExpectViolations', () => {
    const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
    const tempPath = path.join( tempDir, 'broken.svg' );
    const content = [
@@ -67,7 +67,7 @@ test( 'validateMapSvg reports truncation and missing fragments', () => {
    );
 } );
 
-test( 'validateMapSvg reports the known 8 MB truncation size', () => {
+test('Test_ValidateMapSvg_TestKnownTruncationSize_ExpectViolations', () => {
    const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
    const tempPath = path.join( tempDir, 'truncated.svg' );
    const padding = 'x'.repeat(
@@ -86,7 +86,7 @@ test( 'validateMapSvg reports the known 8 MB truncation size', () => {
    );
 } );
 
-test( 'validateMapSvg reports a missing closing svg tag', () => {
+test('Test_ValidateMapSvg_TestMissingClosingTag_ExpectViolation', () => {
    const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
    const tempPath = path.join( tempDir, 'unclosed.svg' );
    const content = `<svg>${ REQUIRED_FRAGMENTS.join( '' ) }`;

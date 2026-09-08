@@ -3,38 +3,12 @@ import path from 'node:path';
 import process from 'node:process';
 
 const ROOT = process.cwd();
-const CONFIG_PATH = path.join(ROOT, 'tools/lint/jsUnitTestStyle.json');
 
 const FULL_TEST_NAME_RE = /^Test_[A-Z][A-Za-z0-9]*_Test[A-Za-z0-9][A-Za-z0-9]*_Expect[A-Za-z0-9][A-Za-z0-9]*$/;
 const SHORT_TEST_NAME_RE = /^Test_[A-Za-z][A-Za-z0-9_]*$/;
 
-function loadConfig() {
-   if (!fs.existsSync(CONFIG_PATH)) {
-      return {
-         include: [],
-         exclude: [],
-      };
-   }
-
-   return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-}
-
 function toPosix(filePath) {
    return filePath.split(path.sep).join('/');
-}
-
-function globToRegExp(pattern) {
-   const escaped = pattern
-      .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-      .replace(/\*\*/g, '::DOUBLESTAR::')
-      .replace(/\*/g, '[^/]*')
-      .replace(/::DOUBLESTAR::/g, '.*');
-
-   return new RegExp(`^${escaped}$`);
-}
-
-function matchesAny(relativePath, patterns) {
-   return patterns.some(pattern => globToRegExp(pattern).test(relativePath));
 }
 
 function walkTestFiles(dir, files = []) {
@@ -198,23 +172,10 @@ function checkFile(fullPath) {
 }
 
 function main() {
-   const config = loadConfig();
-   const include = config.include ?? [];
-   const exclude = config.exclude ?? [];
    const testsDir = path.join(ROOT, 'tests/scripts');
    const violations = [];
 
    walkTestFiles(testsDir).forEach(fullPath => {
-      const relativePath = toPosix(path.relative(ROOT, fullPath));
-
-      if (include.length > 0 && !matchesAny(relativePath, include)) {
-         return;
-      }
-
-      if (matchesAny(relativePath, exclude)) {
-         return;
-      }
-
       violations.push(...checkFile(fullPath));
    });
 
