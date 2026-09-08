@@ -8,8 +8,10 @@ export class AnimalsPage {
       const router = Router.createAnimalsRouter({ listEl });
       router.start();
    }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-   AnimalsPage.initAnimalsPage();
-});
+   static {
+      document.addEventListener('DOMContentLoaded', () => {
+         AnimalsPage.initAnimalsPage();
+      });
+   }
+}

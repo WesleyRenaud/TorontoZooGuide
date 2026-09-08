@@ -8,6 +8,8 @@ export class MainItinerary {
          ItineraryPage.initItineraryPage();
       });
    }
-}
 
-MainItinerary.bind();
+   static {
+      MainItinerary.bind();
+   }
+}

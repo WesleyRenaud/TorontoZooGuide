@@ -1,8 +1,6 @@
 import { NoticePopup } from '../panel/components/noticePopup.js';
-import {
-   createSaveIssuesContent,
-   ScheduleTimeConflictConfirmation,
-} from '../panel/scheduleTimeConflictConfirmation.js';
+import { ScheduleTimeConflictConfirmation } from '../panel/scheduleTimeConflictConfirmation.js';
+import { ScheduleTimeConflictContent } from '../panel/scheduleTimeConflictContent.js';
 import { SaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { Strings } from '../../strings.js';
 import { WildEncounterConflictResolution } from './wildEncounterConflictResolution.js';
@@ -14,7 +12,7 @@ export class WizardSaveIssuesPopup {
       showNoticePopup = NoticePopup.showItineraryNoticePopup,
       showProceedConfirmation = SaveIssuesProceedConfirmation.showSaveIssuesProceedConfirmation,
       saveFinalItinerary,
-      createSaveIssues = createSaveIssuesContent,
+      createSaveIssues = ScheduleTimeConflictContent.createSaveIssuesContent,
       confirmSaveIssues = ScheduleTimeConflictConfirmation.confirmSaveIssuesConflictSelection,
       buildResolvedItinerary = WildEncounterConflictResolution.buildItineraryWithSelectedConflictResolutions,
       } = {}

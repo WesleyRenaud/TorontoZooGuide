@@ -1,15 +1,15 @@
 import { DayPlannerTimelineMetrics } from '../dayPlannerTimelineMetrics.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 
-const timelinePlacementsByGridLine = new WeakMap();
-
 export class DayPlannerTimelinePillPlacementRegistry {
+   static timelinePlacementsByGridLine = new WeakMap();
+
    static getTimelinePlacements(gridLine) {
-      let placements = timelinePlacementsByGridLine.get(gridLine);
+      let placements = DayPlannerTimelinePillPlacementRegistry.timelinePlacementsByGridLine.get(gridLine);
 
       if (!placements) {
          placements = [];
-         timelinePlacementsByGridLine.set(gridLine, placements);
+         DayPlannerTimelinePillPlacementRegistry.timelinePlacementsByGridLine.set(gridLine, placements);
       }
 
       return placements;

@@ -1,9 +1,8 @@
 import { StoredSelection } from '../base/storedSelection.js';
 import { TransportationScheduleItemKeyHelpers } from './transportationScheduleItemKeyHelpers.js';
 
-export const TRANSPORTATION_ITEM_KEY_SEPARATOR = '||';
-
 export class TransportationScheduleItemKey {
+   static TRANSPORTATION_ITEM_KEY_SEPARATOR = '||';
    constructor(name, addedAsAttraction) {
       this.name = StoredSelection.normalizeStoredString(name);
       this.addedAsAttraction = addedAsAttraction;
@@ -22,7 +21,7 @@ export class TransportationScheduleItemKey {
 
    static fromWire(wire) {
       const parts = StoredSelection.normalizeStoredString(wire).split(
-         TRANSPORTATION_ITEM_KEY_SEPARATOR,
+         TransportationScheduleItemKey.TRANSPORTATION_ITEM_KEY_SEPARATOR,
          2
       );
       const name = StoredSelection.normalizeStoredString(parts[0]);
@@ -39,6 +38,6 @@ export class TransportationScheduleItemKey {
       return [
          this.name,
          this.addedAsAttraction ? '1' : '0',
-      ].join(TRANSPORTATION_ITEM_KEY_SEPARATOR);
+      ].join(TransportationScheduleItemKey.TRANSPORTATION_ITEM_KEY_SEPARATOR);
    }
 }

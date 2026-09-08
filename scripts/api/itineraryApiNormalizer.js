@@ -7,16 +7,16 @@ import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncount
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
-const ITINERARY_COLLECTION_FIELDS = [
-   ['animals', 'animals'],
-   ['attractions', 'attractions'],
-   ['guardiansTalks', 'guardians_talks'],
-   ['wildEncounters', 'wild_encounters'],
-   ['transportations', 'transportations'],
-   ['transportationStations', 'transportation_stations'],
-];
-
 export class ItineraryApiNormalizer {
+   static ITINERARY_COLLECTION_FIELDS = [
+      ['animals', 'animals'],
+      ['attractions', 'attractions'],
+      ['guardiansTalks', 'guardians_talks'],
+      ['wildEncounters', 'wild_encounters'],
+      ['transportations', 'transportations'],
+      ['transportationStations', 'transportation_stations'],
+   ];
+
    static mapScheduleItemKeyToWire(itemType, key) {
       const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
 
@@ -83,7 +83,7 @@ export class ItineraryApiNormalizer {
    }
 
    static normalizeItineraryCollections(source = {}) {
-      return ItineraryApiNormalizer.normalizeCollectionFields(source, ITINERARY_COLLECTION_FIELDS);
+      return ItineraryApiNormalizer.normalizeCollectionFields(source, ItineraryApiNormalizer.ITINERARY_COLLECTION_FIELDS);
    }
 
    static normalizeItineraryModel(itinerary) {

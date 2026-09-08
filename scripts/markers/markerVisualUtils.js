@@ -1,28 +1,28 @@
 import { LikelihoodColors } from '../likelihood/likelihoodColors.js';
 import { LikelihoodScale } from '../likelihood/likelihoodScale.js';
 
-const DEFAULT_STACK_MARKER_COLOR = '#5e9600f2';
-
-const MARKER_TYPE_CLASSES = [
-   'marker-restaurant',
-   'marker-restroom',
-   'marker-gift-shop',
-   'marker-attraction',
-   'marker-zoomobile-station',
-   'marker-zoomobile-route-marker',
-   'marker-guardians-talk',
-   'marker-wild-encounter',
-   'marker-drinking-fountain',
-   'marker-defibrillator',
-   'marker-emergency-intercom',
-   'marker-guest-service',
-   'marker-guest-service-first-aid',
-   'marker-picnic-site',
-   'marker-event-site',
-   'marker-has-limited-viewing',
-];
-
 export class MarkerVisualUtils {
+   static DEFAULT_STACK_MARKER_COLOR = '#5e9600f2';
+
+   static MARKER_TYPE_CLASSES = [
+      'marker-restaurant',
+      'marker-restroom',
+      'marker-gift-shop',
+      'marker-attraction',
+      'marker-zoomobile-station',
+      'marker-zoomobile-route-marker',
+      'marker-guardians-talk',
+      'marker-wild-encounter',
+      'marker-drinking-fountain',
+      'marker-defibrillator',
+      'marker-emergency-intercom',
+      'marker-guest-service',
+      'marker-guest-service-first-aid',
+      'marker-picnic-site',
+      'marker-event-site',
+      'marker-has-limited-viewing',
+   ];
+
    static resetMarkerVisual(markerEl) {
       markerEl.textContent = '';
       markerEl.style.backgroundImage = 'none';
@@ -33,7 +33,7 @@ export class MarkerVisualUtils {
       markerEl.style.width = '';
       markerEl.style.height = '';
 
-      markerEl.classList.remove(...MARKER_TYPE_CLASSES);
+      markerEl.classList.remove(...MarkerVisualUtils.MARKER_TYPE_CLASSES);
    }
 
    static applyMarkerClass(markerEl, className) {
@@ -45,7 +45,7 @@ export class MarkerVisualUtils {
    static applyCountMarker(
       markerEl,
       count,
-      backgroundColor = DEFAULT_STACK_MARKER_COLOR
+      backgroundColor = MarkerVisualUtils.DEFAULT_STACK_MARKER_COLOR
    ) {
       markerEl.style.backgroundImage = 'none';
       markerEl.style.backgroundColor = backgroundColor;

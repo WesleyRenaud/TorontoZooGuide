@@ -1,15 +1,15 @@
-let pastItineraryPromptOpen = false;
-
 export class PromptSession {
+   static pastItineraryPromptOpen = false;
+
    static isPastItineraryPromptOpen() {
-      return pastItineraryPromptOpen;
+      return PromptSession.pastItineraryPromptOpen;
    }
 
    static setPastItineraryPromptOpen(isOpen) {
-      pastItineraryPromptOpen = isOpen;
+      PromptSession.pastItineraryPromptOpen = isOpen;
    }
 
    static resetPastItineraryPromptSessionForTests() {
-      pastItineraryPromptOpen = false;
+      PromptSession.pastItineraryPromptOpen = false;
    }
 }

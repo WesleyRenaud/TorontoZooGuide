@@ -3,7 +3,6 @@ import { test } from 'node:test';
 
 import { makeScheduledItem } from '../../../helpers/scheduledPillTestSetup.mjs';
 import {
-   MAX_TIMELINE_PILL_COLUMNS,
    ScheduledPillOverlap,
 } from '../../../../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
 
@@ -116,7 +115,7 @@ test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReturnsPastMaxColumnWhenAll
 
    assert.equal(
       ScheduledPillOverlap.computeFirstFreeHorizontalOffsetIndex(placedItems, candidate),
-      MAX_TIMELINE_PILL_COLUMNS
+      ScheduledPillOverlap.MAX_TIMELINE_PILL_COLUMNS
    );
 });
 

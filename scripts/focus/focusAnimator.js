@@ -1,8 +1,8 @@
 import { Center } from './center.js';
 
-const FOCUS_ZOOM_LEVEL = 3;
-
 export class FocusAnimator {
+   static FOCUS_ZOOM_LEVEL = 3;
+
    static focusMarker({
       panzoom,
       marker,
@@ -15,7 +15,7 @@ export class FocusAnimator {
          return;
       }
 
-      panzoom.zoom(FOCUS_ZOOM_LEVEL, { animate: false });
+      panzoom.zoom(FocusAnimator.FOCUS_ZOOM_LEVEL, { animate: false });
 
       requestAnimationFrame(() => {
          Center.centerMarkerWithContain(panzoom, marker, viewportEl);

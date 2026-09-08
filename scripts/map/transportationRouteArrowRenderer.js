@@ -1,14 +1,14 @@
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
-const ROUTE_ARROWS_LAYER_ID = 'transportation-route-arrows';
-
-const ARROWS_CLASS = 'transportation-route-arrows';
-
-const ARROW_CLASS = 'transportation-route-arrow';
-
-const ARROW_HEAD_POINTS = '0,-4.5 20,0 0,4.5';
-
 export class TransportationRouteArrowRenderer {
+   static SVG_NS = 'http://www.w3.org/2000/svg';
+
+   static ROUTE_ARROWS_LAYER_ID = 'transportation-route-arrows';
+
+   static ARROWS_CLASS = 'transportation-route-arrows';
+
+   static ARROW_CLASS = 'transportation-route-arrow';
+
+   static ARROW_HEAD_POINTS = '0,-4.5 20,0 0,4.5';
+
    static getSvgRoot() {
       return document.querySelector('#zooMapMount svg');
    }
@@ -29,19 +29,19 @@ export class TransportationRouteArrowRenderer {
    }
 
    static removeRouteArrowsLayer(svgRoot) {
-      svgRoot?.querySelector(`#${ROUTE_ARROWS_LAYER_ID}`)?.remove();
+      svgRoot?.querySelector(`#${TransportationRouteArrowRenderer.ROUTE_ARROWS_LAYER_ID}`)?.remove();
    }
 
    static createArrowMarker({ x, y, angleDeg }) {
-      const markerGroup = document.createElementNS(SVG_NS, 'g');
-      markerGroup.classList.add(ARROW_CLASS);
+      const markerGroup = document.createElementNS(TransportationRouteArrowRenderer.SVG_NS, 'g');
+      markerGroup.classList.add(TransportationRouteArrowRenderer.ARROW_CLASS);
       markerGroup.setAttribute(
          'transform',
          `translate(${x} ${y}) rotate(${angleDeg})`
       );
 
-      const head = document.createElementNS(SVG_NS, 'polygon');
-      head.setAttribute('points', ARROW_HEAD_POINTS);
+      const head = document.createElementNS(TransportationRouteArrowRenderer.SVG_NS, 'polygon');
+      head.setAttribute('points', TransportationRouteArrowRenderer.ARROW_HEAD_POINTS);
       markerGroup.appendChild(head);
 
       return markerGroup;
@@ -88,10 +88,10 @@ export class TransportationRouteArrowRenderer {
          return;
       }
 
-      const arrowsLayer = document.createElementNS(SVG_NS, 'g');
-      arrowsLayer.setAttribute('id', ROUTE_ARROWS_LAYER_ID);
+      const arrowsLayer = document.createElementNS(TransportationRouteArrowRenderer.SVG_NS, 'g');
+      arrowsLayer.setAttribute('id', TransportationRouteArrowRenderer.ROUTE_ARROWS_LAYER_ID);
       arrowsLayer.setAttribute('aria-hidden', 'true');
-      arrowsLayer.classList.add(ARROWS_CLASS);
+      arrowsLayer.classList.add(TransportationRouteArrowRenderer.ARROWS_CLASS);
 
       const circlesById = new Map(
          Array.from(routeGroup.querySelectorAll('circle[id]')).map((circle) => [

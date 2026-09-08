@@ -1,10 +1,10 @@
 import { Strings } from '../strings.js';
 
-const ZOO_MAP_SVG_URL = '../images/map/zoo-map.svg';
-
-let cachedSvgTextPromise = null;
-
 export class InlineZooMapLoader {
+   static ZOO_MAP_SVG_URL = '../images/map/zoo-map.svg';
+
+   static cachedSvgTextPromise = null;
+
    static getZooMapMount() {
       return document.getElementById('zooMapMount');
    }
@@ -22,8 +22,8 @@ export class InlineZooMapLoader {
    }
 
    static async fetchZooMapSvgText() {
-      if (!cachedSvgTextPromise) {
-         cachedSvgTextPromise = fetch(ZOO_MAP_SVG_URL)
+      if (!InlineZooMapLoader.cachedSvgTextPromise) {
+         InlineZooMapLoader.cachedSvgTextPromise = fetch(InlineZooMapLoader.ZOO_MAP_SVG_URL)
             .then((response) => {
                if (!response.ok) {
                   throw new Error(Strings.map.loadSvgFailed(response.status));
@@ -32,12 +32,12 @@ export class InlineZooMapLoader {
                return response.text();
             })
             .catch((error) => {
-               cachedSvgTextPromise = null;
+               InlineZooMapLoader.cachedSvgTextPromise = null;
                throw error;
             });
       }
 
-      return await cachedSvgTextPromise;
+      return await InlineZooMapLoader.cachedSvgTextPromise;
    }
 
    static async mountInlineSvg(mount) {

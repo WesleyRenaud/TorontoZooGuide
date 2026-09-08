@@ -1,6 +1,6 @@
-const INCLUDE_CLOSED_ATTRACTIONS_LABEL = 'Include closed attractions';
-
 export class AttractionSelectorRenderer {
+   static INCLUDE_CLOSED_ATTRACTIONS_LABEL = 'Include closed attractions';
+
    static renderIncludeClosedAttractionsToggle({
       bodyEl,
       rerunSearch,
@@ -17,7 +17,7 @@ export class AttractionSelectorRenderer {
       checkbox.checked = false;
 
       const text = document.createElement('span');
-      text.textContent = INCLUDE_CLOSED_ATTRACTIONS_LABEL;
+      text.textContent = AttractionSelectorRenderer.INCLUDE_CLOSED_ATTRACTIONS_LABEL;
 
       checkbox.addEventListener('change', () => {
          onChange?.(checkbox.checked);

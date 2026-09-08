@@ -97,15 +97,7 @@ function formatNamedImportDeclaration(declaration) {
    const namedImports = sortNamedImports(getNamedImports(declaration));
    const source = match[2];
 
-   if (namedImports.length === 1) {
-      return `import { ${namedImports[0]} } from ${source};`;
-   }
-
-   return [
-      'import {',
-      ...namedImports.map(name => `   ${name},`),
-      `} from ${source};`,
-   ].join('\n');
+   return `import { ${namedImports[0]} } from ${source};`;
 }
 
 function formatImportBlock(declarations) {
@@ -123,6 +115,25 @@ function checkFile(fullPath) {
       return;
    }
 
+   const relativePath = path.relative(process.cwd(), fullPath);
+   let hasMultiNamedImport = false;
+
+   importBlock.declarations.forEach(declaration => {
+      const namedImports = getNamedImports(declaration);
+
+      if (namedImports.length > 1) {
+         hasMultiNamedImport = true;
+         violations.push(
+            `${relativePath}: import only one name per module (found ${namedImports.length}: ${namedImports.join(', ')}); use Class.member`
+         );
+      }
+   });
+
+   // Multi-named imports must be fixed by hand; do not collapse them with --fix.
+   if (hasMultiNamedImport) {
+      return;
+   }
+
    const currentBlock = source.slice(0, importBlock.endIndex).trim();
    const expectedBlock = formatImportBlock(importBlock.declarations);
 
@@ -130,7 +141,6 @@ function checkFile(fullPath) {
       return;
    }
 
-   const relativePath = path.relative(process.cwd(), fullPath);
    violations.push(relativePath);
 
    if (shouldFix) {
@@ -142,10 +152,10 @@ function checkFile(fullPath) {
 walk(rootDir);
 
 if (violations.length > 0 && !shouldFix) {
-   console.error('JavaScript imports must be alphabetized and use project brace layout:');
+   console.error('JavaScript import style violations:');
    violations.forEach(file => {
       console.error(file);
    });
-   console.error('Run `node tools/lint/jsImportStyle.js --fix` to update imports.');
+   console.error('Run `node tools/lint/jsImportStyle.js --fix` to alphabetize single-name imports.');
    process.exit(1);
 }

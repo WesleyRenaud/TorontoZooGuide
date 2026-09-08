@@ -6,9 +6,9 @@ import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionStorage } from './regionSelector/regionStorage.js';
 import { Strings } from '../../strings.js';
 
-const STORAGE_KEY = 'tzg.itineraryAnimals';
-
 export class AnimalSelector {
+   static STORAGE_KEY = 'tzg.itineraryAnimals';
+
    static createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
       let includeOffDisplayAnimals = false;
 
@@ -19,7 +19,7 @@ export class AnimalSelector {
          onFinish,
          onClose,
 
-         storageKey: STORAGE_KEY,
+         storageKey: AnimalSelector.STORAGE_KEY,
          migrateSelected: AnimalSelectorModel.migrateStoredAnimals,
 
          getContext: ItinerarySearchContext.getItineraryDateSearchContext,

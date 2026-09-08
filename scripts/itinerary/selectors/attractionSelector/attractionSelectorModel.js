@@ -5,10 +5,11 @@ import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresen
 import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { Strings } from '../../../strings.js';
 
-const DEFAULT_ATTRACTION_TITLE = 'Attraction';
-const CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
-
 export class AttractionSelectorModel {
+   static DEFAULT_ATTRACTION_TITLE = 'Attraction';
+
+   static CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
+
    static getAttractionName(row) {
       return typeof row?.name === 'string'
          ? row.name
@@ -20,7 +21,7 @@ export class AttractionSelectorModel {
    }
 
    static getAttractionTitle(row) {
-      return AttractionSelectorModel.getAttractionName(row) || DEFAULT_ATTRACTION_TITLE;
+      return AttractionSelectorModel.getAttractionName(row) || AttractionSelectorModel.DEFAULT_ATTRACTION_TITLE;
    }
 
    static getAttractionInfoLink(row) {
@@ -119,7 +120,7 @@ export class AttractionSelectorModel {
 
    static buildClosedAttractionMessage(row) {
       const name = AttractionSelectorModel.getAttractionName(row)
-         || CLOSED_ATTRACTION_FALLBACK_NAME;
+         || AttractionSelectorModel.CLOSED_ATTRACTION_FALLBACK_NAME;
       return `The ${name} is closed on your visit date. Do you still want to add it to your itinerary?`;
    }
 

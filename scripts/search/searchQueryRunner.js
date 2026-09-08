@@ -2,14 +2,14 @@ import { SearchApi } from '../api/searchApi.js';
 import { SearchResultsRenderer } from './searchResultsRenderer.js';
 import { SearchRows } from './searchRows.js';
 
-const DEFAULT_DEBOUNCE_MS = 250;
-
 export class SearchQueryRunner {
+   static DEFAULT_DEBOUNCE_MS = 250;
+
    static createNoopSearch() {
       return { refresh: () => {} };
    }
 
-   static debounce(fn, delay = DEFAULT_DEBOUNCE_MS) {
+   static debounce(fn, delay = SearchQueryRunner.DEFAULT_DEBOUNCE_MS) {
       let timeoutId = null;
 
       return (...args) => {

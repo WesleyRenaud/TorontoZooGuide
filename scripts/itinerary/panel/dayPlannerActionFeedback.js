@@ -1,17 +1,17 @@
-let pendingDayPlannerActionFeedback = null;
-
 export class DayPlannerActionFeedback {
+   static pendingDayPlannerActionFeedback = null;
+
    static setPendingDayPlannerActionFeedback(feedback) {
-      pendingDayPlannerActionFeedback = feedback;
+      DayPlannerActionFeedback.pendingDayPlannerActionFeedback = feedback;
    }
 
    static consumePendingDayPlannerActionFeedback() {
-      const feedback = pendingDayPlannerActionFeedback;
-      pendingDayPlannerActionFeedback = null;
+      const feedback = DayPlannerActionFeedback.pendingDayPlannerActionFeedback;
+      DayPlannerActionFeedback.pendingDayPlannerActionFeedback = null;
       return feedback;
    }
 
    static resetPendingDayPlannerActionFeedback() {
-      pendingDayPlannerActionFeedback = null;
+      DayPlannerActionFeedback.pendingDayPlannerActionFeedback = null;
    }
 }

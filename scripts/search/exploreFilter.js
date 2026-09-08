@@ -1,25 +1,25 @@
 import { ExploreFilterBinder } from './exploreFilterBinder.js';
 
-const TYPE_FILTER_ID = 'typeFilter';
-
-const SEARCH_INCLUDE_FLAGS = [
-   ['includeAnimals', 'animal'],
-   ['includePavilions', 'pavilion'],
-   ['includeRestaurants', 'restaurant'],
-   ['includeRestrooms', 'restroom'],
-   ['includeGiftShops', 'giftShop'],
-   ['includeAttractions', 'attraction'],
-   ['includeGuardiansTalks', 'guardiansTalk'],
-   ['includeWildEncounters', 'wildEncounter'],
-];
-
 export class ExploreFilter {
+   static TYPE_FILTER_ID = 'typeFilter';
+
+   static SEARCH_INCLUDE_FLAGS = [
+      ['includeAnimals', 'animal'],
+      ['includePavilions', 'pavilion'],
+      ['includeRestaurants', 'restaurant'],
+      ['includeRestrooms', 'restroom'],
+      ['includeGiftShops', 'giftShop'],
+      ['includeAttractions', 'attraction'],
+      ['includeGuardiansTalks', 'guardiansTalk'],
+      ['includeWildEncounters', 'wildEncounter'],
+   ];
+
    static buildExploreSearchIncludeFlags(selectedTypes, transportationRoute) {
       const selectedTypeSet = new Set(selectedTypes);
 
       return {
          ...Object.fromEntries(
-            SEARCH_INCLUDE_FLAGS.map(([flag, type]) => [
+            ExploreFilter.SEARCH_INCLUDE_FLAGS.map(([flag, type]) => [
                flag,
                selectedTypeSet.has(type),
             ])
@@ -32,7 +32,7 @@ export class ExploreFilter {
    static initExploreTypeFilter({
       onChange,
       onAnimalsUnchecked,
-      multiSelect = document.getElementById(TYPE_FILTER_ID),
+      multiSelect = document.getElementById(ExploreFilter.TYPE_FILTER_ID),
       getTransportationRoute = ExploreFilterBinder.getSelectedTransportationRoute,
    } = {}) {
       if (!multiSelect) {

@@ -2,16 +2,16 @@ import { ItineraryMapController } from './itineraryMapController.js';
 import { ItineraryService } from './itineraryService.js';
 import { MapRuntime } from '../map/mapRuntime.js';
 
-const ITINERARY_MAP_FILTERS = Object.freeze({
-   getIncludeOffDisplay: () => false,
-   getIncludeClosedRestaurants: () => false,
-   getIncludeClosedGiftShops: () => false,
-   getIncludeClosedAttractions: () => false,
-   getTransportationRoute: () => 'none',
-   getSelectedTypes: () => [],
-});
-
 export class ItineraryMapControllerBootstrap {
+   static ITINERARY_MAP_FILTERS = Object.freeze({
+      getIncludeOffDisplay: () => false,
+      getIncludeClosedRestaurants: () => false,
+      getIncludeClosedGiftShops: () => false,
+      getIncludeClosedAttractions: () => false,
+      getTransportationRoute: () => 'none',
+      getSelectedTypes: () => [],
+   });
+
    static getTodayISO() {
       const date = new Date();
       const year = date.getFullYear();
@@ -39,7 +39,7 @@ export class ItineraryMapControllerBootstrap {
       return MapRuntime.createMapRuntime({
          ...ItineraryMapControllerBootstrap.getItineraryMapElements(),
          enableCoordinateEditing: ItineraryMapControllerBootstrap.isCoordinateEditingEnabled(),
-         ...ITINERARY_MAP_FILTERS,
+         ...ItineraryMapControllerBootstrap.ITINERARY_MAP_FILTERS,
       });
    }
 

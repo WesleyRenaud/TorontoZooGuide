@@ -3,8 +3,6 @@ import { test } from 'node:test';
 
 import { makeScheduledItem } from '../../../helpers/scheduledPillTestSetup.mjs';
 import {
-   MAX_TIMELINE_PILL_COLUMNS,
-   MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
    ScheduledPillOverlap,
 } from '../../../../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
 import { ScheduledPillRenderPlan } from '../../../../../scripts/itinerary/panel/components/scheduledPillRenderPlan.js';
@@ -328,6 +326,6 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGivesEachFullLengthVisitIts
          'African Lion',
       ]
    );
-   assert.equal(MAX_TIMELINE_PILL_COLUMNS, 2);
-   assert.equal(MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS, 2);
+   assert.equal(ScheduledPillOverlap.MAX_TIMELINE_PILL_COLUMNS, 2);
+   assert.equal(ScheduledPillOverlap.MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS, 2);
 });

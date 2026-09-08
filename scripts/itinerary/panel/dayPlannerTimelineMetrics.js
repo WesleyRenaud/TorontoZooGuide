@@ -1,10 +1,12 @@
 import { DayPlannerTimelinePlacement } from './dayPlannerTimelinePlacement.js';
 
-const timelineSlotHeightByTimeline = new WeakMap();
-const pointPillHeightByTimeline = new WeakMap();
-const pointPillStripTopOffsetByTimeline = new WeakMap();
-
 export class DayPlannerTimelineMetrics {
+   static timelineSlotHeightByTimeline = new WeakMap();
+
+   static pointPillHeightByTimeline = new WeakMap();
+
+   static pointPillStripTopOffsetByTimeline = new WeakMap();
+
    static getTimelineSlotHeightPx(gridLine) {
       const timeline = DayPlannerTimelinePlacement.resolveTimelineElement(gridLine);
 
@@ -12,7 +14,7 @@ export class DayPlannerTimelineMetrics {
          return null;
       }
 
-      const cachedHeight = timelineSlotHeightByTimeline.get(timeline);
+      const cachedHeight = DayPlannerTimelineMetrics.timelineSlotHeightByTimeline.get(timeline);
 
       if (cachedHeight) {
          return cachedHeight;
@@ -32,7 +34,7 @@ export class DayPlannerTimelineMetrics {
       }
 
       if (slotHeight) {
-         timelineSlotHeightByTimeline.set(timeline, slotHeight);
+         DayPlannerTimelineMetrics.timelineSlotHeightByTimeline.set(timeline, slotHeight);
       }
 
       return slotHeight;
@@ -46,7 +48,7 @@ export class DayPlannerTimelineMetrics {
          return null;
       }
 
-      const cachedOffset = pointPillStripTopOffsetByTimeline.get(timeline);
+      const cachedOffset = DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.get(timeline);
 
       if (cachedOffset) {
          return cachedOffset;
@@ -59,7 +61,7 @@ export class DayPlannerTimelineMetrics {
          );
 
          if (fromCssVariable) {
-            pointPillStripTopOffsetByTimeline.set(timeline, fromCssVariable);
+            DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.set(timeline, fromCssVariable);
             return fromCssVariable;
          }
       }
@@ -81,7 +83,7 @@ export class DayPlannerTimelineMetrics {
       const stripTopOffset = DayPlannerTimelinePlacement.parseStripTopOffsetFromProbeTop(topPx);
 
       if (stripTopOffset) {
-         pointPillStripTopOffsetByTimeline.set(timeline, stripTopOffset);
+         DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.set(timeline, stripTopOffset);
       }
 
       return stripTopOffset;
@@ -95,7 +97,7 @@ export class DayPlannerTimelineMetrics {
          return null;
       }
 
-      const cachedHeight = pointPillHeightByTimeline.get(timeline);
+      const cachedHeight = DayPlannerTimelineMetrics.pointPillHeightByTimeline.get(timeline);
 
       if (cachedHeight) {
          return cachedHeight;
@@ -120,7 +122,7 @@ export class DayPlannerTimelineMetrics {
       gridLine.removeChild(probeStrip);
 
       if (pillHeight > 0) {
-         pointPillHeightByTimeline.set(timeline, pillHeight);
+         DayPlannerTimelineMetrics.pointPillHeightByTimeline.set(timeline, pillHeight);
          return pillHeight;
       }
 

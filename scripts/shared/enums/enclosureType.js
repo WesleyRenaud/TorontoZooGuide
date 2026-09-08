@@ -7,7 +7,7 @@ export class EnclosureType {
    static normalizeEnclosureType(value) {
       const normalized = ValueNormalizer.asTrimmedString(value);
 
-      return ENCLOSURE_TYPES.has(normalized)
+      return EnclosureType.ENCLOSURE_TYPES.has(normalized)
          ? normalized
          : null;
    }
@@ -15,9 +15,9 @@ export class EnclosureType {
    static isEnclosureType(value) {
       return EnclosureType.normalizeEnclosureType(value) !== null;
    }
-}
 
-const ENCLOSURE_TYPES = new Set([
-   EnclosureType.INDOOR,
-   EnclosureType.OUTDOOR,
-]);
+   static ENCLOSURE_TYPES = new Set([
+      EnclosureType.INDOOR,
+      EnclosureType.OUTDOOR,
+   ]);
+}

@@ -2,9 +2,9 @@ import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSe
 import { Strings } from '../../strings.js';
 import { WildEncounterSelectorModel } from './wildEncounterSelector/wildEncounterSelectorModel.js';
 
-const STORAGE_KEY = 'tzg.itineraryWildEncounters';
-
 export class WildEncounterSelector {
+   static STORAGE_KEY = 'tzg.itineraryWildEncounters';
+
    static createItineraryWildEncounterSelectorController({
    mountEl,
    onNext,
@@ -19,7 +19,7 @@ export class WildEncounterSelector {
          onFinish,
          onClose,
 
-         storageKey: STORAGE_KEY,
+         storageKey: WildEncounterSelector.STORAGE_KEY,
          responseKey: 'wild_encounters',
          searchFlag: 'includeWildEncounters',
          imageDirectory: 'wild-encounters',

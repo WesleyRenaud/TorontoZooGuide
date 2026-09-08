@@ -8,17 +8,17 @@ import { WildEncounterSelectorModel } from '../itinerary/selectors/wildEncounter
 import { SearchResultPresentationHelpers } from './searchResultPresentationHelpers.js';
 import { Strings } from '../strings.js';
 
-const SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
-
-const DEFAULT_SEARCH_RESULT_PRESENTATION = {
-   getTitle: AnimalSelectorModel.getAnimalTitleLine,
-   getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
-};
-
 export class SearchResultPresentation {
+   static SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
+
+   static DEFAULT_SEARCH_RESULT_PRESENTATION = {
+      getTitle: AnimalSelectorModel.getAnimalTitleLine,
+      getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
+   };
+
    static buildSearchDetailImageSrc(imageDirectory, name) {
       return DetailImageSrc.buildDetailImageSrc(imageDirectory, name, {
-         basePath: SEARCH_DETAIL_IMAGE_BASE_PATH,
+         basePath: SearchResultPresentation.SEARCH_DETAIL_IMAGE_BASE_PATH,
       });
    }
 
@@ -90,7 +90,7 @@ export class SearchResultPresentation {
 
    static getSearchResultPresentation(row) {
       return SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS[row.type]
-         ?? DEFAULT_SEARCH_RESULT_PRESENTATION;
+         ?? SearchResultPresentation.DEFAULT_SEARCH_RESULT_PRESENTATION;
    }
 
    static createSearchImageRowRenderer({

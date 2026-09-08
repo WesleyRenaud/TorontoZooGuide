@@ -1,21 +1,23 @@
-let itineraryTransportationStationRoles = null;
-let itineraryTransportationStationOnboardingRoles = Object.freeze([]);
-let itineraryTransportationStationOffboardingRoles = Object.freeze([]);
-
 export class ItineraryTransportationStationRoles {
+   static itineraryTransportationStationRoles = null;
+
+   static itineraryTransportationStationOnboardingRoles = Object.freeze([]);
+
+   static itineraryTransportationStationOffboardingRoles = Object.freeze([]);
+
    static updateItineraryTransportationStationRolesFromConfig(
       itineraryConfig = {}
    ) {
       const roles = itineraryConfig?.transportationStationRoles;
 
       if (roles && typeof roles === 'object') {
-         itineraryTransportationStationRoles = Object.freeze({ ...roles });
+         ItineraryTransportationStationRoles.itineraryTransportationStationRoles = Object.freeze({ ...roles });
       }
 
       const onboardingRoles = itineraryConfig?.transportationStationOnboardingRoles;
 
       if (Array.isArray(onboardingRoles) && onboardingRoles.length > 0) {
-         itineraryTransportationStationOnboardingRoles = Object.freeze([
+         ItineraryTransportationStationRoles.itineraryTransportationStationOnboardingRoles = Object.freeze([
             ...onboardingRoles,
          ]);
       }
@@ -23,21 +25,21 @@ export class ItineraryTransportationStationRoles {
       const offboardingRoles = itineraryConfig?.transportationStationOffboardingRoles;
 
       if (Array.isArray(offboardingRoles) && offboardingRoles.length > 0) {
-         itineraryTransportationStationOffboardingRoles = Object.freeze([
+         ItineraryTransportationStationRoles.itineraryTransportationStationOffboardingRoles = Object.freeze([
             ...offboardingRoles,
          ]);
       }
    }
 
    static getItineraryTransportationStationRoles() {
-      return itineraryTransportationStationRoles;
+      return ItineraryTransportationStationRoles.itineraryTransportationStationRoles;
    }
 
    static getItineraryTransportationStationOnboardingRoles() {
-      return itineraryTransportationStationOnboardingRoles;
+      return ItineraryTransportationStationRoles.itineraryTransportationStationOnboardingRoles;
    }
 
    static getItineraryTransportationStationOffboardingRoles() {
-      return itineraryTransportationStationOffboardingRoles;
+      return ItineraryTransportationStationRoles.itineraryTransportationStationOffboardingRoles;
    }
 }

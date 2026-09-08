@@ -1,20 +1,20 @@
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
-const ALERT_WIDTH_TO_HEIGHT_RATIO = 2;
-
-const ALERT_MIN_WIDTH = 560;
-
-const ALERT_MAX_WIDTH = 1600;
-
-const ALERT_VIEWPORT_GUTTER = 48;
-
-const ALERT_MOBILE_MEDIA_QUERY = '(max-width: 720px)';
-
-const ALERT_WIDTH_SEARCH_STEPS = 8;
-
 export class MessageBannerLayoutAdjuster {
+   static SVG_NS = 'http://www.w3.org/2000/svg';
+
+   static ALERT_WIDTH_TO_HEIGHT_RATIO = 2;
+
+   static ALERT_MIN_WIDTH = 560;
+
+   static ALERT_MAX_WIDTH = 1600;
+
+   static ALERT_VIEWPORT_GUTTER = 48;
+
+   static ALERT_MOBILE_MEDIA_QUERY = '(max-width: 720px)';
+
+   static ALERT_WIDTH_SEARCH_STEPS = 8;
+
    static createSvgNode(tagName, attributes = {}) {
-      const node = document.createElementNS(SVG_NS, tagName);
+      const node = document.createElementNS(MessageBannerLayoutAdjuster.SVG_NS, tagName);
 
       Object.entries(attributes).forEach(([key, value]) => {
          node.setAttribute(key, String(value));
@@ -54,18 +54,18 @@ export class MessageBannerLayoutAdjuster {
    static isMobileAlertLayout() {
       return typeof window !== 'undefined'
          && typeof window.matchMedia === 'function'
-         && window.matchMedia(ALERT_MOBILE_MEDIA_QUERY).matches;
+         && window.matchMedia(MessageBannerLayoutAdjuster.ALERT_MOBILE_MEDIA_QUERY).matches;
    }
 
    static getDesktopWidthRange() {
       const viewportWidth = typeof window !== 'undefined' && window.innerWidth
          ? window.innerWidth
-         : ALERT_MAX_WIDTH + ALERT_VIEWPORT_GUTTER;
-      const maxWidth = Math.min(ALERT_MAX_WIDTH, viewportWidth - ALERT_VIEWPORT_GUTTER);
+         : MessageBannerLayoutAdjuster.ALERT_MAX_WIDTH + MessageBannerLayoutAdjuster.ALERT_VIEWPORT_GUTTER;
+      const maxWidth = Math.min(MessageBannerLayoutAdjuster.ALERT_MAX_WIDTH, viewportWidth - MessageBannerLayoutAdjuster.ALERT_VIEWPORT_GUTTER);
       const clampedMaxWidth = Math.max(0, maxWidth);
 
       return {
-         min: Math.min(ALERT_MIN_WIDTH, clampedMaxWidth),
+         min: Math.min(MessageBannerLayoutAdjuster.ALERT_MIN_WIDTH, clampedMaxWidth),
          max: clampedMaxWidth,
       };
    }
@@ -110,14 +110,14 @@ export class MessageBannerLayoutAdjuster {
          return;
       }
 
-      if (minRatio >= ALERT_WIDTH_TO_HEIGHT_RATIO) {
+      if (minRatio >= MessageBannerLayoutAdjuster.ALERT_WIDTH_TO_HEIGHT_RATIO) {
          MessageBannerLayoutAdjuster.setBannerWidth(element, min);
          return;
       }
 
       const maxRatio = MessageBannerLayoutAdjuster.getWidthToHeightRatio(element, max);
 
-      if (maxRatio == null || maxRatio <= ALERT_WIDTH_TO_HEIGHT_RATIO) {
+      if (maxRatio == null || maxRatio <= MessageBannerLayoutAdjuster.ALERT_WIDTH_TO_HEIGHT_RATIO) {
          MessageBannerLayoutAdjuster.setBannerWidth(element, max);
          return;
       }
@@ -125,7 +125,7 @@ export class MessageBannerLayoutAdjuster {
       let low = min;
       let high = max;
 
-      for (let i = 0; i < ALERT_WIDTH_SEARCH_STEPS; i += 1) {
+      for (let i = 0; i < MessageBannerLayoutAdjuster.ALERT_WIDTH_SEARCH_STEPS; i += 1) {
          const midpoint = (low + high) / 2;
          const ratio = MessageBannerLayoutAdjuster.getWidthToHeightRatio(element, midpoint);
 
@@ -133,7 +133,7 @@ export class MessageBannerLayoutAdjuster {
             return;
          }
 
-         if (ratio < ALERT_WIDTH_TO_HEIGHT_RATIO) {
+         if (ratio < MessageBannerLayoutAdjuster.ALERT_WIDTH_TO_HEIGHT_RATIO) {
             low = midpoint;
          } else {
             high = midpoint;

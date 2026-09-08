@@ -1,5 +1,3 @@
-
-
 export class DayPlannerTimelinePlacement {
    static readCssLengthPx(style, property) {
       if (!style?.getPropertyValue) {

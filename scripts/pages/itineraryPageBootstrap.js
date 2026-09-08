@@ -8,10 +8,11 @@ import { ValidationPopup } from '../itinerary/wizard/validationPopup.js';
 import { WizardController } from '../itinerary/wizard/wizardController.js';
 import { LoadInlineZooMap } from '../map/loadInlineZooMap.js';
 
-const DEFAULT_WIZARD_STEP = 'date';
-let lastShownValidationSignature = null;
-
 export class ItineraryPageBootstrap {
+   static DEFAULT_WIZARD_STEP = 'date';
+
+   static lastShownValidationSignature = null;
+
    static hasEmbeddedMap() {
       return Boolean(document.getElementById('mapInner'));
    }
@@ -40,11 +41,11 @@ export class ItineraryPageBootstrap {
          adjustments: itinerary.validation.adjustments,
       });
 
-      if (validationSignature === lastShownValidationSignature) {
+      if (validationSignature === ItineraryPageBootstrap.lastShownValidationSignature) {
          return;
       }
 
-      lastShownValidationSignature = validationSignature;
+      ItineraryPageBootstrap.lastShownValidationSignature = validationSignature;
 
       ValidationPopup.showWizardValidationPopupIfNeeded({
          mountEl,
@@ -108,7 +109,7 @@ export class ItineraryPageBootstrap {
    static bindWizardEvents(openWizard) {
       window.addEventListener('tzg:editItinerarySection', (event) => {
          openWizard({
-            startAt: event?.detail?.step || DEFAULT_WIZARD_STEP,
+            startAt: event?.detail?.step || ItineraryPageBootstrap.DEFAULT_WIZARD_STEP,
          });
       });
 

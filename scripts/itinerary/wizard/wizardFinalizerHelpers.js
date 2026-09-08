@@ -5,13 +5,13 @@ import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 import { WizardPopup } from './wizardPopup.js';
 
-const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
-   title: Strings.itinerary.noItemsSelected.title,
-   message: Strings.itinerary.noItemsSelected.message,
-   buttonText: Strings.itinerary.noItemsSelected.button,
-});
-
 export class WizardFinalizerHelpers {
+   static EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
+      title: Strings.itinerary.noItemsSelected.title,
+      message: Strings.itinerary.noItemsSelected.message,
+      buttonText: Strings.itinerary.noItemsSelected.button,
+   });
+
    static clearWizardMount(mountEl) {
       mountEl?.replaceChildren();
    }
@@ -23,7 +23,7 @@ export class WizardFinalizerHelpers {
    static showEmptySelectionPopup(mountEl, showWizardPopup = WizardPopup.showItineraryWizardPopup) {
       showWizardPopup({
          mountEl,
-         ...EMPTY_SELECTION_POPUP_CONFIG,
+         ...WizardFinalizerHelpers.EMPTY_SELECTION_POPUP_CONFIG,
       });
    }
 

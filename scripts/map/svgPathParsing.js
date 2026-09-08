@@ -1,23 +1,23 @@
 import { SvgPathParsingHelpers } from './svgPathParsingHelpers.js';
 
-const TOKEN_PATTERN = /[a-zA-Z]|[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?/g;
-
-const COMMAND_ARG_COUNTS = {
-   M: 2,
-   L: 2,
-   H: 1,
-   V: 1,
-   C: 6,
-   Z: 0,
-};
-
 export class SvgPathParsing {
+   static TOKEN_PATTERN = /[a-zA-Z]|[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?/g;
+
+   static COMMAND_ARG_COUNTS = {
+      M: 2,
+      L: 2,
+      H: 1,
+      V: 1,
+      C: 6,
+      Z: 0,
+   };
+
    static pointsNear(left, right, tolerance = 1.5) {
       return Math.hypot(left.x - right.x, left.y - right.y) <= tolerance;
    }
 
    static parseSvgPathD(pathD) {
-      const tokens = pathD.match(TOKEN_PATTERN) ?? [];
+      const tokens = pathD.match(SvgPathParsing.TOKEN_PATTERN) ?? [];
       const segments = [];
       let index = 0;
       let command = '';
@@ -109,11 +109,11 @@ export class SvgPathParsing {
          }
 
          if (upperCommand === 'Z') {
-            index += COMMAND_ARG_COUNTS.Z;
+            index += SvgPathParsing.COMMAND_ARG_COUNTS.Z;
             continue;
          }
 
-         index += COMMAND_ARG_COUNTS[upperCommand] ?? 0;
+         index += SvgPathParsing.COMMAND_ARG_COUNTS[upperCommand] ?? 0;
       }
 
       return segments;

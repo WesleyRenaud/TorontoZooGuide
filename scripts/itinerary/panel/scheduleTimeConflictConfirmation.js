@@ -4,9 +4,6 @@ import { ScheduleTimeConflictResolution } from './scheduleTimeConflictResolution
 import { Strings } from '../../strings.js';
 import { SaveIssuesProceedConfirmation } from '../wizard/saveIssuesProceedConfirmation.js';
 
-export const WILD_ENCOUNTER_TIME_CONFLICT = ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT;
-export const createSaveIssuesContent = ScheduleTimeConflictContent.createSaveIssuesContent;
-
 export class ScheduleTimeConflictConfirmation {
    static showScheduleTimeConflictConfirmation({
       issues = [],

@@ -2,9 +2,9 @@ import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSe
 import { GuardiansTalkSelectorModel } from './guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { Strings } from '../../strings.js';
 
-const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
-
 export class GuardiansTalkSelector {
+   static STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
+
    static createItineraryGuardiansTalkSelectorController({
    mountEl,
    onNext,
@@ -19,7 +19,7 @@ export class GuardiansTalkSelector {
          onFinish,
          onClose,
 
-         storageKey: STORAGE_KEY,
+         storageKey: GuardiansTalkSelector.STORAGE_KEY,
          responseKey: 'guardians_talks',
          searchFlag: 'includeGuardiansTalks',
          imageDirectory: 'guardians-talks',

@@ -4,9 +4,9 @@ import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 import { TransportationSelectorPrompts } from './transportationSelectorPrompts.js';
 
-const STORAGE_KEY = 'tzg.itineraryTransportations';
-
 export class TransportationSelector {
+   static STORAGE_KEY = 'tzg.itineraryTransportations';
+
    static createItineraryTransportationSelectorController({
    mountEl,
    onPrev,
@@ -20,7 +20,7 @@ export class TransportationSelector {
          onClose,
          hideNextButton: true,
 
-         storageKey: STORAGE_KEY,
+         storageKey: TransportationSelector.STORAGE_KEY,
          migrateSelected: TransportationSelectorModel.migrateStoredTransportations,
 
          getContext: () => ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false }),

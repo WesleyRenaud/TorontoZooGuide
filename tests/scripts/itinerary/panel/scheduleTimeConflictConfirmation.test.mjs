@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduleTimeConflictConfirmation, WILD_ENCOUNTER_TIME_CONFLICT } from '../../../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
+import { ScheduleTimeConflictConfirmation } from '../../../../scripts/itinerary/panel/scheduleTimeConflictConfirmation.js';
+import { ScheduleTimeConflictContent } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContent.js';
 import { ScheduleConflictCompatibility } from '../../../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -43,7 +44,7 @@ test.describe('scheduleTimeConflictConfirmation', () => {
    test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConfirmationRendersTheSaveIssuesNoticePopup_ExpectOk', () => {
       ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
-            type: WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
          }],
       });
@@ -69,7 +70,7 @@ test.describe('scheduleTimeConflictConfirmation', () => {
 
       ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
-            type: WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
          }],
          onCancel: () => {
@@ -100,7 +101,7 @@ test.describe('scheduleTimeConflictConfirmation', () => {
 
       ScheduleTimeConflictConfirmation.showScheduleTimeConflictConfirmation({
          issues: [{
-            type: WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ScheduleTimeConflictContent.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
          }],
          onConfirm: async (selectedItems) => {

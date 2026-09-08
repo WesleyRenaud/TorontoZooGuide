@@ -2,12 +2,13 @@ import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { ExploreFilter } from './exploreFilter.js';
 import { Strings } from '../strings.js';
 
-const TRANSPORTATION_ROUTE_SELECTOR = 'input[name="transportationRoute-zoomobile"]:checked';
-const DEFAULT_SELECTED_TYPES = ['animal'];
-
 export class ExploreFilterBinder {
+   static TRANSPORTATION_ROUTE_SELECTOR = 'input[name="transportationRoute-zoomobile"]:checked';
+
+   static DEFAULT_SELECTED_TYPES = ['animal'];
+
    static getSelectedTransportationRoute() {
-      const checked = document.querySelector(TRANSPORTATION_ROUTE_SELECTOR);
+      const checked = document.querySelector(ExploreFilterBinder.TRANSPORTATION_ROUTE_SELECTOR);
       return checked?.value ?? 'none';
    }
 
@@ -17,9 +18,9 @@ export class ExploreFilterBinder {
 
    static createFallbackExploreFilter() {
       return {
-         getSelectedTypes: () => [...DEFAULT_SELECTED_TYPES],
+         getSelectedTypes: () => [...ExploreFilterBinder.DEFAULT_SELECTED_TYPES],
          buildSearchIncludeFlags: () => ExploreFilter.buildExploreSearchIncludeFlags(
-            DEFAULT_SELECTED_TYPES,
+            ExploreFilterBinder.DEFAULT_SELECTED_TYPES,
             'none'
          ),
       };

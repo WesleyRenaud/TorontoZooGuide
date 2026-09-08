@@ -1,9 +1,12 @@
-const EDIT_CURSOR = 'grab';
-const DRAG_CURSOR = 'grabbing';
-const COORDINATE_LOG_KEY = '__TZG_LAST_MARKER_COORDS';
-const COORDINATE_LOG_LABEL = '[marker-coordinate-editor]';
-
 export class CoordinateEditingSession {
+   static EDIT_CURSOR = 'grab';
+
+   static DRAG_CURSOR = 'grabbing';
+
+   static COORDINATE_LOG_KEY = '__TZG_LAST_MARKER_COORDS';
+
+   static COORDINATE_LOG_LABEL = '[marker-coordinate-editor]';
+
    static clampPercent(value) {
       return Math.max(0, Math.min(100, value));
    }
@@ -29,7 +32,7 @@ export class CoordinateEditingSession {
    }
 
    static applyMarkerEditingStyles(markerEl) {
-      markerEl.style.cursor = EDIT_CURSOR;
+      markerEl.style.cursor = CoordinateEditingSession.EDIT_CURSOR;
       markerEl.style.touchAction = 'none';
    }
 
@@ -91,9 +94,9 @@ export class CoordinateEditingSession {
          position
       );
 
-      window[COORDINATE_LOG_KEY] = coordinateRows;
+      window[CoordinateEditingSession.COORDINATE_LOG_KEY] = coordinateRows;
 
-      console.log(COORDINATE_LOG_LABEL, coordinateRows);
+      console.log(CoordinateEditingSession.COORDINATE_LOG_LABEL, coordinateRows);
 
       if (typeof console.table === 'function') {
          console.table(coordinateRows);
@@ -103,7 +106,7 @@ export class CoordinateEditingSession {
    static beginDragging(markerEl, state, event) {
       state.activePointerId = event.pointerId;
       state.didDrag = false;
-      markerEl.style.cursor = DRAG_CURSOR;
+      markerEl.style.cursor = CoordinateEditingSession.DRAG_CURSOR;
       markerEl.setPointerCapture?.(event.pointerId);
       CoordinateEditingSession.stopMarkerEvent(event);
    }
@@ -122,7 +125,7 @@ export class CoordinateEditingSession {
       const finalPosition = CoordinateEditingSession.updateMarkerPosition(markerEl, mapInner, event);
 
       markerEl.releasePointerCapture?.(event.pointerId);
-      markerEl.style.cursor = EDIT_CURSOR;
+      markerEl.style.cursor = CoordinateEditingSession.EDIT_CURSOR;
       state.activePointerId = null;
 
       if (state.didDrag && finalPosition) {
