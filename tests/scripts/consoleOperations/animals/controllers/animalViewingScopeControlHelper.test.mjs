@@ -2,19 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AnimalViewingScopeControlHelper } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeControlHelper.js';
-import { AnimalViewingModel } from '../../../../../scripts/shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 
 test('Test_AnimalHasIndoorAndOutdoorViewing_TestScopes_ExpectBoolean', () => {
    assert.equal(
       AnimalViewingScopeControlHelper.animalHasIndoorAndOutdoorViewing([
-         AnimalViewingModel.INDOOR,
-         AnimalViewingModel.OUTDOOR,
+         AnimalViewingScope.INDOOR,
+         AnimalViewingScope.OUTDOOR,
       ]),
       true
    );
    assert.equal(
       AnimalViewingScopeControlHelper.animalHasIndoorAndOutdoorViewing([
-         AnimalViewingModel.INDOOR,
+         AnimalViewingScope.INDOOR,
       ]),
       false
    );
@@ -23,15 +23,15 @@ test('Test_AnimalHasIndoorAndOutdoorViewing_TestScopes_ExpectBoolean', () => {
 test('Test_SingleSpecificViewingScope_TestScopes_ExpectSingleOrEmpty', () => {
    assert.equal(
       AnimalViewingScopeControlHelper.singleSpecificViewingScope([
-         AnimalViewingModel.ALL,
-         AnimalViewingModel.INDOOR,
+         AnimalViewingScope.ALL,
+         AnimalViewingScope.INDOOR,
       ]),
-      AnimalViewingModel.INDOOR
+      AnimalViewingScope.INDOOR
    );
    assert.equal(
       AnimalViewingScopeControlHelper.singleSpecificViewingScope([
-         AnimalViewingModel.INDOOR,
-         AnimalViewingModel.OUTDOOR,
+         AnimalViewingScope.INDOOR,
+         AnimalViewingScope.OUTDOOR,
       ]),
       ''
    );

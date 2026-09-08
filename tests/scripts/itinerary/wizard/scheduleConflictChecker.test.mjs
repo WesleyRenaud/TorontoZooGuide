@@ -8,28 +8,28 @@ const greatBarrierReef = {
    name: 'Great Barrier Reef',
    start_time: '13:00',
    end_time: '13:20',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
 };
 
 const grizzly = {
    name: 'Grizzly Bear',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
 };
 
 const capybara = {
    name: 'Capybara',
    start_time: '13:30',
    end_time: '14:00',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
 };
 
 const africanLionTalk = {
    name: 'African Lion',
    start_time: '13:30',
    end_time: '14:00',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Africa Savanna',
 };
 
@@ -37,7 +37,7 @@ const amurTigerTalk = {
    name: 'Amur Tiger',
    start_time: '13:30',
    end_time: '14:00',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Eurasia Wilds',
 };
 
@@ -45,7 +45,7 @@ const gibbonTalk = {
    name: 'White-Handed Gibbon',
    start_time: '13:10',
    end_time: '13:40',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Indo-Malaya',
 };
 const gibbonTalkAtOne = {
@@ -288,7 +288,7 @@ test('Test_ToggleConflictItemSelection_TestCannotSelect_ExpectUnchanged', () => 
       name: 'Blocked Encounter',
       start_time: '13:00',
       end_time: '13:20',
-      item_type: ItinerarySaveIssueItemType.wildEncounter,
+      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    };
 
    assert.equal(ScheduleConflictChecker.canSelectConflictItem(selection, blocked), false);

@@ -8,7 +8,7 @@ import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperation
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { AnimalViewingModel } from '../../../../../scripts/shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
@@ -47,7 +47,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       assert.deepEqual(payload, {
          species: 'Lion',
          exhibit: 'Savanna',
-         viewingScope: AnimalViewingModel.ALL,
+         viewingScope: AnimalViewingScope.ALL,
       });
       return { success: true, species: 'Lion', exhibit: 'Savanna' };
    };
@@ -157,7 +157,7 @@ test('Test_CreateAnimalOnDisplayController_TestValidationAndFailures_ExpectError
       ControllerHelper.getFieldValue = (el) => {
          if (el === speciesEl) return 'Lion';
          if (el === exhibitEl) return 'Savanna';
-         return AnimalViewingModel.INDOOR;
+         return AnimalViewingScope.INDOOR;
       };
       ConsoleOperationsClient.setAnimalOnDisplay = async () => ({ success: false });
       await submitButtonEl.listeners.click();

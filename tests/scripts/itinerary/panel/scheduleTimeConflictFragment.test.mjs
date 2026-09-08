@@ -12,7 +12,7 @@ const firstEncounter = {
    name: 'From Howls to Honks',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
 };
 
@@ -20,7 +20,7 @@ const secondEncounter = {
    name: 'Great Barrier Reef',
    start_time: '14:00',
    end_time: '14:30',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
 };
 

@@ -2,37 +2,42 @@ from __future__ import annotations
 
 from enum import Enum
 
-
-class AnimalViewingScope( str, Enum ):
-   ALL = 'all'
-   INDOOR = 'indoor'
-   OUTDOOR = 'outdoor'
+from .shared_enum_values import SharedEnumValues
 
 
-   @classmethod
-   def normalize(
-         cls,
-         value: str | None ) -> AnimalViewingScope | None:
-      if value is None:
-         return None
+AnimalViewingScope = Enum(
+   'AnimalViewingScope',
+   SharedEnumValues.load( 'animalViewingScope.json' ),
+   type=str,
+)
 
-      normalized_value = value.strip().lower()
 
-      for scope in cls:
-         if normalized_value == scope.value:
-            return scope
-
+@classmethod
+def _normalize( cls: type[ AnimalViewingScope ],
+      value: str | None ) -> AnimalViewingScope | None:
+   if value is None:
       return None
 
+   normalized_value = value.strip().lower()
 
-   @classmethod
-   def opposite_scope(
-         cls,
-         value: AnimalViewingScope ) -> AnimalViewingScope | None:
-      if value == cls.INDOOR:
-         return cls.OUTDOOR
+   for scope in cls:
+      if normalized_value == scope.value:
+         return scope
 
-      if value == cls.OUTDOOR:
-         return cls.INDOOR
+   return None
 
-      return None
+
+@classmethod
+def _opposite_scope( cls: type[ AnimalViewingScope ],
+      value: AnimalViewingScope ) -> AnimalViewingScope | None:
+   if value == cls.INDOOR:
+      return cls.OUTDOOR
+
+   if value == cls.OUTDOOR:
+      return cls.INDOOR
+
+   return None
+
+
+AnimalViewingScope.normalize = _normalize
+AnimalViewingScope.opposite_scope = _opposite_scope

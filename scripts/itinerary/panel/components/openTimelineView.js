@@ -2,6 +2,7 @@ import { SpeciesLinkTitleBuilder } from '../../../animals/speciesLinkTitleBuilde
 import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { ItineraryPillView } from './itineraryPillView.js';
 import { AnimalSelectorModel } from '../../selectors/animalSelector/animalSelectorModel.js';
+import { ItineraryEventType } from '../../../shared/enums/itineraryEventType.js';
 
 export class OpenTimelineView {
    static createPillLabelNode(
@@ -82,8 +83,8 @@ export class OpenTimelineView {
 
       const marker = ItineraryPanelHelper.el('span', 'itinerary-day-boundary-marker');
       const markerKind = visitBoundaryPlacement === 'starts-at-anchor'
-         ? 'departure'
-         : 'arrival';
+         ? ItineraryEventType.DEPARTURE
+         : ItineraryEventType.ARRIVAL;
 
       marker.setAttribute('aria-label', label);
       marker.setAttribute('data-boundary-marker-kind', markerKind);

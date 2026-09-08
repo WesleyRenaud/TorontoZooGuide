@@ -8,19 +8,19 @@ import { Strings } from '../../../../scripts/strings.js';
 
 test('Test_ResolveItemTypeMeta_TestGuardiansTalk_ExpectMeta', () => {
    const meta = FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({
-      item_type: ItinerarySaveIssueItemType.guardiansTalk,
+      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    });
 
-   assert.equal(meta.itemType, ItinerarySaveIssueItemType.guardiansTalk);
+   assert.equal(meta.itemType, ItinerarySaveIssueItemType.GUARDIANS_TALK);
    assert.equal(meta.typeLabel, Strings.entityLabels.guardiansTalk);
 });
 
 test('Test_ResolveItemTypeMeta_TestWildEncounter_ExpectMeta', () => {
    const meta = FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({
-      item_type: ItinerarySaveIssueItemType.wildEncounter,
+      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    });
 
-   assert.equal(meta.itemType, ItinerarySaveIssueItemType.wildEncounter);
+   assert.equal(meta.itemType, ItinerarySaveIssueItemType.WILD_ENCOUNTER);
    assert.equal(meta.typePhrase, Strings.entityPhrases.wildEncounter);
 });
 

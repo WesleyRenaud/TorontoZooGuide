@@ -1,0 +1,10 @@
+{
+   "ARRIVAL": "arrival",
+   "BREAK": "break",
+   "BREAKFAST": "breakfast",
+   "DEPARTURE": "departure",
+   "DINNER": "dinner",
+   "LUNCH": "lunch",
+   "SHOPPING": "shopping",
+   "SNACK": "snack"
+}

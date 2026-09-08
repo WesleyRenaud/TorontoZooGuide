@@ -1,4 +1,4 @@
-import { AnimalViewingModel } from '../shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
 
 export class ConsoleStrings {
    static help = {
@@ -193,9 +193,9 @@ export class ConsoleStrings {
    ];
 
    static viewingScopes = [
-      { value: AnimalViewingModel.ALL, label: 'Indoor and outdoor' },
-      { value: AnimalViewingModel.INDOOR, label: 'Indoor only' },
-      { value: AnimalViewingModel.OUTDOOR, label: 'Outdoor only' },
+      { value: AnimalViewingScope.ALL, label: 'Indoor and outdoor' },
+      { value: AnimalViewingScope.INDOOR, label: 'Indoor only' },
+      { value: AnimalViewingScope.OUTDOOR, label: 'Outdoor only' },
    ];
 
    static apiErrors = {

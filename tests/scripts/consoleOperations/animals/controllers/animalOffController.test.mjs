@@ -8,7 +8,7 @@ import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperation
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { AnimalViewingModel } from '../../../../../scripts/shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
@@ -49,7 +49,7 @@ test('Test_CreateAnimalOffDisplayController_TestShowAndSubmitSuccess_ExpectStatu
       assert.deepEqual(payload, {
          species: 'Lion',
          exhibit: 'Savanna',
-         viewingScope: AnimalViewingModel.ALL,
+         viewingScope: AnimalViewingScope.ALL,
          startDate: '2026-06-01',
          endDate: null,
          message: 'Vet care',

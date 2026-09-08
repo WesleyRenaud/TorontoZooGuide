@@ -1,15 +1,15 @@
-import { AnimalViewingModel } from '../../../shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 
 export class AnimalViewingScopeControlHelper {
    static animalHasIndoorAndOutdoorViewing(scopes = []) {
       return (
-         scopes.includes(AnimalViewingModel.INDOOR) &&
-         scopes.includes(AnimalViewingModel.OUTDOOR)
+         scopes.includes(AnimalViewingScope.INDOOR) &&
+         scopes.includes(AnimalViewingScope.OUTDOOR)
       );
    }
 
    static singleSpecificViewingScope(scopes = []) {
-      const specificScopes = scopes.filter(scope => scope !== AnimalViewingModel.ALL);
+      const specificScopes = scopes.filter(scope => scope !== AnimalViewingScope.ALL);
       return specificScopes.length === 1
          ? specificScopes[0]
          : '';

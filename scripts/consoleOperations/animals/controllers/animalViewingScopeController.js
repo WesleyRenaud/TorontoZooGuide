@@ -1,7 +1,7 @@
 import { AnimalViewingScopeControlHelper } from './animalViewingScopeControlHelper.js';
 import { AnimalsClient } from '../../../api/animalsClient.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
-import { AnimalViewingModel } from '../../../shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 
 export class AnimalViewingScopeController {
    static createAnimalViewingScopeControl({
@@ -39,7 +39,7 @@ export class AnimalViewingScopeController {
             viewingScopeEl.disabled = !canChooseSpecificScope;
 
             if (canChooseSpecificScope) {
-               viewingScopeEl.value = AnimalViewingModel.ALL;
+               viewingScopeEl.value = AnimalViewingScope.ALL;
                return;
             }
 

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
-import { AnimalViewingModel } from '../../../../../scripts/shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 
 const originalFetch = globalThis.fetch;
 
@@ -40,8 +40,8 @@ test('Test_CreateAnimalViewingScopeControl_TestIndoorAndOutdoor_ExpectSelectEnab
    const viewingScopeEl = _createField('');
 
    _mockViewingScopesResponse([
-      AnimalViewingModel.INDOOR,
-      AnimalViewingModel.OUTDOOR,
+      AnimalViewingScope.INDOOR,
+      AnimalViewingScope.OUTDOOR,
    ]);
 
    AnimalViewingScopeController.createAnimalViewingScopeControl({
@@ -56,7 +56,7 @@ test('Test_CreateAnimalViewingScopeControl_TestIndoorAndOutdoor_ExpectSelectEnab
    await speciesEl.trigger('change');
 
    assert.equal(viewingScopeEl.disabled, false);
-   assert.equal(viewingScopeEl.value, AnimalViewingModel.ALL);
+   assert.equal(viewingScopeEl.value, AnimalViewingScope.ALL);
 });
 
 test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async () => {
@@ -65,7 +65,7 @@ test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async 
    const viewingScopeEl = _createField('');
 
    _mockViewingScopesResponse([
-      AnimalViewingModel.OUTDOOR,
+      AnimalViewingScope.OUTDOOR,
    ]);
 
    AnimalViewingScopeController.createAnimalViewingScopeControl({
@@ -77,7 +77,7 @@ test('Test_CreateAnimalViewingScopeControl_TestSingleScope_ExpectLocked', async 
    await speciesEl.trigger('change');
 
    assert.equal(viewingScopeEl.disabled, true);
-   assert.equal(viewingScopeEl.value, AnimalViewingModel.OUTDOOR);
+   assert.equal(viewingScopeEl.value, AnimalViewingScope.OUTDOOR);
 });
 
 test('Test_CreateAnimalViewingScopeControl_TestMissingFieldsAndErrors_ExpectReset', async () => {

@@ -8,7 +8,7 @@ export class FixedTimeItemLongWaitMessageBuilder {
    static resolveItemTypeMeta(item) {
       if (ScheduleConflictChecker.isGuardiansTalkConflictItem(item)) {
          return {
-            itemType: ItinerarySaveIssueItemType.guardiansTalk,
+            itemType: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             typeLabel: Strings.entityLabels.guardiansTalk,
             typePhrase: Strings.entityPhrases.guardiansTalk,
          };
@@ -16,7 +16,7 @@ export class FixedTimeItemLongWaitMessageBuilder {
 
       if (ScheduleConflictChecker.isWildEncounterConflictItem(item)) {
          return {
-            itemType: ItinerarySaveIssueItemType.wildEncounter,
+            itemType: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
             typeLabel: Strings.entityLabels.wildEncounter,
             typePhrase: Strings.entityPhrases.wildEncounter,
          };
