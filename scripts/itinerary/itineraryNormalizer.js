@@ -1,3 +1,4 @@
+import { ItineraryNormalizerHelpers } from './itineraryNormalizerHelpers.js';
 import { ItineraryPathModel } from './itineraryPathModel.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidation } from './itineraryValidation.js';
@@ -12,7 +13,7 @@ export class ItineraryNormalizer {
 
    static isItineraryEmpty(itinerary) {
       return ItineraryShape.isItineraryEmptyDraft(
-         normalizeItinerarySource(itinerary)
+         ItineraryNormalizerHelpers.normalizeItinerarySource(itinerary)
       );
    }
 
@@ -26,7 +27,7 @@ export class ItineraryNormalizer {
 
    static normalizeItinerary(itinerary) {
       const normalizedDraft = ItineraryShape.normalizeItineraryDraft(
-         normalizeItinerarySource(itinerary)
+         ItineraryNormalizerHelpers.normalizeItinerarySource(itinerary)
       );
 
       return {
@@ -42,22 +43,3 @@ export class ItineraryNormalizer {
    }
 }
 
-function normalizeItinerarySource(itinerary) {
-   const source = itinerary && typeof itinerary === 'object'
-      ? itinerary
-      : {};
-
-   return {
-      date: source.date,
-      arrivalTime: source.arrivalTime,
-      departureTime: source.departureTime,
-      selectedExhibits: source.selectedExhibits,
-      animals: ItineraryShape.normalizeItineraryItems(source.animals),
-      attractions: ItineraryShape.normalizeItineraryItems(source.attractions),
-      guardiansTalks: ItineraryShape.normalizeItineraryItems(source.guardiansTalks),
-      wildEncounters: ItineraryShape.normalizeItineraryItems(source.wildEncounters),
-      transportations: ItineraryShape.normalizeItineraryItems(source.transportations),
-      transportationStations: ItineraryShape.normalizeItineraryItems(source.transportationStations),
-      events: ItineraryShape.normalizeItineraryItems(source.events),
-   };
-}

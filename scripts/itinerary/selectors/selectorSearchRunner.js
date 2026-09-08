@@ -1,20 +1,12 @@
 import { SearchApi } from '../../api/searchApi.js';
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-
-function debounce(fn, delay) {
-   let timeoutId = null;
-
-   return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn(...args), delay);
-   };
-}
+import { SelectorSearchRunnerHelpers } from './selectorSearchRunnerHelpers.js';
 
 export class SelectorSearchRunner {
    static SELECTOR_SEARCH_DEBOUNCE_MS = 250;
 
    static debounce(fn, delay = SelectorSearchRunner.SELECTOR_SEARCH_DEBOUNCE_MS) {
-      return debounce(fn, delay);
+      return SelectorSearchRunnerHelpers.debounce(fn, delay);
    }
 
    static createSelectorSearchRunner({

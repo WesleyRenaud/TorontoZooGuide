@@ -1,24 +1,8 @@
-import { ValueNormalizer } from '../api/valueNormalizer.js';
-
-function getFocusRequestFromQuery(search = window.location.search) {
-   const params = new URLSearchParams(search);
-   const species = ValueNormalizer.asTrimmedString(params.get('focus'));
-
-   if (!species) {
-      return null;
-   }
-
-   const exhibit = ValueNormalizer.asNullableString(params.get('exhibit'));
-
-   return {
-      species,
-      exhibit,
-   };
-}
+import { FocusFromQueryHelpers } from './focusFromQueryHelpers.js';
 
 export class FocusFromQuery {
    static initFocusFromQuery({ onFocus } = {}) {
-      const focusRequest = getFocusRequestFromQuery();
+      const focusRequest = FocusFromQueryHelpers.getFocusRequestFromQuery();
 
       if (!focusRequest || typeof onFocus !== 'function') {
          return;

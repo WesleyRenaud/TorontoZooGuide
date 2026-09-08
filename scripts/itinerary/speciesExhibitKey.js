@@ -1,17 +1,5 @@
 import { AnimalIdentity } from './animalIdentity.js';
-import { EnclosureType } from '../shared/enums/enclosureType.js';
-
-function buildViewingSpotSuffix(animal = {}) {
-   const { enclosure_name: enclosureName } = AnimalIdentity.normalizeAnimalIdentitySearchFields(animal);
-
-   if (enclosureName) {
-      return enclosureName;
-   }
-
-   const enclosureType = EnclosureType.normalizeEnclosureType(animal?.enclosure_type);
-
-   return enclosureType ? enclosureType.toLowerCase() : '';
-}
+import { SpeciesExhibitKeyHelpers } from './speciesExhibitKeyHelpers.js';
 
 export class SpeciesExhibitKey {
    static buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
@@ -31,7 +19,7 @@ export class SpeciesExhibitKey {
          return '';
       }
 
-      const viewingSpotSuffix = buildViewingSpotSuffix(animal);
+      const viewingSpotSuffix = SpeciesExhibitKeyHelpers.buildViewingSpotSuffix(animal);
 
       return viewingSpotSuffix ? `${baseKey}|${viewingSpotSuffix}` : baseKey;
    }
