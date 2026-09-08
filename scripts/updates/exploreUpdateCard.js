@@ -1,13 +1,5 @@
+import { ExploreUpdateCardHelpers } from './exploreUpdateCardHelpers.js';
 import { Strings } from '../strings.js';
-
-function createUpdateTypeEl(update) {
-   const typeEl = document.createElement('span');
-   typeEl.className = `explore-update-type explore-update-type-${String(update.type || '')
-      .toLowerCase()
-      .replaceAll(' ', '-')}`;
-   typeEl.textContent = update.type || Strings.labels.update;
-   return typeEl;
-}
 
 export class ExploreUpdateCard {
    static createUpdateCard(update, isActive = false) {
@@ -17,7 +9,7 @@ export class ExploreUpdateCard {
 
       const metaEl = document.createElement('div');
       metaEl.className = 'explore-update-meta';
-      metaEl.appendChild(createUpdateTypeEl(update));
+      metaEl.appendChild(ExploreUpdateCardHelpers.createUpdateTypeEl(update));
 
       const titleEl = document.createElement('h4');
       titleEl.className = 'explore-update-title';

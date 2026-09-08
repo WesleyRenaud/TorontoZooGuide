@@ -1,15 +1,8 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { DayPlannerSchedule } from './dayPlannerSchedule.js';
+import { RowPresentationHelpers } from './rowPresentationHelpers.js';
 import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { Strings } from '../../strings.js';
-
-function buildTimeFieldLine(value) {
-   if (!value) {
-      return '';
-   }
-
-   return `${Strings.labels.time}: ${value}`;
-}
 
 export class RowPresentation {
    static buildImageSrc(...pathParts) {
@@ -33,7 +26,7 @@ export class RowPresentation {
    }
 
    static buildScheduledTimeFieldLine(item) {
-      return buildTimeFieldLine(
+      return RowPresentationHelpers.buildTimeFieldLine(
          ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(item)
       );
    }
@@ -46,7 +39,7 @@ export class RowPresentation {
       }
 
       const roundedMinutes = Math.round(startMinutes / 5) * 5;
-      return buildTimeFieldLine(`~${DayPlannerSchedule.formatMinutesAsClockTime(roundedMinutes)}`);
+      return RowPresentationHelpers.buildTimeFieldLine(`~${DayPlannerSchedule.formatMinutesAsClockTime(roundedMinutes)}`);
    }
 
    static buildMetaLines(lines = []) {

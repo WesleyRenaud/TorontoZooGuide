@@ -1,6 +1,4 @@
-function hasItems(items) {
-   return Array.isArray(items) && items.length > 0;
-}
+import { WizardDiffSummaryHelpers } from './wizardDiffSummaryHelpers.js';
 
 export class WizardDiffSummary {
    static hasRemovedItems(removed) {
@@ -9,10 +7,10 @@ export class WizardDiffSummary {
       }
 
       return (
-         hasItems(removed.animals) ||
-         hasItems(removed.attractions) ||
-         hasItems(removed.guardiansTalks) ||
-         hasItems(removed.wildEncounters)
+         WizardDiffSummaryHelpers.hasItems(removed.animals) ||
+         WizardDiffSummaryHelpers.hasItems(removed.attractions) ||
+         WizardDiffSummaryHelpers.hasItems(removed.guardiansTalks) ||
+         WizardDiffSummaryHelpers.hasItems(removed.wildEncounters)
       );
    }
 
@@ -21,7 +19,7 @@ export class WizardDiffSummary {
          return false;
       }
 
-      return hasItems(added.animals);
+      return WizardDiffSummaryHelpers.hasItems(added.animals);
    }
 
    static hasReducedVisibility(reducedVisibility) {
@@ -29,7 +27,7 @@ export class WizardDiffSummary {
          return false;
       }
 
-      return hasItems(reducedVisibility.animals);
+      return WizardDiffSummaryHelpers.hasItems(reducedVisibility.animals);
    }
 
    static hasImprovedVisibility(improvedVisibility) {
@@ -37,7 +35,7 @@ export class WizardDiffSummary {
          return false;
       }
 
-      return hasItems(improvedVisibility.animals);
+      return WizardDiffSummaryHelpers.hasItems(improvedVisibility.animals);
    }
 
    static hasUnscheduledItems(unscheduled) {
@@ -45,8 +43,8 @@ export class WizardDiffSummary {
          return false;
       }
 
-      return hasItems(unscheduled.animals)
-         || hasItems(unscheduled.attractions);
+      return WizardDiffSummaryHelpers.hasItems(unscheduled.animals)
+         || WizardDiffSummaryHelpers.hasItems(unscheduled.attractions);
    }
 
    static isValidatedItineraryEmpty(validated) {
@@ -55,11 +53,11 @@ export class WizardDiffSummary {
       }
 
       return (
-         !hasItems(validated.animals) &&
-         !hasItems(validated.attractions) &&
-         !hasItems(validated.guardiansTalks) &&
-         !hasItems(validated.wildEncounters) &&
-         !hasItems(validated.transportations)
+         !WizardDiffSummaryHelpers.hasItems(validated.animals) &&
+         !WizardDiffSummaryHelpers.hasItems(validated.attractions) &&
+         !WizardDiffSummaryHelpers.hasItems(validated.guardiansTalks) &&
+         !WizardDiffSummaryHelpers.hasItems(validated.wildEncounters) &&
+         !WizardDiffSummaryHelpers.hasItems(validated.transportations)
       );
    }
 }

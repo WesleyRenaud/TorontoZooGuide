@@ -1,34 +1,5 @@
-import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { Strings } from '../strings.js';
+import { ExploreEventCardHelpers } from './exploreEventCardHelpers.js';
 import { VisitDateRules } from '../visitDates/visitDateRules.js';
-
-function createEventTitleEl(event) {
-   const titleEl = document.createElement('h4');
-   titleEl.className = 'explore-update-title';
-
-   const name = event.name || Strings.map.events.title;
-   const location = ValueNormalizer.asTrimmedString(event.location);
-   const link = ValueNormalizer.asTrimmedString(event.link);
-
-   if (link) {
-      const linkEl = document.createElement('a');
-      linkEl.className = 'explore-event-title-link';
-      linkEl.href = link;
-      linkEl.target = '_blank';
-      linkEl.rel = 'noopener noreferrer';
-      linkEl.textContent = name;
-      titleEl.appendChild(linkEl);
-   }
-   else {
-      titleEl.appendChild(document.createTextNode(name));
-   }
-
-   if (location) {
-      titleEl.appendChild(document.createTextNode(` • ${location}`));
-   }
-
-   return titleEl;
-}
 
 export class ExploreEventCard {
    static createEventCard(event, isActive = false) {
@@ -44,7 +15,7 @@ export class ExploreEventCard {
       descriptionEl.className = 'explore-update-description';
       descriptionEl.textContent = event.description || '';
 
-      cardEl.append(createEventTitleEl(event), dateRangeEl, descriptionEl);
+      cardEl.append(ExploreEventCardHelpers.createEventTitleEl(event), dateRangeEl, descriptionEl);
       return cardEl;
    }
 }

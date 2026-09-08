@@ -1,20 +1,7 @@
 import { StoredSelection } from '../base/storedSelection.js';
+import { TransportationScheduleItemKeyHelpers } from './transportationScheduleItemKeyHelpers.js';
 
 export const TRANSPORTATION_ITEM_KEY_SEPARATOR = '||';
-
-function addedAsAttractionFromWire(part) {
-   const wire = StoredSelection.normalizeStoredString(part);
-
-   if (wire === '1') {
-      return true;
-   }
-
-   if (wire === '0') {
-      return false;
-   }
-
-   return null;
-}
 
 export class TransportationScheduleItemKey {
    constructor(name, addedAsAttraction) {
@@ -39,7 +26,7 @@ export class TransportationScheduleItemKey {
          2
       );
       const name = StoredSelection.normalizeStoredString(parts[0]);
-      const addedAsAttraction = addedAsAttractionFromWire(parts[1]);
+      const addedAsAttraction = TransportationScheduleItemKeyHelpers.addedAsAttractionFromWire(parts[1]);
 
       if (!name || parts.length !== 2 || addedAsAttraction === null) {
          return null;

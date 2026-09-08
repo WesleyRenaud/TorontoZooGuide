@@ -1,14 +1,4 @@
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
-function createSvgNode(tagName, attributes = {}) {
-   const node = document.createElementNS(SVG_NS, tagName);
-
-   Object.entries(attributes).forEach(([key, value]) => {
-      node.setAttribute(key, String(value));
-   });
-
-   return node;
-}
+import { WarningIconHelpers } from './warningIconHelpers.js';
 
 export class WarningIcon {
    static createWarningIcon({
@@ -29,20 +19,20 @@ export class WarningIcon {
          attributes.focusable = focusable;
       }
 
-      const svg = createSvgNode('svg', attributes);
+      const svg = WarningIconHelpers.createSvgNode('svg', attributes);
 
       svg.append(
-         createSvgNode('path', {
+         WarningIconHelpers.createSvgNode('path', {
             d: 'M12 2L1 21h22L12 2z',
          }),
-         createSvgNode('rect', {
+         WarningIconHelpers.createSvgNode('rect', {
             x: '11',
             y: '9',
             width: '2',
             height: '6',
             fill: 'black',
          }),
-         createSvgNode('circle', {
+         WarningIconHelpers.createSvgNode('circle', {
             cx: '12',
             cy: '18',
             r: '1.6',

@@ -1,12 +1,4 @@
-import { ValueNormalizer } from '../../../api/valueNormalizer.js';
-
-function normalizeLegs(legs) {
-   if (!Array.isArray(legs)) {
-      return [];
-   }
-
-   return legs.map((leg) => ValueNormalizer.asObject(leg));
-}
+import { GroupConsecutiveTransportationLegSequencesHelpers } from './groupConsecutiveTransportationLegSequencesHelpers.js';
 
 /**
  * Split timed transportation legs into onboard/offboard ride sequences.
@@ -18,7 +10,7 @@ export class GroupConsecutiveTransportationLegSequences {
       const sequences = [];
       let currentSequence = [];
 
-      normalizeLegs(legs).forEach((leg) => {
+      GroupConsecutiveTransportationLegSequencesHelpers.normalizeLegs(legs).forEach((leg) => {
          if (currentSequence.length > 0) {
             const previousLeg = currentSequence[currentSequence.length - 1];
             const stationGap = previousLeg.to_station !== leg.from_station;

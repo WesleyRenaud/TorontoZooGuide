@@ -1,12 +1,6 @@
 import { RegionRenderer } from './regionRenderer.js';
+import { RegionSelectorRendererHelpers } from './regionSelectorRendererHelpers.js';
 import { Strings } from '../../../strings.js';
-
-function createEmptyState(message) {
-   const emptyEl = document.createElement('div');
-   emptyEl.className = 'itin-empty';
-   emptyEl.textContent = message;
-   return emptyEl;
-}
 
 export class RegionSelectorRenderer {
    static renderRegionSelectionView(resultsEl, regions, selectedExhibitNames) {
@@ -16,7 +10,7 @@ export class RegionSelectorRenderer {
 
       if (regions.length === 0) {
          resultsEl.replaceChildren(
-            createEmptyState(Strings.itinerary.emptyText.regions)
+            RegionSelectorRendererHelpers.createEmptyState(Strings.itinerary.emptyText.regions)
          );
          return;
       }
