@@ -199,6 +199,27 @@
       "tests/scripts/itinerary/panel/rowPresentationHelper.test.mjs",
       "tests/scripts/itinerary/panel/components/scheduledPillViewingWalkModel.test.mjs",
       "tests/scripts/consoleOperations/templates/consoleStatusBuilder.test.mjs",
-      "tests/scripts/updates/exploreUpdateCardHelper.test.mjs"
+      "tests/scripts/updates/exploreUpdateCardHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/regionSelector/regionSelectorRendererHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/showScheduleItemModuleHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/scheduleItemTimeFieldsHelper.test.mjs",
+      "tests/scripts/map/labelPresenter.test.mjs",
+      "tests/scripts/markers/markerLayerHelper.test.mjs",
+      "tests/scripts/consoleOperations/animals/controllers/animalSpeciesAutocompleteHelper.test.mjs",
+      "tests/scripts/consoleOperations/attractions/controllers/attractionHoursScheduleHelper.test.mjs",
+      "tests/scripts/updates/exploreUpdatesChromeHelper.test.mjs",
+      "tests/scripts/itinerary/panel/itineraryPanelHelper.test.mjs",
+      "tests/scripts/itinerary/panel/itineraryPanelScheduleHandlersHelper.test.mjs",
+      "tests/scripts/itinerary/wizard/wizardControllerHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/dateSelectorViewHelper.test.mjs",
+      "tests/scripts/itinerary/scheduledOccurrenceSorter.test.mjs",
+      "tests/scripts/itinerary/panel/itineraryItemFormatterHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/base/storedSelectionHelper.test.mjs",
+      "tests/scripts/itinerary/panel/rowBuildersHelper.test.mjs",
+      "tests/scripts/focus/centerPanHelper.test.mjs",
+      "tests/scripts/itinerary/selectors/base/selectorShellBuilderHelper.test.mjs",
+      "tests/scripts/updates/exploreUpdatesHelper.test.mjs",
+      "tests/scripts/itinerary/panel/components/removedItemsPopupHelper.test.mjs",
+      "tests/scripts/itinerary/panel/removeItineraryItemConfirmationHelper.test.mjs"
    ]
 }
