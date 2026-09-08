@@ -86,8 +86,4 @@ test('Test_AsBoolean', () => {
 });
 ```
 
-## Opt-in enforcement
-
-`tools/lint/jsUnitTestStyle.json` uses an include list. Add a test file when its
-titles follow this convention; leave legacy prose titles out until they are
-renamed.
+Enforcement covers every `tests/scripts/**/*.test.mjs` file.
