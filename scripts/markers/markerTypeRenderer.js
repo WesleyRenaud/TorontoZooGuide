@@ -1,9 +1,10 @@
 import { IconUrlProvider } from '../assets/iconUrlProvider.js';
 import { MarkerTypeRendererFactory } from './markerTypeRendererFactory.js';
+import { ItemType } from '../shared/enums/itemType.js';
 
 export class MarkerTypeRenderer {
    static attractionMarkerRenderer = MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
-      type: 'attraction',
+      type: ItemType.ATTRACTION,
       getIconUrl: (attraction, iconToken) => IconUrlProvider.getAttractionIconUrl(
          attraction?.name,
          iconToken
@@ -15,29 +16,43 @@ export class MarkerTypeRenderer {
    });
 
    static MARKER_TYPE_RENDERERS = {
-      animal: MarkerTypeRendererFactory.renderAnimalMarker,
-      pavilion: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('pavilion'),
-      restaurant: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
-         type: 'restaurant',
+      [ItemType.ANIMAL]: MarkerTypeRendererFactory.renderAnimalMarker,
+      [ItemType.PAVILION]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.PAVILION
+      ),
+      [ItemType.RESTAURANT]: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
+         type: ItemType.RESTAURANT,
          getIconUrl: (_, iconToken) => IconUrlProvider.getRestaurantIconUrl(iconToken),
       }),
-      restroom: MarkerTypeRendererFactory.renderRestroomMarker,
-      giftShop: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
-         type: 'giftShop',
+      [ItemType.RESTROOM]: MarkerTypeRendererFactory.renderRestroomMarker,
+      [ItemType.GIFT_SHOP]: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
+         type: ItemType.GIFT_SHOP,
          getIconUrl: (_, iconToken) => IconUrlProvider.getGiftShopIconUrl(iconToken),
       }),
-      attraction: MarkerTypeRenderer.attractionMarkerRenderer,
-      transportation: MarkerTypeRenderer.attractionMarkerRenderer,
-      transportationStation: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('transportationStation'),
-      transportationRouteMarker: MarkerTypeRendererFactory.renderTransportationRouteMarker,
-      guardiansTalk: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('guardiansTalk'),
-      wildEncounter: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('wildEncounter'),
-      drinkingFountain: MarkerTypeRendererFactory.renderDrinkingFountainMarker,
-      defibrillator: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('defibrillator'),
-      emergencyIntercom: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('emergencyIntercom'),
-      guestService: MarkerTypeRendererFactory.renderGuestServiceMarker,
-      picnicSite: MarkerTypeRendererFactory.createGenericIconMarkerRenderer('picnicSite'),
-      eventSite: MarkerTypeRendererFactory.renderEventSiteMarker,
+      [ItemType.ATTRACTION]: MarkerTypeRenderer.attractionMarkerRenderer,
+      [ItemType.TRANSPORTATION]: MarkerTypeRenderer.attractionMarkerRenderer,
+      [ItemType.TRANSPORTATION_STATION]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.TRANSPORTATION_STATION
+      ),
+      [ItemType.TRANSPORTATION_ROUTE_MARKER]: MarkerTypeRendererFactory.renderTransportationRouteMarker,
+      [ItemType.GUARDIANS_TALK]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.GUARDIANS_TALK
+      ),
+      [ItemType.WILD_ENCOUNTER]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.WILD_ENCOUNTER
+      ),
+      [ItemType.DRINKING_FOUNTAIN]: MarkerTypeRendererFactory.renderDrinkingFountainMarker,
+      [ItemType.DEFIBRILLATOR]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.DEFIBRILLATOR
+      ),
+      [ItemType.EMERGENCY_INTERCOM]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.EMERGENCY_INTERCOM
+      ),
+      [ItemType.GUEST_SERVICE]: MarkerTypeRendererFactory.renderGuestServiceMarker,
+      [ItemType.PICNIC_SITE]: MarkerTypeRendererFactory.createGenericIconMarkerRenderer(
+         ItemType.PICNIC_SITE
+      ),
+      [ItemType.EVENT_SITE]: MarkerTypeRendererFactory.renderEventSiteMarker,
    };
 
    static renderMarkerByType(markerEl, items) {

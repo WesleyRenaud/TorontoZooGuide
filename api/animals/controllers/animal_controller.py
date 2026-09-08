@@ -6,6 +6,7 @@ from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.constants import Constants
 from ...shared.enums import AnimalViewingScope
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.item_type import ItemType
 from ...shared.typed_dict_mapper import TypedDictMapper
 
 
@@ -78,7 +79,7 @@ class AnimalController():
 
       handler._write_json( {
          'animals': [
-            TypedDictMapper.to_dict_with_type( animal, 'animal' ) for animal in animals
+            TypedDictMapper.to_dict_with_type( animal, ItemType.ANIMAL.value ) for animal in animals
          ],
       } )
 

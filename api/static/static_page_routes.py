@@ -30,4 +30,5 @@ class StaticPageRoutes():
       '/styles/': serve_project_path,
       '/scripts/': serve_project_path,
       '/images/': serve_project_path,
+      '/shared/': serve_project_path,
    }

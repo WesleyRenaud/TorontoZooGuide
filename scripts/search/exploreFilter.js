@@ -1,17 +1,18 @@
 import { ExploreFilterBinder } from './exploreFilterBinder.js';
+import { ItemType } from '../shared/enums/itemType.js';
 
 export class ExploreFilter {
    static TYPE_FILTER_ID = 'typeFilter';
 
    static SEARCH_INCLUDE_FLAGS = [
-      ['includeAnimals', 'animal'],
-      ['includePavilions', 'pavilion'],
-      ['includeRestaurants', 'restaurant'],
-      ['includeRestrooms', 'restroom'],
-      ['includeGiftShops', 'giftShop'],
-      ['includeAttractions', 'attraction'],
-      ['includeGuardiansTalks', 'guardiansTalk'],
-      ['includeWildEncounters', 'wildEncounter'],
+      ['includeAnimals', ItemType.ANIMAL],
+      ['includePavilions', ItemType.PAVILION],
+      ['includeRestaurants', ItemType.RESTAURANT],
+      ['includeRestrooms', ItemType.RESTROOM],
+      ['includeGiftShops', ItemType.GIFT_SHOP],
+      ['includeAttractions', ItemType.ATTRACTION],
+      ['includeGuardiansTalks', ItemType.GUARDIANS_TALK],
+      ['includeWildEncounters', ItemType.WILD_ENCOUNTER],
    ];
 
    static buildExploreSearchIncludeFlags(selectedTypes, transportationRoute) {

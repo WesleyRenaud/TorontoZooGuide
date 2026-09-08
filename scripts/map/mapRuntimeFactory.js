@@ -7,6 +7,7 @@ import { RestroomMessageFragment } from '../banners/restroomMessageFragment.js';
 import { FocusController } from '../focus/focusController.js';
 import { GuardiansTalkLinkedAnimalOpener } from '../guardians/guardiansTalkLinkedAnimalOpener.js';
 import { LabelPresenter } from './labelPresenter.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { TooltipController } from '../tooltips/tooltipController.js';
 
 export class MapRuntimeFactory {
@@ -33,12 +34,12 @@ export class MapRuntimeFactory {
       return (item) => {
          const itemType = String(item?.type || '');
 
-         if (itemType === 'animal') {
+         if (itemType === ItemType.ANIMAL) {
             speciesOverlay.openFromAnimal(item);
             return;
          }
 
-         if (itemType === 'guardiansTalk') {
+         if (itemType === ItemType.GUARDIANS_TALK) {
             void GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(item);
          }
       };

@@ -1,67 +1,68 @@
 import { MarkerHoverTextFormatter } from './markerHoverTextFormatter.js';
+import { ItemType } from '../shared/enums/itemType.js';
 import { Strings } from '../strings.js';
 
 export class MarkerHoverFormatter {
    static HIDDEN_HOVER_TYPES = new Set([
-      'transportationRouteMarker',
+      ItemType.TRANSPORTATION_ROUTE_MARKER,
    ]);
 
    static HOVER_FORMATTERS = Object.freeze({
-      animal: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.ANIMAL]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'species', Strings.entityLabels.animal)
       ),
-      pavilion: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.PAVILION]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.pavilion)
       ),
-      restaurant: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.RESTAURANT]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.restaurant)
       ),
-      restroom: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.RESTROOM]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'title', Strings.entityLabels.restroom)
       ),
-      giftShop: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.GIFT_SHOP]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.giftShop)
       ),
-      attraction: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.ATTRACTION]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.attraction)
       ),
-      transportation: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.TRANSPORTATION]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.attraction)
       ),
-      transportationStation: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.TRANSPORTATION_STATION]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.entityLabels.transportationStation)
       ),
-      guardiansTalk: MarkerHoverTextFormatter.formatGuardiansTalkHoverText,
-      wildEncounter: MarkerHoverTextFormatter.formatWildEncounterHoverText,
-      drinkingFountain: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.GUARDIANS_TALK]: MarkerHoverTextFormatter.formatGuardiansTalkHoverText,
+      [ItemType.WILD_ENCOUNTER]: MarkerHoverTextFormatter.formatWildEncounterHoverText,
+      [ItemType.DRINKING_FOUNTAIN]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          () => Strings.map.hover.drinkingFountain
       ),
-      defibrillator: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.DEFIBRILLATOR]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          () => Strings.map.hover.defibrillator
       ),
-      emergencyIntercom: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.EMERGENCY_INTERCOM]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          () => Strings.map.hover.emergencyIntercom
       ),
-      guestService: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.GUEST_SERVICE]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'service_type', Strings.map.hover.guestService)
       ),
-      picnicSite: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.PICNIC_SITE]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          () => Strings.map.hover.picnicSite
       ),
-      eventSite: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
+      [ItemType.EVENT_SITE]: (items) => MarkerHoverTextFormatter.formatCountedHoverText(
          items,
          (item) => MarkerHoverTextFormatter.readItemText(item, 'name', Strings.map.hover.eventSite)
       ),

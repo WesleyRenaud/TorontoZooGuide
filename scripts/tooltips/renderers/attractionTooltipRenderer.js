@@ -2,10 +2,11 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { AttractionSelectorModel } from '../../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { StoredSelectionNormalizer } from '../../itinerary/selectors/base/storedSelectionNormalizer.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionTooltipRenderer {
-   static key = 'attraction';
+   static key = ItemType.ATTRACTION;
 
    static createCard(a, index) {
       const name = a.name || Strings.entityLabels.attraction;

@@ -1,3 +1,4 @@
+import { ItemType } from '../shared/enums/itemType.js';
 import { SourceHelper } from './sourceHelper.js';
 
 export class TransportationRouteSourceFactory {
@@ -17,11 +18,14 @@ export class TransportationRouteSourceFactory {
    }
 
    static clearTransportationRouteRows(store) {
-      SourceHelper.setSourceRows(store, 'transportationStation', []);
-      SourceHelper.setSourceRows(store, 'transportationRoute', []);
+      SourceHelper.setSourceRows(store, ItemType.TRANSPORTATION_STATION, []);
+      SourceHelper.setSourceRows(store, ItemType.TRANSPORTATION_ROUTE, []);
    }
 
    static normalizeTransportationStations(transportationStations) {
-      return SourceHelper.normalizeTypedRows(transportationStations, 'transportationStation');
+      return SourceHelper.normalizeTypedRows(
+         transportationStations,
+         ItemType.TRANSPORTATION_STATION
+      );
    }
 }

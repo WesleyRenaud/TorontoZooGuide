@@ -110,10 +110,14 @@ def iter_python_files( include: list[ str ] ) -> list[ Path ]:
 def main() -> int:
    config = load_config()
    include = config.get( 'include', [ 'api/**/*.py' ] )
+   excluded_patterns = config.get( 'exclude', [] )
    violations: list[ str ] = []
 
    for path in iter_python_files( include ):
       if path.name in ( '__init__.py', '__main__.py' ):
+         continue
+
+      if is_excluded_path( path, excluded_patterns ):
          continue
 
       try:

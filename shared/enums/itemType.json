@@ -1,0 +1,22 @@
+{
+   "ANIMAL": "animal",
+   "ATTRACTION": "attraction",
+   "DEFIBRILLATOR": "defibrillator",
+   "DRINKING_FOUNTAIN": "drinkingFountain",
+   "EMERGENCY_INTERCOM": "emergencyIntercom",
+   "EVENT_SITE": "eventSite",
+   "EXHIBIT": "exhibit",
+   "GIFT_SHOP": "giftShop",
+   "GUEST_SERVICE": "guestService",
+   "GUARDIANS_TALK": "guardiansTalk",
+   "ITINERARY_EVENT": "itineraryEvent",
+   "PAVILION": "pavilion",
+   "PICNIC_SITE": "picnicSite",
+   "RESTAURANT": "restaurant",
+   "RESTROOM": "restroom",
+   "TRANSPORTATION": "transportation",
+   "TRANSPORTATION_ROUTE": "transportationRoute",
+   "TRANSPORTATION_ROUTE_MARKER": "transportationRouteMarker",
+   "TRANSPORTATION_STATION": "transportationStation",
+   "WILD_ENCOUNTER": "wildEncounter"
+}

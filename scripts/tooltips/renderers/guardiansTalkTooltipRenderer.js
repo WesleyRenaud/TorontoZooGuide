@@ -3,10 +3,11 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { CardFactory } from './cardFactory.js';
 import { GuardiansTalkLinkedAnimalOpener } from '../../guardians/guardiansTalkLinkedAnimalOpener.js';
 import { MapOccurrenceTimesFormatter } from '../mapOccurrenceTimesFormatter.js';
+import { ItemType } from '../../shared/enums/itemType.js';
 import { Strings } from '../../strings.js';
 
 export class GuardiansTalkTooltipRenderer {
-   static key = 'guardiansTalk';
+   static key = ItemType.GUARDIANS_TALK;
 
    static createCard(t, index) {
       const name = t.name || Strings.entityLabels.guardiansTalk;
