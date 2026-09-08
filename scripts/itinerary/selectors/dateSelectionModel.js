@@ -1,5 +1,5 @@
-import { DraftStorage } from '../draftStorage.js';
-import { VisitDateRules } from '../../visitDates/visitDateRules.js';
+import { DraftStore } from '../draftStore.js';
+import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
 export class DateSelectionModel {
    static formatVisitDateLong(date) {
@@ -12,7 +12,7 @@ export class DateSelectionModel {
    }
 
    static readSavedItineraryVisitDate(
-      getStoredDate = DraftStorage.getStoredItineraryDate
+      getStoredDate = DraftStore.getStoredItineraryDate
    ) {
       const iso = getStoredDate();
 
@@ -29,16 +29,16 @@ export class DateSelectionModel {
       initialDate = null,
       syncInputValue = () => {},
       earliestDateFloor = null,
-      getStoredDate = DraftStorage.getStoredItineraryDate,
-      setStoredDate = DraftStorage.setStoredItineraryDate,
-      getTodayFn = VisitDateRules.getToday,
-      daysAhead = VisitDateRules.DEFAULT_DAYS_AHEAD,
+      getStoredDate = DraftStore.getStoredItineraryDate,
+      setStoredDate = DraftStore.setStoredItineraryDate,
+      getTodayFn = VisitDateValidator.getToday,
+      daysAhead = VisitDateValidator.DEFAULT_DAYS_AHEAD,
    } = {}) {
       const floor = earliestDateFloor ?? getTodayFn();
       let currentDate = null;
 
       function persistDate(date) {
-         setStoredDate(VisitDateRules.toISODate(date));
+         setStoredDate(VisitDateValidator.toISODate(date));
       }
 
       function isSelectableVisitDate(date) {
@@ -46,7 +46,7 @@ export class DateSelectionModel {
             return false;
          }
 
-         const candidate = VisitDateRules.normalizeDate(date);
+         const candidate = VisitDateValidator.normalizeDate(date);
 
          if (!candidate) {
             return false;
@@ -56,7 +56,7 @@ export class DateSelectionModel {
             return false;
          }
 
-         if (candidate > VisitDateRules.addLocalCalendarDays(getTodayFn(), daysAhead)) {
+         if (candidate > VisitDateValidator.addLocalCalendarDays(getTodayFn(), daysAhead)) {
             return false;
          }
 
@@ -64,7 +64,7 @@ export class DateSelectionModel {
       }
 
       function setDate(date, { updateInput = true, persist = false } = {}) {
-         const normalized = VisitDateRules.normalizeDate(date);
+         const normalized = VisitDateValidator.normalizeDate(date);
 
          if (!isSelectableVisitDate(normalized)) {
             return false;
@@ -89,7 +89,7 @@ export class DateSelectionModel {
          }
 
          return {
-            date: VisitDateRules.toISODate(currentDate),
+            date: VisitDateValidator.toISODate(currentDate),
             dateObj: currentDate,
          };
       }
@@ -106,7 +106,7 @@ export class DateSelectionModel {
          const savedDate = DateSelectionModel.readSavedItineraryVisitDate(getStoredDate);
          const selectedDate = initialDate || savedDate || floor;
 
-         return VisitDateRules.clampToAllowedVisitDate(
+         return VisitDateValidator.clampToAllowedVisitDate(
             selectedDate,
             daysAhead,
             floor,

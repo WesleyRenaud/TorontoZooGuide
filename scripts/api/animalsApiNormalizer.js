@@ -1,4 +1,4 @@
-import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
+import { AnimalViewingModel } from '../shared/enums/animalViewingModel.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
 export class AnimalsApiNormalizer {
@@ -53,7 +53,7 @@ export class AnimalsApiNormalizer {
    }
 
    static normalizeAnimalViewingScopesResponse(response) {
-      const validScopes = new Set(Object.values(AnimalViewingScope));
+      const validScopes = new Set(Object.values(AnimalViewingModel));
 
       return AnimalsApiNormalizer.normalizeNamedList(ValueNormalizer.asObject(response).viewingScopes)
          .filter(scope => validScopes.has(scope));

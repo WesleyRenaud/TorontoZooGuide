@@ -1,10 +1,10 @@
-import { OpenGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
+import { GuardiansTalkLinkedAnimalOpener } from '../guardians/guardiansTalkLinkedAnimalOpener.js';
 import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
-import { StoredSelection } from '../itinerary/selectors/base/storedSelection.js';
-import { SpeciesOverlay } from '../overlays/speciesOverlay.js';
-import { SearchResultPresentation } from './searchResultPresentation.js';
+import { StoredSelectionNormalizer } from '../itinerary/selectors/base/storedSelectionNormalizer.js';
+import { SpeciesFragment } from '../overlays/speciesFragment.js';
+import { SearchResultPresenter } from './searchResultPresenter.js';
 import { Strings } from '../strings.js';
 
 export class SearchResultRowBuilder {
@@ -23,7 +23,7 @@ export class SearchResultRowBuilder {
             getSubtitle: AnimalSelectorModel.getAnimalSubtitle,
             getImageSrc: AnimalSelectorModel.buildAnimalImageSrc,
             getInfoLink: () => null,
-            onTitleClick: SpeciesOverlay.openAnimalSpeciesOverlay,
+            onTitleClick: SpeciesFragment.openAnimalSpeciesOverlay,
          }),
          attraction: ResultRenderer.createDefaultSelectorRowLeftRenderer({
             getTitle: AttractionSelectorModel.getAttractionTitle,
@@ -33,20 +33,20 @@ export class SearchResultRowBuilder {
             onTitleClick: SearchResultRowBuilder.openAttractionInfoLink,
             shouldEnableTitleClick: (row) => Boolean(AttractionSelectorModel.getAttractionInfoLink(row)),
          }),
-         wildEncounter: SearchResultPresentation.createSearchImageRowRenderer({
-            presentation: SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS.wildEncounter,
+         wildEncounter: SearchResultPresenter.createSearchImageRowRenderer({
+            presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.wildEncounter,
             imageDirectory: 'wild-encounters',
             getInfoLink: () => null,
             onTitleClick: SearchResultRowBuilder.openWildEncounterLink,
          }),
-         guardiansTalk: SearchResultPresentation.createSearchImageRowRenderer({
-            presentation: SearchResultPresentation.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
+         guardiansTalk: SearchResultPresenter.createSearchImageRowRenderer({
+            presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
             imageDirectory: 'guardians-talks',
-            onTitleClick: OpenGuardiansTalkLinkedAnimal.openGuardiansTalkLinkedAnimal,
-            shouldEnableTitleClick: (row) => Boolean(OpenGuardiansTalkLinkedAnimal.getGuardiansTalkLinkedAnimal(row)),
+            onTitleClick: GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal,
+            shouldEnableTitleClick: (row) => Boolean(GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(row)),
          }),
-         ...SearchResultPresentation.createSearchImageRowRenderers([
-            { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: SearchResultPresentation.getRestaurantMenuLink },
+         ...SearchResultPresenter.createSearchImageRowRenderers([
+            { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: SearchResultPresenter.getRestaurantMenuLink },
             { type: 'giftShop', imageDirectory: 'gift-shops' },
             { type: 'pavilion', imageDirectory: 'pavilions' },
             { type: 'transportationStation', imageDirectory: 'transportation-stations' },
@@ -57,7 +57,7 @@ export class SearchResultRowBuilder {
    }
 
    static openWildEncounterLink(row) {
-      const link = StoredSelection.normalizeStoredLink(row.link);
+      const link = StoredSelectionNormalizer.normalizeStoredLink(row.link);
 
       if (link) {
          window.open(link, '_blank');
@@ -73,7 +73,7 @@ export class SearchResultRowBuilder {
    }
 
    static getRowTitle(row) {
-      const presentation = SearchResultPresentation.getSearchResultPresentation(row);
+      const presentation = SearchResultPresenter.getSearchResultPresentation(row);
       const title = presentation.getTitle(row) || '';
       const suffix = typeof presentation.getTitleSuffix === 'function'
          ? presentation.getTitleSuffix(row)
@@ -83,7 +83,7 @@ export class SearchResultRowBuilder {
    }
 
    static getRowSubtitle(row) {
-      return SearchResultPresentation.getSearchResultPresentation(row).getSubtitle(row);
+      return SearchResultPresenter.getSearchResultPresentation(row).getSubtitle(row);
    }
 
    static createTextElement(className, text) {

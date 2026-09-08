@@ -1,8 +1,8 @@
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { AttractionSelectorStoredAttractionFactory } from './attractionSelectorStoredAttractionFactory.js';
-import { StoredSelection } from '../base/storedSelection.js';
-import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
+import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
 import { Strings } from '../../../strings.js';
 
 export class AttractionSelectorModel {
@@ -47,11 +47,11 @@ export class AttractionSelectorModel {
    }
 
    static getAttractionSubtitle(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+      return ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
          primaryValue: AttractionSelectorModel.isFreeWithAdmission(row)
             ? Strings.search.freeWithAdmission
             : Strings.search.extraCharge,
-         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange({
+         timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange({
             start_time: row?.open_time,
             end_time: row?.close_time,
          }),
@@ -71,7 +71,7 @@ export class AttractionSelectorModel {
    }
 
    static migrateStoredAttractions(items) {
-      return StoredSelection.migrateStoredSelectionItems(items, {
+      return StoredSelectionNormalizer.migrateStoredSelectionItems(items, {
          fromString: AttractionSelectorStoredAttractionFactory.createStoredAttractionFromString,
          fromObject: AttractionSelectorStoredAttractionFactory.createStoredAttractionFromObject,
       });

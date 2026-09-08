@@ -1,8 +1,8 @@
-import { DayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
-import { DayPlannerActionFeedbackBanner } from './dayPlannerActionFeedbackBanner.js';
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
+import { DayPlannerActionFeedbackFragment } from './dayPlannerActionFeedbackFragment.js';
+import { DayPlannerActionPresenter } from '../dayPlannerActionPresenter.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { ItineraryPanelSectionBuilder } from './itineraryPanelSectionBuilder.js';
-import { ScheduleItemButton } from './scheduleItemButton.js';
+import { ScheduleItemView } from './scheduleItemView.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 
 export class DayPlannerPreviewBuilder {
@@ -45,8 +45,8 @@ export class DayPlannerPreviewBuilder {
          return null;
       }
 
-      const wrapper = ItineraryPanelDom.el('section', 'itinerary-day-items-sections');
-      const title = ItineraryPanelDom.el('h4', 'itinerary-day-items-title', sectionTitle);
+      const wrapper = ItineraryPanelHelper.el('section', 'itinerary-day-items-sections');
+      const title = ItineraryPanelHelper.el('h4', 'itinerary-day-items-title', sectionTitle);
 
       wrapper.appendChild(title);
       sectionConfigs.forEach((sectionConfig) => {
@@ -72,11 +72,11 @@ export class DayPlannerPreviewBuilder {
       } = {}
    ) {
       const buttons = [];
-      const feedback = DayPlannerActionFeedback.consumePendingDayPlannerActionFeedback();
+      const feedback = DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback();
 
       if (typeof onScheduleItemClick === 'function') {
          buttons.push(
-            ScheduleItemButton.makeScheduleItemButton({
+            ScheduleItemView.makeScheduleItemButton({
                label: strings.scheduleItemButton,
                onClick: onScheduleItemClick,
             })
@@ -84,13 +84,13 @@ export class DayPlannerPreviewBuilder {
       }
 
       if (typeof onRebuildScheduleClick === 'function') {
-         const rebuildScheduleButton = ScheduleItemButton.makeScheduleItemButton({
+         const rebuildScheduleButton = ScheduleItemView.makeScheduleItemButton({
             label: strings.rebuildScheduleButton,
             variant: 'secondary',
          });
 
          rebuildScheduleButton.addEventListener('click', () => {
-            void ScheduleItemButton.runScheduleItemButtonAction(
+            void ScheduleItemView.runScheduleItemButtonAction(
                rebuildScheduleButton,
                onRebuildScheduleClick,
                strings.rebuildScheduleButtonBusy
@@ -101,13 +101,13 @@ export class DayPlannerPreviewBuilder {
       }
 
       if (typeof onUnscheduleAllItemsClick === 'function') {
-         const unscheduleAllButton = ScheduleItemButton.makeScheduleItemButton({
+         const unscheduleAllButton = ScheduleItemView.makeScheduleItemButton({
             label: strings.unscheduleAllButton,
             variant: 'destructive',
          });
 
          unscheduleAllButton.addEventListener('click', () => {
-            void ScheduleItemButton.runScheduleItemButtonAction(
+            void ScheduleItemView.runScheduleItemButtonAction(
                unscheduleAllButton,
                onUnscheduleAllItemsClick,
                strings.unscheduleAllButtonBusy
@@ -118,12 +118,12 @@ export class DayPlannerPreviewBuilder {
       }
 
       if (buttons.length > 0) {
-         container.appendChild(ScheduleItemButton.makeScheduleActionsBar(buttons));
+         container.appendChild(ScheduleItemView.makeScheduleActionsBar(buttons));
 
-         const feedbackSlot = DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackSlot(container);
+         const feedbackSlot = DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackSlot(container);
 
          if (feedback) {
-            DayPlannerActionFeedbackBanner.appendDayPlannerActionFeedbackBanner(feedbackSlot, feedback);
+            DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(feedbackSlot, feedback);
          }
       }
    }

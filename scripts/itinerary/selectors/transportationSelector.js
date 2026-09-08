@@ -1,8 +1,8 @@
-import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
+import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
-import { TransportationSelectorPrompts } from './transportationSelectorPrompts.js';
+import { TransportationSelectorPrompter } from './transportationSelectorPrompter.js';
 
 export class TransportationSelector {
    static STORAGE_KEY = 'tzg.itineraryTransportations';
@@ -13,7 +13,7 @@ export class TransportationSelector {
    onFinish,
    onClose,
 } = {}) {
-      return CreateSelectorController.createItinerarySelectorController({
+      return SelectorControllerFactory.createItinerarySelectorController({
          mountEl,
          onPrev,
          onFinish,
@@ -64,7 +64,7 @@ export class TransportationSelector {
                return;
             }
 
-            TransportationSelectorPrompts.promptForAddAsTransportationSelection(row, proceed);
+            TransportationSelectorPrompter.promptForAddAsTransportationSelection(row, proceed);
          },
       });
    }

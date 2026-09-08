@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import { ShowScheduleItemNoticeFragment } from '../../../../scripts/itinerary/panel/showScheduleItemNoticeFragment.js';
+import { Strings } from '../../../../scripts/strings.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+
+installDomTestHooks({
+   after: () => {
+      document.querySelector('.tzg-notice')?.__tzgPopupCleanup?.();
+      document.querySelector('.tzg-notice')?.remove();
+   },
+});
+
+test('Test_ShowScheduleItemNotice_TestPanelMount_ExpectNoticePopup', () => {
+   ShowScheduleItemNoticeFragment.showScheduleItemNotice('Could not schedule item.');
+
+   const popup = document.querySelector('.tzg-notice');
+   const title = popup?.querySelector('.itin-top-title');
+   const message = popup?.querySelector('.tzg-popup-message');
+   const button = popup?.querySelector('.tzg-popup-confirm');
+
+   assert.ok(popup);
+   assert.equal(
+      title?.textContent,
+      Strings.itinerary.scheduleItem.errorTitle
+   );
+   assert.equal(message?.textContent, 'Could not schedule item.');
+   assert.equal(
+      button?.textContent,
+      Strings.itinerary.noItemsSelected.button
+   );
+});
+
+test('Test_ShowScheduleItemNotice_TestNoMount_ExpectDocumentBody', () => {
+   const noticeCalls = [];
+
+   ShowScheduleItemNoticeFragment.showScheduleItemNotice('Missing mount.', {
+      getMountEl: () => null,
+      showNoticePopup: (config) => {
+         noticeCalls.push(config);
+      },
+   });
+
+   assert.equal(noticeCalls.length, 1);
+   assert.equal(noticeCalls[0].mountEl, document.body);
+   assert.equal(noticeCalls[0].message, 'Missing mount.');
+});

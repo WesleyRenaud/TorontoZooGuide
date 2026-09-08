@@ -1,14 +1,14 @@
-import { ConsoleDatePickers } from '../../../datePickers/consoleDatePickers.js';
+import { ConsoleDateFactory } from '../../../datePickers/consoleDateFactory.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-import { ScheduleItemTimeFieldsHelpers } from './scheduleItemTimeFieldsHelpers.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
+import { ScheduleItemTimeFieldsHelper } from './scheduleItemTimeFieldsHelper.js';
 
 export class ScheduleItemTimeFields {
    static makeScheduleItemTimeFields(strings = {}) {
-      const timeField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-time-field');
-      const durationField = ItineraryPanelDom.el('div', 'schedule-item-field schedule-item-duration-field');
-      const timeLabel = ScheduleItemTimeFieldsHelpers.createFieldLabel(strings.timeLabel ?? '');
-      const durationLabel = ScheduleItemTimeFieldsHelpers.createFieldLabel(strings.durationLabel ?? '');
+      const timeField = ItineraryPanelHelper.el('div', 'schedule-item-field schedule-item-time-field');
+      const durationField = ItineraryPanelHelper.el('div', 'schedule-item-field schedule-item-duration-field');
+      const timeLabel = ScheduleItemTimeFieldsHelper.createFieldLabel(strings.timeLabel ?? '');
+      const durationLabel = ScheduleItemTimeFieldsHelper.createFieldLabel(strings.durationLabel ?? '');
       const timeInput = document.createElement('input');
       const durationInput = document.createElement('input');
       let selectedStartTime = '';
@@ -67,7 +67,7 @@ export class ScheduleItemTimeFields {
 
          const pickerInstance = instance ?? flatpickrInstance;
 
-         selectedStartTime = ScheduleItemTimeFieldsHelpers.readPickerTimeValue(pickerInstance, dateStr, timeInput);
+         selectedStartTime = ScheduleItemTimeFieldsHelper.readPickerTimeValue(pickerInstance, dateStr, timeInput);
          timeInput.value = selectedStartTime;
       }
 
@@ -76,7 +76,7 @@ export class ScheduleItemTimeFields {
             return '';
          }
 
-         return selectedStartTime || ScheduleItemTimeFieldsHelpers.readPickerTimeValue(flatpickrInstance, '', timeInput);
+         return selectedStartTime || ScheduleItemTimeFieldsHelper.readPickerTimeValue(flatpickrInstance, '', timeInput);
       }
 
       timeField.append(timeLabel, timeInput);
@@ -84,7 +84,7 @@ export class ScheduleItemTimeFields {
       syncDurationFieldState();
       syncFixedDurationFieldPresentation();
 
-      ConsoleDatePickers.initTimePicker(timeInput, {
+      ConsoleDateFactory.initTimePicker(timeInput, {
          allowInput: false,
          onChange: commitPickerTime,
          onClose: commitPickerTime,

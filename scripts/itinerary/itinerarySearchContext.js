@@ -1,4 +1,4 @@
-import { ItinerarySearchContextHelpers } from './itinerarySearchContextHelpers.js';
+import { ItinerarySearchContextHelper } from './itinerarySearchContextHelper.js';
 import { SearchContext } from '../search/searchContext.js';
 
 export class ItinerarySearchContext {
@@ -6,7 +6,7 @@ export class ItinerarySearchContext {
       includeTemp = true,
       date: dateOverride = '',
    } = {}) {
-      const date = await ItinerarySearchContextHelpers.resolveItinerarySearchDate(dateOverride);
+      const date = await ItinerarySearchContextHelper.resolveItinerarySearchDate(dateOverride);
       return SearchContext.buildDateSearchContext(date, { includeTemp });
    }
 }

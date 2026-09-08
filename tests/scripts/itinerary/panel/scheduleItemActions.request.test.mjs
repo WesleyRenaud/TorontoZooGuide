@@ -1,28 +1,28 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduleItemActions } from '../../../../scripts/itinerary/panel/scheduleItemActions.js';
+import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsBuildAnimalDraftEntryAndScheduleItemActionsBuildAttractionDraftEntryNormalizeRows_ExpectOk', () => {
    assert.deepEqual(
-      ScheduleItemActions.buildAnimalDraftEntry({ species: 'Tiger', exhibit: 'Savanna' }),
+      ScheduleItemController.buildAnimalDraftEntry({ species: 'Tiger', exhibit: 'Savanna' }),
       { species: 'Tiger', exhibit: 'Savanna' }
    );
-   assert.equal(ScheduleItemActions.buildAnimalDraftEntry({ species: 'Tiger' }), null);
-   assert.equal(ScheduleItemActions.buildAttractionDraftEntry({ name: 'Carousel' }), 'Carousel');
-   assert.equal(ScheduleItemActions.buildAttractionDraftEntry({ name: '' }), null);
+   assert.equal(ScheduleItemController.buildAnimalDraftEntry({ species: 'Tiger' }), null);
+   assert.equal(ScheduleItemController.buildAttractionDraftEntry({ name: 'Carousel' }), 'Carousel');
+   assert.equal(ScheduleItemController.buildAttractionDraftEntry({ name: '' }), null);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestMapsEventAndAnimalRows_ExpectOk', () => {
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('lunch', null, ['lunch']),
+      ScheduleItemController.buildScheduleItemRequest('lunch', null, ['lunch']),
       { itemType: 'lunch', key: '' }
    );
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('animals', {
+      ScheduleItemController.buildScheduleItemRequest('animals', {
          species: 'Tiger',
          exhibit: 'Savanna',
          scheduleItemKind: 'animals',
@@ -30,7 +30,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestMa
       { itemType: 'animals', key: 'Tiger||Savanna' }
    );
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('attractions', {
+      ScheduleItemController.buildScheduleItemRequest('attractions', {
          name: 'Zoomobile',
          added_as_attraction: true,
          scheduleItemKind: 'attractions',
@@ -38,7 +38,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestMa
       { itemType: 'attractions', key: 'Zoomobile' }
    );
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('transportations', {
+      ScheduleItemController.buildScheduleItemRequest('transportations', {
          name: 'Zoomobile',
          added_as_attraction: false,
          scheduleItemKind: 'transportations',
@@ -49,7 +49,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestMa
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestIncludesOptionalScheduleTimes_ExpectOk', () => {
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('lunch', null, ['lunch'], {
+      ScheduleItemController.buildScheduleItemRequest('lunch', null, ['lunch'], {
          startTime: '10:00 AM',
          durationMinutes: 20,
       }),
@@ -61,7 +61,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestIn
       }
    );
    assert.deepEqual(
-      ScheduleItemActions.buildScheduleItemRequest('animals', {
+      ScheduleItemController.buildScheduleItemRequest('animals', {
          species: 'Tiger',
          exhibit: 'Savanna',
          scheduleItemKind: 'animals',

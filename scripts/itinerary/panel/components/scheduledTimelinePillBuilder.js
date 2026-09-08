@@ -1,7 +1,7 @@
-import { ItineraryPanelDom } from '../itineraryPanelDom.js';
-import { ItineraryPillMenu } from './itineraryPillMenu.js';
-import { OpenTimelinePill } from './openTimelinePill.js';
-import { ScheduledPillPresentation } from '../scheduledPillPresentation.js';
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
+import { ItineraryPillView } from './itineraryPillView.js';
+import { OpenTimelineView } from './openTimelineView.js';
+import { ScheduledPillPresenter } from '../scheduledPillPresenter.js';
 import { RegionColors } from '../../../shared/regionColors.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
@@ -51,7 +51,7 @@ export class ScheduledTimelinePillBuilder {
          onLabelClick = null,
       } = {}
    ) {
-      const labelNode = OpenTimelinePill.createPillLabelNode(
+      const labelNode = OpenTimelineView.createPillLabelNode(
          label,
          'itinerary-day-scheduled-pill-label itinerary-day-scheduled-pill-label-name',
          onLabelClick,
@@ -67,7 +67,7 @@ export class ScheduledTimelinePillBuilder {
 
       if (suffixCount > 0) {
          labelMount.appendChild(
-            ItineraryPanelDom.el(
+            ItineraryPanelHelper.el(
                'span',
                'itinerary-day-scheduled-pill-count',
                Strings.itinerary.dayPlanner.scheduledPillMoreCount(suffixCount)
@@ -100,8 +100,8 @@ export class ScheduledTimelinePillBuilder {
       const hasMenuItems = groupItems.some((groupItem) => (
          (groupItem.menuItems ?? []).length > 0
       ));
-      const pill = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu itinerary-day-scheduled-pill--grouped');
-      const header = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill-header itinerary-day-scheduled-pill-header--grouped');
+      const pill = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu itinerary-day-scheduled-pill--grouped');
+      const header = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill-header itinerary-day-scheduled-pill-header--grouped');
       const previousButton = ScheduledTimelinePillBuilder.makeScheduledPillArrowButton(
          Strings.itinerary.dayPlanner.previousScheduledItem,
          'previous'
@@ -110,12 +110,12 @@ export class ScheduledTimelinePillBuilder {
          Strings.itinerary.dayPlanner.nextScheduledItem,
          'next'
       );
-      const labelMount = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill-label-mount');
+      const labelMount = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill-label-mount');
       const menuNodes = hasMenuItems
-         ? ItineraryPillMenu.buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
+         ? ItineraryPillView.buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
          : null;
 
-      if (ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
+      if (ScheduledPillPresenter.isExtendedScheduledPill(durationMinutes)) {
          pill.classList.add('itinerary-day-scheduled-pill--extended');
       }
 
@@ -154,7 +154,7 @@ export class ScheduledTimelinePillBuilder {
          syncActiveItem();
       });
 
-      const trailingControls = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill-trailing-controls');
+      const trailingControls = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill-trailing-controls');
 
       header.appendChild(previousButton);
       header.appendChild(labelMount);
@@ -171,7 +171,7 @@ export class ScheduledTimelinePillBuilder {
       syncActiveItem();
 
       if (menuNodes) {
-         ItineraryPillMenu.bindPillMenu(pill, {
+         ItineraryPillView.bindPillMenu(pill, {
             menuButton: menuNodes.menuButton,
             menuPanel: menuNodes.menuPanel,
             getMenuItems: () => getActiveItem()?.menuItems ?? [],
@@ -194,27 +194,27 @@ export class ScheduledTimelinePillBuilder {
          item = null,
       }
    ) {
-      const pill = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu');
-      const header = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill-header');
-      const labelNode = OpenTimelinePill.createPillLabelNode(
+      const pill = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu');
+      const header = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill-header');
+      const labelNode = OpenTimelineView.createPillLabelNode(
          label,
          'itinerary-day-scheduled-pill-label',
          onLabelClick,
          item
       );
-      const { menu, menuButton, menuPanel } = ItineraryPillMenu.buildPillMenuNodes(
+      const { menu, menuButton, menuPanel } = ItineraryPillView.buildPillMenuNodes(
          menuAriaLabel,
          menuItems
       );
 
-      if (ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
+      if (ScheduledPillPresenter.isExtendedScheduledPill(durationMinutes)) {
          pill.classList.add('itinerary-day-scheduled-pill--extended');
       }
 
       header.appendChild(labelNode);
       header.appendChild(menu);
       pill.appendChild(header);
-      ItineraryPillMenu.bindPillMenu(pill, {
+      ItineraryPillView.bindPillMenu(pill, {
          menuButton,
          menuPanel,
          menuItems,
@@ -234,10 +234,10 @@ export class ScheduledTimelinePillBuilder {
          item = null,
       }
    ) {
-      if (!ScheduledPillPresentation.isExtendedScheduledPill(durationMinutes)) {
-         const pill = ItineraryPanelDom.el('span', 'itinerary-day-scheduled-pill');
+      if (!ScheduledPillPresenter.isExtendedScheduledPill(durationMinutes)) {
+         const pill = ItineraryPanelHelper.el('span', 'itinerary-day-scheduled-pill');
          pill.appendChild(
-            OpenTimelinePill.createPillLabelNode(
+            OpenTimelineView.createPillLabelNode(
                label,
                'itinerary-day-scheduled-pill-label',
                onLabelClick,
@@ -247,11 +247,11 @@ export class ScheduledTimelinePillBuilder {
          return pill;
       }
 
-      const pill = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--extended');
-      const header = ItineraryPanelDom.el('div', 'itinerary-day-scheduled-pill-header');
+      const pill = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--extended');
+      const header = ItineraryPanelHelper.el('div', 'itinerary-day-scheduled-pill-header');
 
       header.appendChild(
-         OpenTimelinePill.createPillLabelNode(
+         OpenTimelineView.createPillLabelNode(
             label,
             'itinerary-day-scheduled-pill-label',
             onLabelClick,

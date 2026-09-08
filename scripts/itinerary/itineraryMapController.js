@@ -1,14 +1,14 @@
 import { ItineraryMapControllerBootstrap } from './itineraryMapControllerBootstrap.js';
-import { ItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
-import { TransportationRouteOverlay } from '../map/transportationRouteOverlay.js';
+import { ItineraryPathFragment } from '../map/itineraryPathFragment.js';
+import { TransportationRouteFragment } from '../map/transportationRouteFragment.js';
 
 export class ItineraryMapController {
    static itineraryMapRuntime = null;
 
    static clearItineraryMapDisplay(runtime) {
       runtime?.markers?.render([]);
-      ItineraryPathOverlay.clearItineraryPathOverlay();
-      TransportationRouteOverlay.hideTransportationRouteLayers();
+      ItineraryPathFragment.clearItineraryPathOverlay();
+      TransportationRouteFragment.hideTransportationRouteLayers();
    }
 
    static initItineraryMap() {

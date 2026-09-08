@@ -1,6 +1,6 @@
-import { StoredSelection } from '../base/storedSelection.js';
-import { ScheduledOccurrencePresentation } from '../../scheduledOccurrencePresentation.js';
-import { ScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
+import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
 import { Strings } from '../../../strings.js';
 import { WildEncounterScheduleItemKey } from './wildEncounterScheduleItemKey.js';
 
@@ -20,14 +20,14 @@ export class WildEncounterSelectorModel {
    }
 
    static formatWildEncounterTitleSuffix(name) {
-      return ScheduledOccurrencePresentation.formatOccurrenceTitleSuffix(
+      return ScheduledOccurrencePresenter.formatOccurrenceTitleSuffix(
          name,
          Strings.entityLabels.wildEncounter
       );
    }
 
    static formatWildEncounterSearchTitle(name) {
-      return ScheduledOccurrencePresentation.formatOccurrenceSearchTitle(
+      return ScheduledOccurrencePresenter.formatOccurrenceSearchTitle(
          name,
          Strings.entityLabels.wildEncounter
       );
@@ -52,22 +52,22 @@ export class WildEncounterSelectorModel {
    }
 
    static getWildEncounterLink(row) {
-      return StoredSelection.normalizeStoredLink(row?.link);
+      return StoredSelectionNormalizer.normalizeStoredLink(row?.link);
    }
 
    static getWildEncounterScheduleStart(row) {
-      return StoredSelection.normalizeStoredString(row?.start_time);
+      return StoredSelectionNormalizer.normalizeStoredString(row?.start_time);
    }
 
    static getWildEncounterSubtitle(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+      return ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
          primaryValue: WildEncounterSelectorModel.getWildEncounterMeetingSpot(row),
-         timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
+         timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange(row),
       });
    }
 
    static buildWildEncounterImageSrc(row) {
-      return ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(
+      return ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
          'wild-encounters',
          WildEncounterSelectorModel.getWildEncounterName(row)
       );
@@ -75,9 +75,9 @@ export class WildEncounterSelectorModel {
 
    static readWildEncounterStoredFields(item) {
       return {
-         meeting_spot: StoredSelection.normalizeStoredString(item?.meeting_spot),
-         start_time: StoredSelection.normalizeStoredString(item?.start_time),
-         end_time: StoredSelection.normalizeStoredString(item?.end_time),
+         meeting_spot: StoredSelectionNormalizer.normalizeStoredString(item?.meeting_spot),
+         start_time: StoredSelectionNormalizer.normalizeStoredString(item?.start_time),
+         end_time: StoredSelectionNormalizer.normalizeStoredString(item?.end_time),
       };
    }
 
@@ -85,7 +85,7 @@ export class WildEncounterSelectorModel {
       return {
          meeting_spot: WildEncounterSelectorModel.getWildEncounterMeetingSpot(row),
          start_time: WildEncounterSelectorModel.getWildEncounterScheduleStart(row),
-         end_time: StoredSelection.normalizeStoredString(row?.end_time),
+         end_time: StoredSelectionNormalizer.normalizeStoredString(row?.end_time),
       };
    }
 }

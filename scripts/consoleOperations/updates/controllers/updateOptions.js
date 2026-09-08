@@ -1,10 +1,10 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { Strings } from '../../../strings.js';
 import { UpdateOptionsFormatter } from './updateOptionsFormatter.js';
 
 export class UpdateOptions {
    static async loadActiveUpdates() {
-      const result = await ConsoleOperationsApi.getActiveUpdateOptions();
+      const result = await ConsoleOperationsClient.getActiveUpdateOptions();
       return result?.updates ?? [];
    }
 

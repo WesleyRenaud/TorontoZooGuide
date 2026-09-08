@@ -1,4 +1,4 @@
-import { GuardiansTalkScheduleItemKeyHelpers } from './guardiansTalkScheduleItemKeyHelpers.js';
+import { GuardiansTalkScheduleItemKeyHelper } from './guardiansTalkScheduleItemKeyHelper.js';
 
 export class GuardiansTalkScheduleItemKey {
    static GUARDIANS_TALK_ITEM_KEY_SEPARATOR = '||';
@@ -17,14 +17,14 @@ export class GuardiansTalkScheduleItemKey {
          return null;
       }
 
-      const startTime = GuardiansTalkScheduleItemKeyHelpers.scheduleTimeFromWirePart(parts[1]);
+      const startTime = GuardiansTalkScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[1]);
 
       if (!startTime) {
          return null;
       }
 
       if (parts.length > 2) {
-         const endTime = GuardiansTalkScheduleItemKeyHelpers.scheduleTimeFromWirePart(parts[2]);
+         const endTime = GuardiansTalkScheduleItemKeyHelper.scheduleTimeFromWirePart(parts[2]);
 
          if (!endTime) {
             return null;

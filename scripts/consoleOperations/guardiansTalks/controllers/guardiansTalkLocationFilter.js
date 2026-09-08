@@ -1,5 +1,5 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
-import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
+import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
@@ -43,7 +43,7 @@ export class GuardiansTalkLocationFilter {
          }
 
          try {
-            const result = await ConsoleOperationsApi.getGuardiansTalkLocations();
+            const result = await ConsoleOperationsClient.getGuardiansTalkLocations();
             const guardiansTalkLocations = result?.guardians_talk_locations ?? [];
             populateLocationDropdown(guardiansTalkLocations);
          }
@@ -52,7 +52,7 @@ export class GuardiansTalkLocationFilter {
       }
 
       async function refreshTalks() {
-         const location = ControllerUtils.getFieldValue(locationEl);
+         const location = ControllerHelper.getFieldValue(locationEl);
 
          clearTalkDropdown();
 
@@ -61,7 +61,7 @@ export class GuardiansTalkLocationFilter {
          }
 
          try {
-            const result = await ConsoleOperationsApi.getGuardiansTalkNamesAtLocation({
+            const result = await ConsoleOperationsClient.getGuardiansTalkNamesAtLocation({
                location
             });
 

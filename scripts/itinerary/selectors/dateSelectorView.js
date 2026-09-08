@@ -1,4 +1,4 @@
-import { DateSelectorViewHelpers } from './dateSelectorViewHelpers.js';
+import { DateSelectorViewHelper } from './dateSelectorViewHelper.js';
 import { Strings } from '../../strings.js';
 
 export class DateSelectorView {
@@ -19,7 +19,7 @@ export class DateSelectorView {
       topTitle.className = 'itin-top-title';
       topTitle.textContent = strings.itinerary.selectors.builderTitle;
 
-      const closeButtonEl = DateSelectorViewHelpers.createButton({
+      const closeButtonEl = DateSelectorViewHelper.createButton({
          className: 'itin-close',
          text: strings.common.closeSymbol,
          ariaLabel: strings.itinerary.aria.closeBuilder,
@@ -57,12 +57,12 @@ export class DateSelectorView {
       const actionsRight = document.createElement('div');
       actionsRight.className = 'itin-actions-right';
 
-      const nextButtonEl = DateSelectorViewHelpers.createButton({
+      const nextButtonEl = DateSelectorViewHelper.createButton({
          className: 'itin-next',
          text: strings.itinerary.actions.next,
       });
 
-      const finishButtonEl = DateSelectorViewHelpers.createButton({
+      const finishButtonEl = DateSelectorViewHelper.createButton({
          className: 'itin-next itin-finish',
          text: strings.itinerary.actions.finish,
       });

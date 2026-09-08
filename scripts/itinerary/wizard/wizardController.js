@@ -1,6 +1,6 @@
-import { DraftStorage } from '../draftStorage.js';
+import { DraftStore } from '../draftStore.js';
 import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
-import { ConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
+import { ConfirmFragment } from '../../itinerary/panel/components/confirmFragment.js';
 import { DateSelector } from '../../itinerary/selectors/dateSelector.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryService } from '../itineraryService.js';
@@ -8,13 +8,13 @@ import { ItineraryShape } from '../itineraryShape.js';
 import { ItineraryWizardStore } from './itineraryWizardStore.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { Strings } from '../../strings.js';
-import { VisitDateEarliest } from '../visitDateEarliest.js';
-import { WizardControllerHelpers } from './wizardControllerHelpers.js';
+import { VisitDateResolver } from '../visitDateResolver.js';
+import { WizardControllerHelper } from './wizardControllerHelper.js';
 import { WizardDraft } from './wizardDraft.js';
-import { WizardFinalizeDecisions } from './wizardFinalizeDecisions.js';
+import { WizardFinalizePresenter } from './wizardFinalizePresenter.js';
 import { WizardFinalizer } from './wizardFinalizer.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
-import { WizardStepDraftSync } from './wizardStepDraftSync.js';
+import { WizardStepDraftSynchronizer } from './wizardStepDraftSynchronizer.js';
 
 export class WizardController {
    static async openItineraryWizard({
@@ -24,13 +24,13 @@ export class WizardController {
 } = {}) {
       const {
          loadItinerary = ItineraryService.getItinerary,
-         resolveEarliestVisitDate = VisitDateEarliest.resolveEarliestSelectableVisitDateNoon,
+         resolveEarliestVisitDate = VisitDateResolver.resolveEarliestSelectableVisitDateNoon,
          createWizardState = ItineraryWizardStore.createItineraryWizardState,
          createDateStepController = DateSelector.createItineraryDateSelectorController,
          finalizeWizard = WizardFinalizer.finalizeItineraryWizard,
-         showConfirmPopup = ConfirmPopup.showItineraryConfirmPopup,
-         syncAnimalDraft = DraftStorage.syncItineraryAnimalDraftFromItinerary,
-         loadSelectionStepConfigs = WizardControllerHelpers.loadDefaultSelectionStepConfigs,
+         showConfirmPopup = ConfirmFragment.showItineraryConfirmPopup,
+         syncAnimalDraft = DraftStore.syncItineraryAnimalDraftFromItinerary,
+         loadSelectionStepConfigs = WizardControllerHelper.loadDefaultSelectionStepConfigs,
          selectionStepConfigs = null,
       } = deps;
 
@@ -47,7 +47,7 @@ export class WizardController {
          syncAnimalDraft(existing);
       }
       else if (!existing || ItineraryService.isItineraryEmpty(existing)) {
-         DraftStorage.clearItinerarySelectionStorage();
+         DraftStore.clearItinerarySelectionStorage();
       }
 
       const earliestVisitNoon = await resolveEarliestVisitDate();
@@ -95,14 +95,14 @@ export class WizardController {
 
          if (
             !wizard.hasUnsavedChanges()
-            && !WizardFinalizeDecisions.shouldBlockEmptyFinish(
+            && !WizardFinalizePresenter.shouldBlockEmptyFinish(
                WizardDraft.buildWizardDraft(wizardState),
                wizard.allowEmptyFinish(options.allowEmpty)
             )
          ) {
             // Clear the overlay only. Do not remount the day planner — that jumps
             // scroll. Saved itinerary content is already on the page.
-            WizardControllerHelpers.clearWizard(mountEl);
+            WizardControllerHelper.clearWizard(mountEl);
             handleFinishDone();
             return existing;
          }
@@ -133,7 +133,7 @@ export class WizardController {
 
       function discardAndClose() {
          wizard.discardChanges();
-         WizardControllerHelpers.closeWizard(mountEl);
+         WizardControllerHelper.closeWizard(mountEl);
       }
 
       function applyWizardDate(date) {
@@ -141,7 +141,7 @@ export class WizardController {
       }
 
       function syncDateStepDraft() {
-         const nextDate = WizardStepDraftSync.resolveDateStepDraftUpdate({
+         const nextDate = WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
             currentDate: wizardSteps.date?.getDate?.(),
             wizardDate: wizardState.date,
          });
@@ -157,7 +157,7 @@ export class WizardController {
          const activeConfig = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY[stepKey];
          const activeController = wizardSteps[stepKey];
 
-         if (!WizardStepDraftSync.shouldSyncSelectionStepDraft({
+         if (!WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
             stepConfig: activeConfig,
             stepController: activeController,
          })) {
@@ -172,7 +172,7 @@ export class WizardController {
       }
 
       async function syncActiveStepDraft() {
-         if (WizardStepDraftSync.isWizardDateStep(activeStepKey)) {
+         if (WizardStepDraftSynchronizer.isWizardDateStep(activeStepKey)) {
             syncDateStepDraft();
             return;
          }
@@ -181,7 +181,7 @@ export class WizardController {
       }
 
       async function handleClose() {
-         if (WizardStepDraftSync.isWizardDateStep(activeStepKey)) {
+         if (WizardStepDraftSynchronizer.isWizardDateStep(activeStepKey)) {
             // Only sync the picker when a visit date was already committed
             // (Next/Finish). Syncing the default earliest date into an empty
             // draft would look like an unsaved change on open → close.
@@ -196,7 +196,7 @@ export class WizardController {
          if (!wizard.hasUnsavedChanges()) {
             // Clear the overlay only. Remounting the day planner jumps scroll;
             // saved itinerary content is already on the page.
-            WizardControllerHelpers.closeWizard(mountEl);
+            WizardControllerHelper.closeWizard(mountEl);
             return;
          }
 

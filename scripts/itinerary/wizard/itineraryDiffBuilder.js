@@ -1,4 +1,4 @@
-import { AnimalVisibility } from './diff/animalVisibility.js';
+import { AnimalPresenter } from './diff/animalPresenter.js';
 import { ItemKey } from './diff/itemKey.js';
 import { RemovedItems } from './diff/removedItems.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
@@ -42,7 +42,7 @@ export class ItineraryDiffBuilder {
    }
 
    static buildAnimalVisibilityDiff(previous, validated, removed, minDelta = null) {
-      return AnimalVisibility.buildAnimalVisibilityChanges(
+      return AnimalPresenter.buildAnimalVisibilityChanges(
          previous.animals,
          validated.animals,
          removed.animals,

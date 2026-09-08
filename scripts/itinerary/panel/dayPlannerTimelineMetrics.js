@@ -1,4 +1,4 @@
-import { DayPlannerTimelinePlacement } from './dayPlannerTimelinePlacement.js';
+import { DayPlannerTimelinePlacer } from './dayPlannerTimelinePlacer.js';
 
 export class DayPlannerTimelineMetrics {
    static timelineSlotHeightByTimeline = new WeakMap();
@@ -8,7 +8,7 @@ export class DayPlannerTimelineMetrics {
    static pointPillStripTopOffsetByTimeline = new WeakMap();
 
    static getTimelineSlotHeightPx(gridLine) {
-      const timeline = DayPlannerTimelinePlacement.resolveTimelineElement(gridLine);
+      const timeline = DayPlannerTimelinePlacer.resolveTimelineElement(gridLine);
 
       if (!timeline) {
          return null;
@@ -23,7 +23,7 @@ export class DayPlannerTimelineMetrics {
       let slotHeight = null;
 
       if (typeof getComputedStyle === 'function') {
-         slotHeight = DayPlannerTimelinePlacement.readCssLengthPx(
+         slotHeight = DayPlannerTimelinePlacer.readCssLengthPx(
             getComputedStyle(timeline),
             '--itinerary-half-hour-slot-height'
          );
@@ -42,7 +42,7 @@ export class DayPlannerTimelineMetrics {
 
 
    static measurePointPillStripTopOffsetPx(gridLine) {
-      const timeline = DayPlannerTimelinePlacement.resolveTimelineElement(gridLine);
+      const timeline = DayPlannerTimelinePlacer.resolveTimelineElement(gridLine);
 
       if (!timeline) {
          return null;
@@ -55,7 +55,7 @@ export class DayPlannerTimelineMetrics {
       }
 
       if (typeof getComputedStyle === 'function') {
-         const fromCssVariable = DayPlannerTimelinePlacement.readCssLengthPx(
+         const fromCssVariable = DayPlannerTimelinePlacer.readCssLengthPx(
             getComputedStyle(timeline),
             '--itinerary-pill-strip-top-offset'
          );
@@ -80,7 +80,7 @@ export class DayPlannerTimelineMetrics {
       const topPx = Number.parseFloat(getComputedStyle(probeStrip).top);
       gridLine.removeChild(probeStrip);
 
-      const stripTopOffset = DayPlannerTimelinePlacement.parseStripTopOffsetFromProbeTop(topPx);
+      const stripTopOffset = DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(topPx);
 
       if (stripTopOffset) {
          DayPlannerTimelineMetrics.pointPillStripTopOffsetByTimeline.set(timeline, stripTopOffset);
@@ -91,7 +91,7 @@ export class DayPlannerTimelineMetrics {
 
 
    static measurePointPillHeightPx(gridLine) {
-      const timeline = DayPlannerTimelinePlacement.resolveTimelineElement(gridLine);
+      const timeline = DayPlannerTimelinePlacer.resolveTimelineElement(gridLine);
 
       if (!timeline || typeof document === 'undefined') {
          return null;
@@ -140,13 +140,13 @@ export class DayPlannerTimelineMetrics {
       const measuredPillHeight = DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine);
 
       if (measuredPillHeight) {
-         return DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(slotHeight, measuredPillHeight);
+         return DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(slotHeight, measuredPillHeight);
       }
 
       const existingPill = gridLine.querySelector?.('.itinerary-day-open-pill');
 
       if (existingPill?.offsetHeight > 0) {
-         return DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(slotHeight, existingPill.offsetHeight);
+         return DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(slotHeight, existingPill.offsetHeight);
       }
 
       return null;
@@ -154,7 +154,7 @@ export class DayPlannerTimelineMetrics {
 
 
    static getPointPillStripPlacementBand(gridLine, offsetFraction = 0) {
-      return DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+      return DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
          slotHeight: DayPlannerTimelineMetrics.getTimelineSlotHeightPx(gridLine),
          pillHeight: DayPlannerTimelineMetrics.measurePointPillHeightPx(gridLine),
          stripTopOffset: DayPlannerTimelineMetrics.measurePointPillStripTopOffsetPx(gridLine),

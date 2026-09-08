@@ -1,4 +1,4 @@
-import { ControllerUtils } from './controllerUtils.js';
+import { ControllerHelper } from './controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../options/consoleDropdownPopulator.js';
 import { Strings } from '../../strings.js';
 
@@ -62,7 +62,7 @@ export class OccurrenceFilterController {
       }
 
       function refreshTimes() {
-         const selectedDate = ControllerUtils.getFieldValue(dateEl);
+         const selectedDate = ControllerHelper.getFieldValue(dateEl);
 
          populateTimeDropdown([]);
 

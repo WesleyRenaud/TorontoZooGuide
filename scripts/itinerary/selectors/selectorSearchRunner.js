@@ -1,12 +1,12 @@
-import { SearchApi } from '../../api/searchApi.js';
+import { SearchClient } from '../../api/searchClient.js';
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { SelectorSearchRunnerHelpers } from './selectorSearchRunnerHelpers.js';
+import { SelectorSearchRunnerHelper } from './selectorSearchRunnerHelper.js';
 
 export class SelectorSearchRunner {
    static SELECTOR_SEARCH_DEBOUNCE_MS = 250;
 
    static debounce(fn, delay = SelectorSearchRunner.SELECTOR_SEARCH_DEBOUNCE_MS) {
-      return SelectorSearchRunnerHelpers.debounce(fn, delay);
+      return SelectorSearchRunnerHelper.debounce(fn, delay);
    }
 
    static createSelectorSearchRunner({
@@ -16,7 +16,7 @@ export class SelectorSearchRunner {
       getContext,
       getQuery,
       onRows,
-      searchItems = SearchApi.searchItineraryItems,
+      searchItems = SearchClient.searchItineraryItems,
       debounceMs = SelectorSearchRunner.SELECTOR_SEARCH_DEBOUNCE_MS,
    } = {}) {
       let latestSearchRequestId = 0;

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DayPlanner } from '../../../../scripts/itinerary/panel/components/dayPlanner.js';
+import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import {
@@ -22,7 +22,7 @@ import {
 installPanelRowsTestHooks();
 
 test('Test_Day_TestDayPlannerOmitsGuardiansTalksAndWildEncounters_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -57,7 +57,7 @@ test('Test_Day_TestDayPlannerOmitsGuardiansTalksAndWildEncounters_ExpectOk', () 
 test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_ExpectOk', () => {
    const scheduleCalls = [];
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -112,7 +112,7 @@ test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_Expe
 
 test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectOk', () => {
    const removeCalls = [];
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -171,7 +171,7 @@ test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectO
 });
 
 test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationWith_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',
@@ -234,7 +234,7 @@ test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationWith_Expec
 });
 
 test('Test_Day_TestDayPlannerRendersEachScheduledTransportationSequenceIn_ExpectOk', () => {
-   const planner = DayPlanner.makeDayPlannerPreview(
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
          openTime: '09:30',

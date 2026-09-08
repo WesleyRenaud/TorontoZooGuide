@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
-import { DayPlannerTimelinePlacement } from '../../../../scripts/itinerary/panel/dayPlannerTimelinePlacement.js';
+import { DayPlannerTimelinePlacer } from '../../../../scripts/itinerary/panel/dayPlannerTimelinePlacer.js';
 import { DayPlannerTimelineMetrics } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMetrics.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -37,11 +37,11 @@ test('Test_ReadCssLengthPx_TestParsesPositiveCSSLengthsAndRejectsInvalidValues_E
       },
    };
 
-   assert.equal(DayPlannerTimelinePlacement.readCssLengthPx(style, '--valid'), 730);
-   assert.equal(DayPlannerTimelinePlacement.readCssLengthPx(style, '--zero'), null);
-   assert.equal(DayPlannerTimelinePlacement.readCssLengthPx(style, '--invalid'), null);
-   assert.equal(DayPlannerTimelinePlacement.readCssLengthPx(style, '--missing'), null);
-   assert.equal(DayPlannerTimelinePlacement.readCssLengthPx(null, '--valid'), null);
+   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--valid'), 730);
+   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--zero'), null);
+   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--invalid'), null);
+   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--missing'), null);
+   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(null, '--valid'), null);
 });
 
 test('Test_ResolveTimelineElement_TestWalksParentNodesWhenClosestIsUnavailable_ExpectOk', () => {
@@ -52,18 +52,18 @@ test('Test_ResolveTimelineElement_TestWalksParentNodesWhenClosestIsUnavailable_E
    timeline.appendChild(row);
    row.appendChild(gridLine);
 
-   assert.equal(DayPlannerTimelinePlacement.resolveTimelineElement(gridLine), timeline);
-   assert.equal(DayPlannerTimelinePlacement.resolveTimelineElement(null), null);
+   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(gridLine), timeline);
+   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(null), null);
 });
 
 test('Test_ParseStripTopOffsetFromProbeTop_TestConvertsNegativeProbeTopsToOffsets_ExpectOk', () => {
-   assert.equal(DayPlannerTimelinePlacement.parseStripTopOffsetFromProbeTop(-80), 80);
-   assert.equal(DayPlannerTimelinePlacement.parseStripTopOffsetFromProbeTop(0), null);
-   assert.equal(DayPlannerTimelinePlacement.parseStripTopOffsetFromProbeTop(Number.NaN), null);
+   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(-80), 80);
+   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(0), null);
+   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(Number.NaN), null);
 });
 
 test('Test_ComputePointPillStripPlacementBand_TestConvertsSlotOffsetsIntoFractions_ExpectOk', () => {
-   const atAnchor = DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+   const atAnchor = DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
       slotHeight: TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
       pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
       stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
@@ -79,7 +79,7 @@ test('Test_ComputePointPillStripPlacementBand_TestConvertsSlotOffsetsIntoFractio
       TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
    );
 
-   const midway = DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+   const midway = DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
       slotHeight: TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
       pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
       stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
@@ -95,7 +95,7 @@ test('Test_ComputePointPillStripPlacementBand_TestConvertsSlotOffsetsIntoFractio
 
 test('Test_ComputePointPillStripPlacementBand_TestFallsBackWhenMeasurementsAreMissing_ExpectOk', () => {
    assert.deepEqual(
-      DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+      DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
          slotHeight: null,
          pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
          stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
@@ -110,13 +110,13 @@ test('Test_ComputePointPillStripPlacementBand_TestFallsBackWhenMeasurementsAreMi
 
 test('Test_ComputePointPillVerticalSpanFraction_TestReturnsPillHeightRelativeToSlotHeight_ExpectOk', () => {
    assert.equal(
-      DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(
+      DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(
          TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
          TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX
       ),
       TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX / TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX
    );
-   assert.equal(DayPlannerTimelinePlacement.computePointPillVerticalSpanFraction(0, 10), null);
+   assert.equal(DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(0, 10), null);
 });
 
 test('Test_GetTimelineSlotHeightPx_TestReadsTheTimelineSlotHeightFromCSSVariables_ExpectOk', () => {
@@ -149,7 +149,7 @@ test('Test_GetPointPillStripPlacementBand_TestMatchesComputedPlacementFractions_
 
    assert.deepEqual(
       DayPlannerTimelineMetrics.getPointPillStripPlacementBand(gridLine, 0),
-      DayPlannerTimelinePlacement.computePointPillStripPlacementBand({
+      DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
          slotHeight: TimelineLayoutConstants.TIMELINE_SLOT_HEIGHT_PX,
          pillHeight: TimelineLayoutConstants.TIMELINE_POINT_PILL_HEIGHT_PX,
          stripTopOffset: TimelineLayoutConstants.TIMELINE_PILL_STRIP_TOP_OFFSET_PX,

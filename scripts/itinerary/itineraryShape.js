@@ -1,6 +1,6 @@
 import { AnimalIdentity } from './animalIdentity.js';
 import { ItineraryDraftEqualityComparer } from './itineraryDraftEqualityComparer.js';
-import { ItineraryDraftPrimitives } from './itineraryDraftPrimitives.js';
+import { ItineraryDraftModel } from './itineraryDraftModel.js';
 import { ItineraryDraftSaveNormalizer } from './itineraryDraftSaveNormalizer.js';
 import { ItineraryItemFormatter } from './panel/itineraryItemFormatter.js';
 import { TransportationSelectorModel } from './selectors/transportationSelector/transportationSelectorModel.js';
@@ -36,12 +36,12 @@ export class ItineraryShape {
    }
 
    static normalizeItineraryDraft(draft = {}) {
-      const source = ItineraryDraftPrimitives.asItineraryDraftSource(draft);
+      const source = ItineraryDraftModel.asItineraryDraftSource(draft);
 
       return {
-         date: ItineraryDraftPrimitives.normalizeItineraryDate(source.date),
-         arrivalTime: ItineraryDraftPrimitives.normalizeItineraryTime(source.arrivalTime),
-         departureTime: ItineraryDraftPrimitives.normalizeItineraryTime(source.departureTime),
+         date: ItineraryDraftModel.normalizeItineraryDate(source.date),
+         arrivalTime: ItineraryDraftModel.normalizeItineraryTime(source.arrivalTime),
+         departureTime: ItineraryDraftModel.normalizeItineraryTime(source.departureTime),
          animals: ItineraryShape.normalizeItineraryItems(source.animals),
          attractions: ItineraryShape.normalizeItineraryItems(source.attractions),
          guardiansTalks: ItineraryShape.normalizeItineraryItems(source.guardiansTalks),
@@ -61,15 +61,15 @@ export class ItineraryShape {
          date: normalizedDraft.date,
          arrivalTime: normalizedDraft.arrivalTime,
          departureTime: normalizedDraft.departureTime,
-         animals: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.animals),
-         attractions: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.attractions),
-         guardiansTalks: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.guardiansTalks),
-         wildEncounters: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.wildEncounters),
-         transportations: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.transportations),
-         transportationStations: ItineraryDraftPrimitives.cloneItineraryItems(
+         animals: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.animals),
+         attractions: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.attractions),
+         guardiansTalks: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.guardiansTalks),
+         wildEncounters: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.wildEncounters),
+         transportations: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.transportations),
+         transportationStations: ItineraryDraftModel.cloneItineraryItems(
             normalizedDraft.transportationStations
          ),
-         events: ItineraryDraftPrimitives.cloneItineraryItems(normalizedDraft.events),
+         events: ItineraryDraftModel.cloneItineraryItems(normalizedDraft.events),
       };
    }
 

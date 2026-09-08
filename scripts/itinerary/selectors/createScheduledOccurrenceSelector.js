@@ -1,10 +1,10 @@
-import { StoredSelection } from './base/storedSelection.js';
-import { CreateSelectorController } from './createSelectorController.js';
+import { StoredSelectionNormalizer } from './base/storedSelectionNormalizer.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { ScheduledOccurrencePresentation } from '../scheduledOccurrencePresentation.js';
+import { ScheduledOccurrencePresenter } from '../scheduledOccurrencePresenter.js';
 import { ScheduledOccurrenceSelectorFactory } from './scheduledOccurrenceSelectorFactory.js';
-import { ScheduledOccurrenceSort } from '../scheduledOccurrenceSort.js';
-import { ScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { ScheduledOccurrenceSorter } from '../scheduledOccurrenceSorter.js';
+import { ScheduledOccurrenceTimeModel } from '../scheduledOccurrenceTimeModel.js';
+import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { Strings } from '../../strings.js';
 
 export class CreateScheduledOccurrenceSelector {
@@ -15,7 +15,7 @@ export class CreateScheduledOccurrenceSelector {
    readStoredFields,
    getId,
 } = {}) {
-      return (items) => StoredSelection.migrateStoredSelectionItems(items, {
+      return (items) => StoredSelectionNormalizer.migrateStoredSelectionItems(items, {
          fromString: (item) => ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromString(item, {
             emptyStoredFields,
             buildImageSrc,
@@ -47,14 +47,14 @@ export class CreateScheduledOccurrenceSelector {
    getName = ScheduledOccurrenceSelectorFactory.getOccurrenceName,
    getId = getName,
    getPrimaryValue,
-   getTimeOfDay = (row) => StoredSelection.normalizeStoredString(row?.start_time),
+   getTimeOfDay = (row) => StoredSelectionNormalizer.normalizeStoredString(row?.start_time),
    getLink = null,
    emptyStoredFields = {},
    readStoredFields,
    buildSelectionFields,
 } = {}) {
       const buildImageSrc = (name) => (
-         ScheduledOccurrencePresentation.buildOccurrenceDetailImageSrc(imageDirectory, name)
+         ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(imageDirectory, name)
       );
 
       const migrateSelected = CreateScheduledOccurrenceSelector.createScheduledOccurrenceMigration({
@@ -74,7 +74,7 @@ export class CreateScheduledOccurrenceSelector {
          buildSelectionFields,
       });
 
-      return CreateSelectorController.createItinerarySelectorController({
+      return SelectorControllerFactory.createItinerarySelectorController({
          mountEl,
          onPrev,
          onNext,
@@ -92,15 +92,15 @@ export class CreateScheduledOccurrenceSelector {
             [searchFlag]: true,
          }),
 
-         extractRows: (response) => ScheduledOccurrenceSort.sortScheduledOccurrencesByStartTime(
+         extractRows: (response) => ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(
             response[responseKey],
             getTimeOfDay),
 
          getId,
          getTitle: (row) => getName(row) || defaultTitle,
-         getSubtitle: (row) => ScheduledOccurrencePresentation.buildOccurrenceSubtitle({
+         getSubtitle: (row) => ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
             primaryValue: getPrimaryValue(row),
-            timeRange: ScheduledOccurrenceTimeRange.buildScheduledOccurrenceTimeRange(row),
+            timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange(row),
          }),
          getImageSrc: (row) => buildImageSrc(getName(row)),
          getInfoLink: () => null,

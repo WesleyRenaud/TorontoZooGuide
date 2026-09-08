@@ -1,21 +1,21 @@
 import { LayerRequestBuilder } from './layerRequestBuilder.js';
 import { MapItemType } from '../shared/enums/mapItemType.js';
-import { SourceHelpers } from './sourceHelpers.js';
+import { SourceHelper } from './sourceHelper.js';
 
 export class LayerRequest {
    static buildItineraryRows(itinerary) {
       const transportationStations = itinerary?.transportationStations;
 
       return [
-         ...SourceHelpers.normalizeTypedRows(itinerary?.animals, 'animal'),
-         ...SourceHelpers.normalizeTypedRows(itinerary?.attractions, 'attraction'),
+         ...SourceHelper.normalizeTypedRows(itinerary?.animals, 'animal'),
+         ...SourceHelper.normalizeTypedRows(itinerary?.attractions, 'attraction'),
          ...LayerRequestBuilder.buildFullyUnscheduledTransportationRows(
             itinerary?.transportations,
             transportationStations
          ),
-         ...SourceHelpers.normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
-         ...SourceHelpers.normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
-         ...SourceHelpers.normalizeTypedRows(
+         ...SourceHelper.normalizeTypedRows(itinerary?.guardiansTalks, 'guardiansTalk'),
+         ...SourceHelper.normalizeTypedRows(itinerary?.wildEncounters, 'wildEncounter'),
+         ...SourceHelper.normalizeTypedRows(
             transportationStations,
             MapItemType.TRANSPORTATION_STATION
          ),

@@ -1,11 +1,11 @@
 import { RegionRendererBuilder } from './regionRendererBuilder.js';
-import { RegionSelection } from './regionSelection.js';
+import { RegionStore } from './regionStore.js';
 
 export class RegionRenderer {
    static buildRegionRows(region, selectedExhibitNames) {
-      const exhibits = RegionSelection.getRegionExhibits(region);
-      const regionName = RegionSelection.getRegionName(region);
-      const regionSelected = RegionSelection.isRegionFullySelected(region, selectedExhibitNames);
+      const exhibits = RegionStore.getRegionExhibits(region);
+      const regionName = RegionStore.getRegionName(region);
+      const regionSelected = RegionStore.isRegionFullySelected(region, selectedExhibitNames);
 
       const rows = [
          RegionRendererBuilder.createChoiceRow({
@@ -16,7 +16,7 @@ export class RegionRenderer {
          }),
       ];
 
-      if (!RegionSelection.shouldHideDuplicateSingleExhibit(region)) {
+      if (!RegionStore.shouldHideDuplicateSingleExhibit(region)) {
          exhibits.forEach((exhibitName) => {
             rows.push(
                RegionRendererBuilder.createChoiceRow({

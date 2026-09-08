@@ -1,5 +1,5 @@
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
-import { SpeciesOverlayContent } from './speciesOverlayContent.js';
+import { SpeciesOverlayView } from './speciesOverlayView.js';
 import { Strings } from '../strings.js';
 
 export class SpeciesOverlayBuilder {
@@ -75,7 +75,7 @@ export class SpeciesOverlayBuilder {
    static createOverlayScrollContent(animal) {
       const scroll = document.createElement('div');
       scroll.className = 'species-overlay-scroll';
-      scroll.appendChild(SpeciesOverlayContent.buildSpeciesContent(animal));
+      scroll.appendChild(SpeciesOverlayView.buildSpeciesContent(animal));
       return scroll;
    }
 }

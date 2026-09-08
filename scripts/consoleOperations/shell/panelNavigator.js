@@ -1,4 +1,4 @@
-import { PanelNavigatorUrlHelpers } from './panelNavigatorUrlHelpers.js';
+import { PanelNavigatorUrlHelper } from './panelNavigatorUrlHelper.js';
 export class PanelNavigator {
    static ACTIVE_CONSOLE_PANEL_QUERY_PARAM = 'panel';
 
@@ -12,7 +12,7 @@ export class PanelNavigator {
    }
 
    static clearConsolePanelUrlParam(options = {}) {
-      PanelNavigatorUrlHelpers.updateConsolePanelUrl('', options);
+      PanelNavigatorUrlHelper.updateConsolePanelUrl('', options);
    }
 
    static createConsolePanelNavigator(
@@ -25,7 +25,7 @@ export class PanelNavigator {
             .forEach(panel => panel.classList.remove('active'));
 
          panelEl?.classList.add('active');
-         PanelNavigatorUrlHelpers.updateConsolePanelUrl(panelEl?.id, urlOptions);
+         PanelNavigatorUrlHelper.updateConsolePanelUrl(panelEl?.id, urlOptions);
 
          doc
             .querySelectorAll('.console-operations-menu-btn')
@@ -54,8 +54,8 @@ export class PanelNavigator {
       }
 
       function restorePanelFromUrl() {
-         const panelId = PanelNavigatorUrlHelpers.getPanelIdFromUrl(urlOptions.location);
-         const button = PanelNavigatorUrlHelpers.findMenuButtonForPanel(doc, panelId);
+         const panelId = PanelNavigatorUrlHelper.getPanelIdFromUrl(urlOptions.location);
+         const button = PanelNavigatorUrlHelper.findMenuButtonForPanel(doc, panelId);
 
          if (button) {
             button.click();

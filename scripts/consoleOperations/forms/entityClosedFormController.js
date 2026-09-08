@@ -1,5 +1,5 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import { ControllerUtils } from '../helpers/controllerUtils.js';
+import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
@@ -29,10 +29,10 @@ export class EntityClosedFormController {
 
       function getFormValues() {
          return {
-            entity: ControllerUtils.getFieldValue(entityEl),
-            startDate: ControllerUtils.getFieldValue(startDateEl),
-            endDate: ControllerUtils.getFieldValue(endDateEl),
-            message: ControllerUtils.getFieldValue(messageEl),
+            entity: ControllerHelper.getFieldValue(entityEl),
+            startDate: ControllerHelper.getFieldValue(startDateEl),
+            endDate: ControllerHelper.getFieldValue(endDateEl),
+            message: ControllerHelper.getFieldValue(messageEl),
          };
       }
 
@@ -45,11 +45,11 @@ export class EntityClosedFormController {
             return null;
          }
 
-         return ControllerUtils.validateOptionalDateRange(startDate, endDate);
+         return ControllerHelper.validateOptionalDateRange(startDate, endDate);
       }
 
       function resetForm() {
-         ControllerUtils.resetFormFields(formFieldEls);
+         ControllerHelper.resetFormFields(formFieldEls);
       }
 
       function show() {
@@ -58,7 +58,7 @@ export class EntityClosedFormController {
       }
 
       function hide() {
-         ControllerUtils.hideConsolePanel({
+         ControllerHelper.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
@@ -76,7 +76,7 @@ export class EntityClosedFormController {
       }
 
       async function onShowClick() {
-         await ControllerUtils.loadOptionsAndShowPanel({
+         await ControllerHelper.loadOptionsAndShowPanel({
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
             loadOptions,

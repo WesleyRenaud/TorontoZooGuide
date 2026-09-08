@@ -1,5 +1,5 @@
-import { NormalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
-import { SearchApi } from './searchApi.js';
+import { GuardiansTalkLinkedAnimalNormalizer } from '../guardians/guardiansTalkLinkedAnimalNormalizer.js';
+import { SearchClient } from './searchClient.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
 export class SearchApiNormalizer {
@@ -28,7 +28,7 @@ export class SearchApiNormalizer {
          name: ValueNormalizer.asTrimmedString(source.name),
          location: ValueNormalizer.asTrimmedString(source.location),
          start_time: ValueNormalizer.asTrimmedString(source.start_time),
-         linked_animals: NormalizeGuardiansTalkLinkedAnimals.normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
+         linked_animals: GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
       };
    }
 
@@ -60,7 +60,7 @@ export class SearchApiNormalizer {
 
    static normalizeSearchEndpointResponse(endpoint, response) {
       if (endpoint === '/search') {
-         return SearchApi.normalizeSearchResponse(response);
+         return SearchClient.normalizeSearchResponse(response);
       }
 
       return response;

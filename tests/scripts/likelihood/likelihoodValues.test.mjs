@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
-import { RowAlerts } from '../../../scripts/itinerary/panel/rowAlerts.js';
-import { ItineraryValidation } from '../../../scripts/itinerary/itineraryValidation.js';
+import { RowAlertPresenter } from '../../../scripts/itinerary/panel/rowAlertPresenter.js';
+import { ItineraryValidator } from '../../../scripts/itinerary/itineraryValidator.js';
 
 test('Test_LikelihoodToPercent_TestIntegerApiValues_ExpectPercents', () => {
    assert.equal(LikelihoodValues.likelihoodToPercent(1), 1);
@@ -23,7 +23,7 @@ test('Test_LikelihoodToFraction_TestLowSavedValues_ExpectPercentSemantics', () =
 });
 
 test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
-   const alert = RowAlerts.buildAnimalAlert({
+   const alert = RowAlertPresenter.buildAnimalAlert({
       likelihoodBefore: 1,
       likelihoodAfter: 20,
    });
@@ -35,7 +35,7 @@ test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
 });
 
 test('Test_BuildItineraryValidationState_TestOnePercentRising_ExpectImproved', () => {
-   const validation = ItineraryValidation.buildItineraryValidationState({
+   const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
             species: 'Marabou Stork',

@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
-import { DayPlannerSchedule } from '../../../../scripts/itinerary/panel/dayPlannerSchedule.js';
-import { DayPlannerTimeline } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
-import { DayPlannerTimelineMarkers } from '../../../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
-import { DayPlannerTimelinePillPlacement } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
+import { DayPlannerScheduleController } from '../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
+import { DayPlannerTimelineView } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelineView.js';
+import { DayPlannerTimelineRenderer } from '../../../../scripts/itinerary/panel/dayPlannerTimelineRenderer.js';
+import { DayPlannerTimelinePillPlacer } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacer.js';
 import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
 import {
    EMPTY_ITINERARY,
@@ -32,14 +32,14 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
    assert.equal(ItineraryItemFormatter.formatClockTime('09:30:30'), '9:30:30 AM');
    assert.equal(ItineraryItemFormatter.formatClockTime('19:00'), '7:00 PM');
    assert.equal(ItineraryItemFormatter.formatClockTime('', 'Fallback Time'), 'Fallback Time');
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30'), 570);
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('09:30:30'), 570.5);
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('10:00 AM'), 600);
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('10:00:30 AM'), 600.5);
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('1:30 PM'), 810);
-   assert.equal(DayPlannerSchedule.parseClockTimeMinutes('bad-time'), null);
-   assert.equal(DayPlannerSchedule.formatMinutesAsClockTime(1140), '7:00 PM');
-   assert.deepEqual(DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('09:30'), 570);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('09:30:30'), 570.5);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('10:00 AM'), 600);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('10:00:30 AM'), 600.5);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:30 PM'), 810);
+   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('bad-time'), null);
+   assert.equal(DayPlannerScheduleController.formatMinutesAsClockTime(1140), '7:00 PM');
+   assert.deepEqual(DayPlannerScheduleController.buildArrivalTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       lastAdmissionTime: '18:00',
@@ -51,7 +51,7 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       minClockTime: '9:00 AM',
       maxClockTime: '6:00 PM',
    });
-   assert.deepEqual(DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.deepEqual(DayPlannerScheduleController.buildArrivalTimeBounds({
       openTime: '09:30',
       lastAdmissionTime: '17:00',
    }), {
@@ -62,18 +62,18 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       minClockTime: '9:30 AM',
       maxClockTime: '5:00 PM',
    });
-   assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('9:00 AM', DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('9:00 AM', DayPlannerScheduleController.buildArrivalTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       lastAdmissionTime: '18:00',
    })), true);
-   assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('8:45 AM', DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('8:45 AM', DayPlannerScheduleController.buildArrivalTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       lastAdmissionTime: '18:00',
    })), false);
    assert.equal(
-      DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(
+      DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(
          { openTime: '09:30', closeTime: '19:00' },
          {
             arrivalTime: '9:30 AM',
@@ -89,8 +89,8 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       525
    );
    assert.deepEqual(
-      DayPlannerSchedule.buildHalfHourSlotStarts(
-         DayPlannerSchedule.resolveDayPlannerTimelineStartMinutes(
+      DayPlannerScheduleController.buildHalfHourSlotStarts(
+         DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(
             { openTime: '09:30', closeTime: '19:00' },
             {
                wildEncounters: [
@@ -106,21 +106,21 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       ).slice(0, 3),
       [525, 540, 570]
    );
-   assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('6:00 PM', DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('6:00 PM', DayPlannerScheduleController.buildArrivalTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       lastAdmissionTime: '18:00',
    })), true);
-   assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('6:15 PM', DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('6:15 PM', DayPlannerScheduleController.buildArrivalTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       lastAdmissionTime: '18:00',
    })), false);
-   assert.equal(DayPlannerSchedule.isArrivalTimeWithinBounds('', DayPlannerSchedule.buildArrivalTimeBounds({
+   assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('', DayPlannerScheduleController.buildArrivalTimeBounds({
       openTime: '09:30',
       lastAdmissionTime: '17:00',
    })), true);
-   assert.deepEqual(DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.deepEqual(DayPlannerScheduleController.buildDepartureTimeBounds({
       openTime: '09:30',
       closeTime: '18:00',
    }), {
@@ -131,43 +131,43 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       minClockTime: '9:30 AM',
       maxClockTime: '6:00 PM',
    });
-   assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('9:30 AM', DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('9:30 AM', DayPlannerScheduleController.buildDepartureTimeBounds({
       openTime: '09:30',
       closeTime: '18:00',
    })), true);
-   assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('9:00 AM', DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('9:00 AM', DayPlannerScheduleController.buildDepartureTimeBounds({
       earlyAdmissionTime: '09:00',
       openTime: '09:30',
       closeTime: '19:00',
    })), false);
-   assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('6:00 PM', DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('6:00 PM', DayPlannerScheduleController.buildDepartureTimeBounds({
       openTime: '09:30',
       closeTime: '18:00',
    })), true);
-   assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('6:15 PM', DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('6:15 PM', DayPlannerScheduleController.buildDepartureTimeBounds({
       openTime: '09:30',
       closeTime: '18:00',
    })), false);
-   assert.equal(DayPlannerSchedule.isDepartureTimeWithinBounds('', DayPlannerSchedule.buildDepartureTimeBounds({
+   assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('', DayPlannerScheduleController.buildDepartureTimeBounds({
       openTime: '09:30',
       closeTime: '18:00',
    })), true);
-   assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
-   assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
-   assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
-   assert.equal(DayPlannerSchedule.areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
-   assert.equal(DayPlannerSchedule.resolveDepartureTimeValidationError(
+   assert.equal(DayPlannerScheduleController.areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
+   assert.equal(DayPlannerScheduleController.areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
+   assert.equal(DayPlannerScheduleController.areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
+   assert.equal(DayPlannerScheduleController.areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
+   assert.equal(DayPlannerScheduleController.resolveDepartureTimeValidationError(
       '9:30 AM',
-      DayPlannerSchedule.buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
+      DayPlannerScheduleController.buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
       '9:30 AM',
       {
          departureTimeInvalid: 'hours',
          departureTimeAfterArrivalInvalid: 'order',
       }
    ), 'order');
-   assert.equal(DayPlannerSchedule.resolveArrivalTimeValidationError(
+   assert.equal(DayPlannerScheduleController.resolveArrivalTimeValidationError(
       '5:00 PM',
-      DayPlannerSchedule.buildArrivalTimeBounds({
+      DayPlannerScheduleController.buildArrivalTimeBounds({
          openTime: '09:30',
          lastAdmissionTime: '17:00',
       }),
@@ -177,18 +177,18 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
          timeOrderInvalid: 'order',
       }
    ), 'order');
-   assert.deepEqual(DayPlannerSchedule.buildHalfHourSlotStarts(570, 720), [
+   assert.deepEqual(DayPlannerScheduleController.buildHalfHourSlotStarts(570, 720), [
       570,
       600,
       630,
       660,
       690,
    ]);
-   assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(2), 2 / 30);
-   assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(15), 0.5);
-   assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(30), 1);
-   assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(0), 1);
-   assert.equal(DayPlannerTimeline.timelineSlotRowHeightFraction(null), 1);
+   assert.equal(DayPlannerTimelineView.timelineSlotRowHeightFraction(2), 2 / 30);
+   assert.equal(DayPlannerTimelineView.timelineSlotRowHeightFraction(15), 0.5);
+   assert.equal(DayPlannerTimelineView.timelineSlotRowHeightFraction(30), 1);
+   assert.equal(DayPlannerTimelineView.timelineSlotRowHeightFraction(0), 1);
+   assert.equal(DayPlannerTimelineView.timelineSlotRowHeightFraction(null), 1);
    assert.deepEqual(ItineraryItemFormatter.normalizeAnimal({
       species: '  African Lion  ',
       exhibit: '  Africa Savanna  ',
@@ -244,11 +244,11 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
 });
 
 test('Test_FindTimelineAnchorSlot_TestPrecedingHalfHour_ExpectAnchored', () => {
-   const slotStarts = DayPlannerSchedule.buildHalfHourSlotStarts(570, 1140);
-   const markersByAnchor = DayPlannerTimelineMarkers.buildMarkersByAnchorSlot(
+   const slotStarts = DayPlannerScheduleController.buildHalfHourSlotStarts(570, 1140);
+   const markersByAnchor = DayPlannerTimelineRenderer.buildMarkersByAnchorSlot(
       [
          {
-            startMinutes: DayPlannerSchedule.parseClockTimeMinutes('11:35'),
+            startMinutes: DayPlannerScheduleController.parseClockTimeMinutes('11:35'),
             label: 'Arrival',
             kind: TEST_ITINERARY_CONFIG.visitBoundaryEventTypes.arrival,
          },
@@ -257,8 +257,8 @@ test('Test_FindTimelineAnchorSlot_TestPrecedingHalfHour_ExpectAnchored', () => {
       1140
    );
 
-   assert.equal(DayPlannerTimelineMarkers.findTimelineAnchorSlot(DayPlannerSchedule.parseClockTimeMinutes('11:35'), slotStarts), 690);
-   assert.equal(DayPlannerTimelineMarkers.computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
+   assert.equal(DayPlannerTimelineRenderer.findTimelineAnchorSlot(DayPlannerScheduleController.parseClockTimeMinutes('11:35'), slotStarts), 690);
+   assert.equal(DayPlannerTimelineRenderer.computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
    assert.deepEqual(markersByAnchor.get(690), [{
       label: 'Arrival',
       offsetFraction: 1 / 6,
@@ -271,21 +271,21 @@ test('Test_ComputeStripHorizontalOffsetIndex_TestOverlappingStrips_ExpectShifted
    );
 
    assert.equal(
-      DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
+      DayPlannerTimelinePillPlacer.computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
       0
    );
-   assert.equal(DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([
+   assert.equal(DayPlannerTimelinePillPlacer.computeStripHorizontalOffsetIndex([
       { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
    ], 0.67, pointPillVerticalSpanFraction), 1);
-   assert.equal(DayPlannerTimelinePillPlacement.computeStripHorizontalOffsetIndex([
+   assert.equal(DayPlannerTimelinePillPlacer.computeStripHorizontalOffsetIndex([
       { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
       { offsetFraction: 0.67, horizontalOffsetIndex: 1 },
    ], 0.6, pointPillVerticalSpanFraction), 2);
 });
 
 test('Test_ComputeTimelineHorizontalOffsetIndex_TestOverlappingPlacements_ExpectShifted', () => {
-   assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
-   assert.equal(DayPlannerTimelinePillPlacement.computeTimelineHorizontalOffsetIndex([
+   assert.equal(DayPlannerTimelinePillPlacer.computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
+   assert.equal(DayPlannerTimelinePillPlacer.computeTimelineHorizontalOffsetIndex([
       { offsetFraction: 0.5, durationFraction: 0.5, horizontalOffsetIndex: 0 },
    ], 0.67, 0.5), 1);
 });

@@ -1,6 +1,6 @@
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
-import { ControllerUtils } from '../helpers/controllerUtils.js';
-import { OpeningScheduleOverlap } from './openingScheduleOverlap.js';
+import { ControllerHelper } from '../helpers/controllerHelper.js';
+import { OpeningScheduleChecker } from './openingScheduleChecker.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
@@ -48,7 +48,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function resetDays() {
-         ControllerUtils.resetFormFields([
+         ControllerHelper.resetFormFields([
             mondayEl,
             tuesdayEl,
             wednesdayEl,
@@ -122,7 +122,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function resetForm() {
-         ControllerUtils.resetFormFields([entityEl, startDateEl, endDateEl, messageEl]);
+         ControllerHelper.resetFormFields([entityEl, startDateEl, endDateEl, messageEl]);
 
          if (presetEl) {
             presetEl.value = 'everyDay';
@@ -138,7 +138,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function hide() {
-         ControllerUtils.hideConsolePanel({
+         ControllerHelper.hideConsolePanel({
             panelEl,
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
@@ -146,7 +146,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       function hasAtLeastOneOpenDay() {
-         return ControllerUtils.hasCheckedField([
+         return ControllerHelper.hasCheckedField([
             mondayEl,
             tuesdayEl,
             wednesdayEl,
@@ -159,7 +159,7 @@ export class WeeklyAvailabilityFormController {
       }
 
       async function onShowClick() {
-         await ControllerUtils.loadOptionsAndShowPanel({
+         await ControllerHelper.loadOptionsAndShowPanel({
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
             loadOptions,
@@ -204,10 +204,10 @@ export class WeeklyAvailabilityFormController {
 
 
       async function onSubmitClick() {
-         const entity = ControllerUtils.getFieldValue(entityEl);
-         const startDate = ControllerUtils.getFieldValue(startDateEl);
-         const endDate = ControllerUtils.getFieldValue(endDateEl);
-         const message = ControllerUtils.getFieldValue(messageEl);
+         const entity = ControllerHelper.getFieldValue(entityEl);
+         const startDate = ControllerHelper.getFieldValue(startDateEl);
+         const endDate = ControllerHelper.getFieldValue(endDateEl);
+         const message = ControllerHelper.getFieldValue(messageEl);
 
          ConsoleStatusPresenter.setStatus(statusEl, '');
 
@@ -221,7 +221,7 @@ export class WeeklyAvailabilityFormController {
             return;
          }
 
-         const dateError = ControllerUtils.validateOptionalDateRange(startDate, endDate);
+         const dateError = ControllerHelper.validateOptionalDateRange(startDate, endDate);
 
          if (dateError) {
             ConsoleStatusPresenter.setStatus(statusEl, dateError, 'is-error');
@@ -238,7 +238,7 @@ export class WeeklyAvailabilityFormController {
                return;
             }
 
-            if (OpeningScheduleOverlap.resultHasOpeningScheduleOverlap(result) && resolveOverlapConflict) {
+            if (OpeningScheduleChecker.resultHasOpeningScheduleOverlap(result) && resolveOverlapConflict) {
                const resolvedResult = await resolveOverlapConflict(payload);
 
                if (resolvedResult?.success) {

@@ -1,6 +1,6 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { OccurrenceFilterController } from '../../helpers/occurrenceFilterController.js';
 
 export class GuardiansTalkOccurrenceFilter {
@@ -19,9 +19,9 @@ export class GuardiansTalkOccurrenceFilter {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
             hasWildEncounter: Boolean(
-               ControllerUtils.getFieldValue(talkNameEl) && ControllerUtils.getFieldValue(locationEl)
+               ControllerHelper.getFieldValue(talkNameEl) && ControllerHelper.getFieldValue(locationEl)
             ),
-            hasDate: Boolean(ControllerUtils.getFieldValue(dateEl)),
+            hasDate: Boolean(ControllerHelper.getFieldValue(dateEl)),
             autoSelectSingleTime: true,
          });
       }
@@ -30,12 +30,12 @@ export class GuardiansTalkOccurrenceFilter {
          dateEl,
          populateTimes,
          getSelectionValues: () => ({
-            talk: ControllerUtils.getFieldValue(talkNameEl),
-            location: ControllerUtils.getFieldValue(locationEl),
+            talk: ControllerHelper.getFieldValue(talkNameEl),
+            location: ControllerHelper.getFieldValue(locationEl),
          }),
          isSelectionReady: ({ talk, location }) => Boolean(talk && location),
          loadOccurrences: async ({ talk, location }) => {
-            const result = await ConsoleOperationsApi.getGuardiansTalkOccurrences({
+            const result = await ConsoleOperationsClient.getGuardiansTalkOccurrences({
                talk,
                location,
             });

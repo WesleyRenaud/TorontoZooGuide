@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DayPlannerTimeline } from '../../../../scripts/itinerary/panel/components/dayPlannerTimeline.js';
+import { DayPlannerTimelineView } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelineView.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -25,7 +25,7 @@ test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
 
-   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+   DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
          row,
          maximumDuration: 30,
@@ -50,7 +50,7 @@ test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
 
-   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+   DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
          row,
          maximumDuration: 15,
@@ -74,7 +74,7 @@ test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
 
-   DayPlannerTimeline.appendScheduledItems(gridLine, [{
+   DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
          row,
          maximumDuration: 30,

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ScheduleItemActions } from '../../../../scripts/itinerary/panel/scheduleItemActions.js';
+import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
@@ -33,7 +33,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       },
    });
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
@@ -59,7 +59,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       return mockScheduleItemFetch()(url, options);
    };
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'lunch',
       null,
@@ -97,7 +97,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       return mockScheduleItemFetch()(url, options);
    };
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -126,7 +126,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       },
    });
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
@@ -150,7 +150,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       },
    });
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       {
@@ -211,7 +211,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await ScheduleItemActions.scheduleSelectedItineraryItem(
+   const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       { animals: [], attractions: [] },
       'animals',
       {

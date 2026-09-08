@@ -1,0 +1,72 @@
+import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
+import { Strings } from '../../../strings.js';
+
+export class ScheduleItemView {
+   static setScheduleItemButtonBusy(
+      button,
+      isBusy,
+      busyLabel = Strings.itinerary.scheduleItem.schedulingBusy
+   ) {
+      if (!button.dataset.defaultLabel) {
+         button.dataset.defaultLabel = button.textContent;
+      }
+
+      button.disabled = isBusy;
+      button.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+      button.classList.toggle('is-busy', isBusy);
+      button.textContent = isBusy ? busyLabel : button.dataset.defaultLabel;
+   }
+
+   static async runScheduleItemButtonAction(
+      button,
+      action,
+      busyLabel = Strings.itinerary.scheduleItem.schedulingBusy
+   ) {
+      if (button.disabled) {
+         return;
+      }
+
+      ScheduleItemView.setScheduleItemButtonBusy(button, true, busyLabel);
+
+      try {
+         await action();
+      }
+      finally {
+         ScheduleItemView.setScheduleItemButtonBusy(button, false);
+      }
+   }
+
+   static makeScheduleItemButton({
+      label = Strings.itinerary.scheduleItem.title,
+      onClick = null,
+      variant = 'primary',
+   } = {}) {
+      const button = ItineraryPanelHelper.el('button', 'itinerary-day-schedule-item-btn', label);
+      button.type = 'button';
+      button.dataset.defaultLabel = label;
+
+      if (variant === 'secondary') {
+         button.classList.add('itinerary-day-schedule-item-btn--secondary');
+      }
+
+      if (variant === 'destructive') {
+         button.classList.add('itinerary-day-schedule-item-btn--destructive');
+      }
+
+      if (typeof onClick === 'function') {
+         button.addEventListener('click', onClick);
+      }
+
+      return button;
+   }
+
+   static makeScheduleActionsBar(buttons = []) {
+      const bar = ItineraryPanelHelper.el('div', 'itinerary-day-schedule-actions');
+
+      buttons.forEach((button) => {
+         bar.appendChild(button);
+      });
+
+      return bar;
+   }
+}

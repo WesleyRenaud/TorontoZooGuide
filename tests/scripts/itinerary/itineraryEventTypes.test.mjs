@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { ItineraryApi } from '../../../scripts/api/itineraryApi.js';
+import { ItineraryClient } from '../../../scripts/api/itineraryClient.js';
 import { ItineraryEventTypes } from '../../../scripts/itinerary/itineraryEventTypes.js';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
@@ -38,7 +38,7 @@ test('Test_Behavior_TestItineraryApiGetItineraryRequestMapsVisitBoundaryEventTyp
       itinerary_config: BACKEND_ITINERARY_CONFIG,
    });
 
-   const result = await ItineraryApi.getItineraryRequest();
+   const result = await ItineraryClient.getItineraryRequest();
 
    assert.deepEqual(result.itineraryConfig.visitBoundaryEventTypes, {
       arrival: 'arrival',

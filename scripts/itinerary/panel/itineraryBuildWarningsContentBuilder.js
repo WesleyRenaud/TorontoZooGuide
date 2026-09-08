@@ -1,11 +1,11 @@
-import { AttractionWithoutAnimalConfirmation } from './attractionWithoutAnimalConfirmation.js';
-import { FixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
-import { GuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
-import { GuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
+import { AttractionWithoutAnimalFragment } from './attractionWithoutAnimalFragment.js';
+import { FixedTimeItemLongWaitFragment } from './fixedTimeItemLongWaitFragment.js';
+import { GuardiansTalkUnscheduleFragment } from './guardiansTalkUnscheduleFragment.js';
+import { GuardiansTalkWithoutAnimalFragment } from './guardiansTalkWithoutAnimalFragment.js';
 import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
-import { ItineraryPanelDom } from './itineraryPanelDom.js';
-import { WildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
+import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
+import { WildEncounterUnscheduleFragment } from './wildEncounterUnscheduleFragment.js';
 
 export class ItineraryBuildWarningsContentBuilder {
    static BUILD_WARNING_SECTION_LIST_BUILDERS = Object.freeze([
@@ -72,7 +72,7 @@ export class ItineraryBuildWarningsContentBuilder {
    }
 
    static buildGuardiansTalkUnscheduleSection(issues, strings) {
-      const talk = GuardiansTalkUnscheduleConfirmation.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
+      const talk = GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
       const type = ItineraryErrorTypes.getItineraryErrorTypes()?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 
       if (!talk?.talkName || !type) {
@@ -92,7 +92,7 @@ export class ItineraryBuildWarningsContentBuilder {
    }
 
    static buildWildEncounterUnscheduleSection(issues, strings) {
-      const encounter = WildEncounterUnscheduleConfirmation.getPrimaryWildEncounterFromUnscheduleIssues(issues);
+      const encounter = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues(issues);
       const type = ItineraryErrorTypes.getItineraryErrorTypes()?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 
       if (!encounter?.encounterName || !type) {
@@ -121,7 +121,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return [];
       }
 
-      return GuardiansTalkWithoutAnimalConfirmation.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
+      return GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
          const talkName = ItineraryItemFormatter.normalizeText(talk.talkName);
          const message = talk.talkTime
             ? strings.buildWarningWithoutAnimalMessage(talkName, talk.talkTime)
@@ -142,10 +142,10 @@ export class ItineraryBuildWarningsContentBuilder {
          return [];
       }
 
-      return AttractionWithoutAnimalConfirmation.getAttractionsFromWithoutAnimalIssues(issues).map((attraction) => ({
+      return AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues).map((attraction) => ({
          type,
          title: strings.buildWarningWithoutAnimalTitle,
-         message: AttractionWithoutAnimalConfirmation.attractionWithoutAnimalMessage(attraction, { strings }),
+         message: AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage(attraction, { strings }),
       }));
    }
 
@@ -156,7 +156,7 @@ export class ItineraryBuildWarningsContentBuilder {
          return [];
       }
 
-      return FixedTimeItemLongWaitConfirmation.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
+      return FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
          const itemName = ItineraryItemFormatter.normalizeText(item.itemName);
          const message = item.itemTime
             ? strings.buildWarningLongWaitMessage(
@@ -178,13 +178,13 @@ export class ItineraryBuildWarningsContentBuilder {
    }
 
    static createBuildWarningsContent(sections) {
-      const content = ItineraryPanelDom.el('div', 'itin-build-warnings tzg-popup-confirm-body');
+      const content = ItineraryPanelHelper.el('div', 'itin-build-warnings tzg-popup-confirm-body');
 
       sections.forEach((section) => {
-         const moduleEl = ItineraryPanelDom.el('div', 'itin-build-warning-module');
+         const moduleEl = ItineraryPanelHelper.el('div', 'itin-build-warning-module');
          moduleEl.append(
-            ItineraryPanelDom.el('div', 'itin-build-warning-module-title', section.title),
-            ItineraryPanelDom.el('div', 'itin-build-warning-module-message', section.message)
+            ItineraryPanelHelper.el('div', 'itin-build-warning-module-title', section.title),
+            ItineraryPanelHelper.el('div', 'itin-build-warning-module-message', section.message)
          );
          content.appendChild(moduleEl);
       });

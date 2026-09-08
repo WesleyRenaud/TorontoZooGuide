@@ -1,5 +1,5 @@
 import { DayPlannerScheduledPillOptionsBuilder } from './dayPlannerScheduledPillOptionsBuilder.js';
-import { ScheduledPillOverlap } from './scheduledPillOverlap.js';
+import { ScheduledPillChecker } from './scheduledPillChecker.js';
 
 export class DayPlannerScheduledPillOptions {
    static resolveScheduledPillOptions(
@@ -29,7 +29,7 @@ export class DayPlannerScheduledPillOptions {
       strings = {},
       resolveItemLabelClick = () => null
    ) {
-      return ScheduledPillOverlap.sortScheduledItemsForGroupDisplay(
+      return ScheduledPillChecker.sortScheduledItemsForGroupDisplay(
          DayPlannerScheduledPillOptionsBuilder.flattenScheduledItemsForPillGroup(scheduledItems)
       ).map((scheduledItem) => ({
          label: scheduledItem.label,

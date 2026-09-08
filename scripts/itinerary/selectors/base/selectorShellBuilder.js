@@ -1,4 +1,4 @@
-import { SelectorShellBuilderHelpers } from './selectorShellBuilderHelpers.js';
+import { SelectorShellBuilderHelper } from './selectorShellBuilderHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class SelectorShellBuilder {
@@ -23,7 +23,7 @@ export class SelectorShellBuilder {
       topTitleEl.className = 'itin-top-title';
       topTitleEl.textContent = topTitle;
 
-      const closeButton = SelectorShellBuilderHelpers.createButton({
+      const closeButton = SelectorShellBuilderHelper.createButton({
          className: 'itin-close',
          text: Strings.common.closeSymbol,
          ariaLabel: Strings.itinerary.aria.closeBuilder,
@@ -57,7 +57,7 @@ export class SelectorShellBuilder {
       const actions = document.createElement('div');
       actions.className = 'itin-card-actions-dual';
 
-      const prevButton = SelectorShellBuilderHelpers.createButton({
+      const prevButton = SelectorShellBuilderHelper.createButton({
          className: 'itin-prev',
          text: Strings.itinerary.actions.previous,
       });
@@ -68,14 +68,14 @@ export class SelectorShellBuilder {
       let nextButton = null;
 
       if (!hideNextButton) {
-         nextButton = SelectorShellBuilderHelpers.createButton({
+         nextButton = SelectorShellBuilderHelper.createButton({
             className: 'itin-next',
             text: Strings.itinerary.actions.next,
          });
          actionsRight.appendChild(nextButton);
       }
 
-      const finishButton = SelectorShellBuilderHelpers.createButton({
+      const finishButton = SelectorShellBuilderHelper.createButton({
          className: 'itin-finish',
          text: Strings.itinerary.actions.finish,
       });

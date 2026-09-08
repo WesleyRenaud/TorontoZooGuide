@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { DateSelectionModel } from '../../../../scripts/itinerary/selectors/dateSelectionModel.js';
-import { VisitDateRules } from '../../../../scripts/visitDates/visitDateRules.js';
+import { VisitDateValidator } from '../../../../scripts/visitDates/visitDateValidator.js';
 
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
@@ -31,7 +31,7 @@ test('Test_CreateDateSelectionModel_TestOutsideWindow_ExpectRejected', () => {
       getTodayFn: () => floor,
       daysAhead: 2,
       syncInputValue: (date) => {
-         syncedDates.push(VisitDateRules.toISODate(date));
+         syncedDates.push(VisitDateValidator.toISODate(date));
       },
    });
 
@@ -52,7 +52,7 @@ test('Test_CreateDateSelectionModel_TestDisplayPriority_ExpectPreferred', () => 
       getStoredDate: () => '2026-06-18',
    });
 
-   assert.equal(VisitDateRules.toISODate(model.getDisplayDate()), '2026-06-18');
+   assert.equal(VisitDateValidator.toISODate(model.getDisplayDate()), '2026-06-18');
 
    const modelWithInitial = DateSelectionModel.createDateSelectionModel({
       initialDate: makeNoonDate(2026, 5, 20),
@@ -61,7 +61,7 @@ test('Test_CreateDateSelectionModel_TestDisplayPriority_ExpectPreferred', () => 
       getStoredDate: () => '2026-06-18',
    });
 
-   assert.equal(VisitDateRules.toISODate(modelWithInitial.getDisplayDate()), '2026-06-20');
+   assert.equal(VisitDateValidator.toISODate(modelWithInitial.getDisplayDate()), '2026-06-20');
 
    const modelWithoutSaved = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,
@@ -69,7 +69,7 @@ test('Test_CreateDateSelectionModel_TestDisplayPriority_ExpectPreferred', () => 
       getStoredDate: () => null,
    });
 
-   assert.equal(VisitDateRules.toISODate(modelWithoutSaved.getDisplayDate()), VisitDateRules.toISODate(floor));
+   assert.equal(VisitDateValidator.toISODate(modelWithoutSaved.getDisplayDate()), VisitDateValidator.toISODate(floor));
 });
 
 test('Test_CreateDateSelectionModel_TestPersist_ExpectPayload', () => {
@@ -101,5 +101,5 @@ test('Test_CreateDateSelectionModel_TestSavedOutOfRange_ExpectClamped', () => {
       getStoredDate: () => '2099-01-01',
    });
 
-   assert.equal(VisitDateRules.toISODate(model.getDisplayDate()), '2026-06-17');
+   assert.equal(VisitDateValidator.toISODate(model.getDisplayDate()), '2026-06-17');
 });

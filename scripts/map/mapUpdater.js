@@ -1,11 +1,11 @@
-import { ClosedExhibitOverlay } from './closedExhibitOverlay.js';
+import { ClosedExhibitFragment } from './closedExhibitFragment.js';
 import { DateContext } from './dateContext.js';
 import { FocusRequest } from './focusRequest.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
-import { ItineraryPathOverlay } from './itineraryPathOverlay.js';
+import { ItineraryPathFragment } from './itineraryPathFragment.js';
 import { LayerRequest } from './layerRequest.js';
-import { SourceHelpers } from './sourceHelpers.js';
-import { TransportationRouteOverlay } from './transportationRouteOverlay.js';
+import { SourceHelper } from './sourceHelper.js';
+import { TransportationRouteFragment } from './transportationRouteFragment.js';
 
 export class MapUpdater {
    static buildUniqueTypes(types = []) {
@@ -41,8 +41,8 @@ export class MapUpdater {
 
       function clearRenderedMarkers() {
          markers.render([]);
-         ItineraryPathOverlay.clearItineraryPathOverlay();
-         TransportationRouteOverlay.hideTransportationRouteLayers();
+         ItineraryPathFragment.clearItineraryPathOverlay();
+         TransportationRouteFragment.hideTransportationRouteLayers();
       }
 
       function resolvePendingUpdateOptions(options) {
@@ -111,11 +111,11 @@ export class MapUpdater {
          const routeMarkers = LayerRequest.resolveItineraryTransportationRouteMarkers(itinerary);
 
          if (!routeMarkers) {
-            TransportationRouteOverlay.hideTransportationRouteLayers();
+            TransportationRouteFragment.hideTransportationRouteLayers();
             return;
          }
 
-         TransportationRouteOverlay.showTransportationRouteMarkers(
+         TransportationRouteFragment.showTransportationRouteMarkers(
             routeMarkers.route,
             routeMarkers.markerSequences
          );
@@ -125,7 +125,7 @@ export class MapUpdater {
          try {
             syncItineraryTransportationRoute(itinerary);
             markers.render(LayerRequest.buildItineraryRows(itinerary));
-            ItineraryPathOverlay.renderItineraryPathOverlay(
+            ItineraryPathFragment.renderItineraryPathOverlay(
                ItineraryPathModel.resolveItineraryPath(options, itinerary)
             );
             focusIfRequested(options);
@@ -145,13 +145,13 @@ export class MapUpdater {
          const source = sources[layer];
 
          if (!source) {
-            return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
+            return SourceHelper.setSourceRows(store, layer, getStoredLayerRows(layer));
          }
 
          try {
             return await source.fetch(ctx);
          } catch {
-            return SourceHelpers.setSourceRows(store, layer, getStoredLayerRows(layer));
+            return SourceHelper.setSourceRows(store, layer, getStoredLayerRows(layer));
          }
       }
 
@@ -176,8 +176,8 @@ export class MapUpdater {
             selectedTypes,
          } = buildRequestedLayers(dateCtx, options);
 
-         await ClosedExhibitOverlay.syncClosedExhibitOverlays(sources, ctx);
-         ItineraryPathOverlay.clearItineraryPathOverlay();
+         await ClosedExhibitFragment.syncClosedExhibitOverlays(sources, ctx);
+         ItineraryPathFragment.clearItineraryPathOverlay();
 
          if (selectedTypes.length === 0) {
             clearRenderedMarkers();

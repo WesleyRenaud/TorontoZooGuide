@@ -1,8 +1,8 @@
-import { FocusFromQuery } from '../focus/focusFromQuery.js';
+import { FocusFromParser } from '../focus/focusFromParser.js';
 import { DateContext } from '../map/dateContext.js';
 import { MapControlsBinder } from '../map/mapControlsBinder.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
-import { Search } from '../search/search.js';
+import { SearchController } from '../search/searchController.js';
 
 export class MapPageBootstrap {
    static getMapPageElements() {
@@ -102,7 +102,7 @@ export class MapPageBootstrap {
       explore,
       updater,
    } = {}) {
-      return Search.initSearch({
+      return SearchController.initSearch({
          inputEl: elements.animalSearchInput,
          resultsEl: elements.animalSearchResultsEl,
          getIncludeFlags: () => ({
@@ -141,7 +141,7 @@ export class MapPageBootstrap {
    }
 
    static initMapDeepLinkFocus(updater) {
-      FocusFromQuery.initFocusFromQuery({
+      FocusFromParser.initFocusFromQuery({
          onFocus: (rowOrSpec) => {
             updater.focusFromDeepLink(rowOrSpec);
          },

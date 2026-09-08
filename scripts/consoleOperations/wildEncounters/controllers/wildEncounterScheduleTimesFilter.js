@@ -1,13 +1,13 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { ControllerHelper } from '../../helpers/controllerHelper.js';
 
 export class WildEncounterScheduleTimesFilter {
    static createWildEncounterScheduleTimesFilterController({
       wildEncounterEl,
       timesEl,
       loadScheduleTimes = async ({ wildEncounter }) => {
-         const result = await ConsoleOperationsApi.getWildEncounterScheduleTimes({
+         const result = await ConsoleOperationsClient.getWildEncounterScheduleTimes({
             wildEncounter,
          });
 
@@ -20,7 +20,7 @@ export class WildEncounterScheduleTimesFilter {
       }
 
       function renderTimesList(times = []) {
-         const wildEncounter = ControllerUtils.getFieldValue(wildEncounterEl);
+         const wildEncounter = ControllerHelper.getFieldValue(wildEncounterEl);
 
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
@@ -38,7 +38,7 @@ export class WildEncounterScheduleTimesFilter {
       }
 
       async function refresh() {
-         const wildEncounter = ControllerUtils.getFieldValue(wildEncounterEl);
+         const wildEncounter = ControllerHelper.getFieldValue(wildEncounterEl);
 
          try {
             const scheduleTimes = wildEncounter

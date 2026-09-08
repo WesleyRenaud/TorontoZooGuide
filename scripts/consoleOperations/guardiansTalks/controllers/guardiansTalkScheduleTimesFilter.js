@@ -1,6 +1,6 @@
-import { ConsoleOperationsApi } from '../../../api/consoleOperationsApi.js';
+import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
-import { ControllerUtils } from '../../helpers/controllerUtils.js';
+import { ControllerHelper } from '../../helpers/controllerHelper.js';
 
 export class GuardiansTalkScheduleTimesFilter {
    static createGuardiansTalkScheduleTimesFilterController({
@@ -8,7 +8,7 @@ export class GuardiansTalkScheduleTimesFilter {
       locationEl,
       timesEl,
       loadScheduleTimes = async ({ talk, location }) => {
-         const result = await ConsoleOperationsApi.getGuardiansTalkScheduleTimes({
+         const result = await ConsoleOperationsClient.getGuardiansTalkScheduleTimes({
             talk,
             location,
          });
@@ -22,7 +22,7 @@ export class GuardiansTalkScheduleTimesFilter {
       }
 
       function hasSelection() {
-         return Boolean(ControllerUtils.getFieldValue(talkNameEl) && ControllerUtils.getFieldValue(locationEl));
+         return Boolean(ControllerHelper.getFieldValue(talkNameEl) && ControllerHelper.getFieldValue(locationEl));
       }
 
       function renderTimesList(times = []) {
@@ -45,8 +45,8 @@ export class GuardiansTalkScheduleTimesFilter {
          try {
             const scheduleTimes = hasSelection()
                ? await loadScheduleTimes?.({
-                  talk: ControllerUtils.getFieldValue(talkNameEl),
-                  location: ControllerUtils.getFieldValue(locationEl),
+                  talk: ControllerHelper.getFieldValue(talkNameEl),
+                  location: ControllerHelper.getFieldValue(locationEl),
                }) ?? []
                : [];
 

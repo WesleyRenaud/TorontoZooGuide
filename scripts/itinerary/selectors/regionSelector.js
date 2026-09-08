@@ -1,10 +1,10 @@
-import { ItinerarySelectorApi } from '../../api/itinerarySelectorApi.js';
-import { DraftStorage } from '../draftStorage.js';
+import { ItinerarySelectorClient } from '../../api/itinerarySelectorClient.js';
+import { DraftStore } from '../draftStore.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { RegionSelection } from './regionSelector/regionSelection.js';
 import { RegionSelectorRenderer } from './regionSelector/regionSelectorRenderer.js';
 import { RegionSelectorStore } from './regionSelector/regionSelectorStore.js';
-import { RegionSelectorElements } from './regionSelectorElements.js';
+import { RegionStore } from './regionSelector/regionStore.js';
+import { RegionSelectorView } from './regionSelectorView.js';
 import { StorageKeys } from '../storageKeys.js';
 
 export class RegionSelector {
@@ -139,13 +139,13 @@ export class RegionSelector {
             return;
          }
 
-         elements = RegionSelectorElements.createRegionSelectorElements();
+         elements = RegionSelectorView.createRegionSelectorElements();
          bindEvents();
       }
 
       async function refreshRegions() {
          const context = await ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false });
-         state.setRegions(await ItinerarySelectorApi.getExhibitsByRegion(context));
+         state.setRegions(await ItinerarySelectorClient.getExhibitsByRegion(context));
          await state.hydrateSelectionsFromStorage();
          renderRegions();
       }
@@ -187,9 +187,9 @@ export class RegionSelector {
             return false;
          }
 
-         if (RegionSelection.selectedExhibitsNeedAnimalRebuild(
+         if (RegionStore.selectedExhibitsNeedAnimalRebuild(
             state.getSelectedExhibitNamesSet(),
-            DraftStorage.loadArray(StorageKeys.ANIMALS_KEY)
+            DraftStore.loadArray(StorageKeys.ANIMALS_KEY)
          )) {
             return false;
          }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { RegionSelector } from '../../../../scripts/itinerary/selectors/regionSelector.js';
-import { DraftStorage } from '../../../../scripts/itinerary/draftStorage.js';
+import { DraftStore } from '../../../../scripts/itinerary/draftStore.js';
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { createDomNode, installDocument, installTestWindow, teardownDocument } from '../../helpers/domMock.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -99,7 +99,7 @@ test('Test_Region_TestRegionSelectorRebuildsAnimalsAfterReSelectingAn_ExpectOk',
       ],
    });
 
-   DraftStorage.removeAnimalFromItineraryAnimalDraft(
+   DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
       'African Penguin||Africa Savanna'
    );

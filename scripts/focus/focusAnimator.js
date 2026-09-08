@@ -1,4 +1,4 @@
-import { Center } from './center.js';
+import { MapCenterHelper } from './mapCenterHelper.js';
 
 export class FocusAnimator {
    static FOCUS_ZOOM_LEVEL = 3;
@@ -18,10 +18,10 @@ export class FocusAnimator {
       panzoom.zoom(FocusAnimator.FOCUS_ZOOM_LEVEL, { animate: false });
 
       requestAnimationFrame(() => {
-         Center.centerMarkerWithContain(panzoom, marker, viewportEl);
+         MapCenterHelper.centerMarkerWithContain(panzoom, marker, viewportEl);
 
          requestAnimationFrame(() => {
-            Center.centerMarkerWithContain(panzoom, marker, viewportEl);
+            MapCenterHelper.centerMarkerWithContain(panzoom, marker, viewportEl);
 
             tooltip.open(marker, items || marker.__items || []);
             tooltip.jumpTo(matchFn);
