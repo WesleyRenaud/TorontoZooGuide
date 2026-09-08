@@ -166,9 +166,20 @@
       "tests/scripts/markers/markerHoverTextFormatter.test.mjs",
       "tests/scripts/api/animalsApiNormalizer.test.mjs",
       "tests/scripts/api/searchApiNormalizer.test.mjs",
-      "tests/scripts/itinerary/itineraryDraftEqualityComparer.test.mjs"
-   ],
-   "exclude": [
-      "tests/scripts/helpers/**"
+      "tests/scripts/itinerary/itineraryDraftEqualityComparer.test.mjs",
+      "tests/scripts/itinerary/itineraryDraftModel.test.mjs",
+      "tests/scripts/itinerary/itineraryNormalizerHelper.test.mjs",
+      "tests/scripts/itinerary/itineraryDraftSaveNormalizer.test.mjs",
+      "tests/scripts/itinerary/itineraryErrorTypesHelper.test.mjs",
+      "tests/scripts/itinerary/speciesExhibitKeyHelper.test.mjs",
+      "tests/scripts/itinerary/itineraryPathModel.test.mjs",
+      "tests/scripts/assets/iconUrlBuilder.test.mjs",
+      "tests/scripts/consoleOperations/animals/controllers/animalViewingScopeControlHelper.test.mjs",
+      "tests/scripts/consoleOperations/shell/consoleStatusPresenter.test.mjs",
+      "tests/scripts/datePickers/openPickerTimeHelper.test.mjs",
+      "tests/scripts/animals/createSpeciesLinkTitleHelper.test.mjs",
+      "tests/scripts/animals/speciesLinkTitleBuilder.test.mjs",
+      "tests/scripts/consoleOperations/shell/panelNavigatorUrlHelper.test.mjs",
+      "tests/scripts/api/itineraryApiNormalizer.test.mjs"
    ]
 }
