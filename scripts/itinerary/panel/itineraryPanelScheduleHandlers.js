@@ -1,23 +1,9 @@
 import { ItineraryApi } from '../../api/itineraryApi.js';
 import { ShowScheduleItemModule } from './components/showScheduleItemModule.js';
 import { DraftStorage } from '../draftStorage.js';
-import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryEventTypes } from '../itineraryEventTypes.js';
-import { ItineraryService } from '../itineraryService.js';
+import { ItineraryPanelScheduleHandlersHelpers } from './itineraryPanelScheduleHandlersHelpers.js';
 import { RemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
-
-async function notifyItineraryUpdated({
-   result,
-   dispatchUpdated = ItineraryService.dispatchItineraryUpdated,
-   loadItinerary = ItineraryService.getItinerary,
-} = {}) {
-   if (!ItineraryErrorTypes.isItinerarySuccess(result?.errorType)) {
-      return false;
-   }
-
-   dispatchUpdated(await loadItinerary());
-   return true;
-}
 
 export class ItineraryPanelScheduleHandlers {
    static openScheduleItemModule(
@@ -54,7 +40,7 @@ export class ItineraryPanelScheduleHandlers {
          requiresRemoveConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation,
          showRemoveConfirmation = RemoveItineraryItemConfirmation.showRemoveItineraryItemConfirmation,
          buildEventTypes = ItineraryEventTypes.buildSchedulableEventTypes,
-         notifyUpdated = notifyItineraryUpdated,
+         notifyUpdated = ItineraryPanelScheduleHandlersHelpers.notifyItineraryUpdated,
       } = deps;
 
       return {

@@ -1,20 +1,10 @@
 import { CreateSelectorController } from './createSelectorController.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { ConfirmPopup } from '../panel/components/confirmPopup.js';
 import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
+import { TransportationSelectorPrompts } from './transportationSelectorPrompts.js';
 
 const STORAGE_KEY = 'tzg.itineraryTransportations';
-
-function promptForAddAsTransportationSelection(row, proceed) {
-   ConfirmPopup.showItineraryConfirmPopup({
-      title: Strings.itinerary.confirmation.addAsTransportationTitle,
-      message: TransportationSelectorModel.buildAddAsTransportationMessage(row),
-      confirmText: Strings.itinerary.actions.confirm,
-      cancelText: Strings.animalsPage.back,
-      onConfirm: proceed,
-   });
-}
 
 export class TransportationSelector {
    static createItineraryTransportationSelectorController({
@@ -74,7 +64,7 @@ export class TransportationSelector {
                return;
             }
 
-            promptForAddAsTransportationSelection(row, proceed);
+            TransportationSelectorPrompts.promptForAddAsTransportationSelection(row, proceed);
          },
       });
    }

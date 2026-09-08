@@ -1,17 +1,9 @@
+import { AnimalSpeciesAutocompleteHelpers } from './animalSpeciesAutocompleteHelpers.js';
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { AnimalSpeciesResultsView } from '../autocomplete/animalSpeciesResultsView.js';
 import { SpeciesMatcher } from '../autocomplete/speciesMatcher.js';
 import { SpeciesSource } from '../autocomplete/speciesSource.js';
 import { ControllerUtils } from '../../helpers/controllerUtils.js';
-
-function debounce(fn, delay = 200) {
-   let timer = null;
-
-   return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-   };
-}
 
 export class AnimalSpeciesAutocomplete {
    static createAnimalSpeciesAutocompleteController({
@@ -61,7 +53,7 @@ export class AnimalSpeciesAutocomplete {
          }
       }
 
-      const runSearch = debounce(() => {
+      const runSearch = AnimalSpeciesAutocompleteHelpers.debounce(() => {
          performSearch();
       }, 180);
 

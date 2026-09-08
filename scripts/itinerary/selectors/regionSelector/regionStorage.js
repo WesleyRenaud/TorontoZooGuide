@@ -1,11 +1,8 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { StoredSelection } from '../base/storedSelection.js';
 import { DraftStorage } from '../../draftStorage.js';
+import { RegionStorageHelpers } from './regionStorageHelpers.js';
 import { StorageKeys } from '../../storageKeys.js';
-
-function normalizeStoredAnimalKey(key) {
-   return StoredSelection.normalizeStoredString(key).toLowerCase();
-}
 
 export class RegionStorage {
    static loadSelectedNames(storageKey) {
@@ -26,13 +23,13 @@ export class RegionStorage {
    static loadRemovedAnimalKeys() {
       return new Set(
          DraftStorage.loadArray(StorageKeys.REMOVED_ANIMALS_KEY)
-            .map(normalizeStoredAnimalKey)
+            .map(RegionStorageHelpers.normalizeStoredAnimalKey)
             .filter(Boolean)
       );
    }
 
    static addRemovedAnimalKey(key) {
-      const normalizedKey = normalizeStoredAnimalKey(key);
+      const normalizedKey = RegionStorageHelpers.normalizeStoredAnimalKey(key);
 
       if (!normalizedKey) {
          return;
@@ -44,7 +41,7 @@ export class RegionStorage {
    }
 
    static restoreRemovedAnimalKey(key) {
-      const normalizedKey = normalizeStoredAnimalKey(key);
+      const normalizedKey = RegionStorageHelpers.normalizeStoredAnimalKey(key);
       const removedKeys = RegionStorage.loadRemovedAnimalKeys();
 
       if (!removedKeys.delete(normalizedKey)) {

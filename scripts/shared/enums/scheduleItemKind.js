@@ -1,3 +1,5 @@
+import { ScheduleItemKindHelpers } from './scheduleItemKindHelpers.js';
+
 export class ScheduleItemKind {
    static ENTRANCE = Object.freeze({
       kind: 'entrance',
@@ -27,7 +29,7 @@ export class ScheduleItemKind {
    });
 
    static scheduleItemKindFromItemType(itemType) {
-      const normalized = normalizeScheduleItemKindKey(itemType);
+      const normalized = ScheduleItemKindHelpers.normalizeScheduleItemKindKey(itemType);
 
       if (!normalized) {
          return null;
@@ -49,7 +51,7 @@ export class ScheduleItemKind {
    }
 
    static isScheduleItemModuleItemType(itemType) {
-      const normalized = normalizeScheduleItemKindKey(itemType);
+      const normalized = ScheduleItemKindHelpers.normalizeScheduleItemKindKey(itemType);
 
       return (
          normalized === ScheduleItemKind.ANIMAL.itemType
@@ -80,12 +82,8 @@ export class ScheduleItemKind {
    }
 
    static scheduleItemModuleItemTypeForKind(kind) {
-      return ITEM_TYPE_BY_KIND[normalizeScheduleItemKindKey(kind)] ?? null;
+      return ITEM_TYPE_BY_KIND[ScheduleItemKindHelpers.normalizeScheduleItemKindKey(kind)] ?? null;
    }
-}
-
-function normalizeScheduleItemKindKey(value) {
-   return String(value ?? '').trim().toLowerCase();
 }
 
 const SCHEDULE_ITEM_KIND_ENTRIES = Object.freeze([

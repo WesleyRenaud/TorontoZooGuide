@@ -1,21 +1,5 @@
+import { DateSelectorViewHelpers } from './dateSelectorViewHelpers.js';
 import { Strings } from '../../strings.js';
-
-function createButton({
-   className,
-   text,
-   ariaLabel = null,
-} = {}) {
-   const button = document.createElement('button');
-   button.className = className;
-   button.type = 'button';
-   button.textContent = text;
-
-   if (ariaLabel) {
-      button.setAttribute('aria-label', ariaLabel);
-   }
-
-   return button;
-}
 
 export class DateSelectorView {
    static buildDateSelectorView(strings = Strings) {
@@ -35,7 +19,7 @@ export class DateSelectorView {
       topTitle.className = 'itin-top-title';
       topTitle.textContent = strings.itinerary.selectors.builderTitle;
 
-      const closeButtonEl = createButton({
+      const closeButtonEl = DateSelectorViewHelpers.createButton({
          className: 'itin-close',
          text: strings.common.closeSymbol,
          ariaLabel: strings.itinerary.aria.closeBuilder,
@@ -73,12 +57,12 @@ export class DateSelectorView {
       const actionsRight = document.createElement('div');
       actionsRight.className = 'itin-actions-right';
 
-      const nextButtonEl = createButton({
+      const nextButtonEl = DateSelectorViewHelpers.createButton({
          className: 'itin-next',
          text: strings.itinerary.actions.next,
       });
 
-      const finishButtonEl = createButton({
+      const finishButtonEl = DateSelectorViewHelpers.createButton({
          className: 'itin-next itin-finish',
          text: strings.itinerary.actions.finish,
       });
