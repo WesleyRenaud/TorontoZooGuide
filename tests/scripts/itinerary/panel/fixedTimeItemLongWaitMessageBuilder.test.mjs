@@ -1,0 +1,82 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { FixedTimeItemLongWaitMessageBuilder } from '../../../../scripts/itinerary/panel/fixedTimeItemLongWaitMessageBuilder.js';
+import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Strings } from '../../../../scripts/strings.js';
+
+test('Test_ResolveItemTypeMeta_TestGuardiansTalk_ExpectMeta', () => {
+   const meta = FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({
+      item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   });
+
+   assert.equal(meta.itemType, ItinerarySaveIssueItemType.guardiansTalk);
+   assert.equal(meta.typeLabel, Strings.entityLabels.guardiansTalk);
+});
+
+test('Test_ResolveItemTypeMeta_TestWildEncounter_ExpectMeta', () => {
+   const meta = FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({
+      item_type: ItinerarySaveIssueItemType.wildEncounter,
+   });
+
+   assert.equal(meta.itemType, ItinerarySaveIssueItemType.wildEncounter);
+   assert.equal(meta.typePhrase, Strings.entityPhrases.wildEncounter);
+});
+
+test('Test_ResolveItemTypeMeta_TestUnsupported_ExpectThrows', () => {
+   assert.throws(
+      () => FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({ item_type: 'animal' }),
+      /Unsupported fixed-time long-wait item type/
+   );
+});
+
+test('Test_IsLongWaitIssue_TestType_ExpectBoolean', () => {
+   const original = ItineraryErrorTypes.getItineraryErrorTypes;
+   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ FIXED_TIME_ITEM_LONG_WAIT: 'LONG_WAIT' });
+
+   try {
+      assert.equal(FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({ type: 'LONG_WAIT' }), true);
+      assert.equal(FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({ type: 'OTHER' }), false);
+   } finally {
+      ItineraryErrorTypes.getItineraryErrorTypes = original;
+   }
+});
+
+test('Test_LongWaitItems_TestIssues_ExpectFlattened', () => {
+   const original = ItineraryErrorTypes.getItineraryErrorTypes;
+   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ FIXED_TIME_ITEM_LONG_WAIT: 'LONG_WAIT' });
+
+   try {
+      const items = FixedTimeItemLongWaitMessageBuilder.longWaitItems([
+         { type: 'LONG_WAIT', items: [{ itemName: 'Talk A' }, { itemName: 'Talk B' }] },
+         { type: 'OTHER', items: [{ itemName: 'Skip' }] },
+      ]);
+      assert.deepEqual(items, [{ itemName: 'Talk A' }, { itemName: 'Talk B' }]);
+   } finally {
+      ItineraryErrorTypes.getItineraryErrorTypes = original;
+   }
+});
+
+test('Test_LongWaitConfirmMessage_TestWithAndWithoutTime_ExpectStrings', () => {
+   const strings = {
+      fixedTimeItemLongWaitMessage: (name, time, type) => `${name}@${time}:${type}`,
+      fixedTimeItemLongWaitMessageWithoutTime: (name, type) => `${name}:${type}`,
+   };
+
+   assert.equal(
+      FixedTimeItemLongWaitMessageBuilder.longWaitConfirmMessage({
+         itemName: 'Amur Tiger',
+         itemTime: '11:00 AM',
+         typePhrase: 'talk',
+      }, strings),
+      'Amur Tiger@11:00 AM:talk'
+   );
+   assert.equal(
+      FixedTimeItemLongWaitMessageBuilder.longWaitConfirmMessage({
+         itemName: 'Amur Tiger',
+         typePhrase: 'talk',
+      }, strings),
+      'Amur Tiger:talk'
+   );
+});
