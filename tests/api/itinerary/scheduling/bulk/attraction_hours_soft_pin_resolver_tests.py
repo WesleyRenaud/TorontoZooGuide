@@ -8,6 +8,7 @@ from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftP
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 
 
@@ -66,8 +67,8 @@ def Test_AttachToWindows_TestOverlappingPins_ExpectFilteredByWindow() -> None:
       [ morning, afternoon ],
       [ soft_pin ] )
 
-   assert attached[ 0 ].attraction_hours_soft_pins == []
-   assert attached[ 1 ].attraction_hours_soft_pins == [ soft_pin ]
+   assert attached[ Position.FIRST ].attraction_hours_soft_pins == []
+   assert attached[ Position.SECOND ].attraction_hours_soft_pins == [ soft_pin ]
 
 
 def Test_LoopIdByAttractionName_TestMixedStops_ExpectMappedAttractionLoop() -> None:

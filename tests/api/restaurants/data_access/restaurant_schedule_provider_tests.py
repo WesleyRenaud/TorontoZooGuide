@@ -8,6 +8,7 @@ from api.restaurants.data_access.restaurant_schedule_provider import RestaurantS
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from api.restaurants.scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
 from api.restaurants.scheduling.restaurant_schedule_override import RestaurantScheduleOverride
+from api.shared.enums.position import Position
 
 
 RESTAURANT = 'Simba Safari Lodge'
@@ -213,10 +214,10 @@ def Test_FetchOpeningScheduleConflicts_TestOverlappingSchedule_ExpectConflictRec
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].restaurant == RESTAURANT
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].schedule_end_date == END_DATE
-   assert conflicts[ 0 ].schedule_message == MESSAGE
+   assert conflicts[ Position.FIRST ].restaurant == RESTAURANT
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].schedule_end_date == END_DATE
+   assert conflicts[ Position.FIRST ].schedule_message == MESSAGE
 
 
 def Test_FetchOpeningScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(

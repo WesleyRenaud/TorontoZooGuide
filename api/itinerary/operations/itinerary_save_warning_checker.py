@@ -9,6 +9,7 @@ from .itinerary_save_context_builder import ItinerarySaveContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.bulk.bulk_reschedule_long_wait_simulator import BulkRescheduleLongWaitSimulator
 from ...shared.enums import ItineraryErrorType
+from ...shared.enums.position import Position
 from ..warnings.attraction_without_animal_warning_builder import AttractionWithoutAnimalWarningBuilder
 from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuilder
 from ..warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
@@ -161,7 +162,7 @@ class ItinerarySaveWarningChecker():
             updated_context,
             ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
                ItinerarySaveResult(
-                  status=pending_reasons[ 0 ].code,
+                  status=pending_reasons[ Position.FIRST ].code,
                   reasons=pending_reasons,
                   itinerary=context.current_itinerary,
                ),

@@ -7,6 +7,7 @@ import pytest
 from api.attractions.data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from api.attractions.data_access.attraction_hours_schedule_record import AttractionHoursScheduleRecord
 from api.attractions.scheduling.attraction_hours_schedule import AttractionHoursSchedule
+from api.shared.enums.position import Position
 
 
 ATTRACTION = 'Kids Zoo'
@@ -171,11 +172,11 @@ def Test_FetchHoursScheduleConflicts_TestOverlappingSchedule_ExpectConflictRecor
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].attraction == ATTRACTION
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].schedule_end_date == END_DATE
-   assert conflicts[ 0 ].weekday_start_time == WEEKDAY_START
-   assert conflicts[ 0 ].weekend_holiday_end_time == WEEKEND_END
+   assert conflicts[ Position.FIRST ].attraction == ATTRACTION
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].schedule_end_date == END_DATE
+   assert conflicts[ Position.FIRST ].weekday_start_time == WEEKDAY_START
+   assert conflicts[ Position.FIRST ].weekend_holiday_end_time == WEEKEND_END
 
 
 def Test_FetchHoursScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(
@@ -209,10 +210,10 @@ def Test_FetchHoursScheduleRecords_TestMultipleSchedules_ExpectOrderedRecords(
       attraction_hours_schedule_conn )
 
    assert len( records ) == 2
-   assert records[ 0 ].attraction == ATTRACTION
-   assert records[ 0 ].schedule_start_date == START_DATE
-   assert records[ 1 ].attraction == OTHER_ATTRACTION
-   assert records[ 1 ].schedule_start_date == '2026-07-01'
+   assert records[ Position.FIRST ].attraction == ATTRACTION
+   assert records[ Position.FIRST ].schedule_start_date == START_DATE
+   assert records[ Position.SECOND ].attraction == OTHER_ATTRACTION
+   assert records[ Position.SECOND ].schedule_start_date == '2026-07-01'
 
 
 def Test_DeleteHoursSchedule_TestExistingSchedule_ExpectRemovesRow(

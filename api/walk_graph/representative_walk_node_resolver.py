@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .domain.walk_graph import WalkGraph
+from ..shared.enums.position import Position
 from .shortest_path_calculator import ShortestPathCalculator
 
 
@@ -15,7 +16,7 @@ class RepresentativeWalkNodeResolver():
          return None
 
       if len( candidate_node_ids ) == 1:
-         return candidate_node_ids[ 0 ]
+         return candidate_node_ids[ Position.FIRST ]
 
       distances = ShortestPathCalculator.distances( graph, from_node_id )
 

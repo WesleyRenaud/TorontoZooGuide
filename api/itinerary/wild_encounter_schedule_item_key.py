@@ -5,6 +5,7 @@ from typing import Any, Self
 
 from .schedule_item_key_separator import ScheduleItemKeySeparator
 from ..shared.calendar_dates import DateValues
+from ..shared.enums.position import Position
 from ..types import Types
 
 
@@ -17,12 +18,12 @@ class WildEncounterScheduleItemKey:
    @classmethod
    def from_wire( cls, wire: str ) -> Self | None:
       parts = wire.split( ScheduleItemKeySeparator.VALUE, 2 )
-      name = parts[ 0 ].strip()
+      name = parts[ Position.FIRST ].strip()
 
       if not name or len( parts ) < 2:
          return None
 
-      start_time = DateValues.normalize_schedule_time( parts[ 1 ] )
+      start_time = DateValues.normalize_schedule_time( parts[ Position.SECOND ] )
 
       if not start_time:
          return None
@@ -30,7 +31,7 @@ class WildEncounterScheduleItemKey:
       end_time = None
 
       if len( parts ) > 2:
-         end_time = DateValues.normalize_schedule_time( parts[ 2 ] )
+         end_time = DateValues.normalize_schedule_time( parts[ Position.THIRD ] )
 
          if not end_time:
             return None

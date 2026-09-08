@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.animals.data_access.animal_viewing_alert_provider import AnimalViewingAlertProvider
+from api.shared.enums.position import Position
 
 
 SPECIES = 'Amur Tiger'
@@ -90,7 +91,7 @@ def Test_SaveAnimalViewingAlert_TestExistingAlert_ExpectReplacesRow(
       ( SPECIES, EXHIBIT ) ).fetchall()
 
    assert len( rows ) == 1
-   assert tuple( rows[ 0 ] ) == ( 'Updated alert.', '2026-07-01', '2026-07-15' )
+   assert tuple( rows[ Position.FIRST ] ) == ( 'Updated alert.', '2026-07-01', '2026-07-15' )
 
 
 def Test_DeleteAnimalViewingAlert_TestExistingAlert_ExpectRemovesRow(

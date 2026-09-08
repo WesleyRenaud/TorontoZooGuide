@@ -17,6 +17,7 @@ from .scheduled_animal_anchor import ScheduledAnimalAnchor
 from ....shared.calendar_dates import DateValues
 from ....shared.constants import Constants
 from ....shared.duration_values import DurationValues
+from ....shared.enums.position import Position
 from ....shared.operating_hours import OperatingHours
 from ....transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.transportation_day_loop import TransportationDayLoop
@@ -217,7 +218,7 @@ class TransportationTransitRideApplier():
 
          timed_animals.append( ( start_seconds, end_seconds, animal ) )
 
-      timed_animals.sort( key=lambda item: item[ 0 ] )
+      timed_animals.sort( key=lambda item: item[ Position.FIRST ] )
       anchors: list[ ScheduledAnimalAnchor ] = []
 
       for start_seconds, end_seconds, animal in timed_animals:

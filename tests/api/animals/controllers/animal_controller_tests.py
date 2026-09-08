@@ -13,7 +13,7 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 import api.http_request_handler as server
 import api.request_connection_provider as request_connection
 from api.shared.constants import Constants
-from api.shared.enums import AnimalViewingScope
+from api.shared.enums import AnimalViewingScope, Position
 from api.types import Types
 
 
@@ -53,7 +53,7 @@ def stub_animal_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubAnimalCoor
 
    def stub_clear_connection() -> None:
       if StubAnimalCoordinator.instances:
-         StubAnimalCoordinator.instances[ -1 ].closed = True
+         StubAnimalCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
@@ -80,8 +80,8 @@ def Test_GetAnimalsByExhibit_TestHttpRequest_ExpectMapsCoordinatorPayloadAndAnim
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'animals' ][ 0 ][ 'type' ] == 'animal'
-   assert stub_animal_coordinator.calls[ 0 ] == (
+   assert result[ 'animals' ][ Position.FIRST ][ 'type' ] == 'animal'
+   assert stub_animal_coordinator.calls[ Position.FIRST ] == (
       'get_animals_viewable_on_day',
       {
          'day': VISIT_DAY,
@@ -112,7 +112,7 @@ def Test_GetVisibleAnimals_TestHttpRequest_ExpectItineraryThresholdInCoordinator
    server.HttpRequestHandler.do_POST( handler )
 
    assert handler.statuses == [ 200 ]
-   assert stub_animal_coordinator.calls[ 0 ] == (
+   assert stub_animal_coordinator.calls[ Position.FIRST ] == (
       'get_animals_viewable_on_day',
       {
          'day': VISIT_DAY,
@@ -142,8 +142,8 @@ def Test_GetVisibleAnimals_TestHttpRequest_ExpectMapsCoordinatorPayloadAndSpecie
    server.HttpRequestHandler.do_POST( handler )
 
    assert handler.statuses == [ 200 ]
-   assert response_json( handler )[ 'animals' ][ 0 ][ 'species' ] == ANIMAL_NAME
-   assert stub_animal_coordinator.calls[ 0 ] == (
+   assert response_json( handler )[ 'animals' ][ Position.FIRST ][ 'species' ] == ANIMAL_NAME
+   assert stub_animal_coordinator.calls[ Position.FIRST ] == (
       'get_animals_viewable_on_day',
       {
          'day': VISIT_DAY,

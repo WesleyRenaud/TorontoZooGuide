@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ...shared.enums import ScheduleItemKind
+from ...shared.enums.position import Position
 from ...shared.value_conversion import ValueConversion
 from .viewing_spot_reference import ANIMAL_MASTER_ROUTE_STOP_KEY_LENGTH
 from .viewing_spot_reference import ViewingSpotReference
@@ -31,9 +32,9 @@ class ViewingSpotReferenceMapper():
             f'found { len( key ) }.' )
 
       species = ValueConversion.as_trimmed_string(
-         None if key[ 0 ] is None else str( key[ 0 ] ) )
+         None if key[ Position.FIRST ] is None else str( key[ Position.FIRST ] ) )
       exhibit = ValueConversion.as_trimmed_string(
-         None if key[ 1 ] is None else str( key[ 1 ] ) )
+         None if key[ Position.SECOND ] is None else str( key[ Position.SECOND ] ) )
 
       if not species or not exhibit:
          raise ValueError(
@@ -43,4 +44,4 @@ class ViewingSpotReferenceMapper():
          species=species,
          exhibit=exhibit,
          name=ValueConversion.as_nullable_string(
-            None if key[ 2 ] is None else str( key[ 2 ] ) ) )
+            None if key[ Position.THIRD ] is None else str( key[ Position.THIRD ] ) ) )

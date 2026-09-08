@@ -7,6 +7,7 @@ from .itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...models import Itinerary
 from .return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from ...shared.enums import ScheduleItemKind
+from ...shared.enums.position import Position
 from .transit_station_ride_gap_checker import TransitStationRideGapChecker
 from ...walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ...walk_graph.domain.walk_graph import WalkGraph
@@ -44,8 +45,8 @@ class ItineraryWalkRouteBuilder():
       route_stops: list[ ItineraryWalkRouteStop ] = []
       legs: list[ WalkRouteLeg ] = []
       route_node_ids: list[ str ] = []
-      entrance_anchor = ordered_anchors[ 0 ]
-      current_node_id = entrance_anchor.walk_node_ids[ 0 ]
+      entrance_anchor = ordered_anchors[ Position.FIRST ]
+      current_node_id = entrance_anchor.walk_node_ids[ Position.FIRST ]
       entrance_node_id = current_node_id
       previous_anchor = entrance_anchor
 
@@ -83,9 +84,9 @@ class ItineraryWalkRouteBuilder():
 
          legs.append(
             WalkTravelTimeCalculator.route_leg_with_travel_time(
-               from_item_key=route_stops[ -1 ].item_key,
+               from_item_key=route_stops[ Position.LAST ].item_key,
                to_item_key=next_anchor.item_key,
-               from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
+               from_schedule_item_kind=route_stops[ Position.LAST ].schedule_item_kind,
                to_schedule_item_kind=next_anchor.schedule_item_kind,
                node_ids=leg_path.node_ids,
                length_px=leg_path.length_px ) )
@@ -133,7 +134,7 @@ class ItineraryWalkRouteBuilder():
          return None
 
       if len( anchor.walk_node_ids ) == 1:
-         return anchor.walk_node_ids[ 0 ]
+         return anchor.walk_node_ids[ Position.FIRST ]
 
       if anchor.schedule_item_kind == ScheduleItemKind.ANIMAL:
          parsed_key = AnimalScheduleItemKey.parse_species_exhibit( anchor.item_key )

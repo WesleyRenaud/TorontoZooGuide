@@ -11,6 +11,7 @@ import api.http_request_handler as server
 from api.models.scheduled_occurrence import ScheduledOccurrence
 from api.models.wild_encounter import WildEncounter
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -108,7 +109,7 @@ def stub_wild_encounter_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubWi
 
    def stub_clear_connection() -> None:
       if StubWildEncounterCoordinator.instances:
-         StubWildEncounterCoordinator.instances[ -1 ].closed = True
+         StubWildEncounterCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
@@ -144,8 +145,8 @@ def Test_GetWildEncounters_TestHttpRequest_ExpectMapsVisitDateAndCollapsesSchedu
       )
    ]
    assert len( result[ 'wild_encounters' ] ) == 1
-   assert result[ 'wild_encounters' ][ 0 ][ 'name' ] == WILD_ENCOUNTER_NAME
-   assert result[ 'wild_encounters' ][ 0 ][ 'times' ] == [ '2:00 PM', '3:30 PM' ]
+   assert result[ 'wild_encounters' ][ Position.FIRST ][ 'name' ] == WILD_ENCOUNTER_NAME
+   assert result[ 'wild_encounters' ][ Position.FIRST ][ 'times' ] == [ '2:00 PM', '3:30 PM' ]
 
 
 def Test_GetWildEncounterNames_TestHttpRequest_ExpectReturnsEncounterNames(
@@ -170,7 +171,7 @@ def Test_GetWildEncounterOccurrences_TestHttpRequest_ExpectMapsWildEncounter(
 
    result = response_json( handler )
 
-   assert stub_wild_encounter_coordinator.calls[ -1 ] == (
+   assert stub_wild_encounter_coordinator.calls[ Position.LAST ] == (
       'get_wild_encounter_occurrences',
       { 'wild_encounter_name': WILD_ENCOUNTER_NAME },
    )
@@ -186,7 +187,7 @@ def Test_SetWildEncounterSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
 
    result = response_json( handler )
 
-   assert stub_wild_encounter_coordinator.calls[ -1 ] == (
+   assert stub_wild_encounter_coordinator.calls[ Position.LAST ] == (
       'set_wild_encounter_schedule',
       {
          'wild_encounter_name': WILD_ENCOUNTER_NAME,
@@ -242,7 +243,7 @@ def Test_WildEncounterScheduleOverlapResolution_TestHttpRequest_ExpectMapsPayloa
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert stub_wild_encounter_coordinator.calls[ -1 ] == (
+   assert stub_wild_encounter_coordinator.calls[ Position.LAST ] == (
       expected_method,
       {
          'wild_encounter_name': WILD_ENCOUNTER_NAME,
@@ -286,7 +287,7 @@ def Test_EndWildEncounterSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
 
    result = response_json( handler )
 
-   assert stub_wild_encounter_coordinator.calls[ -1 ] == (
+   assert stub_wild_encounter_coordinator.calls[ Position.LAST ] == (
       'end_wild_encounter_schedule',
       {
          'wild_encounter_name': WILD_ENCOUNTER_NAME,
@@ -334,7 +335,7 @@ def Test_CancelWildEncounterOccurrence_TestHttpRequest_ExpectMapsPayloadAndSucce
 
    result = response_json( handler )
 
-   assert stub_wild_encounter_coordinator.calls[ -1 ] == (
+   assert stub_wild_encounter_coordinator.calls[ Position.LAST ] == (
       'cancel_wild_encounter_occurrence',
       {
          'wild_encounter_name': WILD_ENCOUNTER_NAME,

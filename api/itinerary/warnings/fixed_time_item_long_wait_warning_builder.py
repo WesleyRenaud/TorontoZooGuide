@@ -22,6 +22,7 @@ from ...shared.constants import Constants
 from ...shared.duration_values import DurationValues
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
+from ...shared.enums.position import Position
 
 ItemT = TypeVar( 'ItemT' )
 
@@ -241,7 +242,7 @@ class FixedTimeItemLongWaitWarningBuilder():
       if not talk_details:
          return None
 
-      detail = talk_details[ 0 ]
+      detail = talk_details[ Position.FIRST ]
       proposed_talk = GuardiansTalk(
          name=new_talk.name,
          location=new_talk.location or detail.location,
@@ -276,7 +277,7 @@ class FixedTimeItemLongWaitWarningBuilder():
       if not encounter_details:
          return None
 
-      detail = encounter_details[ 0 ]
+      detail = encounter_details[ Position.FIRST ]
       proposed_encounter = WildEncounter(
          name=new_encounter.name,
          meeting_spot=new_encounter.meeting_spot or detail.meeting_spot,

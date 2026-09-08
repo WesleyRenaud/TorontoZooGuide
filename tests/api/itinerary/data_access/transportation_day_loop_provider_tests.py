@@ -6,6 +6,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.transportation_day_loop_provider import TransportationDayLoopProvider
+from api.shared.enums.position import Position
 
 
 VISIT_DATE = date( 2026, 6, 15 )
@@ -150,12 +151,12 @@ def Test_FetchTransportationRouteLegs_TestSummerRoute_ExpectMappedSegments(
       route='summer' )
 
    assert len( legs ) == 2
-   assert legs[ 0 ].from_station == MAIN
-   assert legs[ 0 ].to_station == CANADA
-   assert legs[ 0 ].duration_minutes == 20
-   assert legs[ 1 ].from_station == CANADA
-   assert legs[ 1 ].to_station == AFRICA
-   assert legs[ 1 ].duration_minutes == 10
+   assert legs[ Position.FIRST ].from_station == MAIN
+   assert legs[ Position.FIRST ].to_station == CANADA
+   assert legs[ Position.FIRST ].duration_minutes == 20
+   assert legs[ Position.SECOND ].from_station == CANADA
+   assert legs[ Position.SECOND ].to_station == AFRICA
+   assert legs[ Position.SECOND ].duration_minutes == 10
 
 
 def Test_FetchTransportationActiveRoute_TestMissingSchedule_ExpectNone(

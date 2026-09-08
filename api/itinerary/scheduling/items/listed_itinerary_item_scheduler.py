@@ -18,6 +18,7 @@ from .schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculat
 from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
 from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.enums import ItineraryErrorType
+from ....shared.enums.position import Position
 from ....types import Types
 from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ...warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
@@ -80,7 +81,7 @@ class ListedItineraryItemScheduler():
       candidate_walk_node_id = cls._walk_node_id_for_listed_item(
          conn,
          schedule_item_key )
-      visit_anchor_seconds = prepared_window.window[ 0 ]
+      visit_anchor_seconds = prepared_window.window[ Position.FIRST ]
       earliest_start_seconds = ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
          saved_itinerary,
          candidate_walk_node_id=candidate_walk_node_id,

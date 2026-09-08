@@ -13,6 +13,7 @@ from api.models.restroom import Restroom
 import api.request_connection_provider as request_connection
 from api.restrooms.controllers.restroom_controller import RestroomController
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -51,7 +52,7 @@ def stub_restroom_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestroom
 
    def stub_clear_connection() -> None:
       if StubRestroomCoordinator.instances:
-         StubRestroomCoordinator.instances[ -1 ].closed = True
+         StubRestroomCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

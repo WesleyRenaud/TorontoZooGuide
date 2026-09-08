@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.shared.enums.position import Position
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.map_location_walk_node_builder import MapLocationWalkNodeBuilder
@@ -44,10 +45,10 @@ def Test_Build_TestAttractionRow_ExpectSnappedWalkNode() -> None:
       attraction_rows=[ CAROUSEL_ROW ] )
 
    assert len( rows ) == 1
-   assert rows[ 0 ].kind == MapLocationKind.ATTRACTION
-   assert rows[ 0 ].name == 'Carousel'
-   assert rows[ 0 ].walk_node_id == 'n-2'
-   assert rows[ 0 ].snap_distance_px == 0.0
+   assert rows[ Position.FIRST ].kind == MapLocationKind.ATTRACTION
+   assert rows[ Position.FIRST ].name == 'Carousel'
+   assert rows[ Position.FIRST ].walk_node_id == 'n-2'
+   assert rows[ Position.FIRST ].snap_distance_px == 0.0
 
 
 def Test_Build_TestGuardiansTalkRow_ExpectLocationPreserved() -> None:
@@ -58,10 +59,10 @@ def Test_Build_TestGuardiansTalkRow_ExpectLocationPreserved() -> None:
       attraction_rows=[] )
 
    assert len( rows ) == 1
-   assert rows[ 0 ].kind == MapLocationKind.GUARDIANS_TALK
-   assert rows[ 0 ].name == 'Komodo Dragon'
-   assert rows[ 0 ].location == 'Indo-Malaya'
-   assert rows[ 0 ].walk_node_id == 'n-1'
+   assert rows[ Position.FIRST ].kind == MapLocationKind.GUARDIANS_TALK
+   assert rows[ Position.FIRST ].name == 'Komodo Dragon'
+   assert rows[ Position.FIRST ].location == 'Indo-Malaya'
+   assert rows[ Position.FIRST ].walk_node_id == 'n-1'
 
 
 def Test_Build_TestMixedRows_ExpectSortedByKindAndName() -> None:

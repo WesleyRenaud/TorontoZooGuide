@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.defibrillators.data_access.defibrillator_provider import DefibrillatorProvider
+from api.shared.enums.position import Position
 
 
 DEFIBRILLATOR_PROVIDER_SCHEMA = """
@@ -44,5 +45,5 @@ def Test_FetchDefibrillators_TestPopulated_ExpectMappedCoordinates(
       defibrillator_provider_conn )
 
    assert len( defibrillators ) == 1
-   assert defibrillators[ 0 ].x_coord == 12.5
-   assert defibrillators[ 0 ].y_coord == 67.5
+   assert defibrillators[ Position.FIRST ].x_coord == 12.5
+   assert defibrillators[ Position.FIRST ].y_coord == 67.5

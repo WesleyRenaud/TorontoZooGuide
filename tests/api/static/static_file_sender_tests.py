@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api_test_support.fake_handler import FakeHandler
 
+from api.shared.enums.position import Position
 from api.static.static_file_sender import StaticFileSender
 
 
@@ -23,5 +24,5 @@ def Test_Send_TestPngFile_ExpectServesBinaryInChunks() -> None:
       './images/details/animals/indo-malaya-outdoor/cheetah.png' )
 
    assert handler.statuses == [ 200 ]
-   assert handler.sent_headers[ 0 ][ 1 ] == 'image/png'
+   assert handler.sent_headers[ Position.FIRST ][ Position.SECOND ] == 'image/png'
    assert handler.wfile.getvalue().startswith( b'\x89PNG' )

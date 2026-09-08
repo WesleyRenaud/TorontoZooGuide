@@ -6,6 +6,7 @@ from api.attractions.data_access.attraction_record import AttractionRecord
 from api.attractions.data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.domain.attraction_builder import AttractionBuilder
+from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
@@ -206,7 +207,7 @@ def Test_BuildAttractions_TestClosedAttraction_ExpectExcludedUnlessRequested() -
 
    assert open_only == []
    assert len( with_closed ) == 1
-   assert with_closed[ 0 ].is_closed is True
+   assert with_closed[ Position.FIRST ].is_closed is True
 
 
 def Test_BuildAttraction_TestClosureOverrideOnClosedDay_ExpectOverrideMessage() -> None:

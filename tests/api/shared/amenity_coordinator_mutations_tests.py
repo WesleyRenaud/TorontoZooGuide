@@ -5,6 +5,7 @@ import pytest
 from api.restaurants.scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
 from api.restaurants.scheduling.restaurant_schedule_override import RestaurantScheduleOverride
 from api.shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -86,7 +87,7 @@ def Test_SetOpeningSchedule_TestPayload_ExpectBuiltScheduleSaved(
       message=MESSAGE ) is True
 
    assert len( saved_schedules ) == 1
-   assert saved_schedules[ 0 ].monday is True
+   assert saved_schedules[ Position.FIRST ].monday is True
 
 
 def Test_SetAsClosed_TestPayload_ExpectBuiltScheduleSaved(
@@ -102,8 +103,8 @@ def Test_SetAsClosed_TestPayload_ExpectBuiltScheduleSaved(
 
    assert mutations.set_as_closed( AMENITY_NAME, START_DATE, END_DATE, MESSAGE ) is True
    assert len( saved_schedules ) == 1
-   assert saved_schedules[ 0 ].restaurant == AMENITY_NAME
-   assert saved_schedules[ 0 ].message == MESSAGE
+   assert saved_schedules[ Position.FIRST ].restaurant == AMENITY_NAME
+   assert saved_schedules[ Position.FIRST ].message == MESSAGE
 
 
 def Test_SetClosureOverride_TestPayload_ExpectOverrideSaved(
@@ -119,7 +120,7 @@ def Test_SetClosureOverride_TestPayload_ExpectOverrideSaved(
 
    assert mutations.set_closure_override( AMENITY_NAME, START_DATE, END_DATE, MESSAGE ) is True
    assert len( saved_overrides ) == 1
-   assert saved_overrides[ 0 ].restaurant == AMENITY_NAME
+   assert saved_overrides[ Position.FIRST ].restaurant == AMENITY_NAME
 
 
 def Test_ReplaceOpeningScheduleOverlaps_TestPayload_ExpectReplacePath(
@@ -148,7 +149,7 @@ def Test_ReplaceOpeningScheduleOverlaps_TestPayload_ExpectReplacePath(
       message=MESSAGE ) is True
 
    assert len( replaced ) == 1
-   assert replaced[ 0 ].monday is True
+   assert replaced[ Position.FIRST ].monday is True
 
 
 def Test_TrimOpeningScheduleOverlaps_TestPayload_ExpectTrimPath(
@@ -177,4 +178,4 @@ def Test_TrimOpeningScheduleOverlaps_TestPayload_ExpectTrimPath(
       message=MESSAGE ) is True
 
    assert len( trimmed ) == 1
-   assert trimmed[ 0 ].tuesday is True
+   assert trimmed[ Position.FIRST ].tuesday is True

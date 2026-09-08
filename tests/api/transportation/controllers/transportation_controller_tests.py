@@ -13,6 +13,7 @@ from api.models.active_transportation_route import ActiveTransportationRoute
 from api.models.transportation import Transportation
 from api.models.transportation_station import TransportationStation
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.transportation.controllers.transportation_controller import TransportationController
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from api.types import Types
@@ -66,7 +67,7 @@ def stub_transportation_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubTr
 
    def stub_clear_connection() -> None:
       if StubTransportationCoordinator.instances:
-         StubTransportationCoordinator.instances[ -1 ].closed = True
+         StubTransportationCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
@@ -125,7 +126,7 @@ def Test_GetTransportationRoute_TestHttpRequest_ExpectMapsRouteRequestAndReturns
 
    assert handler.statuses == [ 200 ]
    assert result == _sample_route().to_dict()
-   assert stub_transportation_coordinator.calls[ -1 ] == (
+   assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'get_transportation_route',
       {
          'route': ROUTE_NAME,
@@ -147,7 +148,7 @@ def Test_GetTransportationStationNames_TestHttpRequest_ExpectDefaultsTransportat
    result = response_json( handler )
 
    assert result[ 'transportation_stations' ] == [ STATION_NAME ]
-   assert stub_transportation_coordinator.calls[ -1 ] == (
+   assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'get_transportation_station_names',
       { 'transportation': TRANSPORTATION_NAME },
    )
@@ -169,7 +170,7 @@ def Test_SetTransportationStationClosed_TestHttpRequest_ExpectMapsPayloadAndSucc
 
    result = response_json( handler )
 
-   assert stub_transportation_coordinator.calls[ -1 ] == (
+   assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'set_transportation_station_as_closed',
       {
          'transportation_station': STATION_NAME,
@@ -208,7 +209,7 @@ def Test_SetTransportationStationOpen_TestHttpRequest_ExpectMapsPayloadAndSucces
 
    result = response_json( handler )
 
-   assert stub_transportation_coordinator.calls[ -1 ] == (
+   assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'set_transportation_station_as_open',
       {
          'transportation_station': STATION_NAME,
@@ -248,7 +249,7 @@ def Test_SetCurrentTransportationRoute_TestHttpRequest_ExpectMapsPayloadAndSucce
 
    result = response_json( handler )
 
-   assert stub_transportation_coordinator.calls[ -1 ] == (
+   assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'set_current_transportation_route',
       {
          'route': 'winter',

@@ -5,6 +5,7 @@ from datetime import date
 from api.restrooms.data_access.restroom_record import RestroomRecord
 from api.restrooms.domain.restroom_builder import RestroomBuilder
 from api.restrooms.domain.restroom_context import RestroomContext
+from api.shared.enums.position import Position
 
 
 RESTROOM_NAME = 'Entrance Restroom'
@@ -79,7 +80,7 @@ def Test_BuildRestrooms_TestClosedRestroom_ExpectExcludedUnlessRequested() -> No
 
    assert open_only == []
    assert len( with_closed ) == 1
-   assert with_closed[ 0 ].title == RESTROOM_NAME
+   assert with_closed[ Position.FIRST ].title == RESTROOM_NAME
 
 
 def Test_IsStatusActive_TestNullIsClosed_ExpectFalse() -> None:

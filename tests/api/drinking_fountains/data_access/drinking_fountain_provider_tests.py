@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.drinking_fountains.data_access.drinking_fountain_provider import DrinkingFountainProvider
+from api.shared.enums.position import Position
 
 
 DRINKING_FOUNTAIN_PROVIDER_SCHEMA = """
@@ -44,5 +45,5 @@ def Test_FetchDrinkingFountainRecords_TestPopulated_ExpectMappedCoordinates(
       drinking_fountain_provider_conn )
 
    assert len( fountains ) == 1
-   assert fountains[ 0 ].x_coord == 4.5
-   assert fountains[ 0 ].y_coord == 8.25
+   assert fountains[ Position.FIRST ].x_coord == 4.5
+   assert fountains[ Position.FIRST ].y_coord == 8.25

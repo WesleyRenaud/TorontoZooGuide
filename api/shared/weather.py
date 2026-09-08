@@ -4,6 +4,7 @@ import calendar
 import math
 
 from .calendar_dates import CalendarDates
+from .enums.position import Position
 from ..types import Types
 
 
@@ -11,7 +12,7 @@ class Weather:
    @staticmethod
    def get_average_temperature( month: Types.MonthInput, day: Types.VisitDay ) -> float:
       month = CalendarDates.normalize_month( month )
-      day_of_year = sum( calendar.monthrange( 2024, m )[ 1 ] for m in range( 1, month ) ) + day
+      day_of_year = sum( calendar.monthrange( 2024, m )[ Position.SECOND ] for m in range( 1, month ) ) + day
 
       month_base = {
          1: -5.0,
@@ -32,7 +33,7 @@ class Weather:
       cumulative = 1
       for m in range( 1, 13 ):
          month_start_doy.append( ( cumulative, month_base[ m ] ) )
-         cumulative += calendar.monthrange( 2024, m )[ 1 ]
+         cumulative += calendar.monthrange( 2024, m )[ Position.SECOND ]
 
       for i in range( len( month_start_doy ) - 1 ):
          start_day, start_temp = month_start_doy[ i ]
@@ -42,7 +43,7 @@ class Weather:
             temp = start_temp + ( end_temp - start_temp ) * progress
             return round( temp, 1 )
 
-      temp = month_start_doy[ -1 ][ 1 ]
+      temp = month_start_doy[ Position.LAST ][ Position.SECOND ]
       return round( temp, 1 )
 
 

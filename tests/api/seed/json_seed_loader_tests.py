@@ -7,6 +7,7 @@ from typing import Any, cast
 import pytest
 
 from api.seed.json_seed_loader import JsonSeedLoader, SEED_DATA_DIR
+from api.shared.enums.position import Position
 from api.types import Types
 
 class StubCursor:
@@ -232,7 +233,7 @@ def Test_InsertRows_TestValidRows_ExpectExecutemany() -> None:
       rows=[ [ 'Lion', 'Africa' ] ] )
 
    assert len( stub.executemany_calls ) == 1
-   sql, rows = stub.executemany_calls[ 0 ]
+   sql, rows = stub.executemany_calls[ Position.FIRST ]
    assert 'INSERT INTO Animal' in sql
    assert rows == [ [ 'Lion', 'Africa' ] ]
 
@@ -248,7 +249,7 @@ def Test_InsertJsonRows_TestPath_ExpectInserted(
       columns=[ 'SPECIES', 'EXHIBIT' ],
       path=path )
 
-   assert stub.executemany_calls[ 0 ][ 1 ] == [ [ 'Lion', 'Africa' ] ]
+   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
 
 def Test_InsertJsonRecords_TestPath_ExpectInserted(
       tmp_path: Path ) -> None:
@@ -265,7 +266,7 @@ def Test_InsertJsonRecords_TestPath_ExpectInserted(
       fields=[ 'species', 'exhibit' ],
       path=path )
 
-   assert stub.executemany_calls[ 0 ][ 1 ] == [ [ 'Lion', 'Africa' ] ]
+   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
 
 def Test_InsertDayCurveFile_TestPath_ExpectInserted(
       tmp_path: Path ) -> None:
@@ -286,7 +287,7 @@ def Test_InsertDayCurveFile_TestPath_ExpectInserted(
       entity_fields=[ 'species' ],
       day_fields=[ 'day', 'value' ] )
 
-   assert stub.executemany_calls[ 0 ][ 1 ] == [ [ 'Lion', 1, 0.5 ] ]
+   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 1, 0.5 ] ]
 
 def Test_InsertDayCurveDirectory_TestDirectory_ExpectInserted(
       tmp_path: Path ) -> None:
@@ -307,4 +308,4 @@ def Test_InsertDayCurveDirectory_TestDirectory_ExpectInserted(
       entity_fields=[ 'species' ],
       day_fields=[ 'day', 'value' ] )
 
-   assert stub.executemany_calls[ 0 ][ 1 ] == [ [ 'Lion', 1, 0.5 ] ]
+   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 1, 0.5 ] ]

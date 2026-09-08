@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_attraction_mapper import ItineraryAttractionMapper
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.shared.enums.position import Position
 
 
 ATTRACTION_ROW = {
@@ -26,4 +27,4 @@ def Test_MapRecord_TestRow_ExpectAttractionRecord() -> None:
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
    records = ItineraryAttractionMapper.map_records( [ ATTRACTION_ROW ] )
 
-   assert records[ 0 ].attraction == 'Conservation Carousel'
+   assert records[ Position.FIRST ].attraction == 'Conservation Carousel'

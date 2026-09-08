@@ -6,6 +6,7 @@ import sqlite3
 import pytest
 
 from api.attractions.data_access.attraction_provider import AttractionProvider
+from api.shared.enums.position import Position
 
 
 ATTRACTION_PROVIDER_SCHEMA = """
@@ -148,7 +149,7 @@ def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliers
       VISIT_DATE )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == CAROUSEL
    assert record.free_with_admission == 1
    assert record.description == f'{ CAROUSEL } description'
@@ -210,7 +211,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
       VISIT_DATE )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == ZOOMOBILE
    assert record.free_with_admission == 0
    assert record.weekday_multiplier == 0.5
@@ -254,8 +255,8 @@ def Test_FetchAttractionRecords_TestHoursOutsideVisitDate_ExpectNullHours(
       VISIT_DATE )
 
    assert len( records ) == 1
-   assert records[ 0 ].weekday_start_time is None
-   assert records[ 0 ].weekday_end_time is None
+   assert records[ Position.FIRST ].weekday_start_time is None
+   assert records[ Position.FIRST ].weekday_end_time is None
 
 
 def Test_FetchAttractionRecordForCalendarDay_TestMissingAttraction_ExpectNone(
@@ -344,7 +345,7 @@ def Test_FetchAttractionScheduleRecords_TestPopulated_ExpectMappedFields(
       attraction_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.attraction == CAROUSEL
    assert record.schedule_start_date == '2026-05-01'
    assert record.schedule_end_date == '2026-09-30'
@@ -380,7 +381,7 @@ def Test_FetchAttractionScheduleOverrideRecords_TestPopulated_ExpectMappedFields
       attraction_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.attraction == CAROUSEL
    assert record.override_start_date == '2026-07-01'
    assert record.override_end_date == '2026-07-07'

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -191,7 +192,7 @@ def Test_AppendRegion_TestSameNodeIds_ExpectMergedAttachments() -> None:
       attachment_node_id='m-2' )
 
    assert len( spur_regions ) == 2
-   assert spur_regions[ 1 ].attachment_node_ids == frozenset( { 'm-1', 'm-2' } )
+   assert spur_regions[ Position.SECOND ].attachment_node_ids == frozenset( { 'm-1', 'm-2' } )
 
 
 def Test_MergeSubsetSpurs_TestNestedSpurs_ExpectLargestOnly() -> None:

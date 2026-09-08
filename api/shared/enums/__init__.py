@@ -6,6 +6,7 @@ from .itinerary_event_type import ItineraryEventType
 from .itinerary_save_issue_item_type import ItinerarySaveIssueItemType
 from .itinerary_transportation_station_role import ItineraryTransportationStationRole
 from .map_item_type import MapItemType
+from .position import Position
 from .schedule_item_kind import ScheduleItemKind
 from .schedule_status import ScheduleStatus
 from .transportation_name import TransportationName
@@ -21,6 +22,7 @@ __all__ = [
    'ItinerarySaveIssueItemType',
    'ItineraryTransportationStationRole',
    'MapItemType',
+   'Position',
    'ScheduleItemKind',
    'ScheduleStatus',
    'TransportationName',

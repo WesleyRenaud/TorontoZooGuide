@@ -11,6 +11,7 @@ from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ....shared.calendar_dates import DateValues
+from ....shared.enums.position import Position
 from ....shared.operating_hours import OperatingHours
 from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -75,7 +76,7 @@ class LoopUnitAttractionHoursScheduler():
       if not unit_soft_pins:
          return None
 
-      first_soft_pin = unit_soft_pins[ 0 ]
+      first_soft_pin = unit_soft_pins[ Position.FIRST ]
       before_stops = AttractionHoursSoftPinResolver.stops_before(
          list( prepared_unit.unit.stops ),
          loop_id=loop_id,

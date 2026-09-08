@@ -5,6 +5,7 @@ import pytest
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
+from api.shared.enums.position import Position
 from api.walk_graph.master_route_provider import MasterRouteProvider
 
 
@@ -97,12 +98,12 @@ def Test_Group_TestMixedLoopAndUnmappedAnimals_ExpectSortedLoopGroups(
    groups = MasterRouteLoopStopGrouper.group( animals )
 
    assert len( groups ) == 3
-   assert [ animal.species for animal in groups[ 0 ] ] == [
+   assert [ animal.species for animal in groups[ Position.FIRST ] ] == [
       'African Penguin',
       'African Lion',
    ]
-   assert [ animal.species for animal in groups[ 1 ] ] == [ 'Cheetah' ]
-   assert [ animal.species for animal in groups[ 2 ] ] == [ 'Unknown Animal' ]
+   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [ 'Cheetah' ]
+   assert [ animal.species for animal in groups[ Position.THIRD ] ] == [ 'Unknown Animal' ]
 
 
 def Test_Group_TestWarthogBeforeGiraffe_ExpectSeparateLoopGroupsInRouteOrder(
@@ -115,8 +116,8 @@ def Test_Group_TestWarthogBeforeGiraffe_ExpectSeparateLoopGroupsInRouteOrder(
    groups = MasterRouteLoopStopGrouper.group( animals )
 
    assert len( groups ) == 2
-   assert [ animal.species for animal in groups[ 0 ] ] == [ 'Warthog' ]
-   assert [ animal.species for animal in groups[ 1 ] ] == [ 'Masai Giraffe' ]
+   assert [ animal.species for animal in groups[ Position.FIRST ] ] == [ 'Warthog' ]
+   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [ 'Masai Giraffe' ]
 
 
 def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(
@@ -130,7 +131,7 @@ def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(
    groups = MasterRouteLoopStopGrouper.group( animals )
 
    assert len( groups ) == 1
-   assert [ animal.species for animal in groups[ 0 ] ] == [
+   assert [ animal.species for animal in groups[ Position.FIRST ] ] == [
       'African Penguin',
       'African Lion',
       'Cheetah',

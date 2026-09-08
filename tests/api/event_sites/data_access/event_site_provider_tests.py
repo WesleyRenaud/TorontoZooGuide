@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.event_sites.data_access.event_site_provider import EventSiteProvider
+from api.shared.enums.position import Position
 
 
 EVENT_SITE_PROVIDER_SCHEMA = """
@@ -51,6 +52,6 @@ def Test_FetchEventSites_TestPopulated_ExpectMappedFields(
    sites = EventSiteProvider.fetch_event_sites( event_site_provider_conn )
 
    assert len( sites ) == 1
-   assert sites[ 0 ].name == CELEBRATION_SITE
-   assert sites[ 0 ].x_coord == 10.0
-   assert sites[ 0 ].y_coord == 20.0
+   assert sites[ Position.FIRST ].name == CELEBRATION_SITE
+   assert sites[ Position.FIRST ].x_coord == 10.0
+   assert sites[ Position.FIRST ].y_coord == 20.0

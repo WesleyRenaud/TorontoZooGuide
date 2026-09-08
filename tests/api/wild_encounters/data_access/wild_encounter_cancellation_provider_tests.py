@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.wild_encounters.cancellations.wild_encounter_cancellation_input import WildEncounterCancellationInput
 from api.wild_encounters.data_access.wild_encounter_cancellation_provider import WildEncounterCancellationProvider
 
@@ -105,8 +106,8 @@ def Test_SaveCancellation_TestNewRow_ExpectTrueAndPersisted(
       KANGAROO )
 
    assert len( records ) == 1
-   assert records[ 0 ].cancellation_date == CANCELLATION_DATE
-   assert records[ 0 ].encounter_time == ENCOUNTER_TIME
+   assert records[ Position.FIRST ].cancellation_date == CANCELLATION_DATE
+   assert records[ Position.FIRST ].encounter_time == ENCOUNTER_TIME
 
 
 def Test_SaveCancellation_TestDuplicate_ExpectFalse(

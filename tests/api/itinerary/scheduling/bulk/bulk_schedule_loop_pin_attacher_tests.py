@@ -9,7 +9,7 @@ from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pin_attacher import BulkScheduleLoopPinAttacher
 from api.models import GuardiansTalk
 from api.models import WildEncounter
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 
 
 ZEBRA_TALK = "Grevy's Zebra"
@@ -185,13 +185,13 @@ def Test_AttachToWindows_TestAfricanLionTalk_ExpectPinOnBothWindows() -> None:
       [ lion_pin ] )
 
    assert len( attached_windows ) == 2
-   assert attached_windows[ 0 ].start_seconds == 9 * 3600
-   assert attached_windows[ 0 ].end_seconds == 11 * 3600
-   assert attached_windows[ 1 ].start_seconds == 11 * 3600 + 30 * 60
-   assert attached_windows[ 1 ].end_seconds == 17 * 3600
-   assert len( attached_windows[ 0 ].loop_pins ) == 1
-   assert len( attached_windows[ 1 ].loop_pins ) == 1
-   assert attached_windows[ 0 ].loop_pins[ 0 ].stop.item_key == AFRICAN_LION_TALK
+   assert attached_windows[ Position.FIRST ].start_seconds == 9 * 3600
+   assert attached_windows[ Position.FIRST ].end_seconds == 11 * 3600
+   assert attached_windows[ Position.SECOND ].start_seconds == 11 * 3600 + 30 * 60
+   assert attached_windows[ Position.SECOND ].end_seconds == 17 * 3600
+   assert len( attached_windows[ Position.FIRST ].loop_pins ) == 1
+   assert len( attached_windows[ Position.SECOND ].loop_pins ) == 1
+   assert attached_windows[ Position.FIRST ].loop_pins[ Position.FIRST ].stop.item_key == AFRICAN_LION_TALK
 
 
 def Test_SeparateBoundariesAndPins_TestUnpinnedWildEncounter_ExpectNoLoopPin(

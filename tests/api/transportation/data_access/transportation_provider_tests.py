@@ -5,6 +5,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.transportation.data_access.transportation_provider import TransportationProvider
 
 TRANSPORTATION_PROVIDER_SCHEMA = """
@@ -126,7 +127,7 @@ def Test_FetchTransportationRecords_TestPopulated_ExpectMappedFields(
       VISIT_DATE )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == ZOOMOBILE
    assert record.is_also_attraction is True
    assert record.free_with_admission is True

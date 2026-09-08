@@ -14,6 +14,7 @@ from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ..scheduled_activity_visit_times_coverer import ScheduledActivityVisitTimesCoverer
 from ....shared.enums import ItineraryErrorType
+from ....shared.enums.position import Position
 from ....types import Types
 from ..unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from ...warnings.wild_encounter_long_wait_warning_builder import WildEncounterLongWaitWarningBuilder
@@ -143,7 +144,7 @@ class WildEncounterItineraryItemScheduler():
       if pending_reasons:
          return ItinerarySaveResultBuilder.save_result(
             conn,
-            pending_reasons[ 0 ].code,
+            pending_reasons[ Position.FIRST ].code,
             reasons=pending_reasons,
             **itinerary_context )
 

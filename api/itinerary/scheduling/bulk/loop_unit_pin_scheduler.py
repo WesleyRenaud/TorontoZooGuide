@@ -10,6 +10,7 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
+from ....shared.enums.position import Position
 from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
@@ -71,7 +72,7 @@ class LoopUnitPinScheduler():
       if not unit_pins:
          return None
 
-      first_pin = unit_pins[ 0 ]
+      first_pin = unit_pins[ Position.FIRST ]
       before_pin_animals = LoopPinSegmentSplitter.animals_before_first_pin(
          list( prepared_unit.unit.stops ),
          loop_id=loop_id,
@@ -247,7 +248,7 @@ class LoopUnitPinScheduler():
       if not loop_pins:
          return False
 
-      return schedule_cursor_seconds < loop_pins[ -1 ].end_seconds
+      return schedule_cursor_seconds < loop_pins[ Position.LAST ].end_seconds
 
 
    @classmethod

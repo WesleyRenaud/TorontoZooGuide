@@ -5,6 +5,7 @@ import pytest
 from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimmer import GuardiansTalkScheduleTrimmer
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.enums.position import Position
 
 
 def Test_Apply_TestWildEncounterBlocker_ExpectTalkShiftedAfterEncounter() -> None:
@@ -24,8 +25,8 @@ def Test_Apply_TestWildEncounterBlocker_ExpectTalkShiftedAfterEncounter() -> Non
 
    trimmed_talks = GuardiansTalkScheduleTrimmer.apply( [ talk ], [ encounter ] )
 
-   assert trimmed_talks[ 0 ].start_time == '1:45 PM'
-   assert trimmed_talks[ 0 ].end_time == '2:00 PM'
+   assert trimmed_talks[ Position.FIRST ].start_time == '1:45 PM'
+   assert trimmed_talks[ Position.FIRST ].end_time == '2:00 PM'
 
 
 def Test_Apply_TestEarlierTalkPrecedence_ExpectLaterTalkShifted() -> None:
@@ -47,10 +48,10 @@ def Test_Apply_TestEarlierTalkPrecedence_ExpectLaterTalkShifted() -> None:
       [],
    )
 
-   assert trimmed_talks[ 0 ].start_time == '1:30 PM'
-   assert trimmed_talks[ 0 ].end_time == '2:00 PM'
-   assert trimmed_talks[ 1 ].start_time == '2:00 PM'
-   assert trimmed_talks[ 1 ].end_time == '2:15 PM'
+   assert trimmed_talks[ Position.FIRST ].start_time == '1:30 PM'
+   assert trimmed_talks[ Position.FIRST ].end_time == '2:00 PM'
+   assert trimmed_talks[ Position.SECOND ].start_time == '2:00 PM'
+   assert trimmed_talks[ Position.SECOND ].end_time == '2:15 PM'
 
 
 def Test_TrimRangeAgainstBlocker_TestBlockerCoversStart_ExpectShiftedStart() -> None:

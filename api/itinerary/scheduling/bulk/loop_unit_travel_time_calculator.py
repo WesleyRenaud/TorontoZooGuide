@@ -4,6 +4,7 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
+from ....shared.enums.position import Position
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import WalkGraphAdjacency
 
@@ -40,8 +41,8 @@ class LoopUnitTravelTimeCalculator():
          return []
 
       # One travel entry per stop; the first is always 0 (approach is separate).
-      travels = [ 0 ]
-      previous_node_id = LoopScheduleUnitBuilder.walk_node_id_for_stop( stops[ 0 ] )
+      travels = [ Position.FIRST ]
+      previous_node_id = LoopScheduleUnitBuilder.walk_node_id_for_stop( stops[ Position.FIRST ] )
 
       for stop in stops[ 1: ]:
          next_node_id = LoopScheduleUnitBuilder.walk_node_id_for_stop( stop )

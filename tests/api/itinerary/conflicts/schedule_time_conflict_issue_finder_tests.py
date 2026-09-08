@@ -3,7 +3,7 @@ from __future__ import annotations
 from api.itinerary.conflicts.schedule_time_conflict_issue_finder import ScheduleTimeConflictIssueFinder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 
 def Test_ScheduleTimeRange_TestInvalidEndBeforeStart_ExpectNone() -> None:
    talk = GuardiansTalkDiff(
@@ -32,8 +32,8 @@ def Test_Find_TestOverlappingTalkAndEncounter_ExpectConflictIssue() -> None:
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
    assert len( issues ) == 1
-   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert [ item.name for item in issues[ 0 ].items ] == [
+   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert [ item.name for item in issues[ Position.FIRST ].items ] == [
       "Grevy's Zebra",
       'African Rainforest',
    ]
@@ -94,8 +94,8 @@ def Test_Find_TestGroupedMutualOverlap_ExpectSingleConflictGroup() -> None:
       [ rainforest, kangaroo ] )
 
    assert len( issues ) == 1
-   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ 0 ].items } == {
+   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ Position.FIRST ].items } == {
       'African Lion',
       'African Rainforest',
       'Kangaroo',
@@ -119,7 +119,7 @@ def Test_Find_TestOverlappingEncountersOnly_ExpectConflictIssue() -> None:
    issues = ScheduleTimeConflictIssueFinder.find( [], [ rainforest, kangaroo ] )
 
    assert len( issues ) == 1
-   assert { item.name for item in issues[ 0 ].items } == {
+   assert { item.name for item in issues[ Position.FIRST ].items } == {
       'African Rainforest',
       'Kangaroo',
    }
@@ -142,8 +142,8 @@ def Test_Find_TestPartialTalkEncounterOverlap_ExpectConflictIssue() -> None:
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
    assert len( issues ) == 1
-   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ 0 ].items } == {
+   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ Position.FIRST ].items } == {
       'African Lion',
       'Grizzly Bear',
    }
@@ -167,8 +167,8 @@ def Test_Find_TestTurtleTalkRhinoEncounterAt1400_ExpectConflictIssue() -> None:
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
    assert len( issues ) == 1
-   assert issues[ 0 ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ 0 ].items } == {
+   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issues[ Position.FIRST ].items } == {
       'Nile Soft-Shelled Turtle',
       'Guardians of White Rhinos',
    }

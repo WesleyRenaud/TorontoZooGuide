@@ -8,6 +8,7 @@ from api.giftshops.data_access.gift_shop_schedule_provider import GiftShopSchedu
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from api.giftshops.scheduling.gift_shop_opening_schedule import GiftShopOpeningSchedule
 from api.giftshops.scheduling.gift_shop_schedule_override import GiftShopScheduleOverride
+from api.shared.enums.position import Position
 
 
 GIFT_SHOP = 'Africa Gift Shop'
@@ -213,10 +214,10 @@ def Test_FetchOpeningScheduleConflicts_TestOverlappingSchedule_ExpectConflictRec
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].gift_shop == GIFT_SHOP
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].schedule_end_date == END_DATE
-   assert conflicts[ 0 ].schedule_message == MESSAGE
+   assert conflicts[ Position.FIRST ].gift_shop == GIFT_SHOP
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].schedule_end_date == END_DATE
+   assert conflicts[ Position.FIRST ].schedule_message == MESSAGE
 
 
 def Test_FetchOpeningScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(

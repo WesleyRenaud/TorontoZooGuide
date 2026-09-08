@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_animal_mapper import ItineraryAnimalMapper
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.shared.enums.position import Position
 
 
 ANIMAL_ROW = {
@@ -35,4 +36,4 @@ def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
    records = ItineraryAnimalMapper.map_records( [ ANIMAL_ROW ] )
 
    assert len( records ) == 1
-   assert records[ 0 ].species == 'African Lion'
+   assert records[ Position.FIRST ].species == 'African Lion'

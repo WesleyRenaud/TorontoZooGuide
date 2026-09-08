@@ -13,7 +13,7 @@ from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import Guardian
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 
 
 CARIBOU_TALK = 'Caribou'
@@ -331,9 +331,9 @@ def Test_UncoverForUnavailableTalks_TestDeletedCaribouTalkCoveredAnimal_ExpectTh
       [ DELETED_CARIBOU_TALK ],
    )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time == '3:00 PM'
-   assert result[ 0 ].end_time == '3:03 PM'
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time == '3:00 PM'
+   assert result[ Position.FIRST ].end_time == '3:03 PM'
 
 
 def Test_UncoverForUnavailableTalks_TestDeletedTalkWithoutEnclosureDuration_ExpectScheduleCleared(
@@ -364,9 +364,9 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkWithoutEnclosureDuration_Expe
       [ DELETED_CARIBOU_TALK ],
    )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time is None
-   assert result[ 0 ].end_time is None
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time is None
+   assert result[ Position.FIRST ].end_time is None
 
 
 def Test_KeysToCover_TestPenguinOutdoorLoopPin_ExpectOutdoorRowOnly(
@@ -446,7 +446,7 @@ def Test_ApplyAndRestore_TestPenguinOutdoor_ExpectIndoorUntouched(
    cur.close()
 
    assert len( restored.animals ) == 1
-   assert restored.animals[ 0 ].enclosure_name == 'Outdoor'
+   assert restored.animals[ Position.FIRST ].enclosure_name == 'Outdoor'
    assert restored.replacement_end_seconds == 11 * 3600 + 5 * 60
 
    rows_by_enclosure = {
@@ -775,8 +775,8 @@ def Test_UncoverForUnavailableTalks_TestActiveTalk_ExpectNoChange(
       ],
    )
 
-   assert result[ 0 ].covered_by_talk is True
-   assert result[ 0 ].start_time == '3:00 PM'
+   assert result[ Position.FIRST ].covered_by_talk is True
+   assert result[ Position.FIRST ].start_time == '3:00 PM'
 
 
 def Test_UncoverForUnavailableTalks_TestDeletedTalkInvalidTimes_ExpectNoChange(
@@ -811,7 +811,7 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkInvalidTimes_ExpectNoChange(
       ],
    )
 
-   assert result[ 0 ].covered_by_talk is True
+   assert result[ Position.FIRST ].covered_by_talk is True
 
 
 def Test_UncoverForUnavailableTalks_TestDeletedTalkUnlinkedAnimal_ExpectNoChange(
@@ -838,8 +838,8 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkUnlinkedAnimal_ExpectNoChange
       [ DELETED_CARIBOU_TALK ],
    )
 
-   assert result[ 0 ].covered_by_talk is True
-   assert result[ 0 ].start_time == '11:00 AM'
+   assert result[ Position.FIRST ].covered_by_talk is True
+   assert result[ Position.FIRST ].start_time == '11:00 AM'
 
 
 def Test_RestoreAfterRemoved_TestUncoveredLinkedAnimal_ExpectSkipped(

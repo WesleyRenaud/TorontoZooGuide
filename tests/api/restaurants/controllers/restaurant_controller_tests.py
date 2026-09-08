@@ -13,6 +13,7 @@ from api.models.restaurant import Restaurant
 import api.request_connection_provider as request_connection
 from api.restaurants.controllers.restaurant_controller import RestaurantController
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -87,7 +88,7 @@ def stub_restaurant_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestau
 
    def stub_clear_connection() -> None:
       if StubRestaurantCoordinator.instances:
-         StubRestaurantCoordinator.instances[ -1 ].closed = True
+         StubRestaurantCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

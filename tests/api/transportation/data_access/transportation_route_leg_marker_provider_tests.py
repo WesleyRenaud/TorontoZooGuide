@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 from api.transportation.data_access.transportation_route_leg_marker_provider import TransportationRouteLegMarkerProvider
 from api.transportation.data_access.transportation_route_leg_marker_record import TransportationRouteLegMarkerRecord
 
@@ -188,4 +189,4 @@ def Test_FetchTransportationRouteLegMarkerIds_TestWraparoundLeg_ExpectTravelOrde
    )
 
    assert marker_ids_result == EURASIA_TO_MAIN_MARKERS[ :3 ]
-   assert marker_ids_result[ 0 ] == 'zm-s-252'
+   assert marker_ids_result[ Position.FIRST ] == 'zm-s-252'

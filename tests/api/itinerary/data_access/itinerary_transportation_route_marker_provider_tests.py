@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
+from api.shared.enums.position import Position
 
 
 ZOOMOBILE = 'Zoomobile'
@@ -50,11 +51,11 @@ def Test_InsertItineraryTransportationRouteMarkers_TestSequences_ExpectOrderedRe
       route_marker_conn )
 
    assert len( markers ) == 3
-   assert markers[ 0 ].sequence == 0
-   assert markers[ 0 ].marker_order == 0
-   assert markers[ 0 ].marker_id == 'm-a'
-   assert markers[ 2 ].sequence == 1
-   assert markers[ 2 ].marker_id == 'm-c'
+   assert markers[ Position.FIRST ].sequence == 0
+   assert markers[ Position.FIRST ].marker_order == 0
+   assert markers[ Position.FIRST ].marker_id == 'm-a'
+   assert markers[ Position.THIRD ].sequence == 1
+   assert markers[ Position.THIRD ].marker_id == 'm-c'
 
 
 def Test_DeleteItineraryTransportationRouteMarkers_TestOwnedRows_ExpectRemoved(
@@ -89,4 +90,4 @@ def Test_ClearItineraryTransportationRouteMarkers_TestOwnedRows_ExpectEmptyTable
    cur.close()
 
    assert route_marker_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ 0 ] == 0
+      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ Position.FIRST ] == 0

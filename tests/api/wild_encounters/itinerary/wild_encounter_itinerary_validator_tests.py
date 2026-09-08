@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.models.wild_encounter import WildEncounter
+from api.shared.enums.position import Position
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validator import WildEncounterItineraryValidator
 
 
@@ -55,8 +56,8 @@ def Test_ValidateForItinerary_TestPreOpenEncounterTime_ExpectPreservedStartTime(
       ] )
 
    assert len( result ) == 1
-   assert result[ 0 ].start_time == '8:45 AM'
-   assert result[ 0 ].end_time == '9:30 AM'
+   assert result[ Position.FIRST ].start_time == '8:45 AM'
+   assert result[ Position.FIRST ].end_time == '9:30 AM'
 
 
 def Test_ValidateForItinerary_TestKangarooAt330PmThursday_ExpectPreservedSchedule() -> None:
@@ -79,7 +80,7 @@ def Test_ValidateForItinerary_TestKangarooAt330PmThursday_ExpectPreservedSchedul
       day_schedule )
 
    assert len( result ) == 1
-   assert result[ 0 ].name == 'Kangaroo'
-   assert result[ 0 ].is_deleted is False
-   assert result[ 0 ].start_time == KANGAROO_ENCOUNTER_TIME
-   assert result[ 0 ].end_time == '4:15 PM'
+   assert result[ Position.FIRST ].name == 'Kangaroo'
+   assert result[ Position.FIRST ].is_deleted is False
+   assert result[ Position.FIRST ].start_time == KANGAROO_ENCOUNTER_TIME
+   assert result[ Position.FIRST ].end_time == '4:15 PM'

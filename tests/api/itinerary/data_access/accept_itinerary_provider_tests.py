@@ -7,6 +7,7 @@ import pytest
 from api.itinerary.data_access.accept_itinerary_provider import AcceptItineraryProvider
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.shared.constants import Constants
+from api.shared.enums.position import Position
 
 
 ACCEPT_ITINERARY_SCHEMA = """
@@ -169,10 +170,10 @@ def Test_AcceptItinerary_TestAddedAnimalFlags_ExpectCleared(
 
    assert accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal WHERE IS_ADDED = 1;'
-   ).fetchone()[ 0 ] == 0
+   ).fetchone()[ Position.FIRST ] == 0
    assert accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal WHERE OLD_LIKELIHOOD IS NOT NULL;'
-   ).fetchone()[ 0 ] == 0
+   ).fetchone()[ Position.FIRST ] == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAndDeletedItems_ExpectDeclinedRemoved(
@@ -324,7 +325,7 @@ def Test_AcceptItinerary_TestZeroLikelihoodAnimals_ExpectAllRemoved(
 
    assert accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal;'
-   ).fetchone()[ 0 ] == 0
+   ).fetchone()[ Position.FIRST ] == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAnimalsWithOverride_ExpectKeptAnimal(
@@ -358,9 +359,9 @@ def Test_AcceptItinerary_TestZeroLikelihoodAnimalsWithOverride_ExpectKeptAnimal(
    ).fetchall()
 
    assert len( rows ) == 1
-   assert rows[ 0 ][ 'SPECIES' ] == 'African Lion'
-   assert rows[ 0 ][ 'EXHIBIT' ] == 'Africa Savanna'
-   assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
+   assert rows[ Position.FIRST ][ 'SPECIES' ] == 'African Lion'
+   assert rows[ Position.FIRST ][ 'EXHIBIT' ] == 'Africa Savanna'
+   assert rows[ Position.FIRST ][ 'OLD_LIKELIHOOD' ] is None
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAttractions_ExpectAllRemoved(
@@ -380,7 +381,7 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractions_ExpectAllRemoved(
 
    assert accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAttraction;'
-   ).fetchone()[ 0 ] == 0
+   ).fetchone()[ Position.FIRST ] == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAttraction(
@@ -408,8 +409,8 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAtt
    ).fetchall()
 
    assert len( rows ) == 1
-   assert rows[ 0 ][ 'ATTRACTION' ] == 'Conservation Carousel'
-   assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
+   assert rows[ Position.FIRST ][ 'ATTRACTION' ] == 'Conservation Carousel'
+   assert rows[ Position.FIRST ][ 'OLD_LIKELIHOOD' ] is None
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodTransportations_ExpectAllRemoved(
@@ -431,4 +432,4 @@ def Test_AcceptItinerary_TestZeroLikelihoodTransportations_ExpectAllRemoved(
 
    assert accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryTransportation;'
-   ).fetchone()[ 0 ] == 0
+   ).fetchone()[ Position.FIRST ] == 0

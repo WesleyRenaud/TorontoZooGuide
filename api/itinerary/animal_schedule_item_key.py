@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Self
 
 from .schedule_item_key_separator import ScheduleItemKeySeparator
+from ..shared.enums.position import Position
 from ..shared.value_conversion import ValueConversion
 
 
@@ -23,14 +24,14 @@ class AnimalScheduleItemKey:
       if len( parts ) not in ( 2, 3 ):
          return None
 
-      species = parts[ 0 ]
-      exhibit = parts[ 1 ]
+      species = parts[ Position.FIRST ]
+      exhibit = parts[ Position.SECOND ]
 
       if not species or not exhibit:
          return None
 
       enclosure_name = (
-         ValueConversion.as_nullable_string( parts[ 2 ] )
+         ValueConversion.as_nullable_string( parts[ Position.THIRD ] )
          if len( parts ) == 3
          else None )
 

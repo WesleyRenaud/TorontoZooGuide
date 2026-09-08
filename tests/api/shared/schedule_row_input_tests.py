@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.shared.enums.position import Position
 from api.shared.schedule_row_input import ScheduleRowInput
 
 
@@ -60,7 +61,7 @@ def Test_ParseRows_TestInvalidAndDuplicateRows_ExpectKeepsFirstValidTimeOnly() -
    ] )
 
    assert [ row.time for row in rows ] == [ '2:00 PM' ]
-   assert rows[ 0 ].tuesday is False
+   assert rows[ Position.FIRST ].tuesday is False
 
 
 def Test_ParseRows_TestEquivalentTimeFormats_ExpectDistinctCanonicalTimesOnly() -> None:

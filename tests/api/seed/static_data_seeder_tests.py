@@ -7,6 +7,7 @@ from api_test_support.sqlite_schema_support import column_names
 from api.seed.migrations.migration_runner import MigrationRunner
 from api.seed.schema_creator import SchemaCreator
 from api.seed.static_data_seeder import StaticDataSeeder
+from api.shared.enums.position import Position
 
 
 def marker_ids(
@@ -158,7 +159,7 @@ def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() ->
       'STATION',
    }
    table_names = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in cursor.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()

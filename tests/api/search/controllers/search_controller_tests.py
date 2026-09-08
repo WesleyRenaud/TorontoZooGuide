@@ -18,6 +18,7 @@ from api.models.transportation import Transportation
 from api.models.transportation_station import TransportationStation
 from api.models.wild_encounter import WildEncounter
 from api.search.coordinators.search_coordinator import SearchCoordinator
+from api.shared.enums.position import Position
 
 
 VISIT_MONTH = 'June'
@@ -122,16 +123,16 @@ def Test_Search_TestHttpRequest_ExpectAddsTypeFields(
 
    result = response_json( handler )
 
-   assert result[ 'animals' ][ 0 ][ 'type' ] == 'animal'
-   assert result[ 'pavilions' ][ 0 ][ 'type' ] == 'pavilion'
-   assert result[ 'restaurants' ][ 0 ][ 'type' ] == 'restaurant'
-   assert result[ 'restrooms' ][ 0 ][ 'type' ] == 'restroom'
-   assert result[ 'gift_shops' ][ 0 ][ 'type' ] == 'giftShop'
-   assert result[ 'attractions' ][ 0 ][ 'type' ] == 'attraction'
-   assert result[ 'transportations' ][ 0 ][ 'type' ] == 'transportation'
-   assert result[ 'transportation_stations' ][ 0 ][ 'type' ] == 'transportationStation'
-   assert result[ 'guardians_talks' ][ 0 ][ 'type' ] == 'guardiansTalk'
-   assert result[ 'wild_encounters' ][ 0 ][ 'type' ] == 'wildEncounter'
+   assert result[ 'animals' ][ Position.FIRST ][ 'type' ] == 'animal'
+   assert result[ 'pavilions' ][ Position.FIRST ][ 'type' ] == 'pavilion'
+   assert result[ 'restaurants' ][ Position.FIRST ][ 'type' ] == 'restaurant'
+   assert result[ 'restrooms' ][ Position.FIRST ][ 'type' ] == 'restroom'
+   assert result[ 'gift_shops' ][ Position.FIRST ][ 'type' ] == 'giftShop'
+   assert result[ 'attractions' ][ Position.FIRST ][ 'type' ] == 'attraction'
+   assert result[ 'transportations' ][ Position.FIRST ][ 'type' ] == 'transportation'
+   assert result[ 'transportation_stations' ][ Position.FIRST ][ 'type' ] == 'transportationStation'
+   assert result[ 'guardians_talks' ][ Position.FIRST ][ 'type' ] == 'guardiansTalk'
+   assert result[ 'wild_encounters' ][ Position.FIRST ][ 'type' ] == 'wildEncounter'
    assert stub_search_coordinator.calls == [
       (
          'search',
@@ -177,7 +178,7 @@ def Test_Search_TestHttpRequest_ExpectOmittedYearPassesThrough(
    server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == []
-   assert stub_search_coordinator.calls[ -1 ] == (
+   assert stub_search_coordinator.calls[ Position.LAST ] == (
       'search',
       {
          'query': 'a',
@@ -220,8 +221,8 @@ def Test_Search_TestHttpRequest_ExpectOmittedYearPassesThroughForWildEncounters(
    server.HttpRequestHandler.do_POST( handler )
 
    assert handler.errors == []
-   assert stub_search_coordinator.calls[ -1 ][ 1 ][ 'year' ] is None
-   assert stub_search_coordinator.calls[ -1 ][ 1 ][ 'include_wild_encounters' ] is True
+   assert stub_search_coordinator.calls[ Position.LAST ][ Position.SECOND ][ 'year' ] is None
+   assert stub_search_coordinator.calls[ Position.LAST ][ Position.SECOND ][ 'include_wild_encounters' ] is True
 
 
 def Test_Search_TestHttpRequest_ExpectReturnsEmptyCollectionsWhenCoordinatorReturnsEmpty(

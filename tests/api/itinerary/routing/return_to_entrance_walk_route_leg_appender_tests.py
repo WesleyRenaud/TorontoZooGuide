@@ -7,7 +7,7 @@ from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteSt
 from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
 from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.itinerary.routing.walk_route_leg import WalkRouteLeg
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 from api.walk_graph.shortest_path_calculator import ShortestPathCalculator
@@ -98,10 +98,10 @@ def Test_Append_TestAwayFromEntrance_ExpectShortestPathLegAppended() -> None:
       route_node_ids=route_node_ids )
 
    assert len( legs ) == 1
-   assert legs[ 0 ].to_item_key == ENTRANCE_ITEM_KEY
-   assert legs[ 0 ].node_ids == expected_node_ids
-   assert route_stops[ -1 ].item_key == ENTRANCE_ITEM_KEY
-   assert route_stops[ -1 ].walk_node_id == ENTRANCE_NODE_ID
+   assert legs[ Position.FIRST ].to_item_key == ENTRANCE_ITEM_KEY
+   assert legs[ Position.FIRST ].node_ids == expected_node_ids
+   assert route_stops[ Position.LAST ].item_key == ENTRANCE_ITEM_KEY
+   assert route_stops[ Position.LAST ].walk_node_id == ENTRANCE_NODE_ID
    assert route_node_ids == list( expected_node_ids )
 
 

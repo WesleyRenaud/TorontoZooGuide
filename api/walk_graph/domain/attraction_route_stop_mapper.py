@@ -3,6 +3,7 @@ from __future__ import annotations
 from .attraction_route_stop import ATTRACTION_MASTER_ROUTE_STOP_KEY_LENGTH
 from .attraction_route_stop import AttractionRouteStop
 from ...shared.enums import ScheduleItemKind
+from ...shared.enums.position import Position
 from ...shared.value_conversion import ValueConversion
 
 
@@ -31,7 +32,7 @@ class AttractionRouteStopMapper():
             f'found { len( key ) }.' )
 
       name = ValueConversion.as_trimmed_string(
-         None if key[ 0 ] is None else str( key[ 0 ] ) )
+         None if key[ Position.FIRST ] is None else str( key[ Position.FIRST ] ) )
 
       if not name:
          raise ValueError( 'Attraction master-route stop key requires a name.' )

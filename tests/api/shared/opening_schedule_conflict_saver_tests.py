@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
+from api.shared.enums.position import Position
 from api.shared.opening_schedule_conflict_saver import OpeningScheduleConflictSaver
 from api.types import Types
 
@@ -57,6 +58,6 @@ def Test_SaveTrimmingOverlaps_TestConflicts_ExpectTrimInsertAndCommit() -> None:
 
    assert saved is True
    assert len( trimmed ) == 1
-   assert trimmed[ 0 ][ 1 ] == schedule
+   assert trimmed[ Position.FIRST ][ Position.SECOND ] == schedule
    assert inserted == [ schedule ]
    assert conn.commits == 1

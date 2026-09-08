@@ -3,6 +3,7 @@ from __future__ import annotations
 from ..scheduling.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
 from ..scheduling.wild_encounter_schedule_input import WildEncounterScheduleInput
 from ...shared.constants import Constants
+from ...shared.enums.position import Position
 from ...types import Types
 from .wild_encounter_schedule_conflict_mapper import WildEncounterScheduleConflictMapper
 from .wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
@@ -130,7 +131,7 @@ class WildEncounterScheduleProvider():
                target_date,
             ) ).fetchall()
 
-         return [ row[ 0 ] for row in rows ]
+         return [ row[ Position.FIRST ] for row in rows ]
 
       finally:
          cur.close()

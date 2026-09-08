@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_wild_encounter_mapper import ItineraryWildEncounterMapper
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
+from api.shared.enums.position import Position
 
 
 ENCOUNTER_ROW = {
@@ -24,4 +25,4 @@ def Test_MapRecord_TestRow_ExpectWildEncounterRecord() -> None:
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
    records = ItineraryWildEncounterMapper.map_records( [ ENCOUNTER_ROW ] )
 
-   assert records[ 0 ].wild_encounter == 'Kangaroo'
+   assert records[ Position.FIRST ].wild_encounter == 'Kangaroo'

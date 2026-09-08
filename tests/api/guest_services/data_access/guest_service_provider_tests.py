@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.guest_services.data_access.guest_service_provider import GuestServiceProvider
+from api.shared.enums.position import Position
 
 
 GUEST_SERVICE_PROVIDER_SCHEMA = """
@@ -53,6 +54,6 @@ def Test_FetchGuestServices_TestPopulated_ExpectMappedFields(
       guest_service_provider_conn )
 
    assert len( services ) == 1
-   assert services[ 0 ].service_type == FIRST_AID
-   assert services[ 0 ].x_coord == 5.5
-   assert services[ 0 ].y_coord == 6.5
+   assert services[ Position.FIRST ].service_type == FIRST_AID
+   assert services[ Position.FIRST ].x_coord == 5.5
+   assert services[ Position.FIRST ].y_coord == 6.5

@@ -13,7 +13,7 @@ from api.itinerary.scheduling.unscheduling.guardians_talk_unschedule_preparer im
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.itinerary_event import ItineraryEvent
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 ZEBRA_TALK = "Grevy's Zebra"
@@ -147,8 +147,8 @@ def Test_PrepareValidatedForReschedule_TestClearsListedSchedulesAndOverlappingEv
       validated,
       [ talk ] )
 
-   assert prepared.animals[ 0 ].start_time is None
-   assert prepared.animals[ 0 ].end_time is None
+   assert prepared.animals[ Position.FIRST ].start_time is None
+   assert prepared.animals[ Position.FIRST ].end_time is None
    assert [
       ( event.event_type, event.start_time )
       for event in prepared.events
@@ -186,7 +186,7 @@ def Test_ApplyToValidatedItinerary_TestNewTalk_ExpectPreparedItinerary() -> None
       validated,
       [ talk ] )
 
-   assert prepared.animals[ 0 ].start_time is None
+   assert prepared.animals[ Position.FIRST ].start_time is None
 
 
 def Test_ClearOverlappingSavedSchedules_TestOverlap_ExpectDelegateCalled(

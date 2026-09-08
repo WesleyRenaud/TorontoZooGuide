@@ -11,7 +11,7 @@ import api.itinerary.scheduling.bulk.loop_pin_segment_splitter as loop_pin_segme
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.itinerary.scheduling.bulk.loop_pin_stop_segment import LoopPinStopSegment
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.domain.master_route_loop import MasterRouteLoop
 from api.walk_graph.domain.master_route_loop import ONE_WAY_LOOP_TRAVERSAL
 from api.walk_graph.domain.viewing_spot_reference import ViewingSpotReference
@@ -167,8 +167,8 @@ def Test_SplitStops_TestSavannaAnimals_ExpectPenguinBeforePin(
       loop_pins=[ loop_pin ],
    )
 
-   assert [ animal.species for animal in segments[ 0 ] ] == [ 'African Penguin' ]
-   assert [ animal.species for animal in segments[ 1 ] ] == [ 'Cheetah' ]
+   assert [ animal.species for animal in segments[ Position.FIRST ] ] == [ 'African Penguin' ]
+   assert [ animal.species for animal in segments[ Position.SECOND ] ] == [ 'Cheetah' ]
 
 
 def Test_ScheduleSteps_TestSavannaAnimals_ExpectSegmentsAndGap(
@@ -193,17 +193,17 @@ def Test_ScheduleSteps_TestSavannaAnimals_ExpectSegmentsAndGap(
    )
 
    assert len( steps ) == 3
-   assert isinstance( steps[ 0 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 0 ].stops ] == [ 'African Penguin' ]
-   assert steps[ 0 ].end_before_seconds == loop_pin.start_seconds
-   assert steps[ 0 ].anchor_at_end is True
-   assert isinstance( steps[ 1 ], LoopPinGapStep )
-   assert steps[ 1 ].loop_pin is loop_pin
-   assert isinstance( steps[ 2 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'Cheetah' ]
-   assert steps[ 2 ].end_before_seconds == window_end_seconds
-   assert steps[ 2 ].anchor_at_end is False
-   assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
+   assert isinstance( steps[ Position.FIRST ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.FIRST ].stops ] == [ 'African Penguin' ]
+   assert steps[ Position.FIRST ].end_before_seconds == loop_pin.start_seconds
+   assert steps[ Position.FIRST ].anchor_at_end is True
+   assert isinstance( steps[ Position.SECOND ], LoopPinGapStep )
+   assert steps[ Position.SECOND ].loop_pin is loop_pin
+   assert isinstance( steps[ Position.THIRD ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.THIRD ].stops ] == [ 'Cheetah' ]
+   assert steps[ Position.THIRD ].end_before_seconds == window_end_seconds
+   assert steps[ Position.THIRD ].anchor_at_end is False
+   assert steps[ Position.FIRST ].end_before_seconds <= loop_pin.start_seconds
    assert loop_pin.start_seconds < loop_pin.end_seconds
 
 
@@ -242,13 +242,13 @@ def Test_SplitStops_TestWovenAttraction_ExpectPostPinAttractionAndAnimal(
       stop.attraction
       if isinstance( stop, ItineraryAttractionRecord )
       else stop.species
-      for stop in segments[ 0 ]
+      for stop in segments[ Position.FIRST ]
    ] == [ 'Western Grey Kangaroo' ]
    assert [
       stop.attraction
       if isinstance( stop, ItineraryAttractionRecord )
       else stop.species
-      for stop in segments[ 1 ]
+      for stop in segments[ Position.SECOND ]
    ] == [ 'Kangaroo Walk-Thru', 'Amur Tiger' ]
 
 
@@ -270,8 +270,8 @@ def Test_SplitStops_TestGrizzlyEncounterPin_ExpectHyenaBeforeAndCheetahAfter(
       loop_pins=[ loop_pin ],
    )
 
-   assert [ animal.species for animal in segments[ 0 ] ] == [ 'Spotted Hyena' ]
-   assert [ animal.species for animal in segments[ 1 ] ] == [ 'Cheetah' ]
+   assert [ animal.species for animal in segments[ Position.FIRST ] ] == [ 'Spotted Hyena' ]
+   assert [ animal.species for animal in segments[ Position.SECOND ] ] == [ 'Cheetah' ]
 
 
 def Test_ScheduleSteps_TestGrizzlyEncounterPin_ExpectSegmentsAndGap(
@@ -295,14 +295,14 @@ def Test_ScheduleSteps_TestGrizzlyEncounterPin_ExpectSegmentsAndGap(
    )
 
    assert len( steps ) == 3
-   assert isinstance( steps[ 0 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 0 ].stops ] == [ 'Spotted Hyena' ]
-   assert steps[ 0 ].end_before_seconds == loop_pin.start_seconds
-   assert isinstance( steps[ 1 ], LoopPinGapStep )
-   assert steps[ 1 ].loop_pin is loop_pin
-   assert isinstance( steps[ 2 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'Cheetah' ]
-   assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
+   assert isinstance( steps[ Position.FIRST ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.FIRST ].stops ] == [ 'Spotted Hyena' ]
+   assert steps[ Position.FIRST ].end_before_seconds == loop_pin.start_seconds
+   assert isinstance( steps[ Position.SECOND ], LoopPinGapStep )
+   assert steps[ Position.SECOND ].loop_pin is loop_pin
+   assert isinstance( steps[ Position.THIRD ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.THIRD ].stops ] == [ 'Cheetah' ]
+   assert steps[ Position.FIRST ].end_before_seconds <= loop_pin.start_seconds
    assert loop_pin.end_seconds < window_end_seconds
 
 
@@ -325,8 +325,8 @@ def Test_SplitStops_TestOtterTalkPin_ExpectBeforeAndAfterSegments(
       loop_pins=[ loop_pin ],
    )
 
-   assert [ animal.species for animal in segments[ 0 ] ] == [ 'North American River Otter' ]
-   assert [ animal.species for animal in segments[ 1 ] ] == [ 'American Alligator' ]
+   assert [ animal.species for animal in segments[ Position.FIRST ] ] == [ 'North American River Otter' ]
+   assert [ animal.species for animal in segments[ Position.SECOND ] ] == [ 'American Alligator' ]
 
 
 def Test_ScheduleSteps_TestOtterTalkPin_ExpectSegmentsAndGap(
@@ -351,14 +351,14 @@ def Test_ScheduleSteps_TestOtterTalkPin_ExpectSegmentsAndGap(
    )
 
    assert len( steps ) == 3
-   assert isinstance( steps[ 0 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 0 ].stops ] == [ 'North American River Otter' ]
-   assert steps[ 0 ].end_before_seconds == loop_pin.start_seconds
-   assert isinstance( steps[ 1 ], LoopPinGapStep )
-   assert steps[ 1 ].loop_pin is loop_pin
-   assert isinstance( steps[ 2 ], LoopPinStopSegment )
-   assert [ animal.species for animal in steps[ 2 ].stops ] == [ 'American Alligator' ]
-   assert steps[ 0 ].end_before_seconds <= loop_pin.start_seconds
+   assert isinstance( steps[ Position.FIRST ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.FIRST ].stops ] == [ 'North American River Otter' ]
+   assert steps[ Position.FIRST ].end_before_seconds == loop_pin.start_seconds
+   assert isinstance( steps[ Position.SECOND ], LoopPinGapStep )
+   assert steps[ Position.SECOND ].loop_pin is loop_pin
+   assert isinstance( steps[ Position.THIRD ], LoopPinStopSegment )
+   assert [ animal.species for animal in steps[ Position.THIRD ].stops ] == [ 'American Alligator' ]
+   assert steps[ Position.FIRST ].end_before_seconds <= loop_pin.start_seconds
    assert loop_pin.end_seconds < window_end_seconds
 
 

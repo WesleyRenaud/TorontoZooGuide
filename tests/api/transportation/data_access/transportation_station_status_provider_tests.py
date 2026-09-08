@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.transportation.data_access.transportation_station_status_provider import TransportationStationStatusProvider
 from api.transportation.status.transportation_station_closed_status import TransportationStationClosedStatus
 
@@ -62,11 +63,11 @@ def Test_SaveClosedStatus_TestNewStation_ExpectPersistsAndFetches(
       TRANSPORTATION )
 
    assert len( records ) == 1
-   assert records[ 0 ].station == STATION
-   assert records[ 0 ].is_closed == 1
-   assert records[ 0 ].closed_message == CLOSED_MESSAGE
-   assert records[ 0 ].closed_start == START_DATE
-   assert records[ 0 ].closed_end == END_DATE
+   assert records[ Position.FIRST ].station == STATION
+   assert records[ Position.FIRST ].is_closed == 1
+   assert records[ Position.FIRST ].closed_message == CLOSED_MESSAGE
+   assert records[ Position.FIRST ].closed_start == START_DATE
+   assert records[ Position.FIRST ].closed_end == END_DATE
 
 
 def Test_SaveOpenStatus_TestClosedStation_ExpectDeletesRow(

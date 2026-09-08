@@ -3,6 +3,7 @@ from __future__ import annotations
 from ...models import TransportationStation
 from ...models.active_transportation_route import ActiveTransportationRoute
 from ...shared.calendar_dates import CalendarDates
+from ...shared.enums.position import Position
 from ...shared.enums.transportation_route_id import TransportationRouteId
 from ...shared.enums.transportation_route_source import TransportationRouteSource
 from .transportation_route_context import TransportationRouteContext
@@ -73,7 +74,7 @@ class ActiveTransportationRouteBuilder():
          route = (
             TransportationRouteId.SUMMER.value
             if TransportationRouteId.SUMMER.value in valid_routes
-            else valid_routes[ 0 ] if valid_routes else TransportationRouteId.SUMMER.value
+            else valid_routes[ Position.FIRST ] if valid_routes else TransportationRouteId.SUMMER.value
          )
 
       return route, route_source.value

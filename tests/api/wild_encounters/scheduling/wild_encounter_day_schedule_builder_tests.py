@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from api.models.wild_encounter import WildEncounter
+from api.shared.enums.position import Position
 from api.wild_encounters.data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from api.wild_encounters.scheduling.wild_encounter_day_schedule_builder import WildEncounterDayScheduleBuilder
 
@@ -120,10 +121,10 @@ def Test_BuildForTargetDate_TestMatchingWeekday_ExpectAvailableEncounter() -> No
       MONDAY_VISIT_DATE )
 
    assert len( encounters ) == 1
-   assert encounters[ 0 ].name == 'Giraffe Feeding'
-   assert encounters[ 0 ].is_available is True
-   assert encounters[ 0 ].unavailable_message is None
-   assert encounters[ 0 ].end_time == '2:45 PM'
+   assert encounters[ Position.FIRST ].name == 'Giraffe Feeding'
+   assert encounters[ Position.FIRST ].is_available is True
+   assert encounters[ Position.FIRST ].unavailable_message is None
+   assert encounters[ Position.FIRST ].end_time == '2:45 PM'
 
 
 def Test_BuildForTargetDate_TestWrongWeekday_ExpectUnavailableEncounter() -> None:
@@ -131,8 +132,8 @@ def Test_BuildForTargetDate_TestWrongWeekday_ExpectUnavailableEncounter() -> Non
       [ _schedule_record() ],
       TUESDAY_VISIT_DATE )
 
-   assert encounters[ 0 ].is_available is False
-   assert encounters[ 0 ].name in encounters[ 0 ].unavailable_message
+   assert encounters[ Position.FIRST ].is_available is False
+   assert encounters[ Position.FIRST ].name in encounters[ Position.FIRST ].unavailable_message
 
 
 def Test_BuildForTargetDate_TestCancelledEncounter_ExpectUnavailableEncounter() -> None:
@@ -140,8 +141,8 @@ def Test_BuildForTargetDate_TestCancelledEncounter_ExpectUnavailableEncounter() 
       [ _schedule_record( is_cancelled=True ) ],
       MONDAY_VISIT_DATE )
 
-   assert encounters[ 0 ].is_available is False
-   assert 'Giraffe Feeding' in encounters[ 0 ].unavailable_message
+   assert encounters[ Position.FIRST ].is_available is False
+   assert 'Giraffe Feeding' in encounters[ Position.FIRST ].unavailable_message
 
 
 def Test_BuildForTargetDate_TestVisitDateOutsideScheduleRange_ExpectUnavailableEncounter() -> None:
@@ -150,8 +151,8 @@ def Test_BuildForTargetDate_TestVisitDateOutsideScheduleRange_ExpectUnavailableE
       OUTSIDE_SCHEDULE_VISIT_DATE )
 
    assert len( encounters ) == 1
-   assert encounters[ 0 ].is_available is False
-   assert encounters[ 0 ].unavailable_message is not None
+   assert encounters[ Position.FIRST ].is_available is False
+   assert encounters[ Position.FIRST ].unavailable_message is not None
 
 
 def Test_BuildForTargetDate_TestActiveKangarooThursday_ExpectAvailableEncounter() -> None:
@@ -160,10 +161,10 @@ def Test_BuildForTargetDate_TestActiveKangarooThursday_ExpectAvailableEncounter(
       OUTSIDE_SCHEDULE_VISIT_DATE )
 
    assert len( encounters ) == 1
-   assert encounters[ 0 ].name == 'Kangaroo'
-   assert encounters[ 0 ].is_available is True
-   assert encounters[ 0 ].start_time == KANGAROO_ENCOUNTER_TIME
-   assert encounters[ 0 ].end_time == '4:15 PM'
+   assert encounters[ Position.FIRST ].name == 'Kangaroo'
+   assert encounters[ Position.FIRST ].is_available is True
+   assert encounters[ Position.FIRST ].start_time == KANGAROO_ENCOUNTER_TIME
+   assert encounters[ Position.FIRST ].end_time == '4:15 PM'
 
 
 def Test_FilterAvailable_TestMixedAvailability_ExpectAvailableOnly() -> None:

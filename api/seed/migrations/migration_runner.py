@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import sqlite3
 
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -31,7 +32,7 @@ class MigrationRunner():
       cls.ensure_migration_table( cursor )
 
       return {
-         row[ 0 ]
+         row[ Position.FIRST ]
          for row in cursor.execute(
             'SELECT MIGRATION_NAME FROM SchemaMigration;'
          ).fetchall()
@@ -41,7 +42,7 @@ class MigrationRunner():
    @classmethod
    def _table_columns( cls, cursor: Types.Cursor, table: str ) -> set[ str ]:
       return {
-         row[ 1 ]
+         row[ Position.SECOND ]
          for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
       }
 

@@ -11,6 +11,7 @@ from api import database_connection_provider as connection
 import api.http_request_handler as server
 from api.models.update import Update
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 from api.updates.controllers.update_controller import UpdateController
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
@@ -50,7 +51,7 @@ def stub_update_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubUpdateCoor
 
    def stub_clear_connection() -> None:
       if StubUpdateCoordinator.instances:
-         StubUpdateCoordinator.instances[ -1 ].closed = True
+         StubUpdateCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

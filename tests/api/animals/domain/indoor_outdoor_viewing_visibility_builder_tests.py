@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.animals.domain.indoor_outdoor_viewing_visibility_builder import IndoorOutdoorViewingVisibilityBuilder
 from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.models.animal import Animal
+from api.shared.enums.position import Position
 
 
 ANIMAL_SPECIES = 'Masai Giraffe'
@@ -41,7 +42,7 @@ def _preferred(
       *,
       outdoor_likelihood: int ) -> Animal:
    single_habitat_keys = IndoorOutdoorViewingVisibilityBuilder.single_habitat_viewing_species_exhibit_keys( animals )
-   key = SpeciesExhibitKeyBuilder.from_animal( animals[ 0 ] )
+   key = SpeciesExhibitKeyBuilder.from_animal( animals[ Position.FIRST ] )
    outdoor_likelihood_by_species_exhibit = { key: outdoor_likelihood }
 
    return IndoorOutdoorViewingVisibilityBuilder.preferred_single_habitat_viewing_spot_by_species_exhibit(
@@ -125,7 +126,7 @@ def Test_Apply_TestExclusiveOutdoorSpecies_ExpectOutdoorOnly() -> None:
    visible = IndoorOutdoorViewingVisibilityBuilder.apply( animals )
 
    assert [ animal.enclosure_type for animal in visible ] == [ OUTDOOR_ENCLOSURE_TYPE ]
-   assert visible[ 0 ].likelihood == 100
+   assert visible[ Position.FIRST ].likelihood == 100
 
 
 def Test_Apply_TestExclusiveIndoorSpecies_ExpectIndoorOnly() -> None:
@@ -140,7 +141,7 @@ def Test_Apply_TestExclusiveIndoorSpecies_ExpectIndoorOnly() -> None:
    visible = IndoorOutdoorViewingVisibilityBuilder.apply( animals )
 
    assert [ animal.enclosure_type for animal in visible ] == [ INDOOR_ENCLOSURE_TYPE ]
-   assert visible[ 0 ].likelihood == 100
+   assert visible[ Position.FIRST ].likelihood == 100
 
 
 def Test_SingleHabitatAlternateEnclosureViewingAlertMessage_TestOutdoorAnimal_ExpectIndoorAlternateMessage() -> None:
@@ -206,10 +207,10 @@ def Test_Apply_TestBelowFullLikelihood_ExpectAlternateEnclosureAlert() -> None:
    visible = IndoorOutdoorViewingVisibilityBuilder.apply( animals )
 
    assert len( visible ) == 1
-   assert visible[ 0 ].enclosure_type == INDOOR_ENCLOSURE_TYPE
-   assert visible[ 0 ].likelihood == 100
-   assert visible[ 0 ].has_viewing_alert is True
-   assert visible[ 0 ].viewing_alert_messages == [ INDOOR_ALERT_MESSAGE ]
+   assert visible[ Position.FIRST ].enclosure_type == INDOOR_ENCLOSURE_TYPE
+   assert visible[ Position.FIRST ].likelihood == 100
+   assert visible[ Position.FIRST ].has_viewing_alert is True
+   assert visible[ Position.FIRST ].viewing_alert_messages == [ INDOOR_ALERT_MESSAGE ]
 
 
 def Test_Apply_TestFullLikelihood_ExpectNoAlert() -> None:
@@ -224,9 +225,9 @@ def Test_Apply_TestFullLikelihood_ExpectNoAlert() -> None:
    visible = IndoorOutdoorViewingVisibilityBuilder.apply( animals )
 
    assert len( visible ) == 1
-   assert visible[ 0 ].enclosure_type == OUTDOOR_ENCLOSURE_TYPE
-   assert visible[ 0 ].has_viewing_alert is False
-   assert visible[ 0 ].viewing_alert_messages == []
+   assert visible[ Position.FIRST ].enclosure_type == OUTDOOR_ENCLOSURE_TYPE
+   assert visible[ Position.FIRST ].has_viewing_alert is False
+   assert visible[ Position.FIRST ].viewing_alert_messages == []
 
 
 def Test_Apply_TestClosedExhibit_ExpectZeroLikelihoodRetained() -> None:

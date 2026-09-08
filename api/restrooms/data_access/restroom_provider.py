@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .restroom_mapper import RestroomMapper
 from .restroom_record import RestroomRecord
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -17,7 +18,7 @@ class RestroomProvider():
                   FROM Restroom r;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

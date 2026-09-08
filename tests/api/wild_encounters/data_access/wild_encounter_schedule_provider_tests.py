@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.wild_encounters.data_access.wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
 from api.wild_encounters.data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from api.wild_encounters.scheduling.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
@@ -217,10 +218,10 @@ def Test_FetchScheduleRecords_TestExpiredAndActiveRows_ExpectOnlyActiveRowOnVisi
       VISIT_DATE )
 
    assert len( records ) == 1
-   assert records[ 0 ].name == KANGAROO
-   assert records[ 0 ].schedule_start_date == '2026-07-06'
-   assert records[ 0 ].encounter_time == KANGAROO_ENCOUNTER_TIME
-   assert not records[ 0 ].is_cancelled
+   assert records[ Position.FIRST ].name == KANGAROO
+   assert records[ Position.FIRST ].schedule_start_date == '2026-07-06'
+   assert records[ Position.FIRST ].encounter_time == KANGAROO_ENCOUNTER_TIME
+   assert not records[ Position.FIRST ].is_cancelled
 
 
 def Test_FetchScheduleRecords_TestCancellationOnVisitDate_ExpectIsCancelledTrue(
@@ -243,7 +244,7 @@ def Test_FetchScheduleRecords_TestCancellationOnVisitDate_ExpectIsCancelledTrue(
       VISIT_DATE )
 
    assert len( records ) == 1
-   assert records[ 0 ].is_cancelled
+   assert records[ Position.FIRST ].is_cancelled
 
 
 def Test_FetchScheduleRecordsForOccurrences_TestMatchingEncounter_ExpectOrderedRecords(
@@ -343,10 +344,10 @@ def Test_FetchScheduleConflicts_TestOverlappingSchedule_ExpectConflictRecord(
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].wild_encounter == KANGAROO
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].encounter_time == KANGAROO_ENCOUNTER_TIME
-   assert conflicts[ 0 ].message == MESSAGE
+   assert conflicts[ Position.FIRST ].wild_encounter == KANGAROO
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].encounter_time == KANGAROO_ENCOUNTER_TIME
+   assert conflicts[ Position.FIRST ].message == MESSAGE
 
 
 def Test_FetchScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(

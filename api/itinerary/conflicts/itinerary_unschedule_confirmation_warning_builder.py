@@ -3,6 +3,7 @@ from __future__ import annotations
 from .itinerary_unschedule_requirements import ItineraryUnscheduleRequirements
 from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ...shared.enums.position import Position
 from ..warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
 from ..warnings.wild_encounter_unschedule_warning_builder import WildEncounterUnscheduleWarningBuilder
 
@@ -36,6 +37,6 @@ class ItineraryUnscheduleConfirmationWarningBuilder():
          return None
 
       return ItinerarySaveResult(
-         status=pending_reasons[ 0 ].code,
+         status=pending_reasons[ Position.FIRST ].code,
          reasons=pending_reasons,
          itinerary=itinerary )

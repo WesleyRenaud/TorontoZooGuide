@@ -4,6 +4,7 @@ from ..domain.transportation_route_marker_sequences_builder import Transportatio
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...shared.calendar_dates import DateValues
+from ...shared.enums.position import Position
 from ..transportation.timed_transportation_leg_expander import TimedTransportationLegExpander
 from ..transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from ...types import Types
@@ -69,8 +70,8 @@ class ScheduleItineraryTransportationProvider():
          return False
 
       timed_legs: list = []
-      parent_start_time = segments[ 0 ][ 0 ]
-      parent_end_time = segments[ 0 ][ 0 ]
+      parent_start_time = segments[ Position.FIRST ][ Position.FIRST ]
+      parent_end_time = segments[ Position.FIRST ][ Position.FIRST ]
 
       for start_time, legs in segments:
          if not legs:

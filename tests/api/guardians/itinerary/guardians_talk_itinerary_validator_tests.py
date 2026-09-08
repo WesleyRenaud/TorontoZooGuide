@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.guardians.itinerary.guardians_talk_itinerary_validator import GuardiansTalkItineraryValidator
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.models.guardians_talk import GuardiansTalk
+from api.shared.enums.position import Position
 
 
 CARIBOU_TALK = 'Caribou'
@@ -52,7 +53,7 @@ def Test_ValidateForItinerary_TestTalkNotOnDaySchedule_ExpectDeletedDiff() -> No
       [] )
 
    assert len( result ) == 1
-   assert result[ 0 ].name == CARIBOU_TALK
-   assert result[ 0 ].is_deleted is True
-   assert result[ 0 ].start_time == '15:00'
-   assert result[ 0 ].end_time == '15:30'
+   assert result[ Position.FIRST ].name == CARIBOU_TALK
+   assert result[ Position.FIRST ].is_deleted is True
+   assert result[ Position.FIRST ].start_time == '15:00'
+   assert result[ Position.FIRST ].end_time == '15:30'

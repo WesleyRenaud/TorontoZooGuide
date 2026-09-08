@@ -10,6 +10,7 @@ from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.giftshops.search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
 from api.models.gift_shop import GiftShop
+from api.shared.enums.position import Position
 from api.types import Types
 
 VISIT_DAY = 15
@@ -199,7 +200,7 @@ def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == GIFT_SHOP_NAME
+         return args[ Position.FIRST ] == GIFT_SHOP_NAME
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
@@ -222,7 +223,7 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == GIFT_SHOP_NAME
+         return args[ Position.FIRST ] == GIFT_SHOP_NAME
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 

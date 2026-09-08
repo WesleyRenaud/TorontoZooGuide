@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_transportation_leg_mapper import ItineraryTransportationLegMapper
+from api.shared.enums.position import Position
 
 
 def Test_MapRecord_TestRow_ExpectLegWithBoolean() -> None:
@@ -36,4 +37,4 @@ def Test_MapRecords_TestRows_ExpectLegs() -> None:
       ] )
 
    assert len( legs ) == 1
-   assert legs[ 0 ].added_as_attraction is False
+   assert legs[ Position.FIRST ].added_as_attraction is False

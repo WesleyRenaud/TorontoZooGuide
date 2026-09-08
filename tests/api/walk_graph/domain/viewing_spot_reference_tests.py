@@ -9,6 +9,7 @@ from api.itinerary.routing.transportation_walk_node_resolver import Transportati
 from api.itinerary.scheduling.bulk.loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from api.itinerary.scheduling.bulk.master_route_loop_animal_grouper import MasterRouteLoopAnimalGrouper
 from api.itinerary.scheduling.bulk.master_route_loop_stop_grouper import MasterRouteLoopStopGrouper
+from api.shared.enums.position import Position
 from api.walk_graph.domain.animal_master_route_stop_key import AnimalMasterRouteStopKey
 from api.walk_graph.domain.attraction_route_stop import AttractionRouteStop
 from api.walk_graph.domain.map_location_kind import MapLocationKind
@@ -423,8 +424,8 @@ def Test_Build_TestGroupedAnimals_ExpectLoopMetadataAndWalkEndpoints(
 
    assert len( loop_units ) == 2
 
-   australasia_unit = loop_units[ 0 ]
-   indo_unit = loop_units[ 1 ]
+   australasia_unit = loop_units[ Position.FIRST ]
+   indo_unit = loop_units[ Position.SECOND ]
 
    assert australasia_unit.loop_id == 'australasia'
    assert australasia_unit.side_cluster_id == 'north'
@@ -444,9 +445,9 @@ def Test_Build_TestPartialLoopAnimal_ExpectItineraryAnimalEndpoints(
       MasterRouteLoopAnimalGrouper.group( [ AUSTRALASIA_TIGER ] ) )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'australasia'
-   assert loop_units[ 0 ].entry_walk_node_id == 'n-tiger'
-   assert loop_units[ 0 ].exit_walk_node_id == 'n-tiger'
+   assert loop_units[ Position.FIRST ].loop_id == 'australasia'
+   assert loop_units[ Position.FIRST ].entry_walk_node_id == 'n-tiger'
+   assert loop_units[ Position.FIRST ].exit_walk_node_id == 'n-tiger'
 
 def Test_Build_TestTwoWayLoop_ExpectTraversalAndEndpoints(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -454,15 +455,15 @@ def Test_Build_TestTwoWayLoop_ExpectTraversalAndEndpoints(
       MasterRouteLoopAnimalGrouper.group( [ HIGHLAND_CATTLE, WEST_CAUCASIAN_TUR ] ) )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].traversal == TWO_WAY_LOOP_TRAVERSAL
-   assert loop_units[ 0 ].entry_walk_node_id == 'n-highland'
-   assert loop_units[ 0 ].exit_walk_node_id == 'n-tur'
+   assert loop_units[ Position.FIRST ].traversal == TWO_WAY_LOOP_TRAVERSAL
+   assert loop_units[ Position.FIRST ].entry_walk_node_id == 'n-highland'
+   assert loop_units[ Position.FIRST ].exit_walk_node_id == 'n-tur'
 
 def Test_Reversed_TestTwoWayLoop_ExpectSwappedEndpointsAndStops(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group( [ HIGHLAND_CATTLE, WEST_CAUCASIAN_TUR ] ) )
-   reversed_unit = LoopScheduleUnitBuilder.reversed( loop_units[ 0 ] )
+   reversed_unit = LoopScheduleUnitBuilder.reversed( loop_units[ Position.FIRST ] )
 
    assert reversed_unit.entry_walk_node_id == 'n-tur'
    assert reversed_unit.exit_walk_node_id == 'n-highland'
@@ -475,14 +476,14 @@ def Test_Orientations_TestTwoWayLoop_ExpectForwardAndReversed(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
       MasterRouteLoopAnimalGrouper.group( [ HIGHLAND_CATTLE, WEST_CAUCASIAN_TUR ] ) )
-   orientations = LoopScheduleUnitBuilder.orientations( loop_units[ 0 ] )
+   orientations = LoopScheduleUnitBuilder.orientations( loop_units[ Position.FIRST ] )
 
    assert len( orientations ) == 2
-   assert orientations[ 0 ].entry_walk_node_id == 'n-highland'
-   assert orientations[ 0 ].exit_walk_node_id == 'n-tur'
-   assert orientations[ 1 ].entry_walk_node_id == 'n-tur'
-   assert orientations[ 1 ].exit_walk_node_id == 'n-highland'
-   assert [ animal.species for animal in orientations[ 1 ].stops ] == [
+   assert orientations[ Position.FIRST ].entry_walk_node_id == 'n-highland'
+   assert orientations[ Position.FIRST ].exit_walk_node_id == 'n-tur'
+   assert orientations[ Position.SECOND ].entry_walk_node_id == 'n-tur'
+   assert orientations[ Position.SECOND ].exit_walk_node_id == 'n-highland'
+   assert [ animal.species for animal in orientations[ Position.SECOND ].stops ] == [
       'West Caucasian Tur',
       'Highland Cattle',
    ]
@@ -498,8 +499,8 @@ def Test_Build_TestLoopViewingSpotOrder_ExpectSortedStops(
       ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ Position.FIRST ].stops ] == [
       'African Penguin',
       'Cheetah',
    ]
@@ -516,8 +517,8 @@ def Test_Build_TestLionPenguinCheetah_ExpectSingleSavannaLoopUnit(
       ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ Position.FIRST ].stops ] == [
       'African Lion',
       'African Penguin',
       'Cheetah',
@@ -529,18 +530,18 @@ def Test_Build_TestWarthogBeforeGiraffe_ExpectSeparateSavannaAndGiraffeUnits(
       MasterRouteLoopStopGrouper.group( [ WARTHOG, MASAI_GIRAFFE ] ) )
 
    assert len( loop_units ) == 2
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ animal.species for animal in loop_units[ 0 ].stops ] == [ 'Warthog' ]
-   assert loop_units[ 1 ].loop_id == 'african_rainforest_giraffe'
-   assert [ animal.species for animal in loop_units[ 1 ].stops ] == [ 'Masai Giraffe' ]
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ Position.FIRST ].stops ] == [ 'Warthog' ]
+   assert loop_units[ Position.SECOND ].loop_id == 'african_rainforest_giraffe'
+   assert [ animal.species for animal in loop_units[ Position.SECOND ].stops ] == [ 'Masai Giraffe' ]
 
 def Test_Build_TestUnmappedAnimal_ExpectNoLoopMetadata(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build( [ [ UNKNOWN_ANIMAL ] ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id is None
-   assert loop_units[ 0 ].side_cluster_id is None
+   assert loop_units[ Position.FIRST ].loop_id is None
+   assert loop_units[ Position.FIRST ].side_cluster_id is None
 
 def Test_Build_TestWovenAttractionBetweenAnimals_ExpectMasterRouteOrder(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -583,10 +584,10 @@ def Test_Build_TestPavilionSavannaOverlookStops_ExpectExcludedFromSavannaLoop(
       ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
    assert [
       ( animal.species, animal.enclosure_name )
-      for animal in loop_units[ 0 ].stops
+      for animal in loop_units[ Position.FIRST ].stops
    ] == [
       ( 'Marabou Stork', 'White Rhino Viewing' ),
    ]
@@ -597,8 +598,8 @@ def Test_Build_TestZebraSavannaGrasslands_ExpectExcludedFromSavannaLoop(
       [ [ ZEBRA_SAVANNA_GRASSLANDS, ZEBRA ] ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ ( animal.species, animal.enclosure_name ) for animal in loop_units[ 0 ].stops ] == [
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ ( animal.species, animal.enclosure_name ) for animal in loop_units[ Position.FIRST ].stops ] == [
       ( "Grevy's Zebra", None ),
    ]
 
@@ -614,8 +615,8 @@ def Test_Build_TestOstrichEnclosures_ExpectMasterRouteOrder(
       ] )
 
    assert len( loop_units ) == 1
-   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
-   assert [ animal.enclosure_name for animal in loop_units[ 0 ].stops ] == [
+   assert loop_units[ Position.FIRST ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.enclosure_name for animal in loop_units[ Position.FIRST ].stops ] == [
       None,
       'White Rhino Viewing',
       'Kesho Park Offshoot',

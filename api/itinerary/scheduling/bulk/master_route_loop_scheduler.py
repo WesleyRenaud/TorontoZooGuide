@@ -21,6 +21,7 @@ from ...routing.attraction_hours_soft_pin import AttractionHoursSoftPin
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
 from ...routing.loop_schedule_pin import LoopSchedulePin
 from ....shared.calendar_dates import DateValues
+from ....shared.enums.position import Position
 from ....shared.operating_hours import OperatingHours
 from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -577,7 +578,7 @@ class MasterRouteLoopScheduler():
             soft_pin.close_seconds - soft_pin.open_seconds,
             soft_pin.open_seconds,
             soft_pin.attraction_name ) )
-      tightest = ordered[ 0 ]
+      tightest = ordered[ Position.FIRST ]
 
       return {
          soft_pin.loop_id
@@ -737,7 +738,7 @@ class MasterRouteLoopScheduler():
          if not matching_units:
             continue
 
-         prepared_unit = matching_units[ 0 ]
+         prepared_unit = matching_units[ Position.FIRST ]
          drain_cursor_seconds = max( cursor_seconds, soft_pin.open_seconds )
 
          if not cls._pinned_loop_is_ready(

@@ -23,7 +23,7 @@ from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_scheduler import MasterRouteLoopScheduler
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -1565,7 +1565,7 @@ def Test_Schedule_TestWaitFillerFreePackThenCascadeSoftPins_ExpectFreeScheduledA
          remaining_units: list[ PreparedLoopScheduleUnit ] | None = None,
          **kwargs: object,
       ) -> tuple[ int, str ]:
-      units = remaining_units if remaining_units is not None else _args[ 1 ]
+      units = remaining_units if remaining_units is not None else _args[ Position.SECOND ]
       cascade_calls.append( int( kwargs[ 'cascade_end_seconds' ] ) )
       units[ : ] = [
          prepared_unit
@@ -1579,7 +1579,7 @@ def Test_Schedule_TestWaitFillerFreePackThenCascadeSoftPins_ExpectFreeScheduledA
          remaining_units: list[ PreparedLoopScheduleUnit ] | None = None,
          **kwargs: object,
       ) -> tuple[ int, str ]:
-      units = remaining_units if remaining_units is not None else _args[ 1 ]
+      units = remaining_units if remaining_units is not None else _args[ Position.SECOND ]
       soft_drain_calls.append( {
          'late_place': kwargs.get( 'late_place' ),
          'window_end_seconds': kwargs.get( 'window_end_seconds' ),
@@ -1640,7 +1640,7 @@ def Test_Schedule_TestWaitFillerFreePackThenCascadeSoftPins_ExpectFreeScheduledA
    assert remaining == []
    assert cascade_calls
    assert soft_drain_calls
-   assert soft_drain_calls[ 0 ][ 'late_place' ] is False
+   assert soft_drain_calls[ Position.FIRST ][ 'late_place' ] is False
    assert cursor == KANGAROO_OPEN_SECONDS + KANGAROO_DWELL_SECONDS
 
 
@@ -1680,7 +1680,7 @@ def Test_Schedule_TestWaitFillerFreePackWithHardPin_ExpectLatePlaceSoftPin(
          remaining_units: list[ PreparedLoopScheduleUnit ] | None = None,
          **_kwargs: object,
       ) -> tuple[ int, str ]:
-      units = remaining_units if remaining_units is not None else _args[ 1 ]
+      units = remaining_units if remaining_units is not None else _args[ Position.SECOND ]
       return ( KANGAROO_OPEN_SECONDS, units and ENTRANCE_NODE_ID or ENTRANCE_NODE_ID )
 
    def _drain_soft(
@@ -1688,7 +1688,7 @@ def Test_Schedule_TestWaitFillerFreePackWithHardPin_ExpectLatePlaceSoftPin(
          remaining_units: list[ PreparedLoopScheduleUnit ] | None = None,
          **kwargs: object,
       ) -> tuple[ int, str ]:
-      units = remaining_units if remaining_units is not None else _args[ 1 ]
+      units = remaining_units if remaining_units is not None else _args[ Position.SECOND ]
       soft_drain_calls.append( {
          'late_place': kwargs.get( 'late_place' ),
          'window_end_seconds': kwargs.get( 'window_end_seconds' ),
@@ -1756,8 +1756,8 @@ def Test_Schedule_TestWaitFillerFreePackWithHardPin_ExpectLatePlaceSoftPin(
 
    assert remaining == []
    assert soft_drain_calls
-   assert soft_drain_calls[ 0 ][ 'late_place' ] is True
-   assert soft_drain_calls[ 0 ][ 'window_end_seconds' ] == CAMEL_TALK_START_SECONDS
+   assert soft_drain_calls[ Position.FIRST ][ 'late_place' ] is True
+   assert soft_drain_calls[ Position.FIRST ][ 'window_end_seconds' ] == CAMEL_TALK_START_SECONDS
    assert cursor == CAMEL_TALK_START_SECONDS
 
 
@@ -1861,7 +1861,7 @@ def Test_Schedule_TestPinnedWaitAdvancesCursor_ExpectSoftOpenWait(
 
    assert remaining == []
    assert seen_cursors
-   assert seen_cursors[ 0 ] >= KANGAROO_OPEN_SECONDS
+   assert seen_cursors[ Position.FIRST ] >= KANGAROO_OPEN_SECONDS
    assert cursor == KANGAROO_OPEN_SECONDS + KANGAROO_DWELL_SECONDS
 
 
@@ -1931,8 +1931,8 @@ def Test_ProcessScheduleWindow_TestOpenSoftPinHardPinDeadline_ExpectLatePlace(
 
    assert ok is True
    assert soft_drain_kwargs
-   assert soft_drain_kwargs[ 0 ].get( 'late_place' ) is True
-   assert soft_drain_kwargs[ 0 ].get( 'window_end_seconds' ) == CAMEL_TALK_START_SECONDS
+   assert soft_drain_kwargs[ Position.FIRST ].get( 'late_place' ) is True
+   assert soft_drain_kwargs[ Position.FIRST ].get( 'window_end_seconds' ) == CAMEL_TALK_START_SECONDS
 
 
 def Test_ProcessScheduleWindow_TestPackOpenSoftPins_ExpectHoldsReleased(
@@ -1992,8 +1992,8 @@ def Test_ProcessScheduleWindow_TestPackOpenSoftPins_ExpectHoldsReleased(
       remaining_animals=[] )
 
    assert packed_loop_ids
-   assert AUSTRALASIA_LOOP_ID in packed_loop_ids[ 0 ]
-   assert AFRICA_SAVANNA_LOOP_ID in packed_loop_ids[ 0 ]
+   assert AUSTRALASIA_LOOP_ID in packed_loop_ids[ Position.FIRST ]
+   assert AFRICA_SAVANNA_LOOP_ID in packed_loop_ids[ Position.FIRST ]
 
 
 def Test_ProcessScheduleWindow_TestRemainingHardPin_ExpectLaterSameClusterHeld(
@@ -2448,7 +2448,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestPersistError_ExpectAbort(
 
    assert should_abort is True
    assert next_cursor == 9 * 3600
-   assert giraffe.unit.stops[ 0 ] in remaining_animals
+   assert giraffe.unit.stops[ Position.FIRST ] in remaining_animals
 
 
 def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestUnscheduledAnimals_ExpectStop(

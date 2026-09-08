@@ -16,6 +16,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_start_state import BulkSchedule
 from api.itinerary.scheduling.bulk.bulk_schedule_window_prep import BulkScheduleWindowPrep
 from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 from api.walk_graph.domain.walk_graph import WalkGraph
 
@@ -156,7 +157,7 @@ def Test_PackStops_TestAttractionOnly_ExpectAttractionLoopUnit(
    assert packing.covered_by_talk == {}
    assert packing.covered_by_attraction == {}
    assert len( packing.loop_units ) == 1
-   assert packing.loop_units[ 0 ].stops == [ SPLASH ]
+   assert packing.loop_units[ Position.FIRST ].stops == [ SPLASH ]
    assert packing.remaining_stops == []
    assert captured_loop_units == [ [ splash_unit ] ]
 

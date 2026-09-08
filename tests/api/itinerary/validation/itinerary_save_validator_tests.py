@@ -17,6 +17,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.validation.itinerary_save_validator import ItinerarySaveValidator
 from api.models.animal import Animal
 from api.models.guardians_talk import GuardiansTalk
+from api.shared.enums.position import Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -240,7 +241,7 @@ def Test_ValidateForSave_TestDateChangeDeletedTalkUncoversCaribou_ExpectEnclosur
    assert caribou.covered_by_talk is False
    assert caribou.start_time == '3:00 PM'
    assert caribou.end_time == '3:03 PM'
-   assert validated.guardians_talks[ 0 ].is_deleted is True
+   assert validated.guardians_talks[ Position.FIRST ].is_deleted is True
 
 
 def Test_ValidateForSave_TestDateChangeGuestAnimalTimes_ExpectCarryoverPreserved(
@@ -253,7 +254,7 @@ def Test_ValidateForSave_TestDateChangeGuestAnimalTimes_ExpectCarryoverPreserved
       lambda **kwargs: {
          'African Lion': [ LION_ANIMAL ],
          'Cheetah': [ CHEETAH_ANIMAL ],
-      }.get( kwargs[ 'saved_animals' ][ 0 ].species, [] ) )
+      }.get( kwargs[ 'saved_animals' ][ Position.FIRST ].species, [] ) )
    monkeypatch.setattr(
       AnimalCoordinator,
       'get_animals_viewable_on_day',

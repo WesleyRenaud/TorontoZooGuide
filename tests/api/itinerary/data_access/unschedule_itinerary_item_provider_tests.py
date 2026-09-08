@@ -5,7 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 UNSCHEDULE_SCHEMA = """
@@ -312,7 +312,7 @@ def Test_ClearItineraryGuardiansTalkSchedule_TestTalk_ExpectDeleted(
       cur, talk_name=LION_TALK )
    guardians_unschedule_conn.commit()
    assert guardians_unschedule_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryGuardiansTalk' ).fetchone()[ 0 ] == 0
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk' ).fetchone()[ Position.FIRST ] == 0
 
 
 def Test_ClearItineraryWildEncounterSchedule_TestEncounter_ExpectDeleted(
@@ -322,4 +322,4 @@ def Test_ClearItineraryWildEncounterSchedule_TestEncounter_ExpectDeleted(
       cur, wild_encounter='White Rhinoceros' )
    guardians_unschedule_conn.commit()
    assert guardians_unschedule_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryWildEncounter' ).fetchone()[ 0 ] == 0
+      'SELECT COUNT(*) FROM ItineraryWildEncounter' ).fetchone()[ Position.FIRST ] == 0

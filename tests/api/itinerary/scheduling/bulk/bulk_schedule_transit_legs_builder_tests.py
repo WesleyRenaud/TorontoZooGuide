@@ -12,6 +12,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_start_state import BulkSchedule
 from api.itinerary.scheduling.bulk.bulk_schedule_transit_legs_builder import BulkScheduleTransitLegsBuilder
 from api.itinerary.scheduling.bulk.bulk_schedule_window_prep import BulkScheduleWindowPrep
 from api.itinerary.scheduling.bulk.transportation_transit_ride_applier import TransportationTransitRideApplier
+from api.shared.enums.position import Position
 from api.walk_graph.domain.walk_graph import WalkGraph
 
 
@@ -101,5 +102,5 @@ def Test_Apply_TestTransitZoomobile_ExpectRideApplierCalled(
    assert captured[ 'visit_date' ] == '2026-07-11'
    assert captured[ 'schedule_anchor_seconds' ] == 9 * 3600
    assert len( captured[ 'transit_rows' ] ) == 1
-   assert captured[ 'transit_rows' ][ 0 ].added_as_attraction is False
+   assert captured[ 'transit_rows' ][ Position.FIRST ].added_as_attraction is False
    assert len( captured[ 'scheduled_animals' ] ) == 1

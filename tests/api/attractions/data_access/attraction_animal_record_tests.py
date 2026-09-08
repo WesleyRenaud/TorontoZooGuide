@@ -12,6 +12,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models.animal_diff import AnimalDiff
+from api.shared.enums.position import Position
 
 
 
@@ -417,9 +418,9 @@ def Test_UncoverForRemoved_TestCoveredAnimal_ExpectDefaultDuration(
       animals,
       removed )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time == '11:00 AM'
-   assert result[ 0 ].end_time == '11:08 AM'
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time == '11:00 AM'
+   assert result[ Position.FIRST ].end_time == '11:08 AM'
 
 
 def Test_UncoverForRemoved_TestMissingDuration_ExpectClearedTimes(
@@ -454,9 +455,9 @@ def Test_UncoverForRemoved_TestMissingDuration_ExpectClearedTimes(
       animals,
       removed )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time is None
-   assert result[ 0 ].end_time is None
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time is None
+   assert result[ Position.FIRST ].end_time is None
 
 
 def Test_UncoverForRemoved_TestInvalidAttractionTimes_ExpectUncoverOnly(
@@ -486,9 +487,9 @@ def Test_UncoverForRemoved_TestInvalidAttractionTimes_ExpectUncoverOnly(
       animals,
       removed )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time is None
-   assert result[ 0 ].end_time is None
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time is None
+   assert result[ Position.FIRST ].end_time is None
 
 
 def Test_RestoreAfterRemoved_TestUncoveredAnimal_ExpectSkipped(
@@ -542,9 +543,9 @@ def Test_UncoverForRemoved_TestUncoveredAnimal_ExpectUnchanged(
       animals,
       removed )
 
-   assert result[ 0 ].covered_by_talk is False
-   assert result[ 0 ].start_time == '11:00 AM'
-   assert result[ 0 ].end_time == '11:30 AM'
+   assert result[ Position.FIRST ].covered_by_talk is False
+   assert result[ Position.FIRST ].start_time == '11:00 AM'
+   assert result[ Position.FIRST ].end_time == '11:30 AM'
 
 
 def Test_MergeKeys_TestMultipleMaps_ExpectUnion() -> None:

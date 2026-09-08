@@ -5,7 +5,7 @@ from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...models.itinerary_transportation_station import ItineraryTransportationStation
 from ...request_connection_provider import RequestConnectionProvider
 from ...shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
-from ...shared.enums.sequence_index import SequenceIndex
+from ...shared.enums.position import Position
 from ...transportation.data_access.transportation_station_provider import TransportationStationProvider
 from ...transportation.data_access.transportation_station_record import TransportationStationRecord
 
@@ -21,7 +21,7 @@ class ItineraryTransportationStationsBuilder():
 
       for leg in legs:
          if current_sequence:
-            previous_leg = current_sequence[ SequenceIndex.LAST ]
+            previous_leg = current_sequence[ Position.LAST ]
             station_gap = previous_leg.to_station != leg.from_station
             time_gap = previous_leg.end_time != leg.start_time
 
@@ -110,8 +110,8 @@ class ItineraryTransportationStationsBuilder():
 
       for sequence in cls.group_consecutive_leg_sequences(
             transportation.legs ):
-         onboard_names.append( sequence[ SequenceIndex.FIRST ].from_station )
-         offboard_names.append( sequence[ SequenceIndex.LAST ].to_station )
+         onboard_names.append( sequence[ Position.FIRST ].from_station )
+         offboard_names.append( sequence[ Position.LAST ].to_station )
 
       roles_by_name: dict[ str, ItineraryTransportationStationRole ] = {}
 

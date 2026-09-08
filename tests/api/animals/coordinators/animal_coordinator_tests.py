@@ -51,7 +51,7 @@ from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.request_connection_provider import RequestConnectionProvider
-from api.shared.enums import AnimalViewingScope
+from api.shared.enums import AnimalViewingScope, Position
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.shared.enums import ScheduleItemKind
@@ -422,21 +422,21 @@ def Test_ItineraryWithClearedAnimalTimes_TestClearsAnimalAndAttractionTimes_Expe
 
    cleared = BulkRescheduleLongWaitSimulator._itinerary_with_cleared_animal_times( itinerary )
 
-   assert cleared.animals[ 0 ].start_time is None
-   assert cleared.animals[ 0 ].end_time is None
-   assert cleared.animals[ 0 ].covered_by_talk is False
-   assert cleared.attractions[ 0 ].start_time is None
-   assert cleared.attractions[ 0 ].end_time is None
-   assert cleared.guardians_talks[ 0 ].start_time == TALK_START
-   assert itinerary.animals[ 0 ].start_time == ANIMAL_START
+   assert cleared.animals[ Position.FIRST ].start_time is None
+   assert cleared.animals[ Position.FIRST ].end_time is None
+   assert cleared.animals[ Position.FIRST ].covered_by_talk is False
+   assert cleared.attractions[ Position.FIRST ].start_time is None
+   assert cleared.attractions[ Position.FIRST ].end_time is None
+   assert cleared.guardians_talks[ Position.FIRST ].start_time == TALK_START
+   assert itinerary.animals[ Position.FIRST ].start_time == ANIMAL_START
 
 
 def Test_ApplySlotsToItineraryAnimals_TestAnimalAndAttractionSlots_ExpectTimesApplied() -> None:
    itinerary = _timed_itinerary()
-   itinerary.animals[ 0 ].start_time = None
-   itinerary.animals[ 0 ].end_time = None
-   itinerary.attractions[ 0 ].start_time = None
-   itinerary.attractions[ 0 ].end_time = None
+   itinerary.animals[ Position.FIRST ].start_time = None
+   itinerary.animals[ Position.FIRST ].end_time = None
+   itinerary.attractions[ Position.FIRST ].start_time = None
+   itinerary.attractions[ Position.FIRST ].end_time = None
    animal_row = ItineraryAnimalRecord(
       species=LION_SPECIES,
       exhibit=LION_EXHIBIT,
@@ -453,16 +453,16 @@ def Test_ApplySlotsToItineraryAnimals_TestAnimalAndAttractionSlots_ExpectTimesAp
 
    BulkRescheduleLongWaitSimulator._apply_slots_to_itinerary_animals( itinerary, slots )
 
-   assert itinerary.animals[ 0 ].start_time == '10:30 AM'
-   assert itinerary.animals[ 0 ].end_time == '10:38 AM'
-   assert itinerary.attractions[ 0 ].start_time == '11:00 AM'
-   assert itinerary.attractions[ 0 ].end_time == '12:00 PM'
+   assert itinerary.animals[ Position.FIRST ].start_time == '10:30 AM'
+   assert itinerary.animals[ Position.FIRST ].end_time == '10:38 AM'
+   assert itinerary.attractions[ Position.FIRST ].start_time == '11:00 AM'
+   assert itinerary.attractions[ Position.FIRST ].end_time == '12:00 PM'
 
 
 def Test_ApplyTalkCovered_TestMatchingAnimal_ExpectTalkTimesAndCovered() -> None:
    itinerary = _timed_itinerary()
-   itinerary.animals[ 0 ].start_time = None
-   itinerary.animals[ 0 ].end_time = None
+   itinerary.animals[ Position.FIRST ].start_time = None
+   itinerary.animals[ Position.FIRST ].end_time = None
    animal_row = ItineraryAnimalRecord(
       species=LION_SPECIES,
       exhibit=LION_EXHIBIT,
@@ -484,15 +484,15 @@ def Test_ApplyTalkCovered_TestMatchingAnimal_ExpectTalkTimesAndCovered() -> None
       itinerary,
       { animal_row.viewing_spot_key(): ( animal_row, loop_pin ) } )
 
-   assert itinerary.animals[ 0 ].start_time == TALK_START
-   assert itinerary.animals[ 0 ].end_time == TALK_END
-   assert itinerary.animals[ 0 ].covered_by_talk is True
+   assert itinerary.animals[ Position.FIRST ].start_time == TALK_START
+   assert itinerary.animals[ Position.FIRST ].end_time == TALK_END
+   assert itinerary.animals[ Position.FIRST ].covered_by_talk is True
 
 
 def Test_ApplyAttractionCovered_TestMatchingAnimalAndTimedAttraction_ExpectCovered() -> None:
    itinerary = _timed_itinerary()
-   itinerary.animals[ 0 ].start_time = None
-   itinerary.animals[ 0 ].end_time = None
+   itinerary.animals[ Position.FIRST ].start_time = None
+   itinerary.animals[ Position.FIRST ].end_time = None
    animal_row = ItineraryAnimalRecord(
       species=LION_SPECIES,
       exhibit=LION_EXHIBIT,
@@ -503,17 +503,17 @@ def Test_ApplyAttractionCovered_TestMatchingAnimalAndTimedAttraction_ExpectCover
       itinerary,
       { animal_row.viewing_spot_key(): ( animal_row, SPLASH_ISLAND ) } )
 
-   assert itinerary.animals[ 0 ].start_time == ATTRACTION_START
-   assert itinerary.animals[ 0 ].end_time == ATTRACTION_END
-   assert itinerary.animals[ 0 ].covered_by_talk is True
+   assert itinerary.animals[ Position.FIRST ].start_time == ATTRACTION_START
+   assert itinerary.animals[ Position.FIRST ].end_time == ATTRACTION_END
+   assert itinerary.animals[ Position.FIRST ].covered_by_talk is True
 
 
 def Test_ApplyAttractionCovered_TestAttractionMissingTimes_ExpectAnimalUnchanged() -> None:
    itinerary = _timed_itinerary()
-   itinerary.animals[ 0 ].start_time = None
-   itinerary.animals[ 0 ].end_time = None
-   itinerary.attractions[ 0 ].start_time = None
-   itinerary.attractions[ 0 ].end_time = None
+   itinerary.animals[ Position.FIRST ].start_time = None
+   itinerary.animals[ Position.FIRST ].end_time = None
+   itinerary.attractions[ Position.FIRST ].start_time = None
+   itinerary.attractions[ Position.FIRST ].end_time = None
    animal_row = ItineraryAnimalRecord(
       species=LION_SPECIES,
       exhibit=LION_EXHIBIT,
@@ -524,8 +524,8 @@ def Test_ApplyAttractionCovered_TestAttractionMissingTimes_ExpectAnimalUnchanged
       itinerary,
       { animal_row.viewing_spot_key(): ( animal_row, SPLASH_ISLAND ) } )
 
-   assert itinerary.animals[ 0 ].start_time is None
-   assert itinerary.animals[ 0 ].covered_by_talk is False
+   assert itinerary.animals[ Position.FIRST ].start_time is None
+   assert itinerary.animals[ Position.FIRST ].covered_by_talk is False
 
 
 def Test_BuildItineraryFromProposedItems_TestCoordinatorStubs_ExpectBuiltItinerary(
@@ -752,7 +752,7 @@ def Test_PackAnimalsInMemory_TestHappyPathWithStubs_ExpectSlotsAndCoverageApplie
       itinerary_context=ITINERARY_CONTEXT )
 
    assert packed is not None
-   assert packed.animals[ 0 ].start_time is None
+   assert packed.animals[ Position.FIRST ].start_time is None
    assert schedule_calls
    assert applied_slots == [ [ slot ] ]
    assert talk_cover_calls == [ {} ]
@@ -857,8 +857,8 @@ def Test_NewlyAddedReason_TestTimedAnimalsPacked_ExpectPackedIsolationPath(
    assert reason.code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
    assert build_calls
    assert pack_calls
-   assert pack_calls[ 0 ][ 0 ].species == LION_SPECIES
-   assert pack_calls[ 0 ][ 0 ].start_time == ANIMAL_START
+   assert pack_calls[ Position.FIRST ][ Position.FIRST ].species == LION_SPECIES
+   assert pack_calls[ Position.FIRST ][ Position.FIRST ].start_time == ANIMAL_START
 
 
 def Test_NewlyAddedReason_TestIsolatedButNoIssueItems_ExpectNone(
@@ -999,8 +999,8 @@ def Test_NewlyAddedLongWaitItems_TestNoSavedItinerary_ExpectAllIsolated(
 
 def Test_ApplySlotsToItineraryAnimals_TestUnknownTargets_ExpectSkipped() -> None:
    itinerary = _timed_itinerary()
-   original_animal_start = itinerary.animals[ 0 ].start_time
-   original_attraction_start = itinerary.attractions[ 0 ].start_time
+   original_animal_start = itinerary.animals[ Position.FIRST ].start_time
+   original_attraction_start = itinerary.attractions[ Position.FIRST ].start_time
    unknown_animal = ItineraryAnimalRecord(
       species='Cheetah',
       exhibit='Indo-Malaya Outdoor',
@@ -1018,8 +1018,8 @@ def Test_ApplySlotsToItineraryAnimals_TestUnknownTargets_ExpectSkipped() -> None
          LoopScheduleSlot( unknown_animal, '10:30 AM', '10:38 AM' ),
       ] )
 
-   assert itinerary.animals[ 0 ].start_time == original_animal_start
-   assert itinerary.attractions[ 0 ].start_time == original_attraction_start
+   assert itinerary.animals[ Position.FIRST ].start_time == original_animal_start
+   assert itinerary.attractions[ Position.FIRST ].start_time == original_attraction_start
 
 
 def Test_ApplyTalkCovered_TestAnimalNotOnItinerary_ExpectSkipped() -> None:
@@ -1045,7 +1045,7 @@ def Test_ApplyTalkCovered_TestAnimalNotOnItinerary_ExpectSkipped() -> None:
       itinerary,
       { unknown_animal.viewing_spot_key(): ( unknown_animal, loop_pin ) } )
 
-   assert itinerary.animals[ 0 ].covered_by_talk is False
+   assert itinerary.animals[ Position.FIRST ].covered_by_talk is False
 
 
 def Test_ApplyAttractionCovered_TestMissingAnimalOrAttraction_ExpectSkipped() -> None:
@@ -1068,8 +1068,8 @@ def Test_ApplyAttractionCovered_TestMissingAnimalOrAttraction_ExpectSkipped() ->
          lion_row.viewing_spot_key(): ( lion_row, 'Missing Attraction' ),
       } )
 
-   assert itinerary.animals[ 0 ].covered_by_talk is False
-   assert itinerary.animals[ 0 ].start_time == ANIMAL_START
+   assert itinerary.animals[ Position.FIRST ].covered_by_talk is False
+   assert itinerary.animals[ Position.FIRST ].start_time == ANIMAL_START
 
 def Test_GetAnimalSpeciesNames_TestProviderNames_ExpectReturned(
       stub_request_connection: None,

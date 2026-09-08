@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.attractions.data_access.attraction_animal_provider import AttractionAnimalProvider
+from api.shared.enums.position import Position
 
 
 ATTRACTION_ANIMAL_SCHEMA = """
@@ -76,5 +77,5 @@ def Test_FetchAttractionLinkedAnimals_TestKangarooWalkThru_ExpectSpeciesExhibitK
       KANGAROO_WALK_THRU )
 
    assert len( keys ) == 1
-   assert keys[ 0 ].species == 'western grey kangaroo'
-   assert keys[ 0 ].exhibit == 'australasia outdoor'
+   assert keys[ Position.FIRST ].species == 'western grey kangaroo'
+   assert keys[ Position.FIRST ].exhibit == 'australasia outdoor'

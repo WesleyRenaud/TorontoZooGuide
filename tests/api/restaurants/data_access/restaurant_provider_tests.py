@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.restaurants.data_access.restaurant_provider import RestaurantProvider
+from api.shared.enums.position import Position
 
 
 RESTAURANT_PROVIDER_SCHEMA = """
@@ -132,7 +133,7 @@ def Test_FetchRestaurantRecords_TestNoMultiplier_ExpectDefaultMultipliers(
       VISIT_DAY )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == PEACOCK_CAFE
    assert record.location == 'Africa'
    assert record.sub_location == 'Near Entrance'
@@ -171,9 +172,9 @@ def Test_FetchRestaurantRecords_TestMatchingMultiplier_ExpectJoinedValues(
       VISIT_DAY )
 
    assert len( records ) == 1
-   assert records[ 0 ].name == SIMBA_SNACKS
-   assert records[ 0 ].weekday_multiplier == 0.4
-   assert records[ 0 ].weekend_holiday_multiplier == 0.8
+   assert records[ Position.FIRST ].name == SIMBA_SNACKS
+   assert records[ Position.FIRST ].weekday_multiplier == 0.4
+   assert records[ Position.FIRST ].weekend_holiday_multiplier == 0.8
 
 
 def Test_FetchRestaurantScheduleRecords_TestEmpty_ExpectEmptyList(
@@ -209,7 +210,7 @@ def Test_FetchRestaurantScheduleRecords_TestPopulated_ExpectMappedFields(
       restaurant_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.restaurant == PEACOCK_CAFE
    assert record.schedule_start_date == '2026-06-01'
    assert record.schedule_end_date is None
@@ -246,7 +247,7 @@ def Test_FetchRestaurantScheduleOverrideRecords_TestPopulated_ExpectMappedFields
       restaurant_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.restaurant == PEACOCK_CAFE
    assert record.override_start_date == '2026-07-04'
    assert record.override_end_date == '2026-07-04'

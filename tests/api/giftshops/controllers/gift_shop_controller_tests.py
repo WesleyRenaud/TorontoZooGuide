@@ -13,6 +13,7 @@ from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 import api.http_request_handler as server
 from api.models.gift_shop import GiftShop
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -86,7 +87,7 @@ def stub_gift_shop_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubGiftSho
 
    def stub_clear_connection() -> None:
       if StubGiftShopCoordinator.instances:
-         StubGiftShopCoordinator.instances[ -1 ].closed = True
+         StubGiftShopCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

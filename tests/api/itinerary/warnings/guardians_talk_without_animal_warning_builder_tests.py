@@ -11,7 +11,7 @@ from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 
 
 LION_TALK = 'African Lion'
@@ -132,8 +132,8 @@ def Test_BuildIssueFromTalks_TestTalkWithoutAnimal_ExpectWithoutAnimalIssue() ->
 
    assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
    assert len( issue.items ) == 1
-   assert issue.items[ 0 ].name == ZEBRA_TALK
-   assert issue.items[ 0 ].location == 'Africa Savanna'
+   assert issue.items[ Position.FIRST ].name == ZEBRA_TALK
+   assert issue.items[ Position.FIRST ].location == 'Africa Savanna'
 
 
 def Test_TalksWithoutMatchingAnimal_TestLinkedAnimalMatch_ExpectEmpty(

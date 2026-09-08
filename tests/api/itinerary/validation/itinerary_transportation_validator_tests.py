@@ -11,6 +11,7 @@ from api.itinerary.transportation.transportation_day_loop import TransportationD
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.itinerary.validation.itinerary_transportation_validator import ItineraryTransportationValidator
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 
 
 VISIT_DATE = date( 2026, 6, 15 )
@@ -82,14 +83,14 @@ def Test_Validate_TestVisitDateChangingWithDayLoop_ExpectExpandedLegsAndRoute(
       visit_date_is_changing=True )
 
    assert len( diffs ) == 1
-   assert diffs[ 0 ].name == ZOOMOBILE
-   assert diffs[ 0 ].new_likelihood == 80
-   assert diffs[ 0 ].start_time == '10:00 AM'
-   assert diffs[ 0 ].end_time == '10:30 AM'
-   assert diffs[ 0 ].route == 'summer'
-   assert len( diffs[ 0 ].legs ) == 2
-   assert diffs[ 0 ].route_marker_sequences == [ [ 'm-a' ] ]
-   assert diffs[ 0 ].bulk_transit_evaluated is False
+   assert diffs[ Position.FIRST ].name == ZOOMOBILE
+   assert diffs[ Position.FIRST ].new_likelihood == 80
+   assert diffs[ Position.FIRST ].start_time == '10:00 AM'
+   assert diffs[ Position.FIRST ].end_time == '10:30 AM'
+   assert diffs[ Position.FIRST ].route == 'summer'
+   assert len( diffs[ Position.FIRST ].legs ) == 2
+   assert diffs[ Position.FIRST ].route_marker_sequences == [ [ 'm-a' ] ]
+   assert diffs[ Position.FIRST ].bulk_transit_evaluated is False
 
 
 def Test_Validate_TestVisitDateChangingWithoutDayLoop_ExpectEmptyLegs(
@@ -111,8 +112,8 @@ def Test_Validate_TestVisitDateChangingWithoutDayLoop_ExpectEmptyLegs(
       visit_date_is_changing=True )
 
    assert len( diffs ) == 1
-   assert diffs[ 0 ].legs == []
-   assert diffs[ 0 ].route is None
+   assert diffs[ Position.FIRST ].legs == []
+   assert diffs[ Position.FIRST ].route is None
 
 
 def Test_Validate_TestSameVisitDateWithCarryoverLegs_ExpectLegsPreserved(
@@ -137,9 +138,9 @@ def Test_Validate_TestSameVisitDateWithCarryoverLegs_ExpectLegsPreserved(
       visit_date_is_changing=False )
 
    assert len( diffs ) == 1
-   assert diffs[ 0 ].legs == [ CARRYOVER_LEG ]
-   assert diffs[ 0 ].bulk_transit_evaluated is True
-   assert diffs[ 0 ].route == 'summer'
+   assert diffs[ Position.FIRST ].legs == [ CARRYOVER_LEG ]
+   assert diffs[ Position.FIRST ].bulk_transit_evaluated is True
+   assert diffs[ Position.FIRST ].route == 'summer'
 
 
 def Test_Validate_TestScheduleOutsideVisitWindow_ExpectClearedLegs(
@@ -156,6 +157,6 @@ def Test_Validate_TestScheduleOutsideVisitWindow_ExpectClearedLegs(
       visit_date_is_changing=False )
 
    assert len( diffs ) == 1
-   assert diffs[ 0 ].start_time is None
-   assert diffs[ 0 ].end_time is None
-   assert diffs[ 0 ].legs == []
+   assert diffs[ Position.FIRST ].start_time is None
+   assert diffs[ Position.FIRST ].end_time is None
+   assert diffs[ Position.FIRST ].legs == []

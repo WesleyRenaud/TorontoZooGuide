@@ -12,6 +12,7 @@ from api.exhibits.controllers.exhibit_controller import ExhibitController
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 import api.http_request_handler as server
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -46,7 +47,7 @@ def stub_exhibit_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubExhibitCo
 
    def stub_clear_connection() -> None:
       if StubExhibitCoordinator.instances:
-         StubExhibitCoordinator.instances[ -1 ].closed = True
+         StubExhibitCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

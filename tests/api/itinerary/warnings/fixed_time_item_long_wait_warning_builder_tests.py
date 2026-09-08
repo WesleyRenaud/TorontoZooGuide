@@ -16,7 +16,7 @@ from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.transportation_diff import TransportationDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.shared.enums import ItinerarySaveIssueItemType
 
 ZEBRA_TALK = "Grevy's Zebra"
@@ -279,8 +279,8 @@ def Test_ReasonsFromItinerary_TestIsolatedTalk_ExpectLongWaitReason() -> None:
    reasons = FixedTimeItemLongWaitWarningBuilder.reasons_from_itinerary( itinerary )
 
    assert len( reasons ) == 1
-   assert reasons[ 0 ].code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
-   assert { item.name for item in reasons[ 0 ].items } == { MEERKAT_TALK }
+   assert reasons[ Position.FIRST ].code == ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+   assert { item.name for item in reasons[ Position.FIRST ].items } == { MEERKAT_TALK }
 
 
 def Test_ReasonsFromItinerary_TestNoIsolatedItems_ExpectEmptyReasons() -> None:
@@ -468,7 +468,7 @@ def Test_ProposeGuardiansTalkOnItinerary_TestKnownTalk_ExpectProposedItinerary()
 
    assert proposed is not None
    assert len( proposed.guardians_talks ) == 1
-   talk = proposed.guardians_talks[ 0 ]
+   talk = proposed.guardians_talks[ Position.FIRST ]
    assert talk.name == ZEBRA_TALK
    assert talk.location == 'Africa Savanna'
    assert talk.x_coord == 11.0
@@ -526,7 +526,7 @@ def Test_ProposeWildEncounterOnItinerary_TestKnownEncounter_ExpectProposedItiner
 
    assert proposed is not None
    assert len( proposed.wild_encounters ) == 1
-   encounter = proposed.wild_encounters[ 0 ]
+   encounter = proposed.wild_encounters[ Position.FIRST ]
    assert encounter.name == RAINFOREST_ENCOUNTER
    assert encounter.meeting_spot == MEETING_SPOT
    assert encounter.link == 'african-rainforest'

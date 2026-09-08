@@ -8,7 +8,7 @@ from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.itinerary_event import ItineraryEvent
 from api.models.wild_encounter_diff import WildEncounterDiff
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 def _validated_with_scheduled_guest_items() -> ValidatedItinerary:
@@ -51,8 +51,8 @@ def Test_Apply_TestNoRequirements_ExpectUnchangedValidated() -> None:
       ItineraryUnscheduleRequirements( talks=[], encounters=[] ) )
 
    assert result is validated
-   assert result.animals[ 0 ].start_time == '2:30 PM'
-   assert result.attractions[ 0 ].start_time == '11:00 AM'
+   assert result.animals[ Position.FIRST ].start_time == '2:30 PM'
+   assert result.attractions[ Position.FIRST ].start_time == '11:00 AM'
    assert len( result.events ) == 1
 
 
@@ -73,10 +73,10 @@ def Test_Apply_TestEncounterOverlap_ExpectGuestSchedulesCleared() -> None:
 
    result = ItineraryUnscheduleChangeApplier.apply( validated, requirements )
 
-   assert result.animals[ 0 ].start_time is None
-   assert result.animals[ 0 ].end_time is None
-   assert result.attractions[ 0 ].start_time is None
-   assert result.attractions[ 0 ].end_time is None
+   assert result.animals[ Position.FIRST ].start_time is None
+   assert result.animals[ Position.FIRST ].end_time is None
+   assert result.attractions[ Position.FIRST ].start_time is None
+   assert result.attractions[ Position.FIRST ].end_time is None
    assert len( result.events ) == 1
 
 
@@ -96,6 +96,6 @@ def Test_Apply_TestTalkOverlap_ExpectGuestSchedulesCleared() -> None:
 
    result = ItineraryUnscheduleChangeApplier.apply( validated, requirements )
 
-   assert result.animals[ 0 ].start_time is None
-   assert result.attractions[ 0 ].start_time is None
+   assert result.animals[ Position.FIRST ].start_time is None
+   assert result.attractions[ Position.FIRST ].start_time is None
    assert result.events == []

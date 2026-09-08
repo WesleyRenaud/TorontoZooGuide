@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Self
 
 from .schedule_item_key_separator import ScheduleItemKeySeparator
+from ..shared.enums.position import Position
 
 
 @dataclass( frozen=True )
@@ -18,8 +19,8 @@ class TransportationScheduleItemKey:
       if len( parts ) != 2:
          return None
 
-      name = parts[ 0 ].strip()
-      added_as_attraction_wire = parts[ 1 ].strip()
+      name = parts[ Position.FIRST ].strip()
+      added_as_attraction_wire = parts[ Position.SECOND ].strip()
 
       if not name:
          return None

@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
+from api.shared.enums.position import Position
 
 
 PROVIDER_SCHEMA = """
@@ -75,8 +76,8 @@ def Test_FetchLinkedAnimals_TestPenguinTalk_ExpectSpeciesExhibitKey(
       PENGUIN_TALK )
 
    assert len( keys ) == 1
-   assert keys[ 0 ].species == 'african penguin'
-   assert keys[ 0 ].exhibit == 'africa savanna'
+   assert keys[ Position.FIRST ].species == 'african penguin'
+   assert keys[ Position.FIRST ].exhibit == 'africa savanna'
 
 
 def Test_FetchAnimalLinks_TestPenguinTalk_ExpectOutdoorEnclosure(
@@ -86,8 +87,8 @@ def Test_FetchAnimalLinks_TestPenguinTalk_ExpectOutdoorEnclosure(
       PENGUIN_TALK )
 
    assert len( links ) == 1
-   assert links[ 0 ].species == 'African Penguin'
-   assert links[ 0 ].enclosure_name == 'Outdoor'
+   assert links[ Position.FIRST ].species == 'African Penguin'
+   assert links[ Position.FIRST ].enclosure_name == 'Outdoor'
 
 
 def Test_FetchAnimalLinks_TestGorillaTalk_ExpectIndoorEnclosure(
@@ -97,8 +98,8 @@ def Test_FetchAnimalLinks_TestGorillaTalk_ExpectIndoorEnclosure(
       GORILLA_TALK )
 
    assert len( links ) == 1
-   assert links[ 0 ].species == 'Western Lowland Gorilla'
-   assert links[ 0 ].enclosure_name == 'Indoor'
+   assert links[ Position.FIRST ].species == 'Western Lowland Gorilla'
+   assert links[ Position.FIRST ].enclosure_name == 'Indoor'
 
 
 def Test_FetchAnimalLinks_TestLionTalk_ExpectNullEnclosure(
@@ -108,5 +109,5 @@ def Test_FetchAnimalLinks_TestLionTalk_ExpectNullEnclosure(
       LION_TALK )
 
    assert len( links ) == 1
-   assert links[ 0 ].species == 'African Lion'
-   assert links[ 0 ].enclosure_name is None
+   assert links[ Position.FIRST ].species == 'African Lion'
+   assert links[ Position.FIRST ].enclosure_name is None

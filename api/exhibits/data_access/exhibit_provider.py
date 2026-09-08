@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .exhibit_mapper import ExhibitMapper
 from .region_exhibit_record import RegionExhibitRecord
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -17,7 +18,7 @@ class ExhibitProvider():
                   FROM Exhibit e;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()
@@ -35,7 +36,7 @@ class ExhibitProvider():
                  WHERE e.REGION = ?;
             """, ( region, ) )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()
@@ -76,7 +77,7 @@ class ExhibitProvider():
                   WHERE e.EXHIBIT = ?;
             """, ( exhibit, ) )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()
