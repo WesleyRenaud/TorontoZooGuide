@@ -33,3 +33,13 @@ test('Test_FormatExhibitEnclosureTypeLine_TestJoinsExhibitAndEnclosureType_Expec
       'Africa Savanna \u2022 Aviary'
    );
 });
+
+test('Test_FormatExhibitEnclosureTypeLine_TestBlankType_ExpectExhibitOnly', () => {
+   assert.equal(AnimalDisplayFormatter.formatExhibitEnclosureTypeLine('Africa Savanna', ''), 'Africa Savanna');
+   assert.equal(AnimalDisplayFormatter.formatExhibitEnclosureTypeLine('Africa Savanna', null), 'Africa Savanna');
+});
+
+test('Test_FormatAnimalTitleSuffix_TestEnclosure_ExpectSuffixOrEmpty', () => {
+   assert.equal(AnimalDisplayFormatter.formatAnimalTitleSuffix(''), '');
+   assert.equal(AnimalDisplayFormatter.formatAnimalTitleSuffix('Indoor'), ' \u2022 Indoor');
+});
