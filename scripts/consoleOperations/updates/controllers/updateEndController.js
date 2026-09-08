@@ -48,7 +48,7 @@ export class UpdateEndController {
 
       async function onSubmitClick() {
          const values = {
-            ...getSelectedUpdateIdentity(updateEl),
+            ...UpdateOptions.getSelectedUpdateIdentity(updateEl),
             endDate: ControllerHelper.getFieldValue(endDateEl),
          };
          const validationError = validateForm(values);
