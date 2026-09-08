@@ -6,6 +6,7 @@ from .loop_schedule_unit_builder import LoopScheduleUnitBuilder
 from .loop_unit_travel_time_calculator import LoopUnitTravelTimeCalculator
 from .prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
+from ....shared.enums.position import Position
 from ....types import Types
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.master_route_loop_traversal_checker import MasterRouteLoopTraversalChecker
@@ -381,7 +382,7 @@ class LoopWindowPacker():
          window_start_seconds: int,
          current_node_id: str,
          anchor_node_id: str ) -> tuple[ float, float, str ]:
-      terminal_unit = sequence[ -1 ]
+      terminal_unit = sequence[ Position.LAST ]
       occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
          walk_graph,
          sequence,
@@ -630,7 +631,7 @@ class LoopWindowPacker():
                   walk_graph,
                   units_before_soft_end,
                   from_node_id=current_node_id )
-               > min( matching_pins[ 0 ].close_seconds, schedule_window.end_seconds ) ):
+               > min( matching_pins[ Position.FIRST ].close_seconds, schedule_window.end_seconds ) ):
             return False
 
       return True
@@ -833,4 +834,4 @@ class LoopWindowPacker():
       if anchor_stop is None or not anchor_stop.walk_node_ids:
          return None
 
-      return anchor_stop.walk_node_ids[ 0 ]
+      return anchor_stop.walk_node_ids[ Position.FIRST ]

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...shared.enums import ScheduleItemKind
+from ...shared.enums.position import Position
 from ...types import Types
 
 ENTRANCE_ITEM_KEY = 'entrance'
@@ -25,4 +26,4 @@ class ItineraryStop:
       if not self.walk_node_ids:
          return None
 
-      return self.walk_node_ids[ 0 ]
+      return self.walk_node_ids[ Position.FIRST ]

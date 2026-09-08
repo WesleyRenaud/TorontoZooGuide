@@ -22,7 +22,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 CHEETAH_KEY = AnimalScheduleItemKey(
@@ -572,14 +572,14 @@ def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarl
    assert transit_row[ 'END_TIME' ] == '11:30 AM'
    assert transit_row[ 'BULK_TRANSIT_EVALUATED' ] == 1
    assert len( legs ) == 2
-   assert legs[ 0 ][ 'FROM_STATION' ] == 'Station A'
-   assert legs[ 0 ][ 'TO_STATION' ] == 'Station B'
-   assert legs[ 0 ][ 'START_TIME' ] == '11:00 AM'
-   assert legs[ 0 ][ 'END_TIME' ] == '11:15 AM'
-   assert legs[ 1 ][ 'FROM_STATION' ] == 'Station B'
-   assert legs[ 1 ][ 'TO_STATION' ] == 'Station C'
-   assert legs[ 1 ][ 'START_TIME' ] == '11:15 AM'
-   assert legs[ 1 ][ 'END_TIME' ] == '11:30 AM'
+   assert legs[ Position.FIRST ][ 'FROM_STATION' ] == 'Station A'
+   assert legs[ Position.FIRST ][ 'TO_STATION' ] == 'Station B'
+   assert legs[ Position.FIRST ][ 'START_TIME' ] == '11:00 AM'
+   assert legs[ Position.FIRST ][ 'END_TIME' ] == '11:15 AM'
+   assert legs[ Position.SECOND ][ 'FROM_STATION' ] == 'Station B'
+   assert legs[ Position.SECOND ][ 'TO_STATION' ] == 'Station C'
+   assert legs[ Position.SECOND ][ 'START_TIME' ] == '11:15 AM'
+   assert legs[ Position.SECOND ][ 'END_TIME' ] == '11:30 AM'
 
 
 def Test_ShiftItemsAfterUnschedule_TestWovenTalkRemoved_ExpectLaterAnimalShiftedEarlier(

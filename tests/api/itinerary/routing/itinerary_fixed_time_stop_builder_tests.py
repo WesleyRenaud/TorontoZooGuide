@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.routing.itinerary_fixed_time_stop_builder import ItineraryFixedTimeStopBuilder
 from api.itinerary.routing.itinerary_stop import ItineraryStop
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 
 
 FIXED_TIME_STOP = ItineraryStop(
@@ -38,4 +38,4 @@ def Test_FromItineraryStops_TestMixedStops_ExpectSkipsUnscheduledStops() -> None
       [ UNSCHEDULED_STOP, FIXED_TIME_STOP ] )
 
    assert len( fixed_time_stops ) == 1
-   assert fixed_time_stops[ 0 ].stop.item_key == 'Masai Giraffe'
+   assert fixed_time_stops[ Position.FIRST ].stop.item_key == 'Masai Giraffe'

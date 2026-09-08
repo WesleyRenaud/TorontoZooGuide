@@ -9,6 +9,7 @@ from ...routing.transportation_walk_node_resolver import TransportationWalkNodeR
 from ...routing.walk_travel_time_calculator import WalkTravelTimeCalculator
 from .scheduled_walk_stop import ScheduledWalkStop
 from ....shared.calendar_dates import DateValues
+from ....shared.enums.position import Position
 from ....types import Types
 from ....walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from ....walk_graph.domain.map_location_kind import MapLocationKind
@@ -263,4 +264,4 @@ class ScheduleItemTravelTimeCalculator():
 
          previous_candidates.append( ( stop.end_seconds, stop.walk_node_id ) )
 
-      return max( previous_candidates, key=lambda item: item[ 0 ] )
+      return max( previous_candidates, key=lambda item: item[ Position.FIRST ] )

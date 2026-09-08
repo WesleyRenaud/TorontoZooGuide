@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .itinerary_status_record import ItineraryStatusRecord
 from ...shared.enums import ItineraryErrorType
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -25,9 +26,9 @@ class ItineraryStatusProvider():
 
       return [
          ItineraryStatusRecord(
-            status=str( row[ 0 ] ),
-            is_suppressable=bool( row[ 1 ] ),
-            is_suppressed=bool( row[ 2 ] ),
+            status=str( row[ Position.FIRST ] ),
+            is_suppressable=bool( row[ Position.SECOND ] ),
+            is_suppressed=bool( row[ Position.THIRD ] ),
          )
          for row in rows
       ]
@@ -49,7 +50,7 @@ class ItineraryStatusProvider():
 
       cur.close()
 
-      return [ str( row[ 0 ] ) for row in rows ]
+      return [ str( row[ Position.FIRST ] ) for row in rows ]
 
 
    @classmethod
@@ -69,7 +70,7 @@ class ItineraryStatusProvider():
 
       cur.close()
 
-      return bool( row and row[ 0 ] )
+      return bool( row and row[ Position.FIRST ] )
 
 
    @classmethod
@@ -92,7 +93,7 @@ class ItineraryStatusProvider():
 
       cur.close()
 
-      return bool( row and row[ 0 ] )
+      return bool( row and row[ Position.FIRST ] )
 
 
    @classmethod

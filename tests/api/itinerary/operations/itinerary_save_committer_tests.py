@@ -25,7 +25,7 @@ from api.models import Itinerary
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -118,7 +118,7 @@ def Test_Commit_TestOverlappingWithoutOverride_ExpectConflictResult(
 
    assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
    assert len( result.reasons ) == 1
-   assert { item.name for item in result.reasons[ 0 ].items } == {
+   assert { item.name for item in result.reasons[ Position.FIRST ].items } == {
       TURTLE_TALK,
       RHINO_ENCOUNTER,
    }
@@ -182,9 +182,9 @@ def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
    saved = captured[ 'validated_itinerary' ]
    assert isinstance( saved, ValidatedItinerary )
    assert result.status == ItineraryErrorType.SUCCESS
-   assert saved.guardians_talks[ 0 ].start_time == '1:45 PM'
-   assert saved.guardians_talks[ 0 ].end_time == '2:00 PM'
-   assert saved.wild_encounters[ 0 ].name == 'Grizzly Bear'
+   assert saved.guardians_talks[ Position.FIRST ].start_time == '1:45 PM'
+   assert saved.guardians_talks[ Position.FIRST ].end_time == '2:00 PM'
+   assert saved.wild_encounters[ Position.FIRST ].name == 'Grizzly Bear'
 
 
 def Test_Commit_TestUnscheduleRequirements_ExpectAnimalSchedulesCleared(
@@ -264,8 +264,8 @@ def Test_Commit_TestUnscheduleRequirements_ExpectAnimalSchedulesCleared(
    saved = captured[ 'validated_itinerary' ]
    assert isinstance( saved, ValidatedItinerary )
    assert result.status == ItineraryErrorType.SUCCESS
-   assert saved.animals[ 0 ].start_time is None
-   assert saved.animals[ 0 ].end_time is None
+   assert saved.animals[ Position.FIRST ].start_time is None
+   assert saved.animals[ Position.FIRST ].end_time is None
 
 
 def Test_Commit_TestNeedsReschedule_ExpectReschedulerCalled(
@@ -429,7 +429,7 @@ def Test_Commit_TestDateChangeNeedsReschedule_ExpectEndpointSync(
 
    assert captured[ 'saved_itinerary_before_clear' ] == saved_itinerary
    assert captured[ 'seed_if_complete_called' ] is True
-   assert result.adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert result.adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
    assert result.status == ItineraryErrorType.SUCCESS
 
 
@@ -503,5 +503,5 @@ def Test_Commit_TestDateChangeDeletedTalk_ExpectSavedAsDeleted(
    saved = captured[ 'validated_itinerary' ]
    assert isinstance( saved, ValidatedItinerary )
    assert result.status == ItineraryErrorType.SUCCESS
-   assert saved.guardians_talks[ 0 ].is_deleted is True
-   assert saved.wild_encounters[ 0 ].is_deleted is True
+   assert saved.guardians_talks[ Position.FIRST ].is_deleted is True
+   assert saved.wild_encounters[ Position.FIRST ].is_deleted is True

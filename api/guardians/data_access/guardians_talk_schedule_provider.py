@@ -5,6 +5,7 @@ from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ..scheduling.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
 from ...shared.constants import Constants
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -233,7 +234,7 @@ class GuardiansTalkScheduleProvider():
                target_date,
             ) ).fetchall()
 
-         return [ row[ 0 ] for row in rows ]
+         return [ row[ Position.FIRST ] for row in rows ]
 
       finally:
          cur.close()

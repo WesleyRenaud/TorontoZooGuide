@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop
+from ...shared.enums.position import Position
 from ...walk_graph.domain.walk_graph import WalkGraph
 from ...walk_graph.shortest_path import WalkGraphAdjacency
 from ...walk_graph.shortest_path_calculator import ShortestPathCalculator
@@ -37,9 +38,9 @@ class ReturnToEntranceWalkRouteLegAppender():
 
       legs.append(
          WalkTravelTimeCalculator.route_leg_with_travel_time(
-            from_item_key=route_stops[ -1 ].item_key,
+            from_item_key=route_stops[ Position.LAST ].item_key,
             to_item_key=entrance_anchor.item_key,
-            from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
+            from_schedule_item_kind=route_stops[ Position.LAST ].schedule_item_kind,
             to_schedule_item_kind=entrance_anchor.schedule_item_kind,
             node_ids=return_leg_path.node_ids,
             length_px=return_leg_path.length_px ) )

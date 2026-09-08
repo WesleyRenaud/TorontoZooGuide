@@ -12,6 +12,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from api.models.animal_diff import AnimalDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.enums.position import Position
 
 
 RAINFOREST = 'African Rainforest'
@@ -138,8 +139,8 @@ def Test_PrepareValidatedForReschedule_TestClearsListedSchedules_ExpectValidated
       validated,
       [ encounter ] )
 
-   assert prepared.animals[ 0 ].start_time is None
-   assert prepared.animals[ 0 ].end_time is None
+   assert prepared.animals[ Position.FIRST ].start_time is None
+   assert prepared.animals[ Position.FIRST ].end_time is None
 
 
 def Test_ApplyToValidatedItinerary_TestNewEncounter_ExpectPreparedItinerary() -> None:
@@ -171,7 +172,7 @@ def Test_ApplyToValidatedItinerary_TestNewEncounter_ExpectPreparedItinerary() ->
       validated,
       [ encounter ] )
 
-   assert prepared.animals[ 0 ].start_time is None
+   assert prepared.animals[ Position.FIRST ].start_time is None
 
 
 def Test_ClearOverlappingSavedSchedules_TestOverlap_ExpectDelegateCalled(

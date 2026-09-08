@@ -12,7 +12,7 @@ from api.itinerary.scheduling.items.itinerary_save_result_builder import Itinera
 from api.itinerary.scheduling.items.schedule_slot_time_resolver import ScheduleSlotTimeResolver
 from api.itinerary.scheduling.items.schedule_window_preparer import ScheduleWindowPreparer
 from api.models import Animal
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 
 VISIT_WINDOW = ( 16 * 3600, 16 * 3600 + 5 * 60 )
 DAY_HOURS_WINDOW = ( 9 * 3600 + 30 * 60, 17 * 3600 )
@@ -147,7 +147,7 @@ def Test_ResolveAllowingVisitExtension_TestShortVisitWindow_ExpectEarlierSlot(
 
    assert error is None
    assert slot is not None
-   assert slot[ 1 ] == '4:00 PM'
+   assert slot[ Position.SECOND ] == '4:00 PM'
 
 
 def Test_ResolveAllowingVisitExtension_TestRequestedStartAfterDeparture_ExpectSlot(

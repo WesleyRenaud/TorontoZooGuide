@@ -8,6 +8,7 @@ from api.guardians.data_access.guardians_talk_day_schedule_record import Guardia
 from api.guardians.data_access.guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
 from api.guardians.data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from api.guardians.data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
+from api.shared.enums.position import Position
 from api.types import Types
 
 TALK_NAME = 'African Lion'
@@ -141,4 +142,4 @@ def Test_FetchDayScheduleRecords_TestAddedOccurrenceWithoutSchedule_ExpectAddedT
       ADDED_OCCURRENCE_DATE )
 
    assert len( records ) == 1
-   assert records[ 0 ].talk_time == ADDED_TALK_TIME
+   assert records[ Position.FIRST ].talk_time == ADDED_TALK_TIME

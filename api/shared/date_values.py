@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta
 from typing import Any
 
+from .enums.position import Position
 from ..models.date_range import DateRange
 from ..types import Types
 
@@ -212,7 +213,7 @@ class DateValues:
       except ValueError:
          pass
 
-      date_part = value.split( ' ' )[ 0 ]
+      date_part = value.split( ' ' )[ Position.FIRST ]
 
       try:
          return date.fromisoformat( date_part )

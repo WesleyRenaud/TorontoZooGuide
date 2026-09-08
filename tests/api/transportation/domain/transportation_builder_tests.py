@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from api.shared.enums.position import Position
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from api.transportation.data_access.transportation_record import TransportationRecord
 from api.transportation.domain.transportation_builder import TransportationBuilder
@@ -84,4 +85,4 @@ def Test_BuildTransportations_TestRecords_ExpectModels() -> None:
       context )
 
    assert len( transportations ) == 1
-   assert transportations[ 0 ].name == 'Zoomobile'
+   assert transportations[ Position.FIRST ].name == 'Zoomobile'

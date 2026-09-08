@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.animals.itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.models.animal import Animal
+from api.shared.enums.position import Position
 
 
 def _animal(
@@ -186,7 +187,7 @@ def Test_Build_TestAppliesSavedSchedule_ExpectTimesAndFlags() -> None:
 
    animals = ItineraryAnimalsBuilder.build( viewable_animals, saved_animals )
 
-   lion = animals[ 0 ]
+   lion = animals[ Position.FIRST ]
    assert lion.old_likelihood == 80
    assert lion.is_added is True
    assert lion.covered_by_talk is True

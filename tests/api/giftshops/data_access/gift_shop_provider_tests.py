@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
+from api.shared.enums.position import Position
 
 
 GIFT_SHOP_PROVIDER_SCHEMA = """
@@ -117,7 +118,7 @@ def Test_FetchGiftShopRecords_TestNoMultiplier_ExpectDefaultMultipliers(
       VISIT_DAY )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == ZOO_SHOP
    assert record.location == 'Main Entrance'
    assert record.description == f'{ ZOO_SHOP } description'
@@ -149,9 +150,9 @@ def Test_FetchGiftShopRecords_TestMatchingMultiplier_ExpectJoinedValues(
       VISIT_DAY )
 
    assert len( records ) == 1
-   assert records[ 0 ].name == SAVANNA_STORE
-   assert records[ 0 ].weekday_multiplier == 0.6
-   assert records[ 0 ].weekend_holiday_multiplier == 0.9
+   assert records[ Position.FIRST ].name == SAVANNA_STORE
+   assert records[ Position.FIRST ].weekday_multiplier == 0.6
+   assert records[ Position.FIRST ].weekend_holiday_multiplier == 0.9
 
 
 def Test_FetchGiftShopScheduleRecords_TestEmpty_ExpectEmptyList(
@@ -187,7 +188,7 @@ def Test_FetchGiftShopScheduleRecords_TestPopulated_ExpectMappedFields(
       gift_shop_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.gift_shop == ZOO_SHOP
    assert record.schedule_start_date == '2026-04-01'
    assert record.schedule_end_date == '2026-10-31'
@@ -223,7 +224,7 @@ def Test_FetchGiftShopScheduleOverrideRecords_TestPopulated_ExpectMappedFields(
       gift_shop_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.gift_shop == ZOO_SHOP
    assert record.override_start_date == '2026-12-25'
    assert record.override_end_date is None

@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.exhibits.data_access.exhibit_status_provider import ExhibitStatusProvider
+from api.shared.enums.position import Position
 
 
 EXHIBIT = 'Africa Savanna'
@@ -95,6 +96,6 @@ def Test_FetchClosureRecords_TestMixedStatuses_ExpectOnlyClosedExhibits(
    records = ExhibitStatusProvider.fetch_closure_records( exhibit_status_conn )
 
    assert len( records ) == 1
-   assert records[ 0 ].exhibit == EXHIBIT
-   assert records[ 0 ].closed_start == START_DATE
-   assert records[ 0 ].closed_end == END_DATE
+   assert records[ Position.FIRST ].exhibit == EXHIBIT
+   assert records[ Position.FIRST ].closed_start == START_DATE
+   assert records[ Position.FIRST ].closed_end == END_DATE

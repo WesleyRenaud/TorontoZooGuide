@@ -10,6 +10,7 @@ from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordi
 from api.restaurants.data_access.restaurant_provider import RestaurantProvider
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.restaurants.search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
+from api.shared.enums.position import Position
 from api.types import Types
 
 VISIT_DAY = 15
@@ -191,7 +192,7 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == RESTAURANT_NAME
+         return args[ Position.FIRST ] == RESTAURANT_NAME
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
@@ -213,7 +214,7 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == RESTAURANT_NAME
+         return args[ Position.FIRST ] == RESTAURANT_NAME
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 

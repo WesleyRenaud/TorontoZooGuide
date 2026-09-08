@@ -10,6 +10,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.validation.itinerary_animal_validator import ItineraryAnimalValidator
 from api.models.animal import Animal
 from api.shared.constants import Constants
+from api.shared.enums.position import Position
 
 
 VISIT_DATE = date( 2026, 6, 15 )
@@ -44,7 +45,7 @@ def _stub_saved_animals_lookup(
       if not saved_animals:
          return []
 
-      return animals_by_species.get( saved_animals[ 0 ].species, [] )
+      return animals_by_species.get( saved_animals[ Position.FIRST ].species, [] )
 
    monkeypatch.setattr(
       AnimalCoordinator,
@@ -130,7 +131,7 @@ def stub_giraffe_habitat_swap_coordinator(
       if not saved_animals:
          return []
 
-      enclosure_name = saved_animals[ 0 ].enclosure_name
+      enclosure_name = saved_animals[ Position.FIRST ].enclosure_name
 
       if enclosure_name == 'Giraffe House' and temp == 18:
          return []
@@ -189,7 +190,7 @@ def stub_aldabra_habitat_swap_coordinator(
       if not saved_animals:
          return []
 
-      enclosure_name = saved_animals[ 0 ].enclosure_name
+      enclosure_name = saved_animals[ Position.FIRST ].enclosure_name
 
       if enclosure_name == 'Outdoor' and temp == 10:
          return []
@@ -359,8 +360,8 @@ def Test_ValidateOnDateChange_TestUnavailableHabitat_ExpectPreferredOutdoorSwap(
    ]
 
    assert len( giraffes ) == 1
-   assert giraffes[ 0 ].enclosure_name == 'Outdoor'
-   assert giraffes[ 0 ].is_added is False
+   assert giraffes[ Position.FIRST ].enclosure_name == 'Outdoor'
+   assert giraffes[ Position.FIRST ].is_added is False
 
 
 def Test_ValidateOnDateChange_TestColdWeatherOutdoorAldabra_ExpectIndoorSwap(
@@ -398,10 +399,10 @@ def Test_ValidateOnDateChange_TestColdWeatherOutdoorAldabra_ExpectIndoorSwap(
    ]
 
    assert len( aldabras ) == 1
-   assert aldabras[ 0 ].enclosure_name == ALDABRA_INDOOR_ENCLOSURE
-   assert aldabras[ 0 ].is_added is False
-   assert aldabras[ 0 ].start_time == '10:00 AM'
-   assert aldabras[ 0 ].end_time == '10:08 AM'
+   assert aldabras[ Position.FIRST ].enclosure_name == ALDABRA_INDOOR_ENCLOSURE
+   assert aldabras[ Position.FIRST ].is_added is False
+   assert aldabras[ Position.FIRST ].start_time == '10:00 AM'
+   assert aldabras[ Position.FIRST ].end_time == '10:08 AM'
 
 
 def Test_ValidateOnDateChange_TestDuplicatePreferredHabitat_ExpectSingleSwap(

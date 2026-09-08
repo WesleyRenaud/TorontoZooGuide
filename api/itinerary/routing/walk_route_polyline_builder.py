@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.enums.sequence_index import SequenceIndex
+from ...shared.enums.position import Position
 from .walk_route_leg import WalkRouteLeg
 from .walk_route_point import WalkRoutePoint
 
@@ -13,7 +13,7 @@ class WalkRoutePolylineBuilder():
          node_id: str ) -> None:
       if (
             route_node_ids
-            and route_node_ids[ SequenceIndex.LAST ] == node_id
+            and route_node_ids[ Position.LAST ] == node_id
       ):
          return
 
@@ -43,17 +43,17 @@ class WalkRoutePolylineBuilder():
 
       for leg_index, leg in enumerate( legs ):
          if not slices:
-            from_point_sequence = SequenceIndex.FIRST
-         elif cls._legs_share_join_node( legs[ leg_index + SequenceIndex.LAST ], leg ):
-            from_point_sequence = slices[ SequenceIndex.LAST ][ SequenceIndex.SECOND ]
+            from_point_sequence = Position.FIRST
+         elif cls._legs_share_join_node( legs[ leg_index + Position.LAST ], leg ):
+            from_point_sequence = slices[ Position.LAST ][ Position.SECOND ]
          else:
             from_point_sequence = (
-               slices[ SequenceIndex.LAST ][ SequenceIndex.SECOND ]
-               + SequenceIndex.SECOND
+               slices[ Position.LAST ][ Position.SECOND ]
+               + Position.SECOND
             )
 
          to_point_sequence = (
-            from_point_sequence + len( leg.node_ids ) + SequenceIndex.LAST
+            from_point_sequence + len( leg.node_ids ) + Position.LAST
          )
          slices.append( ( from_point_sequence, to_point_sequence ) )
 
@@ -67,8 +67,8 @@ class WalkRoutePolylineBuilder():
          current_leg: WalkRouteLeg,
          ) -> bool:
       return (
-         previous_leg.node_ids[ SequenceIndex.LAST ]
-         == current_leg.node_ids[ SequenceIndex.FIRST ]
+         previous_leg.node_ids[ Position.LAST ]
+         == current_leg.node_ids[ Position.FIRST ]
       )
 
 
@@ -82,6 +82,6 @@ class WalkRoutePolylineBuilder():
       return [
          point.node_id
          for point in points[
-            from_point_sequence:to_point_sequence + SequenceIndex.SECOND
+            from_point_sequence:to_point_sequence + Position.SECOND
          ]
       ]

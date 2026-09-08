@@ -6,6 +6,7 @@ from api.drinking_fountains.data_access.drinking_fountain_record import Drinking
 from api.drinking_fountains.data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from api.drinking_fountains.domain.drinking_fountain_builder import DrinkingFountainBuilder
 from api.drinking_fountains.status.drinking_fountain_status_builder import DrinkingFountainStatusBuilder
+from api.shared.enums.position import Position
 
 
 VISIT_DATE = date( 2026, 6, 15 )
@@ -90,4 +91,4 @@ def Test_BuildDrinkingFountains_TestRecords_ExpectModels() -> None:
       likelihood=0.0 )
 
    assert len( fountains ) == 1
-   assert fountains[ 0 ].is_closed is True
+   assert fountains[ Position.FIRST ].is_closed is True

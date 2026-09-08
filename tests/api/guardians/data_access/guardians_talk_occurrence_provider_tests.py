@@ -6,6 +6,7 @@ import pytest
 
 from api.guardians.data_access.guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
 from api.guardians.occurrences.guardians_talk_occurrence_input import GuardiansTalkOccurrenceInput
+from api.shared.enums.position import Position
 
 
 TALK_NAME = 'African Lion'
@@ -343,7 +344,7 @@ def Test_FetchDayScheduleRecordsFromOccurrences_TestActiveOccurrence_ExpectMappe
       OCCURRENCE_DATE )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.name == TALK_NAME
    assert record.location == LOCATION
    assert record.x_coord == X_COORD

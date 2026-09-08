@@ -12,6 +12,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_slot_assigner import LoopSchedu
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.shared.calendar_dates import DateValues
+from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 from api.types import Types
 
@@ -71,8 +72,8 @@ def Test_AssignContiguous_TestInterStopTravel_ExpectGapsBetweenSlots() -> None:
       stops,
       start_seconds=start_seconds )
 
-   assert [ slot[ 1 ] for slot in slots ] == [ '9:30 AM', '9:44 AM' ]
-   assert [ slot[ 2 ] for slot in slots ] == [ '9:35 AM', '9:52 AM' ]
+   assert [ slot[ Position.SECOND ] for slot in slots ] == [ '9:30 AM', '9:44 AM' ]
+   assert [ slot[ Position.THIRD ] for slot in slots ] == [ '9:35 AM', '9:52 AM' ]
    assert end_seconds == start_seconds + 300 + 540 + 480
 
 
@@ -94,7 +95,7 @@ def Test_AssignContiguous_TestNoTravel_ExpectFlushSlots() -> None:
       stops,
       start_seconds=start_seconds )
 
-   assert [ slot[ 1 ] for slot in slots ] == [ '9:30 AM', '9:35 AM' ]
+   assert [ slot[ Position.SECOND ] for slot in slots ] == [ '9:30 AM', '9:35 AM' ]
    assert end_seconds == start_seconds + 300 + 480
 
 
@@ -117,7 +118,7 @@ def Test_AssignContiguous_TestZeroTravel_ExpectFlushBehavior() -> None:
       stops,
       start_seconds=start_seconds )
 
-   assert slots[ 1 ][ 1 ] == '10:08 AM'
+   assert slots[ Position.SECOND ][ Position.SECOND ] == '10:08 AM'
    assert end_seconds == start_seconds + 480 + 420
 
 
@@ -142,8 +143,8 @@ def Test_AssignContiguousEndingBy_TestDeadline_ExpectBackwardPackedSlots() -> No
    assert assignment is not None
    slots, end_seconds = assignment
    assert end_seconds == deadline_seconds
-   assert slots[ 0 ][ 1 ] == '10:38 AM'
-   assert slots[ 1 ][ 1 ] == '10:52 AM'
+   assert slots[ Position.FIRST ][ Position.SECOND ] == '10:38 AM'
+   assert slots[ Position.SECOND ][ Position.SECOND ] == '10:52 AM'
 
 
 def Test_AssignContiguousRespectingAttractionHours_TestBeforeOpen_ExpectHeldUntilOpen() -> None:
@@ -213,8 +214,8 @@ def Test_AssignContiguous_TestWarthogBeforeGiraffe_ExpectEndBeforeStart() -> Non
       stops,
       start_seconds=start_seconds )
 
-   warthog_end = _seconds( slots[ 0 ][ 2 ] )
-   giraffe_start = _seconds( slots[ 1 ][ 1 ] )
+   warthog_end = _seconds( slots[ Position.FIRST ][ Position.THIRD ] )
+   giraffe_start = _seconds( slots[ Position.SECOND ][ Position.SECOND ] )
 
    assert warthog_end <= giraffe_start
 

@@ -16,7 +16,7 @@ from api.models.attraction_diff import AttractionDiff
 from api.models.itinerary_event import ItineraryEvent
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.transportation_diff import TransportationDiff
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 from api.types import Types
 
 def Test_OverlapsAnyTimeBlock_TestOverlappingTimes_ExpectTrue() -> None:
@@ -116,8 +116,8 @@ def Test_PrepareValidatedForReschedule_TestActivityBlocks_ExpectClearedGuestSche
       validated,
       blocks )
 
-   assert result.animals[ 0 ].start_time is None
-   assert result.animals[ 0 ].end_time is None
+   assert result.animals[ Position.FIRST ].start_time is None
+   assert result.animals[ Position.FIRST ].end_time is None
    assert len( result.events ) == 1
 
 
@@ -234,11 +234,11 @@ def Test_PrepareValidatedForReschedule_TestAttractionAndTransportation_ExpectCle
       validated,
       [] )
 
-   assert result.attractions[ 0 ].start_time is None
-   assert result.attractions[ 0 ].end_time is None
-   assert result.transportations[ 0 ].start_time is None
-   assert result.transportations[ 0 ].end_time is None
-   assert result.transportations[ 0 ].legs == []
+   assert result.attractions[ Position.FIRST ].start_time is None
+   assert result.attractions[ Position.FIRST ].end_time is None
+   assert result.transportations[ Position.FIRST ].start_time is None
+   assert result.transportations[ Position.FIRST ].end_time is None
+   assert result.transportations[ Position.FIRST ].legs == []
 
 
 def Test_RemoveOverlappingEvents_TestLunchOverlaps_ExpectLunchRemoved() -> None:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .meet_the_guardians_talk_mapper import MeetTheGuardiansTalkMapper
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -19,7 +20,7 @@ class MeetTheGuardiansTalkProvider():
                   ORDER BY t.LOCATION;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()
@@ -36,7 +37,7 @@ class MeetTheGuardiansTalkProvider():
                   FROM MeetTheGuardiansTalk t;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()
@@ -58,7 +59,7 @@ class MeetTheGuardiansTalkProvider():
             """,
             ( location, ) )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

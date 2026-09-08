@@ -10,7 +10,7 @@ from api.models import Attraction
 from api.models import GuardiansTalk
 from api.models import Itinerary
 from api.models import WildEncounter
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.domain.map_location_walk_node import MapLocationWalkNode
@@ -217,7 +217,7 @@ def Test_Resolve_TestAnimal_ExpectEntranceAndAnimalStops(
       for stop in stops
       if stop.item_key == 'African Lion||Africa Savanna||Outdoor' )
 
-   assert stops[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
+   assert stops[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert lion_stop.schedule_item_kind == ScheduleItemKind.ANIMAL
    assert lion_stop.walk_node_ids == [ LION_WALK_NODE_ID ]
 
@@ -244,7 +244,7 @@ def Test_ResolveFixedTime_TestWildEncounter_ExpectOnlyFixedTimeStops(
       _itinerary( wild_encounters=[ SCHEDULED_ENCOUNTER ] ) )
 
    assert len( fixed_time_stops ) == 1
-   assert fixed_time_stops[ 0 ].item_key == 'Guardians of White Rhinos'
+   assert fixed_time_stops[ Position.FIRST ].item_key == 'Guardians of White Rhinos'
 
 
 def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
@@ -285,9 +285,9 @@ def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
 
    assert animal_stops == []
    assert len( attraction_stops ) == 1
-   assert attraction_stops[ 0 ].start_time == '11:00 AM'
-   assert attraction_stops[ 0 ].end_time == '11:30 AM'
-   assert attraction_stops[ 0 ].walk_node_ids == [ WALK_THRU_WALK_NODE_ID ]
+   assert attraction_stops[ Position.FIRST ].start_time == '11:00 AM'
+   assert attraction_stops[ Position.FIRST ].end_time == '11:30 AM'
+   assert attraction_stops[ Position.FIRST ].walk_node_ids == [ WALK_THRU_WALK_NODE_ID ]
 
 
 def Test_Resolve_TestCoveredLionTalk_ExpectNoAnimalStop(
@@ -340,8 +340,8 @@ def Test_Resolve_TestGuardiansTalk_ExpectTalkStop(
    ]
 
    assert len( talk_stops ) == 1
-   assert talk_stops[ 0 ].item_key == 'Turtle Talk'
-   assert talk_stops[ 0 ].walk_node_ids == [ TALK_WALK_NODE_ID ]
+   assert talk_stops[ Position.FIRST ].item_key == 'Turtle Talk'
+   assert talk_stops[ Position.FIRST ].walk_node_ids == [ TALK_WALK_NODE_ID ]
 
 
 def Test_Resolve_TestDeletedWildEncounter_ExpectSkipped(

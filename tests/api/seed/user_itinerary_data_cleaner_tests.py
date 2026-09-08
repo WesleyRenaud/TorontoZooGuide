@@ -7,6 +7,7 @@ import sqlite3
 import pytest
 
 from api.seed.user_itinerary_data_cleaner import UserItineraryDataCleaner
+from api.shared.enums.position import Position
 
 
 ITINERARY_CLEANER_SCHEMA = """
@@ -165,7 +166,7 @@ def Test_Clear_TestPopulatedItinerary_ExpectClearsAllTables(
 
    for table in tables:
       count = itinerary_cleaner_conn.execute(
-         f'SELECT COUNT(*) FROM { table };' ).fetchone()[ 0 ]
+         f'SELECT COUNT(*) FROM { table };' ).fetchone()[ Position.FIRST ]
       assert count == 0
 
 
@@ -185,7 +186,7 @@ def Test_Main_TestDatabasePath_ExpectClearsAndPrintsSuccess(
    UserItineraryDataCleaner.main( str( path ) )
 
    conn = sqlite3.connect( path )
-   count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ 0 ]
+   count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ Position.FIRST ]
    conn.close()
 
    assert count == 0
@@ -221,7 +222,7 @@ def Test_ModuleMain_TestDatabasePath_ExpectClearsAndPrintsSuccess(
    runpy.run_module( 'api.seed.user_itinerary_data_cleaner', run_name='__main__' )
 
    conn = sqlite3.connect( path )
-   count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ 0 ]
+   count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ Position.FIRST ]
    conn.close()
 
    assert count == 0

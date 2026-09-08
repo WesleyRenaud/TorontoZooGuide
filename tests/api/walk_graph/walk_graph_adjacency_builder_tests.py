@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from api.shared.enums.position import Position
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 from api.walk_graph.shortest_path import WalkGraphAdjacency
@@ -65,13 +66,13 @@ def _unique_one_way_path_through(
 
    path = [ start ]
 
-   while path[ -1 ] in one_way_successors:
-      next_ids = one_way_successors[ path[ -1 ] ]
+   while path[ Position.LAST ] in one_way_successors:
+      next_ids = one_way_successors[ path[ Position.LAST ] ]
 
       if len( next_ids ) != 1:
          break
 
-      path.append( next_ids[ 0 ] )
+      path.append( next_ids[ Position.FIRST ] )
 
    assert node_id in path
    return path

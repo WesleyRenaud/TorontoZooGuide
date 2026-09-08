@@ -16,7 +16,7 @@ from api.itinerary.operations.all_itinerary_items_unscheduler import AllItinerar
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.models import Animal, Attraction
-from api.shared.enums import ItineraryErrorType, ItineraryEventType
+from api.shared.enums import ItineraryErrorType, ItineraryEventType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -132,8 +132,8 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectClearedSchedules(
 
    assert cleared == [ 'cleared' ]
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.itinerary.animals[ 0 ].start_time is None
-   assert result.itinerary.attractions[ 0 ].start_time is None
+   assert result.itinerary.animals[ Position.FIRST ].start_time is None
+   assert result.itinerary.attractions[ Position.FIRST ].start_time is None
    assert result.itinerary.events == []
 
 

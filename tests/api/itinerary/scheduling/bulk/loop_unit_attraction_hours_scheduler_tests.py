@@ -18,6 +18,7 @@ from api.itinerary.scheduling.bulk.loop_unit_schedule_persist_error import LoopU
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
+from api.shared.enums.position import Position
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 
@@ -511,8 +512,8 @@ def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWi
 
    assert unscheduled == []
    assert slot_sink.slots
-   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
-   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.SECOND ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.THIRD ] )
    assert start_seconds is not None
    assert end_seconds is not None
    assert start_seconds >= TINY_TOUR_END_SECONDS
@@ -551,7 +552,7 @@ def Test_Schedule_TestTightKangarooWalkThruHours_ExpectEndingBeforeClose(
 
    assert unscheduled == []
    assert slot_sink.slots
-   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.THIRD ] )
    assert end_seconds is not None
    assert end_seconds <= KANGAROO_CLOSE_TIGHT_SECONDS
 
@@ -588,7 +589,7 @@ def Test_Schedule_TestKangarooBeforeCamelTalk_ExpectEndingBeforeTalkStart(
 
    assert unscheduled == []
    assert slot_sink.slots
-   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.THIRD ] )
    assert end_seconds is not None
    assert end_seconds <= CAMEL_TALK_START_SECONDS
 
@@ -626,8 +627,8 @@ def Test_Schedule_TestLatePlaceZoomobileAfterCamelTalk_ExpectSlotBeforeEncounter
 
    assert unscheduled == []
    assert slot_sink.slots
-   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
-   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
+   start_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.SECOND ] )
+   end_seconds = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.THIRD ] )
    assert start_seconds is not None
    assert end_seconds is not None
    assert start_seconds >= CAMEL_TALK_END_SECONDS
@@ -672,10 +673,10 @@ def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
 
    assert unscheduled == []
    assert len( slot_sink.slots ) == 2
-   walk_thru_start = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 1 ] )
-   walk_thru_end = DateValues.time_value_in_seconds( slot_sink.slots[ 0 ][ 2 ] )
-   greenhouse_start = DateValues.time_value_in_seconds( slot_sink.slots[ 1 ][ 1 ] )
-   greenhouse_end = DateValues.time_value_in_seconds( slot_sink.slots[ 1 ][ 2 ] )
+   walk_thru_start = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.SECOND ] )
+   walk_thru_end = DateValues.time_value_in_seconds( slot_sink.slots[ Position.FIRST ][ Position.THIRD ] )
+   greenhouse_start = DateValues.time_value_in_seconds( slot_sink.slots[ Position.SECOND ][ Position.SECOND ] )
+   greenhouse_end = DateValues.time_value_in_seconds( slot_sink.slots[ Position.SECOND ][ Position.THIRD ] )
    assert walk_thru_start is not None
    assert walk_thru_end is not None
    assert greenhouse_start is not None

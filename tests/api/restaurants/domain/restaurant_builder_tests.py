@@ -6,6 +6,7 @@ from api.restaurants.data_access.restaurant_record import RestaurantRecord
 from api.restaurants.data_access.restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
+from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
@@ -136,9 +137,9 @@ def Test_BuildRestaurants_TestClosedRestaurant_ExpectExcludedUnlessIncludedOrLis
 
    assert open_only == []
    assert len( with_closed ) == 1
-   assert with_closed[ 0 ].is_closed is True
+   assert with_closed[ Position.FIRST ].is_closed is True
    assert len( explicitly_listed ) == 1
-   assert explicitly_listed[ 0 ].name == RESTAURANT_NAME
+   assert explicitly_listed[ Position.FIRST ].name == RESTAURANT_NAME
 
 
 def Test_BuildRestaurant_TestClosedSchedule_ExpectCustomClosedMessage() -> None:

@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.restrooms.data_access.restroom_provider import RestroomProvider
+from api.shared.enums.position import Position
 
 
 RESTROOM_A = 'Entrance Restroom'
@@ -92,7 +93,7 @@ def Test_FetchRestroomRecords_TestWithoutStatusOrAlert_ExpectNullJoinedFields(
    records = RestroomProvider.fetch_restroom_records( restroom_provider_conn )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.title == RESTROOM_A
    assert record.x_coord == 10.5
    assert record.y_coord == 20.5

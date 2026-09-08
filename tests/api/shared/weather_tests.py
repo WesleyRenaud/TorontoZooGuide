@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.shared.enums.position import Position
 from api.shared.weather import Weather
 
 
@@ -9,7 +10,7 @@ def Test_GetAverageTemperature_TestMonthStartAnchors_ExpectJanuaryColdestAndJuly
       for month in range( 1, 13 )
    ]
 
-   assert month_start_temperatures[ 0 ] == min( month_start_temperatures )
+   assert month_start_temperatures[ Position.FIRST ] == min( month_start_temperatures )
    assert month_start_temperatures[ 6 ] == max( month_start_temperatures )
 
 

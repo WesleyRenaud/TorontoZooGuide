@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.animals.data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
+from api.shared.enums.position import Position
 
 
 SPECIES = 'Amur Tiger'
@@ -213,7 +214,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestDefaults_ExpectDefaultMultipliers(
       VISIT_DAY )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.species == SPECIES
    assert record.exhibit == EXHIBIT
    assert record.enclosure_name == 'Outdoor Yard'
@@ -286,7 +287,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
       VISIT_DAY )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.is_off_display == 1
    assert record.viewing_scope.value == 'all'
    assert record.off_display_message == 'Off display.'
@@ -333,8 +334,8 @@ def Test_FetchAnimalsViewableOnDayRecords_TestExhibitFilter_ExpectOnlyMatchingEx
       exhibits_to_include=[ OTHER_EXHIBIT ] )
 
    assert len( filtered ) == 1
-   assert filtered[ 0 ].species == OTHER_SPECIES
-   assert filtered[ 0 ].exhibit == OTHER_EXHIBIT
+   assert filtered[ Position.FIRST ].species == OTHER_SPECIES
+   assert filtered[ Position.FIRST ].exhibit == OTHER_EXHIBIT
 
 
 def Test_FetchAnimalsViewableOnDayRecords_TestWhitespaceOnlyExhibits_ExpectUnfiltered(
@@ -377,6 +378,6 @@ def Test_FetchAnimalsViewableOnDayRecords_TestScopeMatchingEnclosureType_ExpectJ
       VISIT_DAY )
 
    assert len( records ) == 1
-   assert records[ 0 ].is_off_display == 1
-   assert records[ 0 ].off_display_message == 'Outdoor closed.'
-   assert records[ 0 ].viewing_scope.value == 'outdoor'
+   assert records[ Position.FIRST ].is_off_display == 1
+   assert records[ Position.FIRST ].off_display_message == 'Outdoor closed.'
+   assert records[ Position.FIRST ].viewing_scope.value == 'outdoor'

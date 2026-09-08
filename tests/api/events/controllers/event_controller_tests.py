@@ -12,6 +12,7 @@ from api.events.coordinators.event_coordinator import EventCoordinator
 import api.http_request_handler as server
 from api.models.event import Event
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -49,7 +50,7 @@ def stub_event_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubEventCoordi
 
    def stub_clear_connection() -> None:
       if StubEventCoordinator.instances:
-         StubEventCoordinator.instances[ -1 ].closed = True
+         StubEventCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

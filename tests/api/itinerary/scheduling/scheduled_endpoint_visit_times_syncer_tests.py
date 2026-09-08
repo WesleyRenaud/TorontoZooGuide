@@ -11,6 +11,7 @@ from api.models import GuardiansTalk
 from api.models import Itinerary
 from api.models import ItineraryTransportation
 from api.models import WildEncounter
+from api.shared.enums.position import Position
 
 
 VISIT_DATE = '2026-06-15'
@@ -609,7 +610,7 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
       current_itinerary=current_itinerary )
 
    assert cleared == [ 'arrival', 'departure' ]
-   assert current_itinerary.animals[ 0 ].start_time == '10:00 AM'
+   assert current_itinerary.animals[ Position.FIRST ].start_time == '10:00 AM'
 
 
 def Test_ClearIfBecameIncomplete_TestNoPreviousItinerary_ExpectNoClear(

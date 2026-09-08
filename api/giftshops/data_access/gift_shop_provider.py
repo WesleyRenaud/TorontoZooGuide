@@ -6,6 +6,7 @@ from .gift_shop_schedule_mapper import GiftShopScheduleMapper
 from .gift_shop_schedule_override_mapper import GiftShopScheduleOverrideMapper
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -21,7 +22,7 @@ class GiftShopProvider():
                   FROM GiftShop g;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

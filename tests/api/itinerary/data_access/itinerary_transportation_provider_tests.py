@@ -7,6 +7,7 @@ import pytest
 from api.itinerary.data_access.itinerary_transportation_provider import ItineraryTransportationProvider
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 
 
 ZOOMOBILE = 'Zoomobile'
@@ -150,8 +151,8 @@ def Test_InsertItineraryTransportationLegs_TestLegs_ExpectPersistedRows(
    ).fetchall()
 
    assert len( legs ) == 1
-   assert legs[ 0 ][ 'FROM_STATION' ] == MAIN
-   assert legs[ 0 ][ 'TO_STATION' ] == CANADA
+   assert legs[ Position.FIRST ][ 'FROM_STATION' ] == MAIN
+   assert legs[ Position.FIRST ][ 'TO_STATION' ] == CANADA
 
 
 def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectClearedFields(
@@ -255,11 +256,11 @@ def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersR
    cur.close()
 
    transportation_count = transportation_provider_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportation;' ).fetchone()[ 0 ]
+      'SELECT COUNT(*) FROM ItineraryTransportation;' ).fetchone()[ Position.FIRST ]
    leg_count = transportation_provider_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportationLeg;' ).fetchone()[ 0 ]
+      'SELECT COUNT(*) FROM ItineraryTransportationLeg;' ).fetchone()[ Position.FIRST ]
    marker_count = transportation_provider_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ 0 ]
+      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ Position.FIRST ]
 
    assert transportation_count == 0
    assert leg_count == 0

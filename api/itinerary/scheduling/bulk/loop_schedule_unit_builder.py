@@ -7,6 +7,7 @@ from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from .loop_schedule_unit import LoopScheduleUnit
 from ...routing.transportation_walk_node_resolver import TransportationWalkNodeResolver
+from ....shared.enums.position import Position
 from ....walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from ....walk_graph.domain.map_location_kind import MapLocationKind
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
@@ -126,8 +127,8 @@ class LoopScheduleUnitBuilder():
          return None, None
 
       return (
-         cls.walk_node_id_for_stop( stops[ 0 ] ),
-         cls.walk_node_id_for_stop( stops[ -1 ] ),
+         cls.walk_node_id_for_stop( stops[ Position.FIRST ] ),
+         cls.walk_node_id_for_stop( stops[ Position.LAST ] ),
       )
 
 
@@ -173,8 +174,8 @@ class LoopScheduleUnitBuilder():
    def _unmapped(
          cls,
          stops: list[ LoopScheduleStop.Stop ] ) -> LoopScheduleUnit:
-      first_stop = stops[ 0 ]
-      last_stop = stops[ -1 ]
+      first_stop = stops[ Position.FIRST ]
+      last_stop = stops[ Position.LAST ]
 
       return LoopScheduleUnit(
          loop_id=None,

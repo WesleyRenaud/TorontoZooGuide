@@ -13,6 +13,7 @@ from ..items.schedule_item_key import ScheduleItemKey
 from ....models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryEventType
+from ....shared.enums.position import Position
 from ....types import Types
 
 
@@ -122,8 +123,8 @@ class GuestScheduleShiftApplier():
          return True
 
       shifted_block = TimeBlockBuilder.from_schedule_times(
-         shifted_times[ 0 ],
-         shifted_times[ 1 ] )
+         shifted_times[ Position.FIRST ],
+         shifted_times[ Position.SECOND ] )
 
       if shifted_block is None:
          return True
@@ -258,8 +259,8 @@ class GuestScheduleShiftApplier():
             species=animal_row.species,
             exhibit=animal_row.exhibit,
             enclosure_name=animal_row.enclosure_name,
-            start_time=shifted_times[ 0 ],
-            end_time=shifted_times[ 1 ],
+            start_time=shifted_times[ Position.FIRST ],
+            end_time=shifted_times[ Position.SECOND ],
          )
 
 
@@ -293,8 +294,8 @@ class GuestScheduleShiftApplier():
          ScheduleItineraryItemProvider.update_itinerary_attraction_schedule(
             cur,
             name=attraction_row.attraction,
-            start_time=shifted_times[ 0 ],
-            end_time=shifted_times[ 1 ],
+            start_time=shifted_times[ Position.FIRST ],
+            end_time=shifted_times[ Position.SECOND ],
          )
 
 
@@ -366,8 +367,8 @@ class GuestScheduleShiftApplier():
             cur,
             name=transportation_row.transportation,
             added_as_attraction=transportation_row.added_as_attraction,
-            start_time=shifted_times[ 0 ],
-            end_time=shifted_times[ 1 ],
+            start_time=shifted_times[ Position.FIRST ],
+            end_time=shifted_times[ Position.SECOND ],
             route=transportation_row.route )
 
 
@@ -404,8 +405,8 @@ class GuestScheduleShiftApplier():
          ScheduleItineraryItemProvider.update_itinerary_event_schedule(
             cur,
             event_type=event_row.event_type,
-            start_time=shifted_times[ 0 ],
-            end_time=shifted_times[ 1 ],
+            start_time=shifted_times[ Position.FIRST ],
+            end_time=shifted_times[ Position.SECOND ],
          )
 
 

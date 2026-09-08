@@ -6,6 +6,7 @@ from .restaurant_schedule_mapper import RestaurantScheduleMapper
 from .restaurant_schedule_override_mapper import RestaurantScheduleOverrideMapper
 from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from .restaurant_schedule_record import RestaurantScheduleRecord
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -21,7 +22,7 @@ class RestaurantProvider():
                   FROM Restaurant r;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

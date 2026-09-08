@@ -15,6 +15,7 @@ from api.attractions.scheduling.attraction_hours_time_bounds import AttractionHo
 import api.http_request_handler as server
 from api.models.attraction import Attraction
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -135,7 +136,7 @@ def stub_attraction_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubAttrac
 
    def stub_clear_connection() -> None:
       if StubAttractionCoordinator.instances:
-         StubAttractionCoordinator.instances[ -1 ].closed = True
+         StubAttractionCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

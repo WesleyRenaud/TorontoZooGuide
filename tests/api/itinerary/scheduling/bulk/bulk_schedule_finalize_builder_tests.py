@@ -10,7 +10,7 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.scheduling.bulk.bulk_schedule_finalize_builder import BulkScheduleFinalizeBuilder
 from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from api.models import Animal
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.shared.enums import ItinerarySaveIssueItemType
 
 
@@ -154,17 +154,17 @@ def Test_Finalize_TestRemainingStops_ExpectNotEnoughTimeIssue(
    assert result.status == ItineraryErrorType.SUCCESS
    assert len( result.reasons ) == 1
    assert (
-      result.reasons[ 0 ].code
+      result.reasons[ Position.FIRST ].code
       == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
-   assert [ item.name for item in result.reasons[ 0 ].items ] == [
+   assert [ item.name for item in result.reasons[ Position.FIRST ].items ] == [
       'African Penguin',
       'African Lion',
    ]
-   assert [ item.location for item in result.reasons[ 0 ].items ] == [
+   assert [ item.location for item in result.reasons[ Position.FIRST ].items ] == [
       'Africa Savanna',
       'Africa Savanna',
    ]
-   assert result.reasons[ 0 ].items[ 0 ].item_type == ItinerarySaveIssueItemType.ANIMAL
+   assert result.reasons[ Position.FIRST ].items[ Position.FIRST ].item_type == ItinerarySaveIssueItemType.ANIMAL
    assert {
       animal.species
       for animal in result.itinerary.animals

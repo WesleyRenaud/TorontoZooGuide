@@ -15,7 +15,7 @@ from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.domain.loop_side_cluster_id import LoopSideClusterId
 from api.walk_graph.domain.master_route_loop import TWO_WAY_LOOP_TRAVERSAL
 from api.walk_graph.domain.walk_graph import WalkGraph
@@ -576,7 +576,7 @@ def Test_Pack_TestTwoWayLoop_ExpectShorterApproachOrientation() -> None:
       departure_side_cluster_id='north' )
 
    assert len( packed_units ) == 1
-   packed_unit = packed_units[ 0 ].unit
+   packed_unit = packed_units[ Position.FIRST ].unit
    assert packed_unit.loop_id == EURASIA_LOOP_ID
    assert packed_unit.entry_walk_node_id == TUR_NODE_ID
    assert packed_unit.exit_walk_node_id == HIGHLAND_NODE_ID
@@ -879,8 +879,8 @@ def Test_PrepareUnits_TestStopsPrepared_ExpectOccupiedSeconds(
 
    assert prepared_units is not None
    assert len( prepared_units ) == 1
-   assert prepared_units[ 0 ].unit is unit
-   assert prepared_units[ 0 ].occupied_seconds == CHEETAH_DWELL_SECONDS
+   assert prepared_units[ Position.FIRST ].unit is unit
+   assert prepared_units[ Position.FIRST ].occupied_seconds == CHEETAH_DWELL_SECONDS
 
 
 def Test_PrepareUnits_TestPrepareStopsFails_ExpectNone(
@@ -965,7 +965,7 @@ def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
    monkeypatch.setattr(
       LoopWindowPacker,
       '_pack_loops_for_open_window',
-      lambda *args, **kwargs: [ prepared_units[ 0 ] ] )
+      lambda *args, **kwargs: [ prepared_units[ Position.FIRST ] ] )
 
    assert LoopWindowPacker.pack_all_before_deadline(
       TEST_GRAPH,

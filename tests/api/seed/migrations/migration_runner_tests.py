@@ -8,6 +8,7 @@ import warnings
 import pytest
 
 from api.seed.migrations.migration_runner import MigrationRunner
+from api.shared.enums.position import Position
 
 @pytest.fixture
 def migration_conn() -> sqlite3.Connection:
@@ -22,7 +23,7 @@ def Test_EnsureMigrationTable_TestFreshDatabase_ExpectSchemaMigrationTable(
    cursor = migration_conn.cursor()
    MigrationRunner.ensure_migration_table( cursor )
    tables = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in cursor.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()
@@ -50,7 +51,7 @@ def Test_RunOnCursor_TestAlreadyApplied_ExpectSkipped(
    MigrationRunner.run_on_cursor( cursor )
 
    tables = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in cursor.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()
@@ -75,7 +76,7 @@ def Test_RunOnCursor_TestSkipBefore_ExpectRecordedWithoutExecuting(
 
    applied = MigrationRunner.applied_migrations( cursor )
    tables = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in cursor.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()
@@ -107,13 +108,13 @@ def Test_Run_TestConnectCommitClose_ExpectApplied(
 
    conn = sqlite3.connect( db_path )
    tables = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in conn.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()
    }
    applied = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in conn.execute(
          'SELECT MIGRATION_NAME FROM SchemaMigration;'
       ).fetchall()
@@ -145,7 +146,7 @@ def Test_ModuleMain_TestRunInvoked_ExpectMigrationRunnerCalled(
 
    conn = real_connect( db_path )
    tables = {
-      row[ 0 ]
+      row[ Position.FIRST ]
       for row in conn.execute(
          "SELECT name FROM sqlite_master WHERE type = 'table';"
       ).fetchall()

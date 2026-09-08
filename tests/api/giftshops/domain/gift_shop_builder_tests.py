@@ -6,6 +6,7 @@ from api.giftshops.data_access.gift_shop_record import GiftShopRecord
 from api.giftshops.data_access.gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
+from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 
@@ -123,7 +124,7 @@ def Test_BuildGiftShops_TestClosedGiftShop_ExpectExcludedUnlessIncludedOrListed(
 
    assert open_only == []
    assert len( with_closed ) == 1
-   assert with_closed[ 0 ].is_closed is True
+   assert with_closed[ Position.FIRST ].is_closed is True
    assert len( explicitly_listed ) == 1
 
 

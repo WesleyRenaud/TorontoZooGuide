@@ -8,6 +8,7 @@ from api.attractions.data_access.attraction_schedule_provider import AttractionS
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.scheduling.attraction_opening_schedule import AttractionOpeningSchedule
 from api.attractions.scheduling.attraction_schedule_override import AttractionScheduleOverride
+from api.shared.enums.position import Position
 
 
 ATTRACTION = 'Kids Zoo'
@@ -213,10 +214,10 @@ def Test_FetchOpeningScheduleConflicts_TestOverlappingSchedule_ExpectConflictRec
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].attraction == ATTRACTION
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].schedule_end_date == END_DATE
-   assert conflicts[ 0 ].schedule_message == MESSAGE
+   assert conflicts[ Position.FIRST ].attraction == ATTRACTION
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].schedule_end_date == END_DATE
+   assert conflicts[ Position.FIRST ].schedule_message == MESSAGE
 
 
 def Test_FetchOpeningScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_event_default_mapper import ItineraryEventDefaultMapper
 from api.itinerary.data_access.itinerary_event_default_record import ItineraryEventDefaultRecord
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 LUNCH_ROW = {
@@ -21,4 +21,4 @@ def Test_MapRecord_TestRow_ExpectEventDefaultRecord() -> None:
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
    records = ItineraryEventDefaultMapper.map_records( [ LUNCH_ROW ] )
 
-   assert records[ 0 ].event_type == ItineraryEventType.LUNCH
+   assert records[ Position.FIRST ].event_type == ItineraryEventType.LUNCH

@@ -10,6 +10,7 @@ from api.itinerary.validation.selected_exhibit_date_change_animals_builder impor
 from api.models.animal import Animal
 from api.models.animal_diff import AnimalDiff
 from api.shared.constants import Constants
+from api.shared.enums.position import Position
 
 
 AFRICA_SAVANNA = 'Africa Savanna'
@@ -343,4 +344,4 @@ def Test_ApplyOnDateChange_TestDeselectedExhibitAnimal_ExpectNotMarkedAdded(
       old_visit_date=date( 2026, 10, 31 ),
       visit_date_temp=18 )
 
-   assert animals[ 0 ].is_added is False
+   assert animals[ Position.FIRST ].is_added is False

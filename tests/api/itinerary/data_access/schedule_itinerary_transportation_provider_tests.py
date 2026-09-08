@@ -8,6 +8,7 @@ from api.itinerary.data_access.itinerary_transportation_provider import Itinerar
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.enums.position import Position
 
 
 ZOOMOBILE = 'Zoomobile'
@@ -126,8 +127,8 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
    assert transportation[ 'END_TIME' ] == '11:15 AM'
    assert transportation[ 'ROUTE' ] == 'summer'
    assert len( legs ) == 5
-   assert legs[ 0 ][ 'FROM_STATION' ] == MAIN
-   assert legs[ -1 ][ 'TO_STATION' ] == MAIN
+   assert legs[ Position.FIRST ][ 'FROM_STATION' ] == MAIN
+   assert legs[ Position.LAST ][ 'TO_STATION' ] == MAIN
    assert { marker.sequence for marker in markers } == { 0, 1 }
    assert len( markers ) == 3
 

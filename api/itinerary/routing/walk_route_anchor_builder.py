@@ -8,6 +8,7 @@ from ...models import Itinerary
 from ...models.itinerary_transportation import ItineraryTransportation
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleItemKind
+from ...shared.enums.position import Position
 from .transit_ride_endpoint import TransitRideEndpoint
 from .transportation_station_walk_node_resolver import TransportationStationWalkNodeResolver
 from .transportation_walk_node_resolver import TransportationWalkNodeResolver
@@ -121,8 +122,8 @@ class WalkRouteAnchorBuilder():
          transportation.legs )
 
       for sequence_index, sequence in enumerate( sequences ):
-         onboarding_station = sequence[ 0 ].from_station
-         offboarding_station = sequence[ -1 ].to_station
+         onboarding_station = sequence[ Position.FIRST ].from_station
+         offboarding_station = sequence[ Position.LAST ].to_station
          onboarding_node_id = TransportationStationWalkNodeResolver.resolve(
             transportation.name,
             onboarding_station )
@@ -130,8 +131,8 @@ class WalkRouteAnchorBuilder():
             transportation.name,
             offboarding_station )
          ride_key = f'{ transportation.name }||{ sequence_index }'
-         onboarding_time = sequence[ 0 ].start_time
-         offboarding_time = sequence[ -1 ].end_time
+         onboarding_time = sequence[ Position.FIRST ].start_time
+         offboarding_time = sequence[ Position.LAST ].end_time
 
          if onboarding_node_id is not None:
             anchors.append(

@@ -3,7 +3,7 @@ from __future__ import annotations
 from api.itinerary.routing.walk_route_leg import WalkRouteLeg
 from api.itinerary.routing.walk_route_point import WalkRoutePoint
 from api.itinerary.routing.walk_route_polyline_builder import WalkRoutePolylineBuilder
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 
 
 def _point( node_id: str ) -> WalkRoutePoint:
@@ -93,7 +93,7 @@ def Test_InclusivePointSlicesForLegs_TestDisconnectedLeg_ExpectGapBetweenSlices(
    slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
       [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ] )
 
-   assert slices[ -1 ] == ( 4, 5 )
+   assert slices[ Position.LAST ] == ( 4, 5 )
 
 
 def Test_NodeIdsForPointSlice_TestSliceRange_ExpectMatchingNodeIds() -> None:

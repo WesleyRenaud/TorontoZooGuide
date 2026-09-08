@@ -25,7 +25,7 @@ from api.itinerary.scheduling.items.prepared_schedule_window import PreparedSche
 from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from api.models import Animal
 from api.models.guardians_talk import GuardiansTalk
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -246,7 +246,7 @@ def Test_Run_TestTalkOnlyItinerary_ExpectSuccess(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert len( result.itinerary.guardians_talks ) == 1
-   assert result.itinerary.guardians_talks[ 0 ].start_time is not None
+   assert result.itinerary.guardians_talks[ Position.FIRST ].start_time is not None
 
 
 def Test_Run_TestRemainingStopsFromPacker_ExpectSuccessWithNotEnoughTimeIssue(
@@ -378,7 +378,7 @@ def Test_Run_TestRemainingStopsFromPacker_ExpectSuccessWithNotEnoughTimeIssue(
    assert result.status == ItineraryErrorType.SUCCESS
    assert len( result.reasons ) == 1
    assert (
-      result.reasons[ 0 ].code
+      result.reasons[ Position.FIRST ].code
       == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert result.itinerary.departure_time is None
 

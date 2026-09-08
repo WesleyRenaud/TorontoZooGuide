@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.itinerary.scheduling.core.available_schedule_slot_finder import AvailableScheduleSlotFinder
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.shared.calendar_dates import DateValues
+from api.shared.enums.position import Position
 
 
 def Test_FindBeforeOrAfterBounds_TestOpenBeforeWindow_ExpectBeforeSlot() -> None:
@@ -19,7 +20,7 @@ def Test_FindBeforeOrAfterBounds_TestOpenBeforeWindow_ExpectBeforeSlot() -> None
       after_start_seconds=10 * 3600 + 30 * 60 )
 
    assert slot is not None
-   assert slot[ 1 ] == DateValues.schedule_time_key_from_seconds( 10 * 3600 )
+   assert slot[ Position.SECOND ] == DateValues.schedule_time_key_from_seconds( 10 * 3600 )
 
 
 def Test_FindBeforeOrAfterBounds_TestBeforeBlocked_ExpectAfterSlot() -> None:
@@ -38,7 +39,7 @@ def Test_FindBeforeOrAfterBounds_TestBeforeBlocked_ExpectAfterSlot() -> None:
       after_start_seconds=9 * 3600 + 35 * 60 )
 
    assert slot is not None
-   assert slot[ 0 ] == DateValues.schedule_time_key_from_seconds(
+   assert slot[ Position.FIRST ] == DateValues.schedule_time_key_from_seconds(
       9 * 3600 + 35 * 60 )
 
 
@@ -52,7 +53,7 @@ def Test_FindBeforeOrAfterBounds_TestNoBlockers_ExpectVisitBoundSlot() -> None:
       after_start_seconds=16 * 3600 + 5 * 60 )
 
    assert slot is not None
-   assert slot[ 1 ] == DateValues.schedule_time_key_from_seconds( 16 * 3600 )
+   assert slot[ Position.SECOND ] == DateValues.schedule_time_key_from_seconds( 16 * 3600 )
 
 
 def Test_FindNext_TestOverlappingBlockers_ExpectSlotAfterBlocker() -> None:

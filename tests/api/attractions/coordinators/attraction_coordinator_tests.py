@@ -18,6 +18,7 @@ from api.attractions.search.attractions_matching_query_builder import Attraction
 from api.attractions.status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.models.attraction import Attraction
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -287,7 +288,7 @@ def Test_ReplaceAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == ATTRACTION_NAME
+         return args[ Position.FIRST ] == ATTRACTION_NAME
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
@@ -310,7 +311,7 @@ def Test_TrimAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
       def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ 0 ] == ATTRACTION_NAME
+         return args[ Position.FIRST ] == ATTRACTION_NAME
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 

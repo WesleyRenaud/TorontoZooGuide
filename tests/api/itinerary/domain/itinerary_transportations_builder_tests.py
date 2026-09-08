@@ -10,6 +10,7 @@ from api.itinerary.domain.itinerary_transportations_builder import ItineraryTran
 from api.itinerary.transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.enums.position import Position
 from api.transportation.data_access.transportation_provider import TransportationProvider
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
@@ -87,7 +88,7 @@ def Test_Build_TestSavedTransportation_ExpectMappedModel(
       target_date=VISIT_DATE )
 
    assert len( transportations ) == 1
-   transportation = transportations[ 0 ]
+   transportation = transportations[ Position.FIRST ]
 
    assert transportation.name == ZOOMOBILE
    assert transportation.old_likelihood == 1
@@ -121,5 +122,5 @@ def Test_Build_TestUnscheduledTransportation_ExpectAttractionCoords(
       ],
       target_date=VISIT_DATE )
 
-   assert transportations[ 0 ].x_coord == 30.0
-   assert transportations[ 0 ].y_coord == 40.0
+   assert transportations[ Position.FIRST ].x_coord == 30.0
+   assert transportations[ Position.FIRST ].y_coord == 40.0

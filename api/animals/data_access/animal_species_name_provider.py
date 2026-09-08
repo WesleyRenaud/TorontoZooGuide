@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -15,7 +16,7 @@ class AnimalSpeciesNameProvider():
                   FROM Animal a;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

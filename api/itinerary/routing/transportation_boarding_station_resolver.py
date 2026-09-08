@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
-from ...shared.enums.sequence_index import SequenceIndex
+from ...shared.enums.position import Position
 from .transit_ride_endpoint import TransitRideEndpoint
 
 
@@ -13,9 +13,9 @@ class TransportationBoardingStationResolver():
          endpoint: TransitRideEndpoint,
          ) -> str:
       if endpoint is TransitRideEndpoint.ONBOARDING:
-         return legs[ SequenceIndex.FIRST ].from_station
+         return legs[ Position.FIRST ].from_station
 
-      return legs[ SequenceIndex.LAST ].to_station
+      return legs[ Position.LAST ].to_station
 
 
    @classmethod

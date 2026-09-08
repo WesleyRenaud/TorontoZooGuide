@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -20,7 +21,7 @@ class TransportationActiveRouteProvider():
                   WHERE r.TRANSPORTATION = ?;
             """,
             ( transportation, ) )
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
       finally:
          cur.close()
 
@@ -41,7 +42,7 @@ class TransportationActiveRouteProvider():
                   AND rs.ROUTE = ?;
             """,
             ( transportation, route ) )
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
       finally:
          cur.close()
 

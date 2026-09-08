@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_guardians_talk_mapper import ItineraryGuardiansTalkMapper
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.shared.enums.position import Position
 
 
 TALK_ROW = {
@@ -24,4 +25,4 @@ def Test_MapRecord_TestRow_ExpectGuardiansTalkRecord() -> None:
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
    records = ItineraryGuardiansTalkMapper.map_records( [ TALK_ROW ] )
 
-   assert records[ 0 ].talk_name == 'African Lion'
+   assert records[ Position.FIRST ].talk_name == 'African Lion'

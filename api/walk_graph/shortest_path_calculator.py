@@ -3,6 +3,7 @@ from __future__ import annotations
 import heapq
 
 from .domain.walk_graph import WalkGraph
+from ..shared.enums.position import Position
 from .shortest_path import ShortestPath
 from .shortest_path import WalkGraphAdjacency
 from .walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
@@ -83,8 +84,8 @@ class ShortestPathCalculator():
          if node_id == to_node_id:
             path = [ to_node_id ]
 
-            while path[ -1 ] != from_node_id:
-               path.append( previous[ path[ -1 ] ] )
+            while path[ Position.LAST ] != from_node_id:
+               path.append( previous[ path[ Position.LAST ] ] )
 
             path.reverse()
             return ShortestPath( node_ids=path, length_px=distance )

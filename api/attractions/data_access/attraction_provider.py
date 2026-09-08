@@ -9,6 +9,7 @@ from .attraction_schedule_override_mapper import AttractionScheduleOverrideMappe
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from .attraction_schedule_record import AttractionScheduleRecord
 from ...shared.constants import Constants
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -24,7 +25,7 @@ class AttractionProvider():
                   FROM Attraction a;
             """ )
 
-         return [ row[ 0 ] for row in data.fetchall() ]
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
       finally:
          cur.close()

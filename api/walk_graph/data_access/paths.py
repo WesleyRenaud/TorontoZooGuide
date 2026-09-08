@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ...shared.enums.position import Position
+
 
 class Paths():
-   API_ROOT = Path( __file__ ).resolve().parents[ 2 ]
+   API_ROOT = Path( __file__ ).resolve().parents[ Position.THIRD ]
    SEED_DATA_DIR = API_ROOT / 'seed' / 'data'
    WALK_GRAPH_PATH = SEED_DATA_DIR / 'walk_graph.json'
    ENCLOSURE_VIEWING_PATH = SEED_DATA_DIR / 'enclosure_viewing.json'

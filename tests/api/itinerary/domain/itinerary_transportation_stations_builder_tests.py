@@ -6,6 +6,7 @@ from api.itinerary.domain.itinerary_transportation_stations_builder import Itine
 from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
+from api.shared.enums.position import Position
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
 
@@ -88,7 +89,7 @@ def Test_GroupConsecutiveLegSequences_TestContinuousLegs_ExpectOneSequence() -> 
    sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( legs )
 
    assert len( sequences ) == 1
-   assert [ ( leg.from_station, leg.to_station ) for leg in sequences[ 0 ] ] == [
+   assert [ ( leg.from_station, leg.to_station ) for leg in sequences[ Position.FIRST ] ] == [
       ( AFRICA, AMERICAS ),
       ( AMERICAS, EURASIA ),
    ]

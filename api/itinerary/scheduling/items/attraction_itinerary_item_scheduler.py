@@ -21,6 +21,7 @@ from .schedule_slot_time_resolver import ScheduleSlotTimeResolver
 from .schedule_window_preparer import ScheduleWindowPreparer
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
+from ....shared.enums.position import Position
 from ....shared.operating_hours import OperatingHours
 from ....types import Types
 from ...warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
@@ -62,10 +63,10 @@ class AttractionItineraryItemScheduler():
 
       if attraction_hours is not None:
          schedule_window = (
-            max( schedule_window[ 0 ], attraction_hours.open_seconds ),
-            min( schedule_window[ 1 ], attraction_hours.close_seconds ) )
+            max( schedule_window[ Position.FIRST ], attraction_hours.open_seconds ),
+            min( schedule_window[ Position.SECOND ], attraction_hours.close_seconds ) )
 
-         if schedule_window[ 0 ] >= schedule_window[ 1 ]:
+         if schedule_window[ Position.FIRST ] >= schedule_window[ Position.SECOND ]:
             return ItinerarySaveResultBuilder.save_result(
                conn,
                ItineraryErrorType.NO_AVAILABLE_SLOT,
@@ -133,7 +134,7 @@ class AttractionItineraryItemScheduler():
             saved_itinerary,
             candidate_walk_node_id=ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
                schedule_item_key.name ),
-            visit_anchor_seconds=schedule_window[ 0 ],
+            visit_anchor_seconds=schedule_window[ Position.FIRST ],
             itinerary_context=itinerary_context,
             start_time=time_options.start_time )
          slot, slot_error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(

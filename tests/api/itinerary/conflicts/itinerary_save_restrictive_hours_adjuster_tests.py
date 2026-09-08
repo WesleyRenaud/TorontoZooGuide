@@ -9,6 +9,7 @@ from api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster import It
 from api.itinerary.data_access.itinerary_save_input import ItinerarySaveInput
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
+from api.shared.enums.position import Position
 
 
 ADJUSTER_SCHEMA = """
@@ -141,7 +142,7 @@ def Test_Adjust_TestLateArrivalAfterLastAdmission_ExpectMovedToLastAdmission(
 
    assert updated_input.arrival_time == '17:00'
    assert len( adjustments ) == 1
-   assert adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
 
 
 def Test_Adjust_TestEarlyDepartureBeforeOpen_ExpectMovedToOpen(
@@ -169,7 +170,7 @@ def Test_Adjust_TestEarlyDepartureBeforeOpen_ExpectMovedToOpen(
 
    assert updated_input.departure_time == '09:30'
    assert len( adjustments ) == 1
-   assert adjustments[ 0 ].type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
+   assert adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
 
 
 def Test_Adjust_TestDateChangeFromEarlyAdmissionDay_ExpectArrivalMovedToOpen(
@@ -197,7 +198,7 @@ def Test_Adjust_TestDateChangeFromEarlyAdmissionDay_ExpectArrivalMovedToOpen(
 
    assert updated_input.arrival_time == '09:30'
    assert len( adjustments ) == 1
-   assert adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
 
 
 def Test_Adjust_TestDateChangeWithLateDeparture_ExpectDepartureMovedToClose(
@@ -225,7 +226,7 @@ def Test_Adjust_TestDateChangeWithLateDeparture_ExpectDepartureMovedToClose(
 
    assert updated_input.departure_time == '18:00'
    assert len( adjustments ) == 1
-   assert adjustments[ 0 ].type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
+   assert adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
 
 
 def Test_Adjust_TestEarlyAdmissionArrival_ExpectAdjustmentDict(
@@ -351,4 +352,4 @@ def Test_Adjust_TestShortVisitDateChange_ExpectArrivalOnlyAdjusted(
    assert updated_input.arrival_time == '09:30'
    assert updated_input.departure_time == '9:35 AM'
    assert len( adjustments ) == 1
-   assert adjustments[ 0 ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED

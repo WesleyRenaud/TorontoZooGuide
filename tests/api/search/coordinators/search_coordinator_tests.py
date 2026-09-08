@@ -22,6 +22,7 @@ from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.search.coordinators.search_coordinator import SearchCoordinator
 from api.search.transportation_attraction_route_duration_enricher import TransportationAttractionRouteDurationEnricher
 from api.shared.constants import Constants
+from api.shared.enums.position import Position
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -262,10 +263,10 @@ def Test_Search_TestAllIncludesTrueForItinerary_ExpectListsAndItineraryThreshold
    assert result[ 'wild_encounters' ] == [ WILD_ENCOUNTER ]
 
    assert len( calls[ 'animals' ] ) == 1
-   assert calls[ 'animals' ][ 0 ][ 'threshold' ] == (
+   assert calls[ 'animals' ][ Position.FIRST ][ 'threshold' ] == (
       Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD )
-   assert calls[ 'animals' ][ 0 ][ 'for_itinerary' ] is True
-   assert calls[ 'animals' ][ 0 ][ 'query' ] == QUERY
+   assert calls[ 'animals' ][ Position.FIRST ][ 'for_itinerary' ] is True
+   assert calls[ 'animals' ][ Position.FIRST ][ 'query' ] == QUERY
    assert len( calls[ 'pavilions' ] ) == 1
    assert len( calls[ 'restaurants' ] ) == 1
    assert len( calls[ 'restrooms' ] ) == 1
@@ -273,7 +274,7 @@ def Test_Search_TestAllIncludesTrueForItinerary_ExpectListsAndItineraryThreshold
    assert len( calls[ 'attractions' ] ) == 1
    assert len( calls[ 'transportations' ] ) == 1
    assert len( calls[ 'transportation_stations' ] ) == 1
-   assert calls[ 'transportation_stations' ][ 0 ][ 'route' ] == TRANSPORTATION_ROUTE
+   assert calls[ 'transportation_stations' ][ Position.FIRST ][ 'route' ] == TRANSPORTATION_ROUTE
    assert len( calls[ 'guardians_talks' ] ) == 1
    assert len( calls[ 'wild_encounters' ] ) == 1
 
@@ -288,8 +289,8 @@ def Test_Search_TestForItineraryFalse_ExpectAnimalsThresholdNone(
       for_itinerary=False )
 
    assert len( calls[ 'animals' ] ) == 1
-   assert calls[ 'animals' ][ 0 ][ 'threshold' ] is None
-   assert calls[ 'animals' ][ 0 ][ 'for_itinerary' ] is False
+   assert calls[ 'animals' ][ Position.FIRST ][ 'threshold' ] is None
+   assert calls[ 'animals' ][ Position.FIRST ][ 'for_itinerary' ] is False
 
 
 def Test_Search_TestIncludeAttractions_ExpectEnrichForVisitCalled(
@@ -302,10 +303,10 @@ def Test_Search_TestIncludeAttractions_ExpectEnrichForVisitCalled(
 
    assert result[ 'attractions' ] == [ ATTRACTION ]
    assert len( calls[ 'enrich' ] ) == 1
-   assert calls[ 'enrich' ][ 0 ][ 'attractions' ] == [ ATTRACTION ]
-   assert calls[ 'enrich' ][ 0 ][ 'month' ] == VISIT_MONTH
-   assert calls[ 'enrich' ][ 0 ][ 'day' ] == VISIT_DAY
-   assert calls[ 'enrich' ][ 0 ][ 'year' ] == VISIT_YEAR
+   assert calls[ 'enrich' ][ Position.FIRST ][ 'attractions' ] == [ ATTRACTION ]
+   assert calls[ 'enrich' ][ Position.FIRST ][ 'month' ] == VISIT_MONTH
+   assert calls[ 'enrich' ][ Position.FIRST ][ 'day' ] == VISIT_DAY
+   assert calls[ 'enrich' ][ Position.FIRST ][ 'year' ] == VISIT_YEAR
 
 
 def Test_Search_TestCoordinatorsReturnNone_ExpectEmptyLists(

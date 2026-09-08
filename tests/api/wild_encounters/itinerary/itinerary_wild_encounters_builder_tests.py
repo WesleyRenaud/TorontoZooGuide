@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.models.wild_encounter import WildEncounter
+from api.shared.enums.position import Position
 from api.wild_encounters.itinerary.itinerary_wild_encounters_builder import ItineraryWildEncountersBuilder
 
 BEAVER = 'Canadian Beaver Encounter'
@@ -47,9 +48,9 @@ def Test_Build_TestMatchingSaved_ExpectTimesAndDeletedCopied() -> None:
 
    result = ItineraryWildEncountersBuilder.build( encounters, saved )
 
-   assert result[ 0 ].start_time == SAVED_START
-   assert result[ 0 ].end_time == SAVED_END
-   assert result[ 0 ].is_deleted is True
+   assert result[ Position.FIRST ].start_time == SAVED_START
+   assert result[ Position.FIRST ].end_time == SAVED_END
+   assert result[ Position.FIRST ].is_deleted is True
 
 def Test_Build_TestNoMatch_ExpectUnchanged() -> None:
    encounters = [
@@ -69,10 +70,10 @@ def Test_Build_TestNoMatch_ExpectUnchanged() -> None:
 
    result = ItineraryWildEncountersBuilder.build( encounters, saved )
 
-   assert result[ 0 ].name == OTTER
-   assert result[ 0 ].start_time == '10:00 AM'
-   assert result[ 0 ].end_time == '10:20 AM'
-   assert result[ 0 ].is_deleted is False
+   assert result[ Position.FIRST ].name == OTTER
+   assert result[ Position.FIRST ].start_time == '10:00 AM'
+   assert result[ Position.FIRST ].end_time == '10:20 AM'
+   assert result[ Position.FIRST ].is_deleted is False
 
 def Test_Build_TestSortsByNameAndStartTime_ExpectOrdered() -> None:
    encounters = [

@@ -8,6 +8,7 @@ from api.guardians.data_access.guardians_talk_animal_record import GuardiansTalk
 from api.guardians.domain.guardians_talk_linked_animals_builder import GuardiansTalkLinkedAnimalsBuilder
 from api.models.guardians_talk import GuardiansTalk
 from api.models.guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
+from api.shared.enums.position import Position
 from api.types import Types
 
 STATION_COORD = 0.0
@@ -77,12 +78,12 @@ def Test_Attach_TestLinkedTalks_ExpectMappedLinkedAnimals(
          _talk( UNMAPPED_TALK, 'Nowhere' ),
       ] )
 
-   assert talks[ 0 ].linked_animals == [
+   assert talks[ Position.FIRST ].linked_animals == [
       GuardiansTalkLinkedAnimal(
          species='African Lion',
          exhibit='Africa Savanna' ),
    ]
-   assert talks[ 1 ].linked_animals == [
+   assert talks[ Position.SECOND ].linked_animals == [
       GuardiansTalkLinkedAnimal(
          species='Golden Lion Tamarin',
          exhibit='Americas Pavilion' ),
@@ -93,7 +94,7 @@ def Test_Attach_TestLinkedTalks_ExpectMappedLinkedAnimals(
          species='White-Faced Saki',
          exhibit='Americas Pavilion' ),
    ]
-   assert talks[ 2 ].linked_animals == []
+   assert talks[ Position.THIRD ].linked_animals == []
 
 
 def Test_Attach_TestMissingTalkName_ExpectEmptyLinkedAnimals() -> None:
@@ -105,4 +106,4 @@ def Test_Attach_TestMissingTalkName_ExpectEmptyLinkedAnimals() -> None:
 
    talks = GuardiansTalkLinkedAnimalsBuilder.attach( conn=STUB_REQUEST_CONNECTION, talks=[ talk ] )
 
-   assert talks[ 0 ].linked_animals == []
+   assert talks[ Position.FIRST ].linked_animals == []

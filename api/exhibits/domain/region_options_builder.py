@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..data_access.region_exhibit_record import RegionExhibitRecord
 from ...models import Region
+from ...shared.enums.position import Position
 
 
 class RegionOptionsBuilder():
@@ -24,7 +25,7 @@ class RegionOptionsBuilder():
             name=region_name,
             has_exhibits=not (
                len( exhibits ) == 1
-               and exhibits[ 0 ] == region_name
+               and exhibits[ Position.FIRST ] == region_name
             ) )
          for region_name, exhibits in exhibits_by_region.items()
          if len( exhibits ) > 0

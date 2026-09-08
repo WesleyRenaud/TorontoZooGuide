@@ -11,6 +11,7 @@ from ..data_access.itinerary_animal_save_carryover_mapper import ItineraryAnimal
 from ..domain.itinerary_visit_window_builder import ItineraryVisitWindowBuilder
 from ...models import Animal
 from ...models import AnimalDiff
+from ...shared.enums.position import Position
 from ...shared.value_conversion import ValueConversion
 from ...types import Types
 
@@ -142,7 +143,7 @@ class ItineraryAnimalValidator():
       if len( preferred_habitats ) != 1:
          return None
 
-      return preferred_habitats[ 0 ]
+      return preferred_habitats[ Position.FIRST ]
 
 
    @classmethod

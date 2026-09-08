@@ -6,6 +6,7 @@ from .loop_pin_stop_segment import LoopPinStopSegment
 from .loop_schedule_stop import LoopScheduleStop
 from .loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from ...routing.loop_schedule_pin import LoopSchedulePin
+from ....shared.enums.position import Position
 from ....walk_graph.master_route_provider import MasterRouteProvider
 
 
@@ -112,7 +113,7 @@ class LoopPinSegmentSplitter():
       if not segments:
          return []
 
-      return segments[ 0 ]
+      return segments[ Position.FIRST ]
 
 
    @classmethod

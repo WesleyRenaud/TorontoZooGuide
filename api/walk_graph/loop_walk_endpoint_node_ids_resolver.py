@@ -8,6 +8,7 @@ from .domain.master_route_stop import MasterRouteStop
 from .domain.master_route_stop_checker import MasterRouteStopChecker
 from .domain.viewing_spot_reference import ViewingSpotReference
 from .map_location_walk_node_lookup import MapLocationWalkNodeLookup
+from ..shared.enums.position import Position
 from .viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
 
@@ -18,8 +19,8 @@ class LoopWalkEndpointNodeIdsResolver():
          return None, None
 
       return (
-         cls._walk_node_id_for_route_stop( loop.viewing_spots[ 0 ] ),
-         cls._walk_node_id_for_route_stop( loop.viewing_spots[ -1 ] ),
+         cls._walk_node_id_for_route_stop( loop.viewing_spots[ Position.FIRST ] ),
+         cls._walk_node_id_for_route_stop( loop.viewing_spots[ Position.LAST ] ),
       )
 
 
@@ -34,7 +35,7 @@ class LoopWalkEndpointNodeIdsResolver():
 
       return [
          forward_endpoints,
-         ( forward_endpoints[ 1 ], forward_endpoints[ 0 ] ),
+         ( forward_endpoints[ Position.SECOND ], forward_endpoints[ Position.FIRST ] ),
       ]
 
 

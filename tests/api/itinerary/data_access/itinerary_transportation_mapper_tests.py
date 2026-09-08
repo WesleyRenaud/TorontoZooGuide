@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_transportation_mapper import ItineraryTransportationMapper
 from api.itinerary.data_access.itinerary_transportation_route_marker_record import ItineraryTransportationRouteMarkerRecord
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 
 
 def _leg(
@@ -82,7 +83,7 @@ def Test_MapRecords_TestLegsAndMarkersByKey_ExpectSortedGroupedRecord() -> None:
    records = ItineraryTransportationMapper.map_records( rows, legs, markers )
 
    assert len( records ) == 1
-   record = records[ 0 ]
+   record = records[ Position.FIRST ]
    assert record.transportation == 'Zoomobile'
    assert record.added_as_attraction is False
    assert record.route == 'summer'

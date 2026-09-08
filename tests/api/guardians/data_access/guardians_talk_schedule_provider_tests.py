@@ -8,6 +8,7 @@ from api.guardians.data_access.guardians_talk_schedule_provider import Guardians
 from api.guardians.data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from api.guardians.scheduling.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from api.guardians.scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
+from api.shared.enums.position import Position
 
 
 TALK_NAME = 'African Lion'
@@ -219,7 +220,7 @@ def Test_FetchScheduleRecords_TestActiveSchedule_ExpectMappedRecord(
       schedule_provider_conn )
 
    assert len( records ) == 1
-   assert records[ 0 ] == _schedule_record()
+   assert records[ Position.FIRST ] == _schedule_record()
 
 
 def Test_FetchScheduleRecordsForTalk_TestMatchingTalk_ExpectOrderedRecords(
@@ -279,7 +280,7 @@ def Test_FetchScheduleRecordsCoveringDate_TestDateInsideRange_ExpectRecord(
       occurrence_date=VISIT_DATE )
 
    assert len( records ) == 1
-   assert records[ 0 ].schedule_start_date == START_DATE
+   assert records[ Position.FIRST ].schedule_start_date == START_DATE
 
 
 def Test_FetchScheduleRecordsCoveringDate_TestOpenEndedSchedule_ExpectRecord(
@@ -298,7 +299,7 @@ def Test_FetchScheduleRecordsCoveringDate_TestOpenEndedSchedule_ExpectRecord(
       occurrence_date='2026-12-01' )
 
    assert len( records ) == 1
-   assert records[ 0 ].schedule_end_date is None
+   assert records[ Position.FIRST ].schedule_end_date is None
 
 
 def Test_FetchDayScheduleRecordsFromSchedule_TestNoCancellation_ExpectRecord(
@@ -313,8 +314,8 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestNoCancellation_ExpectRecord(
    )
 
    assert len( records ) == 1
-   assert records[ 0 ].name == TALK_NAME
-   assert records[ 0 ].talk_time == TALK_TIME
+   assert records[ Position.FIRST ].name == TALK_NAME
+   assert records[ Position.FIRST ].talk_time == TALK_TIME
 
 
 def Test_FetchDayScheduleRecordsFromSchedule_TestWithCancellation_ExpectEmpty(
@@ -441,9 +442,9 @@ def Test_FetchScheduleConflicts_TestOverlappingSchedule_ExpectConflictRecord(
          end_date='2026-07-15' ) )
 
    assert len( conflicts ) == 1
-   assert conflicts[ 0 ].name == TALK_NAME
-   assert conflicts[ 0 ].schedule_start_date == START_DATE
-   assert conflicts[ 0 ].talk_time == TALK_TIME
+   assert conflicts[ Position.FIRST ].name == TALK_NAME
+   assert conflicts[ Position.FIRST ].schedule_start_date == START_DATE
+   assert conflicts[ Position.FIRST ].talk_time == TALK_TIME
 
 
 def Test_FetchScheduleConflicts_TestNonOverlappingSchedule_ExpectEmpty(

@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.restrooms.data_access.restroom_alert_provider import RestroomAlertProvider
+from api.shared.enums.position import Position
 
 
 RESTROOM = 'Entrance Restroom'
@@ -76,7 +77,7 @@ def Test_SaveAlert_TestExistingAlert_ExpectReplacesRow(
       ( RESTROOM, ) ).fetchall()
 
    assert len( rows ) == 1
-   assert tuple( rows[ 0 ] ) == ( 'Updated alert.', '2026-07-01', '2026-07-15' )
+   assert tuple( rows[ Position.FIRST ] ) == ( 'Updated alert.', '2026-07-01', '2026-07-15' )
 
 
 def Test_DeleteAlert_TestExistingAlert_ExpectRemovesRow(

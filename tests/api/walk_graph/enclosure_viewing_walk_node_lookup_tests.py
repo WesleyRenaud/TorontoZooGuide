@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from api.shared.enums.position import Position
 from api.walk_graph.data_access.enclosure_viewing_walk_node_provider import EnclosureViewingWalkNodeProvider
 from api.walk_graph.domain.enclosure_viewing_walk_node import EnclosureViewingWalkNode
 from api.walk_graph.enclosure_viewing_walk_node_lookup import EnclosureViewingWalkNodeLookup
@@ -185,7 +186,7 @@ def Test_ForSpeciesExhibit_TestGreaterKuduPavilion_ExpectSingleOutdoorSpot(
       AFRICAN_RAINFOREST_PAVILION )
 
    assert len( kudu_pavilion_rows ) == 1
-   assert kudu_pavilion_rows[ 0 ][ 'walk_node_id' ] == 'v-2003'
+   assert kudu_pavilion_rows[ Position.FIRST ][ 'walk_node_id' ] == 'v-2003'
 
 
 def Test_ForSpeciesExhibit_TestGreveysZebra_ExpectDistinctSavannaAndDomainNodes(
@@ -199,7 +200,7 @@ def Test_ForSpeciesExhibit_TestGreveysZebra_ExpectDistinctSavannaAndDomainNodes(
 
    assert len( zebra_savanna_rows ) == 1
    assert len( zebra_domain_rows ) == 1
-   assert zebra_domain_rows[ 0 ][ 'walk_node_id' ] == 'v-3002'
+   assert zebra_domain_rows[ Position.FIRST ][ 'walk_node_id' ] == 'v-3002'
 
 
 def Test_ForViewingSpot_TestCoordinates_ExpectMatchingRow(

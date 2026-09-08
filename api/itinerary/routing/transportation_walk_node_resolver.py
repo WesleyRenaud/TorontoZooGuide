@@ -5,6 +5,7 @@ from ..data_access.transportation_day_loop_provider import TransportationDayLoop
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import DateValues
+from ...shared.enums.position import Position
 from .transit_ride_endpoint import TransitRideEndpoint
 from ..transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from .transportation_boarding_station_resolver import TransportationBoardingStationResolver
@@ -68,7 +69,7 @@ class TransportationWalkNodeResolver():
                target_date=visit_date )
 
             if day_loop is not None and day_loop.legs:
-               return day_loop.legs[ 0 ].from_station
+               return day_loop.legs[ Position.FIRST ].from_station
 
       return TransportationDayLoopProvider.fetch_main_transportation_station(
          conn,

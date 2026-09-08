@@ -14,6 +14,7 @@ from api.models.scheduled_occurrence import ScheduledOccurrence
 import api.request_connection_provider as request_connection
 from api.shared.api_operation_failure import ApiOperationFailure
 from api.shared.enums.api_error_type import ApiErrorType
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -106,7 +107,7 @@ def stub_guardians_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubGuardia
 
    def stub_clear_connection() -> None:
       if StubGuardiansCoordinator.instances:
-         StubGuardiansCoordinator.instances[ -1 ].closed = True
+         StubGuardiansCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
@@ -142,8 +143,8 @@ def Test_GetGuardiansTalks_TestHttpRequest_ExpectMapsVisitDateAndCollapsesSchedu
       )
    ]
    assert len( result[ 'guardians_talks' ] ) == 1
-   assert result[ 'guardians_talks' ][ 0 ][ 'name' ] == TALK_NAME
-   assert result[ 'guardians_talks' ][ 0 ][ 'times' ] == [ '10:00 AM', '11:00 AM' ]
+   assert result[ 'guardians_talks' ][ Position.FIRST ][ 'name' ] == TALK_NAME
+   assert result[ 'guardians_talks' ][ Position.FIRST ][ 'times' ] == [ '10:00 AM', '11:00 AM' ]
 
 
 def Test_GetGuardiansTalks_TestHttpRequest_ExpectOmittedYearPassesThrough(
@@ -202,7 +203,7 @@ def Test_GetGuardiansTalkNamesAtLocation_TestHttpRequest_ExpectMapsLocation(
 
    result = response_json( handler )
 
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       'get_guardians_talk_names_at_location',
       { 'location': TALK_LOCATION },
    )
@@ -236,7 +237,7 @@ def Test_SetGuardiansTalkSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
 
    result = response_json( handler )
 
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       'set_guardians_talk_schedule',
       {
          'talk': TALK_NAME,
@@ -292,7 +293,7 @@ def Test_GuardiansTalkScheduleOverlapResolution_TestHttpRequest_ExpectMapsPayloa
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       expected_method,
       {
          'talk': TALK_NAME,
@@ -343,7 +344,7 @@ def Test_EndGuardiansTalkSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
 
    result = response_json( handler )
 
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       'end_guardians_talk_schedule',
       {
          'talk': TALK_NAME,
@@ -393,7 +394,7 @@ def Test_CancelGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSucce
 
    result = response_json( handler )
 
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       'cancel_guardians_talk_occurrence',
       {
          'talk': TALK_NAME,
@@ -444,7 +445,7 @@ def Test_AddGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSuccessR
 
    result = response_json( handler )
 
-   assert stub_guardians_coordinator.calls[ -1 ] == (
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
       'add_guardians_talk_occurrence',
       {
          'talk': TALK_NAME,

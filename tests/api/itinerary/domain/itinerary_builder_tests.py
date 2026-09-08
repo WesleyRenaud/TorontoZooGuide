@@ -17,6 +17,7 @@ from api.models.animal import Animal
 from api.models.attraction import Attraction
 from api.models.guardians_talk import GuardiansTalk
 from api.models.wild_encounter import WildEncounter
+from api.shared.enums.position import Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -146,10 +147,10 @@ def Test_BuildCurrent_TestSavedItinerary_ExpectAssembledGuestContent(
    ]
 
    itinerary_dict = itinerary.to_dict()
-   assert itinerary_dict[ 'animals' ][ 0 ][ 'old_likelihood' ] is None
-   assert itinerary_dict[ 'animals' ][ 0 ][ 'likelihood' ] > 0
-   assert itinerary_dict[ 'attractions' ][ 0 ][ 'old_likelihood' ] is None
-   assert itinerary_dict[ 'attractions' ][ 0 ][ 'likelihood' ] > 0
+   assert itinerary_dict[ 'animals' ][ Position.FIRST ][ 'old_likelihood' ] is None
+   assert itinerary_dict[ 'animals' ][ Position.FIRST ][ 'likelihood' ] > 0
+   assert itinerary_dict[ 'attractions' ][ Position.FIRST ][ 'old_likelihood' ] is None
+   assert itinerary_dict[ 'attractions' ][ Position.FIRST ][ 'likelihood' ] > 0
 
 
 def Test_BuildCurrent_TestEmptySavedItinerary_ExpectEmpty(

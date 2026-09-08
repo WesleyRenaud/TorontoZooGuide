@@ -15,7 +15,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner import BulkSch
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
 from api.itinerary.scheduling.fixed_time_activity_rescheduler import FixedTimeActivityRescheduler
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -122,5 +122,5 @@ def Test_RescheduleAfterAdd_TestHasStops_ExpectBulkRunnerCalled(
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert len( captured[ 'stops_to_schedule' ] ) == 1
-   assert captured[ 'stops_to_schedule' ][ 0 ].species == 'African Lion'
+   assert captured[ 'stops_to_schedule' ][ Position.FIRST ].species == 'African Lion'
    assert captured[ 'confirming_fixed_time_item_long_wait' ] is True

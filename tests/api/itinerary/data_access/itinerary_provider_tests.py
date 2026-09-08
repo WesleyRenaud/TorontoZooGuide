@@ -6,6 +6,7 @@ import pytest
 
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 
 
 ITINERARY_PROVIDER_SCHEMA = """
@@ -190,12 +191,12 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
    assert saved.date_value == '2026-06-15'
    assert saved.arrival_time == '9:30 AM'
    assert saved.departure_time == '5:00 PM'
-   assert saved.animal_rows[ 0 ].species == 'African Lion'
-   assert saved.attraction_rows[ 0 ].attraction == 'Conservation Carousel'
-   assert saved.guardians_talk_rows[ 0 ].talk_name == 'African Lion'
-   assert saved.guardians_talk_rows[ 0 ].start_time == '10:00 AM'
-   assert saved.wild_encounter_rows[ 0 ].wild_encounter == 'African Rainforest'
-   assert saved.wild_encounter_rows[ 0 ].start_time == '2:00 PM'
+   assert saved.animal_rows[ Position.FIRST ].species == 'African Lion'
+   assert saved.attraction_rows[ Position.FIRST ].attraction == 'Conservation Carousel'
+   assert saved.guardians_talk_rows[ Position.FIRST ].talk_name == 'African Lion'
+   assert saved.guardians_talk_rows[ Position.FIRST ].start_time == '10:00 AM'
+   assert saved.wild_encounter_rows[ Position.FIRST ].wild_encounter == 'African Rainforest'
+   assert saved.wild_encounter_rows[ Position.FIRST ].start_time == '2:00 PM'
 
 
 def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
@@ -243,6 +244,6 @@ def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
 
    assert len( legs ) == 2
    assert all( isinstance( leg, ItineraryTransportationLeg ) for leg in legs )
-   assert legs[ 0 ].transportation == 'Zoomobile'
-   assert legs[ 0 ].from_station == 'Main Zoomobile Station'
-   assert legs[ -1 ].to_station == 'Africa Zoomobile Station'
+   assert legs[ Position.FIRST ].transportation == 'Zoomobile'
+   assert legs[ Position.FIRST ].from_station == 'Main Zoomobile Station'
+   assert legs[ Position.LAST ].to_station == 'Africa Zoomobile Station'

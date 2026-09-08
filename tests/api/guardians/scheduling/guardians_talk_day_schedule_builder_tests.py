@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.guardians.data_access.guardians_talk_day_schedule_record import GuardiansTalkDayScheduleRecord
 from api.guardians.scheduling.guardians_talk_day_schedule_builder import GuardiansTalkDayScheduleBuilder
+from api.shared.enums.position import Position
 
 
 STATION_COORD = 0.0
@@ -25,12 +26,12 @@ def Test_BuildFromRecords_TestDayScheduleRecord_ExpectAvailableTalkWithEndTime()
    talks = GuardiansTalkDayScheduleBuilder.build_from_records( records )
 
    assert len( talks ) == 1
-   assert talks[ 0 ].name == 'African Lion'
-   assert talks[ 0 ].location == 'Africa Savanna'
-   assert talks[ 0 ].start_time == TALK_TIME
-   assert talks[ 0 ].end_time == '10:30 AM'
-   assert talks[ 0 ].is_available is True
-   assert talks[ 0 ].unavailable_message is None
+   assert talks[ Position.FIRST ].name == 'African Lion'
+   assert talks[ Position.FIRST ].location == 'Africa Savanna'
+   assert talks[ Position.FIRST ].start_time == TALK_TIME
+   assert talks[ Position.FIRST ].end_time == '10:30 AM'
+   assert talks[ Position.FIRST ].is_available is True
+   assert talks[ Position.FIRST ].unavailable_message is None
 
 
 def Test_BuildFromRecords_TestMultipleTimesOnSameDay_ExpectBothTalksWithEndTimes() -> None:

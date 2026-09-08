@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
+from api.shared.enums.position import Position
 
 
 def Test_MapNamedStrings_TestWhitespaceAndEmpty_ExpectTrimmedNonEmpty() -> None:
@@ -46,9 +47,9 @@ def Test_MapGuardiansTalkInputs_TestTimes_ExpectNormalizedInputs() -> None:
          },
       ] )
 
-   assert talks[ 0 ].name == "Grevy's Zebra"
-   assert talks[ 0 ].start_time == '12:00 PM'
-   assert talks[ 0 ].end_time == '12:30 PM'
+   assert talks[ Position.FIRST ].name == "Grevy's Zebra"
+   assert talks[ Position.FIRST ].start_time == '12:00 PM'
+   assert talks[ Position.FIRST ].end_time == '12:30 PM'
 
 
 def Test_MapItinerarySaveInput_TestWireFields_ExpectSaveInput() -> None:
@@ -87,4 +88,4 @@ def Test_MapItinerarySaveInput_TestWireFields_ExpectSaveInput() -> None:
    assert len( save_input.animals ) == 1
    assert len( save_input.guardians_talks ) == 1
    assert len( save_input.wild_encounters ) == 1
-   assert save_input.transportations[ 0 ].name == 'Zoomobile'
+   assert save_input.transportations[ Position.FIRST ].name == 'Zoomobile'

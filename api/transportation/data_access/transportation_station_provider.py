@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ...shared.enums.position import Position
 from .transportation_station_mapper import TransportationStationMapper
 from .transportation_station_record import TransportationStationRecord
 from ...types import Types
@@ -22,7 +23,7 @@ class TransportationStationProvider():
             """,
             ( transportation, ),
          ).fetchall()
-         return [ row[ 0 ] for row in rows ]
+         return [ row[ Position.FIRST ] for row in rows ]
       finally:
          cur.close()
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.shared.enums.position import Position
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.enclosure_viewing_walk_node_builder import EnclosureViewingWalkNodeBuilder
 
@@ -83,5 +84,5 @@ def Test_Build_TestMultipleRows_ExpectSortedBySpeciesAndExhibit() -> None:
       [ ZEBRA_OUTDOOR_ROW, ANTELOPE_OUTDOOR_ROW ] )
 
    assert [ row[ 'species' ] for row in rows ] == [ 'Antelope', 'Zebra' ]
-   assert rows[ 1 ][ 'walk_node_id' ] == 'n-1'
-   assert rows[ 0 ][ 'walk_node_id' ] == 'n-2'
+   assert rows[ Position.SECOND ][ 'walk_node_id' ] == 'n-1'
+   assert rows[ Position.FIRST ][ 'walk_node_id' ] == 'n-2'

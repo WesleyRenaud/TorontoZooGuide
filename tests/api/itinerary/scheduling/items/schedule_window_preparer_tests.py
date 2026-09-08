@@ -8,7 +8,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.core.scheduling_anchor_resolver import SchedulingAnchorResolver
 from api.itinerary.scheduling.items.schedule_window_preparer import ScheduleWindowPreparer
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -57,7 +57,7 @@ def Test_ZooHoursWindowSeconds_TestFixedZooStartTimes_ExpectEarlierAnchor() -> N
 
 def Test_ZooHoursWindowSeconds_TestGuestDepartureBeforeClose_ExpectZooCloseEnd() -> None:
    assert ScheduleWindowPreparer.zoo_hours_window_seconds(
-      ZOO_HOURS )[ 1 ] == 19 * 3600
+      ZOO_HOURS )[ Position.SECOND ] == 19 * 3600
    assert SchedulingAnchorResolver.day_end_seconds( ZOO_HOURS, '3:00 PM' ) == 15 * 3600
 
 
@@ -117,7 +117,7 @@ def Test_PrepareZooHours_TestNoArrivalTime_ExpectOpenAnchor(
       saved_itinerary,
       visit_date_temp=None )
 
-   assert prepared.window[ 0 ] == 9 * 3600 + 30 * 60
+   assert prepared.window[ Position.FIRST ] == 9 * 3600 + 30 * 60
 
 
 def Test_PrepareZooHours_TestSuppressedEarlyAdmission_ExpectNineAmAnchor(
@@ -143,7 +143,7 @@ def Test_PrepareZooHours_TestSuppressedEarlyAdmission_ExpectNineAmAnchor(
       saved_itinerary,
       visit_date_temp=None )
 
-   assert prepared.window[ 0 ] == 9 * 3600
+   assert prepared.window[ Position.FIRST ] == 9 * 3600
 
 
 def Test_Prepare_TestMissingVisitDate_ExpectDateNotSetResult(

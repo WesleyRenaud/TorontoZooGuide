@@ -6,6 +6,7 @@ from api.attractions.itinerary.itinerary_attractions_builder import ItineraryAtt
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_name_key_builder import ItineraryNameKeyBuilder
 from api.models.attraction import Attraction
+from api.shared.enums.position import Position
 
 
 CAROUSEL = 'Conservation Carousel'
@@ -89,9 +90,9 @@ def Test_Build_TestMissingSavedLookup_ExpectSkipsScheduleApplication(
    result = ItineraryAttractionsBuilder.build( attractions, saved_attractions )
 
    assert len( result ) == 1
-   assert result[ 0 ].old_likelihood is None
-   assert result[ 0 ].start_time is None
-   assert result[ 0 ].end_time is None
+   assert result[ Position.FIRST ].old_likelihood is None
+   assert result[ Position.FIRST ].start_time is None
+   assert result[ Position.FIRST ].end_time is None
 
 
 def Test_Build_TestAppliesSavedSchedule_ExpectOldLikelihoodAndTimes() -> None:
@@ -106,7 +107,7 @@ def Test_Build_TestAppliesSavedSchedule_ExpectOldLikelihoodAndTimes() -> None:
 
    result = ItineraryAttractionsBuilder.build( attractions, saved_attractions )
 
-   carousel = result[ 0 ]
+   carousel = result[ Position.FIRST ]
    assert carousel.old_likelihood == 90
    assert carousel.start_time == '11:00 AM'
    assert carousel.end_time == '11:15 AM'

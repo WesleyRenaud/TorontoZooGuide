@@ -11,6 +11,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_slot_sink import LoopScheduleSl
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.transportation.transportation_day_loop import TransportationDayLoop
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.enums.position import Position
 
 LION = ItineraryAnimalRecord(
    species='African Lion',
@@ -90,8 +91,8 @@ def Test_Save_TestPersistDisabled_ExpectSlotsRecordedAndBlockersUpdated(
    assert saved is True
    assert sink.slots == slots
    assert len( blockers ) == 2
-   assert blockers[ 0 ].start_seconds == 10 * 3600
-   assert blockers[ 1 ].start_seconds == 11 * 3600
+   assert blockers[ Position.FIRST ].start_seconds == 10 * 3600
+   assert blockers[ Position.SECOND ].start_seconds == 11 * 3600
 
 
 def Test_Save_TestPersistAnimalSlot_ExpectDatabaseUpdated(

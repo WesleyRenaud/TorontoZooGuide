@@ -18,6 +18,7 @@ from api.itinerary.transportation.transportation_day_loop import TransportationD
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -324,8 +325,8 @@ def Test_PlanRidesForAnchors_TestDomainVisit_ExpectOutboundAndReturnToMain() -> 
       walk_graph=walk_graph,
       adjacency=adjacency )
 
-   assert rides_before[ 0 ] is not None
-   assert rides_before[ 0 ].from_station == MAIN
+   assert rides_before[ Position.FIRST ] is not None
+   assert rides_before[ Position.FIRST ].from_station == MAIN
    assert return_ride is not None
    assert return_ride.to_station == MAIN
 
@@ -467,9 +468,9 @@ def Test_AnimalAnchors_TestTimedAnimalsSorted_ExpectAnchorsWithDurations(
       [ late, untimed, early ] )
 
    assert [ anchor.animal.species for anchor in anchors ] == [ 'Wood Bison', 'Polar Bear' ]
-   assert anchors[ 0 ].walk_node_id == 'n-domain'
-   assert anchors[ 0 ].duration_seconds == 8 * 60
-   assert anchors[ 1 ].duration_seconds == 20 * 60
+   assert anchors[ Position.FIRST ].walk_node_id == 'n-domain'
+   assert anchors[ Position.FIRST ].duration_seconds == 8 * 60
+   assert anchors[ Position.SECOND ].duration_seconds == 20 * 60
 
 
 def Test_AnimalAnchors_TestMissingWalkNode_ExpectSkipped(
@@ -611,8 +612,8 @@ def Test_ApplyTimeline_TestRidePastAnimalStart_ExpectShiftBumpAndPersisted(
 
    assert animal_updates == [ ( 'Wood Bison', '11:10 AM', '11:18 AM' ) ]
    assert len( ride_segments ) == 1
-   assert ride_segments[ 0 ][ 0 ] == '10:40 AM'
-   assert ride_segments[ 0 ][ 1 ] == list( ride.legs )
+   assert ride_segments[ Position.FIRST ][ Position.FIRST ] == '10:40 AM'
+   assert ride_segments[ Position.FIRST ][ Position.SECOND ] == list( ride.legs )
 
 
 def Test_ApplyTimeline_TestNoSegments_ExpectNoPersist(
@@ -694,7 +695,7 @@ def Test_Apply_TestNoRideSegments_ExpectBulkTransitEvaluatedFlag(
       '_animal_anchors',
       lambda walk_graph, entrance_node_id, scheduled_animals: [
          ScheduledAnimalAnchor(
-            animal=scheduled_animals[ 0 ],
+            animal=scheduled_animals[ Position.FIRST ],
             walk_node_id='n-domain',
             duration_seconds=8 * 60 ),
       ] )
@@ -1212,4 +1213,4 @@ def Test_ApplyTimeline_TestReturnRide_ExpectReturnSegmentPersisted(
       operating_hours=None )
 
    assert len( ride_segments ) == 2
-   assert ride_segments[ 1 ][ 1 ] == list( return_ride.legs )
+   assert ride_segments[ Position.SECOND ][ Position.SECOND ] == list( return_ride.legs )

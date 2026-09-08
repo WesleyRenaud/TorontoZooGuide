@@ -19,7 +19,7 @@ from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentTy
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.models import Itinerary
 import api.request_connection_provider as request_connection
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types
 
@@ -61,7 +61,7 @@ def stub_itinerary_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubItinera
 
    def stub_clear_connection() -> None:
       if StubItineraryCoordinator.instances:
-         StubItineraryCoordinator.instances[ -1 ].closed = True
+         StubItineraryCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )
@@ -169,7 +169,7 @@ def Test_SetItinerary_TestHttpRequest_ExpectSuccessPayloads(
    assert set_response[ 'status' ] == 'success'
    assert set_response[ 'reasons' ] == []
    assert set_response[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
-   assert stub_itinerary_coordinator.calls[ 0 ] == (
+   assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
       'set_itinerary',
       {
          'date': VISIT_DATE,
@@ -306,7 +306,7 @@ def Test_AcceptItinerary_TestAnimalsToKeep_ExpectMapsPayload(
 
    assert response[ 'success' ] is True
    assert response[ 'itinerary' ][ 'date' ] == VISIT_DATE
-   assert stub_itinerary_coordinator.calls[ 0 ] == (
+   assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
       'AcceptItineraryProvider.accept_itinerary',
       {
          'animals_to_keep': [
@@ -318,7 +318,7 @@ def Test_AcceptItinerary_TestAnimalsToKeep_ExpectMapsPayload(
          'attractions_to_keep': None,
       },
    )
-   assert stub_itinerary_coordinator.calls[ 1 ] == (
+   assert stub_itinerary_coordinator.calls[ Position.SECOND ] == (
       'get_itinerary',
       { 'visit_date_temp': 22.5 },
    )
@@ -338,7 +338,7 @@ def Test_AcceptItinerary_TestAttractionsToKeep_ExpectMapsPayload(
    response = response_json( handler )
 
    assert response[ 'success' ] is True
-   assert stub_itinerary_coordinator.calls[ 0 ] == (
+   assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
       'AcceptItineraryProvider.accept_itinerary',
       {
          'animals_to_keep': None,

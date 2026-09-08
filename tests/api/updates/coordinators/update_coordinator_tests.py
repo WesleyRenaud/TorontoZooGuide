@@ -6,6 +6,7 @@ from api_test_support.frozen_datetime import patch_database_today
 from api_test_support.seeded_database import SeededDatabase
 import pytest
 
+from api.shared.enums.position import Position
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
 
 
@@ -36,7 +37,7 @@ def Test_CreateUpdate_TestBlankStartDate_ExpectUsesToday(
       year=VISIT_YEAR )
 
    assert len( updates ) == 1
-   assert updates[ 0 ].start_date == '2026-06-15'
+   assert updates[ Position.FIRST ].start_date == '2026-06-15'
 
 
 def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
@@ -59,7 +60,7 @@ def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
       year=VISIT_YEAR )
 
    assert len( updates ) == 1
-   assert updates[ 0 ].to_dict() == {
+   assert updates[ Position.FIRST ].to_dict() == {
       'title': UPDATE_TITLE,
       'description': UPDATE_DESCRIPTION,
       'type': 'New Arrival',
@@ -77,7 +78,7 @@ def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
    updates = UpdateCoordinator.get_updates_for_visit_date( month='July', day=1, year=2026 )
 
    assert len( updates ) == 1
-   assert updates[ 0 ].to_dict() == {
+   assert updates[ Position.FIRST ].to_dict() == {
       'title': UPDATE_TITLE,
       'description': 'Updated calf details.',
       'type': 'Closure',
@@ -94,7 +95,7 @@ def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
 
    updates = UpdateCoordinator.get_updates_for_visit_date( month='August', day=1, year=2026 )
 
-   assert updates[ 0 ].end_date is None
+   assert updates[ Position.FIRST ].end_date is None
 
    assert UpdateCoordinator.end_update( UPDATE_TITLE, UPDATE_START_DATE, '2026-06-14' ) is True
    assert UpdateCoordinator.get_updates_for_visit_date(

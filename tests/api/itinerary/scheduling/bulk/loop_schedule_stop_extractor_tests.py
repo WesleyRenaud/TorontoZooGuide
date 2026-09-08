@@ -4,6 +4,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.scheduling.bulk.loop_schedule_stop_extractor import LoopScheduleStopExtractor
+from api.shared.enums.position import Position
 
 
 SPLASH_ISLAND = 'Splash Island'
@@ -34,7 +35,7 @@ def Test_AttractionsFrom_TestMixedStops_ExpectAttractionRowsOnly() -> None:
       [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
 
    assert len( attractions ) == 1
-   assert attractions[ 0 ].attraction == SPLASH_ISLAND
+   assert attractions[ Position.FIRST ].attraction == SPLASH_ISLAND
 
 
 def Test_AnimalsFrom_TestMixedStops_ExpectAnimalRowsOnly() -> None:
@@ -42,7 +43,7 @@ def Test_AnimalsFrom_TestMixedStops_ExpectAnimalRowsOnly() -> None:
       [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
 
    assert len( animals ) == 1
-   assert animals[ 0 ].species == 'African Lion'
+   assert animals[ Position.FIRST ].species == 'African Lion'
 
 
 def Test_TransportationsFrom_TestMixedStops_ExpectTransportationRowsOnly() -> None:
@@ -50,4 +51,4 @@ def Test_TransportationsFrom_TestMixedStops_ExpectTransportationRowsOnly() -> No
       [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
 
    assert len( transportations ) == 1
-   assert transportations[ 0 ].transportation == ZOOMOBILE
+   assert transportations[ Position.FIRST ].transportation == ZOOMOBILE

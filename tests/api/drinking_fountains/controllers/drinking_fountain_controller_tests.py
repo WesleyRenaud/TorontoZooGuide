@@ -12,6 +12,7 @@ from api.drinking_fountains.coordinators.drinking_fountain_coordinator import Dr
 import api.http_request_handler as server
 from api.models.drinking_fountain import DrinkingFountain
 import api.request_connection_provider as request_connection
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -45,7 +46,7 @@ def stub_drinking_fountain_coordinator( monkeypatch: pytest.MonkeyPatch ) -> Stu
 
    def stub_clear_connection() -> None:
       if StubDrinkingFountainCoordinator.instances:
-         StubDrinkingFountainCoordinator.instances[ -1 ].closed = True
+         StubDrinkingFountainCoordinator.instances[ Position.LAST ].closed = True
 
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'set', stub_set_connection )
    monkeypatch.setattr( request_connection.RequestConnectionProvider, 'clear', stub_clear_connection )

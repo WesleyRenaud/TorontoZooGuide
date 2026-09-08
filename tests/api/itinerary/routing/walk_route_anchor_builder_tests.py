@@ -14,7 +14,7 @@ from api.models import Animal
 from api.models import Itinerary
 from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -145,13 +145,13 @@ def Test_Build_TestScheduledAnimal_ExpectEntranceAndAnimalAnchors(
       _itinerary( animals=[ SCHEDULED_LION ] ) )
 
    assert len( anchors ) == 2
-   assert anchors[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
-   assert anchors[ 0 ].item_key == ENTRANCE_ITEM_KEY
-   assert anchors[ 0 ].walk_node_ids == [ ENTRANCE_NODE_ID ]
-   assert anchors[ 1 ].schedule_item_kind == ScheduleItemKind.ANIMAL
-   assert anchors[ 1 ].item_key == 'African Lion||Africa Savanna||Outdoor'
-   assert anchors[ 1 ].walk_node_ids == [ LION_WALK_NODE_ID ]
-   assert anchors[ 1 ].start_time == '10:00 AM'
+   assert anchors[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
+   assert anchors[ Position.FIRST ].item_key == ENTRANCE_ITEM_KEY
+   assert anchors[ Position.FIRST ].walk_node_ids == [ ENTRANCE_NODE_ID ]
+   assert anchors[ Position.SECOND ].schedule_item_kind == ScheduleItemKind.ANIMAL
+   assert anchors[ Position.SECOND ].item_key == 'African Lion||Africa Savanna||Outdoor'
+   assert anchors[ Position.SECOND ].walk_node_ids == [ LION_WALK_NODE_ID ]
+   assert anchors[ Position.SECOND ].start_time == '10:00 AM'
 
 
 def Test_Build_TestTransitRide_ExpectOnboardAndOffboardAnchors(
@@ -166,10 +166,10 @@ def Test_Build_TestTransitRide_ExpectOnboardAndOffboardAnchors(
          ] ) )
 
    assert len( anchors ) == 3
-   assert anchors[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
+   assert anchors[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
 
-   onboarding_anchor = anchors[ 1 ]
-   offboarding_anchor = anchors[ 2 ]
+   onboarding_anchor = anchors[ Position.SECOND ]
+   offboarding_anchor = anchors[ Position.THIRD ]
 
    assert onboarding_anchor.transit_endpoint == TransitRideEndpoint.ONBOARDING
    assert onboarding_anchor.walk_node_ids == [ ONBOARD_NODE_ID ]
@@ -199,10 +199,10 @@ def Test_Build_TestAttractionModeTransportation_ExpectBoardingPin(
          ] ) )
 
    assert len( anchors ) == 2
-   assert anchors[ 1 ].schedule_item_kind == ScheduleItemKind.TRANSPORTATION
-   assert anchors[ 1 ].item_key == ZOOMOBILE
-   assert anchors[ 1 ].walk_node_ids == [ ONBOARD_NODE_ID ]
-   assert anchors[ 1 ].start_time == '11:00 AM'
+   assert anchors[ Position.SECOND ].schedule_item_kind == ScheduleItemKind.TRANSPORTATION
+   assert anchors[ Position.SECOND ].item_key == ZOOMOBILE
+   assert anchors[ Position.SECOND ].walk_node_ids == [ ONBOARD_NODE_ID ]
+   assert anchors[ Position.SECOND ].start_time == '11:00 AM'
 
 
 def Test_AttractionModeTransportationAnchor_TestMissingTimes_ExpectNone() -> None:

@@ -10,7 +10,7 @@ from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.itinerary.routing.walk_route_anchor_builder import WalkRouteAnchorBuilder
 from api.models import Animal
 from api.models import Itinerary
-from api.shared.enums import ScheduleItemKind
+from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -121,17 +121,17 @@ def Test_Build_TestScheduledAnimal_ExpectRoundTripRoute(
       ENTRANCE_ITEM_KEY,
    ]
    assert len( walk_route.legs ) == 2
-   assert walk_route.legs[ 0 ].from_item_key == ENTRANCE_ITEM_KEY
-   assert walk_route.legs[ 0 ].to_item_key == 'African Lion||Africa Savanna||Outdoor'
-   assert walk_route.legs[ 1 ].from_item_key == 'African Lion||Africa Savanna||Outdoor'
-   assert walk_route.legs[ 1 ].to_item_key == ENTRANCE_ITEM_KEY
+   assert walk_route.legs[ Position.FIRST ].from_item_key == ENTRANCE_ITEM_KEY
+   assert walk_route.legs[ Position.FIRST ].to_item_key == 'African Lion||Africa Savanna||Outdoor'
+   assert walk_route.legs[ Position.SECOND ].from_item_key == 'African Lion||Africa Savanna||Outdoor'
+   assert walk_route.legs[ Position.SECOND ].to_item_key == ENTRANCE_ITEM_KEY
    assert len( walk_route.points ) == (
-      len( walk_route.legs[ 0 ].node_ids )
-      + len( walk_route.legs[ 1 ].node_ids )
+      len( walk_route.legs[ Position.FIRST ].node_ids )
+      + len( walk_route.legs[ Position.SECOND ].node_ids )
       - 1
    )
-   assert walk_route.points[ 0 ].node_id == walk_route.legs[ 0 ].node_ids[ 0 ]
-   assert walk_route.points[ -1 ].node_id == walk_route.legs[ 1 ].node_ids[ -1 ]
+   assert walk_route.points[ Position.FIRST ].node_id == walk_route.legs[ Position.FIRST ].node_ids[ Position.FIRST ]
+   assert walk_route.points[ Position.LAST ].node_id == walk_route.legs[ Position.SECOND ].node_ids[ Position.LAST ]
    assert all(
       point.x_px >= 0 and point.y_px >= 0
       for point in walk_route.points )
@@ -249,7 +249,7 @@ def Test_ResolveWalkRouteAnchorNodeId_TestMultiNodeAnimal_ExpectRepresentative(
          walk_node_ids: list[ str ] ) -> str:
       captured[ 'from_node_id' ] = from_node_id
       captured[ 'walk_node_ids' ] = list( walk_node_ids )
-      return walk_node_ids[ 1 ]
+      return walk_node_ids[ Position.SECOND ]
 
    monkeypatch.setattr( RepresentativeWalkNodeResolver, 'resolve', resolve )
 
@@ -273,8 +273,8 @@ def Test_WalkRoutePointsFromNodeIds_TestMissingNode_ExpectSkipped() -> None:
    points = ItineraryWalkRouteBuilder._walk_route_points_from_node_ids(
       [ ENTRANCE_NODE_ID, 'missing', LION_WALK_NODE_ID ],
       {
-         ENTRANCE_NODE_ID: TEST_GRAPH[ 'nodes' ][ 0 ],
-         LION_WALK_NODE_ID: TEST_GRAPH[ 'nodes' ][ 1 ],
+         ENTRANCE_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.FIRST ],
+         LION_WALK_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.SECOND ],
       } )
 
    assert [ point.node_id for point in points ] == [
@@ -289,7 +289,7 @@ def Test_ResolveWalkRouteAnchorNodeId_TestMultiNodeNonAnimal_ExpectRepresentativ
    monkeypatch.setattr(
       RepresentativeWalkNodeResolver,
       'resolve',
-      lambda walk_graph, from_node_id, walk_node_ids: walk_node_ids[ 0 ] )
+      lambda walk_graph, from_node_id, walk_node_ids: walk_node_ids[ Position.FIRST ] )
 
    anchor = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ATTRACTION,

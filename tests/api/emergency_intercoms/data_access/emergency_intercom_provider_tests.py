@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.emergency_intercoms.data_access.emergency_intercom_provider import EmergencyIntercomProvider
+from api.shared.enums.position import Position
 
 
 EMERGENCY_INTERCOM_PROVIDER_SCHEMA = """
@@ -44,5 +45,5 @@ def Test_FetchEmergencyIntercoms_TestPopulated_ExpectMappedCoordinates(
       emergency_intercom_provider_conn )
 
    assert len( intercoms ) == 1
-   assert intercoms[ 0 ].x_coord == 1.0
-   assert intercoms[ 0 ].y_coord == 2.0
+   assert intercoms[ Position.FIRST ].x_coord == 1.0
+   assert intercoms[ Position.FIRST ].y_coord == 2.0
