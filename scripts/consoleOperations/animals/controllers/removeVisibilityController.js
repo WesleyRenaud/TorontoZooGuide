@@ -75,7 +75,7 @@ export class RemoveVisibilityController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.species} in ${result.exhibit} no longer has a visibility schedule.`,
+            Strings.status.animalVisibilityScheduleRemoved(result),
             'is-success'
          );
 

@@ -86,7 +86,7 @@ export class AnimalViewingController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.species} in ${result.exhibit} was given a viewing alert.`,
+            Strings.status.animalViewingAlertSaved(result),
             'is-success'
          );
 

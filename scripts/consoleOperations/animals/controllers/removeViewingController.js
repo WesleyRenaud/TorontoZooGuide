@@ -75,7 +75,7 @@ export class RemoveViewingController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
+            Strings.status.animalViewingAlertRemoved(result),
             'is-success'
          );
 

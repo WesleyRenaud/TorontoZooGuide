@@ -3,7 +3,6 @@ import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
-import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
@@ -114,7 +113,7 @@ export class CancelGuardiansTalkController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.talk} in ${result.location} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
+            Strings.status.guardiansTalkOccurrenceCancelled(result),
             'is-success'
          );
 

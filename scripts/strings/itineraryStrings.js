@@ -36,6 +36,17 @@ export class ItineraryStrings {
          attractionAlsoTransportationMessage: attractionName => (
             `The ${attractionName} can be added as a transportation method to reduce walking, or as an attraction for a scenic trip around the zoo. This action will add the ${attractionName} as an attraction.`
          ),
+         closedAttractionMessage: attractionName => (
+            `The ${attractionName} is closed on your visit date. Do you still want to add it to your itinerary?`
+         ),
+         closedAttractionFallbackName: 'This attraction',
+         animalFallbackName: 'This animal',
+         animalOffDisplayUnknownLikelihoodMessage: species => (
+            `The ${species} may be off display on your visit date. Do you still want to add it to your itinerary?`
+         ),
+         animalOffDisplayLowLikelihoodMessage: (species, threshold, likelihood) => (
+            `The ${species} has a viewing likelihood below ${threshold}% (${likelihood}%) for your visit date and may be off display. Do you still want to add it to your itinerary?`
+         ),
          addAsTransportationTitle: 'Add as Transportation?',
          addAsTransportationMessage: transportationName => (
             `The ${transportationName} will be used to reduce walking distance when bulk scheduling. This action will add the ${transportationName} as a transportation method.`

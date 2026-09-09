@@ -1,4 +1,5 @@
 import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
+import { JoinedTimesFormatter } from '../shared/joinedTimesFormatter.js';
 
 export class ConsoleStrings {
    static help = {
@@ -174,6 +175,29 @@ export class ConsoleStrings {
       updateEdited: 'Update was edited.',
       updateEnded: 'Update was ended.',
       transportationRouteSet: result => `Transportation route was set to ${result.route}.`,
+      animalViewingAlertSaved: result => (
+         `${result.species} in ${result.exhibit} was given a viewing alert.`
+      ),
+      animalViewingAlertRemoved: result => (
+         `Viewing alert removed for ${result.species} in ${result.exhibit}.`
+      ),
+      animalVisibilityScheduleSaved: result => (
+         `${result.species} in ${result.exhibit} viewing schedule updated.`
+      ),
+      animalVisibilityScheduleRemoved: result => (
+         `${result.species} in ${result.exhibit} no longer has a visibility schedule.`
+      ),
+      restroomAlertSaved: result => `${result.restroom} was given an alert.`,
+      restroomAlertRemoved: result => `Alert removed for ${result.restroom}.`,
+      guardiansTalkOccurrenceAdded: result => (
+         `${result.talk} in ${result.location} on ${result.date} at ${result.times[0]} was added.`
+      ),
+      guardiansTalkOccurrenceCancelled: result => (
+         `${result.talk} in ${result.location} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`
+      ),
+      wildEncounterOccurrenceCancelled: result => (
+         `${result.wildEncounter} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`
+      ),
    };
 
    static confirm = {

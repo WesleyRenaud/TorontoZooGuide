@@ -51,7 +51,7 @@ export class RemoveRestroomController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `Alert removed for ${result.restroom}.`,
+            Strings.status.restroomAlertRemoved(result),
             'is-success'
          );
 
