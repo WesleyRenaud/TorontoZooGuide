@@ -1,6 +1,6 @@
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
-import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 import { TransportationSelectorPrompter } from './transportationSelectorPrompter.js';
