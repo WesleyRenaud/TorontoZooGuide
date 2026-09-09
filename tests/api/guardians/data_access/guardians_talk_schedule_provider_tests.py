@@ -396,6 +396,23 @@ def Test_FetchScheduleTimes_TestCoveringDate_ExpectDistinctOrderedTimes(
    assert times == [ TALK_TIME, SECOND_TALK_TIME ]
 
 
+def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      end_date=VISIT_DATE,
+      talk_time=TALK_TIME )
+   schedule_provider_conn.commit()
+
+   times = GuardiansTalkScheduleProvider.fetch_schedule_times(
+      schedule_provider_conn,
+      TALK_NAME,
+      LOCATION,
+      VISIT_DATE )
+
+   assert times == []
+
+
 def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row( schedule_provider_conn )

@@ -122,7 +122,7 @@ class WildEncounterScheduleProvider():
                   FROM WildEncounterSchedule
                   WHERE WILD_ENCOUNTER = ?
                      AND SCHEDULE_START_DATE <= ?
-                     AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?
+                     AND COALESCE( SCHEDULE_END_DATE, ? ) > ?
                   ORDER BY ENCOUNTER_TIME;""",
             (
                wild_encounter,
