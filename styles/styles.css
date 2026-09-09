@@ -5153,9 +5153,14 @@ nav ul li a:hover {
    flex-wrap: wrap;
    gap: 16px 28px;
    align-items: center;
+   align-content: center;
    box-sizing: border-box;
 
-   min-height: calc(3em + 48px);
+   /* Match one console input row; keep height stable across placeholder/times. */
+   height: calc(3.3em + 48px + 10px);
+   min-height: calc(3.3em + 48px + 10px);
+   overflow-x: hidden;
+   overflow-y: auto;
    padding: 24px 28px;
    border-radius: 22px;
 
@@ -5169,6 +5174,10 @@ nav ul li a:hover {
    font-weight: 700;
    color: #14230a8c;
    line-height: 1.1;
+   max-width: 100%;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
 }
 
 .console-operations-schedule-times-single {
@@ -5176,6 +5185,10 @@ nav ul li a:hover {
    font-weight: 700;
    color: #14230ad9;
    line-height: 1.1;
+   max-width: 100%;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
 }
 
 .console-operations-help {
