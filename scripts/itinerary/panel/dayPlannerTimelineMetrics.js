@@ -1,4 +1,5 @@
 import { DayPlannerTimelinePlacer } from './dayPlannerTimelinePlacer.js';
+import { Strings } from '../../strings.js';
 
 export class DayPlannerTimelineMetrics {
    static timelineSlotHeightByTimeline = new WeakMap();
@@ -105,7 +106,7 @@ export class DayPlannerTimelineMetrics {
 
       const probePill = document.createElement('span');
       probePill.className = 'itinerary-day-open-pill';
-      probePill.textContent = 'Arrival';
+      probePill.textContent = Strings.itinerary.dayPlanner.arrivalLabel;
 
       const probeStrip = document.createElement('div');
       probeStrip.className = 'itinerary-day-pill-strip';

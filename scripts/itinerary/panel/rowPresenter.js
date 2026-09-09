@@ -22,7 +22,7 @@ export class RowPresenter {
          return '';
       }
 
-      return `${label}: ${value}`;
+      return Strings.format.labeledValue(label, value);
    }
 
    static buildScheduledTimeFieldLine(item) {
@@ -39,7 +39,11 @@ export class RowPresenter {
       }
 
       const roundedMinutes = Math.round(startMinutes / 5) * 5;
-      return RowPresentationHelper.buildTimeFieldLine(`~${DayPlannerScheduleController.formatMinutesAsClockTime(roundedMinutes)}`);
+      return RowPresentationHelper.buildTimeFieldLine(
+         Strings.format.approximate(
+            DayPlannerScheduleController.formatMinutesAsClockTime(roundedMinutes)
+         )
+      );
    }
 
    static buildMetaLines(lines = []) {

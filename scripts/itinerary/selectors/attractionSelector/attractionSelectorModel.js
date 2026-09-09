@@ -7,7 +7,7 @@ import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel
 import { Strings } from '../../../strings.js';
 
 export class AttractionSelectorModel {
-   static DEFAULT_ATTRACTION_TITLE = 'Attraction';
+   static DEFAULT_ATTRACTION_TITLE = Strings.entityLabels.attraction;
 
    static CLOSED_ATTRACTION_FALLBACK_NAME = Strings.itinerary.confirmation.closedAttractionFallbackName;
 

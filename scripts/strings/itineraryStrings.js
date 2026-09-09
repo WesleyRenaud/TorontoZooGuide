@@ -1,3 +1,5 @@
+import { CommonStrings } from './commonStrings.js';
+
 export class ItineraryStrings {
    static itinerary = {
       actions: {
@@ -283,7 +285,7 @@ export class ItineraryStrings {
          unscheduleAllSuccess: 'All items unscheduled',
          previousScheduledItem: 'Previous scheduled item',
          nextScheduledItem: 'Next scheduled item',
-         scheduledPillMoreCount: count => `+ ${count}`,
+         scheduledPillMoreCount: count => CommonStrings.format.moreCount(count),
          scheduledPillGroupLabel: (firstLabel, extraCount) => (
             `${firstLabel} + ${extraCount}`
          ),

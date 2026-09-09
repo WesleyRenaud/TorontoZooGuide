@@ -1,5 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { DetailImageBuilder } from '../assets/detailImageBuilder.js';
+import { Strings } from '../strings.js';
 
 export class ScheduledOccurrencePresenter {
    static buildOccurrenceDetailImageSrc(imageDirectory, name) {
@@ -33,7 +34,7 @@ export class ScheduledOccurrencePresenter {
       const parts = [primaryValue, timeRange].filter(Boolean);
 
       return parts.length > 0
-         ? parts.join('  •  ')
-         : '-';
+         ? parts.join(Strings.format.subtitleSeparator)
+         : Strings.format.emptySubtitle;
    }
 }

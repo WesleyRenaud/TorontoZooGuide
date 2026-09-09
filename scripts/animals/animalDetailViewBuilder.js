@@ -23,7 +23,7 @@ export class AnimalDetailViewBuilder {
       section.className = 'section';
 
       const titleEl = document.createElement('strong');
-      titleEl.textContent = `${title}:`;
+      titleEl.textContent = Strings.format.labelWithColon(title);
 
       const bodyEl = document.createElement('p');
       bodyEl.textContent = text;

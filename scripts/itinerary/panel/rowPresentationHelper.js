@@ -6,6 +6,6 @@ export class RowPresentationHelper {
          return '';
       }
 
-      return `${Strings.labels.time}: ${value}`;
+      return Strings.format.labeledValue(Strings.labels.time, value);
    }
 }

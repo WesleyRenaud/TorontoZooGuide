@@ -1,7 +1,9 @@
+import { Strings } from '../strings.js';
+
 export class TimelineLayoutConstants {
    static TIMELINE_SLOT_MINUTES = 30;
    static EXTENDED_SCHEDULED_PILL_MINUTES = this.TIMELINE_SLOT_MINUTES;
-   static DETAIL_SEPARATOR = ' \u2022 ';
+   static DETAIL_SEPARATOR = Strings.format.bulletSeparator;
    // Keep in sync with styles/tokens.css (--itinerary-half-hour-slot-height, etc.).
    static TIMELINE_SLOT_HEIGHT_PX = 730;
    static TIMELINE_PILL_STRIP_TOP_OFFSET_PX = 80;

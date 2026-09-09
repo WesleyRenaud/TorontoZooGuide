@@ -5,6 +5,22 @@ export class CommonStrings {
       save: 'Save',
    };
 
+   static format = {
+      bulletSeparator: ' \u2022 ',
+      subtitleSeparator: '  \u2022  ',
+      emptySubtitle: '-',
+      listJoin: ', ',
+      pipeJoin: ' | ',
+      moreCount: count => `+ ${count}`,
+      approximate: value => `~${value}`,
+      labeledValue: (label, value) => `${label}: ${value}`,
+      labelWithColon: label => `${label}:`,
+      timeRange: (start, end) => `${start} - ${end}`,
+      dateRangeTo: (start, end) => `${start} to ${end}`,
+      dateOnward: start => `${start} onward`,
+      locationSuffix: location => ` \u2022 ${location}`,
+   };
+
    static common = {
       animalPosition: (index, total) => `${index} of ${total}`,
       close: 'Close',
