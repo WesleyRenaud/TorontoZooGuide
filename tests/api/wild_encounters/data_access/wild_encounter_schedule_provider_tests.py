@@ -314,6 +314,23 @@ def Test_FetchScheduleTimes_TestCoveringDate_ExpectDistinctOrderedTimes(
    assert times == [ SECOND_ENCOUNTER_TIME, KANGAROO_ENCOUNTER_TIME ]
 
 
+def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date=START_DATE,
+      end_date='2026-06-15',
+      encounter_time=KANGAROO_ENCOUNTER_TIME )
+   schedule_provider_conn.commit()
+
+   times = WildEncounterScheduleProvider.fetch_schedule_times(
+      schedule_provider_conn,
+      KANGAROO,
+      '2026-06-15' )
+
+   assert times == []
+
+
 def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(

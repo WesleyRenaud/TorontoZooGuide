@@ -224,7 +224,7 @@ class GuardiansTalkScheduleProvider():
                   WHERE TALK_NAME = ?
                      AND LOCATION = ?
                      AND SCHEDULE_START_DATE <= ?
-                     AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?
+                     AND COALESCE( SCHEDULE_END_DATE, ? ) > ?
                   ORDER BY TALK_TIME;""",
             (
                talk_name,
