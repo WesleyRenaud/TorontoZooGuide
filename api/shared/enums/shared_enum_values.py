@@ -35,3 +35,29 @@ class SharedEnumValues:
                f'{ path }: wire value for { key } must be a non-empty string' )
 
       return dict( sorted( members.items() ) )
+
+
+   @staticmethod
+   def load_integers( json_name: str ) -> dict[ str, int ]:
+      path = SharedEnumValues.shared_enums_directory() / json_name
+      members = json.loads( path.read_text( encoding='utf-8' ) )
+
+      if not isinstance( members, dict ) or not members:
+         raise ValueError(
+            f'{ path }: expected a non-empty object of MEMBER -> integer value' )
+
+      normalized: dict[ str, int ] = {}
+
+      for key, value in members.items():
+         if not isinstance( key, str ) or not key.isidentifier() or not key.isupper():
+            raise ValueError(
+               f'{ path }: member key must be SCREAMING_SNAKE identifier: '
+               f'{ repr( key ) }' )
+
+         if isinstance( value, bool ) or not isinstance( value, int ):
+            raise ValueError(
+               f'{ path }: integer value for { key } must be an int' )
+
+         normalized[ key ] = value
+
+      return dict( sorted( normalized.items() ) )

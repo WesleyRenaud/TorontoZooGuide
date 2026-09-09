@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from enum import IntEnum
 
+from .shared_enum_values import SharedEnumValues
 
-class Position( IntEnum ):
-   FIRST = 0
-   SECOND = 1
-   THIRD = 2
-   LAST = -1
+
+Position = IntEnum(
+   'Position',
+   SharedEnumValues.load_integers( 'position.json' ),
+)
