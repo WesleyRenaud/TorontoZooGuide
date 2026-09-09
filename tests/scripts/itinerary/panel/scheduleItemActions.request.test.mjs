@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 installScheduleItemActionsTestHooks();
 
@@ -43,7 +44,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsBuildScheduleItemRequestMa
          added_as_attraction: false,
          scheduleItemKind: 'transportations',
       }, []),
-      { itemType: 'transportations', key: 'Zoomobile||0' }
+      { itemType: 'transportations', key: new TransportationScheduleItemKey('Zoomobile', false).toWire() }
    );
 });
 

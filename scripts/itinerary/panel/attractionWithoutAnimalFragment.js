@@ -2,14 +2,13 @@ import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmFragment } from './components/confirmFragment.js';
 import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionWithoutAnimalFragment {
-   static ATTRACTION_WITHOUT_ANIMAL_ISSUE = 'attractionWithoutAnimal';
-
    static hasAttractionWithoutAnimalIssue(issues = []) {
       return issues.some(
-         (issue) => issue?.type === AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_ISSUE
+         (issue) => issue?.type === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
       );
 
    }
@@ -24,7 +23,7 @@ export class AttractionWithoutAnimalFragment {
       const attractionsByName = new Map();
 
       issues
-         .filter((issue) => issue?.type === AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_ISSUE)
+         .filter((issue) => issue?.type === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL)
          .flatMap((issue) => issue.items ?? [])
          .forEach((item) => {
             const attractionName = ValueNormalizer.asTrimmedString(item?.name);

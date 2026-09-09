@@ -1,10 +1,11 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 import { WildEncounterSelectorModel } from './wildEncounterSelector/wildEncounterSelectorModel.js';
 
 export class WildEncounterSelector {
-   static STORAGE_KEY = 'tzg.itineraryWildEncounters';
+   static STORAGE_KEY = StorageKeys.WILD_KEY;
 
    static createItineraryWildEncounterSelectorController({
    mountEl,

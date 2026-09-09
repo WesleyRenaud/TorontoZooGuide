@@ -5,6 +5,7 @@ import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/component
 import { RemovedItemsFragment } from '../../../../scripts/itinerary/panel/components/removedItemsFragment.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -360,7 +361,7 @@ test('Test_TransportationSection_TestPureTransportations_ExpectNoScheduleActions
    assert.equal(scheduleCalls.length, 0);
    assert.deepEqual(removeCalls, [{
       itemType: 'transportations',
-      key: 'Zoomobile||0',
+      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    }]);
 });
 

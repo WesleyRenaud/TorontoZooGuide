@@ -3,6 +3,8 @@ import { test } from 'node:test';
 
 import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 
 installScheduleItemActionsTestHooks();
 
@@ -25,11 +27,11 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
       if (url === '/suppress-itinerary-warning') {
          return mockJsonResponse({
-            status: 'success',
+            status: ItineraryErrorType.SUCCESS,
             suppressed_warnings: [],
             itinerary_config: {
                itinerary_error_types: MOCK_ERROR_TYPES,
-               suppressed_error_types: ['itemNotOnItinerary'],
+               suppressed_error_types: [ItineraryErrorType.ITEM_NOT_ON_ITINERARY],
             },
          });
       }
@@ -40,7 +42,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'itemNotOnItinerary',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
          reasons: [],
       });
    };
@@ -71,7 +73,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.deepEqual(
       requests.map((request) => request.url),
       [
@@ -80,10 +82,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
          '/schedule-itinerary-item',
       ]
    );
-   assert.equal(requests[1].body.warningType, 'itemNotOnItinerary');
-   assert.equal(requests[2].body.confirmingScheduleItemNotOnItinerary, true);
+   assert.equal(requests[Position.SECOND].body.warningType, ItineraryErrorType.ITEM_NOT_ON_ITINERARY);
+   assert.equal(requests[Position.THIRD].body.confirmingScheduleItemNotOnItinerary, true);
    assert.equal(
-      requests[2].body.suppressScheduleItemNotOnItineraryWarning,
+      requests[Position.THIRD].body.suppressScheduleItemNotOnItineraryWarning,
       undefined
    );
 });
@@ -106,7 +108,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'itemNotOnItinerary',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
          reasons: isConfirmed ? [] : [],
       });
    };
@@ -133,10 +135,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingScheduleItemNotOnItinerary, false);
-   assert.equal(requests[1].body.confirmingScheduleItemNotOnItinerary, true);
+   assert.equal(requests[Position.FIRST].body.confirmingScheduleItemNotOnItinerary, false);
+   assert.equal(requests[Position.SECOND].body.confirmingScheduleItemNotOnItinerary, true);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingATalkWithout_ExpectOk', async () => {
@@ -157,9 +159,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'guardiansTalkWithoutAnimal',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          reasons: isConfirmed ? [] : [{
-            code: 'guardiansTalkWithoutAnimal',
+            code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             items: [{
                name: 'Komodo Dragon',
                item_type: 'guardiansTalk',
@@ -202,10 +204,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingGuardiansTalkWithoutAnimal, false);
-   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+   assert.equal(requests[Position.FIRST].body.confirmingGuardiansTalkWithoutAnimal, false);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAGuardiansTalk_ExpectOk', async () => {
@@ -226,9 +228,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          reasons: isConfirmed ? [] : [{
-            code: 'guardiansTalkWillUnscheduleItems',
+            code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'African Lion',
                item_type: 'guardiansTalk',
@@ -270,19 +272,19 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingGuardiansTalkUnschedule, false);
-   assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
+   assert.equal(requests[Position.FIRST].body.confirmingGuardiansTalkUnschedule, false);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
-            status: 'guardiansTalkWillUnscheduleItems',
+            status: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             reasons: [{
-               code: 'guardiansTalkWillUnscheduleItems',
+               code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'Arctic Wolf',
                   item_type: 'guardiansTalk',
@@ -314,7 +316,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const result = await schedulePromise;
 
    assert.equal(result.cancelled, true);
-   assert.equal(result.errorType, 'guardiansTalkWillUnscheduleItems');
+   assert.equal(result.errorType, ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAWildEncounter_ExpectOk', async () => {
@@ -335,9 +337,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
          reasons: isConfirmed ? [] : [{
-            code: 'wildEncounterWillUnscheduleItems',
+            code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'African Rainforest',
                item_type: 'wildEncounter',
@@ -379,10 +381,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingWildEncounterUnschedule, false);
-   assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
+   assert.equal(requests[Position.FIRST].body.confirmingWildEncounterUnschedule, false);
+   assert.equal(requests[Position.SECOND].body.confirmingWildEncounterUnschedule, true);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsMultipleBuildWarningsTogether_ExpectOk', async () => {
@@ -405,10 +407,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          reasons: isConfirmed ? [] : [
             {
-               code: 'guardiansTalkWillUnscheduleItems',
+               code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'Amur Tiger',
                   item_type: 'guardiansTalk',
@@ -416,7 +418,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
                }],
             },
             {
-               code: 'guardiansTalkWithoutAnimal',
+               code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
                items: [{
                   name: 'Amur Tiger',
                   item_type: 'guardiansTalk',
@@ -464,10 +466,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
-   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemAdjustsAttractionOutsideOperatingHours_ExpectOk', async () => {
@@ -488,7 +490,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       );
 
       return mockJsonResponse({
-         status: isConfirmed ? 'success' : 'attractionOutsideOperatingHours',
+         status: isConfirmed ? ItineraryErrorType.SUCCESS : ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS,
          reasons: [],
       });
    };
@@ -529,9 +531,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await schedulePromise;
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingAttractionOutsideOperatingHours, false);
-   assert.equal(requests[1].body.confirmingAttractionOutsideOperatingHours, true);
-   assert.equal(requests[1].body.startTime, '10:00 AM');
+   assert.equal(requests[Position.FIRST].body.confirmingAttractionOutsideOperatingHours, false);
+   assert.equal(requests[Position.SECOND].body.confirmingAttractionOutsideOperatingHours, true);
+   assert.equal(requests[Position.SECOND].body.startTime, '10:00 AM');
 });

@@ -4,10 +4,11 @@ import { AttractionSelectorPrompter } from './attractionSelectorPrompter.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionSelector {
-   static STORAGE_KEY = 'tzg.itineraryAttractions';
+   static STORAGE_KEY = StorageKeys.ATTRACTIONS_KEY;
 
    static createItineraryAttractionSelectorController({
    mountEl,

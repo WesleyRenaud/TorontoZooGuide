@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ItineraryPanelScheduleHandler } from '../../../../scripts/itinerary/panel/itineraryPanelScheduleHandler.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 const ITINERARY_CONFIG = {
    eventTypes: ['lunch', 'break'],
@@ -33,11 +35,11 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersOpen
    });
 
    assert.equal(calls.length, 1);
-   assert.deepEqual(calls[0], {
+   assert.deepEqual(calls[Position.FIRST], {
       itinerary: { date: '2026-06-15' },
       eventTypes: ['lunch'],
       preselectedRow: ANIMAL_ROW,
-      onScheduled: calls[0].onScheduled,
+      onScheduled: calls[Position.FIRST].onScheduled,
    });
 });
 
@@ -59,8 +61,8 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
    handlers.onScheduleItineraryItem({ row: ANIMAL_ROW });
 
    assert.equal(opened.length, 1);
-   assert.deepEqual(opened[0].eventTypes, ['lunch']);
-   assert.equal(opened[0].preselectedRow, ANIMAL_ROW);
+   assert.deepEqual(opened[Position.FIRST].eventTypes, ['lunch']);
+   assert.equal(opened[Position.FIRST].preselectedRow, ANIMAL_ROW);
 });
 
 test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersUnschedulesItemsAndRefreshesThePanel_ExpectOk', async () => {
@@ -136,7 +138,7 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
    assert.equal(removed.length, 0);
    assert.equal(confirmations.length, 1);
 
-   await confirmations[0]();
+   await confirmations[Position.FIRST]();
 
    assert.deepEqual(removed, [{ itemType: 'lunch', key: '' }]);
    assert.equal(notified, true);
@@ -162,15 +164,15 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
 
    handlers.onRemoveItineraryItem({
       itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-      key: 'Zoomobile||0',
+      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    });
 
    assert.equal(confirmations.length, 1);
    assert.equal(
-      confirmations[0].itemType,
+      confirmations[Position.FIRST].itemType,
       ScheduleItemKind.TRANSPORTATION.itemType
    );
-   assert.equal(confirmations[0].key, 'Zoomobile||0');
+   assert.equal(confirmations[Position.FIRST].key, new TransportationScheduleItemKey('Zoomobile', false).toWire());
 });
 
 test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersRemovesAnimalsWithoutConfirmation_ExpectOk', async () => {

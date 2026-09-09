@@ -4,9 +4,10 @@ import test from 'node:test';
 import { GuardiansTalkUnscheduleFragment } from '../../../../scripts/itinerary/panel/guardiansTalkUnscheduleFragment.js';
 import { ConfirmFragment } from '../../../../scripts/itinerary/panel/components/confirmFragment.js';
 import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { Strings } from '../../../../scripts/strings.js';
 
-const issueType = GuardiansTalkUnscheduleFragment.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE;
+const issueType = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 
 test('Test_GetGuardiansTalkNamesFromUnscheduleIssues_TestIssues_ExpectNames', () => {
    assert.deepEqual(

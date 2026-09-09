@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ScheduleTimeConflictFragment } from '../../../../scripts/itinerary/panel/scheduleTimeConflictFragment.js';
-import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
 import { ScheduleConflictChecker } from '../../../../scripts/itinerary/wizard/scheduleConflictChecker.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -43,7 +43,7 @@ installDomTestHooks({
 test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConfirmationRendersTheSaveIssuesNoticePopup_ExpectOk', () => {
    ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation({
       issues: [{
-         type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
          items: [firstEncounter, secondEncounter],
       }],
    });
@@ -69,7 +69,7 @@ test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConf
 
    ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation({
       issues: [{
-         type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
          items: [firstEncounter, secondEncounter],
       }],
       onCancel: () => {
@@ -100,7 +100,7 @@ test('Test_ShowScheduleTimeConflictConfirmation_TestShowScheduleTimeConflictConf
 
    ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation({
       issues: [{
-         type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
          items: [firstEncounter, secondEncounter],
       }],
       onConfirm: async (selectedItems) => {
@@ -160,7 +160,7 @@ test('Test_ShowScheduleTimeConflictConfirmation_TestUnresolvedSelection_ExpectKe
    try {
       ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation({
          issues: [{
-            type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+            type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
             items: [firstEncounter, secondEncounter],
          }],
          onConfirm: async () => {},

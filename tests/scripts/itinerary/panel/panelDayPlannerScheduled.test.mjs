@@ -5,6 +5,7 @@ import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/component
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import {
@@ -338,14 +339,14 @@ test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_E
 
    assert.deepEqual(unscheduleCalls, [{
       itemType: 'transportations',
-      key: 'Zoomobile||1',
+      key: new TransportationScheduleItemKey('Zoomobile', true).toWire(),
    }]);
 
    menuItems[Position.SECOND].click();
 
    assert.deepEqual(removeCalls, [{
       itemType: 'transportations',
-      key: 'Zoomobile||1',
+      key: new TransportationScheduleItemKey('Zoomobile', true).toWire(),
    }]);
 });
 

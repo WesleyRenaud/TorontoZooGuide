@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -57,7 +58,7 @@ test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentIgnoresNonWildEnco
 test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentRendersConflictRowsAndSelectionGroups_ExpectOk', () => {
    const { content, conflictGroups } = ScheduleTimeConflictView.createSaveIssuesContent([
       {
-         type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
          items: [secondEncounter, firstEncounter],
       },
    ]);
@@ -91,7 +92,7 @@ test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentRendersConflictRow
 test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentTogglesAddButtonsIntoSelectedRemoveButtons_ExpectOk', () => {
    const { content } = ScheduleTimeConflictView.createSaveIssuesContent([
       {
-         type: ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT,
+         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
          items: [firstEncounter, secondEncounter],
       },
    ]);

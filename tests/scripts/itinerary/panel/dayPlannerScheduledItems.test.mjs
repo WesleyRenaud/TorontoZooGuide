@@ -9,6 +9,7 @@ import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
 import { makeScheduledItem } from '../../helpers/scheduledPillTestSetup.mjs';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 installDomTestHooks();
 
@@ -16,7 +17,7 @@ test('Test_ResolveScheduledPillOptions_TestPureTransportations_ExpectHideUnsched
    const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
-         scheduleItemKey: 'Zoomobile||0',
+         scheduleItemKey: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
          item: {
             name: 'Zoomobile',
             added_as_attraction: false,
@@ -43,7 +44,7 @@ test('Test_ResolveScheduledPillOptions_TestAddedAsAttraction_ExpectKeepUnschedul
    const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
-         scheduleItemKey: 'Zoomobile||1',
+         scheduleItemKey: new TransportationScheduleItemKey('Zoomobile', true).toWire(),
          item: {
             name: 'Zoomobile',
             added_as_attraction: true,
@@ -321,7 +322,7 @@ test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () =>
 
    assert.equal(transportationItems.length, 1);
    assert.equal(transportationItems[Position.FIRST].label, 'Zoomobile');
-   assert.equal(transportationItems[Position.FIRST].scheduleItemKey, 'Zoomobile||0');
+   assert.equal(transportationItems[Position.FIRST].scheduleItemKey, new TransportationScheduleItemKey('Zoomobile', false).toWire());
    assert.equal(context.scheduledTransportationIndexes.size, 1);
    assert.match(
       allTextFor(transportationItems[Position.FIRST].row),

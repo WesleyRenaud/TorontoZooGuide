@@ -4,6 +4,7 @@ import test from 'node:test';
 import { GuardiansTalkSelector } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector.js';
 import { CreateScheduledOccurrenceSelector } from '../../../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
 import { GuardiansTalkSelectorModel } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 
 test('Test_CreateItineraryGuardiansTalkSelectorController_TestWiring_ExpectFactoryOptions', () => {
@@ -28,7 +29,7 @@ test('Test_CreateItineraryGuardiansTalkSelectorController_TestWiring_ExpectFacto
          GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController(callbacks),
          { selector: true }
       );
-      assert.equal(GuardiansTalkSelector.STORAGE_KEY, 'tzg.itineraryGuardiansTalks');
+      assert.equal(GuardiansTalkSelector.STORAGE_KEY, StorageKeys.GUARDIANS_KEY);
       assert.equal(captured.mountEl, callbacks.mountEl);
       assert.equal(captured.storageKey, GuardiansTalkSelector.STORAGE_KEY);
       assert.equal(captured.responseKey, 'guardians_talks');

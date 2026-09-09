@@ -1,12 +1,11 @@
 import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
 import { ScheduleTimeConflictContentBuilder } from './scheduleTimeConflictContentBuilder.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
 import { WildEncounterConflictResolver } from '../wizard/wildEncounterConflictResolver.js';
 
 export class ScheduleTimeConflictView {
-   static WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
-
    static buildConflictItemImageSrc(item) {
       const file = AssetKeyNormalizer.normalize(item?.name || '');
 
@@ -25,7 +24,7 @@ export class ScheduleTimeConflictView {
    static createSaveIssuesContent(issues) {
       const content = ItineraryPanelHelper.el('div', 'itin-save-issues');
       const wildEncounterConflictIssues = issues.filter(
-         issue => issue?.type === ScheduleTimeConflictView.WILD_ENCOUNTER_TIME_CONFLICT
+         issue => issue?.type === ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
       );
       let conflictGroups = [];
 

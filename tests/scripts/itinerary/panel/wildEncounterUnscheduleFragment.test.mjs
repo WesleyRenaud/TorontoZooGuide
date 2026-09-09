@@ -4,9 +4,10 @@ import test from 'node:test';
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { ConfirmFragment } from '../../../../scripts/itinerary/panel/components/confirmFragment.js';
 import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { Strings } from '../../../../scripts/strings.js';
 
-const issueType = WildEncounterUnscheduleFragment.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE;
+const issueType = ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 
 test('Test_GetWildEncounterNamesFromUnscheduleIssues_TestIssues_ExpectNames', () => {
    assert.deepEqual(

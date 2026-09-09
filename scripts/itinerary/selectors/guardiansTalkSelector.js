@@ -1,10 +1,11 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
 import { GuardiansTalkSelectorModel } from './guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 
 export class GuardiansTalkSelector {
-   static STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
+   static STORAGE_KEY = StorageKeys.GUARDIANS_KEY;
 
    static createItineraryGuardiansTalkSelectorController({
    mountEl,

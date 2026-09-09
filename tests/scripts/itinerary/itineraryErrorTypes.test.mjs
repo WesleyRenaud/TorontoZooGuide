@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryErrorTypesHelper } from '../../../scripts/itinerary/itineraryErrorTypesHelper.js';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { Strings } from '../../../scripts/strings.js';
 
 function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
@@ -16,9 +17,9 @@ function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
 }
 
 test('Test_SyncSuppressedItineraryErrorTypes_TestSuppressed_ExpectHydrated', () => {
-   _withSuppressedErrorTypes(['saveFailed'], () => {
-      assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed('saveFailed'), true);
-      assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed('success'), false);
+   _withSuppressedErrorTypes([ItineraryErrorType.SAVE_FAILED], () => {
+      assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed(ItineraryErrorType.SAVE_FAILED), true);
+      assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed(ItineraryErrorType.SUCCESS), false);
    });
 });
 
@@ -33,65 +34,65 @@ test('Test_SyncSuppressedItineraryErrorTypes_TestMissingConfig_ExpectEmptySuppre
 });
 
 test('Test_IsItinerarySuccess_TestStatuses_ExpectSuccessOnly', () => {
-   assert.equal(ItineraryErrorTypes.isItinerarySuccess('success'), true);
-   assert.equal(ItineraryErrorTypes.isItinerarySuccess('saveFailed'), false);
+   assert.equal(ItineraryErrorTypes.isItinerarySuccess(ItineraryErrorType.SUCCESS), true);
+   assert.equal(ItineraryErrorTypes.isItinerarySuccess(ItineraryErrorType.SAVE_FAILED), false);
 });
 
 test('Test_RequiresConfirmations_TestSuppressedAndActive_ExpectFlags', () => {
    _withSuppressedErrorTypes(
       [
-         'arrivalDepartureTooClose',
-         'earlyAdmissionRequiresMembership',
-         'itemNotOnItinerary',
+         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+         ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+         ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       ],
       () => {
          assert.equal(
-            ItineraryErrorTypes.requiresShortVisitConfirmation('arrivalDepartureTooClose'),
+            ItineraryErrorTypes.requiresShortVisitConfirmation(ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE),
             false
          );
          assert.equal(
-            ItineraryErrorTypes.requiresEarlyAdmissionConfirmation('earlyAdmissionRequiresMembership'),
+            ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP),
             false
          );
          assert.equal(
-            ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation('itemNotOnItinerary'),
+            ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation(ItineraryErrorType.ITEM_NOT_ON_ITINERARY),
             false
          );
          assert.equal(
             ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation(
-               'attractionOutsideOperatingHours'
+               ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
             ),
             true
          );
          assert.equal(
             ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation(
-               'guardiansTalkWillUnscheduleItems'
+               ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
             ),
             true
          );
          assert.equal(
-            ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation('fixedTimeItemLongWait'),
+            ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation(ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT),
             true
          );
          assert.equal(
             ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation(
-               'guardiansTalkWithoutAnimal'
+               ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
             ),
             true
          );
          assert.equal(
-            ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation('attractionWithoutAnimal'),
+            ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation(ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL),
             true
          );
          assert.equal(
             ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation(
-               'wildEncounterWillUnscheduleItems'
+               ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
             ),
             true
          );
          assert.equal(
             ItineraryErrorTypes.requiresGuardiansTalkWildEncounterTimeConflictConfirmation(
-               'guardiansTalkWildEncounterTimeConflict'
+               ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
             ),
             true
          );
@@ -102,15 +103,15 @@ test('Test_RequiresConfirmations_TestSuppressedAndActive_ExpectFlags', () => {
 test('Test_RequiresConfirmations_TestUnsuppressed_ExpectFlags', () => {
    _withSuppressedErrorTypes([], () => {
       assert.equal(
-         ItineraryErrorTypes.requiresShortVisitConfirmation('arrivalDepartureTooClose'),
+         ItineraryErrorTypes.requiresShortVisitConfirmation(ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE),
          true
       );
       assert.equal(
-         ItineraryErrorTypes.requiresEarlyAdmissionConfirmation('earlyAdmissionRequiresMembership'),
+         ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP),
          true
       );
       assert.equal(
-         ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation('itemNotOnItinerary'),
+         ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation(ItineraryErrorType.ITEM_NOT_ON_ITINERARY),
          true
       );
    });
@@ -120,60 +121,60 @@ test('Test_ResolveItineraryErrorMessage_TestKnownAndUnknown_ExpectStrings', () =
    const strings = Strings.itinerary.errors;
 
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('itineraryDateNotSet'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ITINERARY_DATE_NOT_SET),
       strings.itineraryDateNotSet
    );
-   assert.equal(ItineraryErrorTypes.resolveItineraryErrorMessage('saveFailed'), strings.saveFailed);
+   assert.equal(ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.SAVE_FAILED), strings.saveFailed);
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('timeOrderInvalid'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.TIME_ORDER_INVALID),
       strings.timeOrderInvalid
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('arrivalDepartureTooClose'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE),
       strings.arrivalDepartureTooClose
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('earlyAdmissionRequiresMembership'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP),
       strings.earlyAdmissionRequiresMembership
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('noAvailableSlot'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.NO_AVAILABLE_SLOT),
       strings.noAvailableSlot
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('requestedTimeNotAvailable'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE),
       strings.requestedTimeNotAvailable
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('attractionOutsideOperatingHours'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS),
       strings.attractionOutsideOperatingHours
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('itemNotOnItinerary'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ITEM_NOT_ON_ITINERARY),
       strings.itemNotOnItinerary
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('itemAlreadyScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ITEM_ALREADY_SCHEDULED),
       strings.itemAlreadyScheduled
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('timeOutOfBounds'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.TIME_OUT_OF_BOUNDS),
       strings.timeOutOfBounds
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('activityNotOnDaySchedule'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE),
       strings.activityNotOnDaySchedule
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('scheduleWindowUnavailable'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE),
       strings.scheduleWindowUnavailable
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('bulkScheduleItineraryAlreadyScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED),
       strings.bulkScheduleItineraryAlreadyScheduled
    );
    assert.equal(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('unscheduleAllNothingScheduled'),
+      ItineraryErrorTypes.resolveItineraryErrorMessage(ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED),
       strings.unscheduleAllNothingScheduled
    );
    assert.equal(ItineraryErrorTypes.resolveItineraryErrorMessage('unknown'), strings.generic);

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { GuardiansTalkWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -9,13 +10,13 @@ installDomTestHooks();
 test('Test_HasGuardiansTalkWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
    assert.equal(
       GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue([
-         { type: 'guardiansTalkWithoutAnimal' },
+         { type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL },
       ]),
       true
    );
    assert.equal(
       GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue([
-         { type: 'fixedTimeItemLongWait' },
+         { type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT },
       ]),
       false
    );
@@ -25,7 +26,7 @@ test('Test_GetPrimaryGuardiansTalkFromWithoutAnimalIssues_TestTalk_ExpectNoTime'
    assert.deepEqual(
       GuardiansTalkWithoutAnimalFragment.getPrimaryGuardiansTalkFromWithoutAnimalIssues([
          {
-            type: 'guardiansTalkWithoutAnimal',
+            type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             items: [{ name: 'Komodo Dragon' }],
          },
       ]),
@@ -36,7 +37,7 @@ test('Test_GetPrimaryGuardiansTalkFromWithoutAnimalIssues_TestTalk_ExpectNoTime'
 test('Test_GetGuardiansTalksFromWithoutAnimalIssues_TestNamedTalks_ExpectAll', () => {
    assert.deepEqual(
       GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues([{
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [
             {
                name: 'Western Grey Kangaroo',
@@ -66,7 +67,7 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMessage_ExpectNoTime',
 
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [{ name: 'Komodo Dragon' }],
       }],
       onConfirm: () => {
@@ -89,7 +90,7 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMessage_ExpectNoTime',
 test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', () => {
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [
             { name: 'Western Grey Kangaroo' },
             { name: 'African Lion' },
@@ -105,7 +106,7 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', 
 
 test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
-      issues: [{ type: 'guardiansTalkWithoutAnimal', items: [] }],
+      issues: [{ type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL, items: [] }],
       onConfirm: () => {
          throw new Error('should not confirm');
       },
@@ -117,7 +118,7 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp
 test('Test_GetGuardiansTalkNamesFromWithoutAnimalIssues_TestNamesAndBlanks_ExpectFiltered', () => {
    assert.deepEqual(
       GuardiansTalkWithoutAnimalFragment.getGuardiansTalkNamesFromWithoutAnimalIssues([{
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [
             { name: '  Komodo Dragon  ', start_time: '11:00 AM' },
             { name: '' },

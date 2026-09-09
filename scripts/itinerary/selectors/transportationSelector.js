@@ -1,12 +1,13 @@
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 import { TransportationSelectorPrompter } from './transportationSelectorPrompter.js';
 
 export class TransportationSelector {
-   static STORAGE_KEY = 'tzg.itineraryTransportations';
+   static STORAGE_KEY = StorageKeys.TRANSPORTATIONS_KEY;
 
    static createItineraryTransportationSelectorController({
    mountEl,

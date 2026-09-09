@@ -1,25 +1,26 @@
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { installDomTestHooks } from './domTestSetup.mjs';
 import { mockJsonResponse } from './fetchMock.mjs';
 import { createLocalStorageMock } from './localStorageMock.mjs';
 
 export const MOCK_ERROR_TYPES = Object.freeze({
-   SUCCESS: 'success',
-   SAVE_FAILED: 'saveFailed',
-   ACTIVITY_NOT_ON_DAY_SCHEDULE: 'activityNotOnDaySchedule',
-   SCHEDULE_WINDOW_UNAVAILABLE: 'scheduleWindowUnavailable',
-   NO_AVAILABLE_SLOT: 'noAvailableSlot',
-   REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
-   ATTRACTION_OUTSIDE_OPERATING_HOURS: 'attractionOutsideOperatingHours',
-   ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
-   ITEM_ALREADY_SCHEDULED: 'itemAlreadyScheduled',
-   GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
-   FIXED_TIME_ITEM_LONG_WAIT: 'fixedTimeItemLongWait',
-   GUARDIANS_TALK_WITHOUT_ANIMAL: 'guardiansTalkWithoutAnimal',
-   ATTRACTION_WITHOUT_ANIMAL: 'attractionWithoutAnimal',
-   WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
-   BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED: 'bulkScheduleItineraryAlreadyScheduled',
-   UNSCHEDULE_ALL_NOTHING_SCHEDULED: 'unscheduleAllNothingScheduled',
+   SUCCESS: ItineraryErrorType.SUCCESS,
+   SAVE_FAILED: ItineraryErrorType.SAVE_FAILED,
+   ACTIVITY_NOT_ON_DAY_SCHEDULE: ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
+   SCHEDULE_WINDOW_UNAVAILABLE: ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
+   NO_AVAILABLE_SLOT: ItineraryErrorType.NO_AVAILABLE_SLOT,
+   REQUESTED_TIME_NOT_AVAILABLE: ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE,
+   ATTRACTION_OUTSIDE_OPERATING_HOURS: ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS,
+   ITEM_NOT_ON_ITINERARY: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+   ITEM_ALREADY_SCHEDULED: ItineraryErrorType.ITEM_ALREADY_SCHEDULED,
+   GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+   FIXED_TIME_ITEM_LONG_WAIT: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+   GUARDIANS_TALK_WITHOUT_ANIMAL: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+   ATTRACTION_WITHOUT_ANIMAL: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+   WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+   BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED: ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
+   UNSCHEDULE_ALL_NOTHING_SCHEDULED: ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
 });
 
 export { mockJsonResponse };

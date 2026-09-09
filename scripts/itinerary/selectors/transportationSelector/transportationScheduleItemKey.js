@@ -1,9 +1,9 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { ScheduleItemKeySeparator } from '../../scheduleItemKeySeparator.js';
 import { Position } from '../../../shared/enums/position.js';
 import { TransportationScheduleItemKeyHelper } from './transportationScheduleItemKeyHelper.js';
 
 export class TransportationScheduleItemKey {
-   static TRANSPORTATION_ITEM_KEY_SEPARATOR = '||';
    constructor(name, addedAsAttraction) {
       this.name = ValueNormalizer.asTrimmedString(name);
       this.addedAsAttraction = addedAsAttraction;
@@ -22,7 +22,7 @@ export class TransportationScheduleItemKey {
 
    static fromWire(wire) {
       const parts = ValueNormalizer.asTrimmedString(wire).split(
-         TransportationScheduleItemKey.TRANSPORTATION_ITEM_KEY_SEPARATOR,
+         ScheduleItemKeySeparator.VALUE,
          2
       );
       const name = ValueNormalizer.asTrimmedString(parts[Position.FIRST]);
@@ -41,6 +41,6 @@ export class TransportationScheduleItemKey {
       return [
          this.name,
          this.addedAsAttraction ? '1' : '0',
-      ].join(TransportationScheduleItemKey.TRANSPORTATION_ITEM_KEY_SEPARATOR);
+      ].join(ScheduleItemKeySeparator.VALUE);
    }
 }

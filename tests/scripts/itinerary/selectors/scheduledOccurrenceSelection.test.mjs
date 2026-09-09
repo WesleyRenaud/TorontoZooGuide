@@ -5,10 +5,11 @@ import { SelectionStore } from '../../../../scripts/itinerary/selectors/base/sel
 import { CreateScheduledOccurrenceSelector } from '../../../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
 import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { GuardiansTalkSelectorModel } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
-const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
+const STORAGE_KEY = StorageKeys.GUARDIANS_KEY;
 
 function _createGuardiansTalkSelectionState() {
    return SelectionStore.createSelectorSelectionState({
