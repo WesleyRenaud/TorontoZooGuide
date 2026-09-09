@@ -4,6 +4,7 @@ import test from 'node:test';
 import { MarkerBuilder } from '../../../scripts/markers/markerBuilder.js';
 import { MarkerHelper } from '../../../scripts/markers/markerHelper.js';
 import { MarkerHoverFormatter } from '../../../scripts/markers/markerHoverFormatter.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -28,7 +29,7 @@ test('Test_CreateMarkerElement_TestGroup_ExpectPositionedMarker', () => {
       const group = {
          x: 12.5,
          y: 40,
-         items: [{ type: 'animal', species: 'African Lion' }],
+         items: [{ type: ItemType.ANIMAL, species: 'African Lion' }],
       };
       const markerEl = MarkerBuilder.createMarkerElement(group);
 
@@ -49,7 +50,7 @@ test('Test_BindMarkerInteractions_TestCoordinateEditing_ExpectEditor', () => {
    const calls = [];
    MarkerBuilder.bindMarkerInteractions({
       markerEl: { id: 'm1' },
-      group: { items: [{ type: 'animal' }] },
+      group: { items: [{ type: ItemType.ANIMAL }] },
       mapInner: { id: 'map' },
       tooltip: { attachToMarker() { assert.fail('should not attach'); } },
       hover: {},
@@ -67,7 +68,7 @@ test('Test_BindMarkerInteractions_TestTooltip_ExpectAttached', () => {
    const attaches = [];
    MarkerBuilder.bindMarkerInteractions({
       markerEl: { id: 'm2' },
-      group: { items: [{ type: 'pavilion' }] },
+      group: { items: [{ type: ItemType.PAVILION }] },
       mapInner: {},
       tooltip: {
          attachToMarker(markerEl, items, hover) {

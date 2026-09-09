@@ -1,7 +1,7 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { CancelOccurrenceControllerFactory } from '../../forms/cancelOccurrenceControllerFactory.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
-import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { GuardiansTalkDropdownResetHelper } from '../helpers/guardiansTalkDropdownResetHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class CancelGuardiansTalkController {
@@ -17,18 +17,6 @@ export class CancelGuardiansTalkController {
 
       function resetOccurrenceFields() {
          occurrenceFilterController?.clear?.();
-      }
-
-      function resetTalkDropdown() {
-         if (talkLocationFilterController?.clear) {
-            talkLocationFilterController.clear();
-         }
-         else if (talkNameEl?.tagName === 'SELECT') {
-            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
-         }
-         else if (talkNameEl) {
-            talkNameEl.value = '';
-         }
       }
 
       function validateSelection({ talk, location, date, times }) {
@@ -73,7 +61,10 @@ export class CancelGuardiansTalkController {
          occurrenceFilterController,
          resetSelection: () => {
             ControllerHelper.resetFormFields([locationEl]);
-            resetTalkDropdown();
+            GuardiansTalkDropdownResetHelper.resetTalkDropdown({
+               talkNameEl,
+               talkLocationFilterController,
+            });
          },
          getSelectionValues: () => ({
             talk: ControllerHelper.getFieldValue(talkNameEl),

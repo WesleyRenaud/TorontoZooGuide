@@ -1,7 +1,7 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { RecurringScheduleSetControllerFactory } from '../../forms/recurringScheduleSetControllerFactory.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
-import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
+import { GuardiansTalkDropdownResetHelper } from '../helpers/guardiansTalkDropdownResetHelper.js';
 import { Strings } from '../../../strings.js';
 
 export class GuardiansTalkController {
@@ -16,20 +16,6 @@ export class GuardiansTalkController {
       talkLocationFilterController = null,
       ...controllerOptions
    } = {}) {
-      function resetTalkDropdown() {
-         if (talkLocationFilterController?.clear) {
-            talkLocationFilterController.clear();
-            return;
-         }
-
-         if (talkNameEl?.tagName === 'SELECT') {
-            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
-         }
-         else if (talkNameEl) {
-            talkNameEl.value = '';
-         }
-      }
-
       return RecurringScheduleSetControllerFactory.createRecurringScheduleSetController({
          ...controllerOptions,
          scheduleRowsEl,
@@ -54,7 +40,10 @@ export class GuardiansTalkController {
          },
          resetSelection: () => {
             ControllerHelper.resetFormFields([locationEl, startDateEl, endDateEl, messageEl]);
-            resetTalkDropdown();
+            GuardiansTalkDropdownResetHelper.resetTalkDropdown({
+               talkNameEl,
+               talkLocationFilterController,
+            });
          },
          prepareForm: async () => {
             if (talkLocationFilterController?.refreshLocations) {

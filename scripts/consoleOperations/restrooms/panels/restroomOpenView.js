@@ -1,34 +1,19 @@
+import { AmenityOpenPanelBuilder } from '../../forms/amenityOpenPanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class RestroomOpenView {
    static createRestroomOpenPanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return AmenityOpenPanelBuilder.createPanel({
          panelId: 'restroomOpenPanel',
          title: Strings.panelTitles.restroomOpen,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.restroom,
-               inputId: 'restroomOpenRestroom',
-               emptyOptionLabel: Strings.placeholders.restroom,
-            }),
-            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-               startDateId: 'restroomOpenStartDate',
-               startHelpText: Strings.help.startImmediately,
-               endDateId: 'restroomOpenEndDate',
-               endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('restroom'),
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitRestroomOpen',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'restroomOpenStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.restroom,
+         emptyOptionLabel: Strings.placeholders.restroom,
+         idPrefix: 'restroomOpen',
+         entityFieldName: 'Restroom',
+         startHelpText: Strings.help.startImmediately,
+         endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('restroom'),
+         submitId: 'submitRestroomOpen',
+         statusId: 'restroomOpenStatus',
       });
    }
 }

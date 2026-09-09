@@ -1,5 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { EntityClosedControllerFactory } from '../../forms/entityClosedControllerFactory.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
@@ -9,7 +9,7 @@ export class AttractionController {
       attractionEl,
       ...controllerOptions
    } = {}) {
-      return EntityClosedFormController.createEntityClosedFormController({
+      return EntityClosedControllerFactory.createEntityClosedController({
          ...controllerOptions,
          entityEl: attractionEl,
          loadOptions: ConsoleOptionsLoader.loadAttractions,
@@ -22,7 +22,7 @@ export class AttractionController {
          }),
          entityLabel: Strings.entityLabels.attraction,
          optionsLabel: Strings.entityLabels.attractions,
-         successMessage: result => Strings.status.closed(result.attraction),
+         resultName: result => result.attraction,
       });
    }
 }

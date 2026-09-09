@@ -4,6 +4,7 @@ import test from 'node:test';
 import { MarkerHelper } from '../../../scripts/markers/markerHelper.js';
 import { MarkerTypeRenderer } from '../../../scripts/markers/markerTypeRenderer.js';
 import { MarkerVisualHelper } from '../../../scripts/markers/markerVisualHelper.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 
 test('Test_ApplyMarkerVisual_TestEmptyAndCount_ExpectVisualHelpers', () => {
    const resets = [];
@@ -18,7 +19,7 @@ test('Test_ApplyMarkerVisual_TestEmptyAndCount_ExpectVisualHelpers', () => {
 
    try {
       const markerEl = { id: 'm1' };
-      MarkerHelper.applyMarkerVisual(null, [{ type: 'animal' }]);
+      MarkerHelper.applyMarkerVisual(null, [{ type: ItemType.ANIMAL }]);
       MarkerHelper.applyMarkerVisual(markerEl, []);
       MarkerHelper.applyMarkerVisual(markerEl, [{ type: 'unknown' }, { type: 'unknown' }]);
       assert.equal(resets.length, 2);
@@ -41,7 +42,7 @@ test('Test_ApplyMarkerVisual_TestTypeRendererHandles_ExpectNoCount', () => {
    MarkerTypeRenderer.renderMarkerByType = () => true;
 
    try {
-      MarkerHelper.applyMarkerVisual({ id: 'm1' }, [{ type: 'animal' }]);
+      MarkerHelper.applyMarkerVisual({ id: 'm1' }, [{ type: ItemType.ANIMAL }]);
       assert.deepEqual(counts, []);
    } finally {
       MarkerVisualHelper.resetMarkerVisual = originalReset;

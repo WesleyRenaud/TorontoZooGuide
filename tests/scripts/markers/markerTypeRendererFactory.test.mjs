@@ -4,6 +4,7 @@ import test from 'node:test';
 import { IconUrlProvider } from '../../../scripts/assets/iconUrlProvider.js';
 import { MarkerTypeRendererFactory } from '../../../scripts/markers/markerTypeRendererFactory.js';
 import { MarkerVisualHelper } from '../../../scripts/markers/markerVisualHelper.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -74,18 +75,18 @@ test('Test_CreateGenericIconMarkerRenderer_TestCount_ExpectVisualHelpers', () =>
    MarkerVisualHelper.applyGenericIcon = (...args) => calls.push(['icon', ...args]);
 
    try {
-      const render = MarkerTypeRendererFactory.createGenericIconMarkerRenderer('pavilion');
+      const render = MarkerTypeRendererFactory.createGenericIconMarkerRenderer(ItemType.PAVILION);
       const markerEl = _markerEl();
-      render(markerEl, [{ type: 'pavilion' }, { type: 'pavilion' }]);
+      render(markerEl, [{ type: ItemType.PAVILION }, { type: ItemType.PAVILION }]);
       assert.deepEqual(calls[0], [
          'class',
          markerEl,
-         MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.pavilion,
+         MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.PAVILION],
       ]);
       assert.deepEqual(calls[1], [
          'icon',
          markerEl,
-         MarkerTypeRendererFactory.GENERIC_ICON_PATHS.pavilion,
+         MarkerTypeRendererFactory.GENERIC_ICON_PATHS[ItemType.PAVILION],
          2,
       ]);
    } finally {
@@ -108,7 +109,7 @@ test('Test_CreateLikelihoodIconMarkerRenderer_TestSingleAndCount_ExpectIcons', (
 
    try {
       const render = MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
-         type: 'restaurant',
+         type: ItemType.RESTAURANT,
          getIconUrl: (_item, token) => `url-${token}`,
          applySize: (el) => calls.push(['size', el]),
       });

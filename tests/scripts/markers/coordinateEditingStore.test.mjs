@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { CoordinateEditingStore } from '../../../scripts/markers/coordinateEditingStore.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -21,7 +22,7 @@ test('Test_GetMarkerItemName_TestFallbacks_ExpectPreferredField', () => {
    assert.equal(CoordinateEditingStore.getMarkerItemName({ species: 'Tiger' }), 'Tiger');
    assert.equal(CoordinateEditingStore.getMarkerItemName({ title: 'Restroom' }), 'Restroom');
    assert.equal(CoordinateEditingStore.getMarkerItemName({ location: 'Africa' }), 'Africa');
-   assert.equal(CoordinateEditingStore.getMarkerItemName({ type: 'animal' }), 'animal');
+   assert.equal(CoordinateEditingStore.getMarkerItemName({ type: ItemType.ANIMAL }), ItemType.ANIMAL);
    assert.equal(CoordinateEditingStore.getMarkerItemName({}), 'marker');
 });
 
@@ -117,11 +118,11 @@ test('Test_UpdateMarkerPosition_TestValidPointer_ExpectApplied', () => {
 test('Test_BuildDraggedMarkerCoordinateRows_TestItems_ExpectFormattedRows', () => {
    assert.deepEqual(
       CoordinateEditingStore.buildDraggedMarkerCoordinateRows(
-         [{ type: 'animal', species: 'Lion' }, { name: 'Shop' }],
+         [{ type: ItemType.ANIMAL, species: 'Lion' }, { name: 'Shop' }],
          { x: 1.2, y: 3.4 }
       ),
       [
-         { type: 'animal', name: 'Lion', x_coord: '1.200', y_coord: '3.400' },
+         { type: ItemType.ANIMAL, name: 'Lion', x_coord: '1.200', y_coord: '3.400' },
          { type: '', name: 'Shop', x_coord: '1.200', y_coord: '3.400' },
       ]
    );
@@ -138,12 +139,12 @@ test('Test_LogDraggedMarkerCoordinates_TestDrag_ExpectWindowAndConsole', () => {
 
    try {
       CoordinateEditingStore.logDraggedMarkerCoordinates(
-         [{ type: 'animal', species: 'Lion' }],
+         [{ type: ItemType.ANIMAL, species: 'Lion' }],
          { x: 10, y: 20 }
       );
 
       assert.deepEqual(window[CoordinateEditingStore.COORDINATE_LOG_KEY], [
-         { type: 'animal', name: 'Lion', x_coord: '10.000', y_coord: '20.000' },
+         { type: ItemType.ANIMAL, name: 'Lion', x_coord: '10.000', y_coord: '20.000' },
       ]);
       assert.equal(logs[0][0], CoordinateEditingStore.COORDINATE_LOG_LABEL);
       assert.equal(tables.length, 1);
@@ -187,7 +188,7 @@ test('Test_BeginAndFinishDragging_TestLifecycle_ExpectCaptureAndLog', () => {
    CoordinateEditingStore.finishDragging({
       markerEl,
       mapInner,
-      itemsAtPoint: [{ type: 'animal', species: 'Lion' }],
+      itemsAtPoint: [{ type: ItemType.ANIMAL, species: 'Lion' }],
       state,
       event: {
          pointerId: 7,
