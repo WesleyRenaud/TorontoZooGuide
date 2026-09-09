@@ -4,11 +4,11 @@ import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssu
 
 export class ScheduleConflictChecker {
    static isWildEncounterConflictItem(item) {
-      return item.item_type === ItinerarySaveIssueItemType.wildEncounter;
+      return item.item_type === ItinerarySaveIssueItemType.WILD_ENCOUNTER;
    }
 
    static isGuardiansTalkConflictItem(item) {
-      return item.item_type === ItinerarySaveIssueItemType.guardiansTalk;
+      return item.item_type === ItinerarySaveIssueItemType.GUARDIANS_TALK;
    }
 
    static scheduleTimesOverlap(first, second) {

@@ -1,4 +1,7 @@
+import itinerarySaveIssueItemTypeValues from '../../../shared/enums/itinerarySaveIssueItemType.json' with { type: 'json' };
+
 export class ItinerarySaveIssueItemType {
-   static guardiansTalk = 'guardiansTalk';
-   static wildEncounter = 'wildEncounter';
+   static {
+      Object.assign(ItinerarySaveIssueItemType, itinerarySaveIssueItemTypeValues);
+   }
 }

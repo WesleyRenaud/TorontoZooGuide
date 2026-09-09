@@ -11,21 +11,21 @@ const greatBarrierReef = {
    name: 'Great Barrier Reef',
    start_time: '13:00',
    end_time: '13:20',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
 };
 
 const grizzly = {
    name: 'Grizzly Bear',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
 };
 
 const africanLionTalk = {
    name: 'African Lion',
    start_time: '13:30',
    end_time: '14:00',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Africa Savanna',
 };
 

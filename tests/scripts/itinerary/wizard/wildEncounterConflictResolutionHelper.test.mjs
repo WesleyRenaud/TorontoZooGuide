@@ -7,7 +7,7 @@ import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/iti
 test('Test_ToConflictResolutionDraftItem_TestGuardiansAndWild_ExpectShape', () => {
    assert.deepEqual(
       WildEncounterConflictResolutionHelper.toConflictResolutionDraftItem({
-         item_type: ItinerarySaveIssueItemType.guardiansTalk,
+         item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
          name: 'Lion Talk',
          location: 'Theatre',
       }),

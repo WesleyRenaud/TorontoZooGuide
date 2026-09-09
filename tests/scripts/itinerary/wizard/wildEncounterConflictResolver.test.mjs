@@ -9,7 +9,7 @@ const firstEncounter = {
    name: 'From Howls to Honks',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
 };
 
@@ -17,7 +17,7 @@ const secondEncounter = {
    name: 'Great Barrier Reef',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
 };
 
@@ -25,7 +25,7 @@ const thirdEncounter = {
    name: 'Savanna Safari',
    start_time: '14:00',
    end_time: '14:30',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
@@ -33,7 +33,7 @@ const fourthEncounter = {
    name: 'Guardians of Gorillas',
    start_time: '14:30',
    end_time: '15:00',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
@@ -41,7 +41,7 @@ const guardiansTalk = {
    name: 'African Lion',
    start_time: '14:00',
    end_time: '14:30',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Africa Savanna',
 };
 
@@ -182,14 +182,14 @@ test('Test_BuildItineraryWithSelectedConflictResolutions_TestOmitsScheduleTimesF
       name: 'Grizzly Bear',
       start_time: '13:00',
       end_time: '13:45',
-      item_type: ItinerarySaveIssueItemType.wildEncounter,
+      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
       meeting_spot: 'Spot',
    };
    const talk = {
       name: 'African Lion',
       start_time: '13:30',
       end_time: '14:00',
-      item_type: ItinerarySaveIssueItemType.guardiansTalk,
+      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
       location: 'Africa Savanna',
    };
 

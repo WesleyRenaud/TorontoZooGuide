@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import ast
 from fnmatch import fnmatch
+import json
 from pathlib import Path, PurePosixPath
-import re
 import sys
 import tomllib
 from typing import Any
@@ -22,6 +22,7 @@ def find_root() -> Path:
 
 
 ROOT = find_root()
+SHARED_ENUMS_CATALOG_PATH = ROOT / 'shared' / 'enums' / 'catalog.json'
 
 
 def get_display_path( path: Path ) -> str:
@@ -43,6 +44,18 @@ def load_config() -> dict[ str, Any ]:
       .get( 'tool', {} )
       .get( 'tzg_python_one_class_per_file', {} )
    )
+
+
+def load_shared_enum_python_modules() -> set[ str ]:
+   if not SHARED_ENUMS_CATALOG_PATH.exists():
+      return set()
+
+   catalog = json.loads( SHARED_ENUMS_CATALOG_PATH.read_text( encoding='utf-8' ) )
+   return {
+      entry[ 'pythonModule' ]
+      for entry in catalog.get( 'enums', [] )
+      if isinstance( entry.get( 'pythonModule' ), str )
+   }
 
 
 def snake_to_pascal( stem: str ) -> str:
@@ -111,10 +124,16 @@ def main() -> int:
    config = load_config()
    include = config.get( 'include', [ 'api/**/*.py' ] )
    excluded_patterns = config.get( 'exclude', [] )
+   shared_enum_modules = load_shared_enum_python_modules()
    violations: list[ str ] = []
 
    for path in iter_python_files( include ):
       if path.name in ( '__init__.py', '__main__.py' ):
+         continue
+
+      display_path = get_display_path( path )
+
+      if display_path in shared_enum_modules:
          continue
 
       if is_excluded_path( path, excluded_patterns ):

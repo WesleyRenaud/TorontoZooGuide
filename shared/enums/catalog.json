@@ -1,12 +1,44 @@
 {
    "enums": [
       {
+         "id": "animalViewingScope",
+         "json": "animalViewingScope.json",
+         "pythonModule": "api/shared/enums/animal_viewing_scope.py",
+         "pythonClass": "AnimalViewingScope",
+         "javascriptModule": "scripts/shared/enums/animalViewingScope.js",
+         "javascriptClass": "AnimalViewingScope"
+      },
+      {
+         "id": "enclosureType",
+         "json": "enclosureType.json",
+         "pythonModule": "api/shared/enums/enclosure_type.py",
+         "pythonClass": "EnclosureType",
+         "javascriptModule": "scripts/shared/enums/enclosureType.js",
+         "javascriptClass": "EnclosureType"
+      },
+      {
          "id": "itemType",
          "json": "itemType.json",
          "pythonModule": "api/shared/enums/item_type.py",
          "pythonClass": "ItemType",
          "javascriptModule": "scripts/shared/enums/itemType.js",
          "javascriptClass": "ItemType"
+      },
+      {
+         "id": "itineraryEventType",
+         "json": "itineraryEventType.json",
+         "pythonModule": "api/shared/enums/itinerary_event_type.py",
+         "pythonClass": "ItineraryEventType",
+         "javascriptModule": "scripts/shared/enums/itineraryEventType.js",
+         "javascriptClass": "ItineraryEventType"
+      },
+      {
+         "id": "itinerarySaveIssueItemType",
+         "json": "itinerarySaveIssueItemType.json",
+         "pythonModule": "api/shared/enums/itinerary_save_issue_item_type.py",
+         "pythonClass": "ItinerarySaveIssueItemType",
+         "javascriptModule": "scripts/shared/enums/itinerarySaveIssueItemType.js",
+         "javascriptClass": "ItinerarySaveIssueItemType"
       }
    ]
 }

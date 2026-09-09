@@ -4,7 +4,7 @@ import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
-import { AnimalViewingModel } from '../../../shared/enums/animalViewingModel.js';
+import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
@@ -30,7 +30,7 @@ export class AnimalOffController {
          return {
             species: ControllerHelper.getFieldValue(speciesEl),
             exhibit: ControllerHelper.getFieldValue(exhibitEl),
-            viewingScope: ControllerHelper.getFieldValue(viewingScopeEl) || AnimalViewingModel.ALL,
+            viewingScope: ControllerHelper.getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
             startDate: ControllerHelper.getFieldValue(startDateEl),
             endDate: ControllerHelper.getFieldValue(endDateEl),
             message: ControllerHelper.getFieldValue(messageEl),

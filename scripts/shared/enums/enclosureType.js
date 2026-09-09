@@ -1,8 +1,11 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
+import enclosureTypeValues from '../../../shared/enums/enclosureType.json' with { type: 'json' };
 
 export class EnclosureType {
-   static INDOOR = 'Indoor';
-   static OUTDOOR = 'Outdoor';
+   static {
+      Object.assign(EnclosureType, enclosureTypeValues);
+      EnclosureType.ENCLOSURE_TYPES = new Set(Object.values(enclosureTypeValues));
+   }
 
    static normalizeEnclosureType(value) {
       const normalized = ValueNormalizer.asTrimmedString(value);
@@ -15,9 +18,4 @@ export class EnclosureType {
    static isEnclosureType(value) {
       return EnclosureType.normalizeEnclosureType(value) !== null;
    }
-
-   static ENCLOSURE_TYPES = new Set([
-      EnclosureType.INDOOR,
-      EnclosureType.OUTDOOR,
-   ]);
 }

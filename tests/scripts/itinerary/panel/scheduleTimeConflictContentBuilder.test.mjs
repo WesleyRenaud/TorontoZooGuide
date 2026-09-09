@@ -19,7 +19,7 @@ const wildItem = {
    name: 'From Howls to Honks',
    start_time: '13:00',
    end_time: '13:45',
-   item_type: ItinerarySaveIssueItemType.wildEncounter,
+   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
    meeting_spot: 'Mayan Temple',
    link: '/w',
 };
@@ -28,7 +28,7 @@ const talkItem = {
    name: 'African Lion',
    start_time: '14:00',
    end_time: '14:30',
-   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    location: 'Africa Savanna',
 };
 
