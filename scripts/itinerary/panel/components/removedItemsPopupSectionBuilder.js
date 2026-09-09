@@ -1,6 +1,7 @@
 import { ItineraryPanelRowsBuilder } from '../itineraryPanelRowsBuilder.js';
 import { RemovedItemsPopupContentRowsBuilder } from './removedItemsPopupContentRowsBuilder.js';
 import { ItemType } from '../../../shared/enums/itemType.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { SpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { Strings } from '../../../strings.js';
 import { ItemKey } from '../../wizard/diff/itemKey.js';
@@ -18,7 +19,7 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.itinerary.dayPlanner.unscheduledTitle,
             subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
-            stepKey: 'animals',
+            stepKey: ScheduleItemKind.ANIMAL.itemType,
             showViewAlternatives: false,
          });
       }
@@ -29,7 +30,7 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.map.filter.attractions,
             subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAttractionRows,
-            stepKey: 'attractions',
+            stepKey: ScheduleItemKind.ATTRACTION.itemType,
             showViewAlternatives: false,
          });
       }
@@ -65,7 +66,7 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.itinerary.removedItems.animalsAddedTitle,
             subtitle: strings.itinerary.removedItems.animalsAddedSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
-            stepKey: 'animals',
+            stepKey: ScheduleItemKind.ANIMAL.itemType,
             showViewAlternatives: false,
          },
          ...RemovedItemsPopupSectionBuilder.getUnscheduledSectionSpecs(safeUnscheduled, strings),
@@ -74,7 +75,7 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.itinerary.removedItems.animalsRemovedTitle,
             subtitle: strings.itinerary.removedItems.animalsRemovedSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
-            stepKey: 'animals',
+            stepKey: ScheduleItemKind.ANIMAL.itemType,
             keepOverrideKey: ItemType.ANIMAL,
          },
          {
@@ -82,14 +83,14 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.itinerary.removedItems.reducedAnimalVisibilityTitle,
             subtitle: strings.itinerary.removedItems.reducedAnimalVisibilitySubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
-            stepKey: 'animals',
+            stepKey: ScheduleItemKind.ANIMAL.itemType,
          },
          {
             items: safeImproved.animals ?? [],
             title: strings.itinerary.removedItems.improvedAnimalVisibilityTitle,
             subtitle: strings.itinerary.removedItems.improvedAnimalVisibilitySubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAnimalRows,
-            stepKey: 'animals',
+            stepKey: ScheduleItemKind.ANIMAL.itemType,
             showViewAlternatives: false,
          },
          {
@@ -97,7 +98,7 @@ export class RemovedItemsPopupSectionBuilder {
             title: strings.map.filter.attractions,
             subtitle: strings.itinerary.removedItems.attractionsSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAttractionRows,
-            stepKey: 'attractions',
+            stepKey: ScheduleItemKind.ATTRACTION.itemType,
             keepOverrideKey: ItemType.ATTRACTION,
          },
          {

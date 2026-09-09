@@ -34,7 +34,7 @@ export class ItineraryPanelRowsBuilder {
                species: AnimalSelectorModel.getAnimalSpecies(animal),
                enclosureName: AnimalSelectorModel.getAnimalEnclosureName(animal),
                imageSrc: RowPresenter.buildImageSrc(
-                  'animals',
+                  ScheduleItemKind.ANIMAL.itemType,
                   animal.exhibit,
                   AnimalSelectorModel.getAnimalSpecies(animal)
                ),
@@ -67,7 +67,7 @@ export class ItineraryPanelRowsBuilder {
          normalizeItem: ItineraryItemFormatter.normalizeAttraction,
          prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.attraction,
-         imageDirectory: 'attractions',
+         imageDirectory: ScheduleItemKind.ATTRACTION.itemType,
          getName: (attraction) => attraction.name,
          getMetaLines: (attraction) => [
             attraction.subtitle,
@@ -99,7 +99,7 @@ export class ItineraryPanelRowsBuilder {
          normalizeItem: ItineraryItemFormatter.normalizeTransportation,
          prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
          defaultName: Strings.entityLabels.transportation,
-         imageDirectory: 'transportations',
+         imageDirectory: ScheduleItemKind.TRANSPORTATION.itemType,
          getName: TransportationSelectorModel.getTransportationName,
          getMetaLines: (transportation) => [
             TransportationSelectorModel.buildTransportationStationsLine(transportation),
@@ -146,7 +146,7 @@ export class ItineraryPanelRowsBuilder {
                   : {}
             ),
             ...RowActionPresenter.buildRemoveRowProps(
-               'guardians_talks',
+               ScheduleItemKind.GUARDIANS_TALK.itemType,
                talk,
                onRemoveItem,
                { useSecondaryAction: false }
@@ -177,7 +177,11 @@ export class ItineraryPanelRowsBuilder {
          getAlertLine: RowAlertPresenter.buildWildRemovalReasonLine,
          extendRowProps: (wild) => ({
             ...RowPresenter.buildTitleLinkRowProps(wild.link),
-            ...RowActionPresenter.buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
+            ...RowActionPresenter.buildRemoveRowProps(
+               ScheduleItemKind.WILD_ENCOUNTER.itemType,
+               wild,
+               onRemoveItem
+            ),
          }),
       });
    }

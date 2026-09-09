@@ -250,7 +250,7 @@ export class DayPlannerScheduledItems {
          DayPlannerScheduledItems.getScheduledMaximumDuration
       ).map((scheduledItem) => ({
          ...scheduledItem,
-         scheduleItemKind: 'guardians_talks',
+         scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
          scheduleItemKey: GuardiansTalkSelectorModel.getGuardiansTalkId(scheduledItem.item),
       }));
       const wildEncounterRows = DayPlannerScheduledItems.buildScheduledItemRows(
@@ -259,7 +259,7 @@ export class DayPlannerScheduledItems {
          DayPlannerScheduledItems.getScheduledMaximumDuration
       ).map((scheduledItem) => ({
          ...scheduledItem,
-         scheduleItemKind: 'wild_encounters',
+         scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
          scheduleItemKey: WildEncounterSelectorModel.getWildEncounterId(scheduledItem.item),
       }));
       const animalRows = DayPlannerScheduledItems.buildScheduledAnimalRows(animals).map((scheduledItem) => ({

@@ -1,5 +1,6 @@
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 import { TransportationSelectorModel } from './transportationSelector/transportationSelectorModel.js';
 import { TransportationSelectorPrompter } from './transportationSelectorPrompter.js';
@@ -30,9 +31,11 @@ export class TransportationSelector {
             includeTransportations: true,
          }),
 
-         extractRows: response => (
-            Array.isArray(response.transportations) ? response.transportations : []
-         ),
+         extractRows: response => {
+            const rows = response[ScheduleItemKind.TRANSPORTATION.itemType];
+
+            return Array.isArray(rows) ? rows : [];
+         },
 
          getId: TransportationSelectorModel.getTransportationId,
          getTitle: TransportationSelectorModel.getTransportationTitle,

@@ -1,17 +1,17 @@
 import { ItineraryPanelRowsBuilder } from './itineraryPanelRowsBuilder.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSequenceItems } from '../selectors/transportationSelector/transportationSequenceItems.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 
 export class SectionConfigs {
    static ITINERARY_PANEL_SECTION_KEYS = {
-      animals: 'animals',
-      attractions: 'attractions',
-      transportations: 'transportations',
+      animals: ScheduleItemKind.ANIMAL.itemType,
+      attractions: ScheduleItemKind.ATTRACTION.itemType,
+      transportations: ScheduleItemKind.TRANSPORTATION.itemType,
       guardiansTalks: 'guardiansTalks',
       wildEncounters: 'wildEncounters',
    };
-
    static SCHEDULED_DAY_PLANNER_SECTION_KEYS = [
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,

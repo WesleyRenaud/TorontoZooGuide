@@ -4,6 +4,7 @@ import { AnimalSelectorControllerHelper } from './animalSelectorControllerHelper
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionStorageStore } from './regionSelector/regionStorageStore.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 
 export class AnimalSelector {
@@ -26,7 +27,7 @@ export class AnimalSelector {
 
          buildSearchPayload: query => AnimalSelectorControllerHelper.buildAnimalSearchPayload(query, includeOffDisplayAnimals),
 
-         extractRows: response => response.animals,
+         extractRows: response => response[ScheduleItemKind.ANIMAL.itemType],
 
          getId: AnimalSelectorModel.getAnimalId,
          getTitle: AnimalSelectorControllerHelper.getAnimalTitle,

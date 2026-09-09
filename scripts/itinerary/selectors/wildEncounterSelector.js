@@ -1,4 +1,5 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 import { WildEncounterSelectorModel } from './wildEncounterSelector/wildEncounterSelectorModel.js';
 
@@ -20,7 +21,7 @@ export class WildEncounterSelector {
          onClose,
 
          storageKey: WildEncounterSelector.STORAGE_KEY,
-         responseKey: 'wild_encounters',
+         responseKey: ScheduleItemKind.WILD_ENCOUNTER.itemType,
          searchFlag: 'includeWildEncounters',
          imageDirectory: 'wild-encounters',
          defaultTitle: Strings.entityLabels.wildEncounter,
