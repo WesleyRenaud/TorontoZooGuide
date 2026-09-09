@@ -20,6 +20,8 @@ export const REQUIRED_FRAGMENTS = [
    'id="walk-graph-path"',
    'stroke="black" fill="none"/>',
    '</defs>',
+   'class="map-label-primary-svg"',
+   'class="map-label-secondary-svg"',
 ];
 
 function readFileTail( filePath, byteCount ) {
