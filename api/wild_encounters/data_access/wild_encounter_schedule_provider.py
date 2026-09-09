@@ -53,7 +53,7 @@ class WildEncounterScheduleProvider():
                   WHERE s.SCHEDULE_START_DATE <= :VISIT_DATE
                      AND (
                         s.SCHEDULE_END_DATE IS NULL
-                        OR s.SCHEDULE_END_DATE >= :VISIT_DATE
+                        OR s.SCHEDULE_END_DATE > :VISIT_DATE
                      );
             """,
             { 'VISIT_DATE': target_date } )

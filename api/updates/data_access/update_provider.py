@@ -109,7 +109,7 @@ class UpdateProvider():
                      END_DATE
                   FROM ZooUpdate
                   WHERE END_DATE IS NULL
-                     OR END_DATE >= ?
+                     OR END_DATE > ?
                   ORDER BY START_DATE DESC, TITLE ASC;
             """,
             ( as_of_date, ) )
