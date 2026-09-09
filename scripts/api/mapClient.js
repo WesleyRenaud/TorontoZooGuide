@@ -1,9 +1,14 @@
 import { ApiClient } from './apiClient.js';
 import { MapApiFetcher } from './mapApiFetcher.js';
+import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 
 export class MapClient {
    static async getVisibleAnimals(payload = MapApiFetcher.EMPTY_PAYLOAD) {
-      return await MapApiFetcher.fetchCollection('/get-visible-animals', 'animals', payload);
+      return await MapApiFetcher.fetchCollection(
+         '/get-visible-animals',
+         ScheduleItemKind.ANIMAL.itemType,
+         payload
+      );
    }
 
    static async getPavilions() {
@@ -23,11 +28,19 @@ export class MapClient {
    }
 
    static async getAttractions(payload = MapApiFetcher.EMPTY_PAYLOAD) {
-      return await MapApiFetcher.fetchCollection('/get-attractions', 'attractions', payload);
+      return await MapApiFetcher.fetchCollection(
+         '/get-attractions',
+         ScheduleItemKind.ATTRACTION.itemType,
+         payload
+      );
    }
 
    static async getTransportations(payload = MapApiFetcher.EMPTY_PAYLOAD) {
-      return await MapApiFetcher.fetchCollection('/get-transportations', 'transportations', payload);
+      return await MapApiFetcher.fetchCollection(
+         '/get-transportations',
+         ScheduleItemKind.TRANSPORTATION.itemType,
+         payload
+      );
    }
 
    static async getTransportationRoute(payload = MapApiFetcher.EMPTY_PAYLOAD) {
@@ -41,11 +54,19 @@ export class MapClient {
    }
 
    static async getGuardiansTalks(payload) {
-      return await MapApiFetcher.fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
+      return await MapApiFetcher.fetchCollection(
+         '/get-guardians-talks',
+         ScheduleItemKind.GUARDIANS_TALK.itemType,
+         payload
+      );
    }
 
    static async getWildEncounters(payload = MapApiFetcher.EMPTY_PAYLOAD) {
-      return await MapApiFetcher.fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
+      return await MapApiFetcher.fetchCollection(
+         '/get-wild-encounters',
+         ScheduleItemKind.WILD_ENCOUNTER.itemType,
+         payload
+      );
    }
 
    static async getDrinkingFountains(payload = MapApiFetcher.EMPTY_PAYLOAD) {

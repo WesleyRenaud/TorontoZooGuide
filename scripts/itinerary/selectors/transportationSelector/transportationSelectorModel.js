@@ -26,7 +26,7 @@ export class TransportationSelectorModel {
 
    static buildTransportationImageSrc(row) {
       return ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
-         'transportations',
+         ScheduleItemKind.TRANSPORTATION.itemType,
          TransportationSelectorModel.getTransportationName(row)
       );
    }

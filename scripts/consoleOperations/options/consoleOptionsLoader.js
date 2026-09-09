@@ -1,5 +1,6 @@
 import { ConsoleOperationsClient } from '../../api/consoleOperationsClient.js';
 import { ConsoleOptionsLoaderHelper } from './consoleOptionsLoaderHelper.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 export class ConsoleOptionsLoader {
    static async loadSpecies() {
@@ -46,7 +47,7 @@ export class ConsoleOptionsLoader {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'attractions',
          fetchOptions: ConsoleOperationsClient.getAttractionNameOptions,
-         resultKey: 'attractions',
+         resultKey: ScheduleItemKind.ATTRACTION.itemType,
       });
    }
 
@@ -62,7 +63,7 @@ export class ConsoleOptionsLoader {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'guardiansTalks',
          fetchOptions: ConsoleOperationsClient.getGuardiansTalkNameOptions,
-         resultKey: 'guardians_talks',
+         resultKey: ScheduleItemKind.GUARDIANS_TALK.itemType,
       });
    }
 
@@ -70,7 +71,7 @@ export class ConsoleOptionsLoader {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'wildEncounters',
          fetchOptions: ConsoleOperationsClient.getWildEncounterNameOptions,
-         resultKey: 'wild_encounters',
+         resultKey: ScheduleItemKind.WILD_ENCOUNTER.itemType,
       });
    }
 }

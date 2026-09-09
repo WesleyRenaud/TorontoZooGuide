@@ -3,6 +3,7 @@ import { AttractionSelectorRenderer } from './attractionSelector/attractionSelec
 import { AttractionSelectorPrompter } from './attractionSelectorPrompter.js';
 import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionSelector {
@@ -35,7 +36,7 @@ export class AttractionSelector {
             includeClosedAttractions,
          }),
 
-         extractRows: response => response.attractions,
+         extractRows: response => response[ScheduleItemKind.ATTRACTION.itemType],
 
          getId: AttractionSelectorModel.getAttractionId,
          getTitle: AttractionSelectorModel.getAttractionTitle,

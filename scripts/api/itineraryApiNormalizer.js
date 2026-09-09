@@ -9,11 +9,11 @@ import { ValueNormalizer } from './valueNormalizer.js';
 
 export class ItineraryApiNormalizer {
    static ITINERARY_COLLECTION_FIELDS = [
-      ['animals', 'animals'],
-      ['attractions', 'attractions'],
-      ['guardiansTalks', 'guardians_talks'],
-      ['wildEncounters', 'wild_encounters'],
-      ['transportations', 'transportations'],
+      ['animals', ScheduleItemKind.ANIMAL.itemType],
+      ['attractions', ScheduleItemKind.ATTRACTION.itemType],
+      ['guardiansTalks', ScheduleItemKind.GUARDIANS_TALK.itemType],
+      ['wildEncounters', ScheduleItemKind.WILD_ENCOUNTER.itemType],
+      ['transportations', ScheduleItemKind.TRANSPORTATION.itemType],
       ['transportationStations', 'transportation_stations'],
    ];
 

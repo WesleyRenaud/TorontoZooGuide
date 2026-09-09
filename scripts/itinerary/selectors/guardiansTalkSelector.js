@@ -1,5 +1,6 @@
 import { CreateScheduledOccurrenceSelector } from './createScheduledOccurrenceSelector.js';
 import { GuardiansTalkSelectorModel } from './guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { Strings } from '../../strings.js';
 
 export class GuardiansTalkSelector {
@@ -20,7 +21,7 @@ export class GuardiansTalkSelector {
          onClose,
 
          storageKey: GuardiansTalkSelector.STORAGE_KEY,
-         responseKey: 'guardians_talks',
+         responseKey: ScheduleItemKind.GUARDIANS_TALK.itemType,
          searchFlag: 'includeGuardiansTalks',
          imageDirectory: 'guardians-talks',
          defaultTitle: Strings.itinerary.selectors.talkFallback,
