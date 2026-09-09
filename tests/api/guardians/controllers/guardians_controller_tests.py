@@ -267,7 +267,7 @@ def Test_SetGuardiansTalkSchedule_TestHttpRequest_ExpectOverlappingScheduleError
 
    assert result[ 'success' ] is False
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
-   assert result[ 'apiErrorType' ] == 'couldNotSetGuardiansTalkSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE.value
 
 
 @pytest.mark.parametrize(
@@ -376,7 +376,7 @@ def Test_EndGuardiansTalkSchedule_TestHttpRequest_ExpectCouldNotEndScheduleApiEr
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotEndGuardiansTalkSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_END_GUARDIANS_TALK_SCHEDULE.value
 
 
 def Test_CancelGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -427,7 +427,7 @@ def Test_CancelGuardiansTalkOccurrence_TestHttpRequest_ExpectCouldNotCancelApiEr
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotCancelGuardiansTalkOccurrence'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CANCEL_GUARDIANS_TALK_OCCURRENCE.value
 
 
 def Test_AddGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -485,4 +485,4 @@ def Test_AddGuardiansTalkOccurrence_TestHttpRequest_ExpectAppliesCoordinatorFail
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'guardiansTalkOccurrenceAlreadyExists'
+   assert result[ 'apiErrorType' ] == ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS.value

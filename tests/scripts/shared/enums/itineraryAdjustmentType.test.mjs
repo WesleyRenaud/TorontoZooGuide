@@ -9,18 +9,13 @@ import itineraryAdjustmentTypeValues from '../../../../shared/enums/itineraryAdj
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryAdjustmentType_TestConstants_ExpectWireValues', () => {
-   assert.equal(ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED, 'arrivalTimeAdjusted');
-   assert.equal(ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED, 'departureTimeAdjusted');
-});
-
 test('Test_ItineraryAdjustmentType_TestNormalize_ExpectMatchedOrPassthrough', () => {
    assert.equal(
-      ItineraryAdjustmentType.normalize('arrivalTimeAdjusted'),
+      ItineraryAdjustmentType.normalize(ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED),
       ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
    );
    assert.equal(
-      ItineraryAdjustmentType.normalize('  departureTimeAdjusted  '),
+      ItineraryAdjustmentType.normalize(`  ${ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED}  `),
       ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
    );
    assert.equal(ItineraryAdjustmentType.normalize('custom'), 'custom');

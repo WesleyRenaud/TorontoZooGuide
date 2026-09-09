@@ -1,6 +1,14 @@
 {
    "enums": [
       {
+         "id": "apiErrorType",
+         "json": "apiErrorType.json",
+         "pythonModule": "api/shared/enums/api_error_type.py",
+         "pythonClass": "ApiErrorType",
+         "javascriptModule": "scripts/shared/enums/apiErrorType.js",
+         "javascriptClass": "ApiErrorType"
+      },
+      {
          "id": "animalViewingScope",
          "json": "animalViewingScope.json",
          "pythonModule": "api/shared/enums/animal_viewing_scope.py",
@@ -97,6 +105,14 @@
          "pythonClass": "ScheduleItemKind",
          "javascriptModule": "scripts/shared/enums/scheduleItemKind.js",
          "javascriptClass": "ScheduleItemKind"
+      },
+      {
+         "id": "transportationName",
+         "json": "transportationName.json",
+         "pythonModule": "api/shared/enums/transportation_name.py",
+         "pythonClass": "TransportationName",
+         "javascriptModule": "scripts/shared/enums/transportationName.js",
+         "javascriptClass": "TransportationName"
       },
       {
          "id": "transportationRouteId",

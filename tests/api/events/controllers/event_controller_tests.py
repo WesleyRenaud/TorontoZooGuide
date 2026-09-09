@@ -12,6 +12,7 @@ from api.events.coordinators.event_coordinator import EventCoordinator
 import api.http_request_handler as server
 from api.models.event import Event
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -145,4 +146,4 @@ def Test_CreateEvent_TestHttpRequest_ExpectCouldNotCreateEventApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotCreateEvent'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_EVENT.value

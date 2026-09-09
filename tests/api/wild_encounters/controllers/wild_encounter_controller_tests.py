@@ -11,6 +11,7 @@ import api.http_request_handler as server
 from api.models.scheduled_occurrence import ScheduledOccurrence
 from api.models.wild_encounter import WildEncounter
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
@@ -217,7 +218,7 @@ def Test_SetWildEncounterSchedule_TestHttpRequest_ExpectOverlappingScheduleError
 
    assert result[ 'success' ] is False
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
-   assert result[ 'apiErrorType' ] == 'couldNotSetWildEncounterSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_WILD_ENCOUNTER_SCHEDULE.value
 
 
 @pytest.mark.parametrize(
@@ -318,7 +319,7 @@ def Test_EndWildEncounterSchedule_TestHttpRequest_ExpectCouldNotEndScheduleApiEr
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotEndWildEncounterSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_END_WILD_ENCOUNTER_SCHEDULE.value
 
 
 def Test_CancelWildEncounterOccurrence_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -366,4 +367,4 @@ def Test_CancelWildEncounterOccurrence_TestHttpRequest_ExpectCouldNotCancelApiEr
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotCancelWildEncounterOccurrence'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CANCEL_WILD_ENCOUNTER_OCCURRENCE.value

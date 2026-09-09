@@ -10,6 +10,7 @@ Current shared enums:
 
 | JSON | API | Frontend |
 |---|---|---|
+| `apiErrorType.json` | `ApiErrorType` | `ApiErrorType` |
 | `animalViewingScope.json` | `AnimalViewingScope` | `AnimalViewingScope` |
 | `enclosureType.json` | `EnclosureType` | `EnclosureType` |
 | `itemType.json` | `ItemType` | `ItemType` |
@@ -22,6 +23,7 @@ Current shared enums:
 | `itineraryTransportationStationRole.json` | `ItineraryTransportationStationRole` | `ItineraryTransportationStationRole` |
 | `position.json` | `Position` | `Position` |
 | `scheduleItemKind.json` | `ScheduleItemKind` | `ScheduleItemKind` |
+| `transportationName.json` | `TransportationName` | `TransportationName` |
 | `transportationRouteId.json` | `TransportationRouteId` | `TransportationRouteId` |
 
 To add an enum:

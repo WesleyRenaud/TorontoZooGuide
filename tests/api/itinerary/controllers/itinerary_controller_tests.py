@@ -20,6 +20,7 @@ from api.models import Itinerary
 import api.request_connection_provider as request_connection
 from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType, Position
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types
 
@@ -492,7 +493,7 @@ def Test_ClearItinerary_TestHttpRequest_ExpectCouldNotClearApiError(
 
    response = response_json( handler )
    assert response[ 'success' ] is False
-   assert response[ 'apiErrorType' ] == 'couldNotClearItinerary'
+   assert response[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CLEAR_ITINERARY.value
    assert stub_itinerary_coordinator.calls == [
       ( 'ClearItineraryProvider.clear_itinerary', {} ),
    ]
@@ -508,7 +509,7 @@ def Test_AcceptItinerary_TestHttpRequest_ExpectCouldNotAcceptApiError(
    response = response_json( handler )
    assert response[ 'success' ] is False
    assert response[ 'itinerary' ] is None
-   assert response[ 'apiErrorType' ] == 'couldNotAcceptItineraryChanges'
+   assert response[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES.value
    assert stub_itinerary_coordinator.calls == [
       (
          'AcceptItineraryProvider.accept_itinerary',

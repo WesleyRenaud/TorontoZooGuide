@@ -15,6 +15,7 @@ from api.attractions.scheduling.attraction_hours_time_bounds import AttractionHo
 import api.http_request_handler as server
 from api.models.attraction import Attraction
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
@@ -237,7 +238,7 @@ def Test_SetAttractionClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
 
    assert handler.statuses == [ 200 ]
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
    assert result.get( 'apiErrorParams' ) == { 'name': ATTRACTION_NAME }
 
 
@@ -285,7 +286,7 @@ def Test_SetAttractionClosureOverride_TestHttpRequest_ExpectCouldNotCreateClosur
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotCreateClosureOverride'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE.value
 
 
 def Test_SetAttractionOpeningSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -320,7 +321,7 @@ def Test_SetAttractionOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleA
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE.value
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
@@ -355,7 +356,7 @@ def Test_ReplaceAttractionOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNot
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotReplaceOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS.value
 
 
 def Test_TrimAttractionOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(
@@ -389,7 +390,7 @@ def Test_TrimAttractionOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotTri
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotTrimOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS.value
 
 
 def Test_GetAttractionHoursScheduleTimeBounds_TestHttpRequest_ExpectNormalizedBoundsResponse(
@@ -436,7 +437,7 @@ def Test_GetAttractionHoursScheduleTimeBounds_TestHttpRequest_ExpectCouldNotReso
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotResolveAttractionHoursTimeBounds'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_RESOLVE_ATTRACTION_HOURS_TIME_BOUNDS.value
 
 
 def Test_SetAttractionHoursSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -471,7 +472,7 @@ def Test_SetAttractionHoursSchedule_TestHttpRequest_ExpectInvalidAttractionHours
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'invalidAttractionHours'
+   assert result[ 'apiErrorType' ] == ApiErrorType.INVALID_ATTRACTION_HOURS.value
 
 
 def Test_SetAttractionHoursSchedule_TestHttpRequest_ExpectOverlappingScheduleApiError(
@@ -487,7 +488,7 @@ def Test_SetAttractionHoursSchedule_TestHttpRequest_ExpectOverlappingScheduleApi
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetAttractionHours'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_ATTRACTION_HOURS.value
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
@@ -522,7 +523,7 @@ def Test_ReplaceAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectInvalidAtt
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'invalidAttractionHours'
+   assert result[ 'apiErrorType' ] == ApiErrorType.INVALID_ATTRACTION_HOURS.value
 
 
 def Test_ReplaceAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectCouldNotReplaceApiError(
@@ -538,7 +539,7 @@ def Test_ReplaceAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectCouldNotRe
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotReplaceAttractionHoursOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_REPLACE_ATTRACTION_HOURS_OVERLAPS.value
 
 
 def Test_TrimAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(
@@ -572,7 +573,7 @@ def Test_TrimAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectInvalidAttrac
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'invalidAttractionHours'
+   assert result[ 'apiErrorType' ] == ApiErrorType.INVALID_ATTRACTION_HOURS.value
 
 
 def Test_TrimAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectCouldNotTrimApiError(
@@ -588,4 +589,4 @@ def Test_TrimAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectCouldNotTrimA
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotTrimAttractionHoursOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_ATTRACTION_HOURS_OVERLAPS.value

@@ -13,6 +13,7 @@ from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 import api.http_request_handler as server
 from api.models.gift_shop import GiftShop
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
@@ -182,7 +183,7 @@ def Test_SetGiftShopClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
 
 
 def Test_SetGiftShopClosureOverride_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -227,7 +228,7 @@ def Test_SetGiftShopClosureOverride_TestHttpRequest_ExpectCouldNotCreateClosureO
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotCreateClosureOverride'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE.value
 
 
 def Test_SetGiftShopOpeningSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -253,7 +254,7 @@ def Test_SetGiftShopOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleApi
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE.value
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
@@ -286,7 +287,7 @@ def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotRe
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotReplaceOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS.value
 
 
 def Test_TrimGiftShopOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(
@@ -318,4 +319,4 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotTrimA
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotTrimOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS.value

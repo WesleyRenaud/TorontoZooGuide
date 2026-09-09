@@ -13,6 +13,7 @@ from api.models.restaurant import Restaurant
 import api.request_connection_provider as request_connection
 from api.restaurants.controllers.restaurant_controller import RestaurantController
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
@@ -184,7 +185,7 @@ def Test_SetRestaurantClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
 
 
 def Test_SetRestaurantClosureOverride_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -229,7 +230,7 @@ def Test_SetRestaurantClosureOverride_TestHttpRequest_ExpectCouldNotCreateClosur
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotCreateClosureOverride'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_CLOSURE_OVERRIDE.value
 
 
 def Test_SetRestaurantOpeningSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -255,7 +256,7 @@ def Test_SetRestaurantOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleA
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE.value
    assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
@@ -288,7 +289,7 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNot
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotReplaceOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_REPLACE_OPENING_SCHEDULE_OVERLAPS.value
 
 
 def Test_TrimRestaurantOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(
@@ -320,4 +321,4 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotTri
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotTrimOpeningScheduleOverlaps'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS.value

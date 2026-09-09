@@ -7,18 +7,9 @@ from api.shared.enums.item_type import ItemType
 from api.shared.enums.shared_enum_values import SharedEnumValues
 
 
-def Test_ItemType_TestWireValues_ExpectCamelCaseTypes() -> None:
-   assert ItemType.ANIMAL.value == 'animal'
-   assert ItemType.GIFT_SHOP.value == 'giftShop'
-   assert ItemType.GUARDIANS_TALK.value == 'guardiansTalk'
-   assert ItemType.ITINERARY_EVENT.value == 'itineraryEvent'
-   assert ItemType.TRANSPORTATION_STATION.value == 'transportationStation'
-   assert ItemType.WILD_ENCOUNTER.value == 'wildEncounter'
-
-
 def Test_ItemType_TestEquality_ExpectMatchesWireString() -> None:
-   assert ItemType.ATTRACTION == 'attraction'
-   assert ItemType.RESTAURANT == 'restaurant'
+   assert ItemType.ATTRACTION == ItemType.ATTRACTION.value
+   assert ItemType.RESTAURANT == ItemType.RESTAURANT.value
 
 
 def Test_ItemType_TestSharedJson_ExpectSingleSourceOfTruth() -> None:

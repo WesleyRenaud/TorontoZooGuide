@@ -12,6 +12,7 @@ from api.drinking_fountains.coordinators.drinking_fountain_coordinator import Dr
 import api.http_request_handler as server
 from api.models.drinking_fountain import DrinkingFountain
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -111,7 +112,7 @@ def Test_SetDrinkingFountainsClosed_TestHttpRequest_ExpectCouldNotSetClosedApiEr
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'drinkingFountainsCouldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_CLOSED.value
 
 
 def Test_SetDrinkingFountainsOpen_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -149,4 +150,4 @@ def Test_SetDrinkingFountainsOpen_TestHttpRequest_ExpectCouldNotSetOpenApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'drinkingFountainsCouldNotSetOpen'
+   assert result[ 'apiErrorType' ] == ApiErrorType.DRINKING_FOUNTAINS_COULD_NOT_SET_OPEN.value

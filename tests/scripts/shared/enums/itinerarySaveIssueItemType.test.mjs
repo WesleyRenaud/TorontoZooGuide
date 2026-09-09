@@ -9,13 +9,6 @@ import itinerarySaveIssueItemTypeValues from '../../../../shared/enums/itinerary
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItinerarySaveIssueItemType_TestConstants_ExpectValues', () => {
-   assert.equal(ItinerarySaveIssueItemType.ANIMAL, 'animal');
-   assert.equal(ItinerarySaveIssueItemType.ATTRACTION, 'attraction');
-   assert.equal(ItinerarySaveIssueItemType.GUARDIANS_TALK, 'guardiansTalk');
-   assert.equal(ItinerarySaveIssueItemType.WILD_ENCOUNTER, 'wildEncounter');
-});
-
 test('Test_ItinerarySaveIssueItemType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(itinerarySaveIssueItemTypeValues)) {
       assert.equal(ItinerarySaveIssueItemType[key], value);

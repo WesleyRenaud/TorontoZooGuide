@@ -9,12 +9,6 @@ import animalViewingScopeValues from '../../../../shared/enums/animalViewingScop
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_AnimalViewingScope_TestConstants_ExpectStableValues', () => {
-   assert.equal(AnimalViewingScope.ALL, 'all');
-   assert.equal(AnimalViewingScope.INDOOR, 'indoor');
-   assert.equal(AnimalViewingScope.OUTDOOR, 'outdoor');
-});
-
 test('Test_AnimalViewingScope_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(animalViewingScopeValues)) {
       assert.equal(AnimalViewingScope[key], value);

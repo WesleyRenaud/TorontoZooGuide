@@ -14,6 +14,7 @@ import api.http_request_handler as server
 import api.request_connection_provider as request_connection
 from api.shared.constants import Constants
 from api.shared.enums import AnimalViewingScope, Position
+from api.shared.enums.api_error_type import ApiErrorType
 from api.types import Types
 
 
@@ -277,7 +278,7 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectNoAnimalFoundApiError(
 
    assert handler.statuses == [ 200 ]
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'noAnimalFoundWithSpecies'
+   assert result[ 'apiErrorType' ] == ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES.value
    assert result.get( 'apiErrorParams' ) == { 'species': ANIMAL_NAME }
 
 
@@ -469,7 +470,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
             'exhibit': ANIMAL_EXHIBIT,
             'viewingScope': 'outdoor',
          },
-         'noOffDisplayEntryFound',
+         ApiErrorType.NO_OFF_DISPLAY_ENTRY_FOUND.value,
       ),
       (
          '/set-animal-visibility-schedule',
@@ -482,7 +483,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
             'dailyEndTime': VISIBILITY_SCHEDULE_DAILY_END_TIME,
             'message': VISIBILITY_SCHEDULE_MESSAGE,
          },
-         'couldNotSetLimitedViewingSchedule',
+         ApiErrorType.COULD_NOT_SET_LIMITED_VIEWING_SCHEDULE.value,
       ),
       (
          '/remove-animal-visibility-schedule',
@@ -490,7 +491,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
          },
-         'couldNotRemoveVisibilitySchedule',
+         ApiErrorType.COULD_NOT_REMOVE_VISIBILITY_SCHEDULE.value,
       ),
       (
          '/set-animal-viewing-alert',
@@ -501,7 +502,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
             'alertEndDate': VIEWING_ALERT_END_DATE,
             'message': VIEWING_ALERT_MESSAGE,
          },
-         'couldNotSetViewingAlert',
+         ApiErrorType.COULD_NOT_SET_VIEWING_ALERT.value,
       ),
       (
          '/remove-animal-viewing-alert',
@@ -509,7 +510,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
          },
-         'couldNotRemoveViewingAlert',
+         ApiErrorType.COULD_NOT_REMOVE_VIEWING_ALERT.value,
       ),
    ],
 )
