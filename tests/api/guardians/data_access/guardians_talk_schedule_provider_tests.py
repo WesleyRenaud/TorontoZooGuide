@@ -318,6 +318,39 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestNoCancellation_ExpectRecord(
    assert records[ Position.FIRST ].talk_time == TALK_TIME
 
 
+def Test_FetchDayScheduleRecordsFromSchedule_TestEndsOnVisitDate_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      end_date=VISIT_DATE )
+   schedule_provider_conn.commit()
+
+   records = (
+      GuardiansTalkScheduleProvider.fetch_day_schedule_records_from_schedule(
+         schedule_provider_conn,
+         VISIT_DATE )
+   )
+
+   assert records == []
+
+
+def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      end_date=VISIT_DATE )
+   schedule_provider_conn.commit()
+
+   records = GuardiansTalkScheduleProvider.fetch_schedule_records_covering_date(
+      schedule_provider_conn,
+      talk_name=TALK_NAME,
+      location=LOCATION,
+      talk_time=TALK_TIME,
+      occurrence_date=VISIT_DATE )
+
+   assert records == []
+
+
 def Test_FetchDayScheduleRecordsFromSchedule_TestWithCancellation_ExpectEmpty(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row( schedule_provider_conn )
