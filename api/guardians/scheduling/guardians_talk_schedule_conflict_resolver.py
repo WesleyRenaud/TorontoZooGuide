@@ -3,11 +3,11 @@ from __future__ import annotations
 from ..data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
-from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...shared.opening_schedule_conflict_resolver_factory import OpeningScheduleConflictResolverFactory
 from ...types import Types
 
 
-_resolution = OpeningScheduleConflictResolution(
+_resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
    fetch_conflicts=GuardiansTalkScheduleProvider.fetch_schedule_conflicts,
    delete_conflict=GuardiansTalkScheduleProvider.delete_schedule,
    insert_or_update=GuardiansTalkScheduleProvider.insert_or_update_schedule,

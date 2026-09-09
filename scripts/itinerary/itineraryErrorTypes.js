@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { ItineraryConfirmationRegistry } from './itineraryConfirmationRegistry.js';
 import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 import { Strings } from '../strings.js';
 
@@ -38,59 +39,69 @@ export class ItineraryErrorTypes {
    }
 
    static requiresShortVisitConfirmation(errorType) {
-      if (ItineraryErrorTypes.isItineraryErrorSuppressed(
-         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
-      )) {
-         return false;
-      }
-
-      return errorType === ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+         ItineraryErrorTypes.isItineraryErrorSuppressed
+      );
    }
 
    static requiresEarlyAdmissionConfirmation(errorType) {
-      if (
-         ItineraryErrorTypes.isItineraryErrorSuppressed(
-            ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
-         )
-      ) {
-         return false;
-      }
-
-      return errorType === ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+         ItineraryErrorTypes.isItineraryErrorSuppressed
+      );
    }
 
    static requiresScheduleItemNotOnItineraryConfirmation(errorType) {
-      if (ItineraryErrorTypes.isItineraryErrorSuppressed(
-         ItineraryErrorType.ITEM_NOT_ON_ITINERARY
-      )) {
-         return false;
-      }
-
-      return errorType === ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+         ItineraryErrorTypes.isItineraryErrorSuppressed
+      );
    }
 
    static requiresAttractionOutsideOperatingHoursConfirmation(errorType) {
-      return errorType === ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
+      );
    }
 
    static requiresGuardiansTalkUnscheduleConfirmation(errorType) {
-      return errorType === ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+      );
    }
 
    static requiresFixedTimeItemLongWaitConfirmation(errorType) {
-      return errorType === ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+      );
    }
 
    static requiresGuardiansTalkWithoutAnimalConfirmation(errorType) {
-      return errorType === ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+      );
    }
 
    static requiresAttractionWithoutAnimalConfirmation(errorType) {
-      return errorType === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
+      );
    }
 
    static requiresWildEncounterUnscheduleConfirmation(errorType) {
-      return errorType === ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+      );
    }
 
    static requiresGuardiansTalkWildEncounterTimeConflictConfirmation(errorType) {

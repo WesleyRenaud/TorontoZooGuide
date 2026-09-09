@@ -3,11 +3,11 @@ from __future__ import annotations
 from .attraction_opening_schedule import AttractionOpeningSchedule
 from ..data_access.attraction_schedule_provider import AttractionScheduleProvider
 from ..data_access.attraction_schedule_record import AttractionScheduleRecord
-from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...shared.opening_schedule_conflict_resolver_factory import OpeningScheduleConflictResolverFactory
 from ...types import Types
 
 
-_resolution = OpeningScheduleConflictResolution(
+_resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
    fetch_conflicts=AttractionScheduleProvider.fetch_opening_schedule_conflicts,
    delete_conflict=AttractionScheduleProvider.delete_opening_schedule,
    insert_or_update=AttractionScheduleProvider.insert_or_update_opening_schedule,

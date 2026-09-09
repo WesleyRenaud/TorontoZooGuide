@@ -3,11 +3,11 @@ from __future__ import annotations
 from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from .restaurant_opening_schedule import RestaurantOpeningSchedule
-from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...shared.opening_schedule_conflict_resolver_factory import OpeningScheduleConflictResolverFactory
 from ...types import Types
 
 
-_resolution = OpeningScheduleConflictResolution(
+_resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
    fetch_conflicts=RestaurantScheduleProvider.fetch_opening_schedule_conflicts,
    delete_conflict=RestaurantScheduleProvider.delete_opening_schedule,
    insert_or_update=RestaurantScheduleProvider.insert_or_update_opening_schedule,
