@@ -2,16 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ScheduleItemSearchRowTagger } from '../../../../scripts/itinerary/panel/scheduleItemSearchRowTagger.js';
+import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
 test('Test_ItineraryWildEncounterId_TestRow_ExpectWireOrNull', () => {
+   const giraffeRow = {
+      name: 'Giraffe',
+      start_time: '1:00 PM',
+      end_time: '1:30 PM',
+   };
    assert.equal(
-      ScheduleItemSearchRowTagger.itineraryWildEncounterId({
-         name: 'Giraffe',
-         start_time: '1:00 PM',
-         end_time: '1:30 PM',
-      }),
-      'Giraffe||1:00 PM||1:30 PM'
+      ScheduleItemSearchRowTagger.itineraryWildEncounterId(giraffeRow),
+      WildEncounterScheduleItemKey.fromRow(giraffeRow).toWire()
    );
    assert.equal(ScheduleItemSearchRowTagger.itineraryWildEncounterId({ name: 'Giraffe' }), null);
 });

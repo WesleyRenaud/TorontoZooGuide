@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { WildEncounterScheduleItemKey } from '../../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { WildEncounterSelectorModel } from '../../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
@@ -22,7 +23,7 @@ test('Test_GetWildEncounterNameAndMeetingSpot_TestRow_ExpectStrings', () => {
 test('Test_GetWildEncounterId_TestRow_ExpectWireKey', () => {
    assert.equal(
       WildEncounterSelectorModel.getWildEncounterId(encounterRow),
-      'Giraffe Encounter||1:00 PM||1:30 PM'
+      WildEncounterScheduleItemKey.fromRow(encounterRow).toWire()
    );
 });
 

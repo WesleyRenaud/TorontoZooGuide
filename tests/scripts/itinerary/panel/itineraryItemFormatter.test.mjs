@@ -7,6 +7,7 @@ import { DayPlannerTimelineView } from '../../../../scripts/itinerary/panel/comp
 import { DayPlannerTimelineRenderer } from '../../../../scripts/itinerary/panel/dayPlannerTimelineRenderer.js';
 import { DayPlannerTimelinePillPlacer } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacer.js';
 import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -292,26 +293,28 @@ test('Test_FormatPanelHelpers_TestDatesTimesAndItems_ExpectNormalized', () => {
       ItineraryItemFormatter.normalizeItineraryNamesForSave(['  Carousel  ', '']),
       ['Carousel']
    );
+   const morningsInMalaysiaRow = {
+      name: 'Mornings in Malaysia',
+      start_time: '8:45 AM',
+      end_time: '9:45 AM',
+   };
+   const morningsInMalaysiaWire = WildEncounterScheduleItemKey.fromRow(morningsInMalaysiaRow).toWire();
    assert.equal(
-      ItineraryItemFormatter.normalizeWildEncounterForSave('Mornings in Malaysia||8:45 AM||9:45 AM'),
-      'Mornings in Malaysia||8:45 AM||9:45 AM'
+      ItineraryItemFormatter.normalizeWildEncounterForSave(morningsInMalaysiaWire),
+      morningsInMalaysiaWire
    );
    assert.equal(ItineraryItemFormatter.normalizeWildEncounterForSave(''), '');
    assert.equal(
-      ItineraryItemFormatter.normalizeWildEncounterForSave({
-         name: 'Mornings in Malaysia',
-         start_time: '8:45 AM',
-         end_time: '9:45 AM',
-      }),
-      'Mornings in Malaysia||8:45 AM||9:45 AM'
+      ItineraryItemFormatter.normalizeWildEncounterForSave(morningsInMalaysiaRow),
+      morningsInMalaysiaWire
    );
    assert.deepEqual(ItineraryItemFormatter.normalizeWildEncounterListForSave(null), []);
    assert.deepEqual(
       ItineraryItemFormatter.normalizeWildEncounterListForSave([
-         'Mornings in Malaysia||8:45 AM||9:45 AM',
+         morningsInMalaysiaWire,
          '',
       ]),
-      ['Mornings in Malaysia||8:45 AM||9:45 AM']
+      [morningsInMalaysiaWire]
    );
 });
 

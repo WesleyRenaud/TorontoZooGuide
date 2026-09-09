@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { GuardiansTalkScheduleItemKey } from '../../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { GuardiansTalkSelectorModel } from '../../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
@@ -21,7 +22,7 @@ test('Test_GetGuardiansTalkNameAndLocation_TestRow_ExpectStrings', () => {
 test('Test_GetGuardiansTalkId_TestRow_ExpectWireKey', () => {
    assert.equal(
       GuardiansTalkSelectorModel.getGuardiansTalkId(talkRow),
-      'Amur Tiger||11:00 AM||11:20 AM'
+      GuardiansTalkScheduleItemKey.fromRow(talkRow).toWire()
    );
    assert.equal(GuardiansTalkSelectorModel.getGuardiansTalkId({ name: 'Talk' }), '');
 });

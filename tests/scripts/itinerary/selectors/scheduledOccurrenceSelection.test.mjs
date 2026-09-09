@@ -3,7 +3,9 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { SelectionStore } from '../../../../scripts/itinerary/selectors/base/selectionStore.js';
 import { CreateScheduledOccurrenceSelector } from '../../../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
+import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { GuardiansTalkSelectorModel } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
@@ -62,9 +64,9 @@ test('Test_API_TestAPITalkWithoutIdMatchesCatalogWireId_ExpectOk', () => {
    };
    const catalogId = GuardiansTalkSelectorModel.getGuardiansTalkId(catalogRow);
 
-   assert.equal(catalogId, 'New World Primates||11:30 AM||12:00 PM');
+   assert.equal(catalogId, GuardiansTalkScheduleItemKey.fromRow(catalogRow).toWire());
    assert.equal(state.isSelected(catalogId), true);
-   assert.equal(state.getSelectedSnapshot()[0].id, catalogId);
+   assert.equal(state.getSelectedSnapshot()[Position.FIRST].id, catalogId);
 });
 
 test('Test_Name_TestNameOnlyStoredIdIsUpgradedWhenStart_ExpectOk', () => {
@@ -82,9 +84,14 @@ test('Test_Name_TestNameOnlyStoredIdIsUpgradedWhenStart_ExpectOk', () => {
    );
 
    const state = _createGuardiansTalkSelectionState();
+   const upgradedWire = new GuardiansTalkScheduleItemKey(
+      'New World Primates',
+      '11:30 AM',
+      '12:00 PM'
+   ).toWire();
 
    assert.equal(
-      state.isSelected('New World Primates||11:30 AM||12:00 PM'),
+      state.isSelected(upgradedWire),
       true
    );
    assert.equal(state.isSelected('New World Primates'), false);

@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { ScheduleItemSearcher } from '../../../../scripts/itinerary/panel/scheduleItemSearcher.js';
 import { ScheduleItemTypes } from '../../../../scripts/itinerary/panel/scheduleItemTypes.js';
 import { ItineraryEventTypes } from '../../../../scripts/itinerary/itineraryEventTypes.js';
+import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
+import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { Strings } from '../../../../scripts/strings.js';
 
@@ -280,8 +282,14 @@ test('Test_GetScheduleItemRowKindAndId_TestMixedRows_ExpectResolved', () => {
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(attractionRow), 'Carousel');
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(transportationRow), 'Zoomobile||0');
-   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||14:00');
-   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(wildEncounterRow), 'African Rainforest||14:00');
+   assert.equal(
+      ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow),
+      GuardiansTalkScheduleItemKey.fromRow(guardiansTalkRow).toWire()
+   );
+   assert.equal(
+      ScheduleItemSearcher.getScheduleItemRowId(wildEncounterRow),
+      WildEncounterScheduleItemKey.fromRow(wildEncounterRow).toWire()
+   );
 });
 
 test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithAnimalRow_ExpectAnimal', () => {
@@ -339,9 +347,19 @@ test('Test_BuildItineraryScheduleItemRowIds_TestMixedItinerary_ExpectIdSets', ()
    assert.equal(ids.transportationIds.has('Zoomobile'), false);
    assert.equal(ids.transportationIds.has('Zoo Shuttle'), false);
    assert.equal(ids.transportationIds.has('Zoo Shuttle||0'), true);
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
+   assert.equal(
+      ids.guardiansTalkIds.has(
+         new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM').toWire()
+      ),
+      true
+   );
    assert.equal(ids.wildEncounterIds.has('African Rainforest'), false);
-   assert.equal(ids.wildEncounterIds.has('Americas||2:00 PM'), true);
+   assert.equal(
+      ids.wildEncounterIds.has(
+         new WildEncounterScheduleItemKey('Americas', '2:00 PM').toWire()
+      ),
+      true
+   );
 });
 
 test('Test_BuildItineraryScheduleItemRowIds_TestUnscheduledOnly_ExpectUnscheduledIds', () => {
@@ -358,7 +376,12 @@ test('Test_BuildItineraryScheduleItemRowIds_TestUnscheduledOnly_ExpectUnschedule
 
    assert.equal(ids.animalIds.has('Tiger||Savanna'), false);
    assert.equal(ids.animalIds.has('Giant Panda||Bamboo'), true);
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), false);
+   assert.equal(
+      ids.guardiansTalkIds.has(
+         new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM').toWire()
+      ),
+      false
+   );
    assert.equal(ids.guardiansTalkIds.has(''), true);
 });
 
@@ -373,9 +396,19 @@ test('Test_BuildItineraryScheduleItemRowIds_TestScheduledOnly_ExpectScheduledIds
       ],
    }, { scheduledOnly: true });
 
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
+   assert.equal(
+      ids.guardiansTalkIds.has(
+         new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM').toWire()
+      ),
+      true
+   );
    assert.equal(ids.guardiansTalkIds.has(''), false);
-   assert.equal(ids.wildEncounterIds.has('African Rainforest||2:00 PM'), true);
+   assert.equal(
+      ids.wildEncounterIds.has(
+         new WildEncounterScheduleItemKey('African Rainforest', '2:00 PM').toWire()
+      ),
+      true
+   );
 });
 
 test('Test_FilterScheduleItemRowsExcludingScheduledOccurrences_TestScheduledItems_ExpectHidden', () => {
@@ -679,7 +712,10 @@ test('Test_TagScheduleItemRow_TestModuleKinds_ExpectTagged', () => {
       guardiansTalkRow.scheduleItemKind,
       ScheduleItemKind.GUARDIANS_TALK.itemType
    );
-   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||1:30 PM');
+   assert.equal(
+      ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow),
+      GuardiansTalkScheduleItemKey.fromRow(guardiansTalkRow).toWire()
+   );
    assert.equal(ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, null), null);
 });
 
@@ -724,14 +760,14 @@ test('Test_GetItineraryItemKey_TestModuleKinds_ExpectKeys', () => {
          ScheduleItemKind.GUARDIANS_TALK.itemType,
          { name: 'Amur Tiger', start_time: '1:30 PM' }
       ),
-      'Amur Tiger||1:30 PM'
+      new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM').toWire()
    );
    assert.equal(
       ScheduleItemSearcher.getItineraryItemKey(
          ScheduleItemKind.WILD_ENCOUNTER.itemType,
          { name: 'African Rainforest', start_time: '2:00 PM' }
       ).toWire(),
-      'African Rainforest||2:00 PM'
+      new WildEncounterScheduleItemKey('African Rainforest', '2:00 PM').toWire()
    );
    assert.equal(ScheduleItemSearcher.getItineraryItemKey('', { name: 'x' }), '');
 });

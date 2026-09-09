@@ -4,6 +4,9 @@ import { test } from 'node:test';
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
+import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
+import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -122,14 +125,14 @@ test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_Expect
    );
    assert.equal(tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'), null);
    assert.equal(menuItems.length, 1);
-   assert.equal(menuItems[0]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, 'Remove');
 
-   menuItems[0].click();
+   menuItems[Position.FIRST].click();
 
    assert.deepEqual(unscheduleCalls, []);
    assert.deepEqual(removeCalls, [{
       itemType: 'guardians_talks',
-      key: 'Amur Tiger||1:30 PM||2:00 PM',
+      key: new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM', '2:00 PM').toWire(),
    }]);
 });
 
@@ -179,14 +182,14 @@ test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_Expect
    assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
    assert.match(allTextFor(kangarooEvent), /Meeting Spot:/);
    assert.equal(menuItems.length, 1);
-   assert.equal(menuItems[0]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, 'Remove');
 
-   menuItems[0].click();
+   menuItems[Position.FIRST].click();
 
    assert.deepEqual(unscheduleCalls, []);
    assert.deepEqual(removeCalls, [{
       itemType: 'wild_encounters',
-      key: 'Kangaroo||3:30 PM||4:15 PM',
+      key: new WildEncounterScheduleItemKey('Kangaroo', '3:30 PM', '4:15 PM').toWire(),
    }]);
 });
 
@@ -244,10 +247,10 @@ test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_Expec
    );
    assert.equal(zoomobileEvent.querySelector('.itinerary-day-scheduled-pill'), null);
    assert.equal(menuItems.length, 2);
-   assert.equal(menuItems[0]?.textContent, 'Unschedule');
-   assert.equal(menuItems[1]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, 'Unschedule');
+   assert.equal(menuItems[Position.SECOND]?.textContent, 'Remove');
 
-   menuItems[0].click();
+   menuItems[Position.FIRST].click();
 
    assert.deepEqual(unscheduleCalls, [{
       itemType: 'attractions',
@@ -255,7 +258,7 @@ test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_Expec
    }]);
    assert.deepEqual(removeCalls, []);
 
-   menuItems[1].click();
+   menuItems[Position.SECOND].click();
 
    assert.deepEqual(removeCalls, [{
       itemType: 'attractions',
@@ -328,17 +331,17 @@ test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_E
       /images\/details\/transportations\/zoomobile\.png$/
    );
    assert.equal(menuItems.length, 2);
-   assert.equal(menuItems[0]?.textContent, 'Unschedule');
-   assert.equal(menuItems[1]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, 'Unschedule');
+   assert.equal(menuItems[Position.SECOND]?.textContent, 'Remove');
 
-   menuItems[0].click();
+   menuItems[Position.FIRST].click();
 
    assert.deepEqual(unscheduleCalls, [{
       itemType: 'transportations',
       key: 'Zoomobile||1',
    }]);
 
-   menuItems[1].click();
+   menuItems[Position.SECOND].click();
 
    assert.deepEqual(removeCalls, [{
       itemType: 'transportations',
@@ -485,8 +488,8 @@ test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_Expect
       ['Unschedule', 'Remove']
    );
 
-   menuItems[0].click();
-   menuItems[1].click();
+   menuItems[Position.FIRST].click();
+   menuItems[Position.SECOND].click();
 
    assert.deepEqual(unscheduleCalls, [{
       itemType: 'animals',
@@ -569,7 +572,7 @@ test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectO
       true
    );
    assert.equal(tigerButtons.length, 1);
-   assert.equal(tigerButtons[0]?.textContent, 'Remove');
+   assert.equal(tigerButtons[Position.FIRST]?.textContent, 'Remove');
    assert.equal(unscheduledList?.querySelectorAll('.itin-panel-item-action-btn').length ?? 0, 0);
 
    [...scheduledButtons]

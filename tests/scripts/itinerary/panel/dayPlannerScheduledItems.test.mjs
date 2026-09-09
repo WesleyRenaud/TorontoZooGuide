@@ -3,9 +3,11 @@ import { test } from 'node:test';
 
 import { DayPlannerScheduledItems } from '../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
 import { DayPlannerScheduledPillOptions } from '../../../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
+import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
 import { makeScheduledItem } from '../../helpers/scheduledPillTestSetup.mjs';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
 installDomTestHooks();
@@ -99,11 +101,11 @@ test('Test_BuildScheduledItemRowsContext_TestGenericEvents_ExpectOnTimeline', ()
    const lunchItems = [...context.itemsByStart.values()].flat();
 
    assert.equal(lunchItems.length, 1);
-   assert.equal(lunchItems[0].label, 'Lunch');
-   assert.equal(lunchItems[0].scheduleItemKind, ScheduleItemKind.EVENT.kind);
-   assert.equal(lunchItems[0].scheduleItemEventType, 'lunch');
-   assert.equal(lunchItems[0].maximumDuration, 40);
-   assert.equal(lunchItems[0].anchorSlotMinutes, 720);
+   assert.equal(lunchItems[Position.FIRST].label, 'Lunch');
+   assert.equal(lunchItems[Position.FIRST].scheduleItemKind, ScheduleItemKind.EVENT.kind);
+   assert.equal(lunchItems[Position.FIRST].scheduleItemEventType, 'lunch');
+   assert.equal(lunchItems[Position.FIRST].maximumDuration, 40);
+   assert.equal(lunchItems[Position.FIRST].anchorSlotMinutes, 720);
 });
 
 test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () => {
@@ -127,9 +129,9 @@ test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () =
    );
 
    assert.equal(options.menuItems?.length, 1);
-   assert.equal(options.menuItems?.[0]?.label, 'Remove');
+   assert.equal(options.menuItems?.[Position.FIRST]?.label, 'Remove');
 
-   options.menuItems?.[0]?.onAction?.();
+   options.menuItems?.[Position.FIRST]?.onAction?.();
 
    assert.deepEqual(removeRequests, [{
       itemType: 'lunch',
@@ -160,10 +162,15 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
       key: 'African Lion||Africa Savanna',
    }]);
 
+   const amurTigerTalkKey = new GuardiansTalkScheduleItemKey(
+      'Amur Tiger',
+      '1:30 PM',
+      '2:00 PM'
+   ).toWire();
    const talkOptions = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
       {
          scheduleItemKind: 'guardians_talks',
-         scheduleItemKey: 'Amur Tiger||1:30 PM||2:00 PM',
+         scheduleItemKey: amurTigerTalkKey,
       },
       {
          onRemoveItineraryItem: (request) => {
@@ -174,13 +181,13 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
    );
 
    assert.equal(talkOptions.menuItems?.length, 1);
-   assert.equal(talkOptions.menuItems?.[0]?.label, 'Remove');
+   assert.equal(talkOptions.menuItems?.[Position.FIRST]?.label, 'Remove');
 
-   talkOptions.menuItems?.[0]?.onAction?.();
+   talkOptions.menuItems?.[Position.FIRST]?.onAction?.();
 
-   assert.deepEqual(removeRequests[1], {
+   assert.deepEqual(removeRequests[Position.SECOND], {
       itemType: 'guardians_talks',
-      key: 'Amur Tiger||1:30 PM||2:00 PM',
+      key: amurTigerTalkKey,
    });
 });
 
@@ -258,7 +265,7 @@ test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepSch
       .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
 
    assert.equal(animalItems.length, 1);
-   assert.equal(animalItems[0].item.species, 'Cheetah');
+   assert.equal(animalItems[Position.FIRST].item.species, 'Cheetah');
    assert.equal(context.scheduledAnimalIndexes.size, 2);
 });
 
@@ -313,11 +320,11 @@ test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () =>
       ));
 
    assert.equal(transportationItems.length, 1);
-   assert.equal(transportationItems[0].label, 'Zoomobile');
-   assert.equal(transportationItems[0].scheduleItemKey, 'Zoomobile||0');
+   assert.equal(transportationItems[Position.FIRST].label, 'Zoomobile');
+   assert.equal(transportationItems[Position.FIRST].scheduleItemKey, 'Zoomobile||0');
    assert.equal(context.scheduledTransportationIndexes.size, 1);
    assert.match(
-      allTextFor(transportationItems[0].row),
+      allTextFor(transportationItems[Position.FIRST].row),
       /Main Station → Wildlife Health/
    );
 });
@@ -388,16 +395,16 @@ test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills
       .sort((left, right) => left.startMinutes - right.startMinutes);
 
    assert.equal(transportationItems.length, 2);
-   assert.equal(transportationItems[0].startMinutes, 540);
-   assert.equal(transportationItems[0].maximumDuration, 30);
-   assert.equal(transportationItems[1].startMinutes, 624);
-   assert.equal(transportationItems[1].maximumDuration, 55);
+   assert.equal(transportationItems[Position.FIRST].startMinutes, 540);
+   assert.equal(transportationItems[Position.FIRST].maximumDuration, 30);
+   assert.equal(transportationItems[Position.SECOND].startMinutes, 624);
+   assert.equal(transportationItems[Position.SECOND].maximumDuration, 55);
    assert.match(
-      allTextFor(transportationItems[0].row),
+      allTextFor(transportationItems[Position.FIRST].row),
       /Main Zoomobile Station → Africa Zoomobile Station/
    );
    assert.match(
-      allTextFor(transportationItems[1].row),
+      allTextFor(transportationItems[Position.SECOND].row),
       /Canadian Domain Zoomobile Station → Main Zoomobile Station/
    );
 });
@@ -523,11 +530,11 @@ test('Test_BuildScheduledAndUnscheduledItinerary_TestIndexes_ExpectFiltered', ()
       wildEncounters: [{ name: 'I' }, { name: 'J' }],
    };
    const indexes = {
-      scheduledAnimalIndexes: new Set([0]),
-      scheduledAttractionIndexes: new Set([1]),
-      scheduledTransportationIndexes: new Set([0]),
-      scheduledGuardiansTalkIndexes: new Set([1]),
-      scheduledWildEncounterIndexes: new Set([0]),
+      scheduledAnimalIndexes: new Set([Position.FIRST]),
+      scheduledAttractionIndexes: new Set([Position.SECOND]),
+      scheduledTransportationIndexes: new Set([Position.FIRST]),
+      scheduledGuardiansTalkIndexes: new Set([Position.SECOND]),
+      scheduledWildEncounterIndexes: new Set([Position.FIRST]),
    };
 
    assert.deepEqual(DayPlannerScheduledItems.buildScheduledItinerary(itinerary, indexes), {

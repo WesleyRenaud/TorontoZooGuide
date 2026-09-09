@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
+import { WildEncounterScheduleItemKey } from '../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 
 test('Test_CreateAndNormalizeItineraryDraft_TestMixedInput_ExpectNormalizedShape', () => {
    assert.deepEqual(ItineraryShape.createEmptyItineraryDraft(), {
@@ -192,7 +193,7 @@ test('Test_ToSetItineraryPayload_TestCanonicalShapes_ExpectSaveApiShape', () => 
          start_time: null,
          end_time: null,
       }],
-      wildEncounters: ['African Rainforest||14:00'],
+      wildEncounters: [new WildEncounterScheduleItemKey('African Rainforest', '14:00').toWire()],
    });
 });
 
@@ -283,7 +284,7 @@ test('Test_ToSetItineraryPayload_TestWildEncounters_ExpectWireStrings', () => {
          start_time: '13:00',
          end_time: '13:45',
       }],
-   }).wildEncounters, ['Kangaroo||13:00||13:45']);
+   }).wildEncounters, [new WildEncounterScheduleItemKey('Kangaroo', '13:00', '13:45').toWire()]);
 });
 
 test('Test_ToSetItineraryPayload_TestScheduleTimes_ExpectPreserved', () => {
@@ -314,6 +315,6 @@ test('Test_ToSetItineraryPayload_TestScheduleTimes_ExpectPreserved', () => {
          start_time: '13:45',
          end_time: '14:00',
       }],
-      wildEncounters: ['Grizzly Bear||13:00'],
+      wildEncounters: [new WildEncounterScheduleItemKey('Grizzly Bear', '13:00').toWire()],
    });
 });
