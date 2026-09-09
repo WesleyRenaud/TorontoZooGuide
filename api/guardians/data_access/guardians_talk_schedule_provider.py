@@ -138,7 +138,7 @@ class GuardiansTalkScheduleProvider():
                      AND s.LOCATION = ?
                      AND s.TALK_TIME = ?
                      AND s.SCHEDULE_START_DATE <= ?
-                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?;
+                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) > ?;
             """,
             (
                talk_name,
@@ -185,7 +185,7 @@ class GuardiansTalkScheduleProvider():
                      ON t.NAME = s.TALK_NAME
                      AND t.LOCATION = s.LOCATION
                   WHERE s.SCHEDULE_START_DATE <= ?
-                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?
+                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) > ?
                      AND NOT EXISTS (
                         SELECT 1
                         FROM GuardiansTalkCancellation c
