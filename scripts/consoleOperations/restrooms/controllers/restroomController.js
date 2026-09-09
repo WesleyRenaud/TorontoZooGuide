@@ -91,7 +91,7 @@ export class RestroomController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.restroom} was given an alert.`,
+            Strings.status.restroomAlertSaved(result),
             'is-success'
          );
 

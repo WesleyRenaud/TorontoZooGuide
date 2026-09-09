@@ -103,7 +103,7 @@ export class AnimalVisibilityController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.species} in ${result.exhibit} viewing schedule updated.`,
+            Strings.status.animalVisibilityScheduleSaved(result),
             'is-success'
          );
 

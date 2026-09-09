@@ -108,7 +108,7 @@ export class AddGuardiansTalkController {
 
             ConsoleStatusPresenter.setStatus(
                statusEl,
-               `${result.talk} in ${result.location} on ${result.date} at ${result.times[0]} was added.`,
+               Strings.status.guardiansTalkOccurrenceAdded(result),
                'is-success'
             );
             resetForm();

@@ -4,7 +4,6 @@ import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxFie
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
-import { JoinedTimesFormatter } from '../../../shared/joinedTimesFormatter.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
@@ -94,7 +93,7 @@ export class CancelWildEncounterController {
       function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
-            `${result.wildEncounter} on ${result.date} at ${JoinedTimesFormatter.format(result.times)} was cancelled.`,
+            Strings.status.wildEncounterOccurrenceCancelled(result),
             'is-success'
          );
 

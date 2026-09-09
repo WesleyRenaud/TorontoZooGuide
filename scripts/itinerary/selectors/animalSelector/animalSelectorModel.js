@@ -4,6 +4,7 @@ import { AnimalSelectorStoredAnimalFactory } from './animalSelectorStoredAnimalF
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 import { EnclosureType } from '../../../shared/enums/enclosureType.js';
+import { Strings } from '../../../strings.js';
 
 export class AnimalSelectorModel {
    static OFF_DISPLAY_WARNING_THRESHOLD = 80;
@@ -117,13 +118,18 @@ export class AnimalSelectorModel {
    }
 
    static buildOffDisplayWarningMessage(row) {
-      const species = AnimalSelectorModel.getAnimalSpecies(row) || 'This animal';
+      const species = AnimalSelectorModel.getAnimalSpecies(row)
+         || Strings.itinerary.confirmation.animalFallbackName;
       const likelihood = AnimalSelectorModel.getAnimalLikelihood(row);
 
       if (likelihood === null) {
-         return `The ${species} may be off display on your visit date. Do you still want to add it to your itinerary?`;
+         return Strings.itinerary.confirmation.animalOffDisplayUnknownLikelihoodMessage(species);
       }
 
-      return `The ${species} has a viewing likelihood below ${AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD}% (${likelihood}%) for your visit date and may be off display. Do you still want to add it to your itinerary?`;
+      return Strings.itinerary.confirmation.animalOffDisplayLowLikelihoodMessage(
+         species,
+         AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD,
+         likelihood
+      );
    }
 }

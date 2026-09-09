@@ -9,7 +9,7 @@ import { Strings } from '../../../strings.js';
 export class AttractionSelectorModel {
    static DEFAULT_ATTRACTION_TITLE = 'Attraction';
 
-   static CLOSED_ATTRACTION_FALLBACK_NAME = 'This attraction';
+   static CLOSED_ATTRACTION_FALLBACK_NAME = Strings.itinerary.confirmation.closedAttractionFallbackName;
 
    static getAttractionName(row) {
       return typeof row?.name === 'string'
@@ -122,7 +122,7 @@ export class AttractionSelectorModel {
    static buildClosedAttractionMessage(row) {
       const name = AttractionSelectorModel.getAttractionName(row)
          || AttractionSelectorModel.CLOSED_ATTRACTION_FALLBACK_NAME;
-      return `The ${name} is closed on your visit date. Do you still want to add it to your itinerary?`;
+      return Strings.itinerary.confirmation.closedAttractionMessage(name);
    }
 
    static buildAlsoTransportationAttractionMessage(row) {
