@@ -143,7 +143,6 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
 
@@ -178,7 +177,6 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
 
@@ -328,7 +326,6 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRebuildsWithoutLongWaitConfirmationFor_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
 
@@ -367,7 +364,6 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
 
@@ -498,7 +494,6 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
 

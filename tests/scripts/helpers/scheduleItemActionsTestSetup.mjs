@@ -58,7 +58,6 @@ export function installScheduleItemActionsTestHooks() {
             }
          };
          ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-            errorTypes: MOCK_ERROR_TYPES,
             suppressedErrorTypes: [],
          });
       },

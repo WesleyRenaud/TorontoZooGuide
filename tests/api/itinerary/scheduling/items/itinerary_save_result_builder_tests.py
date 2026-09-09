@@ -9,10 +9,10 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 

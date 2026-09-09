@@ -2,17 +2,20 @@ from __future__ import annotations
 
 from enum import Enum
 
+from .shared_enum_values import SharedEnumValues
+
+
+_MEMBERS = SharedEnumValues.load_object_members( 'scheduleItemKind.json' )
 _ITEM_TYPE_BY_KIND: dict[ 'ScheduleItemKind', str ] = {}
 
 
 class ScheduleItemKind( str, Enum ):
-   ENTRANCE = 'entrance'
-   ANIMAL = 'animal'
-   ATTRACTION = 'attraction'
-   EVENT = 'event'
-   GUARDIANS_TALK = 'guardians_talk'
-   TRANSPORTATION = 'transportation'
-   WILD_ENCOUNTER = 'wild_encounter'
+   # Enum bodies register a member per assigned name, so the shared JSON members
+   # have to be written into the class namespace one name at a time.
+   _ignore_ = [ 'member_name', 'member_definition' ]
+
+   for member_name, member_definition in _MEMBERS.items():
+      locals()[ member_name ] = member_definition[ 'kind' ]
 
 
    @property
@@ -49,9 +52,7 @@ class ScheduleItemKind( str, Enum ):
 
 
 _ITEM_TYPE_BY_KIND.update( {
-   ScheduleItemKind.ANIMAL: 'animals',
-   ScheduleItemKind.ATTRACTION: 'attractions',
-   ScheduleItemKind.GUARDIANS_TALK: 'guardians_talks',
-   ScheduleItemKind.TRANSPORTATION: 'transportations',
-   ScheduleItemKind.WILD_ENCOUNTER: 'wild_encounters',
+   ScheduleItemKind[ member_name ]: member_definition[ 'itemType' ]
+   for member_name, member_definition in _MEMBERS.items()
+   if 'itemType' in member_definition
 } )

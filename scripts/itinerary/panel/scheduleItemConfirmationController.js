@@ -9,12 +9,13 @@ import { ItineraryService } from '../itineraryService.js';
 import { PersistItineraryWarningSuppressor } from '../persistItineraryWarningSuppressor.js';
 import { ScheduleItemConfirmationFlowHelper } from './scheduleItemConfirmationFlowHelper.js';
 import { ScheduleItemNotOnItineraryFragment } from './scheduleItemNotOnItineraryFragment.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { WildEncounterUnscheduleFragment } from './wildEncounterUnscheduleFragment.js';
 
 export class ScheduleItemConfirmationController {
    static createScheduleItemSaveFailedResult() {
       return {
-         errorType: ItineraryErrorTypes.getItineraryErrorTypes()?.SAVE_FAILED,
+         errorType: ItineraryErrorType.SAVE_FAILED,
       };
 
    }
@@ -42,7 +43,7 @@ export class ScheduleItemConfirmationController {
             beforeConfirm: async ({ doNotShowAgain = false } = {}) => {
                if (doNotShowAgain) {
                   await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(
-                     ItineraryErrorTypes.getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
+                     ItineraryErrorType.ITEM_NOT_ON_ITINERARY
                   );
                }
             },

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
 from api.models import Itinerary
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 

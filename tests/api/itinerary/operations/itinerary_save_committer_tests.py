@@ -14,7 +14,6 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.operations.itinerary_save_committer import ItinerarySaveCommitter
 from api.itinerary.operations.itinerary_save_context import ItinerarySaveContext
@@ -25,6 +24,7 @@ from api.models import Itinerary
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 

@@ -1,20 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { RemovedItemsPopupAdjustmentBuilder } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupAdjustmentBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
-const ADJUSTMENT_TYPES = {
-   ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-   DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-};
-
 test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_ExpectOk', () => {
-   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-      adjustmentTypes: ADJUSTMENT_TYPES,
-   });
-
    assert.deepEqual(
       RemovedItemsPopupAdjustmentBuilder.buildAdjustmentRowSpec({
          type: 'arrivalTimeAdjusted',
@@ -32,10 +22,6 @@ test('Test_BuildAdjustmentRowSpec_TestMapsArrivalAdjustmentsToItemRowContent_Exp
 });
 
 test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_ExpectOk', () => {
-   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-      adjustmentTypes: ADJUSTMENT_TYPES,
-   });
-
    assert.deepEqual(
       RemovedItemsPopupAdjustmentBuilder.buildAdjustmentRowSpec({
          type: 'departureTimeAdjusted',
@@ -53,10 +39,6 @@ test('Test_BuildAdjustmentRowSpec_TestMapsDepartureAdjustmentsToItemRowContent_E
 });
 
 test('Test_BuildAdjustmentRowSpec_TestIgnoresUnknownOrIncompleteAdjustments_ExpectOk', () => {
-   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-      adjustmentTypes: ADJUSTMENT_TYPES,
-   });
-
    assert.equal(
       RemovedItemsPopupAdjustmentBuilder.buildAdjustmentRowSpec({
          type: 'arrivalTimeAdjusted',

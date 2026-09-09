@@ -12,7 +12,6 @@ installDomTestHooks({
    before: () => {
       globalThis.localStorage = createLocalStorageMock();
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-         errorTypes: { SUCCESS: 'success', SAVE_FAILED: 'saveFailed' },
          suppressedErrorTypes: [],
       });
    },

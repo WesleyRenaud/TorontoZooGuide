@@ -28,7 +28,7 @@ export class GuardiansTalkScheduleTimesFilter {
       function renderTimesList(times = []) {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
-            hasWildEncounter: hasSelection(),
+            hasSelectedEntity: hasSelection(),
             hasDate: true,
             autoSelectSingleTime: true,
          });
@@ -37,7 +37,7 @@ export class GuardiansTalkScheduleTimesFilter {
       function clear() {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times: [],
-            hasWildEncounter: false,
+            hasSelectedEntity: false,
          });
       }
 

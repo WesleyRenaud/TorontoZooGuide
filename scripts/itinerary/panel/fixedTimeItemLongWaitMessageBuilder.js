@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../strings.js';
 import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
@@ -28,12 +28,11 @@ export class FixedTimeItemLongWaitMessageBuilder {
    }
 
    static fixedTimeItemLongWaitIssueType() {
-      return ItineraryErrorTypes.getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
+      return ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
    }
 
    static isLongWaitIssue(issue) {
-      const issueType = FixedTimeItemLongWaitMessageBuilder.fixedTimeItemLongWaitIssueType();
-      return Boolean(issueType) && issue.type === issueType;
+      return issue.type === ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
    }
 
    static longWaitItems(issues = []) {

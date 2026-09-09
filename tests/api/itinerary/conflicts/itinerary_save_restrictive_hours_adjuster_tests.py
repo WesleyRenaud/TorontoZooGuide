@@ -8,7 +8,7 @@ import pytest
 from api.itinerary.conflicts.itinerary_save_restrictive_hours_adjuster import ItinerarySaveRestrictiveHoursAdjuster
 from api.itinerary.data_access.itinerary_save_input import ItinerarySaveInput
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums.position import Position
 
 

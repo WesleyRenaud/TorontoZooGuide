@@ -1,40 +1,21 @@
+import { AmenityClosedPanelBuilder } from '../../forms/amenityClosedPanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
-import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class AttractionClosedView {
    static createAttractionClosedPanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return AmenityClosedPanelBuilder.createPanel({
          panelId: 'attractionClosedPanel',
          title: Strings.panelTitles.attractionClosed,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.attraction,
-               inputId: 'attractionClosedAttraction',
-               emptyOptionLabel: Strings.placeholders.attraction,
-            }),
-            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-               startDateId: 'attractionClosedStartDate',
-               startHelpText: Strings.help.startImmediately,
-               endDateId: 'attractionClosedEndDate',
-               endHelpText: Strings.help.keepClosedUntilManuallyReopened('attraction'),
-            }),
-            ConsoleTextareaFieldBuilder.createTextareaField({
-               label: Strings.labels.closureMessage,
-               inputId: 'attractionClosedMessage',
-               placeholder: Strings.textareas.closureMessage,
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitAttractionClosed',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'attractionClosedStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.attraction,
+         emptyOptionLabel: Strings.placeholders.attraction,
+         idPrefix: 'attractionClosed',
+         entityFieldName: 'Attraction',
+         startHelpText: Strings.help.startImmediately,
+         endHelpText: Strings.help.keepClosedUntilManuallyReopened('attraction'),
+         messageLabel: Strings.labels.closureMessage,
+         messagePlaceholder: Strings.textareas.closureMessage,
+         submitId: 'submitAttractionClosed',
+         statusId: 'attractionClosedStatus',
       });
    }
 }

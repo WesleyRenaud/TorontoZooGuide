@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .itinerary_adjustment_reason import ItineraryAdjustmentReason
-from .itinerary_adjustment_type import ItineraryAdjustmentType
+from ...shared.enums import ItineraryAdjustmentType
 
 
 @dataclass( frozen=True )

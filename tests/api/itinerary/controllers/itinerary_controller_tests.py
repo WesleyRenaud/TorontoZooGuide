@@ -15,10 +15,10 @@ from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.models import Itinerary
 import api.request_connection_provider as request_connection
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType, Position
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types

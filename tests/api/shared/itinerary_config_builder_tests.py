@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from api.itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from api.shared.constants import Constants
+from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ItineraryTransportationStationRole

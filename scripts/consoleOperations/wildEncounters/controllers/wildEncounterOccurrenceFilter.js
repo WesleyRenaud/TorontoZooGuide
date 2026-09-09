@@ -17,7 +17,7 @@ export class WildEncounterOccurrenceFilter {
       function populateTimes(times = []) {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
-            hasWildEncounter: Boolean(ControllerHelper.getFieldValue(wildEncounterEl)),
+            hasSelectedEntity: Boolean(ControllerHelper.getFieldValue(wildEncounterEl)),
             hasDate: Boolean(ControllerHelper.getFieldValue(dateEl)),
             autoSelectSingleTime: true,
          });

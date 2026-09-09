@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryClient } from '../../../../scripts/api/itineraryClient.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryService } from '../../../../scripts/itinerary/itineraryService.js';
 import { PersistItineraryWarningSuppressor } from '../../../../scripts/itinerary/persistItineraryWarningSuppressor.js';
@@ -16,17 +17,10 @@ import { ScheduleItemNotOnItineraryFragment } from '../../../../scripts/itinerar
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 
 test('Test_CreateScheduleItemSaveFailedResult_TestDefault_ExpectSaveFailedType', () => {
-   const original = ItineraryErrorTypes.getItineraryErrorTypes;
-   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ SAVE_FAILED: 'SAVE_FAILED' });
-
-   try {
-      assert.deepEqual(
-         ScheduleItemConfirmationController.createScheduleItemSaveFailedResult(),
-         { errorType: 'SAVE_FAILED' }
-      );
-   } finally {
-      ItineraryErrorTypes.getItineraryErrorTypes = original;
-   }
+   assert.deepEqual(
+      ScheduleItemConfirmationController.createScheduleItemSaveFailedResult(),
+      { errorType: ItineraryErrorType.SAVE_FAILED }
+   );
 });
 
 test('Test_ScheduleItineraryItemWithConfirmation_TestSuccess_ExpectDispatch', async () => {
@@ -65,13 +59,11 @@ test('Test_ScheduleItineraryItemWithConfirmation_TestConfirmationBranches_Expect
    const originalMulti = ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings;
    const originalHelper = ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation;
    const originalPersist = PersistItineraryWarningSuppressor.persistItineraryWarningSuppression;
-   const originalGetTypes = ItineraryErrorTypes.getItineraryErrorTypes;
    const originalMount = ScheduleItemConfirmationFlowHelper.getConfirmationMountEl;
    const originalBuildConfirmed = ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings;
    const helperCalls = [];
 
    ItineraryErrorTypes.isItinerarySuccess = () => false;
-   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ ITEM_NOT_ON_ITINERARY: 'ITEM_NOT_ON_ITINERARY' });
    ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation = async (options) => {
       helperCalls.push(options);
       return { confirmed: options.showConfirmation.name || 'confirmed' };
@@ -195,7 +187,6 @@ test('Test_ScheduleItineraryItemWithConfirmation_TestConfirmationBranches_Expect
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = originalMulti;
       ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation = originalHelper;
       PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
-      ItineraryErrorTypes.getItineraryErrorTypes = originalGetTypes;
       ScheduleItemConfirmationFlowHelper.getConfirmationMountEl = originalMount;
       ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings = originalBuildConfirmed;
    }

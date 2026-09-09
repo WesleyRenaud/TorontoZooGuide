@@ -1,154 +1,145 @@
 import { ItineraryErrorTypesHelper } from './itineraryErrorTypesHelper.js';
+import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 import { Strings } from '../strings.js';
 
 export class ItineraryErrorTypes {
-   static itineraryErrorTypes = null;
-
    static suppressedItineraryErrorTypes = [];
 
    static updateItineraryErrorTypesFromConfig(itineraryConfig = {}) {
-      const errorTypes = itineraryConfig?.errorTypes;
-
-      if (errorTypes && typeof errorTypes === 'object') {
-         ItineraryErrorTypes.itineraryErrorTypes = Object.freeze({ ...errorTypes });
-      }
-
-      ItineraryErrorTypes.suppressedItineraryErrorTypes = [...itineraryConfig.suppressedErrorTypes];
+      ItineraryErrorTypes.suppressedItineraryErrorTypes = [
+         ...(itineraryConfig?.suppressedErrorTypes ?? []),
+      ];
    }
 
    static isItineraryErrorSuppressed(errorType) {
       return ItineraryErrorTypes.suppressedItineraryErrorTypes.includes(errorType);
    }
 
-   static getItineraryErrorTypes() {
-      return ItineraryErrorTypes.itineraryErrorTypes;
-   }
-
    static isItinerarySuccess(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.SUCCESS;
+      return errorType === ItineraryErrorType.SUCCESS;
    }
 
    static requiresShortVisitConfirmation(errorType) {
       if (ItineraryErrorTypes.isItineraryErrorSuppressed(
-         ItineraryErrorTypes.itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE
+         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
       )) {
          return false;
       }
 
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE;
+      return errorType === ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
    }
 
    static requiresEarlyAdmissionConfirmation(errorType) {
       if (
          ItineraryErrorTypes.isItineraryErrorSuppressed(
-            ItineraryErrorTypes.itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+            ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
          )
       ) {
          return false;
       }
 
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+      return errorType === ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
    }
 
    static requiresScheduleItemNotOnItineraryConfirmation(errorType) {
       if (ItineraryErrorTypes.isItineraryErrorSuppressed(
-         ItineraryErrorTypes.itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY
+         ItineraryErrorType.ITEM_NOT_ON_ITINERARY
       )) {
          return false;
       }
 
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY;
+      return errorType === ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
    }
 
    static requiresAttractionOutsideOperatingHoursConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.ATTRACTION_OUTSIDE_OPERATING_HOURS;
+      return errorType === ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS;
    }
 
    static requiresGuardiansTalkUnscheduleConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+      return errorType === ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
    }
 
    static requiresFixedTimeItemLongWaitConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.FIXED_TIME_ITEM_LONG_WAIT;
+      return errorType === ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
    }
 
    static requiresGuardiansTalkWithoutAnimalConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.GUARDIANS_TALK_WITHOUT_ANIMAL;
+      return errorType === ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL;
    }
 
    static requiresAttractionWithoutAnimalConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.ATTRACTION_WITHOUT_ANIMAL;
+      return errorType === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL;
    }
 
    static requiresWildEncounterUnscheduleConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
+      return errorType === ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
    }
 
    static requiresGuardiansTalkWildEncounterTimeConflictConfirmation(errorType) {
-      return errorType === ItineraryErrorTypes.itineraryErrorTypes?.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT;
+      return errorType === ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT;
    }
 
    static resolveItineraryErrorMessage(
       errorType,
       strings = Strings.itinerary.errors
    ) {
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ITINERARY_DATE_NOT_SET) {
+      if (errorType === ItineraryErrorType.ITINERARY_DATE_NOT_SET) {
          return strings.itineraryDateNotSet;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.SAVE_FAILED) {
+      if (errorType === ItineraryErrorType.SAVE_FAILED) {
          return strings.saveFailed;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.TIME_ORDER_INVALID) {
+      if (errorType === ItineraryErrorType.TIME_ORDER_INVALID) {
          return strings.timeOrderInvalid;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE) {
+      if (errorType === ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE) {
          return strings.arrivalDepartureTooClose;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP) {
+      if (errorType === ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP) {
          return strings.earlyAdmissionRequiresMembership;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.NO_AVAILABLE_SLOT) {
+      if (errorType === ItineraryErrorType.NO_AVAILABLE_SLOT) {
          return strings.noAvailableSlot;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.REQUESTED_TIME_NOT_AVAILABLE) {
+      if (errorType === ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE) {
          return strings.requestedTimeNotAvailable;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ATTRACTION_OUTSIDE_OPERATING_HOURS) {
+      if (errorType === ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS) {
          return strings.attractionOutsideOperatingHours;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY) {
+      if (errorType === ItineraryErrorType.ITEM_NOT_ON_ITINERARY) {
          return strings.itemNotOnItinerary;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ITEM_ALREADY_SCHEDULED) {
+      if (errorType === ItineraryErrorType.ITEM_ALREADY_SCHEDULED) {
          return strings.itemAlreadyScheduled;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.TIME_OUT_OF_BOUNDS) {
+      if (errorType === ItineraryErrorType.TIME_OUT_OF_BOUNDS) {
          return strings.timeOutOfBounds;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.ACTIVITY_NOT_ON_DAY_SCHEDULE) {
+      if (errorType === ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE) {
          return strings.activityNotOnDaySchedule;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.SCHEDULE_WINDOW_UNAVAILABLE) {
+      if (errorType === ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE) {
          return strings.scheduleWindowUnavailable;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED) {
+      if (errorType === ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED) {
          return strings.bulkScheduleItineraryAlreadyScheduled;
       }
 
-      if (errorType === ItineraryErrorTypes.itineraryErrorTypes?.UNSCHEDULE_ALL_NOTHING_SCHEDULED) {
+      if (errorType === ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED) {
          return strings.unscheduleAllNothingScheduled;
       }
 

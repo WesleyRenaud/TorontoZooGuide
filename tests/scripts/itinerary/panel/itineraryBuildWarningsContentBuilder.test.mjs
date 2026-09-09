@@ -9,12 +9,10 @@ import { GuardiansTalkUnscheduleFragment } from '../../../../scripts/itinerary/p
 import { GuardiansTalkWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
-import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
 ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-   errorTypes: MOCK_ERROR_TYPES,
    suppressedErrorTypes: [],
 });
 

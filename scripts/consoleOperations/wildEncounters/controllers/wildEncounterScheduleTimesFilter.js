@@ -24,7 +24,7 @@ export class WildEncounterScheduleTimesFilter {
 
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
-            hasWildEncounter: Boolean(wildEncounter),
+            hasSelectedEntity: Boolean(wildEncounter),
             hasDate: true,
             autoSelectSingleTime: true,
          });
@@ -33,7 +33,7 @@ export class WildEncounterScheduleTimesFilter {
       function clear() {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times: [],
-            hasWildEncounter: false,
+            hasSelectedEntity: false,
          });
       }
 

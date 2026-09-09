@@ -77,7 +77,7 @@ test('Test_UpdateScheduleTimesCheckboxList_TestSingleOccurrence_ExpectAutoSelect
 
    ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
       times: [ '3:30 PM' ],
-      hasWildEncounter: true,
+      hasSelectedEntity: true,
       hasDate: true,
       autoSelectSingleTime: true,
    });
@@ -128,7 +128,7 @@ test('Test_UpdateScheduleTimesCheckboxList_TestEncounterNoDate_ExpectSelectDate'
 
    ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
       times: [],
-      hasWildEncounter: true,
+      hasSelectedEntity: true,
       hasDate: false,
    });
 
@@ -204,7 +204,7 @@ test('Test_ScheduleTimesCheckboxField_TestMissingListEl_ExpectNoOps', () => {
          ScheduleTimesCheckboxField.populateScheduleTimesCheckboxList(null, [ '1:00 PM' ]);
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(null, {
             times: [ '1:00 PM' ],
-            hasWildEncounter: true,
+            hasSelectedEntity: true,
             hasDate: true,
          });
          ScheduleTimesCheckboxField.clearScheduleTimesCheckboxList(null);
@@ -224,7 +224,7 @@ test('Test_UpdateScheduleTimesCheckboxList_TestEncounterWithDateNoTimes_ExpectNo
 
    ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
       times: [],
-      hasWildEncounter: true,
+      hasSelectedEntity: true,
       hasDate: true,
    });
 
@@ -241,7 +241,7 @@ test('Test_UpdateScheduleTimesCheckboxList_TestEncounterWithDateNoTimes_ExpectNo
 
    ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(listEl, {
       times: [],
-      hasWildEncounter: false,
+      hasSelectedEntity: false,
    });
    assert.equal(
       listEl.querySelector('.console-operations-schedule-times-placeholder')?.textContent,

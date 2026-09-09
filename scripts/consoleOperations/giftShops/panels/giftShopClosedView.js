@@ -1,39 +1,20 @@
+import { AmenityClosedPanelBuilder } from '../../forms/amenityClosedPanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
-import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class GiftShopClosedView {
    static createGiftShopClosedPanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return AmenityClosedPanelBuilder.createPanel({
          panelId: 'giftShopClosedPanel',
          title: Strings.panelTitles.giftShopClosed,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.giftShop,
-               inputId: 'giftShopClosedGiftShop',
-               emptyOptionLabel: Strings.placeholders.giftShop,
-            }),
-            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-               startDateId: 'giftShopClosedStartDate',
-               endDateId: 'giftShopClosedEndDate',
-               endHelpText: Strings.help.continueUntilReopened('gift shop'),
-            }),
-            ConsoleTextareaFieldBuilder.createTextareaField({
-               label: Strings.labels.closedMessage,
-               inputId: 'giftShopClosedMessage',
-               placeholder: Strings.textareas.closedMessage('gift shop'),
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitGiftShopClosed',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'giftShopClosedStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.giftShop,
+         emptyOptionLabel: Strings.placeholders.giftShop,
+         idPrefix: 'giftShopClosed',
+         entityFieldName: 'GiftShop',
+         endHelpText: Strings.help.continueUntilReopened('gift shop'),
+         messageLabel: Strings.labels.closedMessage,
+         messagePlaceholder: Strings.textareas.closedMessage('gift shop'),
+         submitId: 'submitGiftShopClosed',
+         statusId: 'giftShopClosedStatus',
       });
    }
 }

@@ -1,15 +1,8 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { ItineraryAdjustmentType } from '../shared/enums/itineraryAdjustmentType.js';
 
 export class ItineraryAdjustmentTypes {
-   static itineraryAdjustmentTypes = null;
-
-   static updateItineraryAdjustmentTypesFromConfig(itineraryConfig = {}) {
-      const adjustmentTypes = itineraryConfig?.adjustmentTypes;
-
-      if (adjustmentTypes && typeof adjustmentTypes === 'object') {
-         ItineraryAdjustmentTypes.itineraryAdjustmentTypes = Object.freeze({ ...adjustmentTypes });
-      }
-   }
+   static itineraryAdjustmentTypes = Object.freeze({ ...ItineraryAdjustmentType });
 
    static getItineraryAdjustmentTypes() {
       return ItineraryAdjustmentTypes.itineraryAdjustmentTypes;
@@ -17,11 +10,6 @@ export class ItineraryAdjustmentTypes {
 
    static normalizeItineraryAdjustmentType(adjustmentType) {
       const normalizedAdjustmentType = ValueNormalizer.asTrimmedString(adjustmentType);
-
-      if (!normalizedAdjustmentType || !ItineraryAdjustmentTypes.itineraryAdjustmentTypes) {
-         return normalizedAdjustmentType;
-      }
-
       const matchingEntry = Object.entries(ItineraryAdjustmentTypes.itineraryAdjustmentTypes).find(
          ([, value]) => value === normalizedAdjustmentType
       );

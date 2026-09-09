@@ -6,6 +6,7 @@ import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { EarlyAdmissionFragment } from './panel/earlyAdmissionFragment.js';
 import { ShortVisitFragment } from './panel/shortVisitFragment.js';
 import { PersistItineraryWarningSuppressor } from './persistItineraryWarningSuppressor.js';
+import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 export class ItineraryServiceTimeRunner {
@@ -67,9 +68,7 @@ export class ItineraryServiceTimeRunner {
             showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
             requestFn,
             timeValue,
-            suppressionType: (
-               ItineraryErrorTypes.getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
-            ),
+            suppressionType: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
             confirmationOptions: {
                confirmingEarlyAdmission: true,
             },
@@ -84,7 +83,7 @@ export class ItineraryServiceTimeRunner {
          showConfirmation: ShortVisitFragment.showShortVisitConfirmation,
          requestFn,
          timeValue,
-         suppressionType: ItineraryErrorTypes.getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,
+         suppressionType: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
          confirmationOptions: {
             confirmingShortVisit: true,
          },
