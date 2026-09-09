@@ -142,7 +142,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 });
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -176,7 +176,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 });
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -325,7 +325,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
 });
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRebuildsWithoutLongWaitConfirmationFor_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -363,7 +363,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
 });
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -493,7 +493,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
 });
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 

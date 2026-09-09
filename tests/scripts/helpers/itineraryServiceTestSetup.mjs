@@ -6,7 +6,7 @@ export function installItineraryServiceTestHooks() {
    installDomTestHooks({
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
-         ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+         ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
             suppressedErrorTypes: [],
          });
          globalThis.CustomEvent = class CustomEvent {

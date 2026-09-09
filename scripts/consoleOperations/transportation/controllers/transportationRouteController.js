@@ -1,6 +1,7 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
+import { TransportationRouteId } from '../../../shared/enums/transportationRouteId.js';
 import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
@@ -21,11 +22,11 @@ export class TransportationRouteController {
 
       function getSelectedRoute() {
          if (summerRouteEl?.checked) {
-            return 'summer';
+            return TransportationRouteId.SUMMER;
          }
 
          if (winterRouteEl?.checked) {
-            return 'winter';
+            return TransportationRouteId.WINTER;
          }
 
          return '';

@@ -1,5 +1,17 @@
 {
-   "OFFBOARDING": "offboarding_station",
-   "ONBOARDING": "onboarding_station",
-   "ROUND_TRIP": "round_trip"
+   "OFFBOARDING": {
+      "kind": "offboarding_station",
+      "onboarding": false,
+      "offboarding": true
+   },
+   "ONBOARDING": {
+      "kind": "onboarding_station",
+      "onboarding": true,
+      "offboarding": false
+   },
+   "ROUND_TRIP": {
+      "kind": "round_trip",
+      "onboarding": true,
+      "offboarding": true
+   }
 }

@@ -1,6 +1,6 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
-import { ItineraryTransportationStationRoles } from '../../itineraryTransportationStationRoles.js';
+import { ItineraryTransportationStationRole } from '../../../shared/enums/itineraryTransportationStationRole.js';
 import { TransportationSelectorModel } from './transportationSelectorModel.js';
 
 export class TransportationStationNameResolver {
@@ -64,7 +64,7 @@ export class TransportationStationNameResolver {
       if (stations.length > 0) {
          return TransportationStationNameResolver.namesForRoles(
             stations,
-            ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles()
+            ItineraryTransportationStationRole.onboardingRoleValues()
          );
       }
 
@@ -77,7 +77,7 @@ export class TransportationStationNameResolver {
       if (stations.length > 0) {
          return TransportationStationNameResolver.namesForRoles(
             stations,
-            ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles()
+            ItineraryTransportationStationRole.offboardingRoleValues()
          );
       }
 

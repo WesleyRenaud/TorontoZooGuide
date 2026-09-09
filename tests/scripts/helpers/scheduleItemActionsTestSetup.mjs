@@ -57,7 +57,7 @@ export function installScheduleItemActionsTestHooks() {
                this.detail = options.detail;
             }
          };
-         ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+         ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
             suppressedErrorTypes: [],
          });
       },

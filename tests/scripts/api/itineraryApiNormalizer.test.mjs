@@ -77,19 +77,6 @@ test('Test_NormalizeItineraryModel_TestCollections_ExpectNormalized', () => {
    assert.equal(model.events[0].event_type, 'arrival');
 });
 
-test('Test_NormalizeNamedStringMap_TestValues_ExpectFrozenTrimmed', () => {
-   const map = ItineraryApiNormalizer.normalizeNamedStringMap({
-      SUCCESS: '  success  ',
-      EMPTY: '  ',
-   });
-
-   assert.equal(map.SUCCESS, 'success');
-   assert.equal(map.EMPTY, undefined);
-   assert.throws(() => {
-      map.SUCCESS = 'changed';
-   });
-});
-
 test('Test_NormalizeZooHoursResponse_TestHours_ExpectNormalized', () => {
    assert.deepEqual(
       ItineraryApiNormalizer.normalizeZooHoursResponse({
@@ -157,7 +144,7 @@ test('Test_NormalizeItineraryReason_TestCode_ExpectTypeAlias', () => {
 });
 
 test('Test_NormalizeItineraryResult_TestStatusAndItinerary_ExpectResult', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -199,26 +186,6 @@ test('Test_MapScheduleItemKeyToWire_TestGuardiansTalkKey_ExpectWire', () => {
    );
 });
 
-test('Test_NormalizeItineraryErrorTypes_TestMap_ExpectFrozenTrimmed', () => {
-   const map = ItineraryApiNormalizer.normalizeItineraryErrorTypes({
-      SUCCESS: '  success  ',
-      EMPTY: '  ',
-   });
-
-   assert.equal(map.SUCCESS, 'success');
-   assert.equal(map.EMPTY, undefined);
-});
-
-test('Test_NormalizeItineraryAdjustmentTypes_TestMap_ExpectFrozenTrimmed', () => {
-   const map = ItineraryApiNormalizer.normalizeItineraryAdjustmentTypes({
-      REMOVED: '  removed  ',
-      EMPTY: '  ',
-   });
-
-   assert.equal(map.REMOVED, 'removed');
-   assert.equal(map.EMPTY, undefined);
-});
-
 test('Test_NormalizeVisitBoundaryEventTypes_TestConfig_ExpectTrimmed', () => {
    assert.deepEqual(
       ItineraryApiNormalizer.normalizeVisitBoundaryEventTypes({
@@ -240,11 +207,6 @@ test('Test_NormalizeItineraryConfig_TestFullConfig_ExpectNormalizedAndSideEffect
          arrival: 'arrival',
          departure: 'departure',
       },
-      itinerary_error_types: { SUCCESS: 'success' },
-      itinerary_adjustment_types: { REMOVED: 'removed' },
-      itinerary_transportation_station_roles: { BOARD: 'board' },
-      itinerary_transportation_station_onboarding_roles: ['  board  ', ''],
-      itinerary_transportation_station_offboarding_roles: ['  alight  '],
       itinerary_statuses: [
          { status: 'warning', is_suppressable: true, is_suppressed: true },
          { status: 'error', is_suppressable: false, is_suppressed: true },
@@ -256,11 +218,9 @@ test('Test_NormalizeItineraryConfig_TestFullConfig_ExpectNormalizedAndSideEffect
    assert.equal(config.itineraryAnimalMinLikelihood, 0.25);
    assert.deepEqual(config.eventTypes, ['arrival']);
    assert.deepEqual(config.visitBoundaryEventTypes, { arrival: 'arrival', departure: 'departure' });
-   assert.equal(config.errorTypes.SUCCESS, 'success');
-   assert.equal(config.adjustmentTypes.REMOVED, 'removed');
-   assert.equal(config.transportationStationRoles.BOARD, 'board');
-   assert.deepEqual(config.transportationStationOnboardingRoles, ['board']);
-   assert.deepEqual(config.transportationStationOffboardingRoles, ['alight']);
+   assert.equal(config.errorTypes, undefined);
+   assert.equal(config.adjustmentTypes, undefined);
+   assert.equal(config.transportationStationRoles, undefined);
    assert.deepEqual(config.statuses, [
       { status: 'warning', isSuppressable: true, isSuppressed: true },
       { status: 'error', isSuppressable: false, isSuppressed: true },
@@ -300,7 +260,7 @@ test('Test_NormalizeItineraryAdjustment_TestRow_ExpectNormalized', () => {
 });
 
 test('Test_NormalizeItineraryResult_TestConfigPathAndAdjustments_ExpectNormalized', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -311,8 +271,6 @@ test('Test_NormalizeItineraryResult_TestConfigPathAndAdjustments_ExpectNormalize
       suppressed_warnings: [],
       itinerary_path: { stops: [], legs: [], points: [] },
       itinerary_config: {
-         itinerary_error_types: { SUCCESS: 'success' },
-         itinerary_adjustment_types: { REMOVED: 'removed' },
          itinerary_statuses: [],
       },
    }, { includeItinerary: false });
@@ -320,12 +278,12 @@ test('Test_NormalizeItineraryResult_TestConfigPathAndAdjustments_ExpectNormalize
    assert.equal(result.status, 'success');
    assert.deepEqual(result.adjustments[0].type, 'arrivalTimeAdjusted');
    assert.deepEqual(result.itineraryPath, { stops: [], legs: [], points: [] });
-   assert.equal(result.itineraryConfig.errorTypes.SUCCESS, 'success');
+   assert.deepEqual(result.itineraryConfig.suppressedErrorTypes, []);
    assert.equal(result.itinerary, undefined);
 });
 
 test('Test_NormalizeItineraryResponse_TestPayload_ExpectResult', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -341,7 +299,7 @@ test('Test_NormalizeItineraryResponse_TestPayload_ExpectResult', () => {
 });
 
 test('Test_NormalizeScheduleItineraryItemResponse_TestPayload_ExpectResult', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -356,7 +314,7 @@ test('Test_NormalizeScheduleItineraryItemResponse_TestPayload_ExpectResult', () 
 });
 
 test('Test_NormalizeItineraryTimeSetResponse_TestPayload_ExpectResult', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 

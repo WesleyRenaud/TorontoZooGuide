@@ -14,6 +14,19 @@ test('Test_ItineraryAdjustmentType_TestConstants_ExpectWireValues', () => {
    assert.equal(ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED, 'departureTimeAdjusted');
 });
 
+test('Test_ItineraryAdjustmentType_TestNormalize_ExpectMatchedOrPassthrough', () => {
+   assert.equal(
+      ItineraryAdjustmentType.normalize('arrivalTimeAdjusted'),
+      ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   );
+   assert.equal(
+      ItineraryAdjustmentType.normalize('  departureTimeAdjusted  '),
+      ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
+   );
+   assert.equal(ItineraryAdjustmentType.normalize('custom'), 'custom');
+   assert.equal(ItineraryAdjustmentType.normalize(''), '');
+});
+
 test('Test_ItineraryAdjustmentType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(itineraryAdjustmentTypeValues)) {
       assert.equal(ItineraryAdjustmentType[key], value);

@@ -1,6 +1,10 @@
 from enum import Enum
 
+from .shared_enum_values import SharedEnumValues
 
-class TransportationRouteId( str, Enum ):
-   SUMMER = 'summer'
-   WINTER = 'winter'
+
+TransportationRouteId = Enum(
+   'TransportationRouteId',
+   SharedEnumValues.load( 'transportationRouteId.json' ),
+   type=str,
+)

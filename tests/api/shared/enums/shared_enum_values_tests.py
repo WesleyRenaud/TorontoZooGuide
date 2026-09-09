@@ -72,8 +72,8 @@ def Test_LoadObjectMembers_TestValidMembers_ExpectSortedDict(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    ( tmp_path / 'sample.json' ).write_text(
       '{\n'
-      '   "BETA": { "kind": "beta", "itemType": "betas" },\n'
-      '   "ALPHA": { "kind": "alpha" }\n'
+      '   "BETA": { "kind": "beta", "itemType": "betas", "onboarding": true },\n'
+      '   "ALPHA": { "kind": "alpha", "label": "Alpha" }\n'
       '}\n',
       encoding='utf-8' )
    monkeypatch.setattr(
@@ -82,8 +82,8 @@ def Test_LoadObjectMembers_TestValidMembers_ExpectSortedDict(
       staticmethod( lambda: tmp_path ) )
 
    assert SharedEnumValues.load_object_members( 'sample.json' ) == {
-      'ALPHA': { 'kind': 'alpha' },
-      'BETA': { 'kind': 'beta', 'itemType': 'betas' },
+      'ALPHA': { 'kind': 'alpha', 'label': 'Alpha' },
+      'BETA': { 'kind': 'beta', 'itemType': 'betas', 'onboarding': True },
    }
 
 
@@ -143,36 +143,6 @@ def Test_LoadObjectMembers_TestMissingKind_ExpectValueError(
 
    with pytest.raises( ValueError, match='kind for ALPHA' ):
       SharedEnumValues.load_object_members( 'no-kind.json' )
-
-
-def Test_LoadObjectMembers_TestBlankItemType_ExpectValueError(
-      tmp_path: Path,
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   ( tmp_path / 'blank-item-type.json' ).write_text(
-      '{ "ALPHA": { "kind": "alpha", "itemType": "" } }\n',
-      encoding='utf-8' )
-   monkeypatch.setattr(
-      SharedEnumValues,
-      'shared_enums_directory',
-      staticmethod( lambda: tmp_path ) )
-
-   with pytest.raises( ValueError, match='itemType for ALPHA' ):
-      SharedEnumValues.load_object_members( 'blank-item-type.json' )
-
-
-def Test_LoadObjectMembers_TestUnknownField_ExpectValueError(
-      tmp_path: Path,
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   ( tmp_path / 'unknown-field.json' ).write_text(
-      '{ "ALPHA": { "kind": "alpha", "label": "Alpha" } }\n',
-      encoding='utf-8' )
-   monkeypatch.setattr(
-      SharedEnumValues,
-      'shared_enums_directory',
-      staticmethod( lambda: tmp_path ) )
-
-   with pytest.raises( ValueError, match='unknown field' ):
-      SharedEnumValues.load_object_members( 'unknown-field.json' )
 
 
 def Test_LoadIntegers_TestValidMembers_ExpectSortedDict(

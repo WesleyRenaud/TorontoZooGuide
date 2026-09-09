@@ -7,7 +7,7 @@ import { Strings } from '../../../scripts/strings.js';
 
 function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
    const originalSuppressed = ItineraryErrorTypes.suppressedItineraryErrorTypes;
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({ suppressedErrorTypes });
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({ suppressedErrorTypes });
    try {
       return run();
    } finally {
@@ -15,16 +15,16 @@ function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
    }
 }
 
-test('Test_UpdateItineraryErrorTypesFromConfig_TestSuppressed_ExpectHydrated', () => {
+test('Test_SyncSuppressedItineraryErrorTypes_TestSuppressed_ExpectHydrated', () => {
    _withSuppressedErrorTypes(['saveFailed'], () => {
       assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed('saveFailed'), true);
       assert.equal(ItineraryErrorTypes.isItineraryErrorSuppressed('success'), false);
    });
 });
 
-test('Test_UpdateItineraryErrorTypesFromConfig_TestMissingConfig_ExpectEmptySuppressed', () => {
+test('Test_SyncSuppressedItineraryErrorTypes_TestMissingConfig_ExpectEmptySuppressed', () => {
    const originalSuppressed = ItineraryErrorTypes.suppressedItineraryErrorTypes;
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig();
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes();
    try {
       assert.deepEqual(ItineraryErrorTypes.suppressedItineraryErrorTypes, []);
    } finally {
