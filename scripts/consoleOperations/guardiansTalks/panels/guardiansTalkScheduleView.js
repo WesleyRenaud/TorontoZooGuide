@@ -26,6 +26,8 @@ export class GuardiansTalkScheduleView {
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'guardiansTalkScheduleStartDate',
                endDateId: 'guardiansTalkScheduleEndDate',
+               endLabel: Strings.labels.stopsBeingOfferedOn,
+               endPlaceholder: Strings.placeholders.stopsBeingOfferedOn,
                endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
             ConsoleRecurringScheduleRowsFieldBuilder.createRecurringScheduleRowsField({

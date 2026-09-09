@@ -9,8 +9,8 @@ export class ConsoleDateRangeFieldsBuilder {
       startPlaceholder = Strings.placeholders.startDate,
       startHelpText = '',
       endDateId,
-      endLabel = Strings.labels.endDate,
-      endPlaceholder = Strings.placeholders.endDate,
+      endLabel = Strings.labels.lastDay,
+      endPlaceholder = Strings.placeholders.lastDay,
       endHelpText = '',
    } = {}) {
       return ConsoleFieldPrimitiveBuilder.createFragment([

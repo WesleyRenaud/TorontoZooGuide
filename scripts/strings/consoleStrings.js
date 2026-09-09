@@ -3,28 +3,45 @@ import { JoinedTimesFormatter } from '../shared/joinedTimesFormatter.js';
 
 export class ConsoleStrings {
    static help = {
-      continueUntilReopened: entityName => (
-         `Leave blank to continue until the ${entityName} is reopened.`
+      continueUntilScheduleEnded: (
+         'Leave blank to keep offering with no stop date.'
       ),
-      continueUntilScheduleEnded: 'Leave blank to continue until the schedule is ended.',
-      endScheduleToday: 'Leave blank to end the schedule today.',
-      endUpdateToday: 'Leave blank to end the update today.',
-      keepAlertActiveUntilRemoved: 'Leave blank to keep the alert active until manually removed.',
-      keepEventActiveWithoutEndDate: 'Leave blank to keep the event active with no end date.',
+      endScheduleToday: (
+         'Leave blank to stop offering today. This date is the first day '
+         + 'the schedule is not offered.'
+      ),
+      endUpdateToday: (
+         'Leave blank to stop showing the update today. This date is the first '
+         + 'day it is not shown.'
+      ),
+      keepAlertActiveUntilRemoved: (
+         'Leave blank to keep the alert active until manually removed (no last day).'
+      ),
+      keepEventActiveWithoutEndDate: (
+         'Leave blank to keep the event active with no last day.'
+      ),
       keepClosedUntilManuallyReopened: entityName => (
-         `Leave blank to keep the ${entityName} closed until it is manually reopened.`
+         `Leave blank to keep the ${entityName} closed until it is manually `
+         + 'reopened (no last day).'
       ),
-      keepCurrentEndDate: 'Leave blank to keep the current end date.',
+      keepCurrentEndDate: 'Leave blank to keep the current stop date.',
       keepOffDisplayUntilOnDisplay: (
-         'Leave blank to keep the animal off display until it is manually set back on display.'
+         'Leave blank to keep the animal off display until it is manually set '
+         + 'back on display (no last day).'
       ),
       keepExplicitlyOpenUntilChanged: (entityName, subject = 'it is') => (
-         `Leave blank to keep the ${entityName} explicitly open until ${subject} changed.`
+         `Leave blank to keep the ${entityName} explicitly open until ${subject} `
+         + 'changed (no last day).'
       ),
-      keepRouteUntilChanged: 'Leave blank to keep this route until it is changed again.',
-      keepScheduleUntilChanged: 'Leave blank to keep this schedule active until it is changed.',
+      keepRouteUntilChanged: (
+         'Leave blank to keep this route until it is changed again (no last day).'
+      ),
+      keepScheduleUntilChanged: (
+         'Leave blank to keep this schedule active with no last day.'
+      ),
       endSingleWildEncounterScheduleTime: (
-         'Leave blank to end all times for this encounter on the selected date.'
+         'Leave blank to stop offering all times for this encounter on the '
+         + 'selected date (that date is not offered).'
       ),
       endScheduleTimes: (
          'Select one or more scheduled times to end.'
@@ -37,11 +54,16 @@ export class ConsoleStrings {
       talkScheduleRows: 'Add each talk time with the days it runs.',
       removeEncounterScheduleRow: 'Remove this scheduled time',
       removeScheduledTime: time => `Remove ${time}`,
-      keepUpdateActiveWithoutEndDate: 'Leave blank to keep the update active with no end date.',
+      keepUpdateActiveWithoutEndDate: (
+         'Leave blank to keep the update active with no stop date.'
+      ),
       keepVisibilityScheduleUntilChanged: (
-         'Leave blank to keep this visibility schedule in place until manually changed.'
+         'Leave blank to keep this visibility schedule in place with no last day.'
       ),
       startImmediately: 'Leave blank to start immediately.',
+      continueUntilReopened: entityName => (
+         `Leave blank to keep the ${entityName} closed until reopened (no last day).`
+      ),
    };
 
    static loadErrors = {
@@ -65,6 +87,9 @@ export class ConsoleStrings {
       weekendHolidayEndTime: 'Select a weekend/holiday end time',
       weekendHolidayStartTime: 'Select a weekend/holiday start time',
       endDate: 'Select an end date',
+      lastDay: 'Select the last day this applies',
+      lastDayOfSchedule: 'Select the last day of this schedule',
+      stopsBeingOfferedOn: 'Select the first day this is not offered',
       encounterTimes: 'Select encounter times',
       selectWildEncounterFirst: 'Select a wild encounter first',
       selectDateFirst: 'Select a date first',
@@ -72,12 +97,11 @@ export class ConsoleStrings {
       giftShop: 'Select a gift shop',
       keepCurrentType: 'Keep current type',
       location: 'Select a location',
-      newEndDate: 'Select a new end date',
+      newEndDate: 'Select a new stop date',
       option: 'Select an option',
       restaurant: 'Select a restaurant',
       restroom: 'Select a restroom',
       restroomAlertExample: 'Example: Women\'s restroom is temporarily unavailable',
-      scheduleEndDate: 'Select the date the schedule should end',
       scheduledTime: label => `Select ${label} time`,
       speciesSearch: 'Search for a species',
       startDate: 'Select a start date',
