@@ -224,6 +224,21 @@ def Test_FetchScheduleRecords_TestExpiredAndActiveRows_ExpectOnlyActiveRowOnVisi
    assert not records[ Position.FIRST ].is_cancelled
 
 
+def Test_FetchScheduleRecords_TestEndsOnVisitDate_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date='2026-07-01',
+      end_date=VISIT_DATE )
+   schedule_provider_conn.commit()
+
+   records = WildEncounterScheduleProvider.fetch_schedule_records(
+      schedule_provider_conn,
+      VISIT_DATE )
+
+   assert records == []
+
+
 def Test_FetchScheduleRecords_TestCancellationOnVisitDate_ExpectIsCancelledTrue(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(

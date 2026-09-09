@@ -104,6 +104,28 @@ def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
       year=VISIT_YEAR ) == []
 
 
+def Test_EndUpdate_TestEndsOnVisitDate_ExpectHiddenOnThatDate(
+      db: SeededDatabase,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   patch_database_today( monkeypatch, date( 2026, 6, 15 ) )
+
+   assert UpdateCoordinator.create_update(
+      title=UPDATE_TITLE,
+      description=UPDATE_DESCRIPTION,
+      update_type=UPDATE_TYPE,
+      start_date=UPDATE_START_DATE,
+      end_date=None )
+
+   assert UpdateCoordinator.end_update(
+      UPDATE_TITLE,
+      UPDATE_START_DATE,
+      '2026-06-15' ) is True
+   assert UpdateCoordinator.get_updates_for_visit_date(
+      month=VISIT_MONTH,
+      day=VISIT_DAY,
+      year=VISIT_YEAR ) == []
+
+
 def Test_GetUnexpiredUpdates_TestFutureAndExpiredUpdates_ExpectFutureOnly(
       db: SeededDatabase,
       monkeypatch: pytest.MonkeyPatch ) -> None:
