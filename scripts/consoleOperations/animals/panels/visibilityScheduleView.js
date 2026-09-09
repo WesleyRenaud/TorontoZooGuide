@@ -30,7 +30,8 @@ export class VisibilityScheduleView {
                startLabel: Strings.labels.scheduleStartDate,
                startHelpText: Strings.help.startImmediately,
                endDateId: 'visibilityScheduleEndDate',
-               endLabel: Strings.labels.scheduleEndDate,
+               endLabel: Strings.labels.lastDayOfSchedule,
+               endPlaceholder: Strings.placeholders.lastDayOfSchedule,
                endHelpText: Strings.help.keepVisibilityScheduleUntilChanged,
             }),
             ConsoleDateFieldBuilder.createDateField({

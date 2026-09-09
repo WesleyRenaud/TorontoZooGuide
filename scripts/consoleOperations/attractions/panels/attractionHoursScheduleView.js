@@ -22,7 +22,8 @@ export class AttractionHoursScheduleView {
                startLabel: Strings.labels.scheduleStartDate,
                startHelpText: Strings.help.startImmediately,
                endDateId: 'attractionHoursScheduleEndDate',
-               endLabel: Strings.labels.scheduleEndDate,
+               endLabel: Strings.labels.lastDayOfSchedule,
+               endPlaceholder: Strings.placeholders.lastDayOfSchedule,
                endHelpText: Strings.help.keepScheduleUntilChanged,
             }),
             ConsoleDateFieldBuilder.createDateField({

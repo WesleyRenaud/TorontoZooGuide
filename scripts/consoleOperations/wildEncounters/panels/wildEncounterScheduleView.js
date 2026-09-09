@@ -21,6 +21,8 @@ export class WildEncounterScheduleView {
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'wildEncounterScheduleStartDate',
                endDateId: 'wildEncounterScheduleEndDate',
+               endLabel: Strings.labels.stopsBeingOfferedOn,
+               endPlaceholder: Strings.placeholders.stopsBeingOfferedOn,
                endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
             ConsoleRecurringScheduleRowsFieldBuilder.createRecurringScheduleRowsField({
