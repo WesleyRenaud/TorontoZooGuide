@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ConsoleWildEncounterScheduleRowsFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleWildEncounterScheduleRowsFieldBuilder.js';
+import { ConsoleRecurringScheduleRowsFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleRecurringScheduleRowsFieldBuilder.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateWildEncounterScheduleRowsField_TestIds_ExpectRowsAndAddButton', () => {
-   const fieldEl = ConsoleWildEncounterScheduleRowsFieldBuilder.createWildEncounterScheduleRowsField({
+test('Test_CreateRecurringScheduleRowsField_TestIds_ExpectRowsAndAddButton', () => {
+   const fieldEl = ConsoleRecurringScheduleRowsFieldBuilder.createRecurringScheduleRowsField({
       rowsId: 'rows',
       addRowButtonId: 'add-row',
    });

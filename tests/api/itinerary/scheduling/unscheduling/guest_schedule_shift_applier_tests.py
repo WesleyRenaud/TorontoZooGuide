@@ -23,6 +23,7 @@ from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums import ItineraryEventType, Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 CHEETAH_KEY = AnimalScheduleItemKey(
@@ -30,7 +31,7 @@ CHEETAH_KEY = AnimalScheduleItemKey(
    exhibit='Africa Savanna',
 )
 
-ZOOMOBILE = 'Zoomobile'
+
 ZOOMOBILE_ATTRACTION_START = '11:00 AM'
 ZOOMOBILE_ATTRACTION_END = '11:30 AM'
 ZOOMOBILE_TRANSIT_START = '11:30 AM'
@@ -206,7 +207,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             )
             VALUES ( ?, NULL, 3, 1, ?, ?, NULL, 0 );
       """,
-      ( ZOOMOBILE, ZOOMOBILE_ATTRACTION_START, ZOOMOBILE_ATTRACTION_END ) )
+      ( TransportationName.ZOOMOBILE, ZOOMOBILE_ATTRACTION_START, ZOOMOBILE_ATTRACTION_END ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportation (
                TRANSPORTATION,
@@ -221,7 +222,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             VALUES ( ?, NULL, 3, 0, ?, ?, ?, 1 );
       """,
       (
-         ZOOMOBILE,
+         TransportationName.ZOOMOBILE,
          ZOOMOBILE_TRANSIT_START,
          ZOOMOBILE_TRANSIT_END,
          ZOOMOBILE_TRANSIT_ROUTE,
@@ -237,7 +238,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             )
             VALUES ( ?, 0, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, 'Station A', 'Station B', '11:30 AM', '11:45 AM' ) )
+      ( TransportationName.ZOOMOBILE, 'Station A', 'Station B', '11:30 AM', '11:45 AM' ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
                TRANSPORTATION,
@@ -249,7 +250,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             )
             VALUES ( ?, 0, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, 'Station B', 'Station C', '11:45 AM', '12:00 PM' ) )
+      ( TransportationName.ZOOMOBILE, 'Station B', 'Station C', '11:45 AM', '12:00 PM' ) )
    conn.commit()
 
    return SavedItinerary(
@@ -258,7 +259,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
       departure_time='5:00 PM',
       transportation_rows=(
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True,
@@ -266,7 +267,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             end_time=ZOOMOBILE_ATTRACTION_END,
          ),
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False,
@@ -276,7 +277,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
             bulk_transit_evaluated=True,
             legs=[
                ItineraryTransportationLeg(
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False,
                   from_station='Station A',
                   to_station='Station B',
@@ -284,7 +285,7 @@ def _insert_zoomobile_transportation_schedule( conn: sqlite3.Connection ) -> Sav
                   end_time='11:45 AM',
                ),
                ItineraryTransportationLeg(
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False,
                   from_station='Station B',
                   to_station='Station C',
@@ -545,7 +546,7 @@ def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarl
       shift_applier_conn,
       cur,
       saved_itinerary=saved_itinerary,
-      schedule_item_key=AttractionScheduleItemKey( name=ZOOMOBILE ) )
+      schedule_item_key=AttractionScheduleItemKey( name=TransportationName.ZOOMOBILE ) )
    shift_applier_conn.commit()
    cur.close()
 
@@ -555,7 +556,7 @@ def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarl
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 0;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
    legs = shift_applier_conn.execute(
       """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
@@ -564,7 +565,7 @@ def Test_ApplyForUnschedule_TestAttractionZoomobile_ExpectTransitLegsShiftedEarl
               AND ADDED_AS_ATTRACTION = 0
             ORDER BY START_TIME;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchall()
 
    assert transit_row is not None

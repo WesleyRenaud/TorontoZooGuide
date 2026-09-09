@@ -3,6 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import { ItineraryClient } from '../../../scripts/api/itineraryClient.js';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
+import { ItinerarySaveIssueItemType } from '../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 function _normalizedItineraryConfig(overrides = {}) {
    return {
@@ -642,7 +643,7 @@ test('Test_BulkScheduleItineraryRequest_TestAnimals_ExpectNormalized', async () 
                   {
                      name: 'African Lion',
                      location: 'Africa Savanna',
-                     item_type: 'animal',
+                     item_type: ItinerarySaveIssueItemType.ANIMAL,
                   },
                ],
             },

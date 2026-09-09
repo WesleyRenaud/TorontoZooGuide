@@ -12,16 +12,16 @@ from api.itinerary.transportation.transportation_route_leg_segment import Transp
 from api.itinerary.validation.itinerary_transportation_validator import ItineraryTransportationValidator
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = date( 2026, 6, 15 )
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 
 CARRYOVER_LEG = ItineraryTransportationLeg(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    from_station=MAIN,
    to_station=CANADA,
    start_time='10:00 AM',
@@ -29,7 +29,7 @@ CARRYOVER_LEG = ItineraryTransportationLeg(
    added_as_attraction=True )
 
 SAVED_ROW = ItineraryTransportationRecord(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    old_likelihood=None,
    new_likelihood=100,
    added_as_attraction=True,
@@ -40,7 +40,7 @@ SAVED_ROW = ItineraryTransportationRecord(
 )
 
 DAY_LOOP = TransportationDayLoop(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    route='summer',
    main_station=MAIN,
    legs=[
@@ -74,7 +74,7 @@ def Test_Validate_TestVisitDateChangingWithDayLoop_ExpectExpandedLegsAndRoute(
    diffs = ItineraryTransportationValidator.validate(
       AttractionCoordinator,
       None,
-      [ ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=True ) ],
+      [ ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=True ) ],
       VISIT_DATE,
       arrival_time='9:00 AM',
       departure_time='5:00 PM',
@@ -83,7 +83,7 @@ def Test_Validate_TestVisitDateChangingWithDayLoop_ExpectExpandedLegsAndRoute(
       visit_date_is_changing=True )
 
    assert len( diffs ) == 1
-   assert diffs[ Position.FIRST ].name == ZOOMOBILE
+   assert diffs[ Position.FIRST ].name == TransportationName.ZOOMOBILE
    assert diffs[ Position.FIRST ].new_likelihood == 80
    assert diffs[ Position.FIRST ].start_time == '10:00 AM'
    assert diffs[ Position.FIRST ].end_time == '10:30 AM'
@@ -103,7 +103,7 @@ def Test_Validate_TestVisitDateChangingWithoutDayLoop_ExpectEmptyLegs(
    diffs = ItineraryTransportationValidator.validate(
       AttractionCoordinator,
       None,
-      [ ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=True ) ],
+      [ ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=True ) ],
       VISIT_DATE,
       arrival_time='9:00 AM',
       departure_time='5:00 PM',
@@ -129,7 +129,7 @@ def Test_Validate_TestSameVisitDateWithCarryoverLegs_ExpectLegsPreserved(
    diffs = ItineraryTransportationValidator.validate(
       AttractionCoordinator,
       None,
-      [ ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=True ) ],
+      [ ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=True ) ],
       VISIT_DATE,
       arrival_time='9:00 AM',
       departure_time='5:00 PM',
@@ -148,7 +148,7 @@ def Test_Validate_TestScheduleOutsideVisitWindow_ExpectClearedLegs(
    diffs = ItineraryTransportationValidator.validate(
       AttractionCoordinator,
       None,
-      [ ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=True ) ],
+      [ ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=True ) ],
       VISIT_DATE,
       arrival_time='11:00 AM',
       departure_time='5:00 PM',

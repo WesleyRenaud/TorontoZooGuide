@@ -3,35 +3,34 @@ from __future__ import annotations
 from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
 from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.transportation_name import TransportationName
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 AFRICA_STATION = 'Africa Zoomobile Station'
 EURASIA_STATION = 'Eurasia Zoomobile Station'
-
 TRANSPORTATION_LEGS = [
    ItineraryTransportationLeg(
       MAIN_STATION,
       CANADA_STATION,
       '10:00 AM',
       '10:20 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
    ItineraryTransportationLeg(
       CANADA_STATION,
       AFRICA_STATION,
       '10:20 AM',
       '10:30 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
    ItineraryTransportationLeg(
       'Tundra Zoomobile Station',
       EURASIA_STATION,
       '10:30 AM',
       '10:45 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
 ]
 

@@ -6,9 +6,8 @@ import pytest
 
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
-
-ZOOMOBILE = 'Zoomobile'
 
 ROUTE_MARKER_SCHEMA = """
 CREATE TABLE ItineraryTransportationRouteMarker (
@@ -38,7 +37,7 @@ def Test_InsertItineraryTransportationRouteMarkers_TestSequences_ExpectOrderedRe
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route_marker_sequences=[
          [ 'm-a', 'm-b' ],
@@ -63,12 +62,12 @@ def Test_DeleteItineraryTransportationRouteMarkers_TestOwnedRows_ExpectRemoved(
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route_marker_sequences=[ [ 'm-a' ] ] )
    ItineraryTransportationRouteMarkerProvider.delete_itinerary_transportation_route_markers(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True )
    route_marker_conn.commit()
    cur.close()
@@ -82,7 +81,7 @@ def Test_ClearItineraryTransportationRouteMarkers_TestOwnedRows_ExpectEmptyTable
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route_marker_sequences=[ [ 'm-a' ] ] )
    ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers( cur )

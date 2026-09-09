@@ -8,11 +8,11 @@ from api.itinerary.data_access.transportation_day_loop_provider import Transport
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.itinerary.transportation.transportation_route_resolver import TransportationRouteResolver
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = date( 2026, 6, 15 )
 WINTER_VISIT_DATE = date( 2026, 1, 15 )
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
@@ -29,7 +29,7 @@ def stub_transportation_day_loop_fetcher( monkeypatch: pytest.MonkeyPatch ) -> N
    monkeypatch.setattr(
       TransportationDayLoopProvider,
       'fetch_main_transportation_station',
-      lambda conn, transportation: MAIN if transportation == ZOOMOBILE else None )
+      lambda conn, transportation: MAIN if transportation == TransportationName.ZOOMOBILE else None )
    monkeypatch.setattr(
       TransportationRouteResolver,
       'resolve_for_date',
@@ -44,11 +44,11 @@ def Test_Fetch_TestOwnedLegRows_ExpectOrderedDayLoop(
       stub_transportation_day_loop_fetcher: None ) -> None:
    day_loop = TransportationDayLoopFetcher.fetch(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE )
 
    assert day_loop is not None
-   assert day_loop.transportation == ZOOMOBILE
+   assert day_loop.transportation == TransportationName.ZOOMOBILE
    assert day_loop.route == 'summer'
    assert day_loop.main_station == MAIN
    assert [
@@ -70,7 +70,7 @@ def Test_Fetch_TestMissingMainStation_ExpectNone(
 
    assert TransportationDayLoopFetcher.fetch(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) is None
 
 
@@ -91,7 +91,7 @@ def Test_Fetch_TestNoLegRows_ExpectNone(
 
    assert TransportationDayLoopFetcher.fetch(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) is None
 
 
@@ -130,11 +130,11 @@ def Test_Fetch_TestSummerAndWinterRoutes_ExpectDistinctStationSequences(
 
    summer_loop = TransportationDayLoopFetcher.fetch(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE )
    winter_loop = TransportationDayLoopFetcher.fetch(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=WINTER_VISIT_DATE )
 
    assert summer_loop is not None

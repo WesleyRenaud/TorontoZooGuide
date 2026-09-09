@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { FilterDraftExcludingWarningFixedTimeItems } from '../../../../scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 test('Test_FilterDraftExcludingWarningFixedTimeItems_TestMatchingItems_ExpectRemoved', () => {
    const filtered = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
@@ -20,11 +21,11 @@ test('Test_FilterDraftExcludingWarningFixedTimeItems_TestMatchingItems_ExpectRem
             {
                name: 'Amur Tiger',
                start_time: '11:00 AM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Capybara',
-               item_type: 'wildEncounter',
+               item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
             },
          ],
       }]
@@ -56,7 +57,7 @@ test('Test_FilterDraftExcludingWarningFixedTimeItems_TestEndTimeOnly_ExpectMatch
          type: 'fixedTimeItemLongWait',
          items: [{
             name: 'Western Grey Kangaroo',
-            item_type: 'guardiansTalk',
+            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             start_time: '11:00 AM',
             end_time: '11:30 AM',
          }],

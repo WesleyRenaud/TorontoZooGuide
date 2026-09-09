@@ -1,37 +1,22 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
-import { ScheduleTimesCheckboxField } from '../../forms/scheduleTimesCheckboxField.js';
+import { CancelOccurrenceControllerFactory } from '../../forms/cancelOccurrenceControllerFactory.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
-import { ConsoleStatusPresenter } from '../../shell/consoleStatusPresenter.js';
 import { Strings } from '../../../strings.js';
 
 export class CancelGuardiansTalkController {
    static createCancelGuardiansTalkOccurrenceController({
-      showButtonEl,
-      panelEl,
-      cancelButtonEl,
-      submitButtonEl,
-      statusEl,
       talkNameEl,
       locationEl,
       dateEl,
       timesEl,
-      activatePanel,
       talkLocationFilterController = null,
       occurrenceFilterController = null,
+      ...controllerOptions
    } = {}) {
-      const formFieldEls = [locationEl, dateEl];
-
-
-      function getSelectedTimes() {
-         return ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl);
-      }
 
       function resetOccurrenceFields() {
-         if (occurrenceFilterController?.clear) {
-            occurrenceFilterController.clear();
-         }
+         occurrenceFilterController?.clear?.();
       }
 
       function resetTalkDropdown() {
@@ -44,38 +29,9 @@ export class CancelGuardiansTalkController {
          else if (talkNameEl) {
             talkNameEl.value = '';
          }
-
-         resetOccurrenceFields();
       }
 
-      function resetForm() {
-         ControllerHelper.resetFormFields(formFieldEls);
-         resetTalkDropdown();
-      }
-
-      function getFormValues() {
-         return {
-            talk: ControllerHelper.getFieldValue(talkNameEl),
-            location: ControllerHelper.getFieldValue(locationEl),
-            date: ControllerHelper.getFieldValue(dateEl),
-            times: getSelectedTimes(),
-         };
-      }
-
-      function show() {
-         ConsoleStatusPresenter.setStatus(statusEl, '');
-         activatePanel?.(panelEl);
-      }
-
-      function hide() {
-         ControllerHelper.hideConsolePanel({
-            panelEl,
-            statusEl,
-            setStatus: ConsoleStatusPresenter.setStatus,
-         });
-      }
-
-      function validateForm({ talk, location, date, times }) {
+      function validateSelection({ talk, location, date, times }) {
          if (!location) {
             return Strings.validation.entityRequired(Strings.labels.location);
          }
@@ -95,7 +51,7 @@ export class CancelGuardiansTalkController {
          return null;
       }
 
-      async function refreshLocations() {
+      async function prepareForm() {
          if (talkLocationFilterController?.refreshLocations) {
             await talkLocationFilterController.refreshLocations();
          }
@@ -110,57 +66,25 @@ export class CancelGuardiansTalkController {
          });
       }
 
-      function handleSubmitSuccess(result) {
-         ConsoleStatusPresenter.setStatus(
-            statusEl,
-            Strings.status.guardiansTalkOccurrenceCancelled(result),
-            'is-success'
-         );
-
-         resetForm();
-      }
-
-      async function onShowClick() {
-         ConsoleStatusPresenter.setStatus(statusEl, '');
-
-         try {
-            resetForm();
-            await refreshLocations();
-            show();
-         }
-         catch(err) {
-            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.locations, 'is-error');
-            show();
-         }
-      }
-
-      async function onSubmitClick() {
-         const formValues = getFormValues();
-
-         ConsoleStatusPresenter.setStatus(statusEl, '');
-
-         const validationError = validateForm(formValues);
-
-         if (validationError) {
-            ConsoleStatusPresenter.setStatus(statusEl, validationError, 'is-error');
-            return;
-         }
-
-         try {
-            const result = await submitOccurrenceCancellation(formValues);
-
-            if (result.success) {
-               handleSubmitSuccess(result);
-            }
-            else {
-               ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
-            }
-
-         }
-         catch(err) {
-            ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
-         }
-      }
+      const controller = CancelOccurrenceControllerFactory.createCancelOccurrenceController({
+         ...controllerOptions,
+         dateEl,
+         timesEl,
+         occurrenceFilterController,
+         resetSelection: () => {
+            ControllerHelper.resetFormFields([locationEl]);
+            resetTalkDropdown();
+         },
+         getSelectionValues: () => ({
+            talk: ControllerHelper.getFieldValue(talkNameEl),
+            location: ControllerHelper.getFieldValue(locationEl),
+         }),
+         validateSelection,
+         prepareForm,
+         loadErrorMessage: Strings.loadErrors.locations,
+         submitOccurrenceCancellation,
+         successMessage: result => Strings.status.guardiansTalkOccurrenceCancelled(result),
+      });
 
       locationEl?.addEventListener('change', () => {
          resetOccurrenceFields();
@@ -175,19 +99,6 @@ export class CancelGuardiansTalkController {
          }
       });
 
-      dateEl?.addEventListener('change', () => {
-         if (occurrenceFilterController?.refreshTimes) {
-            occurrenceFilterController.refreshTimes();
-         }
-      });
-
-      showButtonEl?.addEventListener('click', onShowClick);
-      cancelButtonEl?.addEventListener('click', hide);
-      submitButtonEl?.addEventListener('click', onSubmitClick);
-
-      return {
-         show,
-         hide,
-      };
+      return controller;
    }
 }

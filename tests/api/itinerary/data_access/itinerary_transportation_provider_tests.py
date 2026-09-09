@@ -8,12 +8,11 @@ from api.itinerary.data_access.itinerary_transportation_provider import Itinerar
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
-
 TRANSPORTATION_PROVIDER_SCHEMA = """
 CREATE TABLE ItineraryTransportation (
    TRANSPORTATION           TEXT        NOT NULL,
@@ -63,7 +62,7 @@ def Test_InsertItineraryTransportation_TestNewRow_ExpectInserted(
    cur = transportation_provider_conn.cursor()
    inserted = ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
@@ -79,7 +78,7 @@ def Test_InsertItineraryTransportation_TestNewRow_ExpectInserted(
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert inserted is True
@@ -95,13 +94,13 @@ def Test_InsertItineraryTransportation_TestDuplicateRow_ExpectIgnored(
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True )
    duplicate_inserted = ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=50,
       added_as_attraction=True )
@@ -114,7 +113,7 @@ def Test_InsertItineraryTransportation_TestDuplicateRow_ExpectIgnored(
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert duplicate_inserted is False
@@ -127,11 +126,11 @@ def Test_InsertItineraryTransportationLegs_TestLegs_ExpectPersistedRows(
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation_legs(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       legs=[
          ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             from_station=MAIN,
             to_station=CANADA,
             start_time='10:00 AM',
@@ -147,7 +146,7 @@ def Test_InsertItineraryTransportationLegs_TestLegs_ExpectPersistedRows(
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchall()
 
    assert len( legs ) == 1
@@ -160,7 +159,7 @@ def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectCleare
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
@@ -170,7 +169,7 @@ def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectCleare
       bulk_transit_evaluated=True )
    ItineraryTransportationProvider.clear_itinerary_transportation_schedule_times(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True )
    transportation_provider_conn.commit()
    cur.close()
@@ -181,7 +180,7 @@ def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectCleare
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -196,13 +195,13 @@ def Test_SetItineraryTransportationBulkTransitEvaluated_TestRow_ExpectUpdatedFla
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True )
    ItineraryTransportationProvider.set_itinerary_transportation_bulk_transit_evaluated(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       bulk_transit_evaluated=True )
    transportation_provider_conn.commit()
@@ -214,7 +213,7 @@ def Test_SetItineraryTransportationBulkTransitEvaluated_TestRow_ExpectUpdatedFla
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -226,17 +225,17 @@ def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersR
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True )
    ItineraryTransportationProvider.insert_itinerary_transportation_legs(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       legs=[
          ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             from_station=MAIN,
             to_station=CANADA,
             start_time='10:00 AM',
@@ -245,12 +244,12 @@ def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersR
       ] )
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route_marker_sequences=[ [ 'm-a', 'm-b' ] ] )
    ItineraryTransportationProvider.delete_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True )
    transportation_provider_conn.commit()
    cur.close()
@@ -272,7 +271,7 @@ def Test_ClearAllItineraryTransportationScheduleTimes_TestScheduledRows_ExpectAl
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
@@ -281,7 +280,7 @@ def Test_ClearAllItineraryTransportationScheduleTimes_TestScheduledRows_ExpectAl
       route='summer' )
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False,

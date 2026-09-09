@@ -4,9 +4,7 @@ from api.itinerary.data_access.itinerary_transportation_input import ItineraryTr
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_transportation_save_carryover_mapper import ItineraryTransportationSaveCarryoverMapper
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
-
-
-ZOOMOBILE = 'Zoomobile'
+from api.shared.enums.transportation_name import TransportationName
 
 
 def _leg() -> ItineraryTransportationLeg:
@@ -15,7 +13,7 @@ def _leg() -> ItineraryTransportationLeg:
       to_station='Americas',
       start_time='11:00 AM',
       end_time='11:10 AM',
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True )
 
 
@@ -23,7 +21,7 @@ def Test_MapFromSavedTransportationRows_TestMatchingMode_ExpectScheduleAndLegs()
    carryover = ItineraryTransportationSaveCarryoverMapper.map_from_saved_transportation_rows(
       [
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=True,
@@ -33,7 +31,7 @@ def Test_MapFromSavedTransportationRows_TestMatchingMode_ExpectScheduleAndLegs()
             legs=[ _leg() ],
          ),
       ],
-      ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=True ),
+      ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=True ),
       old_visit_date='2026-06-15',
    )
 
@@ -47,7 +45,7 @@ def Test_MapFromSavedTransportationRows_TestModeMismatch_ExpectEmptyCarryover() 
    carryover = ItineraryTransportationSaveCarryoverMapper.map_from_saved_transportation_rows(
       [
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=True,
@@ -55,7 +53,7 @@ def Test_MapFromSavedTransportationRows_TestModeMismatch_ExpectEmptyCarryover() 
             end_time='11:20 AM',
          ),
       ],
-      ItineraryTransportationInput( name=ZOOMOBILE, added_as_attraction=False ),
+      ItineraryTransportationInput( name=TransportationName.ZOOMOBILE, added_as_attraction=False ),
       old_visit_date='2026-06-15',
    )
 

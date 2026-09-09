@@ -26,7 +26,7 @@ test('Test_ResolveItemTypeMeta_TestWildEncounter_ExpectMeta', () => {
 
 test('Test_ResolveItemTypeMeta_TestUnsupported_ExpectThrows', () => {
    assert.throws(
-      () => FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({ item_type: 'animal' }),
+      () => FixedTimeItemLongWaitMessageBuilder.resolveItemTypeMeta({ item_type: ItinerarySaveIssueItemType.ANIMAL }),
       /Unsupported fixed-time long-wait item type/
    );
 });

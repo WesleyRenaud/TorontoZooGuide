@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { WildEncounterScheduleBuilder } from '../../../../scripts/consoleOperations/forms/wildEncounterScheduleBuilder.js';
+import { RecurringScheduleBuilder } from '../../../../scripts/consoleOperations/forms/recurringScheduleBuilder.js';
 
-test('Test_NormalizeWildEncounterScheduleRow_TestTimeAndDays_ExpectFormattedFlags', () => {
+test('Test_NormalizeRecurringScheduleRow_TestTimeAndDays_ExpectFormattedFlags', () => {
    assert.deepEqual(
-      WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow({
+      RecurringScheduleBuilder.normalizeRecurringScheduleRow({
          time: '2:30 PM',
          monday: true,
          tuesday: false,
@@ -24,28 +24,28 @@ test('Test_NormalizeWildEncounterScheduleRow_TestTimeAndDays_ExpectFormattedFlag
    );
 });
 
-test('Test_ValidateWildEncounterScheduleRows_TestInvalidAndValidRows_ExpectMessagesOrNull', () => {
+test('Test_ValidateRecurringScheduleRows_TestInvalidAndValidRows_ExpectMessagesOrNull', () => {
    assert.match(
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows([]) ?? '',
+      RecurringScheduleBuilder.validateRecurringScheduleRows([]) ?? '',
       /Encounter times/
    );
 
    assert.match(
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows([
+      RecurringScheduleBuilder.validateRecurringScheduleRows([
          { time: '', monday: true },
       ]) ?? '',
       /Encounter time/
    );
 
    assert.match(
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows([
+      RecurringScheduleBuilder.validateRecurringScheduleRows([
          { time: '11:00 AM', monday: false, tuesday: false },
       ]) ?? '',
       /at least one day/i
    );
 
    assert.match(
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows([
+      RecurringScheduleBuilder.validateRecurringScheduleRows([
          { time: '11:00 AM', monday: true },
          { time: '11:00 AM', tuesday: true },
       ]) ?? '',
@@ -53,7 +53,7 @@ test('Test_ValidateWildEncounterScheduleRows_TestInvalidAndValidRows_ExpectMessa
    );
 
    assert.equal(
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows([
+      RecurringScheduleBuilder.validateRecurringScheduleRows([
          { time: '11:00 AM', monday: true },
          { time: '2:30 PM', saturday: true, sunday: true },
       ]),

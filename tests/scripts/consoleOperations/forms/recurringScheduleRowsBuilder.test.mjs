@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { WildEncounterScheduleRowsBuilder } from '../../../../scripts/consoleOperations/forms/wildEncounterScheduleRowsBuilder.js';
+import { RecurringScheduleRowsBuilder } from '../../../../scripts/consoleOperations/forms/recurringScheduleRowsBuilder.js';
 import { ConsoleDateFactory } from '../../../../scripts/datePickers/consoleDateFactory.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -9,7 +9,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 installDomTestHooks();
 
 test('Test_CreateDayCheckbox_TestChecked_ExpectOption', () => {
-   const { inputEl, optionLabelEl } = WildEncounterScheduleRowsBuilder.createDayCheckbox({
+   const { inputEl, optionLabelEl } = RecurringScheduleRowsBuilder.createDayCheckbox({
       rowIndex: 1,
       dayKey: 'monday',
       label: 'Monday',
@@ -27,7 +27,7 @@ test('Test_CreateScheduleRow_TestAllowRemove_ExpectRowParts', () => {
    ConsoleDateFactory.initTimePicker = (el) => { inits.push(el); };
 
    try {
-      const row = WildEncounterScheduleRowsBuilder.createScheduleRow({
+      const row = RecurringScheduleRowsBuilder.createScheduleRow({
          rowIndex: 0,
          initialRow: { time: '11:00 AM', monday: true },
          allowRemove: true,
@@ -39,7 +39,7 @@ test('Test_CreateScheduleRow_TestAllowRemove_ExpectRowParts', () => {
       assert.ok(row.removeButtonEl);
       assert.equal(inits.length, 1);
 
-      const noRemove = WildEncounterScheduleRowsBuilder.createScheduleRow({
+      const noRemove = RecurringScheduleRowsBuilder.createScheduleRow({
          rowIndex: 2,
          allowRemove: false,
       });

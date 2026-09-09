@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { WildEncounterScheduleRowsController } from '../../../../scripts/consoleOperations/forms/wildEncounterScheduleRowsController.js';
-import { WildEncounterScheduleRowsBuilder } from '../../../../scripts/consoleOperations/forms/wildEncounterScheduleRowsBuilder.js';
-import { WildEncounterScheduleBuilder } from '../../../../scripts/consoleOperations/forms/wildEncounterScheduleBuilder.js';
+import { RecurringScheduleRowsController } from '../../../../scripts/consoleOperations/forms/recurringScheduleRowsController.js';
+import { RecurringScheduleRowsBuilder } from '../../../../scripts/consoleOperations/forms/recurringScheduleRowsBuilder.js';
+import { RecurringScheduleBuilder } from '../../../../scripts/consoleOperations/forms/recurringScheduleBuilder.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -11,7 +11,7 @@ installDomTestHooks();
 function _createRowController({ rowIndex, allowRemove, initialRow = {} }) {
    const removeButtonEl = allowRemove ? document.createElement('button') : null;
    const dayInputEls = {};
-   WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+   RecurringScheduleBuilder.RECURRING_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
       dayInputEls[dayKey] = {
          checked: Boolean(initialRow[dayKey]),
       };
@@ -26,26 +26,26 @@ function _createRowController({ rowIndex, allowRemove, initialRow = {} }) {
    };
 }
 
-test('Test_CreateWildEncounterScheduleRowsController_TestAddGetValidateReset_ExpectRows', () => {
-   const originalCreate = WildEncounterScheduleRowsBuilder.createScheduleRow;
-   const originalNormalize = WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow;
-   const originalValidate = WildEncounterScheduleBuilder.validateWildEncounterScheduleRows;
+test('Test_CreateRecurringScheduleRowsController_TestAddGetValidateReset_ExpectRows', () => {
+   const originalCreate = RecurringScheduleRowsBuilder.createScheduleRow;
+   const originalNormalize = RecurringScheduleBuilder.normalizeRecurringScheduleRow;
+   const originalValidate = RecurringScheduleBuilder.validateRecurringScheduleRows;
    const created = [];
 
-   WildEncounterScheduleRowsBuilder.createScheduleRow = (options) => {
+   RecurringScheduleRowsBuilder.createScheduleRow = (options) => {
       const row = _createRowController(options);
       created.push(options);
       return row;
    };
-   WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow = (row) => row;
-   WildEncounterScheduleBuilder.validateWildEncounterScheduleRows = (rows) => {
+   RecurringScheduleBuilder.normalizeRecurringScheduleRow = (row) => row;
+   RecurringScheduleBuilder.validateRecurringScheduleRows = (rows) => {
       return rows.length ? null : 'missing';
    };
 
    try {
       const rowsEl = document.createElement('div');
       const addRowButtonEl = document.createElement('button');
-      const controller = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
+      const controller = RecurringScheduleRowsController.createRecurringScheduleRowsController({
          rowsEl,
          addRowButtonEl,
       });
@@ -95,18 +95,18 @@ test('Test_CreateWildEncounterScheduleRowsController_TestAddGetValidateReset_Exp
       controller.reset();
       assert.equal(controller.getRows().length, 1);
    } finally {
-      WildEncounterScheduleRowsBuilder.createScheduleRow = originalCreate;
-      WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow = originalNormalize;
-      WildEncounterScheduleBuilder.validateWildEncounterScheduleRows = originalValidate;
+      RecurringScheduleRowsBuilder.createScheduleRow = originalCreate;
+      RecurringScheduleBuilder.normalizeRecurringScheduleRow = originalNormalize;
+      RecurringScheduleBuilder.validateRecurringScheduleRows = originalValidate;
    }
 });
 
-test('Test_CreateWildEncounterScheduleRowsController_TestRemoveRow_ExpectKeepsFirst', () => {
-   const originalCreate = WildEncounterScheduleRowsBuilder.createScheduleRow;
-   const originalNormalize = WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow;
+test('Test_CreateRecurringScheduleRowsController_TestRemoveRow_ExpectKeepsFirst', () => {
+   const originalCreate = RecurringScheduleRowsBuilder.createScheduleRow;
+   const originalNormalize = RecurringScheduleBuilder.normalizeRecurringScheduleRow;
    const rowControllers = [];
 
-   WildEncounterScheduleRowsBuilder.createScheduleRow = (options) => {
+   RecurringScheduleRowsBuilder.createScheduleRow = (options) => {
       const row = _createRowController({
          ...options,
          allowRemove: true,
@@ -114,11 +114,11 @@ test('Test_CreateWildEncounterScheduleRowsController_TestRemoveRow_ExpectKeepsFi
       rowControllers.push(row);
       return row;
    };
-   WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow = (row) => row;
+   RecurringScheduleBuilder.normalizeRecurringScheduleRow = (row) => row;
 
    try {
       const rowsEl = document.createElement('div');
-      const controller = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
+      const controller = RecurringScheduleRowsController.createRecurringScheduleRowsController({
          rowsEl,
          addRowButtonEl: document.createElement('button'),
       });
@@ -134,11 +134,11 @@ test('Test_CreateWildEncounterScheduleRowsController_TestRemoveRow_ExpectKeepsFi
       assert.equal(controller.getRows().length, 2);
       assert.equal(rowsEl.children.length, 2);
 
-      WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
+      RecurringScheduleRowsController.createRecurringScheduleRowsController({
          addRowButtonEl: document.createElement('button'),
       });
    } finally {
-      WildEncounterScheduleRowsBuilder.createScheduleRow = originalCreate;
-      WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow = originalNormalize;
+      RecurringScheduleRowsBuilder.createScheduleRow = originalCreate;
+      RecurringScheduleBuilder.normalizeRecurringScheduleRow = originalNormalize;
    }
 });

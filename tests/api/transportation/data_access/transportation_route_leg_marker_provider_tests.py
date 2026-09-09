@@ -6,10 +6,10 @@ import pytest
 
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_route_leg_marker_provider import TransportationRouteLegMarkerProvider
 from api.transportation.data_access.transportation_route_leg_marker_record import TransportationRouteLegMarkerRecord
 
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
@@ -75,7 +75,7 @@ def _insert_marker(
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, SUMMER_ROUTE, from_station, to_station, marker_id ),
+      ( TransportationName.ZOOMOBILE, SUMMER_ROUTE, from_station, to_station, marker_id ),
    )
 
 
@@ -119,7 +119,7 @@ def Test_FetchTransportationRouteLegMarkersByLeg_TestInsertedRows_ExpectTravelOr
 
    markers_by_leg = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_markers_by_leg(
       leg_marker_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route=SUMMER_ROUTE )
 
    assert markers_by_leg[ ( MAIN, CANADA ) ] == MAIN_TO_CANADA_MARKERS[ :3 ]
@@ -130,7 +130,7 @@ def Test_FetchTransportationRouteLegMarkerIds_TestEmptyLegs_ExpectEmptyList(
       leg_marker_conn: sqlite3.Connection ) -> None:
    assert TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       leg_marker_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route=SUMMER_ROUTE,
       legs=[] ) == []
 
@@ -146,11 +146,11 @@ def Test_FetchTransportationRouteLegMarkerIds_TestSingleLeg_ExpectTravelOrder(
 
    marker_ids_result = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       leg_marker_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route=SUMMER_ROUTE,
       legs=[
          ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             from_station=MAIN,
             to_station=CANADA,
             start_time='10:00 AM',
@@ -174,11 +174,11 @@ def Test_FetchTransportationRouteLegMarkerIds_TestWraparoundLeg_ExpectTravelOrde
 
    marker_ids_result = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       leg_marker_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route=SUMMER_ROUTE,
       legs=[
          ItineraryTransportationLeg(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             from_station=EURASIA,
             to_station=MAIN,
             start_time='11:00 AM',

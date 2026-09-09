@@ -7,10 +7,10 @@ import pytest
 
 from api.itinerary.data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = date( 2026, 6, 15 )
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
@@ -66,7 +66,7 @@ def day_loop_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 'winter', '2026-01-01', '2026-03-31' );
       """,
-      ( ZOOMOBILE, ) )
+      ( TransportationName.ZOOMOBILE, ) )
    conn.execute(
       """   INSERT INTO TransportationDayRoute (
                TRANSPORTATION,
@@ -76,7 +76,7 @@ def day_loop_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 'summer', 6, 15 );
       """,
-      ( ZOOMOBILE, ) )
+      ( TransportationName.ZOOMOBILE, ) )
    conn.execute(
       """   INSERT INTO TransportationStation (
                TRANSPORTATION,
@@ -85,7 +85,7 @@ def day_loop_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, 1 );
       """,
-      ( ZOOMOBILE, MAIN ) )
+      ( TransportationName.ZOOMOBILE, MAIN ) )
    conn.executemany(
       """   INSERT INTO TransportationRouteLeg (
                TRANSPORTATION,
@@ -96,8 +96,8 @@ def day_loop_provider_conn() -> sqlite3.Connection:
             VALUES ( ?, 'summer', ?, ? );
       """,
       [
-         ( ZOOMOBILE, MAIN, CANADA ),
-         ( ZOOMOBILE, CANADA, AFRICA ),
+         ( TransportationName.ZOOMOBILE, MAIN, CANADA ),
+         ( TransportationName.ZOOMOBILE, CANADA, AFRICA ),
       ] )
    conn.executemany(
       """   INSERT INTO TransportationLeg (
@@ -109,8 +109,8 @@ def day_loop_provider_conn() -> sqlite3.Connection:
             VALUES ( ?, ?, ?, ? );
       """,
       [
-         ( ZOOMOBILE, MAIN, CANADA, 20 ),
-         ( ZOOMOBILE, CANADA, AFRICA, 10 ),
+         ( TransportationName.ZOOMOBILE, MAIN, CANADA, 20 ),
+         ( TransportationName.ZOOMOBILE, CANADA, AFRICA, 10 ),
       ] )
    conn.commit()
 
@@ -123,7 +123,7 @@ def Test_FetchTransportationActiveRoute_TestVisitDateInRange_ExpectWinterRoute(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationDayLoopProvider.fetch_transportation_active_route(
       day_loop_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=date( 2026, 2, 1 ) ) == 'winter'
 
 
@@ -131,7 +131,7 @@ def Test_FetchTransportationDayRoute_TestOwnedDate_ExpectSummerRoute(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationDayLoopProvider.fetch_transportation_day_route(
       day_loop_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       month=6,
       day=15 ) == 'summer'
 
@@ -140,14 +140,14 @@ def Test_FetchMainTransportationStation_TestZoomobile_ExpectMainStation(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationDayLoopProvider.fetch_main_transportation_station(
       day_loop_provider_conn,
-      ZOOMOBILE ) == MAIN
+      TransportationName.ZOOMOBILE ) == MAIN
 
 
 def Test_FetchTransportationRouteLegs_TestSummerRoute_ExpectMappedSegments(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    legs = TransportationDayLoopProvider.fetch_transportation_route_legs(
       day_loop_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route='summer' )
 
    assert len( legs ) == 2
@@ -163,7 +163,7 @@ def Test_FetchTransportationActiveRoute_TestMissingSchedule_ExpectNone(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationDayLoopProvider.fetch_transportation_active_route(
       day_loop_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=date( 2026, 7, 1 ) ) is None
 
 
@@ -171,7 +171,7 @@ def Test_FetchTransportationDayRoute_TestMissingDate_ExpectNone(
       day_loop_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationDayLoopProvider.fetch_transportation_day_route(
       day_loop_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       month=7,
       day=4 ) is None
 

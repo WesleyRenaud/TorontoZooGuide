@@ -1,8 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { OpeningScheduleChecker } from '../../forms/openingScheduleChecker.js';
-import { OpeningScheduleOverlapResolver } from '../../forms/openingScheduleOverlapResolver.js';
-import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
-import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
+import { RecurringScheduleSetControllerFactory } from '../../forms/recurringScheduleSetControllerFactory.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
@@ -18,79 +15,37 @@ export class WildEncounterController {
       messageEl,
       ...controllerOptions
    } = {}) {
-      const scheduleRowsController = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
-         rowsEl: scheduleRowsEl,
-         addRowButtonEl: addScheduleRowEl,
-      });
-
-
-      function validateSelection({
-         wildEncounter,
-      }) {
-         if (!wildEncounter) {
-            return Strings.validation.entityRequired(Strings.entityLabels.wildEncounter);
-         }
-
-         return null;
-      }
-
-      async function submitSchedule({
-         wildEncounter,
-         startDate,
-         endDate,
-         message,
-      }) {
-         const scheduleRows = scheduleRowsController.getRows();
-         const payload = {
-            wildEncounter,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message,
-            scheduleRows,
-         };
-
-         const result = await ConsoleOperationsClient.setWildEncounterSchedule(payload);
-
-         if (result.success || !OpeningScheduleChecker.resultHasOpeningScheduleOverlap(result)) {
-            return result;
-         }
-
-         return OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
-            payload,
-            replaceOverlaps: ConsoleOperationsClient.replaceWildEncounterScheduleOverlaps,
-            trimOverlaps: ConsoleOperationsClient.trimWildEncounterScheduleOverlaps,
-            dismissedResult: { success: false, dismissed: true },
-         });
-      }
-
-      async function prepareForm() {
-         if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await ConsoleOptionsLoader.loadWildEncounters();
-            ConsoleDropdownPopulator.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
-         }
-      }
-
-      return RecurringScheduleFormController.createRecurringScheduleFormController({
+      return RecurringScheduleSetControllerFactory.createRecurringScheduleSetController({
          ...controllerOptions,
+         scheduleRowsEl,
+         addScheduleRowEl,
          startDateEl,
          endDateEl,
          messageEl,
-         resetSelection: () => {
-            ControllerHelper.resetFormFields([wildEncounterEl, startDateEl, endDateEl, messageEl]);
-         },
-         resetScheduleTimes: () => {
-            scheduleRowsController.reset();
-         },
-         validateRecurringSchedule: () => scheduleRowsController.validate(),
          getSelectionValues: () => ({
             wildEncounter: ControllerHelper.getFieldValue(wildEncounterEl),
          }),
-         validateSelection,
-         prepareForm,
+         validateSelection: ({ wildEncounter }) => {
+            if (!wildEncounter) {
+               return Strings.validation.entityRequired(Strings.entityLabels.wildEncounter);
+            }
+
+            return null;
+         },
+         resetSelection: () => {
+            ControllerHelper.resetFormFields([wildEncounterEl, startDateEl, endDateEl, messageEl]);
+         },
+         prepareForm: async () => {
+            if (wildEncounterEl?.tagName === 'SELECT') {
+               const wildEncounters = await ConsoleOptionsLoader.loadWildEncounters();
+               ConsoleDropdownPopulator.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
+            }
+         },
          loadErrorMessage: Strings.loadErrors.wildEncounters,
-         submitSchedule,
          successMessage: result => Strings.status.scheduleSaved(result.wildEncounter),
-         shouldReportSubmitFailure: result => !result?.dismissed,
+         setSchedule: payload => ConsoleOperationsClient.setWildEncounterSchedule(payload),
+         replaceOverlaps: payload => ConsoleOperationsClient.replaceWildEncounterScheduleOverlaps(payload),
+         trimOverlaps: payload => ConsoleOperationsClient.trimWildEncounterScheduleOverlaps(payload),
       });
    }
 }

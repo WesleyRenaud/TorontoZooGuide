@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_route_provider import TransportationRouteProvider
 
 TRANSPORTATION_ROUTE_PROVIDER_SCHEMA = """
@@ -19,7 +20,6 @@ CREATE TABLE TransportationRoute (
 );
 """
 
-ZOOMOBILE = 'Zoomobile'
 
 @pytest.fixture
 def transportation_route_provider_conn() -> sqlite3.Connection:
@@ -45,7 +45,7 @@ def Test_FetchTransportationRoutesByName_TestPopulated_ExpectMappedRoutes(
             )
             VALUES ( ?, 1 );
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    )
    transportation_route_provider_conn.execute(
       """   INSERT INTO TransportationRoute (
@@ -54,7 +54,7 @@ def Test_FetchTransportationRoutesByName_TestPopulated_ExpectMappedRoutes(
             )
             VALUES ( ?, ? ), ( ?, ? );
       """,
-      ( ZOOMOBILE, 'summer', ZOOMOBILE, 'winter' ),
+      ( TransportationName.ZOOMOBILE, 'summer', TransportationName.ZOOMOBILE, 'winter' ),
    )
    transportation_route_provider_conn.commit()
 
@@ -62,6 +62,6 @@ def Test_FetchTransportationRoutesByName_TestPopulated_ExpectMappedRoutes(
       transportation_route_provider_conn )
 
    assert [ ( route.transportation, route.route ) for route in routes ] == [
-      ( ZOOMOBILE, 'summer' ),
-      ( ZOOMOBILE, 'winter' ),
+      ( TransportationName.ZOOMOBILE, 'summer' ),
+      ( TransportationName.ZOOMOBILE, 'winter' ),
    ]

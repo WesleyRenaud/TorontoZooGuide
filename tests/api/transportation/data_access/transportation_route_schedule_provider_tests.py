@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_route_schedule_provider import TransportationRouteScheduleProvider
 from api.transportation.scheduling.transportation_current_route_schedule import TransportationCurrentRouteSchedule
 
@@ -28,7 +29,6 @@ CREATE TABLE TransportationRouteSchedule (
 );
 """
 
-ZOOMOBILE = 'Zoomobile'
 
 @pytest.fixture
 def transportation_route_schedule_provider_conn() -> sqlite3.Connection:
@@ -42,7 +42,7 @@ def transportation_route_schedule_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1 );
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    )
    conn.execute(
       """   INSERT INTO TransportationRoute (
@@ -51,7 +51,7 @@ def transportation_route_schedule_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ? );
       """,
-      ( ZOOMOBILE, 'summer' ),
+      ( TransportationName.ZOOMOBILE, 'summer' ),
    )
    conn.commit()
 
@@ -68,7 +68,7 @@ def Test_SaveCurrentTransportationRouteSchedule_TestInsert_ExpectPersisted(
 
    saved = TransportationRouteScheduleProvider.save_current_transportation_route_schedule(
       transportation_route_schedule_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       schedule )
 
    row = transportation_route_schedule_provider_conn.execute(
@@ -76,7 +76,7 @@ def Test_SaveCurrentTransportationRouteSchedule_TestInsert_ExpectPersisted(
             FROM TransportationRouteSchedule
             WHERE TRANSPORTATION = ?;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert saved is True
@@ -94,20 +94,20 @@ def Test_SaveCurrentTransportationRouteSchedule_TestReplace_ExpectUpdatedRoute(
             )
             VALUES ( ?, ? );
       """,
-      ( ZOOMOBILE, 'winter' ),
+      ( TransportationName.ZOOMOBILE, 'winter' ),
    )
    transportation_route_schedule_provider_conn.commit()
 
    TransportationRouteScheduleProvider.save_current_transportation_route_schedule(
       transportation_route_schedule_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TransportationCurrentRouteSchedule(
          route='summer',
          start_date='2026-05-01',
          end_date=None ) )
    saved = TransportationRouteScheduleProvider.save_current_transportation_route_schedule(
       transportation_route_schedule_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TransportationCurrentRouteSchedule(
          route='winter',
          start_date='2026-05-01',
@@ -119,7 +119,7 @@ def Test_SaveCurrentTransportationRouteSchedule_TestReplace_ExpectUpdatedRoute(
             WHERE TRANSPORTATION = ?
               AND SCHEDULE_START_DATE = ?;
       """,
-      ( ZOOMOBILE, '2026-05-01' ),
+      ( TransportationName.ZOOMOBILE, '2026-05-01' ),
    ).fetchone()
 
    assert saved is True

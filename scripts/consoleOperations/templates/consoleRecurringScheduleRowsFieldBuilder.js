@@ -1,8 +1,8 @@
 import { ConsoleFieldPrimitiveBuilder } from './consoleFieldPrimitiveBuilder.js';
 import { Strings } from '../../strings.js';
 
-export class ConsoleWildEncounterScheduleRowsFieldBuilder {
-   static createWildEncounterScheduleRowsField({
+export class ConsoleRecurringScheduleRowsFieldBuilder {
+   static createRecurringScheduleRowsField({
       label = Strings.labels.encounterTimes,
       rowsId,
       addRowButtonId,

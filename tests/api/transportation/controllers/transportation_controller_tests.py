@@ -15,12 +15,12 @@ from api.models.transportation_station import TransportationStation
 import api.request_connection_provider as request_connection
 from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.controllers.transportation_controller import TransportationController
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
 from api.types import Types
 
 
-TRANSPORTATION_NAME = 'Zoomobile'
 STATION_NAME = 'Africa Zoomobile Station'
 ROUTE_NAME = 'summer'
 VISIT_MONTH = 'June'
@@ -33,7 +33,7 @@ CLOSURE_MESSAGE = 'Closed.'
 
 def _sample_transportation() -> Transportation:
    return Transportation(
-      name=TRANSPORTATION_NAME,
+      name=TransportationName.ZOOMOBILE,
       open_time='10:00 AM',
       close_time='4:00 PM' )
 
@@ -135,7 +135,7 @@ def Test_GetTransportationRoute_TestHttpRequest_ExpectMapsRouteRequestAndReturns
          'month': VISIT_MONTH,
          'year': VISIT_YEAR,
          'transportation_stations_to_include': [ STATION_NAME ],
-         'transportation': TRANSPORTATION_NAME,
+         'transportation': TransportationName.ZOOMOBILE,
       }
    )
 
@@ -151,7 +151,7 @@ def Test_GetTransportationStationNames_TestHttpRequest_ExpectDefaultsTransportat
    assert result[ 'transportation_stations' ] == [ STATION_NAME ]
    assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'get_transportation_station_names',
-      { 'transportation': TRANSPORTATION_NAME },
+      { 'transportation': TransportationName.ZOOMOBILE },
    )
 
 
@@ -178,7 +178,7 @@ def Test_SetTransportationStationClosed_TestHttpRequest_ExpectMapsPayloadAndSucc
          'start_date': CLOSURE_START_DATE,
          'end_date': CLOSURE_END_DATE,
          'message': CLOSURE_MESSAGE,
-         'transportation': TRANSPORTATION_NAME,
+         'transportation': TransportationName.ZOOMOBILE,
       }
    )
    assert result[ 'success' ] is True
@@ -214,7 +214,7 @@ def Test_SetTransportationStationOpen_TestHttpRequest_ExpectMapsPayloadAndSucces
       'set_transportation_station_as_open',
       {
          'transportation_station': STATION_NAME,
-         'transportation': TRANSPORTATION_NAME,
+         'transportation': TransportationName.ZOOMOBILE,
       }
    )
    assert result[ 'success' ] is True
@@ -256,7 +256,7 @@ def Test_SetCurrentTransportationRoute_TestHttpRequest_ExpectMapsPayloadAndSucce
          'route': 'winter',
          'start_date': CLOSURE_START_DATE,
          'end_date': CLOSURE_END_DATE,
-         'transportation': TRANSPORTATION_NAME,
+         'transportation': TransportationName.ZOOMOBILE,
       }
    )
    assert result[ 'success' ] is True

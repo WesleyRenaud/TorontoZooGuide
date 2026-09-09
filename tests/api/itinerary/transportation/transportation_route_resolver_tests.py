@@ -6,10 +6,10 @@ import pytest
 
 from api.itinerary.data_access.transportation_day_loop_provider import TransportationDayLoopProvider
 from api.itinerary.transportation.transportation_route_resolver import TransportationRouteResolver
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = date( 2026, 6, 15 )
-ZOOMOBILE = 'Zoomobile'
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def stub_transportation_route_resolver( monkeypatch: pytest.MonkeyPatch ) -> Non
       TransportationDayLoopProvider,
       'fetch_transportation_day_route',
       lambda conn, *, transportation, month, day: 'summer'
-      if transportation == ZOOMOBILE and month == 6 and day == 15
+      if transportation == TransportationName.ZOOMOBILE and month == 6 and day == 15
       else None )
 
 
@@ -30,7 +30,7 @@ def Test_ResolveForDate_TestSummerDay_ExpectDayRoute(
       stub_transportation_route_resolver: None ) -> None:
    assert TransportationRouteResolver.resolve_for_date(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) == 'summer'
 
 
@@ -47,7 +47,7 @@ def Test_ResolveForDate_TestActiveRouteOverride_ExpectActiveRoute(
 
    assert TransportationRouteResolver.resolve_for_date(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) == 'winter'
 
 
@@ -65,5 +65,5 @@ def Test_ResolveForDate_TestMissingRoute_ExpectValueError(
    with pytest.raises( ValueError, match='No route defined' ):
       TransportationRouteResolver.resolve_for_date(
          None,
-         transportation=ZOOMOBILE,
+         transportation=TransportationName.ZOOMOBILE,
          target_date=VISIT_DATE )

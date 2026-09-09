@@ -5,10 +5,10 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
+from api.shared.enums.transportation_name import TransportationName
 
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 AFRICAN_RAINFOREST_PAVILION = 'African Rainforest Pavilion'
 ALDABRA_INDOOR_ENCLOSURE = 'Ring-Tailed Lemur Enclosure'
 
@@ -40,14 +40,14 @@ def _saved() -> SavedItinerary:
       ],
       transportation_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=True,
             start_time='11:00 AM',
             end_time='11:20 AM' ),
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -93,14 +93,14 @@ def Test_Transportations_TestAttractionModeOnly_ExpectAttractionModeRows() -> No
       for row in BulkScheduleStopSelector.transportations(
          _saved(),
          only_previously_scheduled=False )
-   ] == [ ( ZOOMOBILE, True ) ]
+   ] == [ ( TransportationName.ZOOMOBILE, True ) ]
 
 
 def Test_TransitTransportations_TestTransitMode_ExpectTransitRows() -> None:
    assert [
       ( row.transportation, row.added_as_attraction )
       for row in BulkScheduleStopSelector.transit_transportations( _saved() )
-   ] == [ ( ZOOMOBILE, False ) ]
+   ] == [ ( TransportationName.ZOOMOBILE, False ) ]
 
 
 def Test_StopsMatchingPrevious_TestPreviouslyScheduledSpecies_ExpectPostSaveRows() -> None:
@@ -276,7 +276,7 @@ def Test_Stops_TestAllGuestStops_ExpectAnimalsAttractionsAndTransportation() -> 
       ( 'African Lion', None, None ),
       ( 'Cheetah', None, None ),
       ( None, CAROUSEL, None ),
-      ( None, ZOOMOBILE, ZOOMOBILE ),
+      ( None, TransportationName.ZOOMOBILE, TransportationName.ZOOMOBILE ),
    ]
 
 
@@ -286,7 +286,7 @@ def Test_Transportations_TestScheduledOnly_ExpectTimedRows() -> None:
       for row in BulkScheduleStopSelector.transportations(
          _saved(),
          only_previously_scheduled=True )
-   ] == [ ZOOMOBILE ]
+   ] == [ TransportationName.ZOOMOBILE ]
 
 
 def Test_TransitTransportations_TestNone_ExpectEmpty() -> None:

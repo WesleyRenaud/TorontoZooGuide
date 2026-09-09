@@ -11,6 +11,7 @@ from api.itinerary.transportation.transportation_route_duration_resolver import 
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.request_connection_provider import RequestConnectionProvider
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_provider import TransportationProvider
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
@@ -18,7 +19,6 @@ from api.types import Types
 
 
 VISIT_DATE = date( 2026, 6, 15 )
-ZOOMOBILE = 'Zoomobile'
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 ROUTE_DURATION_MINUTES = 75
@@ -36,12 +36,12 @@ TRANSPORTATION_LEGS = [
       to_station=CANADA_STATION,
       start_time='10:00 AM',
       end_time='10:20 AM',
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=False ),
 ]
 
 SAVED_TRANSPORTATION = ItineraryTransportationRecord(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    old_likelihood=1,
    new_likelihood=3,
    added_as_attraction=False,
@@ -65,7 +65,7 @@ def stub_itinerary_transportations_builder( monkeypatch: pytest.MonkeyPatch ) ->
             'TransportationRecord',
             (),
             {
-               'name': ZOOMOBILE,
+               'name': TransportationName.ZOOMOBILE,
                'x_coord': 30.0,
                'y_coord': 40.0,
             },
@@ -90,7 +90,7 @@ def Test_Build_TestSavedTransportation_ExpectMappedModel(
    assert len( transportations ) == 1
    transportation = transportations[ Position.FIRST ]
 
-   assert transportation.name == ZOOMOBILE
+   assert transportation.name == TransportationName.ZOOMOBILE
    assert transportation.old_likelihood == 1
    assert transportation.likelihood == 3
    assert transportation.start_time == '10:00 AM'
@@ -113,7 +113,7 @@ def Test_Build_TestUnscheduledTransportation_ExpectAttractionCoords(
    transportations = ItineraryTransportationsBuilder.build(
       [
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=None,
             added_as_attraction=True,

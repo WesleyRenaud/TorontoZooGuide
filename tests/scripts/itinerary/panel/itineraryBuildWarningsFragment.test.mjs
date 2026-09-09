@@ -5,6 +5,7 @@ import { ItineraryBuildWarningsFragment } from '../../../../scripts/itinerary/pa
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 installDomTestHooks();
 
@@ -50,12 +51,12 @@ test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarnin
             {
                name: 'Western Grey Kangaroo',
                start_time: '11:00 AM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Aldabra Tortoise',
                start_time: '2:00 PM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
          ],
       }]),
@@ -67,7 +68,7 @@ test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarnin
          items: [{
             name: 'Western Grey Kangaroo',
             start_time: '11:00 AM',
-            item_type: 'guardiansTalk',
+            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
          }],
       }]),
       false
@@ -136,16 +137,16 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
          items: [
             {
                name: 'Amur Tiger',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Indian Rhino',
                start_time: '1:00 PM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Capybara',
-               item_type: 'wildEncounter',
+               item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
             },
          ],
       },
@@ -215,12 +216,12 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
             {
                name: 'Western Grey Kangaroo',
                start_time: '11:00 AM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Aldabra Tortoise',
                start_time: '2:00 PM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
          ],
       }],
@@ -277,12 +278,12 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
                {
                   name: 'Western Grey Kangaroo',
                   start_time: '11:00 AM',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                },
                {
                   name: 'African Lion',
                   start_time: '2:00 PM',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                },
             ],
          },

@@ -6,6 +6,7 @@ import pytest
 
 from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from api.shared.enums import ItineraryEventType, Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 UNSCHEDULE_SCHEMA = """
@@ -65,7 +66,6 @@ CREATE TABLE ItineraryTransportationRouteMarker (
 """
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 
@@ -130,7 +130,7 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, NULL, 3, 1, ?, ?, ?, 1 );
       """,
-      ( ZOOMOBILE, '10:00 AM', '11:15 AM', 'summer' ) )
+      ( TransportationName.ZOOMOBILE, '10:00 AM', '11:15 AM', 'summer' ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
                TRANSPORTATION,
@@ -142,7 +142,7 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, MAIN, CANADA, '10:00 AM', '10:20 AM' ) )
+      ( TransportationName.ZOOMOBILE, MAIN, CANADA, '10:00 AM', '10:20 AM' ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationRouteMarker (
                TRANSPORTATION,
@@ -153,7 +153,7 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1, 0, 0, ? );
       """,
-      ( ZOOMOBILE, 'm-a' ) )
+      ( TransportationName.ZOOMOBILE, 'm-a' ) )
    conn.commit()
 
    yield conn
@@ -264,7 +264,7 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
    cur = zoomobile_unschedule_conn.cursor()
    UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
       cur,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=True )
    zoomobile_unschedule_conn.commit()
    cur.close()
@@ -275,7 +275,7 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
    leg_count = zoomobile_unschedule_conn.execute(
       """   SELECT COUNT(*) AS COUNT
@@ -283,7 +283,7 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
    marker_count = zoomobile_unschedule_conn.execute(
       """   SELECT COUNT(*) AS COUNT
@@ -291,7 +291,7 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert transportation is not None

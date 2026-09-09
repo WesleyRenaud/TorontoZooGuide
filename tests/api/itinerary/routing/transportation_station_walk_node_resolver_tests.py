@@ -4,6 +4,7 @@ import pytest
 
 from api.itinerary.routing.transportation_station_walk_node_resolver import TransportationStationWalkNodeResolver
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -11,11 +12,9 @@ from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN_STATION = 'Main Zoomobile Station'
 NEAR_NODE_ID = 'n-1'
 FAR_NODE_ID = 'n-2'
-
 STATION_RECORD = TransportationStationRecord(
    name=MAIN_STATION,
    description='Main boarding area',
@@ -59,7 +58,7 @@ def stub_transportation_station_walk_node_dependencies(
       'fetch_transportation_station_record',
       lambda conn, transportation, station_name: (
          STATION_RECORD
-         if transportation == ZOOMOBILE and station_name == MAIN_STATION
+         if transportation == TransportationName.ZOOMOBILE and station_name == MAIN_STATION
          else None ) )
    monkeypatch.setattr( WalkGraphProvider, 'fetch', lambda: TEST_GRAPH )
    yield
@@ -68,12 +67,12 @@ def stub_transportation_station_walk_node_dependencies(
 def Test_Resolve_TestKnownStation_ExpectSnappedWalkNode(
       stub_transportation_station_walk_node_dependencies: None ) -> None:
    assert TransportationStationWalkNodeResolver.resolve(
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       MAIN_STATION ) == FAR_NODE_ID
 
 
 def Test_Resolve_TestMissingStationRecord_ExpectNone(
       stub_transportation_station_walk_node_dependencies: None ) -> None:
    assert TransportationStationWalkNodeResolver.resolve(
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       'Unknown Station' ) is None

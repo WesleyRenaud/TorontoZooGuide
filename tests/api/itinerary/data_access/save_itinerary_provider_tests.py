@@ -15,8 +15,9 @@ from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.transportation_diff import TransportationDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItineraryEventType
+from api.shared.enums.transportation_name import TransportationName
 
-ZOOMOBILE = 'Zoomobile'
+
 KANGAROO = 'Kangaroo'
 KANGAROO_ENCOUNTER_TIME = '3:30 PM'
 VISIT_DATE = date( 2026, 6, 15 )
@@ -25,7 +26,6 @@ AMERICAS = 'Americas'
 CAROUSEL = 'Conservation Carousel'
 LION = 'African Lion'
 SAVANNA = 'Africa Savanna'
-
 SAVE_PROVIDER_SCHEMA = """
 CREATE TABLE ItineraryDate (
    ITINERARY_DATE       TEXT,
@@ -257,7 +257,7 @@ def Test_SaveItineraryTransportations_TestAttractionModeZoomobile_ExpectTranspor
       cur,
       [
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True ),
@@ -275,7 +275,7 @@ def Test_SaveItineraryTransportations_TestAttractionModeZoomobile_ExpectTranspor
    ).fetchone()
 
    assert row is not None
-   assert row[ 'TRANSPORTATION' ] == ZOOMOBILE
+   assert row[ 'TRANSPORTATION' ] == TransportationName.ZOOMOBILE
    assert row[ 'ADDED_AS_ATTRACTION' ] == 1
    assert leg_count is not None
    assert leg_count[ 'COUNT' ] == 0
@@ -288,12 +288,12 @@ def Test_SaveItineraryTransportations_TestBothModes_ExpectTwoRows(
       cur,
       [
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True ),
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False ),
@@ -315,8 +315,8 @@ def Test_SaveItineraryTransportations_TestBothModes_ExpectTwoRows(
       }
       for row in rows
    ] == [
-      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 0 },
-      { 'TRANSPORTATION': ZOOMOBILE, 'ADDED_AS_ATTRACTION': 1 },
+      { 'TRANSPORTATION': TransportationName.ZOOMOBILE, 'ADDED_AS_ATTRACTION': 0 },
+      { 'TRANSPORTATION': TransportationName.ZOOMOBILE, 'ADDED_AS_ATTRACTION': 1 },
    ]
 
 
@@ -438,7 +438,7 @@ def Test_SaveItineraryTransportations_TestLegsAndMarkers_ExpectPersistedChildren
       cur,
       [
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False,
@@ -452,14 +452,14 @@ def Test_SaveItineraryTransportations_TestLegsAndMarkers_ExpectPersistedChildren
                   to_station=AMERICAS,
                   start_time='11:30 AM',
                   end_time='11:45 AM',
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False ),
                ItineraryTransportationLeg(
                   from_station=AMERICAS,
                   to_station=AFRICA,
                   start_time='11:45 AM',
                   end_time='12:00 PM',
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False ),
             ],
             route_marker_sequences=[ [ 'm-1', 'm-2' ], [ 'm-3' ] ] ),
@@ -472,7 +472,7 @@ def Test_SaveItineraryTransportations_TestLegsAndMarkers_ExpectPersistedChildren
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ? AND ADDED_AS_ATTRACTION = 0;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
    legs = save_provider_conn.execute(
       """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
@@ -618,7 +618,7 @@ def Test_SaveValidatedItinerary_TestOrchestration_ExpectSubSaversInvoked(
       ],
       transportations=[
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True ),

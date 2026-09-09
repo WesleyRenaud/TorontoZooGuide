@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.validation.itinerary_save_attraction_split_builder import ItinerarySaveAttractionSplitBuilder
+from api.shared.enums.transportation_name import TransportationName
 
 
 ATTRACTION_SCHEMA = """
@@ -15,7 +16,6 @@ CREATE TABLE Attraction (
 """
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def split_builder_conn() -> sqlite3.Connection:
       ( CAROUSEL, ) )
    conn.execute(
       'INSERT INTO Attraction ( NAME, IS_ALSO_TRANSPORTATION ) VALUES ( ?, 1 );',
-      ( ZOOMOBILE, ) )
+      ( TransportationName.ZOOMOBILE, ) )
    conn.commit()
 
    yield conn
@@ -40,10 +40,10 @@ def Test_SplitNames_TestMixedAttractions_ExpectPlainAndTransportationLists(
       split_builder_conn: sqlite3.Connection ) -> None:
    plain_attractions, transportations = ItinerarySaveAttractionSplitBuilder.split_names(
       split_builder_conn,
-      [ CAROUSEL, ZOOMOBILE, CAROUSEL ] )
+      [ CAROUSEL, TransportationName.ZOOMOBILE, CAROUSEL ] )
 
    assert plain_attractions == [ CAROUSEL, CAROUSEL ]
-   assert transportations == [ ZOOMOBILE ]
+   assert transportations == [ TransportationName.ZOOMOBILE ]
 
 
 def Test_SplitNames_TestPlainAttractionsOnly_ExpectEmptyTransportations(

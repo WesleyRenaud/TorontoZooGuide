@@ -2,10 +2,10 @@ import { Strings } from '../../../strings.js';
 import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
 import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
 import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
+import { ConsoleRecurringScheduleRowsFieldBuilder } from '../../templates/consoleRecurringScheduleRowsFieldBuilder.js';
 import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
-import { ConsoleWildEncounterScheduleRowsFieldBuilder } from '../../templates/consoleWildEncounterScheduleRowsFieldBuilder.js';
 
 export class GuardiansTalkScheduleView {
    static createGuardiansTalkSchedulePanel() {
@@ -28,7 +28,7 @@ export class GuardiansTalkScheduleView {
                endDateId: 'guardiansTalkScheduleEndDate',
                endHelpText: Strings.help.continueUntilScheduleEnded,
             }),
-            ConsoleWildEncounterScheduleRowsFieldBuilder.createWildEncounterScheduleRowsField({
+            ConsoleRecurringScheduleRowsFieldBuilder.createRecurringScheduleRowsField({
                label: Strings.labels.talkTimes,
                rowsId: 'guardiansTalkScheduleScheduleRows',
                addRowButtonId: 'guardiansTalkScheduleAddScheduleRow',

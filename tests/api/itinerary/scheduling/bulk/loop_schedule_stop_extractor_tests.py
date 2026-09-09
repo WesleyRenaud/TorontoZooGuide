@@ -5,12 +5,11 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.scheduling.bulk.loop_schedule_stop_extractor import LoopScheduleStopExtractor
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 SPLASH_ISLAND = 'Splash Island'
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
-
 LION = ItineraryAnimalRecord(
    species='African Lion',
    exhibit='Africa Savanna',
@@ -23,7 +22,7 @@ SPLASH = ItineraryAttractionRecord(
    new_likelihood=100,
 )
 ZOOMOBILE_ATTRACTION = ItineraryTransportationRecord(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    old_likelihood=None,
    new_likelihood=100,
    added_as_attraction=True,
@@ -51,4 +50,4 @@ def Test_TransportationsFrom_TestMixedStops_ExpectTransportationRowsOnly() -> No
       [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
 
    assert len( transportations ) == 1
-   assert transportations[ Position.FIRST ].transportation == ZOOMOBILE
+   assert transportations[ Position.FIRST ].transportation == TransportationName.ZOOMOBILE

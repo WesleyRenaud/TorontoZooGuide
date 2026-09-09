@@ -4,8 +4,9 @@ from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryG
 from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.shared.enums.transportation_name import TransportationName
 
-ZOOMOBILE = 'Zoomobile'
+
 LION_TALK = 'African Lion'
 RHINO_ENCOUNTER = 'White Rhinoceros'
 
@@ -16,13 +17,13 @@ def Test_TransportationNames_TestTransportationRows_ExpectNames() -> None:
       departure_time='5:00 PM',
       transportation_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False ),
       ] )
 
-   assert saved.transportation_names() == [ ZOOMOBILE ]
+   assert saved.transportation_names() == [ TransportationName.ZOOMOBILE ]
 
 def Test_GuardiansTalkNames_TestTalkRows_ExpectNames() -> None:
    saved = SavedItinerary(

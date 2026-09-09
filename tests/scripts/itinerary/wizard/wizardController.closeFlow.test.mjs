@@ -9,6 +9,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 import { createStubStepController, syncedSelection } from '../../helpers/wizardTestFixtures.mjs';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 installDomTestHooks({
    before: () => {
@@ -339,7 +340,7 @@ test('Test_Cancelling_TestCancellingALongWaitWarningRemovesOnlyThe_ExpectOk', as
                   type: 'fixedTimeItemLongWait',
                   items: [{
                      name: 'Western Grey Kangaroo',
-                     item_type: 'guardiansTalk',
+                     item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '11:00 AM',
                      end_time: '11:30 AM',
                   }],

@@ -5,6 +5,7 @@ import { ScheduleItemController } from '../../../../scripts/itinerary/panel/sche
 import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 installScheduleItemActionsTestHooks();
 
@@ -164,7 +165,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
             code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             items: [{
                name: 'Komodo Dragon',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                start_time: '2:00 PM',
                location: 'Australasia Pavilion',
             }],
@@ -233,7 +234,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
             code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'African Lion',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                start_time: '10:00',
             }],
          }],
@@ -287,7 +288,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
                code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'Arctic Wolf',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                   start_time: '11:00',
                }],
             }],
@@ -342,7 +343,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
             code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'African Rainforest',
-               item_type: 'wildEncounter',
+               item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                start_time: '14:00',
             }],
          }],
@@ -413,7 +414,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
                code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'Amur Tiger',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                   start_time: '11:00 AM',
                }],
             },
@@ -421,7 +422,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
                code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
                items: [{
                   name: 'Amur Tiger',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                   start_time: '11:00 AM',
                }],
             },
