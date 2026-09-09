@@ -89,6 +89,7 @@ export class ConsoleStrings {
       endDate: 'Select an end date',
       lastDay: 'Select the last day this applies',
       lastDayOfSchedule: 'Select the last day of this schedule',
+      noLongerAppliesOn: 'Select the first day this no longer applies',
       stopsBeingOfferedOn: 'Select the first day this is not offered',
       encounterTimes: 'Select encounter times',
       selectWildEncounterFirst: 'Select a wild encounter first',

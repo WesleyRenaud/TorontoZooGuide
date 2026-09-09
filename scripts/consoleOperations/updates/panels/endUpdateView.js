@@ -17,9 +17,9 @@ export class EndUpdateView {
                emptyOptionLabel: Strings.placeholders.update,
             }),
             ConsoleDateFieldBuilder.createDateField({
-               label: Strings.labels.stopsBeingOfferedOn,
+               label: Strings.labels.noLongerAppliesOn,
                inputId: 'endUpdateEndDate',
-               placeholder: Strings.placeholders.stopsBeingOfferedOn,
+               placeholder: Strings.placeholders.noLongerAppliesOn,
                helpText: Strings.help.endUpdateToday,
             }),
             ConsoleActionsBuilder.createActions({

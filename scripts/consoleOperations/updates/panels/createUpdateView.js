@@ -36,8 +36,8 @@ export class CreateUpdateView {
                startDateId: 'createUpdateStartDate',
                startHelpText: Strings.help.startImmediately,
                endDateId: 'createUpdateEndDate',
-               endLabel: Strings.labels.stopsBeingOfferedOn,
-               endPlaceholder: Strings.placeholders.stopsBeingOfferedOn,
+               endLabel: Strings.labels.noLongerAppliesOn,
+               endPlaceholder: Strings.placeholders.noLongerAppliesOn,
                endHelpText: Strings.help.keepUpdateActiveWithoutEndDate,
             }),
             ConsoleActionsBuilder.createActions({
