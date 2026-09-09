@@ -12,7 +12,7 @@
     "name": "Africa Restaurant",
     "location": "Africa",
     "sub_location": null,
-    "description": "Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.       ",
+    "description": "Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?",
     "x_coord": 53.383,
     "y_coord": 57.213
@@ -93,7 +93,7 @@
     "name": "Tundra Tacos",
     "location": "Tundra Trek",
     "sub_location": null,
-    "description": "Traditional tacos, venison tacos and churros, corn dogs, and fries, beer, wine, soft drinks  and seltzers, There is something          for everyone!",
+    "description": "Traditional tacos, venison tacos and churros, corn dogs, and fries, beer, wine, soft drinks and seltzers, There is something for everyone!",
     "menu_link": null,
     "x_coord": 72.858,
     "y_coord": 56.303
@@ -111,7 +111,7 @@
     "name": "Simba Safari Lodge",
     "location": "Africa Savanna",
     "sub_location": null,
-    "description": "Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken.          *Fully Licensed.",
+    "description": "Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken. *Fully Licensed.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?",
     "x_coord": 37.786,
     "y_coord": 50.566
