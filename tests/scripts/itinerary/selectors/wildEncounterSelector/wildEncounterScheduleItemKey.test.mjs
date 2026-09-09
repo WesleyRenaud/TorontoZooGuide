@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { GuardiansTalkScheduleItemKey } from '../../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 
 test('Test_FromWire_TestParts_ExpectKeyOrNull', () => {
@@ -52,4 +53,8 @@ test('Test_Equals_TestMatchingAndMismatch_ExpectBoolean', () => {
    assert.equal(key.equals(new WildEncounterScheduleItemKey('Giraffe', '1:00 PM', '1:30 PM')), true);
    assert.equal(key.equals(new WildEncounterScheduleItemKey('Giraffe', '1:00 PM')), false);
    assert.equal(key.equals(null), false);
+   assert.equal(
+      key.equals(new GuardiansTalkScheduleItemKey('Giraffe', '1:00 PM', '1:30 PM')),
+      false
+   );
 });

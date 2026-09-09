@@ -3,8 +3,8 @@ import { AttractionWithoutAnimalFragment } from './attractionWithoutAnimalFragme
 import { FixedTimeItemLongWaitFragment } from './fixedTimeItemLongWaitFragment.js';
 import { GuardiansTalkUnscheduleFragment } from './guardiansTalkUnscheduleFragment.js';
 import { GuardiansTalkWithoutAnimalFragment } from './guardiansTalkWithoutAnimalFragment.js';
-import { ItineraryErrorTypes } from '../itineraryErrorTypes.js';
 import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { WildEncounterUnscheduleFragment } from './wildEncounterUnscheduleFragment.js';
 
 export class ItineraryBuildWarningsContentBuilder {
@@ -21,44 +21,33 @@ export class ItineraryBuildWarningsContentBuilder {
    ]);
 
    static itineraryBuildWarningIssueTypes() {
-      const types = ItineraryErrorTypes.getItineraryErrorTypes();
-
       return [
-         types?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         types?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         types?.ATTRACTION_WITHOUT_ANIMAL,
-         types?.FIXED_TIME_ITEM_LONG_WAIT,
-      ].filter(Boolean);
+         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+         ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+      ];
    }
 
    static buildWarningConfirmFlags() {
-      const types = ItineraryErrorTypes.getItineraryErrorTypes();
-
-      return Object.fromEntries(
-         [
-            [
-               types?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-               { confirmingGuardiansTalkUnschedule: true },
-            ],
-            [
-               types?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-               { confirmingWildEncounterUnschedule: true },
-            ],
-            [
-               types?.GUARDIANS_TALK_WITHOUT_ANIMAL,
-               { confirmingGuardiansTalkWithoutAnimal: true },
-            ],
-            [
-               types?.ATTRACTION_WITHOUT_ANIMAL,
-               { confirmingAttractionWithoutAnimal: true },
-            ],
-            [
-               types?.FIXED_TIME_ITEM_LONG_WAIT,
-               { confirmingFixedTimeItemLongWait: true },
-            ],
-         ].filter(([type]) => Boolean(type))
-      );
+      return {
+         [ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS]: {
+            confirmingGuardiansTalkUnschedule: true,
+         },
+         [ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS]: {
+            confirmingWildEncounterUnschedule: true,
+         },
+         [ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL]: {
+            confirmingGuardiansTalkWithoutAnimal: true,
+         },
+         [ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL]: {
+            confirmingAttractionWithoutAnimal: true,
+         },
+         [ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT]: {
+            confirmingFixedTimeItemLongWait: true,
+         },
+      };
    }
 
    static issueType(issue) {
@@ -73,9 +62,8 @@ export class ItineraryBuildWarningsContentBuilder {
 
    static buildGuardiansTalkUnscheduleSection(issues, strings) {
       const talk = GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
-      const type = ItineraryErrorTypes.getItineraryErrorTypes()?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 
-      if (!talk?.talkName || !type) {
+      if (!talk?.talkName) {
          return null;
       }
 
@@ -85,7 +73,7 @@ export class ItineraryBuildWarningsContentBuilder {
          : strings.buildWarningScheduleOverlapMessageWithoutTime(talkName);
 
       return {
-         type,
+         type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          title: strings.buildWarningScheduleOverlapTitle,
          message,
       };
@@ -93,9 +81,8 @@ export class ItineraryBuildWarningsContentBuilder {
 
    static buildWildEncounterUnscheduleSection(issues, strings) {
       const encounter = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues(issues);
-      const type = ItineraryErrorTypes.getItineraryErrorTypes()?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 
-      if (!encounter?.encounterName || !type) {
+      if (!encounter?.encounterName) {
          return null;
       }
 
@@ -108,19 +95,13 @@ export class ItineraryBuildWarningsContentBuilder {
          : strings.buildWarningWildEncounterOverlapMessageWithoutTime(encounterName);
 
       return {
-         type,
+         type: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
          title: strings.buildWarningScheduleOverlapTitle,
          message,
       };
    }
 
    static buildGuardiansTalkWithoutAnimalSections(issues, strings) {
-      const type = ItineraryErrorTypes.getItineraryErrorTypes()?.GUARDIANS_TALK_WITHOUT_ANIMAL;
-
-      if (!type) {
-         return [];
-      }
-
       return GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues).map((talk) => {
          const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
          const message = talk.talkTime
@@ -128,7 +109,7 @@ export class ItineraryBuildWarningsContentBuilder {
             : strings.buildWarningWithoutAnimalMessageWithoutTime(talkName);
 
          return {
-            type,
+            type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             title: strings.buildWarningWithoutAnimalTitle,
             message,
          };
@@ -136,26 +117,14 @@ export class ItineraryBuildWarningsContentBuilder {
    }
 
    static buildAttractionWithoutAnimalSections(issues, strings) {
-      const type = ItineraryErrorTypes.getItineraryErrorTypes()?.ATTRACTION_WITHOUT_ANIMAL;
-
-      if (!type) {
-         return [];
-      }
-
       return AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues).map((attraction) => ({
-         type,
+         type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
          title: strings.buildWarningWithoutAnimalTitle,
          message: AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage(attraction, { strings }),
       }));
    }
 
    static buildFixedTimeItemLongWaitSections(issues, strings) {
-      const type = ItineraryErrorTypes.getItineraryErrorTypes()?.FIXED_TIME_ITEM_LONG_WAIT;
-
-      if (!type) {
-         return [];
-      }
-
       return FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues(issues).map((item) => {
          const itemName = ValueNormalizer.asTrimmedString(item.itemName);
          const message = item.itemTime
@@ -170,7 +139,7 @@ export class ItineraryBuildWarningsContentBuilder {
             );
 
          return {
-            type,
+            type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
             title: strings.buildWarningLongWaitTitle,
             message,
          };

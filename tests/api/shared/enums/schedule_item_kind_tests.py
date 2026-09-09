@@ -1,6 +1,24 @@
 from __future__ import annotations
 
 from api.shared.enums import ScheduleItemKind
+from api.shared.enums.shared_enum_values import SharedEnumValues
+
+def Test_Members_TestSharedJson_ExpectKindsAndItemTypes() -> None:
+   members = SharedEnumValues.load_object_members( 'scheduleItemKind.json' )
+
+   assert {
+      name: member.value
+      for name, member in ScheduleItemKind.__members__.items()
+   } == { name: definition[ 'kind' ] for name, definition in members.items() }
+   assert {
+      name: member.item_type
+      for name, member in ScheduleItemKind.__members__.items()
+      if member.item_type is not None
+   } == {
+      name: definition[ 'itemType' ]
+      for name, definition in members.items()
+      if 'itemType' in definition
+   }
 
 def Test_Normalize_TestEntrance_ExpectEntranceKind() -> None:
    assert ScheduleItemKind.normalize( 'entrance' ) == ScheduleItemKind.ENTRANCE

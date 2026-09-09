@@ -18,7 +18,7 @@ export class GuardiansTalkOccurrenceFilter {
       function populateTimes(times = []) {
          ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList(getTimesListEl(), {
             times,
-            hasWildEncounter: Boolean(
+            hasSelectedEntity: Boolean(
                ControllerHelper.getFieldValue(talkNameEl) && ControllerHelper.getFieldValue(locationEl)
             ),
             hasDate: Boolean(ControllerHelper.getFieldValue(dateEl)),

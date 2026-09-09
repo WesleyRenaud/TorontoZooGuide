@@ -24,7 +24,7 @@ test('Test_CreateGuardiansTalkScheduleTimesFilterController_TestRefreshAndClear_
 
       controller.clear();
       assert.deepEqual(updates.at(-1)[1].times, []);
-      assert.equal(updates.at(-1)[1].hasWildEncounter, false);
+      assert.equal(updates.at(-1)[1].hasSelectedEntity, false);
 
       const emptyController = GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
          talkNameEl: { value: '' },

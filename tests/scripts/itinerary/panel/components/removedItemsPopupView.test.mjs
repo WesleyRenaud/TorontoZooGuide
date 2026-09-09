@@ -3,21 +3,11 @@ import { test } from 'node:test';
 
 import { RemovedItemsPopupView } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupView.js';
 import { RemovedItemsPopupSectionBuilder } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupSectionBuilder.js';
-import { ItineraryAdjustmentTypes } from '../../../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhibitKey.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-installDomTestHooks({
-   before: () => {
-      ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-         adjustmentTypes: {
-            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-         },
-      });
-   },
-});
+installDomTestHooks();
 
 test('Test_RemovedItemsPopupSectionSpecs_TestRemovedItemsPopupSectionSpecsHasRemovedItemsPopupContentReportsRemovedAnimals_ExpectOk', () => {
    assert.equal(

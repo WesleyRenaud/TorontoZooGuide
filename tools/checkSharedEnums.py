@@ -33,7 +33,59 @@ def python_module_name( relative_path: str ) -> str:
    return relative_path.removesuffix( '.py' ).replace( '/', '.' )
 
 
-def check_python( entry: dict, members: dict[ str, str | int ] ) -> list[ str ]:
+def has_object_values( entry: dict, members: dict ) -> bool:
+   if entry.get( 'valueShape' ) == 'object':
+      return True
+
+   return all( isinstance( value, dict ) for value in members.values() )
+
+
+def check_object_members( entry: dict, members: dict ) -> list[ str ]:
+   violations: list[ str ] = []
+   location = f'shared/enums/{ entry[ "json" ] }'
+
+   for name, value in members.items():
+      if not isinstance( value, dict ):
+         violations.append( f'{ location }: { name } must be an object' )
+         continue
+
+      unknown_fields = sorted( set( value ) - { 'kind', 'itemType' } )
+
+      if unknown_fields:
+         violations.append(
+            f'{ location }: unknown field(s) for { name }: '
+            f'{ ", ".join( unknown_fields ) }'
+         )
+
+      if not isinstance( value.get( 'kind' ), str ) or not value[ 'kind' ]:
+         violations.append(
+            f'{ location }: kind for { name } must be a non-empty string'
+         )
+
+      if 'itemType' not in value:
+         continue
+
+      if not isinstance( value[ 'itemType' ], str ) or not value[ 'itemType' ]:
+         violations.append(
+            f'{ location }: itemType for { name } must be a non-empty string'
+         )
+
+   return violations
+
+
+def expected_kinds( members: dict ) -> dict[ str, str ]:
+   return { name: value[ 'kind' ] for name, value in members.items() }
+
+
+def expected_item_types( members: dict ) -> dict[ str, str ]:
+   return {
+      name: value[ 'itemType' ]
+      for name, value in members.items()
+      if 'itemType' in value
+   }
+
+
+def check_python( entry: dict, members: dict, object_shape: bool ) -> list[ str ]:
    violations: list[ str ] = []
    module = importlib.import_module( python_module_name( entry[ 'pythonModule' ] ) )
    enum_cls = getattr( module, entry[ 'pythonClass' ], None )
@@ -48,16 +100,31 @@ def check_python( entry: dict, members: dict[ str, str | int ] ) -> list[ str ]:
       for name, member in enum_cls.__members__.items()
    }
 
-   if actual != members:
+   if actual != ( expected_kinds( members ) if object_shape else members ):
       violations.append(
          f'{ entry[ "pythonModule" ] }: { entry[ "pythonClass" ] } does not match '
          f'shared/enums/{ entry[ "json" ] }'
       )
 
+   if not object_shape:
+      return violations
+
+   actual_item_types = {
+      name: member.item_type
+      for name, member in enum_cls.__members__.items()
+      if getattr( member, 'item_type', None ) is not None
+   }
+
+   if actual_item_types != expected_item_types( members ):
+      violations.append(
+         f'{ entry[ "pythonModule" ] }: { entry[ "pythonClass" ] }.item_type does not '
+         f'match shared/enums/{ entry[ "json" ] }'
+      )
+
    return violations
 
 
-def check_javascript( entry: dict, members: dict[ str, str | int ] ) -> list[ str ]:
+def check_javascript( entry: dict, members: dict ) -> list[ str ]:
    violations: list[ str ] = []
    path = ROOT / entry[ 'javascriptModule' ]
    relative = entry[ 'javascriptModule' ]
@@ -81,23 +148,20 @@ def check_javascript( entry: dict, members: dict[ str, str | int ] ) -> list[ st
          f'{ relative }: missing export class { entry[ "javascriptClass" ] }'
       )
 
-   if 'Object.assign(' not in source:
+   freeze_assign_pattern = re.compile(
+      rf'{ re.escape( entry[ "javascriptClass" ] ) }\s*\[[^\]]+\]\s*=\s*Object\.freeze\('
+   )
+
+   if 'Object.assign(' not in source and not freeze_assign_pattern.search( source ):
       violations.append(
-         f'{ relative }: must Object.assign shared JSON values onto the class'
+         f'{ relative }: must Object.assign shared JSON values onto the class '
+         f'(or freeze-assign each member onto it)'
       )
 
    return violations
 
 
-def check() -> int:
-   catalog = load_catalog()
-   violations: list[ str ] = []
-
-   for entry in catalog[ 'enums' ]:
-      members = load_json_members( entry[ 'json' ] )
-      violations.extend( check_python( entry, members ) )
-      violations.extend( check_javascript( entry, members ) )
-
+def report( violations: list[ str ] ) -> int:
    if not violations:
       return 0
 
@@ -107,6 +171,33 @@ def check() -> int:
       print( f'  { violation }' )
 
    return 1
+
+
+def check() -> int:
+   catalog = load_catalog()
+   loaded: list[ tuple[ dict, dict, bool ] ] = []
+   shape_violations: list[ str ] = []
+
+   for entry in catalog[ 'enums' ]:
+      members = load_json_members( entry[ 'json' ] )
+      object_shape = has_object_values( entry, members )
+      loaded.append( ( entry, members, object_shape ) )
+
+      if object_shape:
+         shape_violations.extend( check_object_members( entry, members ) )
+
+   # Importing an API enum module runs its JSON loader, so malformed JSON has to
+   # be reported before any module import is attempted.
+   if shape_violations:
+      return report( shape_violations )
+
+   violations: list[ str ] = []
+
+   for entry, members, object_shape in loaded:
+      violations.extend( check_python( entry, members, object_shape ) )
+      violations.extend( check_javascript( entry, members ) )
+
+   return report( violations )
 
 
 def main() -> int:

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { FixedTimeItemLongWaitMessageBuilder } from '../../../../scripts/itinerary/panel/fixedTimeItemLongWaitMessageBuilder.js';
-import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { Strings } from '../../../../scripts/strings.js';
 
@@ -31,31 +31,33 @@ test('Test_ResolveItemTypeMeta_TestUnsupported_ExpectThrows', () => {
    );
 });
 
-test('Test_IsLongWaitIssue_TestType_ExpectBoolean', () => {
-   const original = ItineraryErrorTypes.getItineraryErrorTypes;
-   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ FIXED_TIME_ITEM_LONG_WAIT: 'LONG_WAIT' });
+test('Test_FixedTimeItemLongWaitIssueType_TestSharedEnum_ExpectWireValue', () => {
+   assert.equal(
+      FixedTimeItemLongWaitMessageBuilder.fixedTimeItemLongWaitIssueType(),
+      ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
+   );
+});
 
-   try {
-      assert.equal(FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({ type: 'LONG_WAIT' }), true);
-      assert.equal(FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({ type: 'OTHER' }), false);
-   } finally {
-      ItineraryErrorTypes.getItineraryErrorTypes = original;
-   }
+test('Test_IsLongWaitIssue_TestType_ExpectBoolean', () => {
+   assert.equal(
+      FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+      }),
+      true
+   );
+   assert.equal(FixedTimeItemLongWaitMessageBuilder.isLongWaitIssue({ type: 'OTHER' }), false);
 });
 
 test('Test_LongWaitItems_TestIssues_ExpectFlattened', () => {
-   const original = ItineraryErrorTypes.getItineraryErrorTypes;
-   ItineraryErrorTypes.getItineraryErrorTypes = () => ({ FIXED_TIME_ITEM_LONG_WAIT: 'LONG_WAIT' });
+   const items = FixedTimeItemLongWaitMessageBuilder.longWaitItems([
+      {
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+         items: [{ itemName: 'Talk A' }, { itemName: 'Talk B' }],
+      },
+      { type: 'OTHER', items: [{ itemName: 'Skip' }] },
+   ]);
 
-   try {
-      const items = FixedTimeItemLongWaitMessageBuilder.longWaitItems([
-         { type: 'LONG_WAIT', items: [{ itemName: 'Talk A' }, { itemName: 'Talk B' }] },
-         { type: 'OTHER', items: [{ itemName: 'Skip' }] },
-      ]);
-      assert.deepEqual(items, [{ itemName: 'Talk A' }, { itemName: 'Talk B' }]);
-   } finally {
-      ItineraryErrorTypes.getItineraryErrorTypes = original;
-   }
+   assert.deepEqual(items, [{ itemName: 'Talk A' }, { itemName: 'Talk B' }]);
 });
 
 test('Test_LongWaitConfirmMessage_TestWithAndWithoutTime_ExpectStrings', () => {

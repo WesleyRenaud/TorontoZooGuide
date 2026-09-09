@@ -1,5 +1,4 @@
 export class CenterPanHelper {
-   static DEFAULT_CONTAIN = 'outside';
    static FOCUS_CONTAIN = 'none';
 
    static setContain(panzoom, mode) {

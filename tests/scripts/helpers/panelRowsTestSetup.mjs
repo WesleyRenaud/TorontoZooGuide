@@ -1,6 +1,5 @@
 import { afterEach, beforeEach } from 'node:test';
 
-import { ItineraryAdjustmentTypes } from '../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { TimelineLayoutConstants } from '../../../scripts/shared/timelineLayoutConstants.js';
 import { installTestWindow } from './domMock.mjs';
 
@@ -316,12 +315,6 @@ export function installPanelRowsTestHooks() {
          },
       };
       installTestWindow();
-      ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-         adjustmentTypes: {
-            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-         },
-      });
       globalThis.requestAnimationFrame = (callback) => callback();
    });
    

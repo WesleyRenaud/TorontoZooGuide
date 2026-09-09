@@ -1,10 +1,8 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
+import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 
 export class ItineraryErrorTypesHelper {
    static normalizeItineraryErrorType(errorType, legacySuccess) {
-      const types = ItineraryErrorTypes.getItineraryErrorTypes();
-
       const normalizedErrorType = ValueNormalizer.asTrimmedString(errorType);
 
       if (normalizedErrorType) {
@@ -12,9 +10,9 @@ export class ItineraryErrorTypesHelper {
       }
 
       if (legacySuccess === false) {
-         return types?.SAVE_FAILED;
+         return ItineraryErrorType.SAVE_FAILED;
       }
 
-      return types?.SUCCESS;
+      return ItineraryErrorType.SUCCESS;
    }
 }

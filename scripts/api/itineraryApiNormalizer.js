@@ -1,7 +1,6 @@
 import { ItineraryAdjustmentTypes } from '../itinerary/itineraryAdjustmentTypes.js';
 import { ItineraryErrorTypes } from '../itinerary/itineraryErrorTypes.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
-import { ItineraryTransportationStationRoles } from '../itinerary/itineraryTransportationStationRoles.js';
 import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
@@ -187,8 +186,6 @@ export class ItineraryApiNormalizer {
       }
 
       ItineraryErrorTypes.updateItineraryErrorTypesFromConfig(normalizedConfig);
-      ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig(normalizedConfig);
-      ItineraryTransportationStationRoles.updateItineraryTransportationStationRolesFromConfig(normalizedConfig);
 
       return normalizedConfig;
    }

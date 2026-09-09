@@ -6,7 +6,6 @@ import { ItineraryPanelScheduleHandlersHelper } from '../../../../scripts/itiner
 
 test('Test_NotifyItineraryUpdated_TestSuccessAndFailure_ExpectDispatch', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: { SUCCESS: 'success', SAVE_FAILED: 'save_failed' },
       suppressedErrorTypes: [],
    });
 

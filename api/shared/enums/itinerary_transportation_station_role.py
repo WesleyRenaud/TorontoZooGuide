@@ -2,48 +2,65 @@ from __future__ import annotations
 
 from enum import Enum
 
-
-class ItineraryTransportationStationRole( str, Enum ):
-   ONBOARDING = 'onboarding_station'
-   OFFBOARDING = 'offboarding_station'
-   ROUND_TRIP = 'round_trip'
+from .shared_enum_values import SharedEnumValues
 
 
-   @classmethod
-   def onboarding_roles( cls ) -> frozenset[ ItineraryTransportationStationRole ]:
-      return frozenset( {
-         cls.ONBOARDING,
-         cls.ROUND_TRIP,
-      } )
+ItineraryTransportationStationRole = Enum(
+   'ItineraryTransportationStationRole',
+   SharedEnumValues.load( 'itineraryTransportationStationRole.json' ),
+   type=str,
+)
 
 
-   @classmethod
-   def offboarding_roles( cls ) -> frozenset[ ItineraryTransportationStationRole ]:
-      return frozenset( {
-         cls.OFFBOARDING,
-         cls.ROUND_TRIP,
-      } )
+@classmethod
+def _onboarding_roles(
+      cls: type[ ItineraryTransportationStationRole ],
+      ) -> frozenset[ ItineraryTransportationStationRole ]:
+   return frozenset( {
+      cls.ONBOARDING,
+      cls.ROUND_TRIP,
+   } )
 
 
-   @classmethod
-   def to_config_dict( cls ) -> dict[ str, str ]:
-      return {
-         role.name: role.value
-         for role in cls
-      }
+@classmethod
+def _offboarding_roles(
+      cls: type[ ItineraryTransportationStationRole ],
+      ) -> frozenset[ ItineraryTransportationStationRole ]:
+   return frozenset( {
+      cls.OFFBOARDING,
+      cls.ROUND_TRIP,
+   } )
 
 
-   @classmethod
-   def onboarding_role_values( cls ) -> list[ str ]:
-      return sorted(
-         role.value
-         for role in cls.onboarding_roles()
-      )
+@classmethod
+def _to_config_dict(
+      cls: type[ ItineraryTransportationStationRole ] ) -> dict[ str, str ]:
+   return {
+      role.name: role.value
+      for role in cls
+   }
 
 
-   @classmethod
-   def offboarding_role_values( cls ) -> list[ str ]:
-      return sorted(
-         role.value
-         for role in cls.offboarding_roles()
-      )
+@classmethod
+def _onboarding_role_values(
+      cls: type[ ItineraryTransportationStationRole ] ) -> list[ str ]:
+   return sorted(
+      role.value
+      for role in cls.onboarding_roles()
+   )
+
+
+@classmethod
+def _offboarding_role_values(
+      cls: type[ ItineraryTransportationStationRole ] ) -> list[ str ]:
+   return sorted(
+      role.value
+      for role in cls.offboarding_roles()
+   )
+
+
+ItineraryTransportationStationRole.onboarding_roles = _onboarding_roles
+ItineraryTransportationStationRole.offboarding_roles = _offboarding_roles
+ItineraryTransportationStationRole.to_config_dict = _to_config_dict
+ItineraryTransportationStationRole.onboarding_role_values = _onboarding_role_values
+ItineraryTransportationStationRole.offboarding_role_values = _offboarding_role_values

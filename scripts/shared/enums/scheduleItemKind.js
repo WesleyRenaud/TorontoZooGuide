@@ -1,32 +1,24 @@
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
+import scheduleItemKindValues from '../../../shared/enums/scheduleItemKind.json' with { type: 'json' };
 
 export class ScheduleItemKind {
-   static ENTRANCE = Object.freeze({
-      kind: 'entrance',
-   });
-   static ANIMAL = Object.freeze({
-      kind: 'animal',
-      itemType: 'animals',
-   });
-   static ATTRACTION = Object.freeze({
-      kind: 'attraction',
-      itemType: 'attractions',
-   });
-   static TRANSPORTATION = Object.freeze({
-      kind: 'transportation',
-      itemType: 'transportations',
-   });
-   static GUARDIANS_TALK = Object.freeze({
-      kind: 'guardians_talk',
-      itemType: 'guardians_talks',
-   });
-   static WILD_ENCOUNTER = Object.freeze({
-      kind: 'wild_encounter',
-      itemType: 'wild_encounters',
-   });
-   static EVENT = Object.freeze({
-      kind: 'event',
-   });
+   static {
+      Object.entries(scheduleItemKindValues).forEach(([memberName, definition]) => {
+         Object.assign(ScheduleItemKind, { [memberName]: Object.freeze({ ...definition }) });
+      });
+
+      ScheduleItemKind.SCHEDULE_ITEM_KIND_ENTRIES = Object.freeze(
+         Object.keys(scheduleItemKindValues).map(memberName => ScheduleItemKind[memberName])
+      );
+
+      ScheduleItemKind.ITEM_TYPE_BY_KIND = Object.freeze(
+         Object.fromEntries(
+            ScheduleItemKind.SCHEDULE_ITEM_KIND_ENTRIES
+               .filter(entry => Boolean(entry.itemType))
+               .map(entry => [entry.kind, entry.itemType])
+         )
+      );
+   }
 
    static scheduleItemKindFromItemType(itemType) {
       const normalized = ValueNormalizer.asTrimmedString(itemType).toLowerCase();
@@ -84,22 +76,4 @@ export class ScheduleItemKind {
    static scheduleItemModuleItemTypeForKind(kind) {
       return ScheduleItemKind.ITEM_TYPE_BY_KIND[ValueNormalizer.asTrimmedString(kind).toLowerCase()] ?? null;
    }
-
-   static SCHEDULE_ITEM_KIND_ENTRIES = Object.freeze([
-      ScheduleItemKind.ENTRANCE,
-      ScheduleItemKind.ANIMAL,
-      ScheduleItemKind.ATTRACTION,
-      ScheduleItemKind.TRANSPORTATION,
-      ScheduleItemKind.GUARDIANS_TALK,
-      ScheduleItemKind.WILD_ENCOUNTER,
-      ScheduleItemKind.EVENT,
-   ]);
-
-   static ITEM_TYPE_BY_KIND = Object.freeze({
-      [ScheduleItemKind.ANIMAL.kind]: ScheduleItemKind.ANIMAL.itemType,
-      [ScheduleItemKind.ATTRACTION.kind]: ScheduleItemKind.ATTRACTION.itemType,
-      [ScheduleItemKind.TRANSPORTATION.kind]: ScheduleItemKind.TRANSPORTATION.itemType,
-      [ScheduleItemKind.GUARDIANS_TALK.kind]: ScheduleItemKind.GUARDIANS_TALK.itemType,
-      [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
-   });
 }

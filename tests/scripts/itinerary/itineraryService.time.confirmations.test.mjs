@@ -11,10 +11,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
-      },
       suppressedErrorTypes: [],
    });
 
@@ -114,10 +110,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
-      },
       suppressedErrorTypes: [],
    });
 
@@ -210,10 +202,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
 
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheVisitorCancelsConfirmation_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
-      },
       suppressedErrorTypes: [],
    });
 
@@ -280,12 +268,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
 
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeThrowsForNonConfirmationErrors_ExpectOk', async () => {
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         TIME_OUT_OF_BOUNDS: 'timeOutOfBounds',
-         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
-         ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
-      },
       suppressedErrorTypes: [],
    });
 
@@ -386,10 +368,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
    const requests = [];
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
-      },
       suppressedErrorTypes: [],
    });
 
@@ -490,11 +468,6 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
    let arrivalRequestCount = 0;
 
    ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         SUCCESS: 'success',
-         TIME_OUT_OF_BOUNDS: 'timeOutOfBounds',
-         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
-      },
       suppressedErrorTypes: [],
    });
 

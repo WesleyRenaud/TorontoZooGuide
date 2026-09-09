@@ -38,6 +38,56 @@ class SharedEnumValues:
 
 
    @staticmethod
+   def load_object_members( json_name: str ) -> dict[ str, dict[ str, str ] ]:
+      path = SharedEnumValues.shared_enums_directory() / json_name
+      members = json.loads( path.read_text( encoding='utf-8' ) )
+
+      if not isinstance( members, dict ) or not members:
+         raise ValueError(
+            f'{ path }: expected a non-empty object of MEMBER -> object value' )
+
+      normalized: dict[ str, dict[ str, str ] ] = {}
+
+      for key, value in members.items():
+         if not isinstance( key, str ) or not key.isidentifier() or not key.isupper():
+            raise ValueError(
+               f'{ path }: member key must be SCREAMING_SNAKE identifier: '
+               f'{ repr( key ) }' )
+
+         if not isinstance( value, dict ):
+            raise ValueError(
+               f'{ path }: value for { key } must be an object' )
+
+         unknown_fields = sorted( set( value ) - { 'kind', 'itemType' } )
+
+         if unknown_fields:
+            raise ValueError(
+               f'{ path }: unknown field(s) for { key }: '
+               f'{ ", ".join( unknown_fields ) }' )
+
+         kind = value.get( 'kind' )
+
+         if not isinstance( kind, str ) or not kind:
+            raise ValueError(
+               f'{ path }: kind for { key } must be a non-empty string' )
+
+         normalized_value: dict[ str, str ] = { 'kind': kind }
+
+         if 'itemType' in value:
+            item_type = value[ 'itemType' ]
+
+            if not isinstance( item_type, str ) or not item_type:
+               raise ValueError(
+                  f'{ path }: itemType for { key } must be a non-empty string' )
+
+            normalized_value[ 'itemType' ] = item_type
+
+         normalized[ key ] = normalized_value
+
+      return dict( sorted( normalized.items() ) )
+
+
+   @staticmethod
    def load_integers( json_name: str ) -> dict[ str, int ]:
       path = SharedEnumValues.shared_enums_directory() / json_name
       members = json.loads( path.read_text( encoding='utf-8' ) )

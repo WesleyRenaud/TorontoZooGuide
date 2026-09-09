@@ -25,6 +25,22 @@
          "javascriptClass": "ItemType"
       },
       {
+         "id": "itineraryAdjustmentType",
+         "json": "itineraryAdjustmentType.json",
+         "pythonModule": "api/shared/enums/itinerary_adjustment_type.py",
+         "pythonClass": "ItineraryAdjustmentType",
+         "javascriptModule": "scripts/shared/enums/itineraryAdjustmentType.js",
+         "javascriptClass": "ItineraryAdjustmentType"
+      },
+      {
+         "id": "itineraryErrorType",
+         "json": "itineraryErrorType.json",
+         "pythonModule": "api/shared/enums/itinerary_error_type.py",
+         "pythonClass": "ItineraryErrorType",
+         "javascriptModule": "scripts/shared/enums/itineraryErrorType.js",
+         "javascriptClass": "ItineraryErrorType"
+      },
+      {
          "id": "itineraryEventType",
          "json": "itineraryEventType.json",
          "pythonModule": "api/shared/enums/itinerary_event_type.py",
@@ -41,12 +57,29 @@
          "javascriptClass": "ItinerarySaveIssueItemType"
       },
       {
+         "id": "itineraryTransportationStationRole",
+         "json": "itineraryTransportationStationRole.json",
+         "pythonModule": "api/shared/enums/itinerary_transportation_station_role.py",
+         "pythonClass": "ItineraryTransportationStationRole",
+         "javascriptModule": "scripts/shared/enums/itineraryTransportationStationRole.js",
+         "javascriptClass": "ItineraryTransportationStationRole"
+      },
+      {
          "id": "position",
          "json": "position.json",
          "pythonModule": "api/shared/enums/position.py",
          "pythonClass": "Position",
          "javascriptModule": "scripts/shared/enums/position.js",
          "javascriptClass": "Position"
+      },
+      {
+         "id": "scheduleItemKind",
+         "json": "scheduleItemKind.json",
+         "valueShape": "object",
+         "pythonModule": "api/shared/enums/schedule_item_kind.py",
+         "pythonClass": "ScheduleItemKind",
+         "javascriptModule": "scripts/shared/enums/scheduleItemKind.js",
+         "javascriptClass": "ScheduleItemKind"
       }
    ]
 }

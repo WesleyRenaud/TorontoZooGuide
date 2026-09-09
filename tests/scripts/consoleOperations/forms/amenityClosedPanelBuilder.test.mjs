@@ -1,0 +1,122 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { AmenityClosedPanelBuilder } from '../../../../scripts/consoleOperations/forms/amenityClosedPanelBuilder.js';
+import { ConsoleActionsBuilder } from '../../../../scripts/consoleOperations/templates/consoleActionsBuilder.js';
+import { ConsoleDateRangeFieldsBuilder } from '../../../../scripts/consoleOperations/templates/consoleDateRangeFieldsBuilder.js';
+import { ConsolePanelShellBuilder } from '../../../../scripts/consoleOperations/templates/consolePanelShellBuilder.js';
+import { ConsoleSelectFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
+import { ConsoleStatusBuilder } from '../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
+import { ConsoleTextareaFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
+import { Strings } from '../../../../scripts/strings.js';
+
+test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
+   const originals = {
+      createPanelShell: ConsolePanelShellBuilder.createPanelShell,
+      createSelectField: ConsoleSelectFieldBuilder.createSelectField,
+      createDateRangeFields: ConsoleDateRangeFieldsBuilder.createDateRangeFields,
+      createTextareaField: ConsoleTextareaFieldBuilder.createTextareaField,
+      createActions: ConsoleActionsBuilder.createActions,
+      createStatus: ConsoleStatusBuilder.createStatus,
+   };
+
+   let captured;
+   ConsolePanelShellBuilder.createPanelShell = (options) => {
+      captured = options;
+      return { panel: true };
+   };
+   ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
+   ConsoleDateRangeFieldsBuilder.createDateRangeFields = (options) => ({ kind: 'createDateRangeFields', ...options });
+   ConsoleTextareaFieldBuilder.createTextareaField = (options) => ({ kind: 'createTextareaField', ...options });
+   ConsoleActionsBuilder.createActions = (options) => ({ kind: 'createActions', ...options });
+   ConsoleStatusBuilder.createStatus = (options) => ({ kind: 'createStatus', ...options });
+
+   try {
+      const result = AmenityClosedPanelBuilder.createPanel({
+         panelId: 'giftShopClosedPanel',
+         title: Strings.panelTitles.giftShopClosed,
+         entityLabel: Strings.entityLabels.giftShop,
+         emptyOptionLabel: Strings.placeholders.giftShop,
+         idPrefix: 'giftShopClosed',
+         entityFieldName: 'GiftShop',
+         endHelpText: Strings.help.continueUntilReopened('gift shop'),
+         messageLabel: Strings.labels.closedMessage,
+         messagePlaceholder: Strings.textareas.closedMessage('gift shop'),
+         submitId: 'submitGiftShopClosed',
+         statusId: 'giftShopClosedStatus',
+      });
+
+      assert.deepEqual(result, { panel: true });
+      assert.equal(captured.panelId, 'giftShopClosedPanel');
+      assert.equal(captured.bodyChildren.length, 5);
+      assert.equal(captured.bodyChildren[0].inputId, 'giftShopClosedGiftShop');
+      assert.equal(captured.bodyChildren[1].startDateId, 'giftShopClosedStartDate');
+      assert.equal(captured.bodyChildren[1].startHelpText, undefined);
+      assert.equal(captured.bodyChildren[1].endHelpText, Strings.help.continueUntilReopened('gift shop'));
+      assert.equal(captured.bodyChildren[2].label, Strings.labels.closedMessage);
+      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closedMessage('gift shop'));
+      assert.equal(captured.bodyChildren[3].submitId, 'submitGiftShopClosed');
+      assert.equal(captured.bodyChildren[4].statusId, 'giftShopClosedStatus');
+   } finally {
+      ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
+      ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;
+      ConsoleDateRangeFieldsBuilder.createDateRangeFields = originals.createDateRangeFields;
+      ConsoleTextareaFieldBuilder.createTextareaField = originals.createTextareaField;
+      ConsoleActionsBuilder.createActions = originals.createActions;
+      ConsoleStatusBuilder.createStatus = originals.createStatus;
+   }
+});
+
+test('Test_CreatePanel_TestAttractionConfig_ExpectStartHelpText', () => {
+   const originals = {
+      createPanelShell: ConsolePanelShellBuilder.createPanelShell,
+      createSelectField: ConsoleSelectFieldBuilder.createSelectField,
+      createDateRangeFields: ConsoleDateRangeFieldsBuilder.createDateRangeFields,
+      createTextareaField: ConsoleTextareaFieldBuilder.createTextareaField,
+      createActions: ConsoleActionsBuilder.createActions,
+      createStatus: ConsoleStatusBuilder.createStatus,
+   };
+
+   let captured;
+   ConsolePanelShellBuilder.createPanelShell = (options) => {
+      captured = options;
+      return { panel: true };
+   };
+   ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
+   ConsoleDateRangeFieldsBuilder.createDateRangeFields = (options) => ({ kind: 'createDateRangeFields', ...options });
+   ConsoleTextareaFieldBuilder.createTextareaField = (options) => ({ kind: 'createTextareaField', ...options });
+   ConsoleActionsBuilder.createActions = (options) => ({ kind: 'createActions', ...options });
+   ConsoleStatusBuilder.createStatus = (options) => ({ kind: 'createStatus', ...options });
+
+   try {
+      AmenityClosedPanelBuilder.createPanel({
+         panelId: 'attractionClosedPanel',
+         title: Strings.panelTitles.attractionClosed,
+         entityLabel: Strings.entityLabels.attraction,
+         emptyOptionLabel: Strings.placeholders.attraction,
+         idPrefix: 'attractionClosed',
+         entityFieldName: 'Attraction',
+         startHelpText: Strings.help.startImmediately,
+         endHelpText: Strings.help.keepClosedUntilManuallyReopened('attraction'),
+         messageLabel: Strings.labels.closureMessage,
+         messagePlaceholder: Strings.textareas.closureMessage,
+         submitId: 'submitAttractionClosed',
+         statusId: 'attractionClosedStatus',
+      });
+
+      assert.equal(captured.bodyChildren[1].startHelpText, Strings.help.startImmediately);
+      assert.equal(
+         captured.bodyChildren[1].endHelpText,
+         Strings.help.keepClosedUntilManuallyReopened('attraction')
+      );
+      assert.equal(captured.bodyChildren[2].label, Strings.labels.closureMessage);
+      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closureMessage);
+   } finally {
+      ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
+      ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;
+      ConsoleDateRangeFieldsBuilder.createDateRangeFields = originals.createDateRangeFields;
+      ConsoleTextareaFieldBuilder.createTextareaField = originals.createTextareaField;
+      ConsoleActionsBuilder.createActions = originals.createActions;
+      ConsoleStatusBuilder.createStatus = originals.createStatus;
+   }
+});

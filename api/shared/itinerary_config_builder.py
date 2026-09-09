@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from .constants import Constants
+from .enums import ItineraryAdjustmentType
 from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
 from .enums import ItineraryTransportationStationRole
 from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
-from ..itinerary.domain.itinerary_adjustment_type import ItineraryAdjustmentType
 from ..types import Types
 
 

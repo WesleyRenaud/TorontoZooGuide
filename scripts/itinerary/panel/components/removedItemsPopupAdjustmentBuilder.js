@@ -1,12 +1,11 @@
-import { ItineraryAdjustmentTypes } from '../../itineraryAdjustmentTypes.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
+import { ItineraryAdjustmentType } from '../../../shared/enums/itineraryAdjustmentType.js';
 import { Strings } from '../../../strings.js';
 
 export class RemovedItemsPopupAdjustmentBuilder {
    static buildAdjustmentRowSpec(
       adjustment = {},
       {
-         adjustmentTypes = ItineraryAdjustmentTypes.getItineraryAdjustmentTypes(),
          strings = Strings,
          formatTime = ItineraryItemFormatter.formatClockTime,
       } = {}
@@ -18,14 +17,14 @@ export class RemovedItemsPopupAdjustmentBuilder {
          return null;
       }
 
-      if (adjustment.type === adjustmentTypes?.ARRIVAL_TIME_ADJUSTED) {
+      if (adjustment.type === ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED) {
          return {
             name: strings.itinerary.dayPlanner.arrivalLabel,
             alertLine: strings.itinerary.removedItems.arrivalAdjusted(oldTime, newTime),
          };
       }
 
-      if (adjustment.type === adjustmentTypes?.DEPARTURE_TIME_ADJUSTED) {
+      if (adjustment.type === ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED) {
          return {
             name: strings.labels.departure,
             alertLine: strings.itinerary.removedItems.departureAdjusted(oldTime, newTime),

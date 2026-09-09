@@ -4,12 +4,10 @@ import { test } from 'node:test';
 import { ItineraryBuildWarningsFragment } from '../../../../scripts/itinerary/panel/itineraryBuildWarningsFragment.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
-import { MOCK_ERROR_TYPES } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installDomTestHooks();
 
 ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-   errorTypes: MOCK_ERROR_TYPES,
    suppressedErrorTypes: [],
 });
 
@@ -335,35 +333,6 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
       ]),
       []
    );
-});
-
-test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsSkipsLongWaitWhenErrorTypeIs_ExpectOk', () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-      errorTypes: {
-         ...MOCK_ERROR_TYPES,
-         FIXED_TIME_ITEM_LONG_WAIT: '',
-      },
-      suppressedErrorTypes: [],
-   });
-
-   try {
-      assert.deepEqual(
-         ItineraryBuildWarningsFragment.buildItineraryBuildWarningSections([{
-            type: 'fixedTimeItemLongWait',
-            items: [{
-               name: 'Amur Tiger',
-               item_type: 'guardiansTalk',
-            }],
-         }]),
-         []
-      );
-   }
-   finally {
-      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-         errorTypes: MOCK_ERROR_TYPES,
-         suppressedErrorTypes: [],
-      });
-   }
 });
 
 test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarningsConfirmationCancelsWhenNoSections_ExpectOk', () => {

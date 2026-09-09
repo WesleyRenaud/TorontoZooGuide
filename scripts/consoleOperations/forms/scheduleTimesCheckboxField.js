@@ -98,7 +98,7 @@ export class ScheduleTimesCheckboxField {
 
    static updateScheduleTimesCheckboxList(el, {
       times = [],
-      hasWildEncounter = false,
+      hasSelectedEntity = false,
       hasDate = false,
       autoSelectSingleTime = false,
    } = {}) {
@@ -119,7 +119,7 @@ export class ScheduleTimesCheckboxField {
          return;
       }
 
-      if (!hasWildEncounter) {
+      if (!hasSelectedEntity) {
          ScheduleTimesCheckboxField.resetScheduleTimesCheckboxList(listEl);
          return;
       }

@@ -3,34 +3,26 @@ import test from 'node:test';
 
 import { ItineraryAdjustmentTypes } from '../../../scripts/itinerary/itineraryAdjustmentTypes.js';
 
-test('Test_UpdateAndGetItineraryAdjustmentTypes_TestConfig_ExpectFrozen', () => {
-   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-      adjustmentTypes: { EARLY: 'early_admission' },
-   });
-
+test('Test_GetItineraryAdjustmentTypes_TestSharedEnum_ExpectFrozen', () => {
    assert.deepEqual(ItineraryAdjustmentTypes.getItineraryAdjustmentTypes(), {
-      EARLY: 'early_admission',
+      ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+      DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
    });
+   assert.equal(Object.isFrozen(ItineraryAdjustmentTypes.getItineraryAdjustmentTypes()), true);
 });
 
 test('Test_NormalizeItineraryAdjustmentType_TestValues_ExpectMatchedOrPassthrough', () => {
-   ItineraryAdjustmentTypes.updateItineraryAdjustmentTypesFromConfig({
-      adjustmentTypes: { EARLY: 'early_admission' },
-   });
-
    assert.equal(
-      ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('early_admission'),
-      'early_admission'
+      ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('arrivalTimeAdjusted'),
+      'arrivalTimeAdjusted'
+   );
+   assert.equal(
+      ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('  departureTimeAdjusted  '),
+      'departureTimeAdjusted'
    );
    assert.equal(
       ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('custom'),
       'custom'
    );
    assert.equal(ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType(''), '');
-
-   ItineraryAdjustmentTypes.itineraryAdjustmentTypes = null;
-   assert.equal(
-      ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType('early_admission'),
-      'early_admission'
-   );
 });

@@ -1,0 +1,9 @@
+{
+   "ANIMAL": { "kind": "animal", "itemType": "animals" },
+   "ATTRACTION": { "kind": "attraction", "itemType": "attractions" },
+   "ENTRANCE": { "kind": "entrance" },
+   "EVENT": { "kind": "event" },
+   "GUARDIANS_TALK": { "kind": "guardians_talk", "itemType": "guardians_talks" },
+   "TRANSPORTATION": { "kind": "transportation", "itemType": "transportations" },
+   "WILD_ENCOUNTER": { "kind": "wild_encounter", "itemType": "wild_encounters" }
+}

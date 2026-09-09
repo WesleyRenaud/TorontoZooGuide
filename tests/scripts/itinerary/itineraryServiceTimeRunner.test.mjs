@@ -8,6 +8,7 @@ import { ItineraryService } from '../../../scripts/itinerary/itineraryService.js
 import { ItineraryServiceTimeRunner } from '../../../scripts/itinerary/itineraryServiceTimeRunner.js';
 import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
 import { ItineraryValidationResult } from '../../../scripts/itinerary/itineraryValidationResult.js';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
 import { PersistItineraryWarningSuppressor } from '../../../scripts/itinerary/persistItineraryWarningSuppressor.js';
@@ -99,16 +100,11 @@ test('Test_SetItineraryTimeWithConfirmation_TestBranches_ExpectFlows', async () 
    const originalEarly = ItineraryErrorTypes.requiresEarlyAdmissionConfirmation;
    const originalShort = ItineraryErrorTypes.requiresShortVisitConfirmation;
    const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
-   const originalGetTypes = ItineraryErrorTypes.getItineraryErrorTypes;
    const originalRequest = ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange;
    const originalEarlyShow = EarlyAdmissionFragment.showEarlyAdmissionConfirmation;
    const originalShortShow = ShortVisitFragment.showShortVisitConfirmation;
    const requests = [];
 
-   ItineraryErrorTypes.getItineraryErrorTypes = () => ({
-      EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'EARLY',
-      ARRIVAL_DEPARTURE_TOO_CLOSE: 'SHORT',
-   });
    ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = async (options) => {
       requests.push(options);
       return { confirmed: true, via: options.suppressionType };
@@ -128,7 +124,7 @@ test('Test_SetItineraryTimeWithConfirmation_TestBranches_ExpectFlows', async () 
       ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => true;
       assert.deepEqual(
          await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), '8:00 AM'),
-         { confirmed: true, via: 'EARLY' }
+         { confirmed: true, via: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP }
       );
       assert.equal(requests[0].showConfirmation, EarlyAdmissionFragment.showEarlyAdmissionConfirmation);
 
@@ -136,7 +132,7 @@ test('Test_SetItineraryTimeWithConfirmation_TestBranches_ExpectFlows', async () 
       ItineraryErrorTypes.requiresShortVisitConfirmation = () => true;
       assert.deepEqual(
          await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), '3:00 PM'),
-         { confirmed: true, via: 'SHORT' }
+         { confirmed: true, via: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE }
       );
       assert.equal(requests[1].showConfirmation, ShortVisitFragment.showShortVisitConfirmation);
 
@@ -151,7 +147,6 @@ test('Test_SetItineraryTimeWithConfirmation_TestBranches_ExpectFlows', async () 
       ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originalEarly;
       ItineraryErrorTypes.requiresShortVisitConfirmation = originalShort;
       ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
-      ItineraryErrorTypes.getItineraryErrorTypes = originalGetTypes;
       ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
       EarlyAdmissionFragment.showEarlyAdmissionConfirmation = originalEarlyShow;
       ShortVisitFragment.showShortVisitConfirmation = originalShortShow;

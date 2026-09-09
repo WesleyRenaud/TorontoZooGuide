@@ -1,10 +1,11 @@
 import { CenterPanHelper } from './centerPanHelper.js';
+import { AppConfig } from '../config/appConfig.js';
 
 export class MapCenterHelper {
    static centerMarkerWithContain(panzoom, markerEl, viewportEl) {
       if (!panzoom || !markerEl || !viewportEl) return;
 
-      const prevContain = panzoom?.options?.contain ?? CenterPanHelper.DEFAULT_CONTAIN;
+      const prevContain = panzoom?.options?.contain ?? AppConfig.DEFAULT_MAP_CONTAIN;
 
       const markerRect = markerEl.getBoundingClientRect();
       const viewportRect = viewportEl.getBoundingClientRect();

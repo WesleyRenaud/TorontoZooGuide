@@ -7,10 +7,6 @@ export function installItineraryServiceTestHooks() {
       before: () => {
          globalThis.localStorage = createLocalStorageMock();
          ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
-            errorTypes: {
-               SUCCESS: 'success',
-               GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
-            },
             suppressedErrorTypes: [],
          });
          globalThis.CustomEvent = class CustomEvent {
