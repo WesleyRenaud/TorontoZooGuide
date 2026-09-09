@@ -13,6 +13,7 @@ from api.models.active_transportation_route import ActiveTransportationRoute
 from api.models.transportation import Transportation
 from api.models.transportation_station import TransportationStation
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.transportation.controllers.transportation_controller import TransportationController
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
@@ -195,7 +196,7 @@ def Test_SetTransportationStationClosed_TestHttpRequest_ExpectCouldNotSetClosedA
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
 
 
 def Test_SetTransportationStationOpen_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -231,7 +232,7 @@ def Test_SetTransportationStationOpen_TestHttpRequest_ExpectCouldNotSetOpenApiEr
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpen'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value
 
 
 def Test_SetCurrentTransportationRoute_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -274,5 +275,5 @@ def Test_SetCurrentTransportationRoute_TestHttpRequest_ExpectCouldNotSetTranspor
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetTransportationRoute'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_TRANSPORTATION_ROUTE.value
    assert result.get( 'apiErrorParams' ) == { 'route': 'winter' }

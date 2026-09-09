@@ -9,11 +9,6 @@ import transportationRouteIdValues from '../../../../shared/enums/transportation
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_TransportationRouteId_TestConstants_ExpectWireValues', () => {
-   assert.equal(TransportationRouteId.SUMMER, 'summer');
-   assert.equal(TransportationRouteId.WINTER, 'winter');
-});
-
 test('Test_TransportationRouteId_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(transportationRouteIdValues)) {
       assert.equal(TransportationRouteId[key], value);

@@ -12,6 +12,7 @@ from api.exhibits.controllers.exhibit_controller import ExhibitController
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 import api.http_request_handler as server
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -220,7 +221,7 @@ def Test_SetExhibitClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
 
    assert handler.statuses == [ 200 ]
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
    assert result.get( 'apiErrorParams' ) == { 'name': EXHIBIT_NAME }
 
 
@@ -238,7 +239,7 @@ def Test_SetExhibitOpen_TestHttpRequest_ExpectCouldNotSetOpenApiError(
 
    assert handler.statuses == [ 200 ]
    assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpen'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value
    assert result.get( 'apiErrorParams' ) == { 'name': EXHIBIT_NAME }
 
 

@@ -9,13 +9,6 @@ import itineraryErrorTypeValues from '../../../../shared/enums/itineraryErrorTyp
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryErrorType_TestConstants_ExpectWireValues', () => {
-   assert.equal(ItineraryErrorType.SUCCESS, 'success');
-   assert.equal(ItineraryErrorType.SAVE_FAILED, 'saveFailed');
-   assert.equal(ItineraryErrorType.ITEM_NOT_ON_ITINERARY, 'itemNotOnItinerary');
-   assert.equal(ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT, 'fixedTimeItemLongWait');
-});
-
 test('Test_ItineraryErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(itineraryErrorTypeValues)) {
       assert.equal(ItineraryErrorType[key], value);

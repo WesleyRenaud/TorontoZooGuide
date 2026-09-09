@@ -16,7 +16,7 @@ def Test_ApplyError_TestParams_ExpectApiErrorTypeAndParams() -> None:
 
    assert response == {
       'success': False,
-      'apiErrorType': 'couldNotSetGuardiansTalkSchedule',
+      'apiErrorType': ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE.value,
       'apiErrorParams': {
          'talk': 'African Lion',
          'location': 'Africa Savanna',
@@ -37,5 +37,6 @@ def Test_ApplyFailure_TestOperationFailure_ExpectAppliesFailureFields() -> None:
 
    ApiErrorResponseApplier.apply_failure( response, failure )
 
-   assert response[ 'apiErrorType' ] == 'guardiansTalkOccurrenceAlreadyExists'
+   assert response[ 'apiErrorType' ] == (
+      ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS.value )
    assert response[ 'apiErrorParams' ] == failure.params

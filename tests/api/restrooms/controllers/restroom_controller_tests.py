@@ -13,6 +13,7 @@ from api.models.restroom import Restroom
 import api.request_connection_provider as request_connection
 from api.restrooms.controllers.restroom_controller import RestroomController
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -143,7 +144,7 @@ def Test_SetRestroomClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetClosed'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
 
 
 def Test_SetRestroomOpen_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -183,7 +184,7 @@ def Test_SetRestroomOpen_TestHttpRequest_ExpectCouldNotSetOpenApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetOpen'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value
 
 
 def Test_SetRestroomAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -226,7 +227,7 @@ def Test_SetRestroomAlert_TestHttpRequest_ExpectCouldNotSetRestroomAlertApiError
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotSetRestroomAlert'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_RESTROOM_ALERT.value
 
 
 def Test_RemoveRestroomAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -252,4 +253,4 @@ def Test_RemoveRestroomAlert_TestHttpRequest_ExpectCouldNotRemoveRestroomAlertAp
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotRemoveRestroomAlert'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_REMOVE_RESTROOM_ALERT.value

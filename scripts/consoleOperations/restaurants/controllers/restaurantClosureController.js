@@ -1,5 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { AmenityClosureControllerFactory } from '../../forms/amenityClosureControllerFactory.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
@@ -9,7 +9,7 @@ export class RestaurantClosureController {
       restaurantEl,
       ...controllerOptions
    } = {}) {
-      return EntityClosedFormController.createEntityClosedFormController({
+      return AmenityClosureControllerFactory.createAmenityClosureController({
          ...controllerOptions,
          entityEl: restaurantEl,
          loadOptions: ConsoleOptionsLoader.loadRestaurants,
@@ -24,7 +24,7 @@ export class RestaurantClosureController {
          ),
          entityLabel: Strings.entityLabels.restaurant,
          optionsLabel: Strings.entityLabels.restaurants,
-         successMessage: result => Strings.status.closureOverrideSaved(result.restaurant),
+         resultName: result => result.restaurant,
       });
    }
 }

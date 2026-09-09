@@ -11,6 +11,7 @@ from api import database_connection_provider as connection
 import api.http_request_handler as server
 from api.models.update import Update
 import api.request_connection_provider as request_connection
+from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 from api.updates.controllers.update_controller import UpdateController
@@ -154,7 +155,7 @@ def Test_CreateUpdate_TestHttpRequest_ExpectCouldNotCreateUpdateApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotCreateUpdate'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_UPDATE.value
 
 
 def Test_EndUpdate_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -194,7 +195,7 @@ def Test_EndUpdate_TestHttpRequest_ExpectCouldNotEndUpdateApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotEndUpdate'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_END_UPDATE.value
 
 
 def Test_EditUpdate_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -239,4 +240,4 @@ def Test_EditUpdate_TestHttpRequest_ExpectCouldNotEditUpdateApiError(
 
    result = response_json( handler )
 
-   assert result[ 'apiErrorType' ] == 'couldNotEditUpdate'
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_EDIT_UPDATE.value

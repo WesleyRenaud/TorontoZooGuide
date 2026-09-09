@@ -1,39 +1,52 @@
-import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
 
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import scheduleItemKindValues from '../../../../shared/enums/scheduleItemKind.json' with { type: 'json' };
 
-test('Test_Animal_TestStaticFields_ExpectKindAndItemType', () => {
-   assert.equal(ScheduleItemKind.ANIMAL.kind, 'animal');
-   assert.equal(ScheduleItemKind.ANIMAL.itemType, 'animals');
-   assert.equal(ScheduleItemKind.ATTRACTION.kind, 'attraction');
-   assert.equal(ScheduleItemKind.ATTRACTION.itemType, 'attractions');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
+
+test('Test_ScheduleItemKind_TestSharedJson_ExpectSingleSourceOfTruth', () => {
+   for (const [key, value] of Object.entries(scheduleItemKindValues)) {
+      assert.deepEqual(ScheduleItemKind[key], value);
+   }
+
+   const diskValues = JSON.parse(
+      readFileSync(path.join(root, 'shared/enums/scheduleItemKind.json'), 'utf8')
+   );
+   assert.deepEqual(scheduleItemKindValues, diskValues);
 });
 
 test('Test_ScheduleItemKindFromItemType_TestModuleAndKindStrings_ExpectMatchingKind', () => {
    assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType('animals'),
+      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ANIMAL.itemType),
       ScheduleItemKind.ANIMAL
    );
    assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType('attractions'),
+      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ATTRACTION.itemType),
       ScheduleItemKind.ATTRACTION
    );
    assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType('animal'),
+      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ANIMAL.kind),
       ScheduleItemKind.ANIMAL
    );
 });
 
 test('Test_IsScheduleItemModuleItemType_TestModuleTypes_ExpectRecognizedOnly', () => {
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('animals'), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('attractions'), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('transportations'), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('guardians_talks'), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('wild_encounters'), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ANIMAL.itemType), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ATTRACTION.itemType), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.TRANSPORTATION.itemType), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.GUARDIANS_TALK.itemType), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.WILD_ENCOUNTER.itemType), true);
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('lunch'), false);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('animal'), false);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('  ANIMALS  '), true);
+   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ANIMAL.kind), false);
+   assert.equal(
+      ScheduleItemKind.isScheduleItemModuleItemType(`  ${ScheduleItemKind.ANIMAL.itemType.toUpperCase()}  `),
+      true
+   );
    assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(null), false);
 });
 
@@ -87,26 +100,26 @@ test('Test_UsesScheduledTimelineEventCard_TestFixedTimeAndAttractions_ExpectTrue
 });
 
 test('Test_ScheduleItemKindFromItemType_TestUnknownAndBlank_ExpectNullOrEvent', () => {
-   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType('event'), ScheduleItemKind.EVENT);
+   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.EVENT.kind), ScheduleItemKind.EVENT);
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType('lunch'), null);
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(''), null);
    assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(null), null);
    assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType('  ATTRACTION  '),
+      ScheduleItemKind.scheduleItemKindFromItemType(`  ${ScheduleItemKind.ATTRACTION.kind.toUpperCase()}  `),
       ScheduleItemKind.ATTRACTION
    );
 });
 
 test('Test_ScheduleItemModuleItemTypeForKind_TestSchedulableKinds_ExpectItemTypes', () => {
    assert.equal(
-      ScheduleItemKind.scheduleItemModuleItemTypeForKind('animal'),
+      ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.ANIMAL.kind),
       ScheduleItemKind.ANIMAL.itemType
    );
    assert.equal(
-      ScheduleItemKind.scheduleItemModuleItemTypeForKind('attraction'),
+      ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.ATTRACTION.kind),
       ScheduleItemKind.ATTRACTION.itemType
    );
-   assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind('event'), null);
+   assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.EVENT.kind), null);
    assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(''), null);
    assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(null), null);
 });

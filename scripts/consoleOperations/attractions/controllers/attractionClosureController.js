@@ -1,5 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { EntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { AmenityClosureControllerFactory } from '../../forms/amenityClosureControllerFactory.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
@@ -9,7 +9,7 @@ export class AttractionClosureController {
       attractionEl,
       ...controllerOptions
    } = {}) {
-      return EntityClosedFormController.createEntityClosedFormController({
+      return AmenityClosureControllerFactory.createAmenityClosureController({
          ...controllerOptions,
          entityEl: attractionEl,
          loadOptions: ConsoleOptionsLoader.loadAttractions,
@@ -24,7 +24,7 @@ export class AttractionClosureController {
          ),
          entityLabel: Strings.entityLabels.attraction,
          optionsLabel: Strings.entityLabels.attractions,
-         successMessage: result => Strings.status.closureOverrideSaved(result.attraction),
+         resultName: result => result.attraction,
       });
    }
 }

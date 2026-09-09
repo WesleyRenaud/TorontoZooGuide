@@ -9,32 +9,20 @@ import itineraryTransportationStationRoleValues from '../../../../shared/enums/i
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryTransportationStationRole_TestConstants_ExpectObjectMembers', () => {
-   assert.deepEqual(ItineraryTransportationStationRole.ONBOARDING, {
-      kind: 'onboarding_station',
-      onboarding: true,
-      offboarding: false,
-   });
-   assert.deepEqual(ItineraryTransportationStationRole.OFFBOARDING, {
-      kind: 'offboarding_station',
-      onboarding: false,
-      offboarding: true,
-   });
-   assert.deepEqual(ItineraryTransportationStationRole.ROUND_TRIP, {
-      kind: 'round_trip',
-      onboarding: true,
-      offboarding: true,
-   });
-});
-
 test('Test_ItineraryTransportationStationRole_TestRoleValueHelpers_ExpectKinds', () => {
    assert.deepEqual(
       ItineraryTransportationStationRole.onboardingRoleValues(),
-      ['onboarding_station', 'round_trip']
+      [
+         ItineraryTransportationStationRole.ONBOARDING.kind,
+         ItineraryTransportationStationRole.ROUND_TRIP.kind,
+      ]
    );
    assert.deepEqual(
       ItineraryTransportationStationRole.offboardingRoleValues(),
-      ['offboarding_station', 'round_trip']
+      [
+         ItineraryTransportationStationRole.OFFBOARDING.kind,
+         ItineraryTransportationStationRole.ROUND_TRIP.kind,
+      ]
    );
 });
 

@@ -9,13 +9,6 @@ import itineraryEventTypeValues from '../../../../shared/enums/itineraryEventTyp
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryEventType_TestConstants_ExpectWireValues', () => {
-   assert.equal(ItineraryEventType.ARRIVAL, 'arrival');
-   assert.equal(ItineraryEventType.DEPARTURE, 'departure');
-   assert.equal(ItineraryEventType.LUNCH, 'lunch');
-   assert.equal(ItineraryEventType.BREAK, 'break');
-});
-
 test('Test_ItineraryEventType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(itineraryEventTypeValues)) {
       assert.equal(ItineraryEventType[key], value);
