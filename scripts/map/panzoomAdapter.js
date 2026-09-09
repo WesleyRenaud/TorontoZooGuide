@@ -7,7 +7,7 @@ export class PanzoomAdapter {
    });
 
    static createPanzoom(mapInner, { contain }) {
-      const panzoom = globalThis.PanzoomAdapter(mapInner, {
+      const panzoom = globalThis.Panzoom(mapInner, {
          ...PanzoomAdapter.PANZOOM_SCALE_RANGE,
          contain,
       });
