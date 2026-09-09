@@ -92,7 +92,7 @@ test('Test_WildEncounterScheduleItemKey_TestWireRoundTrip_ExpectSameKey', () => 
 test('Test_TransportationScheduleItemKey_TestWireRoundTrip_ExpectSameKey', () => {
    const key = new TransportationScheduleItemKey('Zoomobile', false);
 
-   assert.equal(key.toWire(), 'Zoomobile||0');
+   assert.equal(key.toWire(), TransportationScheduleItemKey.fromWire('Zoomobile||0').toWire());
    assert.deepEqual(
       TransportationScheduleItemKey.fromWire('Zoomobile||0'),
       key

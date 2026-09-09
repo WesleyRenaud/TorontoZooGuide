@@ -19,14 +19,13 @@ from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLo
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
 from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 
 
 SPLASH_ISLAND = 'Splash Island'
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
-ZOOMOBILE = 'Zoomobile'
-
 SPLASH_OPEN_SECONDS = 12 * 3600
 SPLASH_CLOSE_SECONDS = 17 * 3600
 ZOO_CLOSE_SECONDS = 19 * 3600
@@ -131,7 +130,7 @@ def stub_attraction_hours_scheduling(
 
 def Test_Schedule_TestEarlyExitCases_ExpectUnchangedCursor() -> None:
    attraction = ItineraryAttractionRecord(
-      attraction=ZOOMOBILE,
+      attraction=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100 )
    prepared = PreparedLoopScheduleUnit(
@@ -140,7 +139,7 @@ def Test_Schedule_TestEarlyExitCases_ExpectUnchangedCursor() -> None:
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
 
@@ -183,13 +182,13 @@ def Test_Schedule_TestEarlyExitCases_ExpectUnchangedCursor() -> None:
 
 def Test_EarliestStartSeconds_TestLoopAndPinCases_ExpectOpenOrNone() -> None:
    attraction = ItineraryAttractionRecord(
-      attraction=ZOOMOBILE,
+      attraction=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100 )
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
 
@@ -217,13 +216,13 @@ def Test_EarliestStartSeconds_TestLoopAndPinCases_ExpectOpenOrNone() -> None:
 
 def Test_AttractionStopHelpers_TestSoftPinMatching_ExpectExpectedStop() -> None:
    attraction = ItineraryAttractionRecord(
-      attraction=ZOOMOBILE,
+      attraction=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100 )
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
    other = AttractionHoursSoftPin(
@@ -241,7 +240,7 @@ def Test_AttractionStopHelpers_TestSoftPinMatching_ExpectExpectedStop() -> None:
       other ) is None
    assert LoopUnitAttractionHoursScheduler._stop_is_soft_pinned_attraction(
       attraction,
-      { ZOOMOBILE } ) is True
+      { TransportationName.ZOOMOBILE } ) is True
    assert LoopUnitAttractionHoursScheduler._still_unscheduled_stops(
       [ attraction ],
       scheduled_stop_ids={ id( attraction ) } ) == []
@@ -388,7 +387,7 @@ def Test_Schedule_TestLatePlaceZoomobile_ExpectRightAlignedBeforeDeadline(
       scheduler_conn: sqlite3.Connection,
       stub_attraction_hours_scheduling: None ) -> None:
    zoomobile = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       old_likelihood=None,
       new_likelihood=100 )
@@ -399,7 +398,7 @@ def Test_Schedule_TestLatePlaceZoomobile_ExpectRightAlignedBeforeDeadline(
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
    slot_sink = LoopScheduleSlotSink( persist=False )
@@ -484,7 +483,7 @@ def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWi
       scheduler_conn: sqlite3.Connection,
       stub_attraction_hours_scheduling: None ) -> None:
    zoomobile = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       old_likelihood=None,
       new_likelihood=100 )
@@ -495,7 +494,7 @@ def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWi
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
    slot_sink = LoopScheduleSlotSink( persist=False )
@@ -598,7 +597,7 @@ def Test_Schedule_TestLatePlaceZoomobileAfterCamelTalk_ExpectSlotBeforeEncounter
       scheduler_conn: sqlite3.Connection,
       stub_attraction_hours_scheduling: None ) -> None:
    zoomobile = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       old_likelihood=None,
       new_likelihood=100 )
@@ -609,7 +608,7 @@ def Test_Schedule_TestLatePlaceZoomobileAfterCamelTalk_ExpectSlotBeforeEncounter
    soft_pin = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
-      attraction_name=ZOOMOBILE,
+      attraction_name=TransportationName.ZOOMOBILE,
       open_seconds=10 * 3600,
       close_seconds=18 * 3600 )
    slot_sink = LoopScheduleSlotSink( persist=False )

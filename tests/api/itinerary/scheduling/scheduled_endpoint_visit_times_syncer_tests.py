@@ -12,12 +12,11 @@ from api.models import Itinerary
 from api.models import ItineraryTransportation
 from api.models import WildEncounter
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = '2026-06-15'
 ENTRANCE_TRAVEL_SECONDS = 10 * 60
-ZOOMOBILE = 'Zoomobile'
-
 
 def _fully_scheduled_lion_itinerary() -> Itinerary:
    return ItineraryBuilder.build(
@@ -570,7 +569,7 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
       attractions=[],
       transportations=[
          ItineraryTransportation(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             added_as_attraction=True,
             start_time='11:00 AM',
             end_time='11:30 AM' ),
@@ -594,7 +593,7 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
       attractions=[],
       transportations=[
          ItineraryTransportation(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             added_as_attraction=True ),
       ],
       transportation_stations=[],

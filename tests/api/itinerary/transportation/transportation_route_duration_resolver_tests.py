@@ -8,16 +8,16 @@ from api.itinerary.transportation.transportation_day_loop import TransportationD
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_route_duration_resolver import TransportationRouteDurationResolver
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = date( 2026, 6, 15 )
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 
 SUMMER_LOOP = TransportationDayLoop(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    route='summer',
    main_station=MAIN,
    legs=[
@@ -37,7 +37,7 @@ def Test_Minutes_TestSummerLoop_ExpectDurationSum(
 
    assert TransportationRouteDurationResolver.minutes(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) == 75
 
 
@@ -50,5 +50,5 @@ def Test_Minutes_TestMissingLoop_ExpectNone(
 
    assert TransportationRouteDurationResolver.minutes(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       target_date=VISIT_DATE ) is None

@@ -6,6 +6,7 @@ import sqlite3
 import pytest
 
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_provider import TransportationProvider
 
 TRANSPORTATION_PROVIDER_SCHEMA = """
@@ -39,7 +40,6 @@ CREATE TABLE AttractionHoursSchedule (
 );
 """
 
-ZOOMOBILE = 'Zoomobile'
 VISIT_DATE = date( 2026, 6, 15 )
 
 @pytest.fixture
@@ -69,7 +69,7 @@ def _insert_zoomobile( conn: sqlite3.Connection ) -> None:
             VALUES ( ?, 1, ?, ?, ?, ?, ?, ?, ?, 1 );
       """,
       (
-         ZOOMOBILE,
+         TransportationName.ZOOMOBILE,
          'Zoomobile ride',
          'https://example.com',
          'Learn more',
@@ -86,7 +86,7 @@ def _insert_zoomobile( conn: sqlite3.Connection ) -> None:
             )
             VALUES ( ?, 1 );
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    )
    conn.execute(
       """   INSERT INTO AttractionHoursSchedule (
@@ -101,7 +101,7 @@ def _insert_zoomobile( conn: sqlite3.Connection ) -> None:
             VALUES ( ?, ?, ?, ?, ?, ?, ? );
       """,
       (
-         ZOOMOBILE,
+         TransportationName.ZOOMOBILE,
          '2026-01-01',
          '2026-12-31',
          '10:00 AM',
@@ -128,7 +128,7 @@ def Test_FetchTransportationRecords_TestPopulated_ExpectMappedFields(
 
    assert len( records ) == 1
    record = records[ Position.FIRST ]
-   assert record.name == ZOOMOBILE
+   assert record.name == TransportationName.ZOOMOBILE
    assert record.is_also_attraction is True
    assert record.free_with_admission is True
    assert record.description == 'Zoomobile ride'

@@ -15,6 +15,7 @@ from api.models import Itinerary
 from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums import Position, ScheduleItemKind
+from api.shared.enums.transportation_name import TransportationName
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -25,10 +26,9 @@ VISIT_DATE = '2026-06-20'
 ARRIVAL_TIME = '9:30 AM'
 DEPARTURE_TIME = '5:00 PM'
 
-ZOOMOBILE = 'Zoomobile'
+
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
-
 ENTRANCE_NODE_ID = 'n-1'
 LION_WALK_NODE_ID = 'n-2001'
 ONBOARD_NODE_ID = 'n-onboard'
@@ -60,7 +60,7 @@ ZOOMOBILE_LEGS = [
       CANADA_STATION,
       '10:00 AM',
       '10:20 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
 ]
 
@@ -160,7 +160,7 @@ def Test_Build_TestTransitRide_ExpectOnboardAndOffboardAnchors(
       _itinerary(
          transportations=[
             ItineraryTransportation(
-               name=ZOOMOBILE,
+               name=TransportationName.ZOOMOBILE,
                added_as_attraction=False,
                legs=ZOOMOBILE_LEGS ),
          ] ) )
@@ -191,7 +191,7 @@ def Test_Build_TestAttractionModeTransportation_ExpectBoardingPin(
       _itinerary(
          transportations=[
             ItineraryTransportation(
-               name=ZOOMOBILE,
+               name=TransportationName.ZOOMOBILE,
                added_as_attraction=True,
                start_time='11:00 AM',
                end_time='11:30 AM',
@@ -200,7 +200,7 @@ def Test_Build_TestAttractionModeTransportation_ExpectBoardingPin(
 
    assert len( anchors ) == 2
    assert anchors[ Position.SECOND ].schedule_item_kind == ScheduleItemKind.TRANSPORTATION
-   assert anchors[ Position.SECOND ].item_key == ZOOMOBILE
+   assert anchors[ Position.SECOND ].item_key == TransportationName.ZOOMOBILE
    assert anchors[ Position.SECOND ].walk_node_ids == [ ONBOARD_NODE_ID ]
    assert anchors[ Position.SECOND ].start_time == '11:00 AM'
 
@@ -208,14 +208,14 @@ def Test_Build_TestAttractionModeTransportation_ExpectBoardingPin(
 def Test_AttractionModeTransportationAnchor_TestMissingTimes_ExpectNone() -> None:
    assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
       ItineraryTransportation(
-         name=ZOOMOBILE,
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=True,
          start_time=None,
          end_time='11:30 AM',
          legs=ZOOMOBILE_LEGS ) ) is None
    assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
       ItineraryTransportation(
-         name=ZOOMOBILE,
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=True,
          start_time='11:00 AM',
          end_time=None,
@@ -231,7 +231,7 @@ def Test_AttractionModeTransportationAnchor_TestMissingWalkNode_ExpectNone(
 
    assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
       ItineraryTransportation(
-         name=ZOOMOBILE,
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=True,
          start_time='11:00 AM',
          end_time='11:30 AM',
@@ -250,7 +250,7 @@ def Test_Build_TestAttractionModeWithoutResolvedNode_ExpectEmpty(
       _itinerary(
          transportations=[
             ItineraryTransportation(
-               name=ZOOMOBILE,
+               name=TransportationName.ZOOMOBILE,
                added_as_attraction=True,
                start_time='11:00 AM',
                end_time='11:30 AM',

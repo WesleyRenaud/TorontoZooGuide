@@ -19,6 +19,7 @@ from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryEventType
+from api.shared.enums.transportation_name import TransportationName
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.map_location_kind import MapLocationKind
 from api.walk_graph.domain.map_location_walk_node import MapLocationWalkNode
@@ -36,7 +37,6 @@ TALK_NODE_ID = 'n-talk'
 ENCOUNTER_NODE_ID = 'n-encounter'
 OFFBOARD_NODE_ID = 'n-offboard'
 ONBOARD_NODE_ID = 'n-onboard'
-
 ARRIVAL_SECONDS = 9 * 3600 + 30 * 60
 LION_END_SECONDS = 10 * 3600 + 8 * 60
 CAROUSEL_END_SECONDS = 11 * 3600 + 15 * 60
@@ -44,7 +44,7 @@ TRAVEL_MINUTES = 6
 TRAVEL_SECONDS = TRAVEL_MINUTES * 60
 EDGE_LENGTH_PX = WalkTravelTimeCalculator.WALK_PX_PER_MINUTE * TRAVEL_MINUTES
 
-ZOOMOBILE = 'Zoomobile'
+
 CAROUSEL = 'Conservation Carousel'
 ZEBRA_TALK = "Grevy's Zebra"
 MEETING_SPOT = 'Wild Encounter - Africa Meeting Spot'
@@ -214,7 +214,7 @@ def stub_schedule_item_travel_time_calculator(
          *,
          legs: list[ ItineraryTransportationLeg ] | None = None,
          endpoint: TransitRideEndpoint = TransitRideEndpoint.ONBOARDING ) -> str | None:
-      if transportation_name != ZOOMOBILE:
+      if transportation_name != TransportationName.ZOOMOBILE:
          return None
 
       if endpoint == TransitRideEndpoint.OFFBOARDING:
@@ -354,7 +354,7 @@ def Test_WalkNodeIdForLatestScheduledItem_TestTransportationOffboard_ExpectOffbo
    ]
    itinerary.transportations = [
       ItineraryTransportation(
-         name=ZOOMOBILE,
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=False,
          start_time='11:00 AM',
          end_time='11:30 AM',
@@ -364,7 +364,7 @@ def Test_WalkNodeIdForLatestScheduledItem_TestTransportationOffboard_ExpectOffbo
                to_station='Americas',
                start_time='11:00 AM',
                end_time='11:30 AM',
-               transportation=ZOOMOBILE,
+               transportation=TransportationName.ZOOMOBILE,
                added_as_attraction=False ),
          ] ),
    ]
@@ -546,7 +546,7 @@ def Test_WalkNodeIdForLatestScheduledItem_TestEarlierTransportSkipped_ExpectLate
       stub_schedule_item_travel_time_calculator: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    earlier = ItineraryTransportation(
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=False,
       start_time='10:00 AM',
       end_time='10:20 AM',
@@ -556,7 +556,7 @@ def Test_WalkNodeIdForLatestScheduledItem_TestEarlierTransportSkipped_ExpectLate
             'Canadian Domain Zoomobile Station',
             '10:00 AM',
             '10:20 AM',
-            ZOOMOBILE,
+            TransportationName.ZOOMOBILE,
             False ),
       ] )
    later_attraction = Attraction(
@@ -631,7 +631,7 @@ def Test_ScheduledStopsWithWalkNodes_TestTransportDeletedTalkEncounterAndMissing
       ],
       transportations=[
          ItineraryTransportation(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             added_as_attraction=False,
             start_time='10:00 AM',
             end_time='10:20 AM',
@@ -641,7 +641,7 @@ def Test_ScheduledStopsWithWalkNodes_TestTransportDeletedTalkEncounterAndMissing
                   'Canadian Domain Zoomobile Station',
                   '10:00 AM',
                   '10:20 AM',
-                  ZOOMOBILE,
+                  TransportationName.ZOOMOBILE,
                   False ),
             ] ),
       ],

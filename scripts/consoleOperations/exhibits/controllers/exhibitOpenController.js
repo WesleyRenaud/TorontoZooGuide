@@ -1,5 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { EntityOpenFormController } from '../../forms/entityOpenFormController.js';
+import { AmenityOpenControllerFactory } from '../../forms/amenityOpenControllerFactory.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
@@ -9,7 +9,7 @@ export class ExhibitOpenController {
       exhibitEl,
       ...controllerOptions
    } = {}) {
-      return EntityOpenFormController.createEntityOpenFormController({
+      return AmenityOpenControllerFactory.createAmenityOpenController({
          ...controllerOptions,
          entityEl: exhibitEl,
          loadOptions: ConsoleOptionsLoader.loadExhibits,
@@ -21,7 +21,7 @@ export class ExhibitOpenController {
          }),
          entityLabel: Strings.entityLabels.exhibit,
          optionsLabel: Strings.entityLabels.exhibits,
-         successMessage: result => Strings.status.explicitlyOpen(result.exhibit),
+         resultName: result => result.exhibit,
       });
    }
 }

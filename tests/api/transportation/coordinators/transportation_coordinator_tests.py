@@ -45,10 +45,9 @@ STATION_NAME = 'Main Zoomobile Station'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 MESSAGE = 'Station closed for maintenance.'
-TRANSPORTATION = TransportationName.ZOOMOBILE
 
 TRANSPORTATION_MODEL = Transportation(
-   name=TRANSPORTATION,
+   name=TransportationName.ZOOMOBILE,
    open_time='10:00 AM',
    close_time='4:00 PM' )
 STATION = TransportationStation(
@@ -162,7 +161,7 @@ def Test_GetTransportationStationNames_TestProviderNames_ExpectReturned(
       TransportationStationProvider,
       'fetch_transportation_station_names',
       lambda _conn, transportation: [ STATION_NAME ]
-      if transportation == TRANSPORTATION
+      if transportation == TransportationName.ZOOMOBILE
       else [] )
 
    assert TransportationCoordinator.get_transportation_station_names() == [ STATION_NAME ]
@@ -175,7 +174,7 @@ def Test_GetTransportationRouteIds_TestProviderIds_ExpectReturned(
       TransportationActiveRouteProvider,
       'fetch_transportation_route_ids',
       lambda _conn, transportation: [ ROUTE ]
-      if transportation == TRANSPORTATION
+      if transportation == TransportationName.ZOOMOBILE
       else [] )
 
    assert TransportationCoordinator.get_transportation_route_ids() == [ ROUTE ]
@@ -432,7 +431,7 @@ def Test_SetTransportationStationAsClosed_TestBuiltStatus_ExpectSaved(
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE ) is True
-   assert captured[ 'transportation' ] == TRANSPORTATION
+   assert captured[ 'transportation' ] == TransportationName.ZOOMOBILE
    assert captured[ 'status' ] is status
 
 
@@ -458,7 +457,7 @@ def Test_SetTransportationStationAsOpen_TestProvider_ExpectSaved(
    assert TransportationCoordinator.set_transportation_station_as_open(
       STATION_NAME ) is True
    assert captured == {
-      'transportation': TRANSPORTATION,
+      'transportation': TransportationName.ZOOMOBILE,
       'station': STATION_NAME,
    }
 
@@ -521,5 +520,5 @@ def Test_SetCurrentTransportationRoute_TestValidRoute_ExpectSaved(
       route=ROUTE,
       start_date=START_DATE,
       end_date=END_DATE ) is True
-   assert captured[ 'transportation' ] == TRANSPORTATION
+   assert captured[ 'transportation' ] == TransportationName.ZOOMOBILE
    assert captured[ 'schedule' ] is schedule

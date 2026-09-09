@@ -7,6 +7,7 @@ import pytest
 
 from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 ATTRACTION_PROVIDER_SCHEMA = """
@@ -69,7 +70,6 @@ CREATE TABLE AttractionScheduleOverride (
 """
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 VISIT_DATE = date( 2026, 6, 15 )
 OTHER_DAY = date( 2026, 12, 25 )
 
@@ -129,14 +129,14 @@ def Test_FetchAttractionNames_TestPopulated_ExpectNames(
    _insert_attraction( attraction_provider_conn, name=CAROUSEL )
    _insert_attraction(
       attraction_provider_conn,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       free_with_admission=0,
       is_also_transportation=1 )
    attraction_provider_conn.commit()
 
    names = AttractionProvider.fetch_attraction_names( attraction_provider_conn )
 
-   assert set( names ) == { CAROUSEL, ZOOMOBILE }
+   assert set( names ) == { CAROUSEL, TransportationName.ZOOMOBILE }
 
 
 def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliersAndNullHours(
@@ -171,7 +171,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
       attraction_provider_conn: sqlite3.Connection ) -> None:
    _insert_attraction(
       attraction_provider_conn,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       free_with_admission=0,
       is_also_transportation=1 )
    attraction_provider_conn.execute(
@@ -180,7 +180,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, 6, 15, 0.5, 0.75 ),
+      ( TransportationName.ZOOMOBILE, 6, 15, 0.5, 0.75 ),
    )
    attraction_provider_conn.execute(
       """   INSERT INTO AttractionHoursSchedule (
@@ -195,7 +195,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
             VALUES ( ?, ?, ?, ?, ?, ?, ? );
       """,
       (
-         ZOOMOBILE,
+         TransportationName.ZOOMOBILE,
          '2026-06-01',
          '2026-08-31',
          '10:00',
@@ -212,7 +212,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
 
    assert len( records ) == 1
    record = records[ Position.FIRST ]
-   assert record.name == ZOOMOBILE
+   assert record.name == TransportationName.ZOOMOBILE
    assert record.free_with_admission == 0
    assert record.weekday_multiplier == 0.5
    assert record.weekend_holiday_multiplier == 0.75

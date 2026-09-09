@@ -18,6 +18,7 @@ from api.itinerary.wild_encounter_schedule_item_key import WildEncounterSchedule
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
+from api.shared.enums.transportation_name import TransportationName
 
 
 UNSCHEDULER_SCHEMA = """
@@ -92,7 +93,6 @@ CREATE TABLE ItineraryWildEncounter (
 """
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 ZOOMOBILE_ATTRACTION_START = '11:00 AM'
 ZOOMOBILE_ATTRACTION_END = '11:30 AM'
 ZOOMOBILE_TRANSIT_START = '11:30 AM'
@@ -190,7 +190,7 @@ def _insert_zoomobile_transportation_rows( conn: sqlite3.Connection ) -> None:
             )
             VALUES ( ?, NULL, 3, 1, ?, ?, NULL, 0 );
       """,
-      ( ZOOMOBILE, ZOOMOBILE_ATTRACTION_START, ZOOMOBILE_ATTRACTION_END ) )
+      ( TransportationName.ZOOMOBILE, ZOOMOBILE_ATTRACTION_START, ZOOMOBILE_ATTRACTION_END ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportation (
                TRANSPORTATION,
@@ -205,7 +205,7 @@ def _insert_zoomobile_transportation_rows( conn: sqlite3.Connection ) -> None:
             VALUES ( ?, NULL, 3, 0, ?, ?, ?, 1 );
       """,
       (
-         ZOOMOBILE,
+         TransportationName.ZOOMOBILE,
          ZOOMOBILE_TRANSIT_START,
          ZOOMOBILE_TRANSIT_END,
          ZOOMOBILE_TRANSIT_ROUTE,
@@ -221,7 +221,7 @@ def _insert_zoomobile_transportation_rows( conn: sqlite3.Connection ) -> None:
             )
             VALUES ( ?, 0, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, 'Station A', 'Station B', '11:30 AM', '11:45 AM' ) )
+      ( TransportationName.ZOOMOBILE, 'Station A', 'Station B', '11:30 AM', '11:45 AM' ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
                TRANSPORTATION,
@@ -233,7 +233,7 @@ def _insert_zoomobile_transportation_rows( conn: sqlite3.Connection ) -> None:
             )
             VALUES ( ?, 0, ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, 'Station B', 'Station C', '11:45 AM', '12:00 PM' ) )
+      ( TransportationName.ZOOMOBILE, 'Station B', 'Station C', '11:45 AM', '12:00 PM' ) )
    conn.commit()
 
 
@@ -244,7 +244,7 @@ def _zoomobile_saved_itinerary() -> SavedItinerary:
       departure_time='5:00 PM',
       transportation_rows=(
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True,
@@ -252,7 +252,7 @@ def _zoomobile_saved_itinerary() -> SavedItinerary:
             end_time=ZOOMOBILE_ATTRACTION_END,
          ),
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False,
@@ -262,7 +262,7 @@ def _zoomobile_saved_itinerary() -> SavedItinerary:
             bulk_transit_evaluated=True,
             legs=[
                ItineraryTransportationLeg(
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False,
                   from_station='Station A',
                   to_station='Station B',
@@ -270,7 +270,7 @@ def _zoomobile_saved_itinerary() -> SavedItinerary:
                   end_time='11:45 AM',
                ),
                ItineraryTransportationLeg(
-                  transportation=ZOOMOBILE,
+                  transportation=TransportationName.ZOOMOBILE,
                   added_as_attraction=False,
                   from_station='Station B',
                   to_station='Station C',
@@ -309,7 +309,7 @@ def _fetch_transportation_row(
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = ?;
       """,
-      ( ZOOMOBILE, added_as_attraction ),
+      ( TransportationName.ZOOMOBILE, added_as_attraction ),
    ).fetchone()
 
    assert row is not None
@@ -324,7 +324,7 @@ def _fetch_transit_legs( conn: sqlite3.Connection ) -> list[ tuple[ str, str, st
               AND ADDED_AS_ATTRACTION = 0
             ORDER BY START_TIME;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchall()
 
    return [
@@ -418,7 +418,7 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeClearedTransitPres
    cur = zoomobile_unscheduler_conn.cursor()
    ItineraryItemUnscheduler.apply(
       cur,
-      AttractionScheduleItemKey( name=ZOOMOBILE ) )
+      AttractionScheduleItemKey( name=TransportationName.ZOOMOBILE ) )
    zoomobile_unscheduler_conn.commit()
    cur.close()
 
@@ -450,7 +450,7 @@ def Test_Apply_TestTransportationAttractionModeKey_ExpectAttractionModeClearedTr
    ItineraryItemUnscheduler.apply(
       cur,
       TransportationScheduleItemKey(
-         name=ZOOMOBILE,
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=True ) )
    zoomobile_unscheduler_conn.commit()
    cur.close()

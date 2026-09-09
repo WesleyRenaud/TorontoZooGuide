@@ -1,8 +1,8 @@
 import { Strings } from '../../strings.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
-export class WildEncounterScheduleBuilder {
-   static WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS = [
+export class RecurringScheduleBuilder {
+   static RECURRING_SCHEDULE_WEEKDAY_KEYS = [
       'monday',
       'tuesday',
       'wednesday',
@@ -12,19 +12,19 @@ export class WildEncounterScheduleBuilder {
       'sunday',
    ];
 
-   static normalizeWildEncounterScheduleRow(row = {}) {
+   static normalizeRecurringScheduleRow(row = {}) {
       const normalized = {
          time: VisitDateValidator.formatZooDisplayClockTime(row.time?.trim?.() ?? row.time ?? '') ?? '',
       };
 
-      WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((day) => {
+      RecurringScheduleBuilder.RECURRING_SCHEDULE_WEEKDAY_KEYS.forEach((day) => {
          normalized[day] = Boolean(row[day]);
       });
 
       return normalized;
    }
 
-   static validateWildEncounterScheduleRows(rows = []) {
+   static validateRecurringScheduleRows(rows = []) {
       if (!rows.length) {
          return Strings.validation.entityRequired(Strings.labels.encounterTimes);
       }
@@ -32,13 +32,13 @@ export class WildEncounterScheduleBuilder {
       const seenTimes = new Set();
 
       for (const row of rows) {
-         const normalized = WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow(row);
+         const normalized = RecurringScheduleBuilder.normalizeRecurringScheduleRow(row);
 
          if (!normalized.time) {
             return Strings.validation.entityRequired(Strings.labels.encounterTime);
          }
 
-         if (!WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.some(
+         if (!RecurringScheduleBuilder.RECURRING_SCHEDULE_WEEKDAY_KEYS.some(
             (day) => normalized[day]
          )) {
             return Strings.validation.encounterScheduleRowNeedsDay;

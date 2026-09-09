@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 
 
@@ -19,7 +20,6 @@ CREATE TABLE TransportationStation (
 );
 """
 
-ZOOMOBILE = 'Zoomobile'
 TRAIN = 'Zoo Train'
 MAIN = 'Main Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
@@ -71,7 +71,7 @@ def _insert_station(
 def _seed_zoomobile_stations( conn: sqlite3.Connection ) -> None:
    _insert_station(
       conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       name=MAIN,
       description='Main boarding area',
       x_coord=1.0,
@@ -79,7 +79,7 @@ def _seed_zoomobile_stations( conn: sqlite3.Connection ) -> None:
       is_main_station=1 )
    _insert_station(
       conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       name=AFRICA,
       description='Africa stop',
       x_coord=3.0,
@@ -99,7 +99,7 @@ def Test_FetchTransportationStationNames_TestEmpty_ExpectEmptyList(
       transportation_station_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationStationProvider.fetch_transportation_station_names(
       transportation_station_provider_conn,
-      ZOOMOBILE ) == []
+      TransportationName.ZOOMOBILE ) == []
 
 
 def Test_FetchTransportationStationNames_TestPopulated_ExpectFilteredNames(
@@ -108,7 +108,7 @@ def Test_FetchTransportationStationNames_TestPopulated_ExpectFilteredNames(
 
    names = TransportationStationProvider.fetch_transportation_station_names(
       transportation_station_provider_conn,
-      ZOOMOBILE )
+      TransportationName.ZOOMOBILE )
 
    assert set( names ) == { MAIN, AFRICA }
 
@@ -119,7 +119,7 @@ def Test_FetchTransportationStationRecords_TestPopulated_ExpectMappedFields(
 
    records = TransportationStationProvider.fetch_transportation_station_records(
       transportation_station_provider_conn,
-      ZOOMOBILE )
+      TransportationName.ZOOMOBILE )
 
    by_name = { record.name: record for record in records }
    assert set( by_name ) == { MAIN, AFRICA }
@@ -135,7 +135,7 @@ def Test_FetchMainTransportationStationRecord_TestMissing_ExpectNone(
       transportation_station_provider_conn: sqlite3.Connection ) -> None:
    _insert_station(
       transportation_station_provider_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       name=AFRICA,
       description='Africa stop',
       x_coord=3.0,
@@ -144,7 +144,7 @@ def Test_FetchMainTransportationStationRecord_TestMissing_ExpectNone(
 
    assert TransportationStationProvider.fetch_main_transportation_station_record(
       transportation_station_provider_conn,
-      ZOOMOBILE ) is None
+      TransportationName.ZOOMOBILE ) is None
 
 
 def Test_FetchMainTransportationStationRecord_TestPresent_ExpectMainStation(
@@ -153,7 +153,7 @@ def Test_FetchMainTransportationStationRecord_TestPresent_ExpectMainStation(
 
    record = TransportationStationProvider.fetch_main_transportation_station_record(
       transportation_station_provider_conn,
-      ZOOMOBILE )
+      TransportationName.ZOOMOBILE )
 
    assert record is not None
    assert record.name == MAIN
@@ -168,7 +168,7 @@ def Test_FetchTransportationStationRecord_TestMissing_ExpectNone(
 
    assert TransportationStationProvider.fetch_transportation_station_record(
       transportation_station_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       CANADA ) is None
 
 
@@ -178,7 +178,7 @@ def Test_FetchTransportationStationRecord_TestPresent_ExpectMappedFields(
 
    record = TransportationStationProvider.fetch_transportation_station_record(
       transportation_station_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       AFRICA )
 
    assert record is not None

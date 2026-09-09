@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { GuardiansTalkController } from '../../../../../scripts/consoleOperations/guardiansTalks/controllers/guardiansTalkController.js';
 import { RecurringScheduleFormController } from '../../../../../scripts/consoleOperations/forms/recurringScheduleFormController.js';
-import { WildEncounterScheduleRowsController } from '../../../../../scripts/consoleOperations/forms/wildEncounterScheduleRowsController.js';
+import { RecurringScheduleRowsController } from '../../../../../scripts/consoleOperations/forms/recurringScheduleRowsController.js';
 import { OpeningScheduleOverlapFragment } from '../../../../../scripts/consoleOperations/forms/openingScheduleOverlapFragment.js';
 import { OpeningScheduleChecker } from '../../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
@@ -16,7 +16,7 @@ installDomTestHooks();
 
 test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
-   const originalRows = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController;
+   const originalRows = RecurringScheduleRowsController.createRecurringScheduleRowsController;
    const originalPopulate = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
    const originalGetField = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -46,7 +46,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
       captured = options;
       return { controller: true };
    };
-   WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = () => scheduleRowsController;
+   RecurringScheduleRowsController.createRecurringScheduleRowsController = () => scheduleRowsController;
    ConsoleDropdownPopulator.populateGuardiansTalkDropdown = (...args) => {
       calls.push(['populate', ...args]);
    };
@@ -175,7 +175,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
       );
    } finally {
       RecurringScheduleFormController.createRecurringScheduleFormController = originalCreate;
-      WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = originalRows;
+      RecurringScheduleRowsController.createRecurringScheduleRowsController = originalRows;
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulate;
       ControllerHelper.getFieldValue = originalGetField;
       ControllerHelper.resetFormFields = originalReset;
@@ -188,7 +188,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
 
 test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPopulate', () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
-   const originalRows = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController;
+   const originalRows = RecurringScheduleRowsController.createRecurringScheduleRowsController;
    const originalPopulate = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
    const originalGetField = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -199,7 +199,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPo
       captured = options;
       return {};
    };
-   WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = () => ({
+   RecurringScheduleRowsController.createRecurringScheduleRowsController = () => ({
       getRows: () => [],
       reset: () => {},
       validate: () => null,
@@ -234,7 +234,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPo
       assert.equal(talkNameEl.value, '');
    } finally {
       RecurringScheduleFormController.createRecurringScheduleFormController = originalCreate;
-      WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = originalRows;
+      RecurringScheduleRowsController.createRecurringScheduleRowsController = originalRows;
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulate;
       ControllerHelper.getFieldValue = originalGetField;
       ControllerHelper.resetFormFields = originalReset;

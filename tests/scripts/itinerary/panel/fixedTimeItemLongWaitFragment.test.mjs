@@ -6,6 +6,7 @@ import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErro
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 installDomTestHooks();
 
@@ -18,7 +19,7 @@ const talkLongWaitIssue = {
    items: [{
       name: 'Amur Tiger',
       start_time: '11:00 AM',
-      item_type: 'guardiansTalk',
+      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    }],
 };
 
@@ -44,15 +45,15 @@ test('Test_GetFixedTimeItemsFromLongWaitIssues_TestNamedItems_ExpectAll', () => 
                {
                   name: '  Amur Tiger  ',
                   start_time: '11:00 AM',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                },
                {
                   name: '   ',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                },
                {
                   name: 'Capybara',
-                  item_type: 'wildEncounter',
+                  item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                },
             ],
          },
@@ -60,7 +61,7 @@ test('Test_GetFixedTimeItemsFromLongWaitIssues_TestNamedItems_ExpectAll', () => 
       [
          {
             issueType: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-            itemType: 'guardiansTalk',
+            itemType: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             typeLabel: Strings.entityLabels.guardiansTalk,
             typePhrase: Strings.entityPhrases.guardiansTalk,
             itemName: 'Amur Tiger',
@@ -68,7 +69,7 @@ test('Test_GetFixedTimeItemsFromLongWaitIssues_TestNamedItems_ExpectAll', () => 
          },
          {
             issueType: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-            itemType: 'wildEncounter',
+            itemType: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
             typeLabel: Strings.entityLabels.wildEncounter,
             typePhrase: Strings.entityPhrases.wildEncounter,
             itemName: 'Capybara',
@@ -84,7 +85,7 @@ test('Test_GetFixedTimeItemsFromLongWaitIssues_TestUnsupportedTypes_ExpectReject
          type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
          items: [{
             name: 'Lunch',
-            item_type: 'animal',
+            item_type: ItinerarySaveIssueItemType.ANIMAL,
          }],
       }]),
       /Unsupported fixed-time long-wait item type: animal/
@@ -123,11 +124,11 @@ test('Test_ShowFixedTimeItemLongWaitConfirmation_TestMultiple_ExpectNoOp', () =>
             {
                name: 'Amur Tiger',
                start_time: '11:00 AM',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             },
             {
                name: 'Capybara',
-               item_type: 'wildEncounter',
+               item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
             },
          ],
       }],
@@ -143,7 +144,7 @@ test('Test_ShowFixedTimeItemLongWaitConfirmation_TestUnnamed_ExpectNoOp', () => 
    FixedTimeItemLongWaitFragment.showFixedTimeItemLongWaitConfirmation({
       issues: [{
          type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-         items: [{ name: '   ', item_type: 'guardiansTalk' }],
+         items: [{ name: '   ', item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK }],
       }],
       onConfirm: () => {
          throw new Error('should not confirm');

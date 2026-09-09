@@ -5,6 +5,7 @@ import sqlite3
 
 import pytest
 
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_active_route_provider import TransportationActiveRouteProvider
 
 
@@ -39,7 +40,6 @@ CREATE TABLE TransportationDayRoute (
 );
 """
 
-ZOOMOBILE = 'Zoomobile'
 TRAIN = 'Zoo Train'
 SUMMER = 'summer'
 WINTER = 'winter'
@@ -63,7 +63,7 @@ def Test_FetchTransportationRouteIds_TestEmpty_ExpectEmptyList(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationActiveRouteProvider.fetch_transportation_route_ids(
       transportation_active_route_provider_conn,
-      ZOOMOBILE ) == []
+      TransportationName.ZOOMOBILE ) == []
 
 
 def Test_FetchTransportationRouteIds_TestPopulated_ExpectFilteredRoutes(
@@ -73,8 +73,8 @@ def Test_FetchTransportationRouteIds_TestPopulated_ExpectFilteredRoutes(
             VALUES ( ?, ? );
       """,
       [
-         ( ZOOMOBILE, SUMMER ),
-         ( ZOOMOBILE, WINTER ),
+         ( TransportationName.ZOOMOBILE, SUMMER ),
+         ( TransportationName.ZOOMOBILE, WINTER ),
          ( TRAIN, 'loop' ),
       ],
    )
@@ -82,7 +82,7 @@ def Test_FetchTransportationRouteIds_TestPopulated_ExpectFilteredRoutes(
 
    routes = TransportationActiveRouteProvider.fetch_transportation_route_ids(
       transportation_active_route_provider_conn,
-      ZOOMOBILE )
+      TransportationName.ZOOMOBILE )
 
    assert set( routes ) == { SUMMER, WINTER }
 
@@ -91,7 +91,7 @@ def Test_FetchTransportationRouteStationNames_TestEmpty_ExpectEmptyList(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationActiveRouteProvider.fetch_transportation_route_station_names(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       SUMMER ) == []
 
 
@@ -104,16 +104,16 @@ def Test_FetchTransportationRouteStationNames_TestPopulated_ExpectFilteredStatio
             VALUES ( ?, ?, ? );
       """,
       [
-         ( ZOOMOBILE, SUMMER, MAIN ),
-         ( ZOOMOBILE, SUMMER, AFRICA ),
-         ( ZOOMOBILE, WINTER, MAIN ),
+         ( TransportationName.ZOOMOBILE, SUMMER, MAIN ),
+         ( TransportationName.ZOOMOBILE, SUMMER, AFRICA ),
+         ( TransportationName.ZOOMOBILE, WINTER, MAIN ),
       ],
    )
    transportation_active_route_provider_conn.commit()
 
    stations = TransportationActiveRouteProvider.fetch_transportation_route_station_names(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       SUMMER )
 
    assert set( stations ) == { MAIN, AFRICA }
@@ -123,7 +123,7 @@ def Test_FetchActiveTransportationRoute_TestMissing_ExpectNone(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationActiveRouteProvider.fetch_active_transportation_route(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TARGET_DATE ) is None
 
 
@@ -138,13 +138,13 @@ def Test_FetchActiveTransportationRoute_TestExpiredOnly_ExpectNone(
             )
             VALUES ( ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, '2026-01-01', '2026-03-31', WINTER ),
+      ( TransportationName.ZOOMOBILE, '2026-01-01', '2026-03-31', WINTER ),
    )
    transportation_active_route_provider_conn.commit()
 
    assert TransportationActiveRouteProvider.fetch_active_transportation_route(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TARGET_DATE ) is None
 
 
@@ -160,15 +160,15 @@ def Test_FetchActiveTransportationRoute_TestOpenEndedAndNewerStart_ExpectNewestR
             VALUES ( ?, ?, ?, ? );
       """,
       [
-         ( ZOOMOBILE, '2026-01-01', None, WINTER ),
-         ( ZOOMOBILE, '2026-06-01', '2026-08-31', SUMMER ),
+         ( TransportationName.ZOOMOBILE, '2026-01-01', None, WINTER ),
+         ( TransportationName.ZOOMOBILE, '2026-06-01', '2026-08-31', SUMMER ),
       ],
    )
    transportation_active_route_provider_conn.commit()
 
    route = TransportationActiveRouteProvider.fetch_active_transportation_route(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TARGET_DATE )
 
    assert route == SUMMER
@@ -178,7 +178,7 @@ def Test_FetchTransportationDayRoute_TestMissing_ExpectNone(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
    assert TransportationActiveRouteProvider.fetch_transportation_day_route(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TARGET_DATE.month,
       TARGET_DATE.day ) is None
 
@@ -191,13 +191,13 @@ def Test_FetchTransportationDayRoute_TestPresent_ExpectRoute(
             )
             VALUES ( ?, ?, ?, ? );
       """,
-      ( ZOOMOBILE, TARGET_DATE.month, TARGET_DATE.day, SUMMER ),
+      ( TransportationName.ZOOMOBILE, TARGET_DATE.month, TARGET_DATE.day, SUMMER ),
    )
    transportation_active_route_provider_conn.commit()
 
    route = TransportationActiveRouteProvider.fetch_transportation_day_route(
       transportation_active_route_provider_conn,
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       TARGET_DATE.month,
       TARGET_DATE.day )
 

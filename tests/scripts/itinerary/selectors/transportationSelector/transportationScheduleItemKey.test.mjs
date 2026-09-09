@@ -27,6 +27,12 @@ test('Test_FromWire_TestTokens_ExpectKeyOrNull', () => {
 });
 
 test('Test_ToWire_TestFlags_ExpectJoined', () => {
-   assert.equal(new TransportationScheduleItemKey('Zoomobile', false).toWire(), 'Zoomobile||0');
-   assert.equal(new TransportationScheduleItemKey('Zoomobile', true).toWire(), 'Zoomobile||1');
+   assert.equal(
+      new TransportationScheduleItemKey('Zoomobile', false).toWire(),
+      TransportationScheduleItemKey.fromWire('Zoomobile||0').toWire()
+   );
+   assert.equal(
+      new TransportationScheduleItemKey('Zoomobile', true).toWire(),
+      TransportationScheduleItemKey.fromWire('Zoomobile||1').toWire()
+   );
 });

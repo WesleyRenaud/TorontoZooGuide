@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.scheduling.items.attraction_or_transportation_duration_resolver import AttractionOrTransportationDurationResolver
+from api.shared.enums.transportation_name import TransportationName
 
 
 DURATION_SCHEMA = """
@@ -16,8 +17,6 @@ CREATE TABLE Attraction (
 """
 
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
-
 
 @pytest.fixture
 def duration_conn() -> sqlite3.Connection:
@@ -41,7 +40,7 @@ def duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, NULL, 1 );
       """,
-      ( ZOOMOBILE, ) )
+      ( TransportationName.ZOOMOBILE, ) )
    conn.commit()
 
    yield conn
@@ -65,4 +64,4 @@ def Test_DefaultSeconds_TestTransportationAttraction_ExpectTransportationDuratio
 
    assert AttractionOrTransportationDurationResolver.default_seconds(
       duration_conn,
-      ZOOMOBILE ) == 25 * 60
+      TransportationName.ZOOMOBILE ) == 25 * 60

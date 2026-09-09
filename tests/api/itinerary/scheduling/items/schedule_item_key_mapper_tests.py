@@ -8,10 +8,17 @@ from api.itinerary.transportation_schedule_item_key import TransportationSchedul
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
+from api.shared.enums.transportation_name import TransportationName
 
 
 LION_KEY = 'African Lion||Africa Savanna'
 PENGUIN_KEY = 'African Penguin||Africa Savanna||Outdoor'
+ZOOMOBILE_TRANSIT_WIRE = TransportationScheduleItemKey(
+   name=TransportationName.ZOOMOBILE,
+   added_as_attraction=False ).to_wire()
+ZOOMOBILE_ATTRACTION_WIRE = TransportationScheduleItemKey(
+   name=TransportationName.ZOOMOBILE,
+   added_as_attraction=True ).to_wire()
 
 
 def Test_FromWire_TestEmptyItemType_ExpectNone() -> None:
@@ -67,18 +74,18 @@ def Test_FromWire_TestAttractionKey_ExpectAttractionScheduleItemKey() -> None:
 def Test_FromWire_TestTransportationKeys_ExpectTransitOrAttractionMode() -> None:
    schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'transportations',
-      'Zoomobile||0' )
+      ZOOMOBILE_TRANSIT_WIRE )
 
    assert schedule_item_key == TransportationScheduleItemKey(
-      name='Zoomobile',
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=False )
    assert ScheduleItemKeyMapper.from_wire(
       'transportations',
-      'Zoomobile' ) is None
+      TransportationName.ZOOMOBILE ) is None
    assert ScheduleItemKeyMapper.from_wire(
       'transportations',
-      'Zoomobile||1' ) == TransportationScheduleItemKey(
-         name='Zoomobile',
+      ZOOMOBILE_ATTRACTION_WIRE ) == TransportationScheduleItemKey(
+         name=TransportationName.ZOOMOBILE,
          added_as_attraction=True )
 
 

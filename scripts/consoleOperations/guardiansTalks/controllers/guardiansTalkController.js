@@ -1,8 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { OpeningScheduleChecker } from '../../forms/openingScheduleChecker.js';
-import { OpeningScheduleOverlapResolver } from '../../forms/openingScheduleOverlapResolver.js';
-import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
-import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
+import { RecurringScheduleSetControllerFactory } from '../../forms/recurringScheduleSetControllerFactory.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
@@ -19,12 +16,6 @@ export class GuardiansTalkController {
       talkLocationFilterController = null,
       ...controllerOptions
    } = {}) {
-      const scheduleRowsController = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController({
-         rowsEl: scheduleRowsEl,
-         addRowButtonEl: addScheduleRowEl,
-      });
-
-
       function resetTalkDropdown() {
          if (talkLocationFilterController?.clear) {
             talkLocationFilterController.clear();
@@ -39,78 +30,42 @@ export class GuardiansTalkController {
          }
       }
 
-      function validateSelection({ talk, location }) {
-         if (!location) {
-            return Strings.validation.entityRequired(Strings.labels.location);
-         }
-
-         if (!talk) {
-            return Strings.validation.entityRequired(Strings.labels.talkName);
-         }
-
-         return null;
-      }
-
-      async function submitSchedule({
-         talk,
-         location,
-         startDate,
-         endDate,
-         message,
-      }) {
-         const scheduleRows = scheduleRowsController.getRows();
-         const payload = {
-            talk,
-            location,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message,
-            scheduleRows,
-         };
-
-         const result = await ConsoleOperationsClient.setGuardiansTalkSchedule(payload);
-
-         if (result.success || !OpeningScheduleChecker.resultHasOpeningScheduleOverlap(result)) {
-            return result;
-         }
-
-         return OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
-            payload,
-            replaceOverlaps: ConsoleOperationsClient.replaceGuardiansTalkScheduleOverlaps,
-            trimOverlaps: ConsoleOperationsClient.trimGuardiansTalkScheduleOverlaps,
-            dismissedResult: { success: false, dismissed: true },
-         });
-      }
-
-      async function prepareForm() {
-         if (talkLocationFilterController?.refreshLocations) {
-            await talkLocationFilterController.refreshLocations();
-         }
-      }
-
-      return RecurringScheduleFormController.createRecurringScheduleFormController({
+      return RecurringScheduleSetControllerFactory.createRecurringScheduleSetController({
          ...controllerOptions,
+         scheduleRowsEl,
+         addScheduleRowEl,
          startDateEl,
          endDateEl,
          messageEl,
-         resetSelection: () => {
-            ControllerHelper.resetFormFields([locationEl, startDateEl, endDateEl, messageEl]);
-            resetTalkDropdown();
-         },
-         resetScheduleTimes: () => {
-            scheduleRowsController.reset();
-         },
-         validateRecurringSchedule: () => scheduleRowsController.validate(),
          getSelectionValues: () => ({
             talk: ControllerHelper.getFieldValue(talkNameEl),
             location: ControllerHelper.getFieldValue(locationEl),
          }),
-         validateSelection,
-         prepareForm,
+         validateSelection: ({ talk, location }) => {
+            if (!location) {
+               return Strings.validation.entityRequired(Strings.labels.location);
+            }
+
+            if (!talk) {
+               return Strings.validation.entityRequired(Strings.labels.talkName);
+            }
+
+            return null;
+         },
+         resetSelection: () => {
+            ControllerHelper.resetFormFields([locationEl, startDateEl, endDateEl, messageEl]);
+            resetTalkDropdown();
+         },
+         prepareForm: async () => {
+            if (talkLocationFilterController?.refreshLocations) {
+               await talkLocationFilterController.refreshLocations();
+            }
+         },
          loadErrorMessage: Strings.loadErrors.locations,
-         submitSchedule,
          successMessage: result => Strings.status.guardiansTalkScheduleSaved(result),
-         shouldReportSubmitFailure: result => !result?.dismissed,
+         setSchedule: payload => ConsoleOperationsClient.setGuardiansTalkSchedule(payload),
+         replaceOverlaps: payload => ConsoleOperationsClient.replaceGuardiansTalkScheduleOverlaps(payload),
+         trimOverlaps: payload => ConsoleOperationsClient.trimGuardiansTalkScheduleOverlaps(payload),
       });
    }
 }

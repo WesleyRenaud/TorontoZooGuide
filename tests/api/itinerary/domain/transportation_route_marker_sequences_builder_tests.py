@@ -4,16 +4,15 @@ import pytest
 
 from api.itinerary.domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_route_leg_marker_provider import TransportationRouteLegMarkerProvider
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 TUNDRA = 'Tundra Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
-
 MARKERS_BY_LEG = {
    ( MAIN, CANADA ): [ 'm-a', 'm-b' ],
    ( CANADA, AFRICA ): [ 'm-c' ],
@@ -32,7 +31,7 @@ def _leg(
       to_station=to_station,
       start_time=start_time,
       end_time=end_time,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=False )
 
 
@@ -48,7 +47,7 @@ def Test_Build_TestDiscontinuousLegs_ExpectSplitSequences(
       stub_transportation_route_leg_markers: None ) -> None:
    sequences = TransportationRouteMarkerSequencesBuilder.build(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route='summer',
       legs=[
          _leg(
@@ -74,7 +73,7 @@ def Test_Build_TestConsecutiveLegs_ExpectConcatenatedSequence(
       stub_transportation_route_leg_markers: None ) -> None:
    sequences = TransportationRouteMarkerSequencesBuilder.build(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route='summer',
       legs=[
          _leg(
@@ -98,6 +97,6 @@ def Test_Build_TestConsecutiveLegs_ExpectConcatenatedSequence(
 def Test_Build_TestEmptyLegs_ExpectEmptySequences() -> None:
    assert TransportationRouteMarkerSequencesBuilder.build(
       None,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route='summer',
       legs=[] ) == []

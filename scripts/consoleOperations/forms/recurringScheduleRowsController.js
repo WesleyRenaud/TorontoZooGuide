@@ -1,8 +1,8 @@
-import { WildEncounterScheduleBuilder } from './wildEncounterScheduleBuilder.js';
-import { WildEncounterScheduleRowsBuilder } from './wildEncounterScheduleRowsBuilder.js';
+import { RecurringScheduleBuilder } from './recurringScheduleBuilder.js';
+import { RecurringScheduleRowsBuilder } from './recurringScheduleRowsBuilder.js';
 
-export class WildEncounterScheduleRowsController {
-   static createWildEncounterScheduleRowsController({
+export class RecurringScheduleRowsController {
+   static createRecurringScheduleRowsController({
       rowsEl,
       addRowButtonEl,
    } = {}) {
@@ -14,11 +14,11 @@ export class WildEncounterScheduleRowsController {
             time: rowController.timeInputEl.value,
          };
 
-         WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+         RecurringScheduleBuilder.RECURRING_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
             row[dayKey] = Boolean(rowController.dayInputEls[dayKey]?.checked);
          });
 
-         return WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow(row);
+         return RecurringScheduleBuilder.normalizeRecurringScheduleRow(row);
       }
 
       function render() {
@@ -45,7 +45,7 @@ export class WildEncounterScheduleRowsController {
       }
 
       function addRow(initialRow = {}) {
-         const rowController = WildEncounterScheduleRowsBuilder.createScheduleRow({
+         const rowController = RecurringScheduleRowsBuilder.createScheduleRow({
             rowIndex: nextRowIndex,
             initialRow,
             allowRemove: rowControllers.length > 0,
@@ -67,7 +67,7 @@ export class WildEncounterScheduleRowsController {
       }
 
       function validate() {
-         return WildEncounterScheduleBuilder.validateWildEncounterScheduleRows(getRows());
+         return RecurringScheduleBuilder.validateRecurringScheduleRows(getRows());
       }
 
       function setRows(rows = []) {

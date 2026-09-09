@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { WildEncounterController } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterController.js';
 import { RecurringScheduleFormController } from '../../../../../scripts/consoleOperations/forms/recurringScheduleFormController.js';
-import { WildEncounterScheduleRowsController } from '../../../../../scripts/consoleOperations/forms/wildEncounterScheduleRowsController.js';
+import { RecurringScheduleRowsController } from '../../../../../scripts/consoleOperations/forms/recurringScheduleRowsController.js';
 import { OpeningScheduleOverlapFragment } from '../../../../../scripts/consoleOperations/forms/openingScheduleOverlapFragment.js';
 import { OpeningScheduleChecker } from '../../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
@@ -17,7 +17,7 @@ installDomTestHooks();
 
 test('Test_CreateWildEncounterScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
-   const originalRows = WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController;
+   const originalRows = RecurringScheduleRowsController.createRecurringScheduleRowsController;
    const originalLoad = ConsoleOptionsLoader.loadWildEncounters;
    const originalPopulate = ConsoleDropdownPopulator.populateWildEncounterDropdown;
    const originalGetField = ControllerHelper.getFieldValue;
@@ -40,7 +40,7 @@ test('Test_CreateWildEncounterScheduleController_TestWiring_ExpectFormCallbacks'
       captured = options;
       return { controller: true };
    };
-   WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = () => scheduleRowsController;
+   RecurringScheduleRowsController.createRecurringScheduleRowsController = () => scheduleRowsController;
    ConsoleOptionsLoader.loadWildEncounters = async () => [{ name: 'Giraffe' }];
    ConsoleDropdownPopulator.populateWildEncounterDropdown = (...args) => {
       rowCalls.push(['populate', ...args]);
@@ -154,7 +154,7 @@ test('Test_CreateWildEncounterScheduleController_TestWiring_ExpectFormCallbacks'
       );
    } finally {
       RecurringScheduleFormController.createRecurringScheduleFormController = originalCreate;
-      WildEncounterScheduleRowsController.createWildEncounterScheduleRowsController = originalRows;
+      RecurringScheduleRowsController.createRecurringScheduleRowsController = originalRows;
       ConsoleOptionsLoader.loadWildEncounters = originalLoad;
       ConsoleDropdownPopulator.populateWildEncounterDropdown = originalPopulate;
       ControllerHelper.getFieldValue = originalGetField;

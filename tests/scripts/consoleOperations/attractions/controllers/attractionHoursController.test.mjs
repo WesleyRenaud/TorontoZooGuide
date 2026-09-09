@@ -5,6 +5,7 @@ import { AttractionHoursController } from '../../../../../scripts/consoleOperati
 import { OpeningScheduleChecker } from '../../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
 import { OpeningScheduleOverlapFragment } from '../../../../../scripts/consoleOperations/forms/openingScheduleOverlapFragment.js';
 import { ConsoleDateFactory } from '../../../../../scripts/datePickers/consoleDateFactory.js';
+import { ApiErrorType } from '../../../../../scripts/shared/enums/apiErrorType.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
@@ -265,7 +266,7 @@ test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError
       statusEl,
       saveSchedule: async () => ( {
          success: false,
-         apiErrorType: 'invalidAttractionHours',
+         apiErrorType: ApiErrorType.INVALID_ATTRACTION_HOURS,
       } ),
    });
 
@@ -284,7 +285,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
       statusEl,
       loadTimeBounds: async () => ({
          success: false,
-         apiErrorType: 'couldNotResolveAttractionHoursTimeBounds',
+         apiErrorType: ApiErrorType.COULD_NOT_RESOLVE_ATTRACTION_HOURS_TIME_BOUNDS,
       }),
    });
    assert.equal(await boundsFail.refreshTimeBounds(), false);
@@ -340,7 +341,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
          saveSchedule: async () => ({ success: false }),
          trimScheduleOverlaps: async () => ({
             success: false,
-            apiErrorType: 'invalidAttractionHours',
+            apiErrorType: ApiErrorType.INVALID_ATTRACTION_HOURS,
          }),
       });
       await overlapTrimFail.submit();

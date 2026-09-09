@@ -9,15 +9,14 @@ from api.itinerary.data_access.itinerary_transportation_route_marker_provider im
 from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 TUNDRA = 'Tundra Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
-
 SUMMER_ROUTE_LEG_SEGMENTS = [
    TransportationRouteLegSegment( MAIN, CANADA, 20 ),
    TransportationRouteLegSegment( CANADA, AFRICA, 10 ),
@@ -75,7 +74,7 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
    cur = schedule_transportation_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=3,
       added_as_attraction=True )
@@ -92,7 +91,7 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
    cur = schedule_transportation_conn.cursor()
    applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
       cur,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       start_time='10:00 AM',
       route='summer',
@@ -108,7 +107,7 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
    legs = schedule_transportation_conn.execute(
       """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
@@ -117,7 +116,7 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
               AND ADDED_AS_ATTRACTION = 1
             ORDER BY START_TIME;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchall()
    markers = ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
       schedule_transportation_conn )
@@ -139,7 +138,7 @@ def Test_ApplyItineraryTransportationSchedule_TestDiscontinuousLegs_ExpectSplitM
    cur = schedule_transportation_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=3,
       added_as_attraction=True )
@@ -156,7 +155,7 @@ def Test_ApplyItineraryTransportationSchedule_TestDiscontinuousLegs_ExpectSplitM
    cur = schedule_transportation_conn.cursor()
    applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
       cur,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       start_time='10:00 AM',
       route='summer',
@@ -182,7 +181,7 @@ def Test_ApplyItineraryTransportationRideSegments_TestEmptySegments_ExpectFalse(
    cur = schedule_transportation_conn.cursor()
    assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
       cur,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route='summer',
       segments=[] )
@@ -194,7 +193,7 @@ def Test_ApplyItineraryTransportationRideSegments_TestEmptyLegs_ExpectFalse(
    cur = schedule_transportation_conn.cursor()
    assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
       cur,
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=True,
       route='summer',
       segments=[ ( '10:00 AM', [] ) ] )

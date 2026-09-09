@@ -1,8 +1,8 @@
 import { ConsoleDateFactory } from '../../datePickers/consoleDateFactory.js';
+import { RecurringScheduleBuilder } from './recurringScheduleBuilder.js';
 import { Strings } from '../../strings.js';
-import { WildEncounterScheduleBuilder } from './wildEncounterScheduleBuilder.js';
 
-export class WildEncounterScheduleRowsBuilder {
+export class RecurringScheduleRowsBuilder {
    static createDayCheckbox({
       rowIndex,
       dayKey,
@@ -46,7 +46,7 @@ export class WildEncounterScheduleRowsBuilder {
       timeInputEl.setAttribute('aria-label', Strings.labels.encounterTime);
       timeInputEl.autocomplete = 'off';
 
-      const normalizedRow = WildEncounterScheduleBuilder.normalizeWildEncounterScheduleRow(initialRow);
+      const normalizedRow = RecurringScheduleBuilder.normalizeRecurringScheduleRow(initialRow);
 
       if (normalizedRow.time) {
          timeInputEl.value = normalizedRow.time;
@@ -59,8 +59,8 @@ export class WildEncounterScheduleRowsBuilder {
 
       const dayInputEls = {};
 
-      WildEncounterScheduleBuilder.WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
-         const { inputEl, optionLabelEl } = WildEncounterScheduleRowsBuilder.createDayCheckbox({
+      RecurringScheduleBuilder.RECURRING_SCHEDULE_WEEKDAY_KEYS.forEach((dayKey) => {
+         const { inputEl, optionLabelEl } = RecurringScheduleRowsBuilder.createDayCheckbox({
             rowIndex,
             dayKey,
             label: Strings.schedule.dayLabels[dayKey],

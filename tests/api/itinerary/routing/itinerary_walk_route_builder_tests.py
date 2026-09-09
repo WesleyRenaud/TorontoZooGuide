@@ -8,9 +8,12 @@ from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRout
 from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
 from api.itinerary.routing.walk_route_anchor import WalkRouteAnchor
 from api.itinerary.routing.walk_route_anchor_builder import WalkRouteAnchorBuilder
+from api.itinerary.schedule_item_key_separator import ScheduleItemKeySeparator
+from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
 from api.models import Animal
 from api.models import Itinerary
 from api.shared.enums import Position, ScheduleItemKind
+from api.shared.enums.transportation_name import TransportationName
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.domain.walk_graph_node import WalkGraphNode
@@ -25,6 +28,19 @@ DEPARTURE_TIME = '5:00 PM'
 
 ENTRANCE_NODE_ID = 'n-1'
 LION_WALK_NODE_ID = 'n-2'
+ZOOMOBILE_TRANSIT_RIDE_KEY = TransportationScheduleItemKey(
+   name=TransportationName.ZOOMOBILE,
+   added_as_attraction=False ).to_wire()
+ZOOMOBILE_MAIN_STOP_KEY = (
+   f'{ ZOOMOBILE_TRANSIT_RIDE_KEY }'
+   f'{ ScheduleItemKeySeparator.VALUE }'
+   f'Main'
+)
+ZOOMOBILE_CANADA_STOP_KEY = (
+   f'{ ZOOMOBILE_TRANSIT_RIDE_KEY }'
+   f'{ ScheduleItemKeySeparator.VALUE }'
+   f'Canada'
+)
 
 
 def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
@@ -148,19 +164,19 @@ def Test_Build_TestTransitRideGap_ExpectStopsWithoutLeg(
       end_time=ARRIVAL_TIME )
    onboard = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
-      item_key='Zoomobile||0||Main',
+      item_key=ZOOMOBILE_MAIN_STOP_KEY,
       walk_node_ids=[ LION_WALK_NODE_ID ],
       start_time='10:00 AM',
       end_time='10:00 AM',
-      transit_ride_key='Zoomobile||0',
+      transit_ride_key=ZOOMOBILE_TRANSIT_RIDE_KEY,
       transit_endpoint=TransitRideEndpoint.ONBOARDING )
    offboard = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
-      item_key='Zoomobile||0||Canada',
+      item_key=ZOOMOBILE_CANADA_STOP_KEY,
       walk_node_ids=[ LION_WALK_NODE_ID ],
       start_time='10:20 AM',
       end_time='10:20 AM',
-      transit_ride_key='Zoomobile||0',
+      transit_ride_key=ZOOMOBILE_TRANSIT_RIDE_KEY,
       transit_endpoint=TransitRideEndpoint.OFFBOARDING )
    animal = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
@@ -182,11 +198,11 @@ def Test_Build_TestTransitRideGap_ExpectStopsWithoutLeg(
    walk_route = ItineraryWalkRouteBuilder.build( _itinerary( SCHEDULED_LION ) )
 
    assert any(
-      stop.item_key == 'Zoomobile||0||Canada'
+      stop.item_key == ZOOMOBILE_CANADA_STOP_KEY
       for stop in walk_route.stops )
    assert all(
-      leg.from_item_key != 'Zoomobile||0||Main'
-      or leg.to_item_key != 'Zoomobile||0||Canada'
+      leg.from_item_key != ZOOMOBILE_MAIN_STOP_KEY
+      or leg.to_item_key != ZOOMOBILE_CANADA_STOP_KEY
       for leg in walk_route.legs )
 
 

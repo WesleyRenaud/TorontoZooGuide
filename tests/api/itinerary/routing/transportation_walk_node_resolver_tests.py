@@ -10,13 +10,12 @@ from api.itinerary.routing.transportation_walk_node_resolver import Transportati
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.enums.transportation_name import TransportationName
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 EURASIA_STATION = 'Eurasia Zoomobile Station'
-
 ONBOARD_NODE_ID = 'n-onboard'
 OFFBOARD_NODE_ID = 'n-offboard'
 DEFAULT_BOARDING_NODE_ID = 'n-default'
@@ -27,14 +26,14 @@ TRANSPORTATION_LEGS = [
       CANADA_STATION,
       '10:00 AM',
       '10:20 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
    ItineraryTransportationLeg(
       CANADA_STATION,
       EURASIA_STATION,
       '10:20 AM',
       '10:30 AM',
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       False ),
 ]
 
@@ -59,7 +58,7 @@ def stub_transportation_walk_node_dependencies( monkeypatch: pytest.MonkeyPatch 
 def Test_Resolve_TestOnboardingLegs_ExpectFirstStationWalkNode(
       stub_transportation_walk_node_dependencies: None ) -> None:
    assert TransportationWalkNodeResolver.resolve(
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       legs=TRANSPORTATION_LEGS,
       endpoint=TransitRideEndpoint.ONBOARDING ) == ONBOARD_NODE_ID
 
@@ -67,7 +66,7 @@ def Test_Resolve_TestOnboardingLegs_ExpectFirstStationWalkNode(
 def Test_Resolve_TestOffboardingLegs_ExpectLastStationWalkNode(
       stub_transportation_walk_node_dependencies: None ) -> None:
    assert TransportationWalkNodeResolver.resolve(
-      ZOOMOBILE,
+      TransportationName.ZOOMOBILE,
       legs=TRANSPORTATION_LEGS,
       endpoint=TransitRideEndpoint.OFFBOARDING ) == OFFBOARD_NODE_ID
 
@@ -75,7 +74,7 @@ def Test_Resolve_TestOffboardingLegs_ExpectLastStationWalkNode(
 def Test_Resolve_TestNoConnection_ExpectNone( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: None )
 
-   assert TransportationWalkNodeResolver.resolve( ZOOMOBILE ) is None
+   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) is None
 
 
 def Test_Resolve_TestDefaultBoardingStation_ExpectMainStationWalkNode(
@@ -94,7 +93,7 @@ def Test_Resolve_TestDefaultBoardingStation_ExpectMainStationWalkNode(
       'resolve',
       lambda transportation_name, station_name: DEFAULT_BOARDING_NODE_ID )
 
-   assert TransportationWalkNodeResolver.resolve( ZOOMOBILE ) == DEFAULT_BOARDING_NODE_ID
+   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) == DEFAULT_BOARDING_NODE_ID
 
 
 def Test_Resolve_TestDayLoopLegs_ExpectFirstFromStation(
@@ -116,4 +115,4 @@ def Test_Resolve_TestDayLoopLegs_ExpectFirstFromStation(
       'resolve',
       _resolve_station_node )
 
-   assert TransportationWalkNodeResolver.resolve( ZOOMOBILE ) == ONBOARD_NODE_ID
+   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) == ONBOARD_NODE_ID

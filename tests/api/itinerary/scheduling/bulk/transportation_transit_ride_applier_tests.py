@@ -19,6 +19,7 @@ from api.itinerary.transportation.transportation_day_loop_fetcher import Transpo
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.shared.operating_hours import OperatingHours
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
@@ -28,17 +29,15 @@ from api.walk_graph.shortest_path import WalkGraphAdjacency
 from api.walk_graph.walk_graph_adjacency_builder import WalkGraphAdjacencyBuilder
 
 
-ZOOMOBILE = 'Zoomobile'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 TUNDRA = 'Tundra Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
-
 VISIT_DATE = date( 2026, 7, 11 )
 
 SUMMER_DAY_LOOP = TransportationDayLoop(
-   transportation=ZOOMOBILE,
+   transportation=TransportationName.ZOOMOBILE,
    route='summer',
    main_station=MAIN,
    legs=[
@@ -168,7 +167,7 @@ def _insert_zoomobile_transit( conn: sqlite3.Connection ) -> None:
    cur = conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False )
@@ -201,7 +200,7 @@ def Test_TransitTimelineStart_TestScheduleAnchorOnly_ExpectEntranceNode() -> Non
 
 def Test_TransitTimelineStart_TestAfterAttractionTrip_ExpectAlightNodeAndAnchorSeconds() -> None:
    companion = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
@@ -213,7 +212,7 @@ def Test_TransitTimelineStart_TestAfterAttractionTrip_ExpectAlightNodeAndAnchorS
             CANADA,
             '10:00 AM',
             '10:20 AM',
-            ZOOMOBILE,
+            TransportationName.ZOOMOBILE,
             True ),
       ],
    )
@@ -230,7 +229,7 @@ def Test_TransitTimelineStart_TestAfterAttractionTrip_ExpectAlightNodeAndAnchorS
 
 def Test_TransitTimelineStart_TestCompanionEndsBeforeAnchor_ExpectAnchorSeconds() -> None:
    companion = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
@@ -400,7 +399,7 @@ def Test_Apply_TestEmptyInputs_ExpectEarlyReturn(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -413,7 +412,7 @@ def Test_Apply_TestEmptyInputs_ExpectEarlyReturn(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -527,7 +526,7 @@ def Test_StationWalkNodeIds_TestRouteStationsSnapped_ExpectStationMap(
 
    station_nodes = TransportationTransitRideApplier._station_walk_node_ids(
       applier_conn,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       day_loop=SUMMER_DAY_LOOP,
       walk_graph=_domain_walk_graph() )
 
@@ -560,7 +559,7 @@ def Test_ApplyTimeline_TestRidePastAnimalStart_ExpectShiftBumpAndPersisted(
       start_time='11:00 AM',
       end_time='11:08 AM' )
    transit_row = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False )
@@ -638,7 +637,7 @@ def Test_ApplyTimeline_TestNoSegments_ExpectNoPersist(
    TransportationTransitRideApplier._apply_timeline(
       applier_conn,
       transit_row=ItineraryTransportationRecord(
-         transportation=ZOOMOBILE,
+         transportation=TransportationName.ZOOMOBILE,
          old_likelihood=None,
          new_likelihood=100,
          added_as_attraction=False ),
@@ -668,7 +667,7 @@ def Test_Apply_TestNoRideSegments_ExpectBulkTransitEvaluatedFlag(
    cur = applier_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False )
@@ -716,7 +715,7 @@ def Test_Apply_TestNoRideSegments_ExpectBulkTransitEvaluatedFlag(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -740,7 +739,7 @@ def Test_Apply_TestNoRideSegments_ExpectBulkTransitEvaluatedFlag(
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 0;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -769,7 +768,7 @@ def Test_Apply_TestInvalidVisitDate_ExpectSkipped(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -792,7 +791,7 @@ def Test_Apply_TestInvalidVisitDate_ExpectSkipped(
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -822,7 +821,7 @@ def Test_Apply_TestDayLoopMissing_ExpectSkipped(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -845,7 +844,7 @@ def Test_Apply_TestDayLoopMissing_ExpectSkipped(
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -879,7 +878,7 @@ def Test_Apply_TestNoStationNodes_ExpectSkipped(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -902,7 +901,7 @@ def Test_Apply_TestNoStationNodes_ExpectSkipped(
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -943,7 +942,7 @@ def Test_Apply_TestNoAnimalAnchors_ExpectSkipped(
       applier_conn,
       transit_rows=[
          ItineraryTransportationRecord(
-            transportation=ZOOMOBILE,
+            transportation=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=100,
             added_as_attraction=False ),
@@ -966,7 +965,7 @@ def Test_Apply_TestNoAnimalAnchors_ExpectSkipped(
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?;
       """,
-      ( ZOOMOBILE, ),
+      ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
    assert row is not None
@@ -1054,7 +1053,7 @@ def Test_BestSavingRide_TestUnreachableDestinationFromAlight_ExpectNone(
    walk_graph = _domain_walk_graph()
    adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
    short_day_loop = TransportationDayLoop(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       route='summer',
       main_station=MAIN,
       legs=[
@@ -1122,7 +1121,7 @@ def Test_ApplyTimeline_TestUntimedAnimal_ExpectSkipped(
    TransportationTransitRideApplier._apply_timeline(
       applier_conn,
       transit_row=ItineraryTransportationRecord(
-         transportation=ZOOMOBILE,
+         transportation=TransportationName.ZOOMOBILE,
          old_likelihood=None,
          new_likelihood=100,
          added_as_attraction=False ),
@@ -1156,7 +1155,7 @@ def Test_ApplyTimeline_TestReturnRide_ExpectReturnSegmentPersisted(
       start_time='11:00 AM',
       end_time='11:08 AM' )
    transit_row = ItineraryTransportationRecord(
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False )

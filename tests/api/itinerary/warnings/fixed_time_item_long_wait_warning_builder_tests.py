@@ -18,12 +18,12 @@ from api.models.transportation_diff import TransportationDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItineraryErrorType, Position
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.shared.enums.transportation_name import TransportationName
 
 ZEBRA_TALK = "Grevy's Zebra"
 MEERKAT_TALK = 'Slender-Tailed Meerkat'
 RAINFOREST_ENCOUNTER = 'African Rainforest'
 CAROUSEL = 'Conservation Carousel'
-ZOOMOBILE = 'Zoomobile'
 MEETING_SPOT = 'Wild Encounter - Africa Meeting Spot'
 
 def _validated(
@@ -116,7 +116,7 @@ def Test_HasUnscheduledListedItems_TestMissingTransportationTimes_ExpectTrue() -
    validated = _validated(
       transportations=[
          TransportationDiff(
-            name=ZOOMOBILE,
+            name=TransportationName.ZOOMOBILE,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=True ),

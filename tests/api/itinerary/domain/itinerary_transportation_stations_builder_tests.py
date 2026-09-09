@@ -7,15 +7,15 @@ from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
 
-ZOOMOBILE = 'Zoomobile'
+
 AFRICA = 'Africa'
 AMERICAS = 'Americas'
 EURASIA = 'Eurasia'
 INDO_MALAYA = 'Indo-Malaya'
-
 AFRICA_RECORD = TransportationStationRecord(
    name=AFRICA,
    description='Africa station',
@@ -46,14 +46,14 @@ def _leg(
       to_station=to_station,
       start_time=start_time,
       end_time=end_time,
-      transportation=ZOOMOBILE,
+      transportation=TransportationName.ZOOMOBILE,
       added_as_attraction=False )
 
 
 def _transportation(
       legs: list[ ItineraryTransportationLeg ] ) -> ItineraryTransportation:
    return ItineraryTransportation(
-      name=ZOOMOBILE,
+      name=TransportationName.ZOOMOBILE,
       added_as_attraction=False,
       legs=legs )
 

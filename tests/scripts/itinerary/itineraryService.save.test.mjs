@@ -8,6 +8,7 @@ import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
+import { ItinerarySaveIssueItemType } from '../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
 installItineraryServiceTestHooks();
 
@@ -131,7 +132,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
                code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
                items: [{
                   name: 'Komodo Dragon',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                   start_time: '2:00 PM',
                   location: 'Australasia Pavilion',
                }],
@@ -214,7 +215,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
                code: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
                items: [{
                   name: 'Kangaroo Walk-Thru',
-                  item_type: 'attraction',
+                  item_type: ItinerarySaveIssueItemType.ATTRACTION,
                }],
             }],
             itinerary_config: itineraryConfig,
@@ -291,7 +292,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
                code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'African Lion',
-                  item_type: 'guardiansTalk',
+                  item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                   start_time: '10:00',
                }],
             }],
@@ -358,7 +359,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
             code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'Arctic Wolf',
-               item_type: 'guardiansTalk',
+               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                start_time: '11:00',
             }],
          }],
@@ -396,7 +397,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
          type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          items: [{
             name: 'Arctic Wolf',
-            item_type: 'guardiansTalk',
+            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
             start_time: '11:00',
          }],
       }],
@@ -433,7 +434,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
                code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'African Rainforest',
-                  item_type: 'wildEncounter',
+                  item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                   start_time: '14:00',
                }],
             }],
@@ -535,14 +536,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
                items: [
                   {
                      name: 'African Lion',
-                     item_type: 'guardiansTalk',
+                     item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '14:00',
                      end_time: '14:30',
                      location: 'Africa Savanna',
                   },
                   {
                      name: 'African Rainforest',
-                     item_type: 'wildEncounter',
+                     item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                      start_time: '14:00',
                      end_time: '14:45',
                      meeting_spot: 'Wild Encounter - Africa Meeting Spot',
@@ -655,14 +656,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
                items: [
                   {
                      name: 'Highland Cattle',
-                     item_type: 'guardiansTalk',
+                     item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '13:00',
                      end_time: '13:30',
                      location: 'Eurasia Wilds',
                   },
                   {
                      name: 'Grizzly Bear',
-                     item_type: 'wildEncounter',
+                     item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                      start_time: '13:00',
                      end_time: '13:45',
                      meeting_spot: 'Wild Encounter - Americas Meeting Spot',
@@ -776,14 +777,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
                items: [
                   {
                      name: 'Nile Soft-Shelled Turtle',
-                     item_type: 'guardiansTalk',
+                     item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '14:00',
                      end_time: '14:30',
                      location: 'African Rainforest Pavilion',
                   },
                   {
                      name: 'Guardians of White Rhinos',
-                     item_type: 'wildEncounter',
+                     item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                      start_time: '14:00',
                      end_time: '14:45',
                      meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
