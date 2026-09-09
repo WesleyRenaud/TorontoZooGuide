@@ -5,6 +5,7 @@ from ...json_request_handler import JsonRequestHandler
 from ..scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 
 
 class GuardiansController():
@@ -128,7 +129,7 @@ class GuardiansController():
          message=message )
 
       if not success:
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 

@@ -1,10 +1,11 @@
 import { ItineraryPathCalculator } from './itineraryPathCalculator.js';
 import { ItineraryPathConstants } from './itineraryPathConstants.js';
 import { ItineraryPathRenderer } from './itineraryPathRenderer.js';
+import { SvgConstants } from '../shared/svgConstants.js';
 import { ZooMapConstants } from '../shared/zooMapConstants.js';
 
 export class ItineraryPathOverlayRenderer {
-   static SVG_NS = 'http://www.w3.org/2000/svg';
+   static SVG_NS = SvgConstants.SVG_NS;
 
    static ITINERARY_PATH_LAYER_ID = 'itinerary-path';
 

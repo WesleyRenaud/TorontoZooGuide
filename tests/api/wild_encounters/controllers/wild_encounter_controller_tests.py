@@ -11,6 +11,7 @@ import api.http_request_handler as server
 from api.models.scheduled_occurrence import ScheduledOccurrence
 from api.models.wild_encounter import WildEncounter
 import api.request_connection_provider as request_connection
+from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -215,7 +216,7 @@ def Test_SetWildEncounterSchedule_TestHttpRequest_ExpectOverlappingScheduleError
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
    assert result[ 'apiErrorType' ] == 'couldNotSetWildEncounterSchedule'
 
 

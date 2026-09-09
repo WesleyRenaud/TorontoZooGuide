@@ -57,6 +57,22 @@
          "javascriptClass": "ItinerarySaveIssueItemType"
       },
       {
+         "id": "openingScheduleOverlapErrorType",
+         "json": "openingScheduleOverlapErrorType.json",
+         "pythonModule": "api/shared/enums/opening_schedule_overlap_error_type.py",
+         "pythonClass": "OpeningScheduleOverlapErrorType",
+         "javascriptModule": "scripts/shared/enums/openingScheduleOverlapErrorType.js",
+         "javascriptClass": "OpeningScheduleOverlapErrorType"
+      },
+      {
+         "id": "openingScheduleOverlapResolution",
+         "json": "openingScheduleOverlapResolution.json",
+         "pythonModule": "api/shared/enums/opening_schedule_overlap_resolution.py",
+         "pythonClass": "OpeningScheduleOverlapResolution",
+         "javascriptModule": "scripts/shared/enums/openingScheduleOverlapResolution.js",
+         "javascriptClass": "OpeningScheduleOverlapResolution"
+      },
+      {
          "id": "itineraryTransportationStationRole",
          "json": "itineraryTransportationStationRole.json",
          "valueShape": "object",

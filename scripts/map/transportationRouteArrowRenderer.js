@@ -1,5 +1,7 @@
+import { SvgConstants } from '../shared/svgConstants.js';
+
 export class TransportationRouteArrowRenderer {
-   static SVG_NS = 'http://www.w3.org/2000/svg';
+   static SVG_NS = SvgConstants.SVG_NS;
 
    static ROUTE_ARROWS_LAYER_ID = 'transportation-route-arrows';
 

@@ -3,7 +3,7 @@ import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { AttractionHoursScheduleHelper } from './attractionHoursScheduleHelper.js';
 import { ConsoleDateFactory } from '../../../datePickers/consoleDateFactory.js';
 import { OpeningScheduleChecker } from '../../forms/openingScheduleChecker.js';
-import { OpeningScheduleOverlapFragment } from '../../forms/openingScheduleOverlapFragment.js';
+import { OpeningScheduleOverlapResolver } from '../../forms/openingScheduleOverlapResolver.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
@@ -171,17 +171,11 @@ export class AttractionHoursController {
       }
 
       async function resolveOverlapConflict(payload) {
-         const resolution = await OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog();
-
-         if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-            return replaceScheduleOverlaps(payload);
-         }
-
-         if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-            return trimScheduleOverlaps(payload);
-         }
-
-         return null;
+         return OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
+            payload,
+            replaceOverlaps: replaceScheduleOverlaps,
+            trimOverlaps: trimScheduleOverlaps,
+         });
       }
 
       function handleSubmitSuccess(result) {

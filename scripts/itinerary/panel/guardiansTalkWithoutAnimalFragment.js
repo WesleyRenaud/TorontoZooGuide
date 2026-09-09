@@ -1,85 +1,59 @@
-import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ConfirmFragment } from './components/confirmFragment.js';
-import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ScheduleItemWithoutAnimalFragment } from './scheduleItemWithoutAnimalFragment.js';
 import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { Strings } from '../../strings.js';
 
 export class GuardiansTalkWithoutAnimalFragment {
+   static GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG = Object.freeze({
+      issueType: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      nameKey: 'talkName',
+      timeKey: 'talkTime',
+      getTitle: () => Strings.itinerary.confirmation.guardiansTalkWithoutAnimalTitle,
+      getMessage: (name, time) => Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(
+         name,
+         time
+      ),
+      getMessageWithoutTime: (name) => Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(name),
+      getBodyMessage: (name, time, strings) => strings.guardiansTalkWithoutAnimalMessage(name, time),
+      getBodyMessageWithoutTime: (name, strings) => strings.guardiansTalkWithoutAnimalMessageWithoutTime(name),
+      getConfirmPrompt: () => '',
+   });
+
    static hasGuardiansTalkWithoutAnimalIssue(issues = []) {
-      return issues.some(
-         (issue) => issue?.type === ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+      return ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue(
+         issues,
+         GuardiansTalkWithoutAnimalFragment.GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG
       );
 
    }
 
    static getGuardiansTalkNamesFromWithoutAnimalIssues(issues = []) {
-      return GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues)
-         .map((talk) => talk.talkName);
+      return ScheduleItemWithoutAnimalFragment.getNamesFromWithoutAnimalIssues(
+         issues,
+         GuardiansTalkWithoutAnimalFragment.GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
    static getGuardiansTalksFromWithoutAnimalIssues(issues = []) {
-      const talksByName = new Map();
-
-      issues
-         .filter((issue) => issue?.type === ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL)
-         .flatMap((issue) => issue.items ?? [])
-         .forEach((item) => {
-            const talkName = ValueNormalizer.asTrimmedString(item?.name);
-
-            if (!talkName) {
-               return;
-            }
-
-            const talkTime = ItineraryItemFormatter.formatClockTime(item?.start_time);
-
-            talksByName.set(
-               talkName,
-               talkTime
-                  ? { talkName, talkTime }
-                  : { talkName }
-            );
-         });
-
-      return [...talksByName.values()];
+      return ScheduleItemWithoutAnimalFragment.getItemsFromWithoutAnimalIssues(
+         issues,
+         GuardiansTalkWithoutAnimalFragment.GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
    static getPrimaryGuardiansTalkFromWithoutAnimalIssues(issues = []) {
-      const [talk] = GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues);
-
-      return talk ?? null;
+      return ScheduleItemWithoutAnimalFragment.getPrimaryFromWithoutAnimalIssues(
+         issues,
+         GuardiansTalkWithoutAnimalFragment.GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
-   static showGuardiansTalkWithoutAnimalConfirmation({
-      issues = [],
-      onConfirm,
-      onCancel,
-      mountEl = ItineraryPanelFragment.getItineraryOverlayMountEl() ?? document.body,
-   } = {}) {
-      const talks = GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues);
-
-      // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
-      if (talks.length !== 1) {
-         return;
-      }
-
-      const [talk] = talks;
-      const talkName = ValueNormalizer.asTrimmedString(talk.talkName);
-      const message = talk.talkTime
-         ? Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(talkName, talk.talkTime)
-         : Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(talkName);
-
-      ConfirmFragment.showItineraryConfirmPopup({
-         title: Strings.itinerary.confirmation.guardiansTalkWithoutAnimalTitle,
-         message,
-         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
-         cancelText: Strings.itinerary.actions.cancel,
-         mountEl,
-         onConfirm,
-         onCancel,
-      });
+   static showGuardiansTalkWithoutAnimalConfirmation(options = {}) {
+      ScheduleItemWithoutAnimalFragment.showWithoutAnimalConfirmation(
+         options,
+         GuardiansTalkWithoutAnimalFragment.GUARDIANS_TALK_WITHOUT_ANIMAL_CONFIG
+      );
    }
 }

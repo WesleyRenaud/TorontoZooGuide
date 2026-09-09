@@ -1,9 +1,27 @@
-import { ItineraryErrorTypesHelper } from './itineraryErrorTypesHelper.js';
+import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 import { Strings } from '../strings.js';
 
 export class ItineraryErrorTypes {
    static suppressedItineraryErrorTypes = [];
+
+   static ITINERARY_ERROR_MESSAGE_KEYS = Object.freeze({
+      [ItineraryErrorType.ITINERARY_DATE_NOT_SET]: 'itineraryDateNotSet',
+      [ItineraryErrorType.SAVE_FAILED]: 'saveFailed',
+      [ItineraryErrorType.TIME_ORDER_INVALID]: 'timeOrderInvalid',
+      [ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE]: 'arrivalDepartureTooClose',
+      [ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP]: 'earlyAdmissionRequiresMembership',
+      [ItineraryErrorType.NO_AVAILABLE_SLOT]: 'noAvailableSlot',
+      [ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE]: 'requestedTimeNotAvailable',
+      [ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS]: 'attractionOutsideOperatingHours',
+      [ItineraryErrorType.ITEM_NOT_ON_ITINERARY]: 'itemNotOnItinerary',
+      [ItineraryErrorType.ITEM_ALREADY_SCHEDULED]: 'itemAlreadyScheduled',
+      [ItineraryErrorType.TIME_OUT_OF_BOUNDS]: 'timeOutOfBounds',
+      [ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE]: 'activityNotOnDaySchedule',
+      [ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE]: 'scheduleWindowUnavailable',
+      [ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED]: 'bulkScheduleItineraryAlreadyScheduled',
+      [ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED]: 'unscheduleAllNothingScheduled',
+   });
 
    static syncSuppressedItineraryErrorTypes(itineraryConfig = {}) {
       ItineraryErrorTypes.suppressedItineraryErrorTypes = [
@@ -83,71 +101,31 @@ export class ItineraryErrorTypes {
       errorType,
       strings = Strings.itinerary.errors
    ) {
-      if (errorType === ItineraryErrorType.ITINERARY_DATE_NOT_SET) {
-         return strings.itineraryDateNotSet;
-      }
+      const messageKey = ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType];
 
-      if (errorType === ItineraryErrorType.SAVE_FAILED) {
-         return strings.saveFailed;
-      }
-
-      if (errorType === ItineraryErrorType.TIME_ORDER_INVALID) {
-         return strings.timeOrderInvalid;
-      }
-
-      if (errorType === ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE) {
-         return strings.arrivalDepartureTooClose;
-      }
-
-      if (errorType === ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP) {
-         return strings.earlyAdmissionRequiresMembership;
-      }
-
-      if (errorType === ItineraryErrorType.NO_AVAILABLE_SLOT) {
-         return strings.noAvailableSlot;
-      }
-
-      if (errorType === ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE) {
-         return strings.requestedTimeNotAvailable;
-      }
-
-      if (errorType === ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS) {
-         return strings.attractionOutsideOperatingHours;
-      }
-
-      if (errorType === ItineraryErrorType.ITEM_NOT_ON_ITINERARY) {
-         return strings.itemNotOnItinerary;
-      }
-
-      if (errorType === ItineraryErrorType.ITEM_ALREADY_SCHEDULED) {
-         return strings.itemAlreadyScheduled;
-      }
-
-      if (errorType === ItineraryErrorType.TIME_OUT_OF_BOUNDS) {
-         return strings.timeOutOfBounds;
-      }
-
-      if (errorType === ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE) {
-         return strings.activityNotOnDaySchedule;
-      }
-
-      if (errorType === ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE) {
-         return strings.scheduleWindowUnavailable;
-      }
-
-      if (errorType === ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED) {
-         return strings.bulkScheduleItineraryAlreadyScheduled;
-      }
-
-      if (errorType === ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED) {
-         return strings.unscheduleAllNothingScheduled;
+      if (messageKey) {
+         return strings[messageKey];
       }
 
       return strings.generic;
    }
 
+   static normalizeItineraryErrorType(errorType, legacySuccess) {
+      const normalizedErrorType = ValueNormalizer.asTrimmedString(errorType);
+
+      if (normalizedErrorType) {
+         return normalizedErrorType;
+      }
+
+      if (legacySuccess === false) {
+         return ItineraryErrorType.SAVE_FAILED;
+      }
+
+      return ItineraryErrorType.SUCCESS;
+   }
+
    static normalizeItineraryErrorTypeFromResponse(source = {}) {
-      return ItineraryErrorTypesHelper.normalizeItineraryErrorType(
+      return ItineraryErrorTypes.normalizeItineraryErrorType(
          source.status,
          source.success
       );

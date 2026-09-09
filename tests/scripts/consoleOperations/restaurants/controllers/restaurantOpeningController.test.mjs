@@ -11,11 +11,17 @@ import { Strings } from '../../../../../scripts/strings.js';
 
 test('Test_CreateRestaurantOpeningScheduleController_TestWiring_ExpectWeeklyForm', async () => {
    const original = WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController;
+   const originalShow = OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog;
+   const originalReplace = ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps;
+   const originalTrim = ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps;
    let captured;
+
    WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController = (options) => {
       captured = options;
       return { created: true };
    };
+   ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps = async (p) => ({ replaced: p });
+   ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps = async (p) => ({ trimmed: p });
 
    try {
       RestaurantOpeningController.createRestaurantOpeningScheduleController({ restaurantEl: {} });
@@ -25,33 +31,24 @@ test('Test_CreateRestaurantOpeningScheduleController_TestWiring_ExpectWeeklyForm
       assert.equal(captured.payloadKey, 'restaurant');
       assert.equal(captured.resultName({ restaurant: 'Peaks' }), 'Peaks');
 
-      const originalShow = OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog;
-      const originalReplace = ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps;
-      const originalTrim = ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps;
       const payload = { restaurant: 'Peaks' };
 
-      ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps = async (p) => ({ replaced: p });
-      ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps = async (p) => ({ trimmed: p });
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
+         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE
+      );
+      assert.deepEqual(await captured.resolveOverlapConflict(payload), { replaced: payload });
 
-      try {
-         OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
-            OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE
-         );
-         assert.deepEqual(await captured.resolveOverlapConflict(payload), { replaced: payload });
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
+         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM
+      );
+      assert.deepEqual(await captured.resolveOverlapConflict(payload), { trimmed: payload });
 
-         OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => (
-            OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM
-         );
-         assert.deepEqual(await captured.resolveOverlapConflict(payload), { trimmed: payload });
-
-         OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => null;
-         assert.equal(await captured.resolveOverlapConflict(payload), null);
-      } finally {
-         OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = originalShow;
-         ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps = originalReplace;
-         ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps = originalTrim;
-      }
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = async () => null;
+      assert.equal(await captured.resolveOverlapConflict(payload), null);
    } finally {
       WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController = original;
+      OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog = originalShow;
+      ConsoleOperationsClient.replaceRestaurantOpeningScheduleOverlaps = originalReplace;
+      ConsoleOperationsClient.trimRestaurantOpeningScheduleOverlaps = originalTrim;
    }
 });

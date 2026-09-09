@@ -1,6 +1,6 @@
 import { ItineraryPanelFragment } from '../../itinerary/panel/components/itineraryPanelFragment.js';
-import { OpeningScheduleChecker } from './openingScheduleChecker.js';
 import { OpeningScheduleOverlapDialogBuilder } from './openingScheduleOverlapDialogBuilder.js';
+import { OpeningScheduleOverlapResolution } from '../../shared/enums/openingScheduleOverlapResolution.js';
 
 export class OpeningScheduleOverlapFragment {
    static ROOT_SELECTOR = '.console-overlap-dialog-root';
@@ -22,12 +22,12 @@ export class OpeningScheduleOverlapFragment {
 
          buttons.replace.addEventListener('click', () => {
             close();
-            resolve(OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE);
+            resolve(OpeningScheduleOverlapResolution.REPLACE);
          });
 
          buttons.trim.addEventListener('click', () => {
             close();
-            resolve(OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM);
+            resolve(OpeningScheduleOverlapResolution.TRIM);
          });
       });
    }

@@ -5,6 +5,7 @@ from ...json_request_handler import JsonRequestHandler
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.calendar_dates import DateValues
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 
 
 class AttractionController():
@@ -139,7 +140,7 @@ class AttractionController():
 
       if not success:
          ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=attraction )
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 
@@ -347,7 +348,7 @@ class AttractionController():
             response,
             ApiErrorType.COULD_NOT_SET_ATTRACTION_HOURS,
             name=payload[ 'attraction' ] )
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 

@@ -13,6 +13,7 @@ from api.models.restaurant import Restaurant
 import api.request_connection_provider as request_connection
 from api.restaurants.controllers.restaurant_controller import RestaurantController
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
+from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -255,7 +256,7 @@ def Test_SetRestaurantOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleA
    result = response_json( handler )
 
    assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
 def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(

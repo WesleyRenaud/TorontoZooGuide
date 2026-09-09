@@ -1,6 +1,6 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { OpeningScheduleChecker } from '../../forms/openingScheduleChecker.js';
-import { OpeningScheduleOverlapFragment } from '../../forms/openingScheduleOverlapFragment.js';
+import { OpeningScheduleOverlapResolver } from '../../forms/openingScheduleOverlapResolver.js';
 import { RecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { WildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
@@ -55,17 +55,12 @@ export class WildEncounterController {
             return result;
          }
 
-         const resolution = await OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog();
-
-         if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-            return ConsoleOperationsClient.replaceWildEncounterScheduleOverlaps(payload);
-         }
-
-         if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-            return ConsoleOperationsClient.trimWildEncounterScheduleOverlaps(payload);
-         }
-
-         return { success: false, dismissed: true };
+         return OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
+            payload,
+            replaceOverlaps: ConsoleOperationsClient.replaceWildEncounterScheduleOverlaps,
+            trimOverlaps: ConsoleOperationsClient.trimWildEncounterScheduleOverlaps,
+            dismissedResult: { success: false, dismissed: true },
+         });
       }
 
       async function prepareForm() {

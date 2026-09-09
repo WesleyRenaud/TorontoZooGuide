@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
-import { ItineraryErrorTypesHelper } from '../../../scripts/itinerary/itineraryErrorTypesHelper.js';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { Strings } from '../../../scripts/strings.js';
 
@@ -180,15 +179,33 @@ test('Test_ResolveItineraryErrorMessage_TestKnownAndUnknown_ExpectStrings', () =
    assert.equal(ItineraryErrorTypes.resolveItineraryErrorMessage('unknown'), strings.generic);
 });
 
-test('Test_NormalizeItineraryErrorTypeFromResponse_TestDelegates_ExpectHelper', () => {
-   const original = ItineraryErrorTypesHelper.normalizeItineraryErrorType;
-   ItineraryErrorTypesHelper.normalizeItineraryErrorType = (status, success) => `${status}:${success}`;
+test('Test_NormalizeItineraryErrorType_TestExplicitType_ExpectTrimmed', () => {
+   assert.equal(
+      ItineraryErrorTypes.normalizeItineraryErrorType('  saveFailed  ', true),
+      'saveFailed'
+   );
+});
+
+test('Test_NormalizeItineraryErrorType_TestLegacySuccessFlag_ExpectMapped', () => {
+   assert.equal(
+      ItineraryErrorTypes.normalizeItineraryErrorType('', false),
+      'saveFailed'
+   );
+   assert.equal(
+      ItineraryErrorTypes.normalizeItineraryErrorType('', true),
+      'success'
+   );
+});
+
+test('Test_NormalizeItineraryErrorTypeFromResponse_TestDelegates_ExpectNormalize', () => {
+   const original = ItineraryErrorTypes.normalizeItineraryErrorType;
+   ItineraryErrorTypes.normalizeItineraryErrorType = (status, success) => `${status}:${success}`;
    try {
       assert.equal(
          ItineraryErrorTypes.normalizeItineraryErrorTypeFromResponse({ status: 'x', success: false }),
          'x:false'
       );
    } finally {
-      ItineraryErrorTypesHelper.normalizeItineraryErrorType = original;
+      ItineraryErrorTypes.normalizeItineraryErrorType = original;
    }
 });

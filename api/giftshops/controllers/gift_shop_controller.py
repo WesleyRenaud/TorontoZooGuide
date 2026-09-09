@@ -4,6 +4,7 @@ from ..coordinators.gift_shop_coordinator import GiftShopCoordinator
 from ...json_request_handler import JsonRequestHandler
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 
 
 class GiftShopController():
@@ -139,7 +140,7 @@ class GiftShopController():
 
       if not success:
          ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=gift_shop )
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 

@@ -1,70 +1,40 @@
-import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ConfirmFragment } from './components/confirmFragment.js';
-import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ScheduleItemUnscheduleFragment } from './scheduleItemUnscheduleFragment.js';
 import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { Strings } from '../../strings.js';
 
 export class WildEncounterUnscheduleFragment {
+   static WILD_ENCOUNTER_UNSCHEDULE_CONFIG = Object.freeze({
+      issueType: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+      nameKey: 'encounterName',
+      timeKey: 'encounterTime',
+      getTitle: () => Strings.itinerary.confirmation.wildEncounterRescheduleTitle,
+      getMessage: (name, time) => Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
+         name,
+         time
+      ),
+      getMessageWithoutTime: (name) => Strings.itinerary.confirmation.wildEncounterRescheduleMessageWithoutTime(name),
+   });
+
    static getWildEncounterNamesFromUnscheduleIssues(issues = []) {
-      return issues
-         .filter((issue) => issue?.type === ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS)
-         .flatMap((issue) => (issue.items ?? [])
-            .map((item) => ValueNormalizer.asTrimmedString(item?.name))
-            .filter(Boolean));
+      return ScheduleItemUnscheduleFragment.getNamesFromUnscheduleIssues(
+         issues,
+         WildEncounterUnscheduleFragment.WILD_ENCOUNTER_UNSCHEDULE_CONFIG
+      );
 
    }
 
    static getPrimaryWildEncounterFromUnscheduleIssues(issues = []) {
-      const [encounterName] = WildEncounterUnscheduleFragment.getWildEncounterNamesFromUnscheduleIssues(issues);
-
-      if (!encounterName) {
-         return null;
-      }
-
-      const encounterItem = issues
-         .filter((issue) => issue?.type === ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS)
-         .flatMap((issue) => issue.items ?? [])
-         .find((item) => ValueNormalizer.asTrimmedString(item?.name) === encounterName);
-
-      const encounterTime = ItineraryItemFormatter.formatClockTime(encounterItem?.start_time);
-
-      if (!encounterTime) {
-         return { encounterName };
-      }
-
-      return { encounterName, encounterTime };
+      return ScheduleItemUnscheduleFragment.getPrimaryFromUnscheduleIssues(
+         issues,
+         WildEncounterUnscheduleFragment.WILD_ENCOUNTER_UNSCHEDULE_CONFIG
+      );
 
    }
 
-   static showWildEncounterUnscheduleConfirmation({
-      issues = [],
-      onConfirm,
-      onCancel,
-      mountEl = ItineraryPanelFragment.getItineraryOverlayMountEl() ?? document.body,
-   } = {}) {
-      const encounter = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues(issues);
-
-      if (!encounter?.encounterName) {
-         return;
-      }
-
-      const encounterName = ValueNormalizer.asTrimmedString(encounter.encounterName);
-      const message = encounter.encounterTime
-         ? Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
-            encounterName,
-            encounter.encounterTime
-         )
-         : Strings.itinerary.confirmation.wildEncounterRescheduleMessageWithoutTime(encounterName);
-
-      ConfirmFragment.showItineraryConfirmPopup({
-         title: Strings.itinerary.confirmation.wildEncounterRescheduleTitle,
-         message,
-         confirmText: Strings.itinerary.confirmation.updatePlanConfirm,
-         cancelText: Strings.itinerary.actions.cancel,
-         mountEl,
-         onConfirm,
-         onCancel,
-      });
+   static showWildEncounterUnscheduleConfirmation(options = {}) {
+      ScheduleItemUnscheduleFragment.showUnscheduleConfirmation(
+         options,
+         WildEncounterUnscheduleFragment.WILD_ENCOUNTER_UNSCHEDULE_CONFIG
+      );
    }
 }

@@ -15,6 +15,7 @@ from api.attractions.scheduling.attraction_hours_time_bounds import AttractionHo
 import api.http_request_handler as server
 from api.models.attraction import Attraction
 import api.request_connection_provider as request_connection
+from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -320,7 +321,7 @@ def Test_SetAttractionOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleA
 
    assert result[ 'success' ] is False
    assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
 def Test_ReplaceAttractionOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(
@@ -487,7 +488,7 @@ def Test_SetAttractionHoursSchedule_TestHttpRequest_ExpectOverlappingScheduleApi
 
    assert result[ 'success' ] is False
    assert result[ 'apiErrorType' ] == 'couldNotSetAttractionHours'
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
 def Test_ReplaceAttractionHoursScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(

@@ -1,5 +1,7 @@
+import { SvgConstants } from '../shared/svgConstants.js';
+
 export class MessageBannerLayoutAdjuster {
-   static SVG_NS = 'http://www.w3.org/2000/svg';
+   static SVG_NS = SvgConstants.SVG_NS;
 
    static ALERT_WIDTH_TO_HEIGHT_RATIO = 2;
 

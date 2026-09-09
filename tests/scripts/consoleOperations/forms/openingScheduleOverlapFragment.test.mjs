@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { OpeningScheduleOverlapFragment } from '../../../../scripts/consoleOperations/forms/openingScheduleOverlapFragment.js';
 import { OpeningScheduleOverlapDialogBuilder } from '../../../../scripts/consoleOperations/forms/openingScheduleOverlapDialogBuilder.js';
-import { OpeningScheduleChecker } from '../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
+import { OpeningScheduleOverlapResolution } from '../../../../scripts/shared/enums/openingScheduleOverlapResolution.js';
 import { ItineraryPanelFragment } from '../../../../scripts/itinerary/panel/components/itineraryPanelFragment.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -36,14 +36,14 @@ test('Test_ShowOpeningScheduleOverlapDialog_TestReplaceAndTrim_ExpectResolutions
       buttons.replace.listeners.click();
       assert.equal(
          await replacePromise,
-         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE
+         OpeningScheduleOverlapResolution.REPLACE
       );
 
       const trimPromise = OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog();
       buttons.trim.listeners.click();
       assert.equal(
          await trimPromise,
-         OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM
+         OpeningScheduleOverlapResolution.TRIM
       );
    } finally {
       OpeningScheduleOverlapDialogBuilder.createDialogLayout = originalCreate;

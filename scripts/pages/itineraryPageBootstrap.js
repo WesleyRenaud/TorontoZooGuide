@@ -6,11 +6,10 @@ import { OfferPastItineraryClearOrRecoverer } from '../itinerary/pastItinerary/o
 import { WizardDiffPresenter } from '../itinerary/wizard/diff/wizardDiffPresenter.js';
 import { ValidationFragment } from '../itinerary/wizard/validationFragment.js';
 import { WizardController } from '../itinerary/wizard/wizardController.js';
+import { WizardStepConfigs } from '../itinerary/wizard/wizardStepConfigs.js';
 import { LoadInlineZooMapLoader } from '../map/loadInlineZooMapLoader.js';
 
 export class ItineraryPageBootstrap {
-   static DEFAULT_WIZARD_STEP = 'date';
-
    static lastShownValidationSignature = null;
 
    static hasEmbeddedMap() {
@@ -109,7 +108,7 @@ export class ItineraryPageBootstrap {
    static bindWizardEvents(openWizard) {
       window.addEventListener('tzg:editItinerarySection', (event) => {
          openWizard({
-            startAt: event?.detail?.step || ItineraryPageBootstrap.DEFAULT_WIZARD_STEP,
+            startAt: event?.detail?.step || WizardStepConfigs.WIZARD_DEFAULT_START_STEP,
          });
       });
 
