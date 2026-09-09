@@ -4,6 +4,7 @@ import test from 'node:test';
 import { WildEncounterSelector } from '../../../../scripts/itinerary/selectors/wildEncounterSelector.js';
 import { CreateScheduledOccurrenceSelector } from '../../../../scripts/itinerary/selectors/createScheduledOccurrenceSelector.js';
 import { WildEncounterSelectorModel } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 
 test('Test_CreateItineraryWildEncounterSelectorController_TestWiring_ExpectFactoryOptions', () => {
@@ -22,7 +23,7 @@ test('Test_CreateItineraryWildEncounterSelectorController_TestWiring_ExpectFacto
          }),
          { selector: true }
       );
-      assert.equal(WildEncounterSelector.STORAGE_KEY, 'tzg.itineraryWildEncounters');
+      assert.equal(WildEncounterSelector.STORAGE_KEY, StorageKeys.WILD_KEY);
       assert.equal(captured.storageKey, WildEncounterSelector.STORAGE_KEY);
       assert.equal(captured.responseKey, 'wild_encounters');
       assert.equal(captured.searchFlag, 'includeWildEncounters');

@@ -5,10 +5,11 @@ import { ItinerarySearchContext } from '../itinerarySearchContext.js';
 import { RegionStorageStore } from './regionSelector/regionStorageStore.js';
 import { SelectorControllerFactory } from './selectorControllerFactory.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { StorageKeys } from '../storageKeys.js';
 import { Strings } from '../../strings.js';
 
 export class AnimalSelector {
-   static STORAGE_KEY = 'tzg.itineraryAnimals';
+   static STORAGE_KEY = StorageKeys.ANIMALS_KEY;
 
    static createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
       let includeOffDisplayAnimals = false;

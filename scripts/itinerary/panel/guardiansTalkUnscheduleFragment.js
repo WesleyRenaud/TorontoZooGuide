@@ -2,14 +2,13 @@ import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { ConfirmFragment } from './components/confirmFragment.js';
 import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { Strings } from '../../strings.js';
 
 export class GuardiansTalkUnscheduleFragment {
-   static GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
-
    static getGuardiansTalkNamesFromUnscheduleIssues(issues = []) {
       return issues
-         .filter((issue) => issue?.type === GuardiansTalkUnscheduleFragment.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS)
          .flatMap((issue) => (issue.items ?? [])
             .map((item) => ValueNormalizer.asTrimmedString(item?.name))
             .filter(Boolean));
@@ -24,7 +23,7 @@ export class GuardiansTalkUnscheduleFragment {
       }
 
       const talkItem = issues
-         .filter((issue) => issue?.type === GuardiansTalkUnscheduleFragment.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
+         .filter((issue) => issue?.type === ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS)
          .flatMap((issue) => issue.items ?? [])
          .find((item) => ValueNormalizer.asTrimmedString(item?.name) === talkName);
 

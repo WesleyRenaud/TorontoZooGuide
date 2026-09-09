@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { ItineraryBuildWarningsFragment } from '../../../../scripts/itinerary/panel/itineraryBuildWarningsFragment.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 
 installDomTestHooks();
 
@@ -13,14 +14,14 @@ ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
 
 const overlapAndWithoutAnimalIssues = [
    {
-      type: 'guardiansTalkWillUnscheduleItems',
+      type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       items: [{
          name: 'Amur Tiger',
          start_time: '11:00 AM',
       }],
    },
    {
-      type: 'guardiansTalkWithoutAnimal',
+      type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
       items: [{
          name: 'Amur Tiger',
          start_time: '11:00 AM',
@@ -44,7 +45,7 @@ test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarnin
 test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarningsDetectsMultipleLongWaitItems_ExpectOk', () => {
    assert.equal(
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings([{
-         type: 'fixedTimeItemLongWait',
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
          items: [
             {
                name: 'Western Grey Kangaroo',
@@ -62,7 +63,7 @@ test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarnin
    );
    assert.equal(
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings([{
-         type: 'fixedTimeItemLongWait',
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
          items: [{
             name: 'Western Grey Kangaroo',
             start_time: '11:00 AM',
@@ -76,7 +77,7 @@ test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarnin
 test('Test_HasMultipleItineraryBuildWarnings_TestHasMultipleItineraryBuildWarningsDetectsMultipleWithoutAnimalTalks_ExpectOk', () => {
    assert.equal(
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings([{
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [
             {
                name: 'Western Grey Kangaroo',
@@ -108,10 +109,10 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
    );
 
    assert.equal(sections.length, 2);
-   assert.equal(sections[0].type, 'guardiansTalkWillUnscheduleItems');
+   assert.equal(sections[0].type, ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS);
    assert.equal(sections[0].title, 'Schedule overlap');
    assert.match(sections[0].message, /Amur Tiger/);
-   assert.equal(sections[1].type, 'guardiansTalkWithoutAnimal');
+   assert.equal(sections[1].type, ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL);
    assert.equal(sections[1].title, 'No matching animal');
    assert.match(sections[1].message, /does not match an animal/);
 });
@@ -119,19 +120,19 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
 test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsCoversEncounterAndNoTimeCopy_ExpectOk', () => {
    const sections = ItineraryBuildWarningsFragment.buildItineraryBuildWarningSections([
       {
-         type: 'wildEncounterWillUnscheduleItems',
+         type: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
          items: [{ name: 'Capybara' }],
       },
       {
-         type: 'guardiansTalkWillUnscheduleItems',
+         type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          items: [{ name: 'Amur Tiger' }],
       },
       {
-         type: 'guardiansTalkWithoutAnimal',
+         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
          items: [{ name: 'Amur Tiger' }],
       },
       {
-         type: 'fixedTimeItemLongWait',
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
          items: [
             {
                name: 'Amur Tiger',
@@ -153,12 +154,12 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
    assert.deepEqual(
       sections.map((section) => section.type),
       [
-         'guardiansTalkWillUnscheduleItems',
-         'wildEncounterWillUnscheduleItems',
-         'guardiansTalkWithoutAnimal',
-         'fixedTimeItemLongWait',
-         'fixedTimeItemLongWait',
-         'fixedTimeItemLongWait',
+         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
       ]
    );
    assert.match(sections[0].message, /Amur Tiger guardians talk overlaps/);
@@ -209,7 +210,7 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
 
    ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation({
       issues: [{
-         type: 'fixedTimeItemLongWait',
+         type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
          items: [
             {
                name: 'Western Grey Kangaroo',
@@ -258,7 +259,7 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
    ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation({
       issues: [
          {
-            type: 'guardiansTalkWithoutAnimal',
+            type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             items: [
                {
                   name: 'Western Grey Kangaroo',
@@ -271,7 +272,7 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
             ],
          },
          {
-            type: 'fixedTimeItemLongWait',
+            type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
             items: [
                {
                   name: 'Western Grey Kangaroo',
@@ -308,7 +309,7 @@ test('Test_ShowItineraryBuildWarningsConfirmation_TestShowItineraryBuildWarnings
 test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsCoversTimedWildEncounterOverlapCopy_ExpectOk', () => {
    const sections = ItineraryBuildWarningsFragment.buildItineraryBuildWarningSections([
       {
-         type: 'wildEncounterWillUnscheduleItems',
+         type: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
          items: [{
             name: 'Capybara',
             start_time: '2:30 PM',
@@ -326,10 +327,10 @@ test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSect
 test('Test_BuildItineraryBuildWarningSections_TestBuildItineraryBuildWarningSectionsSkipsEmptyWarningModules_ExpectOk', () => {
    assert.deepEqual(
       ItineraryBuildWarningsFragment.buildItineraryBuildWarningSections([
-         { type: 'guardiansTalkWillUnscheduleItems', items: [] },
-         { type: 'wildEncounterWillUnscheduleItems', items: [] },
-         { type: 'guardiansTalkWithoutAnimal', items: [] },
-         { type: 'fixedTimeItemLongWait', items: [] },
+         { type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS, items: [] },
+         { type: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS, items: [] },
+         { type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL, items: [] },
+         { type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT, items: [] },
       ]),
       []
    );

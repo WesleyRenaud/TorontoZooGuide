@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { AttractionWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/attractionWithoutAnimalFragment.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -9,13 +10,13 @@ installDomTestHooks();
 test('Test_HasAttractionWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
    assert.equal(
       AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue([
-         { type: 'attractionWithoutAnimal' },
+         { type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL },
       ]),
       true
    );
    assert.equal(
       AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue([
-         { type: 'guardiansTalkWithoutAnimal' },
+         { type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL },
       ]),
       false
    );
@@ -25,7 +26,7 @@ test('Test_GetPrimaryAttractionFromWithoutAnimalIssues_TestAttraction_ExpectNoTi
    assert.deepEqual(
       AttractionWithoutAnimalFragment.getPrimaryAttractionFromWithoutAnimalIssues([
          {
-            type: 'attractionWithoutAnimal',
+            type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
             items: [{ name: 'Kangaroo Walk-Thru' }],
          },
       ]),
@@ -38,7 +39,7 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectNoTime', ()
 
    AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation({
       issues: [{
-         type: 'attractionWithoutAnimal',
+         type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
          items: [{ name: 'Kangaroo Walk-Thru' }],
       }],
       onConfirm: () => {
@@ -60,7 +61,7 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectNoTime', ()
 
 test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
    AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation({
-      issues: [{ type: 'attractionWithoutAnimal', items: [] }],
+      issues: [{ type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL, items: [] }],
       onConfirm: () => {
          throw new Error('should not confirm');
       },
@@ -72,7 +73,7 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', 
 test('Test_GetAttractionNamesFromWithoutAnimalIssues_TestNamesTimesAndBlanks_ExpectFiltered', () => {
    assert.deepEqual(
       AttractionWithoutAnimalFragment.getAttractionNamesFromWithoutAnimalIssues([{
-         type: 'attractionWithoutAnimal',
+         type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
          items: [
             { name: '  Kangaroo Walk-Thru  ', start_time: '11:00' },
             { name: '   ' },

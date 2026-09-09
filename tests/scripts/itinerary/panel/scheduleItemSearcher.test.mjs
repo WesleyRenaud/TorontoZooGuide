@@ -8,6 +8,7 @@ import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/sele
 import { WildEncounterScheduleItemKey } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { Strings } from '../../../../scripts/strings.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 test('Test_BuildScheduleItemSearchPayload_TestAnimalModule_ExpectAnimalsOnly', () => {
    assert.deepEqual(
@@ -281,7 +282,7 @@ test('Test_GetScheduleItemRowKindAndId_TestMixedRows_ExpectResolved', () => {
    assert.equal(ScheduleItemSearcher.getScheduleItemRowKind(wildEncounterRow), 'wild_encounters');
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(ScheduleItemSearcher.getScheduleItemRowId(attractionRow), 'Carousel');
-   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(transportationRow), 'Zoomobile||0');
+   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(transportationRow), new TransportationScheduleItemKey('Zoomobile', false).toWire());
    assert.equal(
       ScheduleItemSearcher.getScheduleItemRowId(guardiansTalkRow),
       GuardiansTalkScheduleItemKey.fromRow(guardiansTalkRow).toWire()
@@ -707,7 +708,7 @@ test('Test_TagScheduleItemRow_TestModuleKinds_ExpectTagged', () => {
       transportationRow.scheduleItemKind,
       ScheduleItemKind.TRANSPORTATION.itemType
    );
-   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(transportationRow), 'Zoomobile||0');
+   assert.equal(ScheduleItemSearcher.getScheduleItemRowId(transportationRow), new TransportationScheduleItemKey('Zoomobile', false).toWire());
    assert.equal(
       guardiansTalkRow.scheduleItemKind,
       ScheduleItemKind.GUARDIANS_TALK.itemType
@@ -753,7 +754,7 @@ test('Test_GetItineraryItemKey_TestModuleKinds_ExpectKeys', () => {
          ScheduleItemKind.TRANSPORTATION.itemType,
          { name: 'Zoomobile', added_as_attraction: false }
       ),
-      'Zoomobile||0'
+      new TransportationScheduleItemKey('Zoomobile', false).toWire()
    );
    assert.equal(
       ScheduleItemSearcher.getItineraryItemKey(

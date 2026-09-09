@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -106,7 +107,7 @@ test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_Expe
    assert.equal(scheduleCalls.length, 0);
    assert.deepEqual(removeCalls, [{
       itemType: 'transportations',
-      key: 'Zoomobile||0',
+      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    }]);
 });
 
@@ -166,7 +167,7 @@ test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectO
 
    assert.deepEqual(removeCalls, [{
       itemType: 'transportations',
-      key: 'Zoomobile||0',
+      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    }]);
 });
 

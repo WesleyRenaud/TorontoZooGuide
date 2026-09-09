@@ -9,6 +9,7 @@ import { GuardiansTalkUnscheduleFragment } from '../../../../scripts/itinerary/p
 import { GuardiansTalkWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 
 installDomTestHooks();
 
@@ -34,21 +35,21 @@ test('Test_ItineraryBuildWarningIssueTypes_TestConfigured_ExpectTypes', () => {
    assert.deepEqual(
       ItineraryBuildWarningsContentBuilder.itineraryBuildWarningIssueTypes(),
       [
-         'guardiansTalkWillUnscheduleItems',
-         'wildEncounterWillUnscheduleItems',
-         'guardiansTalkWithoutAnimal',
-         'attractionWithoutAnimal',
-         'fixedTimeItemLongWait',
+         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+         ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
       ]
    );
 });
 
 test('Test_BuildWarningConfirmFlags_TestTypes_ExpectFlagMap', () => {
    const flags = ItineraryBuildWarningsContentBuilder.buildWarningConfirmFlags();
-   assert.deepEqual(flags.guardiansTalkWillUnscheduleItems, {
+   assert.deepEqual(flags[ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS], {
       confirmingGuardiansTalkUnschedule: true,
    });
-   assert.deepEqual(flags.fixedTimeItemLongWait, {
+   assert.deepEqual(flags[ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT], {
       confirmingFixedTimeItemLongWait: true,
    });
 });
@@ -75,7 +76,7 @@ test('Test_BuildGuardiansTalkUnscheduleSection_TestWithAndWithoutTime_ExpectSect
       assert.deepEqual(
          ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings),
          {
-            type: 'guardiansTalkWillUnscheduleItems',
+            type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             title: 'Schedule overlap',
             message: 'Amur Tiger at 11:00 AM',
          }

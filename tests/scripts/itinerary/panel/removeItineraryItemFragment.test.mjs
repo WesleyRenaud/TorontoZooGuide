@@ -6,6 +6,7 @@ import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemK
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { cleanupConfirmPopup } from '../../helpers/confirmPopupTestSetup.mjs';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 installDomTestHooks({
    after: () => {
@@ -41,7 +42,7 @@ test('Test_ShowRemoveItineraryItemConfirmation_TestDefault_ExpectConfirmPopup', 
 test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage', () => {
    RemoveItineraryItemFragment.showRemoveItineraryItemConfirmation({
       itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-      key: 'Zoomobile||0',
+      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    });
 
    const message = document.querySelector('.tzg-popup-message');
@@ -55,7 +56,7 @@ test('Test_ShowRemoveItineraryItemConfirmation_TestTransit_ExpectTransitMessage'
 test('Test_ShowRemoveItineraryItemConfirmation_TestAttractionTransport_ExpectDefaultMessage', () => {
    RemoveItineraryItemFragment.showRemoveItineraryItemConfirmation({
       itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-      key: 'Zoomobile||1',
+      key: new TransportationScheduleItemKey('Zoomobile', true).toWire(),
    });
 
    const message = document.querySelector('.tzg-popup-message');

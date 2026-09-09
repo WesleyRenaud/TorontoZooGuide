@@ -6,6 +6,7 @@ import { SelectorControllerFactory } from '../../../../scripts/itinerary/selecto
 import { TransportationSelector } from '../../../../scripts/itinerary/selectors/transportationSelector.js';
 import { TransportationSelectorModel } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js';
 import { TransportationSelectorPrompter } from '../../../../scripts/itinerary/selectors/transportationSelectorPrompter.js';
+import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -27,7 +28,7 @@ test('Test_CreateItineraryTransportationSelectorController_TestWiring_ExpectFact
          }),
          { controller: true }
       );
-      assert.equal(TransportationSelector.STORAGE_KEY, 'tzg.itineraryTransportations');
+      assert.equal(TransportationSelector.STORAGE_KEY, StorageKeys.TRANSPORTATIONS_KEY);
       assert.equal(captured.storageKey, TransportationSelector.STORAGE_KEY);
       assert.equal(captured.hideNextButton, true);
       assert.equal(captured.migrateSelected, TransportationSelectorModel.migrateStoredTransportations);

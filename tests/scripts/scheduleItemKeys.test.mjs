@@ -27,7 +27,7 @@ test('Test_GetItineraryItemKey_TestItemTypes_ExpectResolvedKeys', () => {
          name: 'Zoomobile',
          added_as_attraction: false,
       }),
-      'Zoomobile||0'
+      new TransportationScheduleItemKey('Zoomobile', false).toWire()
    );
    assert.equal(
       ScheduleItemSearcher.getItineraryItemKey('guardians_talks', { name: 'Amur Tiger' }),

@@ -7,6 +7,7 @@ import { WildEncounterScheduleItemKey } from '../../../scripts/itinerary/selecto
 import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 
 installItineraryServiceTestHooks();
 
@@ -101,7 +102,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WITHOUT_ANIMAL: 'guardiansTalkWithoutAnimal',
+         GUARDIANS_TALK_WITHOUT_ANIMAL: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
       },
       suppressed_error_types: [],
    };
@@ -125,9 +126,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: isConfirmed ? 'success' : 'guardiansTalkWithoutAnimal',
+            status: isConfirmed ? 'success' : ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             reasons: isConfirmed ? [] : [{
-               code: 'guardiansTalkWithoutAnimal',
+               code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
                items: [{
                   name: 'Komodo Dragon',
                   item_type: 'guardiansTalk',
@@ -184,7 +185,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         ATTRACTION_WITHOUT_ANIMAL: 'attractionWithoutAnimal',
+         ATTRACTION_WITHOUT_ANIMAL: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
       },
       suppressed_error_types: [],
    };
@@ -208,9 +209,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: isConfirmed ? 'success' : 'attractionWithoutAnimal',
+            status: isConfirmed ? 'success' : ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
             reasons: isConfirmed ? [] : [{
-               code: 'attractionWithoutAnimal',
+               code: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
                items: [{
                   name: 'Kangaroo Walk-Thru',
                   item_type: 'attraction',
@@ -265,7 +266,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
+         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       },
       suppressed_error_types: [],
    };
@@ -285,9 +286,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+            status: isConfirmed ? 'success' : ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             reasons: isConfirmed ? [] : [{
-               code: 'guardiansTalkWillUnscheduleItems',
+               code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'African Lion',
                   item_type: 'guardiansTalk',
@@ -342,7 +343,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
+         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       },
       suppressed_error_types: [],
    };
@@ -352,9 +353,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
       status: 200,
       statusText: 'OK',
       text: async () => JSON.stringify({
-         status: 'guardiansTalkWillUnscheduleItems',
+         status: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          reasons: [{
-            code: 'guardiansTalkWillUnscheduleItems',
+            code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             items: [{
                name: 'Arctic Wolf',
                item_type: 'guardiansTalk',
@@ -391,8 +392,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
    assert.deepEqual(result, {
       cancelled: true,
       issues: [{
-         code: 'guardiansTalkWillUnscheduleItems',
-         type: 'guardiansTalkWillUnscheduleItems',
+         code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          items: [{
             name: 'Arctic Wolf',
             item_type: 'guardiansTalk',
@@ -407,7 +408,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
+         WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
       },
       suppressed_error_types: [],
    };
@@ -427,9 +428,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
+            status: isConfirmed ? 'success' : ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
             reasons: isConfirmed ? [] : [{
-               code: 'wildEncounterWillUnscheduleItems',
+               code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
                items: [{
                   name: 'African Rainforest',
                   item_type: 'wildEncounter',
@@ -485,8 +486,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: 'guardiansTalkWildEncounterTimeConflict',
-         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
+         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
+         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       },
       suppressed_error_types: [],
    };
@@ -528,9 +529,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: 'guardiansTalkWildEncounterTimeConflict',
+            status: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
             reasons: [{
-               code: 'wildEncounterTimeConflict',
+               code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
                      name: 'African Lion',
@@ -606,7 +607,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: 'guardiansTalkWildEncounterTimeConflict',
+         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
       },
       suppressed_error_types: [],
    };
@@ -648,9 +649,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: 'guardiansTalkWildEncounterTimeConflict',
+            status: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
             reasons: [{
-               code: 'wildEncounterTimeConflict',
+               code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
                      name: 'Highland Cattle',
@@ -722,7 +723,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: 'guardiansTalkWildEncounterTimeConflict',
+         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
       },
       suppressed_error_types: [],
    };
@@ -769,9 +770,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: 'guardiansTalkWildEncounterTimeConflict',
+            status: ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
             reasons: [{
-               code: 'wildEncounterTimeConflict',
+               code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
                      name: 'Nile Soft-Shelled Turtle',
