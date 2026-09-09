@@ -1,34 +1,19 @@
+import { AmenityOpenPanelBuilder } from '../../forms/amenityOpenPanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class ExhibitOpenView {
    static createExhibitOpenPanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return AmenityOpenPanelBuilder.createPanel({
          panelId: 'exhibitOpenPanel',
          title: Strings.panelTitles.exhibitOpen,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.exhibit,
-               inputId: 'exhibitOpenExhibit',
-               emptyOptionLabel: Strings.placeholders.exhibit,
-            }),
-            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-               startDateId: 'exhibitOpenStartDate',
-               startHelpText: Strings.help.startImmediately,
-               endDateId: 'exhibitOpenEndDate',
-               endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('exhibit'),
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitExhibitOpen',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'exhibitOpenStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.exhibit,
+         emptyOptionLabel: Strings.placeholders.exhibit,
+         idPrefix: 'exhibitOpen',
+         entityFieldName: 'Exhibit',
+         startHelpText: Strings.help.startImmediately,
+         endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('exhibit'),
+         submitId: 'submitExhibitOpen',
+         statusId: 'exhibitOpenStatus',
       });
    }
 }

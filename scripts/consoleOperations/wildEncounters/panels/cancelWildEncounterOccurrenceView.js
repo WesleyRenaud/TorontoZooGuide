@@ -1,38 +1,22 @@
+import { CancelOccurrencePanelBuilder } from '../../forms/cancelOccurrencePanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../templates/consoleScheduleTimesCheckboxFieldBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
 
 export class CancelWildEncounterOccurrenceView {
    static createCancelWildEncounterOccurrencePanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return CancelOccurrencePanelBuilder.createPanel({
          panelId: 'cancelWildEncounterOccurrencePanel',
          title: Strings.panelTitles.cancelWildEncounterOccurrence,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.wildEncounter,
-               inputId: 'cancelWildEncounterOccurrenceName',
-               emptyOptionLabel: Strings.placeholders.wildEncounter,
-            }),
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.labels.date,
-               inputId: 'cancelWildEncounterOccurrenceDate',
-               emptyOptionLabel: Strings.placeholders.date,
-            }),
-            ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField({
-               label: Strings.labels.encounterTimes,
-               inputId: 'cancelWildEncounterOccurrenceTimes',
-               helpText: Strings.help.cancelOccurrenceTimes,
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitCancelWildEncounterOccurrence',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'cancelWildEncounterOccurrenceStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.wildEncounter,
+         entityInputId: 'cancelWildEncounterOccurrenceName',
+         entityEmptyOptionLabel: Strings.placeholders.wildEncounter,
+         dateLabel: Strings.labels.date,
+         dateInputId: 'cancelWildEncounterOccurrenceDate',
+         dateEmptyOptionLabel: Strings.placeholders.date,
+         timesLabel: Strings.labels.encounterTimes,
+         timesInputId: 'cancelWildEncounterOccurrenceTimes',
+         timesHelpText: Strings.help.cancelOccurrenceTimes,
+         submitId: 'submitCancelWildEncounterOccurrence',
+         statusId: 'cancelWildEncounterOccurrenceStatus',
       });
    }
 }

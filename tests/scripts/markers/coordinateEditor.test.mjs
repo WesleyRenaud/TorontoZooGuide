@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { CoordinateEditingStore } from '../../../scripts/markers/coordinateEditingStore.js';
 import { CoordinateEditor } from '../../../scripts/markers/coordinateEditor.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 
 function _createMarkerEl() {
    const listeners = {};
@@ -47,7 +48,7 @@ test('Test_EnableMarkerCoordinateEditing_TestPointerLifecycle_ExpectStoreCalls',
 
    try {
       const markerEl = _createMarkerEl();
-      const itemsAtPoint = [{ type: 'animal' }];
+      const itemsAtPoint = [{ type: ItemType.ANIMAL }];
       const mapInner = { id: 'map' };
 
       CoordinateEditor.enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner);

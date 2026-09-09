@@ -1,40 +1,21 @@
+import { AmenityClosedPanelBuilder } from '../../forms/amenityClosedPanelBuilder.js';
 import { Strings } from '../../../strings.js';
-import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
-import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
-import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
-import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
-import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
-import { ConsoleTextareaFieldBuilder } from '../../templates/consoleTextareaFieldBuilder.js';
 
 export class ExhibitClosedView {
    static createExhibitClosedPanel() {
-      return ConsolePanelShellBuilder.createPanelShell({
+      return AmenityClosedPanelBuilder.createPanel({
          panelId: 'exhibitClosedPanel',
          title: Strings.panelTitles.exhibitClosed,
-         bodyChildren: [
-            ConsoleSelectFieldBuilder.createSelectField({
-               label: Strings.entityLabels.exhibit,
-               inputId: 'exhibitClosedExhibit',
-               emptyOptionLabel: Strings.placeholders.exhibit,
-            }),
-            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-               startDateId: 'exhibitClosedStartDate',
-               startHelpText: Strings.help.startImmediately,
-               endDateId: 'exhibitClosedEndDate',
-               endHelpText: Strings.help.keepClosedUntilManuallyReopened('exhibit'),
-            }),
-            ConsoleTextareaFieldBuilder.createTextareaField({
-               label: Strings.labels.closureMessage,
-               inputId: 'exhibitClosedMessage',
-               placeholder: Strings.textareas.closureMessage,
-            }),
-            ConsoleActionsBuilder.createActions({
-               submitId: 'submitExhibitClosed',
-            }),
-            ConsoleStatusBuilder.createStatus({
-               statusId: 'exhibitClosedStatus',
-            }),
-         ],
+         entityLabel: Strings.entityLabels.exhibit,
+         emptyOptionLabel: Strings.placeholders.exhibit,
+         idPrefix: 'exhibitClosed',
+         entityFieldName: 'Exhibit',
+         startHelpText: Strings.help.startImmediately,
+         endHelpText: Strings.help.keepClosedUntilManuallyReopened('exhibit'),
+         messageLabel: Strings.labels.closureMessage,
+         messagePlaceholder: Strings.textareas.closureMessage,
+         submitId: 'submitExhibitClosed',
+         statusId: 'exhibitClosedStatus',
       });
    }
 }

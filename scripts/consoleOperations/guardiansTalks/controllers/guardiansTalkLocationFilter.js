@@ -1,6 +1,7 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
+import { GuardiansTalkDropdownResetHelper } from '../helpers/guardiansTalkDropdownResetHelper.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
@@ -30,12 +31,7 @@ export class GuardiansTalkLocationFilter {
       }
 
       function clearTalkDropdown() {
-         if (talkNameEl?.tagName === 'SELECT') {
-            ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, []);
-         }
-         else if (talkNameEl) {
-            talkNameEl.value = '';
-         }
+         GuardiansTalkDropdownResetHelper.resetTalkDropdown({ talkNameEl });
       }
 
       async function refreshLocations() {

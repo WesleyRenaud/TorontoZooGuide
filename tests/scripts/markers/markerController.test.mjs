@@ -6,6 +6,7 @@ import { CoordinateEditor } from '../../../scripts/markers/coordinateEditor.js';
 import { MarkerBuilder } from '../../../scripts/markers/markerBuilder.js';
 import { MarkerGrouper } from '../../../scripts/markers/markerGrouper.js';
 import { MarkerLayerHelper } from '../../../scripts/markers/markerLayerHelper.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -27,7 +28,7 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
    };
    MarkerBuilder.bindMarkerInteractions = (options) => { binds.push(options); };
    MarkerGrouper.groupMarkersByCoordinate = () => new Map([
-      ['1|2', { key: '1|2', items: [{ type: 'animal' }] }],
+      ['1|2', { key: '1|2', items: [{ type: ItemType.ANIMAL }] }],
       ['3|4', { key: '3|4', items: [{ type: 'skip' }] }],
    ]);
    MarkerLayerHelper.shouldRenderMarkerGroup = (group) => group.key === '1|2';
@@ -53,7 +54,7 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
          enableCoordinateEditing: true,
       });
 
-      layer.render([{ type: 'animal' }]);
+      layer.render([{ type: ItemType.ANIMAL }]);
       assert.deepEqual(removes, ['map']);
       assert.equal(mapInner.children.length, 1);
       assert.equal(mapInner.children[0].id, '1|2');
