@@ -2,6 +2,7 @@ import { ValueNormalizer } from '../../api/valueNormalizer.js';
 import { GuardiansTalkLinkedAnimalNormalizer } from '../../guardians/guardiansTalkLinkedAnimalNormalizer.js';
 import { ItineraryItemFormatterHelper } from './itineraryItemFormatterHelper.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
+import { ZooClockTimeHelper } from '../../shared/zooClockTimeHelper.js';
 
 export class ItineraryItemFormatter {
    static normalizeNumber = ValueNormalizer.normalizeNumber;
@@ -72,28 +73,7 @@ export class ItineraryItemFormatter {
    }
 
    static formatClockTime(timeValue, fallback = '') {
-      const trimmedTimeValue = ValueNormalizer.asTrimmedString(timeValue);
-
-      if (!trimmedTimeValue) {
-         return fallback;
-      }
-
-      const timeParts = trimmedTimeValue.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
-
-      if (!timeParts) {
-         return trimmedTimeValue;
-      }
-
-      const hours = Number(timeParts[1]);
-      const minutes = Number(timeParts[2]);
-      const seconds = timeParts[3] == null ? 0 : Number(timeParts[3]);
-      const period = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 || 12;
-      const secondsLabel = seconds > 0
-         ? `:${String(seconds).padStart(2, '0')}`
-         : '';
-
-      return `${displayHours}:${String(minutes).padStart(2, '0')}${secondsLabel} ${period}`;
+      return ZooClockTimeHelper.formatClockTime(timeValue, fallback);
    }
 
    static normalizeAnimal(value) {

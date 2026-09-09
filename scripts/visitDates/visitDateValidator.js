@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { ZooClockTimeHelper } from '../shared/zooClockTimeHelper.js';
 import { VisitDateRuleHelper } from './visitDateRuleHelper.js';
 
 export class VisitDateValidator {
@@ -178,72 +179,21 @@ export class VisitDateValidator {
     * Parses "HH:MM" (24h) or "H:MM AM/PM" zoo-style clock strings to minutes from midnight.
     */
    static parseZooClockTimeMinutes(timeValue) {
-      const normalizedTimeValue = ValueNormalizer.asTrimmedString(timeValue);
-
-      if (!normalizedTimeValue) {
-         return null;
-      }
-
-      const timeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})$/);
-
-      if (timeParts) {
-         const hours = Number(timeParts[1]);
-         const minutes = Number(timeParts[2]);
-
-         if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-            return null;
-         }
-
-         return (hours * 60) + minutes;
-      }
-
-      const displayTimeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-
-      if (!displayTimeParts) {
-         return null;
-      }
-
-      const displayHours = Number(displayTimeParts[1]);
-      const displayMinutes = Number(displayTimeParts[2]);
-      const period = displayTimeParts[3].toUpperCase();
-
-      if (
-         displayHours < 1
-         || displayHours > 12
-         || displayMinutes < 0
-         || displayMinutes > 59
-      ) {
-         return null;
-      }
-
-      const hours = (displayHours % 12) + (period === 'PM' ? 12 : 0);
-
-      return (hours * 60) + displayMinutes;
+      return ZooClockTimeHelper.parseMinutes(timeValue);
    }
 
    /**
     * Formats a zoo clock string as 12-hour display (matches backend format_display_time_value).
     */
    static formatZooDisplayClockTime(timeValue) {
-      const minutes = VisitDateValidator.parseZooClockTimeMinutes(timeValue);
-
-      if (minutes == null) {
-         return null;
-      }
-
-      const hours24 = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      const period = hours24 >= 12 ? 'PM' : 'AM';
-      const hours12 = hours24 % 12 || 12;
-
-      return `${hours12}:${String(mins).padStart(2, '0')} ${period}`;
+      return ZooClockTimeHelper.formatDisplay(timeValue);
    }
 
    /**
     * Normalizes a zoo clock string to canonical 12-hour display (matches backend normalize_schedule_time).
     */
    static normalizeScheduleTime(timeValue) {
-      return VisitDateValidator.formatZooDisplayClockTime(timeValue);
+      return ZooClockTimeHelper.normalizeScheduleTime(timeValue);
    }
 
    /**

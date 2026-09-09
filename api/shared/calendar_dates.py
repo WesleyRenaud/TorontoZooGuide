@@ -1,12 +1,34 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+from typing import Any
 
 from .date_values import DateValues
 from ..types import Types
 
 
 class CalendarDates:
+   MONTH_ABBREVIATIONS = (
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+   )
+   MONTH_FULL_NAME_TO_INDEX = {
+      'january': 1,
+      'february': 2,
+      'march': 3,
+      'april': 4,
+      'may': 5,
+      'june': 6,
+      'july': 7,
+      'august': 8,
+      'september': 9,
+      'october': 10,
+      'november': 11,
+      'december': 12,
+   }
+   DAYS_IN_MONTH = ( 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 )
+
+
    @staticmethod
    def normalize_month( month: Types.MonthInput ) -> Types.VisitMonth | None:
       if not month:
@@ -19,87 +41,40 @@ class CalendarDates:
 
       m = str( month ).strip()
 
-      if m in ( 'JAN', 'Jan' ) or m.startswith( 'Jan' ) or m.startswith( 'JAN' ):
-         return 1
-      elif m in ( 'FEB', 'Feb' ) or m.startswith( 'Feb' ) or m.startswith( 'FEB' ):
-         return 2
-      elif m in ( 'MAR', 'Mar' ) or m.startswith( 'Mar' ) or m.startswith( 'MAR' ):
-         return 3
-      elif m in ( 'APR', 'Apr' ) or m.startswith( 'Apr' ) or m.startswith( 'APR' ):
-         return 4
-      elif m in ( 'MAY', 'May' ) or m.startswith( 'May' ) or m.startswith( 'MAY' ):
-         return 5
-      elif m in ( 'JUN', 'Jun' ) or m.startswith( 'Jun' ) or m.startswith( 'JUN' ):
-         return 6
-      elif m in ( 'JUL', 'Jul' ) or m.startswith( 'Jul' ) or m.startswith( 'JUL' ):
-         return 7
-      elif m in ( 'AUG', 'Aug' ) or m.startswith( 'Aug' ) or m.startswith( 'AUG' ):
-         return 8
-      elif m in ( 'SEP', 'Sep' ) or m.startswith( 'Sep' ) or m.startswith( 'SEP' ):
-         return 9
-      elif m in ( 'OCT', 'Oct' ) or m.startswith( 'Oct' ) or m.startswith( 'OCT' ):
-         return 10
-      elif m in ( 'NOV', 'Nov' ) or m.startswith( 'Nov' ) or m.startswith( 'NOV' ):
-         return 11
-      elif m in ( 'DEC', 'Dec' ) or m.startswith( 'Dec' ) or m.startswith( 'DEC' ):
-         return 12
+      for index, label in enumerate( CalendarDates.MONTH_ABBREVIATIONS, start=1 ):
+         upper = label.upper()
+
+         if m in ( upper, label ) or m.startswith( label ) or m.startswith( upper ):
+            return index
 
       return None
 
 
    @staticmethod
    def get_month_abbreviation( month: Types.MonthInput ) -> str:
-      month_map = {
-         1: 'Jan',
-         2: 'Feb',
-         3: 'Mar',
-         4: 'Apr',
-         5: 'May',
-         6: 'Jun',
-         7: 'Jul',
-         8: 'Aug',
-         9: 'Sep',
-         10: 'Oct',
-         11: 'Nov',
-         12: 'Dec',
-      }
-
-      full_name_map = {
-         'january': 'Jan',
-         'february': 'Feb',
-         'march': 'Mar',
-         'april': 'Apr',
-         'may': 'May',
-         'june': 'Jun',
-         'july': 'Jul',
-         'august': 'Aug',
-         'september': 'Sep',
-         'october': 'Oct',
-         'november': 'Nov',
-         'december': 'Dec',
-      }
-
       if isinstance( month, int ):
-         if month not in month_map:
+         if month < 1 or month > 12:
             raise ValueError( f'Invalid month: { month }' )
-         return month_map[ month ]
+         return CalendarDates.MONTH_ABBREVIATIONS[ month - 1 ]
 
       if isinstance( month, str ):
          month = month.strip()
 
          if month.isdigit():
             month_num = int( month )
-            if month_num not in month_map:
+            if month_num < 1 or month_num > 12:
                raise ValueError( f'Invalid month: { month }' )
-            return month_map[ month_num ]
+            return CalendarDates.MONTH_ABBREVIATIONS[ month_num - 1 ]
 
          lowered = month.lower()
 
-         if lowered in full_name_map:
-            return full_name_map[ lowered ]
+         if lowered in CalendarDates.MONTH_FULL_NAME_TO_INDEX:
+            return CalendarDates.MONTH_ABBREVIATIONS[
+               CalendarDates.MONTH_FULL_NAME_TO_INDEX[ lowered ] - 1
+            ]
 
          abbrev = month[ :3 ].title()
-         if abbrev in month_map.values():
+         if abbrev in CalendarDates.MONTH_ABBREVIATIONS:
             return abbrev
 
       raise ValueError( f'Invalid month: { month }' )
@@ -148,67 +123,34 @@ class CalendarDates:
 
    @staticmethod
    def get_day_of_year( month: str, day: int ) -> int:
-      month_index = {
-         'JAN': 0,
-         'FEB': 1,
-         'MAR': 2,
-         'APR': 3,
-         'MAY': 4,
-         'JUN': 5,
-         'JUL': 6,
-         'AUG': 7,
-         'SEP': 8,
-         'OCT': 9,
-         'NOV': 10,
-         'DEC': 11
-      }
+      month_index = CalendarDates.normalize_month( month )
 
-      days_in_month = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
+      if month_index is None:
+         raise KeyError( month )
 
-      doy = sum( days_in_month[ :month_index[ month ] ] )
+      doy = sum( CalendarDates.DAYS_IN_MONTH[ :month_index - 1 ] )
       return doy + ( day - 1 )
 
 
    @staticmethod
    def get_next_month( month: str ) -> str | None:
-      if month in ( 'JAN', 'Jan' ):
-         return 'Feb'
-      elif month in ( 'FEB', 'Feb' ):
-         return 'Mar'
-      elif month in ( 'MAR', 'Mar' ):
-         return 'Apr'
-      elif month in ( 'APR', 'Apr' ):
-         return 'May'
-      elif month in ( 'MAY', 'May' ):
-         return 'Jun'
-      elif month in ( 'JUN', 'Jun' ):
-         return 'Jul'
-      elif month in ( 'JUL', 'Jul' ):
-         return 'Aug'
-      elif month in ( 'AUG', 'Aug' ):
-         return 'Sep'
-      elif month in ( 'SEP', 'Sep' ):
-         return 'Oct'
-      elif month in ( 'OCT', 'Oct' ):
-         return 'Nov'
-      elif month in ( 'NOV', 'Nov' ):
-         return 'Dec'
-      elif month in ( 'DEC', 'Dec' ):
-         return 'Jan'
+      month_index = CalendarDates.normalize_month( month )
 
-      return None
+      if month_index is None:
+         return None
+
+      next_index = 1 if month_index == 12 else month_index + 1
+      return CalendarDates.MONTH_ABBREVIATIONS[ next_index - 1 ]
 
 
    @staticmethod
    def get_number_of_days_in_month( month: str ) -> int | None:
-      if month in ( 'JAN', 'Jan', 'MAR', 'Mar', 'MAY', 'May', 'JUL', 'Jul', 'AUG', 'Aug', 'OCT', 'Oct', 'DEC', 'Dec' ):
-         return 31
-      elif month in ( 'APR', 'Apr', 'JUN', 'Jun', 'SEP', 'Sep', 'NOV', 'Nov' ):
-         return 30
-      elif month in ( 'FEB', 'Feb' ):
-         return 28
+      month_index = CalendarDates.normalize_month( month )
 
-      return None
+      if month_index is None:
+         return None
+
+      return CalendarDates.DAYS_IN_MONTH[ month_index - 1 ]
 
 
    @staticmethod

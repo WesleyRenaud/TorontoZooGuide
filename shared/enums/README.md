@@ -15,6 +15,7 @@ Current shared enums:
 | `itemType.json` | `ItemType` | `ItemType` |
 | `itineraryEventType.json` | `ItineraryEventType` | `ItineraryEventType` |
 | `itinerarySaveIssueItemType.json` | `ItinerarySaveIssueItemType` | `ItinerarySaveIssueItemType` |
+| `position.json` | `Position` | `Position` |
 
 To add an enum:
 

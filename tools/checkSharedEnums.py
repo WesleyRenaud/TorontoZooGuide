@@ -19,7 +19,7 @@ def load_catalog() -> dict:
    return json.loads( CATALOG_PATH.read_text( encoding='utf-8' ) )
 
 
-def load_json_members( json_name: str ) -> dict[ str, str ]:
+def load_json_members( json_name: str ) -> dict[ str, str | int ]:
    path = ROOT / 'shared' / 'enums' / json_name
    members = json.loads( path.read_text( encoding='utf-8' ) )
 
@@ -33,7 +33,7 @@ def python_module_name( relative_path: str ) -> str:
    return relative_path.removesuffix( '.py' ).replace( '/', '.' )
 
 
-def check_python( entry: dict, members: dict[ str, str ] ) -> list[ str ]:
+def check_python( entry: dict, members: dict[ str, str | int ] ) -> list[ str ]:
    violations: list[ str ] = []
    module = importlib.import_module( python_module_name( entry[ 'pythonModule' ] ) )
    enum_cls = getattr( module, entry[ 'pythonClass' ], None )
@@ -57,7 +57,7 @@ def check_python( entry: dict, members: dict[ str, str ] ) -> list[ str ]:
    return violations
 
 
-def check_javascript( entry: dict, members: dict[ str, str ] ) -> list[ str ]:
+def check_javascript( entry: dict, members: dict[ str, str | int ] ) -> list[ str ]:
    violations: list[ str ] = []
    path = ROOT / entry[ 'javascriptModule' ]
    relative = entry[ 'javascriptModule' ]

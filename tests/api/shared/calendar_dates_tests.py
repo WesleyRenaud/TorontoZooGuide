@@ -174,6 +174,11 @@ def Test_get_day_of_year( month: str, day: int, expected: int ) -> None:
    assert CalendarDates.get_day_of_year( month, day ) == expected
 
 
+def Test_GetDayOfYear_TestInvalidMonth_ExpectKeyError() -> None:
+   with pytest.raises( KeyError ):
+      CalendarDates.get_day_of_year( 'NotAMonth', 1 )
+
+
 @pytest.mark.parametrize(
    'month, expected',
    [

@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { Position } from '../../../shared/enums/position.js';
 import { TransportationScheduleItemKeyHelper } from './transportationScheduleItemKeyHelper.js';
 
 export class TransportationScheduleItemKey {
@@ -24,8 +25,10 @@ export class TransportationScheduleItemKey {
          TransportationScheduleItemKey.TRANSPORTATION_ITEM_KEY_SEPARATOR,
          2
       );
-      const name = ValueNormalizer.asTrimmedString(parts[0]);
-      const addedAsAttraction = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(parts[1]);
+      const name = ValueNormalizer.asTrimmedString(parts[Position.FIRST]);
+      const addedAsAttraction = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(
+         parts[Position.SECOND]
+      );
 
       if (!name || parts.length !== 2 || addedAsAttraction === null) {
          return null;

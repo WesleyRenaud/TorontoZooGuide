@@ -39,6 +39,14 @@
          "pythonClass": "ItinerarySaveIssueItemType",
          "javascriptModule": "scripts/shared/enums/itinerarySaveIssueItemType.js",
          "javascriptClass": "ItinerarySaveIssueItemType"
+      },
+      {
+         "id": "position",
+         "json": "position.json",
+         "pythonModule": "api/shared/enums/position.py",
+         "pythonClass": "Position",
+         "javascriptModule": "scripts/shared/enums/position.js",
+         "javascriptClass": "Position"
       }
    ]
 }

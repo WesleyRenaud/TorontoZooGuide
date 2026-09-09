@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { Position } from '../../../shared/enums/position.js';
 
 export class GuardiansTalkScheduleItemKey {
    static GUARDIANS_TALK_ITEM_KEY_SEPARATOR = '||';
@@ -14,20 +15,20 @@ export class GuardiansTalkScheduleItemKey {
          GuardiansTalkScheduleItemKey.GUARDIANS_TALK_ITEM_KEY_SEPARATOR,
          3
       );
-      const name = ValueNormalizer.asTrimmedString(parts[0]);
+      const name = ValueNormalizer.asTrimmedString(parts[Position.FIRST]);
 
       if (!name || parts.length < 2) {
          return null;
       }
 
-      const startTime = ValueNormalizer.asTrimmedString(parts[1]);
+      const startTime = ValueNormalizer.asTrimmedString(parts[Position.SECOND]);
 
       if (!startTime) {
          return null;
       }
 
       if (parts.length > 2) {
-         const endTime = ValueNormalizer.asTrimmedString(parts[2]);
+         const endTime = ValueNormalizer.asTrimmedString(parts[Position.THIRD]);
 
          if (!endTime) {
             return null;
