@@ -12,7 +12,7 @@ export class MarkerHoverTextFormatter {
          return firstTitle;
       }
 
-      return `${firstTitle} + ${itemsAtPoint.length - 1}`;
+      return `${firstTitle} ${Strings.format.moreCount(itemsAtPoint.length - 1)}`;
    }
 
    static formatGuardiansTalkHoverText(itemsAtPoint) {

@@ -24,7 +24,7 @@ export class ExploreEventCardHelper {
       }
 
       if (location) {
-         titleEl.appendChild(document.createTextNode(` • ${location}`));
+         titleEl.appendChild(document.createTextNode(Strings.format.locationSuffix(location)));
       }
 
       return titleEl;

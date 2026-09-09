@@ -29,7 +29,7 @@ export class SearchResultPresenter {
          return fallback;
       }
 
-      return `${fallback}\n${details.join(' | ')}`;
+      return `${fallback}\n${details.join(Strings.format.pipeJoin)}`;
    }
 
    static buildLocationSummary(row, fallback) {
@@ -38,7 +38,7 @@ export class SearchResultPresenter {
          row.sub_location,
       ]
          .filter(Boolean)
-         .join(', ') || fallback;
+         .join(Strings.format.listJoin) || fallback;
    }
 
    static SEARCH_RESULT_PRESENTATIONS = {

@@ -1,5 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { ZooClockTimeHelper } from '../shared/zooClockTimeHelper.js';
+import { Strings } from '../strings.js';
 import { VisitDateRuleHelper } from './visitDateRuleHelper.js';
 
 export class VisitDateValidator {
@@ -130,7 +131,7 @@ export class VisitDateValidator {
          return startDate;
       }
 
-      return `${startDate} - ${endDate}`;
+      return Strings.format.timeRange(startDate, endDate);
    }
 
    static getMaxDate(daysAhead = VisitDateValidator.DEFAULT_DAYS_AHEAD, referenceToday = null) {

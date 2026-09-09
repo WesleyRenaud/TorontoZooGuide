@@ -1,4 +1,5 @@
 import { ItineraryItemFormatter } from './panel/itineraryItemFormatter.js';
+import { Strings } from '../strings.js';
 
 export class ScheduledOccurrenceTimeModel {
    static buildScheduledOccurrenceTimeRange(item = {}) {
@@ -11,7 +12,7 @@ export class ScheduledOccurrenceTimeModel {
       const endTime = ItineraryItemFormatter.formatClockTime(item.end_time);
 
       return endTime
-         ? `${startTime} - ${endTime}`
+         ? Strings.format.timeRange(startTime, endTime)
          : startTime;
    }
 }

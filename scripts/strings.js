@@ -29,6 +29,7 @@ export class Strings {
    static updateTypes = ConsoleStrings.updateTypes;
    static entityLabels = CommonStrings.entityLabels;
    static entityPhrases = CommonStrings.entityPhrases;
+   static format = CommonStrings.format;
    static validation = ConsoleStrings.validation;
    static viewingScopes = ConsoleStrings.viewingScopes;
 }

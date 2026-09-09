@@ -1,3 +1,5 @@
+import { Strings } from '../../../strings.js';
+
 export class UpdateOptionsFormatter {
    static createPlaceholderOption(label) {
       const optionEl = document.createElement('option');
@@ -8,10 +10,10 @@ export class UpdateOptionsFormatter {
 
    static formatDateRange(update) {
       if (!update.end_date) {
-         return `${update.start_date} onward`;
+         return Strings.format.dateOnward(update.start_date);
       }
 
-      return `${update.start_date} to ${update.end_date}`;
+      return Strings.format.dateRangeTo(update.start_date, update.end_date);
    }
 
    static formatUpdateOptionLabel(update) {

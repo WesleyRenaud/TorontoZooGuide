@@ -78,7 +78,7 @@ export class ScheduleTimeConflictContentBuilder {
          : item.meeting_spot;
 
       subtitle.append(
-         `${locationLabel}: ${locationValue} • `,
+         `${Strings.format.labeledValue(locationLabel, locationValue)}${Strings.format.bulletSeparator}`,
          time
       );
 

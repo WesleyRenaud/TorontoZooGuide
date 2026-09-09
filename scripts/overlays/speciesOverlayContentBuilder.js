@@ -1,5 +1,6 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
+import { Strings } from '../strings.js';
 
 export class SpeciesOverlayContentBuilder {
    static createTextElement(tagName, className, text) {
@@ -28,7 +29,7 @@ export class SpeciesOverlayContentBuilder {
       section.className = 'section';
 
       const heading = document.createElement('strong');
-      heading.textContent = `${title}:`;
+      heading.textContent = Strings.format.labelWithColon(title);
 
       const paragraph = document.createElement('p');
       paragraph.textContent = text;
