@@ -15,11 +15,11 @@ test('Test_CreatePanzoom_TestContain_ExpectWiredPanzoom', () => {
    const panzoom = {
       zoomWithWheel: () => {},
    };
-   const originalGlobal = globalThis.PanzoomAdapter;
+   const originalGlobal = globalThis.Panzoom;
    const originalHandler = PanzoomLabelPresenter.createSvgLabelVisibilityHandler;
    const visibilityCalls = [];
 
-   globalThis.PanzoomAdapter = (el, options) => {
+   globalThis.Panzoom = (el, options) => {
       assert.equal(el, mapInner);
       assert.equal(options.minScale, 1);
       assert.equal(options.maxScale, 10);
@@ -38,7 +38,7 @@ test('Test_CreatePanzoom_TestContain_ExpectWiredPanzoom', () => {
       assert.equal(typeof mapInner.listeners.panzoomchange, 'function');
       assert.equal(visibilityCalls.length, 1);
    } finally {
-      globalThis.PanzoomAdapter = originalGlobal;
+      globalThis.Panzoom = originalGlobal;
       PanzoomLabelPresenter.createSvgLabelVisibilityHandler = originalHandler;
    }
 });
