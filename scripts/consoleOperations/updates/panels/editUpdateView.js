@@ -32,7 +32,7 @@ export class EditUpdateView {
                ],
             }),
             ConsoleDateFieldBuilder.createDateField({
-               label: Strings.labels.stopsBeingOfferedOn,
+               label: Strings.labels.noLongerAppliesOn,
                inputId: 'editUpdateEndDate',
                placeholder: Strings.placeholders.newEndDate,
                helpText: Strings.help.keepUpdateActiveWithoutEndDate,

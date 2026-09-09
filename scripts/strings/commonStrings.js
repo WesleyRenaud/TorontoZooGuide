@@ -83,6 +83,7 @@ export class CommonStrings {
       endDate: 'End date',
       lastDay: 'Last day',
       lastDayOfSchedule: 'Last day of schedule',
+      noLongerAppliesOn: 'No longer applies on',
       stopsBeingOfferedOn: 'Stops being offered on',
       link: 'Link',
       location: 'Location',
