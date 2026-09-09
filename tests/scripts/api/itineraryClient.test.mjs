@@ -4,17 +4,6 @@ import { afterEach, test } from 'node:test';
 import { ItineraryClient } from '../../../scripts/api/itineraryClient.js';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
-const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
-   SUCCESS: 'success',
-   ITINERARY_DATE_NOT_SET: 'itineraryDateNotSet',
-   TIME_OUT_OF_BOUNDS: 'timeOutOfBounds',
-   TIME_ORDER_INVALID: 'timeOrderInvalid',
-   SAVE_FAILED: 'saveFailed',
-   ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
-   NO_AVAILABLE_SLOT: 'noAvailableSlot',
-   ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
-});
-
 function _normalizedItineraryConfig(overrides = {}) {
    return {
       animalVisibilityChangeThreshold: overrides.animalVisibilityChangeThreshold,
@@ -24,18 +13,6 @@ function _normalizedItineraryConfig(overrides = {}) {
          arrival: 'arrival',
          departure: 'departure',
       },
-      errorTypes: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
-      adjustmentTypes: overrides.adjustmentTypes ?? {
-         ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-         DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-      },
-      transportationStationRoles: overrides.transportationStationRoles ?? {},
-      transportationStationOnboardingRoles: (
-         overrides.transportationStationOnboardingRoles ?? []
-      ),
-      transportationStationOffboardingRoles: (
-         overrides.transportationStationOffboardingRoles ?? []
-      ),
       statuses: overrides.statuses ?? [],
       suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
    };
@@ -107,11 +84,6 @@ function _mockItineraryConfigResponse(overrides = {}) {
                arrival: 'arrival',
                departure: 'departure',
             },
-         itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
-         itinerary_adjustment_types: overrides.adjustmentTypes ?? {
-            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-         },
          itinerary_statuses: overrides.statuses ?? [],
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },

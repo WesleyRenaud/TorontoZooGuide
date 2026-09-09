@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from api.shared.constants import Constants
-from api.shared.enums import ItineraryAdjustmentType
-from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
-from api.shared.enums import ItineraryTransportationStationRole
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 
 
@@ -33,35 +30,19 @@ def Test_ToDict_TestVisitBoundaryEventTypes_ExpectArrivalAndDeparture() -> None:
    }
 
 
-def Test_ToDict_TestErrorTypes_ExpectAllErrorTypeValues() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_error_types' ] == {
-      error_type.name: error_type.value
-      for error_type in ItineraryErrorType
-   }
-
-
-def Test_ToDict_TestAdjustmentTypes_ExpectAllAdjustmentTypeValues() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_adjustment_types' ] == {
-      adjustment_type.name: adjustment_type.value
-      for adjustment_type in ItineraryAdjustmentType
-   }
-
-
-def Test_ToDict_TestTransportationStationRoles_ExpectRoleConfig() -> None:
-   assert ItineraryConfigBuilder.to_dict()[
-      'itinerary_transportation_station_roles'
-   ] == ItineraryTransportationStationRole.to_config_dict()
-   assert ItineraryConfigBuilder.to_dict()[
-      'itinerary_transportation_station_onboarding_roles'
-   ] == ItineraryTransportationStationRole.onboarding_role_values()
-   assert ItineraryConfigBuilder.to_dict()[
-      'itinerary_transportation_station_offboarding_roles'
-   ] == ItineraryTransportationStationRole.offboarding_role_values()
-
-
 def Test_ToDict_TestNoConnection_ExpectEmptySuppressedErrorTypes() -> None:
    assert ItineraryConfigBuilder.to_dict()[ 'suppressed_error_types' ] == []
 
 
 def Test_ToDict_TestNoConnection_ExpectEmptyItineraryStatuses() -> None:
    assert ItineraryConfigBuilder.to_dict()[ 'itinerary_statuses' ] == []
+
+
+def Test_ToDict_TestStaticEnumMaps_ExpectOmitted() -> None:
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert 'itinerary_error_types' not in config
+   assert 'itinerary_adjustment_types' not in config
+   assert 'itinerary_transportation_station_roles' not in config
+   assert 'itinerary_transportation_station_onboarding_roles' not in config
+   assert 'itinerary_transportation_station_offboarding_roles' not in config

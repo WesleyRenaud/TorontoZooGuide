@@ -7,7 +7,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
    suppressedErrorTypes: [],
 });
 

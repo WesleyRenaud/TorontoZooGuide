@@ -1,3 +1,4 @@
+import { TransportationRouteId } from '../../../shared/enums/transportationRouteId.js';
 import { Strings } from '../../../strings.js';
 import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
 import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
@@ -15,8 +16,16 @@ export class TransportationRouteView {
                label: Strings.labels.route,
                name: 'transportationRoute',
                options: [
-                  { id: 'transportationRouteSummer', value: 'summer', label: Strings.schedule.routeLabels.summer },
-                  { id: 'transportationRouteWinter', value: 'winter', label: Strings.schedule.routeLabels.winter },
+                  {
+                     id: 'transportationRouteSummer',
+                     value: TransportationRouteId.SUMMER,
+                     label: Strings.schedule.routeLabels.summer,
+                  },
+                  {
+                     id: 'transportationRouteWinter',
+                     value: TransportationRouteId.WINTER,
+                     label: Strings.schedule.routeLabels.winter,
+                  },
                ],
             }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({

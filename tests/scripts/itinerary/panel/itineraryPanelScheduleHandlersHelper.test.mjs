@@ -5,7 +5,7 @@ import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErro
 import { ItineraryPanelScheduleHandlersHelper } from '../../../../scripts/itinerary/panel/itineraryPanelScheduleHandlersHelper.js';
 
 test('Test_NotifyItineraryUpdated_TestSuccessAndFailure_ExpectDispatch', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 

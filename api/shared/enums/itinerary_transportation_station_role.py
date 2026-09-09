@@ -5,62 +5,70 @@ from enum import Enum
 from .shared_enum_values import SharedEnumValues
 
 
-ItineraryTransportationStationRole = Enum(
-   'ItineraryTransportationStationRole',
-   SharedEnumValues.load( 'itineraryTransportationStationRole.json' ),
-   type=str,
-)
+_MEMBERS = SharedEnumValues.load_object_members(
+   'itineraryTransportationStationRole.json' )
+_ONBOARDING_BY_ROLE: dict[ 'ItineraryTransportationStationRole', bool ] = {}
+_OFFBOARDING_BY_ROLE: dict[ 'ItineraryTransportationStationRole', bool ] = {}
 
 
-@classmethod
-def _onboarding_roles(
-      cls: type[ ItineraryTransportationStationRole ],
-      ) -> frozenset[ ItineraryTransportationStationRole ]:
-   return frozenset( {
-      cls.ONBOARDING,
-      cls.ROUND_TRIP,
-   } )
+class ItineraryTransportationStationRole( str, Enum ):
+   # Enum bodies register a member per assigned name, so the shared JSON members
+   # have to be written into the class namespace one name at a time.
+   _ignore_ = [ 'member_name', 'member_definition' ]
+
+   for member_name, member_definition in _MEMBERS.items():
+      locals()[ member_name ] = member_definition[ 'kind' ]
 
 
-@classmethod
-def _offboarding_roles(
-      cls: type[ ItineraryTransportationStationRole ],
-      ) -> frozenset[ ItineraryTransportationStationRole ]:
-   return frozenset( {
-      cls.OFFBOARDING,
-      cls.ROUND_TRIP,
-   } )
+   @property
+   def onboarding( self ) -> bool:
+      return _ONBOARDING_BY_ROLE.get( self, False )
 
 
-@classmethod
-def _to_config_dict(
-      cls: type[ ItineraryTransportationStationRole ] ) -> dict[ str, str ]:
-   return {
-      role.name: role.value
-      for role in cls
-   }
+   @property
+   def offboarding( self ) -> bool:
+      return _OFFBOARDING_BY_ROLE.get( self, False )
 
 
-@classmethod
-def _onboarding_role_values(
-      cls: type[ ItineraryTransportationStationRole ] ) -> list[ str ]:
-   return sorted(
-      role.value
-      for role in cls.onboarding_roles()
+   @classmethod
+   def onboarding_roles(
+         cls ) -> frozenset[ ItineraryTransportationStationRole ]:
+      return frozenset(
+         role
+         for role in cls
+         if role.onboarding
+      )
+
+
+   @classmethod
+   def offboarding_roles(
+         cls ) -> frozenset[ ItineraryTransportationStationRole ]:
+      return frozenset(
+         role
+         for role in cls
+         if role.offboarding
+      )
+
+
+   @classmethod
+   def onboarding_role_values( cls ) -> list[ str ]:
+      return sorted( role.value for role in cls.onboarding_roles() )
+
+
+   @classmethod
+   def offboarding_role_values( cls ) -> list[ str ]:
+      return sorted( role.value for role in cls.offboarding_roles() )
+
+
+_ONBOARDING_BY_ROLE.update( {
+   ItineraryTransportationStationRole[ member_name ]: bool(
+      member_definition.get( 'onboarding', False )
    )
-
-
-@classmethod
-def _offboarding_role_values(
-      cls: type[ ItineraryTransportationStationRole ] ) -> list[ str ]:
-   return sorted(
-      role.value
-      for role in cls.offboarding_roles()
+   for member_name, member_definition in _MEMBERS.items()
+} )
+_OFFBOARDING_BY_ROLE.update( {
+   ItineraryTransportationStationRole[ member_name ]: bool(
+      member_definition.get( 'offboarding', False )
    )
-
-
-ItineraryTransportationStationRole.onboarding_roles = _onboarding_roles
-ItineraryTransportationStationRole.offboarding_roles = _offboarding_roles
-ItineraryTransportationStationRole.to_config_dict = _to_config_dict
-ItineraryTransportationStationRole.onboarding_role_values = _onboarding_role_values
-ItineraryTransportationStationRole.offboarding_role_values = _offboarding_role_values
+   for member_name, member_definition in _MEMBERS.items()
+} )

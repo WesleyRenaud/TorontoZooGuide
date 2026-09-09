@@ -20,6 +20,7 @@ Current shared enums:
 | `itineraryTransportationStationRole.json` | `ItineraryTransportationStationRole` | `ItineraryTransportationStationRole` |
 | `position.json` | `Position` | `Position` |
 | `scheduleItemKind.json` | `ScheduleItemKind` | `ScheduleItemKind` |
+| `transportationRouteId.json` | `TransportationRouteId` | `TransportationRouteId` |
 
 To add an enum:
 
@@ -42,9 +43,11 @@ carry extra metadata instead maps `MEMBER_NAME` to an object and sets
 
 - `kind` (required) is the wire value.
 - `itemType` (optional) is the plural itinerary module name for that kind.
+- `onboarding` / `offboarding` (optional booleans) mark transportation station
+  roles that board or alight riders.
 
 Load these with `SharedEnumValues.load_object_members( '<name>.json' )` on the
-API side. The API enum takes its member values from `kind` and builds its
-`item_type` map from `itemType`; the JS class freezes one object per member so
-members stay comparable with `===`. `checkSharedEnums.py` verifies both sides
-against the JSON, including the `itemType` map.
+API side. The API enum takes its member values from `kind`; optional metadata
+fields are consumed by that enum module. The JS class freezes one object per
+member so members stay comparable with `===`. `checkSharedEnums.py` verifies
+wire values (`kind`) and that both sides load the shared JSON.

@@ -59,6 +59,7 @@
       {
          "id": "itineraryTransportationStationRole",
          "json": "itineraryTransportationStationRole.json",
+         "valueShape": "object",
          "pythonModule": "api/shared/enums/itinerary_transportation_station_role.py",
          "pythonClass": "ItineraryTransportationStationRole",
          "javascriptModule": "scripts/shared/enums/itineraryTransportationStationRole.js",
@@ -80,6 +81,14 @@
          "pythonClass": "ScheduleItemKind",
          "javascriptModule": "scripts/shared/enums/scheduleItemKind.js",
          "javascriptClass": "ScheduleItemKind"
+      },
+      {
+         "id": "transportationRouteId",
+         "json": "transportationRouteId.json",
+         "pythonModule": "api/shared/enums/transportation_route_id.py",
+         "pythonClass": "TransportationRouteId",
+         "javascriptModule": "scripts/shared/enums/transportationRouteId.js",
+         "javascriptClass": "TransportationRouteId"
       }
    ]
 }

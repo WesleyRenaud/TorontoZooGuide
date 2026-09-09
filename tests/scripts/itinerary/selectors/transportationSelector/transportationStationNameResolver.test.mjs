@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { TransportationStationNameResolver } from '../../../../../scripts/itinerary/selectors/transportationSelector/transportationStationNameResolver.js';
 import { TransportationSelectorModel } from '../../../../../scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js';
-import { ItineraryTransportationStationRoles } from '../../../../../scripts/itinerary/itineraryTransportationStationRoles.js';
+import { ItineraryTransportationStationRole } from '../../../../../scripts/shared/enums/itineraryTransportationStationRole.js';
 
 test('Test_AsObjectAndUniqueNames_TestValues_ExpectNormalized', () => {
    assert.deepEqual(TransportationStationNameResolver.asObject(null), {});
@@ -26,15 +26,15 @@ test('Test_NamesForRoles_TestStations_ExpectFiltered', () => {
 
 test('Test_BoardingAndOffboardingStationNames_TestStations_ExpectRoles', () => {
    const originalStations = TransportationSelectorModel.getTransportationStations;
-   const originalOn = ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles;
-   const originalOff = ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles;
+   const originalOn = ItineraryTransportationStationRole.onboardingRoleValues;
+   const originalOff = ItineraryTransportationStationRole.offboardingRoleValues;
 
    TransportationSelectorModel.getTransportationStations = () => [
       { name: 'Board', role: 'board' },
       { name: 'Exit', role: 'exit' },
    ];
-   ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles = () => ['board'];
-   ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles = () => ['exit'];
+   ItineraryTransportationStationRole.onboardingRoleValues = () => ['board'];
+   ItineraryTransportationStationRole.offboardingRoleValues = () => ['exit'];
 
    try {
       assert.deepEqual(
@@ -47,8 +47,8 @@ test('Test_BoardingAndOffboardingStationNames_TestStations_ExpectRoles', () => {
       );
    } finally {
       TransportationSelectorModel.getTransportationStations = originalStations;
-      ItineraryTransportationStationRoles.getItineraryTransportationStationOnboardingRoles = originalOn;
-      ItineraryTransportationStationRoles.getItineraryTransportationStationOffboardingRoles = originalOff;
+      ItineraryTransportationStationRole.onboardingRoleValues = originalOn;
+      ItineraryTransportationStationRole.offboardingRoleValues = originalOff;
    }
 });
 

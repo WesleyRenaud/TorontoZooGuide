@@ -5,7 +5,7 @@ import { Strings } from '../strings.js';
 export class ItineraryErrorTypes {
    static suppressedItineraryErrorTypes = [];
 
-   static updateItineraryErrorTypesFromConfig(itineraryConfig = {}) {
+   static syncSuppressedItineraryErrorTypes(itineraryConfig = {}) {
       ItineraryErrorTypes.suppressedItineraryErrorTypes = [
          ...(itineraryConfig?.suppressedErrorTypes ?? []),
       ];

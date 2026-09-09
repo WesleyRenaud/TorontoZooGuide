@@ -9,15 +9,38 @@ import itineraryTransportationStationRoleValues from '../../../../shared/enums/i
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryTransportationStationRole_TestConstants_ExpectWireValues', () => {
-   assert.equal(ItineraryTransportationStationRole.ONBOARDING, 'onboarding_station');
-   assert.equal(ItineraryTransportationStationRole.OFFBOARDING, 'offboarding_station');
-   assert.equal(ItineraryTransportationStationRole.ROUND_TRIP, 'round_trip');
+test('Test_ItineraryTransportationStationRole_TestConstants_ExpectObjectMembers', () => {
+   assert.deepEqual(ItineraryTransportationStationRole.ONBOARDING, {
+      kind: 'onboarding_station',
+      onboarding: true,
+      offboarding: false,
+   });
+   assert.deepEqual(ItineraryTransportationStationRole.OFFBOARDING, {
+      kind: 'offboarding_station',
+      onboarding: false,
+      offboarding: true,
+   });
+   assert.deepEqual(ItineraryTransportationStationRole.ROUND_TRIP, {
+      kind: 'round_trip',
+      onboarding: true,
+      offboarding: true,
+   });
+});
+
+test('Test_ItineraryTransportationStationRole_TestRoleValueHelpers_ExpectKinds', () => {
+   assert.deepEqual(
+      ItineraryTransportationStationRole.onboardingRoleValues(),
+      ['onboarding_station', 'round_trip']
+   );
+   assert.deepEqual(
+      ItineraryTransportationStationRole.offboardingRoleValues(),
+      ['offboarding_station', 'round_trip']
+   );
 });
 
 test('Test_ItineraryTransportationStationRole_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    for (const [key, value] of Object.entries(itineraryTransportationStationRoleValues)) {
-      assert.equal(ItineraryTransportationStationRole[key], value);
+      assert.deepEqual(ItineraryTransportationStationRole[key], value);
    }
 
    const diskValues = JSON.parse(

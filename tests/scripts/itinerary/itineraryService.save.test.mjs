@@ -104,7 +104,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       suppressed_error_types: [],
    };
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
 
@@ -187,7 +187,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       suppressed_error_types: [],
    };
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
 
@@ -489,7 +489,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
       suppressed_error_types: [],
    };
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
 
@@ -609,7 +609,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
       suppressed_error_types: [],
    };
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
 
@@ -722,7 +722,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
       suppressed_error_types: [],
    };
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
 

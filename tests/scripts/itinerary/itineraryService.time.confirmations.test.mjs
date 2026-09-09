@@ -10,7 +10,7 @@ installItineraryServiceTestHooks();
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeConfirmsEarlyAdmissionWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -109,7 +109,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeConfirmsShortVisitWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -201,7 +201,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
 });
 
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheVisitorCancelsConfirmation_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -267,7 +267,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
 });
 
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeThrowsForNonConfirmationErrors_ExpectOk', async () => {
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -367,7 +367,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimePersistsWarningSuppressionWhenDoNot_ExpectOk', async () => {
    const requests = [];
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 
@@ -467,7 +467,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheConfirmedRetryFails_ExpectOk', async () => {
    let arrivalRequestCount = 0;
 
-   ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
 

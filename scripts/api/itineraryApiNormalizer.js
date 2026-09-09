@@ -1,8 +1,8 @@
-import { ItineraryAdjustmentTypes } from '../itinerary/itineraryAdjustmentTypes.js';
 import { ItineraryErrorTypes } from '../itinerary/itineraryErrorTypes.js';
 import { ItineraryPathModel } from '../itinerary/itineraryPathModel.js';
 import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
+import { ItineraryAdjustmentType } from '../shared/enums/itineraryAdjustmentType.js';
 import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
 import { ValueNormalizer } from './valueNormalizer.js';
 
@@ -100,26 +100,6 @@ export class ItineraryApiNormalizer {
       };
    }
 
-   static normalizeNamedStringMap(values) {
-      const source = ValueNormalizer.asObject(values);
-
-      return Object.freeze(
-         Object.fromEntries(
-            Object.entries(source)
-               .map(([key, value]) => [key, ValueNormalizer.asTrimmedString(value)])
-               .filter(([, value]) => value)
-         )
-      );
-   }
-
-   static normalizeItineraryErrorTypes(errorTypes) {
-      return ItineraryApiNormalizer.normalizeNamedStringMap(errorTypes);
-   }
-
-   static normalizeItineraryAdjustmentTypes(adjustmentTypes) {
-      return ItineraryApiNormalizer.normalizeNamedStringMap(adjustmentTypes);
-   }
-
    static normalizeVisitBoundaryEventTypes(config) {
       const source = ValueNormalizer.asObject(config.itinerary_visit_boundary_event_types);
 
@@ -153,23 +133,6 @@ export class ItineraryApiNormalizer {
             .map(ValueNormalizer.asTrimmedString)
             .filter(Boolean),
          visitBoundaryEventTypes: ItineraryApiNormalizer.normalizeVisitBoundaryEventTypes(source),
-         errorTypes: ItineraryApiNormalizer.normalizeItineraryErrorTypes(source.itinerary_error_types),
-         adjustmentTypes: ItineraryApiNormalizer.normalizeItineraryAdjustmentTypes(
-            source.itinerary_adjustment_types
-         ),
-         transportationStationRoles: ItineraryApiNormalizer.normalizeNamedStringMap(
-            source.itinerary_transportation_station_roles
-         ),
-         transportationStationOnboardingRoles: ValueNormalizer.asArray(
-            source.itinerary_transportation_station_onboarding_roles
-         )
-            .map(ValueNormalizer.asTrimmedString)
-            .filter(Boolean),
-         transportationStationOffboardingRoles: ValueNormalizer.asArray(
-            source.itinerary_transportation_station_offboarding_roles
-         )
-            .map(ValueNormalizer.asTrimmedString)
-            .filter(Boolean),
          statuses: normalizedStatuses,
          suppressedErrorTypes: ValueNormalizer.asArray(source.suppressed_error_types)
             .map(ValueNormalizer.asTrimmedString)
@@ -185,7 +148,7 @@ export class ItineraryApiNormalizer {
             .map((entry) => entry.status);
       }
 
-      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig(normalizedConfig);
+      ItineraryErrorTypes.syncSuppressedItineraryErrorTypes(normalizedConfig);
 
       return normalizedConfig;
    }
@@ -205,7 +168,7 @@ export class ItineraryApiNormalizer {
       const source = ValueNormalizer.asObject(adjustment);
 
       return {
-         type: ItineraryAdjustmentTypes.normalizeItineraryAdjustmentType(source.type),
+         type: ItineraryAdjustmentType.normalize(source.type),
          field: ValueNormalizer.asTrimmedString(source.field),
          previousValue: ValueNormalizer.asTrimmedString(source.previous_value ?? source.previousValue),
          value: ValueNormalizer.asTrimmedString(source.value),

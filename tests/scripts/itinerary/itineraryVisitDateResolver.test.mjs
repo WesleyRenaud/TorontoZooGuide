@@ -11,7 +11,7 @@ import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 installDomTestHooks({
    before: () => {
       globalThis.localStorage = createLocalStorageMock();
-      ItineraryErrorTypes.updateItineraryErrorTypesFromConfig({
+      ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
          suppressedErrorTypes: [],
       });
    },

@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from .constants import Constants
-from .enums import ItineraryAdjustmentType
-from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
-from .enums import ItineraryTransportationStationRole
 from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..types import Types
 
@@ -32,23 +29,6 @@ class ItineraryConfigBuilder():
             'arrival': ItineraryEventType.ARRIVAL.value,
             'departure': ItineraryEventType.DEPARTURE.value,
          },
-         'itinerary_error_types': {
-            error_type.name: error_type.value
-            for error_type in ItineraryErrorType
-         },
-         'itinerary_adjustment_types': {
-            adjustment_type.name: adjustment_type.value
-            for adjustment_type in ItineraryAdjustmentType
-         },
-         'itinerary_transportation_station_roles': (
-            ItineraryTransportationStationRole.to_config_dict()
-         ),
-         'itinerary_transportation_station_onboarding_roles': (
-            ItineraryTransportationStationRole.onboarding_role_values()
-         ),
-         'itinerary_transportation_station_offboarding_roles': (
-            ItineraryTransportationStationRole.offboarding_role_values()
-         ),
          'itinerary_statuses': [
             {
                'status': status.status,
