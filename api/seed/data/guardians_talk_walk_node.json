@@ -313,5 +313,23 @@
     "y": 19.386,
     "walk_node_id": "v-0547",
     "snap_distance_px": 21.322
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Grizzly Bear",
+    "location": "Canadian Domain",
+    "x": 22.512,
+    "y": 6.013,
+    "walk_node_id": "v-0623",
+    "snap_distance_px": 68.15
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Raccoon",
+    "location": "Canadian Domain",
+    "x": 31.304,
+    "y": 17.617,
+    "walk_node_id": "v-0597",
+    "snap_distance_px": 22.326
   }
 ]

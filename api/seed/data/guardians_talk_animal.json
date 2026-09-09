@@ -250,5 +250,19 @@
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
     "enclosure_name": "Female Herd"
+  },
+  {
+    "talk_name": "Grizzly Bear",
+    "location": "Canadian Domain",
+    "species": "Grizzly Bear",
+    "exhibit": "Canadian Domain",
+    "enclosure_name": null
+  },
+  {
+    "talk_name": "Raccoon",
+    "location": "Canadian Domain",
+    "species": "Raccoon",
+    "exhibit": "Canadian Domain",
+    "enclosure_name": null
   }
 ]

@@ -243,5 +243,19 @@
     "x_coord": 77.362,
     "y_coord": 51.988,
     "maximum_duration": 30
+  },
+  {
+    "name": "Grizzly Bear",
+    "location": "Canadian Domain",
+    "x_coord": 22.512,
+    "y_coord": 6.013,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Raccoon",
+    "location": "Canadian Domain",
+    "x_coord": 31.304,
+    "y_coord": 17.617,
+    "maximum_duration": 30
   }
 ]
