@@ -3,7 +3,9 @@ import { test } from 'node:test';
 
 import { ItineraryServiceSaver } from '../../../scripts/itinerary/itineraryServiceSaver.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { WildEncounterScheduleItemKey } from '../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
@@ -173,8 +175,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingGuardiansTalkWithoutAnimal, undefined);
-   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+   assert.equal(requests[Position.FIRST].body.confirmingGuardiansTalkWithoutAnimal, undefined);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAnAttractionWithout_ExpectOk', async () => {
@@ -254,8 +256,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingAttractionWithoutAnimal, undefined);
-   assert.equal(requests[1].body.confirmingAttractionWithoutAnimal, true);
+   assert.equal(requests[Position.FIRST].body.confirmingAttractionWithoutAnimal, undefined);
+   assert.equal(requests[Position.SECOND].body.confirmingAttractionWithoutAnimal, true);
 });
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAGuardiansTalk_ExpectOk', async () => {
@@ -332,8 +334,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingGuardiansTalkUnschedule, undefined);
-   assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
+   assert.equal(requests[Position.FIRST].body.confirmingGuardiansTalkUnschedule, undefined);
+   assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
 });
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
@@ -474,8 +476,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.confirmingWildEncounterUnschedule, undefined);
-   assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
+   assert.equal(requests[Position.FIRST].body.confirmingWildEncounterUnschedule, undefined);
+   assert.equal(requests[Position.SECOND].body.confirmingWildEncounterUnschedule, true);
 });
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesScheduleTimeConflictsBeforeUnschedule_ExpectOk', async () => {
@@ -592,11 +594,11 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[0].body.overridingConflictingGuardiansTalks, false);
-   assert.equal(requests[1].body.overridingConflictingGuardiansTalks, true);
-   assert.equal(requests[1].body.guardiansTalks.length, 1);
-   assert.equal(requests[1].body.guardiansTalks[0].name, 'African Lion');
-   assert.deepEqual(requests[1].body.wildEncounters, []);
+   assert.equal(requests[Position.FIRST].body.overridingConflictingGuardiansTalks, false);
+   assert.equal(requests[Position.SECOND].body.overridingConflictingGuardiansTalks, true);
+   assert.equal(requests[Position.SECOND].body.guardiansTalks.length, 1);
+   assert.equal(requests[Position.SECOND].body.guardiansTalks[Position.FIRST].name, 'African Lion');
+   assert.deepEqual(requests[Position.SECOND].body.wildEncounters, []);
 });
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiffUnselectedScheduleConflicts_ExpectOk', async () => {
@@ -690,7 +692,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
       setTimeout(resolve, 0);
    });
 
-   document.body.querySelectorAll('.itin-save-issue-select-btn')[1]?.click();
+   document.body.querySelectorAll('.itin-save-issue-select-btn')[Position.SECOND]?.click();
 
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
@@ -705,9 +707,12 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    const result = await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.equal(requests[1].body.overridingConflictingGuardiansTalks, true);
-   assert.deepEqual(requests[1].body.guardiansTalks, []);
-   assert.equal(requests[1].body.wildEncounters[0], 'Grizzly Bear||13:00');
+   assert.equal(requests[Position.SECOND].body.overridingConflictingGuardiansTalks, true);
+   assert.deepEqual(requests[Position.SECOND].body.guardiansTalks, []);
+   assert.equal(
+      requests[Position.SECOND].body.wildEncounters[Position.FIRST],
+      new WildEncounterScheduleItemKey('Grizzly Bear', '13:00').toWire()
+   );
    assert.deepEqual(result.validation.removed.guardiansTalks, []);
    assert.equal(result.validation.hasChanges, false);
 });
@@ -828,7 +833,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.deepEqual(requests[1].body.animals, [{
+   assert.deepEqual(requests[Position.SECOND].body.animals, [{
       species: 'African Lion',
       exhibit: 'Africa Savanna',
    }]);

@@ -38,7 +38,7 @@ test('Test_GetItineraryItemKey_TestItemTypes_ExpectResolvedKeys', () => {
          name: 'Amur Tiger',
          start_time: '14:00',
       }),
-      'Amur Tiger||14:00'
+      new GuardiansTalkScheduleItemKey('Amur Tiger', '14:00').toWire()
    );
    assert.equal(
       ScheduleItemSearcher.getItineraryItemKey('wild_encounters', { name: 'African Rainforest' }),
