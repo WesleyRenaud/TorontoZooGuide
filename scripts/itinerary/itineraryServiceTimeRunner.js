@@ -1,12 +1,10 @@
+import { ItineraryConfirmationRegistry } from './itineraryConfirmationRegistry.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItineraryService } from './itineraryService.js';
 import { ItineraryShape } from './itineraryShape.js';
 import { ItineraryValidationResult } from './itineraryValidationResult.js';
-import { EarlyAdmissionFragment } from './panel/earlyAdmissionFragment.js';
-import { ShortVisitFragment } from './panel/shortVisitFragment.js';
 import { PersistItineraryWarningSuppressor } from './persistItineraryWarningSuppressor.js';
-import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
 import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 export class ItineraryServiceTimeRunner {
@@ -63,31 +61,17 @@ export class ItineraryServiceTimeRunner {
          return initialResult;
       }
 
-      if (ItineraryErrorTypes.requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
-         return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-            showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
-            requestFn,
-            timeValue,
-            suppressionType: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-            confirmationOptions: {
-               confirmingEarlyAdmission: true,
-            },
-         });
+      for (const entry of ItineraryConfirmationRegistry.getTimeChangeConfirmationEntries()) {
+         if (ItineraryErrorTypes[entry.requiresMethod](initialResult.errorType)) {
+            return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
+               requestFn,
+               timeValue,
+               ...ItineraryConfirmationRegistry.buildTimeChangeConfirmationOptions(entry),
+            });
+         }
       }
 
-      if (!ItineraryErrorTypes.requiresShortVisitConfirmation(initialResult.errorType)) {
-         throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(initialResult.errorType));
-      }
-
-      return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-         showConfirmation: ShortVisitFragment.showShortVisitConfirmation,
-         requestFn,
-         timeValue,
-         suppressionType: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-         confirmationOptions: {
-            confirmingShortVisit: true,
-         },
-      });
+      throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(initialResult.errorType));
    }
 
    static buildValidatedTimeSetItinerary(previousItinerary, result) {

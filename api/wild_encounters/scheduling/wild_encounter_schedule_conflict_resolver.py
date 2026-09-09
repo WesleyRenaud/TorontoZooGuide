@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from ..data_access.wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
 from ..data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
-from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...shared.opening_schedule_conflict_resolver_factory import OpeningScheduleConflictResolverFactory
 from ...types import Types
 from .wild_encounter_schedule_input import WildEncounterScheduleInput
 
 
-_resolution = OpeningScheduleConflictResolution(
+_resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
    fetch_conflicts=WildEncounterScheduleProvider.fetch_schedule_conflicts,
    delete_conflict=WildEncounterScheduleProvider.delete_schedule,
    insert_or_update=WildEncounterScheduleProvider.insert_or_update_schedule,

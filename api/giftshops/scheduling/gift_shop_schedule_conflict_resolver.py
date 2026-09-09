@@ -3,11 +3,11 @@ from __future__ import annotations
 from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
 from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from .gift_shop_opening_schedule import GiftShopOpeningSchedule
-from ...shared.opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
+from ...shared.opening_schedule_conflict_resolver_factory import OpeningScheduleConflictResolverFactory
 from ...types import Types
 
 
-_resolution = OpeningScheduleConflictResolution(
+_resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
    fetch_conflicts=GiftShopScheduleProvider.fetch_opening_schedule_conflicts,
    delete_conflict=GiftShopScheduleProvider.delete_opening_schedule,
    insert_or_update=GiftShopScheduleProvider.insert_or_update_opening_schedule,
