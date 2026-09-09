@@ -4,6 +4,7 @@ from ..coordinators.restaurant_coordinator import RestaurantCoordinator
 from ...json_request_handler import JsonRequestHandler
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 
 
 class RestaurantController():
@@ -139,7 +140,7 @@ class RestaurantController():
 
       if not success:
          ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPENING_SCHEDULE, name=restaurant )
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 

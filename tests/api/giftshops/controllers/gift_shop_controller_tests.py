@@ -13,6 +13,7 @@ from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 import api.http_request_handler as server
 from api.models.gift_shop import GiftShop
 import api.request_connection_provider as request_connection
+from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -253,7 +254,7 @@ def Test_SetGiftShopOpeningSchedule_TestHttpRequest_ExpectOverlappingScheduleApi
    result = response_json( handler )
 
    assert result[ 'apiErrorType' ] == 'couldNotSetOpeningSchedule'
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
 
 def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestHttpRequest_ExpectMapsPayload(

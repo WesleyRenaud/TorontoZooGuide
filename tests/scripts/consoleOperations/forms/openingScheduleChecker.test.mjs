@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { OpeningScheduleChecker } from '../../../../scripts/consoleOperations/forms/openingScheduleChecker.js';
+import { OpeningScheduleOverlapErrorType } from '../../../../scripts/shared/enums/openingScheduleOverlapErrorType.js';
+import { OpeningScheduleOverlapResolution } from '../../../../scripts/shared/enums/openingScheduleOverlapResolution.js';
 
 test('Test_ResultHasOpeningScheduleOverlap_TestCamelAndSnakeErrorType_ExpectTrue', () => {
    assert.equal(
@@ -27,7 +29,13 @@ test('Test_ResultHasOpeningScheduleOverlap_TestOtherResults_ExpectFalse', () => 
    );
 });
 
-test('Test_OpeningScheduleOverlapResolution_TestConstants_ExpectFrozenValues', () => {
-   assert.equal(OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE, 'replace');
-   assert.equal(OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM, 'trim');
+test('Test_OpeningScheduleOverlapEnums_TestReexports_ExpectSharedEnumReferences', () => {
+   assert.equal(
+      OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_ERROR_TYPE,
+      OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE
+   );
+   assert.equal(
+      OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION,
+      OpeningScheduleOverlapResolution
+   );
 });

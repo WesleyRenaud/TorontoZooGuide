@@ -5,6 +5,7 @@ from ...json_request_handler import JsonRequestHandler
 from ..scheduling.collapse_wild_encounters_for_map_builder import CollapseWildEncountersForMapBuilder
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.enums.api_error_type import ApiErrorType
+from ...shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 
 
 class WildEncounterController():
@@ -97,7 +98,7 @@ class WildEncounterController():
          message=message )
 
       if not success:
-         response[ 'errorType' ] = 'overlappingSchedule'
+         response[ 'errorType' ] = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
 
       handler._write_json( response )
 

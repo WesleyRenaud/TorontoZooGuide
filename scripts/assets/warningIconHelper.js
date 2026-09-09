@@ -1,5 +1,7 @@
+import { SvgConstants } from '../shared/svgConstants.js';
+
 export class WarningIconHelper {
-   static SVG_NS = 'http://www.w3.org/2000/svg';
+   static SVG_NS = SvgConstants.SVG_NS;
 
    static createSvgNode(tagName, attributes = {}) {
       const node = document.createElementNS(WarningIconHelper.SVG_NS, tagName);

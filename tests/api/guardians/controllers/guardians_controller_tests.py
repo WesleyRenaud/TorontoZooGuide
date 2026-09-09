@@ -14,6 +14,7 @@ from api.models.scheduled_occurrence import ScheduledOccurrence
 import api.request_connection_provider as request_connection
 from api.shared.api_operation_failure import ApiOperationFailure
 from api.shared.enums.api_error_type import ApiErrorType
+from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -265,7 +266,7 @@ def Test_SetGuardiansTalkSchedule_TestHttpRequest_ExpectOverlappingScheduleError
    result = response_json( handler )
 
    assert result[ 'success' ] is False
-   assert result[ 'errorType' ] == 'overlappingSchedule'
+   assert result[ 'errorType' ] == OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE.value
    assert result[ 'apiErrorType' ] == 'couldNotSetGuardiansTalkSchedule'
 
 

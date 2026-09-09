@@ -1,15 +1,15 @@
-export class OpeningScheduleChecker {
-   static OPENING_SCHEDULE_OVERLAP_ERROR_TYPE = 'overlappingSchedule';
+import { OpeningScheduleOverlapErrorType } from '../../shared/enums/openingScheduleOverlapErrorType.js';
+import { OpeningScheduleOverlapResolution } from '../../shared/enums/openingScheduleOverlapResolution.js';
 
-   static OPENING_SCHEDULE_OVERLAP_RESOLUTION = Object.freeze({
-      REPLACE: 'replace',
-      TRIM: 'trim',
-   });
+export class OpeningScheduleChecker {
+   static OPENING_SCHEDULE_OVERLAP_ERROR_TYPE = OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE;
+
+   static OPENING_SCHEDULE_OVERLAP_RESOLUTION = OpeningScheduleOverlapResolution;
 
    static resultHasOpeningScheduleOverlap(result) {
       return (
-         result?.errorType === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_ERROR_TYPE
-         || result?.error_type === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_ERROR_TYPE
+         result?.errorType === OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE
+         || result?.error_type === OpeningScheduleOverlapErrorType.OVERLAPPING_SCHEDULE
       );
    }
 }

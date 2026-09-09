@@ -1,55 +1,57 @@
-import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { ConfirmFragment } from './components/confirmFragment.js';
-import { ItineraryPanelFragment } from './components/itineraryPanelFragment.js';
-import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ScheduleItemWithoutAnimalFragment } from './scheduleItemWithoutAnimalFragment.js';
 import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { Strings } from '../../strings.js';
 
 export class AttractionWithoutAnimalFragment {
+   static ATTRACTION_WITHOUT_ANIMAL_CONFIG = Object.freeze({
+      issueType: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+      nameKey: 'attractionName',
+      timeKey: 'attractionTime',
+      getTitle: () => Strings.itinerary.confirmation.attractionWithoutAnimalTitle,
+      getMessage: (name, time) => {
+         const strings = Strings.itinerary.confirmation;
+
+         return `${strings.attractionWithoutAnimalBody(name, time)}${strings.attractionWithoutAnimalConfirmPrompt}`;
+      },
+      getMessageWithoutTime: (name) => {
+         const strings = Strings.itinerary.confirmation;
+
+         return `${strings.attractionWithoutAnimalBodyWithoutTime(name)}${strings.attractionWithoutAnimalConfirmPrompt}`;
+      },
+      getBodyMessage: (name, time, strings) => strings.attractionWithoutAnimalBody(name, time),
+      getBodyMessageWithoutTime: (name, strings) => strings.attractionWithoutAnimalBodyWithoutTime(name),
+      getConfirmPrompt: (strings) => strings.attractionWithoutAnimalConfirmPrompt,
+   });
+
    static hasAttractionWithoutAnimalIssue(issues = []) {
-      return issues.some(
-         (issue) => issue?.type === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
+      return ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue(
+         issues,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG
       );
 
    }
 
    static getAttractionNamesFromWithoutAnimalIssues(issues = []) {
-      return AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues)
-         .map((attraction) => attraction.attractionName);
+      return ScheduleItemWithoutAnimalFragment.getNamesFromWithoutAnimalIssues(
+         issues,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
    static getAttractionsFromWithoutAnimalIssues(issues = []) {
-      const attractionsByName = new Map();
-
-      issues
-         .filter((issue) => issue?.type === ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL)
-         .flatMap((issue) => issue.items ?? [])
-         .forEach((item) => {
-            const attractionName = ValueNormalizer.asTrimmedString(item?.name);
-
-            if (!attractionName) {
-               return;
-            }
-
-            const attractionTime = ItineraryItemFormatter.formatClockTime(item?.start_time);
-
-            attractionsByName.set(
-               attractionName,
-               attractionTime
-                  ? { attractionName, attractionTime }
-                  : { attractionName }
-            );
-         });
-
-      return [...attractionsByName.values()];
+      return ScheduleItemWithoutAnimalFragment.getItemsFromWithoutAnimalIssues(
+         issues,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
    static getPrimaryAttractionFromWithoutAnimalIssues(issues = []) {
-      const [attraction] = AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues);
-
-      return attraction ?? null;
+      return ScheduleItemWithoutAnimalFragment.getPrimaryFromWithoutAnimalIssues(
+         issues,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG
+      );
 
    }
 
@@ -60,48 +62,21 @@ export class AttractionWithoutAnimalFragment {
       strings = Strings.itinerary.confirmation,
       } = {}
    ) {
-      const attractionName = ValueNormalizer.asTrimmedString(attraction.attractionName);
-      const body = attraction.attractionTime
-         ? strings.attractionWithoutAnimalBody(
-            attractionName,
-            attraction.attractionTime
-         )
-         : strings.attractionWithoutAnimalBodyWithoutTime(attractionName);
-
-      if (!includeConfirmPrompt) {
-         return body;
-      }
-
-      return `${body}${strings.attractionWithoutAnimalConfirmPrompt}`;
+      return ScheduleItemWithoutAnimalFragment.withoutAnimalMessage(
+         attraction,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG,
+         {
+            includeConfirmPrompt,
+            strings,
+         }
+      );
 
    }
 
-   static showAttractionWithoutAnimalConfirmation({
-      issues = [],
-      onConfirm,
-      onCancel,
-      mountEl = ItineraryPanelFragment.getItineraryOverlayMountEl() ?? document.body,
-   } = {}) {
-      const attractions = AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues);
-
-      // Multi-item without-animal warnings use showItineraryBuildWarningsConfirmation.
-      if (attractions.length !== 1) {
-         return;
-      }
-
-      const [attraction] = attractions;
-
-      ConfirmFragment.showItineraryConfirmPopup({
-         title: Strings.itinerary.confirmation.attractionWithoutAnimalTitle,
-         message: AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage(attraction, {
-            includeConfirmPrompt: true,
-            strings: Strings.itinerary.confirmation,
-         }),
-         confirmText: Strings.itinerary.confirmation.saveIssuesButton,
-         cancelText: Strings.itinerary.actions.cancel,
-         mountEl,
-         onConfirm,
-         onCancel,
-      });
+   static showAttractionWithoutAnimalConfirmation(options = {}) {
+      ScheduleItemWithoutAnimalFragment.showWithoutAnimalConfirmation(
+         options,
+         AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG
+      );
    }
 }

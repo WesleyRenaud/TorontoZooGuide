@@ -1,7 +1,5 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
-import { OpeningScheduleChecker } from '../../forms/openingScheduleChecker.js';
-import { OpeningScheduleOverlapFragment } from '../../forms/openingScheduleOverlapFragment.js';
-import { WeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { AmenityOpeningScheduleControllerFactory } from '../../forms/amenityOpeningScheduleControllerFactory.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
@@ -11,7 +9,7 @@ export class GiftShopOpeningController {
       giftShopEl,
       ...controllerOptions
    } = {}) {
-      return WeeklyAvailabilityFormController.createWeeklyAvailabilityFormController({
+      return AmenityOpeningScheduleControllerFactory.createAmenityOpeningScheduleController({
          ...controllerOptions,
          entityEl: giftShopEl,
          loadOptions: ConsoleOptionsLoader.loadGiftShops,
@@ -21,19 +19,8 @@ export class GiftShopOpeningController {
          optionsLabel: Strings.entityLabels.giftShops,
          payloadKey: 'giftShop',
          resultName: result => result.gift_shop,
-         resolveOverlapConflict: async payload => {
-            const resolution = await OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog();
-
-            if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
-               return ConsoleOperationsClient.replaceGiftShopOpeningScheduleOverlaps(payload);
-            }
-
-            if (resolution === OpeningScheduleChecker.OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
-               return ConsoleOperationsClient.trimGiftShopOpeningScheduleOverlaps(payload);
-            }
-
-            return null;
-         },
+         replaceOverlaps: ConsoleOperationsClient.replaceGiftShopOpeningScheduleOverlaps,
+         trimOverlaps: ConsoleOperationsClient.trimGiftShopOpeningScheduleOverlaps,
       });
    }
 }
