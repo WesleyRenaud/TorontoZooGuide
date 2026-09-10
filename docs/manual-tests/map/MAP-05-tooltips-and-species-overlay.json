@@ -9,13 +9,13 @@
       "number": 1,
       "name": "Hover tooltip",
       "do": "Hover an animal marker.",
-      "expect": "Hover tooltip (`#hoverTooltip`) appears with identifying text."
+      "expect": "Hover tooltip appears with identifying text."
     },
     {
       "number": 2,
       "name": "Click tooltip",
       "do": "Click the animal marker.",
-      "expect": "Click tooltip (`#tooltip`) opens."
+      "expect": "Click tooltip opens."
     },
     {
       "number": 3,
@@ -27,7 +27,7 @@
       "number": 4,
       "name": "More Info",
       "do": "Click **More Info** (or equivalent) from the tooltip.",
-      "expect": "Species overlay (`#speciesOverlay`) opens."
+      "expect": "Species overlay opens."
     },
     {
       "number": 5,
