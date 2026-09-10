@@ -14,7 +14,7 @@
     {
       "number": 2,
       "name": "Summer date control",
-      "do": "Observe `#mapDate` / date field.",
+      "do": "Observe the date field near the map preset control.",
       "expect": "Date input is hidden or not used for free picking (summer uses fixed seasonal anchor)."
     },
     {
@@ -32,8 +32,8 @@
     {
       "number": 5,
       "name": "Winter date control",
-      "do": "Observe the date field again.",
-      "expect": "Date picking stays locked/hidden as designed for winter preset."
+      "do": "Observe the date field near the map preset control.",
+      "expect": "Date field is hidden or not used for free picking (winter uses fixed seasonal anchor)."
     },
     {
       "number": 6,
@@ -50,8 +50,8 @@
     {
       "number": 8,
       "name": "Open date picker",
-      "do": "Click the date input.",
-      "expect": "Flatpickr (or date UI) opens."
+      "do": "Click the date field.",
+      "expect": "Date picker opens."
     },
     {
       "number": 9,
