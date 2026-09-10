@@ -1,9 +1,9 @@
 {
   "id": "MAP-02",
   "title": "Date presets",
-  "preconditions": "MAP-01 baseline OK. Open `map.html`.",
+  "preconditions": "MAP-01 baseline OK. Open `map.html`. Use default Explore filters (**Animals** on; leave **Include off display animals** and **Include closed *** unchecked). Explore **Updates**/**Events** follow today’s real date — ignore them for seasonal checks.",
   "dateUnderTest": "Exercise **Summer Map**, **Winter Map**, and **Specific Map**.",
-  "cleanup": "Leave preset on **Specific Map** when finished.",
+  "cleanup": "Leave preset on **Specific Map** when finished. Set Zoomobile route back to **None** if you changed it.",
   "steps": [
     {
       "number": 1,
@@ -15,13 +15,13 @@
       "number": 2,
       "name": "Summer date control",
       "do": "Observe the date field near the map preset control.",
-      "expect": "Date input is hidden or not used for free picking (summer uses fixed seasonal anchor)."
+      "expect": "Date field is hidden or not used for free picking (summer uses fixed seasonal anchor)."
     },
     {
       "number": 3,
-      "name": "Summer markers context",
-      "do": "Note animal/amenity marker set (Explore **Updates** may still show — they follow today’s real date, not Summer).",
-      "expect": "Map content reflects summer context (differs from mid-winter where species/amenities are seasonal)."
+      "name": "Summer seed markers",
+      "do": "With **Animals** checked, search **River Hippopotamus** and confirm its marker. Enable **Attractions** and find **Splash Island**. Select Zoomobile **Current Route** and note stations (seed summer route includes **Canadian Domain Zoomobile Station** and **Africa Zoomobile Station**).",
+      "expect": "**River Hippopotamus** marker is present; **Splash Island** marker is present; Zoomobile **Current Route** shows the summer stations above (Main / Tundra / Eurasia may also appear)."
     },
     {
       "number": 4,
@@ -37,9 +37,9 @@
     },
     {
       "number": 6,
-      "name": "Winter vs summer difference",
-      "do": "Compare markers to what you saw on Summer Map (ignore Updates/Events — they stay on today’s date).",
-      "expect": "At least some seasonal difference is visible (animals, closed exhibits, or Zoomobile season) — note what changed."
+      "name": "Winter seed markers vs summer",
+      "do": "Still on **Winter Map**, search **River Hippopotamus** again; with **Attractions** on, look for **Splash Island**; keep Zoomobile **Current Route** and compare stations to summer.",
+      "expect": "**River Hippopotamus** marker is absent; **Splash Island** marker is absent; Zoomobile **Current Route** shows **Indo-Malaya Zoomobile Station** and does **not** show **Canadian Domain Zoomobile Station** or **Africa Zoomobile Station** (Main / Tundra / Eurasia may still appear)."
     },
     {
       "number": 7,
@@ -61,9 +61,9 @@
     },
     {
       "number": 10,
-      "name": "Refresh for that date",
-      "do": "Watch markers and Updates/Events after the date change.",
-      "expect": "Markers and Updates/Events refresh for the selected date without requiring a full page reload."
+      "name": "Markers refresh for date",
+      "do": "Watch animal/attraction markers after the date change (ignore Updates/Events).",
+      "expect": "Markers refresh for the selected Specific Map date without a full page reload; Updates/Events stay based on today."
     }
   ]
 }
