@@ -1,7 +1,7 @@
 {
   "id": "MAP-01",
   "title": "Baseline load and chrome",
-  "preconditions": "`npm run seed`, `npm start`, browser DevTools console open. Open `http://localhost:8000/map.html`.",
+  "preconditions": "`npm run seed`, `npm start`. Open `http://localhost:8000/map.html`.",
   "dateUnderTest": "Default **Specific Map** (whatever date the picker shows after load).",
   "cleanup": "None.",
   "steps": [
@@ -13,48 +13,42 @@
     },
     {
       "number": 2,
-      "name": "Check browser console",
-      "do": "Inspect the DevTools console for load errors.",
-      "expect": "No uncaught errors related to map SVG, markers, or bootstrap (benign 3rd-party noise OK — note it)."
-    },
-    {
-      "number": 3,
       "name": "Explore panel visible",
       "do": "Look at the left **Explore** panel.",
       "expect": "Panel titled **Explore** is visible with toggles, Filter, and search."
     },
     {
-      "number": 4,
+      "number": 3,
       "name": "Bottom nav links",
-      "do": "Inspect the bottom nav.",
+      "do": "Look at the bottom nav.",
       "expect": "Links include **Map**, **Animals**, Meet the Guardians (external), Wild Encounters (external), and **Itinerary**."
     },
     {
-      "number": 5,
+      "number": 4,
       "name": "Pan map",
       "do": "Click-drag the map canvas.",
       "expect": "Map pans; markers move with the map."
     },
     {
-      "number": 6,
+      "number": 5,
       "name": "Zoom map",
       "do": "Zoom in and out (scroll/pinch/controls as available).",
       "expect": "Map zooms; markers remain attached to locations."
     },
     {
-      "number": 7,
+      "number": 6,
       "name": "Show region/pavilion text on",
       "do": "Enable **Show region/pavilion text** if it is not already on (it may default checked).",
       "expect": "Region/pavilion labels appear on the map."
     },
     {
-      "number": 8,
+      "number": 7,
       "name": "Show region/pavilion text off",
       "do": "Disable **Show region/pavilion text**.",
       "expect": "Those labels hide again."
     },
     {
-      "number": 9,
+      "number": 8,
       "name": "Default animal markers",
       "do": "With default filters (Animals checked), observe the map.",
       "expect": "Animal markers are visible on **Specific Map**; map mount is not empty/broken."

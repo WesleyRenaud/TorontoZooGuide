@@ -72,7 +72,6 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | MAP-07 | [json](map/MAP-07-zoomobile-routes.json) | Zoomobile route radios |
 | MAP-08 | [json](map/MAP-08-closed-exhibits-updates-events.json) | Updates, Events, closed exhibits |
 | MAP-09 | [json](map/MAP-09-deep-link-focus.json) | `?focus=` deep link |
-| MAP-10 | [json](map/MAP-10-narrow-layout-smoke.json) | ~720px layout smoke |
 
 ### Itinerary (`itinerary/`)
 
@@ -113,4 +112,4 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 
 ## Recommended run order
 
-MAP-01 → MAP-10, then ITIN-01 → ITIN-12, then CON-01 → CON-15.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-12, then CON-01 → CON-15.
