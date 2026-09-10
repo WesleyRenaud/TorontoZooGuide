@@ -51,7 +51,7 @@
       "number": 8,
       "name": "Default animal markers",
       "do": "With default filters (Animals checked), observe the map.",
-      "expect": "Animal markers are visible on **Specific Map**; map mount is not empty/broken."
+      "expect": "Animal markers are visible on the map."
     }
   ]
 }
