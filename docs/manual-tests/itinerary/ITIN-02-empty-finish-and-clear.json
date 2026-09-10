@@ -1,0 +1,57 @@
+{
+  "id": "ITIN-02",
+  "title": "Empty finish and clear",
+  "preconditions": "Clear any existing itinerary. Open `itinerary.html`.",
+  "dateUnderTest": "Any valid future date.",
+  "cleanup": "End with empty itinerary.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open builder with no items",
+      "do": "Start the wizard and advance through steps without selecting animals/attractions/talks/encounters/transport.",
+      "expect": "Wizard allows advancing with empty selections."
+    },
+    {
+      "number": 2,
+      "name": "Finish empty",
+      "do": "Click **Finish**.",
+      "expect": "**No Items Selected** (or equivalent) blocks a successful empty itinerary."
+    },
+    {
+      "number": 3,
+      "name": "Acknowledge empty state",
+      "do": "Dismiss the empty-finish message.",
+      "expect": "Back in builder; can still edit."
+    },
+    {
+      "number": 4,
+      "name": "Add one animal",
+      "do": "Add ≥1 animal on **Add Animals**.",
+      "expect": "Animal is selected."
+    },
+    {
+      "number": 5,
+      "name": "Finish with item",
+      "do": "Click **Finish**.",
+      "expect": "Itinerary saves/builds successfully."
+    },
+    {
+      "number": 6,
+      "name": "Clear itinerary",
+      "do": "Click **Clear**.",
+      "expect": "**Clear Itinerary?** confirmation appears with the remove-all message."
+    },
+    {
+      "number": 7,
+      "name": "Confirm clear",
+      "do": "Confirm the clear.",
+      "expect": "Itinerary returns to empty state."
+    },
+    {
+      "number": 8,
+      "name": "Wizard usable again",
+      "do": "Open **Edit Itinerary** / **Build Itinerary** again.",
+      "expect": "Wizard starts cleanly (e.g. **Set Visit Date**)."
+    }
+  ]
+}

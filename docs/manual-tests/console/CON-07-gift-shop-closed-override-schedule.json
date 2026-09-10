@@ -1,0 +1,69 @@
+{
+  "id": "CON-07",
+  "title": "Gift shop closed / override / schedule",
+  "preconditions": "Console open. Known gift shop. Prefer either override **or** full schedule depth to keep ~10 steps.",
+  "dateUnderTest": "**D** for closed verify.",
+  "cleanup": "Gift shop open; test overrides/schedules cleaned.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set closed",
+      "do": "**Set gift shop as closed** covering D.",
+      "expect": "Success."
+    },
+    {
+      "number": 2,
+      "name": "Map without include",
+      "do": "Map; **Include closed gift shops** off.",
+      "expect": "Hidden/closed."
+    },
+    {
+      "number": 3,
+      "name": "Map with include",
+      "do": "Enable include closed gift shops.",
+      "expect": "Visible + message."
+    },
+    {
+      "number": 4,
+      "name": "Override or schedule",
+      "do": "Either **Create gift shop closure override** OR **Set gift shop opening schedule**.",
+      "expect": "Success path chosen — note which."
+    },
+    {
+      "number": 5,
+      "name": "Overlap if schedule",
+      "do": "If schedule overlaps, resolve **Schedule conflict**.",
+      "expect": "Trim/Delete/Cancel noted."
+    },
+    {
+      "number": 6,
+      "name": "Map after change",
+      "do": "Map on D / open day.",
+      "expect": "Matches intended open/closed."
+    },
+    {
+      "number": 7,
+      "name": "Cleanup closed",
+      "do": "Re-open if still closed.",
+      "expect": "Open."
+    },
+    {
+      "number": 8,
+      "name": "Verify map",
+      "do": "Include-closed off.",
+      "expect": "Normal marker if open."
+    },
+    {
+      "number": 9,
+      "name": "Statuses",
+      "do": "Each submit showed success.",
+      "expect": "OK."
+    },
+    {
+      "number": 10,
+      "name": "Notes",
+      "do": "Record gift shop name and path used.",
+      "expect": "Notes."
+    }
+  ]
+}

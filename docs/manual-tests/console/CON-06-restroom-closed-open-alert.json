@@ -1,0 +1,69 @@
+{
+  "id": "CON-06",
+  "title": "Restroom closed/open + alert",
+  "preconditions": "Console open. Known restroom.",
+  "dateUnderTest": "**D** for closed/open.",
+  "cleanup": "Restroom open; alerts removed.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Close restroom",
+      "do": "**Set restroom as closed** for D.",
+      "expect": "Success."
+    },
+    {
+      "number": 2,
+      "name": "Map closed behavior",
+      "do": "Map D; try with/without **Include closed restrooms**.",
+      "expect": "Show/hide matches toggles."
+    },
+    {
+      "number": 3,
+      "name": "Set alert",
+      "do": "**Set restroom alert** (same or another restroom) covering D.",
+      "expect": "Success alert."
+    },
+    {
+      "number": 4,
+      "name": "Map alert badge",
+      "do": "Map shows alert badge/styling.",
+      "expect": "Alert visible."
+    },
+    {
+      "number": 5,
+      "name": "Remove alert",
+      "do": "**Remove restroom alert**.",
+      "expect": "Success removed."
+    },
+    {
+      "number": 6,
+      "name": "Open restroom",
+      "do": "**Set restroom as open**.",
+      "expect": "Success open."
+    },
+    {
+      "number": 7,
+      "name": "Map open",
+      "do": "Map D.",
+      "expect": "Restroom open/normal."
+    },
+    {
+      "number": 8,
+      "name": "Include-closed spot-check",
+      "do": "Toggle include closed restrooms once more.",
+      "expect": "Behaves."
+    },
+    {
+      "number": 9,
+      "name": "Cleanup",
+      "do": "No leftover closure/alert.",
+      "expect": "Clean."
+    },
+    {
+      "number": 10,
+      "name": "Pass criteria",
+      "do": "Marker state matches last ops.",
+      "expect": "Pass if matched."
+    }
+  ]
+}

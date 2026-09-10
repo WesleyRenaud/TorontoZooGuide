@@ -1,0 +1,69 @@
+{
+  "id": "ITIN-07",
+  "title": "Talk and encounter scheduling",
+  "preconditions": "Visit date with ≥1 Meet the Guardians talk or Wild Encounter in seed. Clear itinerary first.",
+  "dateUnderTest": "Record date with offerings.",
+  "cleanup": "Clear itinerary.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Add talk",
+      "do": "In wizard Meet the Guardians step, add a talk if listed.",
+      "expect": "Talk selected **or** Notes “none offered” and skip talk-specific steps."
+    },
+    {
+      "number": 2,
+      "name": "Add wild encounter",
+      "do": "On Wild Encounters, add one if listed.",
+      "expect": "Encounter selected **or** Notes none offered."
+    },
+    {
+      "number": 3,
+      "name": "Finish",
+      "do": "Finish with talk and/or encounter (+ optional animal).",
+      "expect": "Itinerary saved."
+    },
+    {
+      "number": 4,
+      "name": "Schedule talk",
+      "do": "Schedule the talk at its offered time.",
+      "expect": "Pill appears at talk time."
+    },
+    {
+      "number": 5,
+      "name": "Reschedule talk",
+      "do": "Change talk time / reschedule.",
+      "expect": "Confirm dialog if required; succeeds."
+    },
+    {
+      "number": 6,
+      "name": "Walk-route update prompt",
+      "do": "If prompted about walk-route update, confirm or cancel once each as separate Notes.",
+      "expect": "Prompt behavior recorded."
+    },
+    {
+      "number": 7,
+      "name": "Schedule encounter",
+      "do": "Schedule wild encounter at its time.",
+      "expect": "Pill appears."
+    },
+    {
+      "number": 8,
+      "name": "Force overlap if easy",
+      "do": "Schedule another item overlapping the encounter/talk.",
+      "expect": "Conflict/overlap flow begins **or** note unable to force."
+    },
+    {
+      "number": 9,
+      "name": "WE priority / shorten",
+      "do": "If wild-encounter overlap handling appears, follow adjust/shorten.",
+      "expect": "WE priority path works — or N/A."
+    },
+    {
+      "number": 10,
+      "name": "Cancel paths",
+      "do": "Document cancel/skip choices in Notes.",
+      "expect": "No crash; itinerary consistent."
+    }
+  ]
+}

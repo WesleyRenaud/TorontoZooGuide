@@ -1,0 +1,81 @@
+{
+  "id": "ITIN-01",
+  "title": "Wizard happy path",
+  "preconditions": "`npm run clear:itinerary` if needed. Open `itinerary.html`. Prefer a future in-season visit date with animals offered.",
+  "dateUnderTest": "Chosen future visit date (record it).",
+  "cleanup": "`npm run clear:itinerary` or **Clear Itinerary?** when done.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open itinerary",
+      "do": "Open `itinerary.html`. Use **Edit Itinerary** / **Build Itinerary** to open the builder if needed.",
+      "expect": "Itinerary page loads; builder can be opened."
+    },
+    {
+      "number": 2,
+      "name": "Set Visit Date",
+      "do": "Complete **Set Visit Date** and continue.",
+      "expect": "Date is accepted; next wizard step appears."
+    },
+    {
+      "number": 3,
+      "name": "Add Animals by Region",
+      "do": "On **Add Animals by Region**, select at least one region/exhibit and continue.",
+      "expect": "Selection is kept; proceed to animals."
+    },
+    {
+      "number": 4,
+      "name": "Add Animals",
+      "do": "On **Add Animals**, add ≥1 animal.",
+      "expect": "Animal appears selected in the builder."
+    },
+    {
+      "number": 5,
+      "name": "Add Attractions",
+      "do": "On **Add Attractions**, add 0 or 1 attraction and continue.",
+      "expect": "Step completes (empty OK)."
+    },
+    {
+      "number": 6,
+      "name": "Meet the Guardians",
+      "do": "On the Meet the Guardians step, add a talk if listed, else continue.",
+      "expect": "Pass with Notes “none offered” if empty for the date."
+    },
+    {
+      "number": 7,
+      "name": "Wild Encounters",
+      "do": "On **Wild Encounters**, add one if listed, else continue.",
+      "expect": "Pass with Notes “none offered” if empty."
+    },
+    {
+      "number": 8,
+      "name": "Add Transportation",
+      "do": "On **Add Transportation**, add or skip, then continue toward finish.",
+      "expect": "Step completes."
+    },
+    {
+      "number": 9,
+      "name": "Finish with items",
+      "do": "Click **Finish** with ≥1 total selected item.",
+      "expect": "Finish succeeds (not **No Items Selected**)."
+    },
+    {
+      "number": 10,
+      "name": "List view",
+      "do": "Click **List View** and confirm sections.",
+      "expect": "Sections show selected animals (and other types if chosen); **List View** control is available."
+    },
+    {
+      "number": 11,
+      "name": "Day Planner view",
+      "do": "Switch to **Day Planner View** if not already shown.",
+      "expect": "Day Planner / timeline UI is available (**Arrival time**, **Departure time**, scheduled/unscheduled sections)."
+    },
+    {
+      "number": 12,
+      "name": "Map pane markers",
+      "do": "Look at the itinerary map pane.",
+      "expect": "Planned item markers appear on the map."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "MAP-09",
+  "title": "Deep link focus",
+  "preconditions": "Know a seed species (+ optional exhibit), e.g. `African Lion` / Africa Savanna. URL-encode spaces as needed.",
+  "dateUnderTest": "N/A (focus query).",
+  "cleanup": "End on plain `map.html` without query.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open focus URL",
+      "do": "Open `map.html?focus=African%20Lion` (adjust species) and optional `&exhibit=...`.",
+      "expect": "Page loads and attempts focus."
+    },
+    {
+      "number": 2,
+      "name": "Pan/focus target",
+      "do": "Observe map motion/highlight.",
+      "expect": "Map pans/focuses toward the target marker."
+    },
+    {
+      "number": 3,
+      "name": "Filter includes Animals",
+      "do": "Check Filter.",
+      "expect": "**Animals** is checked (auto-added if needed)."
+    },
+    {
+      "number": 4,
+      "name": "Tooltip or highlight",
+      "do": "Observe target marker.",
+      "expect": "Tooltip and/or highlight on the focused animal."
+    },
+    {
+      "number": 5,
+      "name": "Query stripped",
+      "do": "Inspect the address bar after focus completes.",
+      "expect": "Focus query params removed via history replace."
+    },
+    {
+      "number": 6,
+      "name": "Refresh clean",
+      "do": "Reload the cleaned URL.",
+      "expect": "Normal map load without forced focus."
+    },
+    {
+      "number": 7,
+      "name": "Invalid focus",
+      "do": "Open `map.html?focus=NotARealSpecies123`.",
+      "expect": "Fails gracefully (no crash); map still usable."
+    },
+    {
+      "number": 8,
+      "name": "Bottom nav after focus",
+      "do": "Use bottom nav to Itinerary then back to Map.",
+      "expect": "Navigation still works."
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "ITIN-05",
+  "title": "Rebuild and unschedule all",
+  "preconditions": "Itinerary with multiple scheduled items and a visible walk path on the itinerary map.",
+  "dateUnderTest": "Visit date.",
+  "cleanup": "Optional reschedule one item so the itinerary is not empty of schedule.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Note baseline",
+      "do": "Note existing pills and walk path.",
+      "expect": "Baseline recorded."
+    },
+    {
+      "number": 2,
+      "name": "Rebuild schedule",
+      "do": "Click **Rebuild schedule**.",
+      "expect": "Pills/path regenerate (may reshuffle times)."
+    },
+    {
+      "number": 3,
+      "name": "Path after rebuild",
+      "do": "Inspect itinerary map.",
+      "expect": "Walk path present if ≥2 scheduled stops."
+    },
+    {
+      "number": 4,
+      "name": "Unschedule all",
+      "do": "Click **Unschedule all items**.",
+      "expect": "Confirm prompt if shown."
+    },
+    {
+      "number": 5,
+      "name": "Confirm unschedule all",
+      "do": "Confirm if prompted.",
+      "expect": "All schedule pills cleared."
+    },
+    {
+      "number": 6,
+      "name": "Path cleared",
+      "do": "Inspect map pane.",
+      "expect": "Walk path cleared."
+    },
+    {
+      "number": 7,
+      "name": "List retained",
+      "do": "Check list view.",
+      "expect": "Items remain on itinerary as unscheduled."
+    },
+    {
+      "number": 8,
+      "name": "Schedule one again",
+      "do": "Schedule a single animal.",
+      "expect": "Pill returns; path may be absent with one stop."
+    },
+    {
+      "number": 9,
+      "name": "Stable UI",
+      "do": "Toggle list/planner.",
+      "expect": "No crash after unschedule-all."
+    }
+  ]
+}

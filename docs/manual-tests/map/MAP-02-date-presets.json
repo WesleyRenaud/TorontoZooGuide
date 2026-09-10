@@ -1,0 +1,69 @@
+{
+  "id": "MAP-02",
+  "title": "Date presets",
+  "preconditions": "MAP-01 baseline OK. Open `map.html`.",
+  "dateUnderTest": "Exercise **Summer Map**, **Winter Map**, and **Specific Map**.",
+  "cleanup": "Leave preset on **Specific Map** when finished.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Select Summer Map",
+      "do": "In the map controls dropdown, choose **Summer Map**.",
+      "expect": "Preset switches to **Summer Map**."
+    },
+    {
+      "number": 2,
+      "name": "Summer date control",
+      "do": "Observe `#mapDate` / date field.",
+      "expect": "Date input is hidden or not used for free picking (summer uses fixed seasonal anchor)."
+    },
+    {
+      "number": 3,
+      "name": "Summer markers context",
+      "do": "Note animal/amenity marker set and Explore **Updates** if shown.",
+      "expect": "Map content reflects summer context (differs from mid-winter where species/amenities are seasonal)."
+    },
+    {
+      "number": 4,
+      "name": "Select Winter Map",
+      "do": "Choose **Winter Map**.",
+      "expect": "Preset switches to **Winter Map**."
+    },
+    {
+      "number": 5,
+      "name": "Winter date control",
+      "do": "Observe the date field again.",
+      "expect": "Date picking stays locked/hidden as designed for winter preset."
+    },
+    {
+      "number": 6,
+      "name": "Winter vs summer difference",
+      "do": "Compare markers/Updates to what you saw on Summer Map.",
+      "expect": "At least some seasonal difference is visible (animals, closed exhibits, updates, or Zoomobile season) — note what changed."
+    },
+    {
+      "number": 7,
+      "name": "Select Specific Map",
+      "do": "Choose **Specific Map**.",
+      "expect": "Preset switches; date field becomes available."
+    },
+    {
+      "number": 8,
+      "name": "Open date picker",
+      "do": "Click the date input.",
+      "expect": "Flatpickr (or date UI) opens."
+    },
+    {
+      "number": 9,
+      "name": "Pick mid-season date",
+      "do": "Choose a mid-season date (e.g. a day in May or September).",
+      "expect": "Date applies; map refetches."
+    },
+    {
+      "number": 10,
+      "name": "Refresh for that date",
+      "do": "Watch markers and Updates/Events after the date change.",
+      "expect": "Markers and Updates/Events refresh for the selected date without requiring a full page reload."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "ITIN-12",
+  "title": "Map path smoke on itinerary",
+  "preconditions": "Scheduled multi-stop day (≥2 scheduled animals/stops).",
+  "dateUnderTest": "Visit date.",
+  "cleanup": "**Unschedule all items** or clear itinerary.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Multi-stop planner",
+      "do": "Ensure Day Planner has ≥2 scheduled stops.",
+      "expect": "Pills visible."
+    },
+    {
+      "number": 2,
+      "name": "Walk path drawn",
+      "do": "Inspect itinerary map.",
+      "expect": "Walk path/route overlay drawn."
+    },
+    {
+      "number": 3,
+      "name": "Pan/zoom path",
+      "do": "Pan/zoom the itinerary map.",
+      "expect": "Path remains visible/coherent."
+    },
+    {
+      "number": 4,
+      "name": "Unschedule middle",
+      "do": "Unschedule a middle stop.",
+      "expect": "Path updates (not stale)."
+    },
+    {
+      "number": 5,
+      "name": "Add Zoomobile transport",
+      "do": "Add Zoomobile as transportation and schedule/rebuild as needed.",
+      "expect": "Transport reflected in legs/path."
+    },
+    {
+      "number": 6,
+      "name": "Path reflects transport",
+      "do": "Inspect path/legs.",
+      "expect": "Transport segment distinguishable or walking reduced as designed."
+    },
+    {
+      "number": 7,
+      "name": "Scenic vs transport",
+      "do": "If Zoomobile also exists as scenic attraction, ensure scenic add does not impersonate transport leg.",
+      "expect": "Representations distinct."
+    },
+    {
+      "number": 8,
+      "name": "Unschedule all clears path",
+      "do": "**Unschedule all items**.",
+      "expect": "Walk path clears."
+    }
+  ]
+}

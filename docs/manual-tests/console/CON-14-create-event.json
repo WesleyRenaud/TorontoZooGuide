@@ -1,0 +1,57 @@
+{
+  "id": "CON-14",
+  "title": "Create event",
+  "preconditions": "Console open. Note: ending events may be unavailable — document in Notes.",
+  "dateUnderTest": "**D** inside event dates; also test a date outside range.",
+  "cleanup": "Note leftover event if it cannot be ended from console.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Create event",
+      "do": "**Create event** with name, location, description, optional link, dates covering D.",
+      "expect": "Success created."
+    },
+    {
+      "number": 2,
+      "name": "Map Events shows",
+      "do": "Map Explore → **Events** on D.",
+      "expect": "Event visible."
+    },
+    {
+      "number": 3,
+      "name": "Open link",
+      "do": "If link present, open/check it.",
+      "expect": "Link works or N/A."
+    },
+    {
+      "number": 4,
+      "name": "Outside range",
+      "do": "Set map date outside event range.",
+      "expect": "Event absent."
+    },
+    {
+      "number": 5,
+      "name": "Inside range again",
+      "do": "Return map date to D.",
+      "expect": "Event present."
+    },
+    {
+      "number": 6,
+      "name": "No itinerary required",
+      "do": "Skip itinerary.",
+      "expect": "Map-only verify OK."
+    },
+    {
+      "number": 7,
+      "name": "Endability Notes",
+      "do": "Check whether console can end/delete event.",
+      "expect": "Notes."
+    },
+    {
+      "number": 8,
+      "name": "Pass",
+      "do": "Create + map date gating verified.",
+      "expect": "Pass."
+    }
+  ]
+}

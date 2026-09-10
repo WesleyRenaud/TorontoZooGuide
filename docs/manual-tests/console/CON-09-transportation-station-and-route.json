@@ -1,0 +1,69 @@
+{
+  "id": "CON-09",
+  "title": "Transportation station + current route",
+  "preconditions": "Console open. Zoomobile stations exist on map.",
+  "dateUnderTest": "**D** for station closure; route range covering D.",
+  "cleanup": "Stations open; restore prior transportation route if known.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Close station",
+      "do": "**Set transportation station as closed** for D.",
+      "expect": "Success."
+    },
+    {
+      "number": 2,
+      "name": "Map station closed",
+      "do": "Map D with Zoomobile route visible.",
+      "expect": "Station closed/missing/messaged."
+    },
+    {
+      "number": 3,
+      "name": "Open station",
+      "do": "**Set transportation station as open**.",
+      "expect": "Success."
+    },
+    {
+      "number": 4,
+      "name": "Set Summer route",
+      "do": "**Set current transportation route** — choose **Summer**, date range including D.",
+      "expect": "Success “Transportation route was set to …”"
+    },
+    {
+      "number": 5,
+      "name": "Map summer",
+      "do": "Map Explore → Summer/Current as applicable.",
+      "expect": "Summer route layer/stations."
+    },
+    {
+      "number": 6,
+      "name": "Set Winter route",
+      "do": "Set route to **Winter** for a range.",
+      "expect": "Success."
+    },
+    {
+      "number": 7,
+      "name": "Map winter",
+      "do": "Map shows winter route treatment.",
+      "expect": "Winter differs from summer where designed."
+    },
+    {
+      "number": 8,
+      "name": "Itinerary transport",
+      "do": "If itinerary transport options change with route, spot-check.",
+      "expect": "Noted or N/A."
+    },
+    {
+      "number": 9,
+      "name": "Restore route",
+      "do": "Set route back to the previous/current intended season.",
+      "expect": "Restored."
+    },
+    {
+      "number": 10,
+      "name": "Cleanup stations",
+      "do": "Confirm stations open on D.",
+      "expect": "Open."
+    }
+  ]
+}

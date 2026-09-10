@@ -1,0 +1,75 @@
+{
+  "id": "ITIN-11",
+  "title": "Draft and past-date recovery",
+  "preconditions": "Ability to use localStorage draft and past-date recovery UI. May require setting visit date to a past day after save, or using recovery entry points the app provides.",
+  "dateUnderTest": "Start future; then exercise past recovery.",
+  "cleanup": "`npm run clear:itinerary` + clear itinerary-config if sticky.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Mid-wizard draft",
+      "do": "Start builder, set date, select animals; do not finish.",
+      "expect": "Draft in progress."
+    },
+    {
+      "number": 2,
+      "name": "Refresh",
+      "do": "Reload `itinerary.html`.",
+      "expect": "Page reloads."
+    },
+    {
+      "number": 3,
+      "name": "Draft restored",
+      "do": "Re-open builder.",
+      "expect": "Draft restored from localStorage (selections/date retained)."
+    },
+    {
+      "number": 4,
+      "name": "Complete save",
+      "do": "Finish to save itinerary.",
+      "expect": "Saved itinerary present."
+    },
+    {
+      "number": 5,
+      "name": "Trigger past-date recovery",
+      "do": "Cause past-date recovery (set visit date in the past if UI allows, or open app when saved date is past).",
+      "expect": "Past-date recovery UI appears."
+    },
+    {
+      "number": 6,
+      "name": "Choose new date",
+      "do": "Choose a new future date.",
+      "expect": "Recovery continues."
+    },
+    {
+      "number": 7,
+      "name": "Removed-items popup",
+      "do": "Review animals added/removed, talks unavailable, times adjusted, etc.",
+      "expect": "Popup sections match changes."
+    },
+    {
+      "number": 8,
+      "name": "Keep vs remove",
+      "do": "Use **Keep** / remove choices where offered.",
+      "expect": "Choices apply."
+    },
+    {
+      "number": 9,
+      "name": "Alternate clear path",
+      "do": "On another run, choose clear itinerary from recovery if available.",
+      "expect": "Empty itinerary result."
+    },
+    {
+      "number": 10,
+      "name": "Don’t show again",
+      "do": "If suppression checkbox exists, note behavior.",
+      "expect": "Pass/N/A."
+    },
+    {
+      "number": 11,
+      "name": "Coherent result",
+      "do": "Inspect itinerary after accepting recovery.",
+      "expect": "New date itinerary coherent."
+    }
+  ]
+}

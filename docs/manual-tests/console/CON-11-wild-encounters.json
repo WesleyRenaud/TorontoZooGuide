@@ -1,0 +1,69 @@
+{
+  "id": "CON-11",
+  "title": "Wild encounters",
+  "preconditions": "Console open. Known wild encounter from seed.",
+  "dateUnderTest": "**D** in schedule.",
+  "cleanup": "End schedule; cancel test occurrences.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set schedule",
+      "do": "**Set Wild Encounter schedule** including D.",
+      "expect": "Success saved."
+    },
+    {
+      "number": 2,
+      "name": "Map verify",
+      "do": "Map D; enable **Wild Encounters** filter.",
+      "expect": "Meeting spot / encounter marker visible."
+    },
+    {
+      "number": 3,
+      "name": "Itinerary selector",
+      "do": "Itinerary Wild Encounters step on D.",
+      "expect": "Encounter listed."
+    },
+    {
+      "number": 4,
+      "name": "Cancel occurrence",
+      "do": "**Cancel Wild Encounter occurrence** (add occurrence first only if required to have something to cancel).",
+      "expect": "Success cancelled."
+    },
+    {
+      "number": 5,
+      "name": "Cancelled absent",
+      "do": "Itinerary/map for that slot.",
+      "expect": "Absent as designed."
+    },
+    {
+      "number": 6,
+      "name": "End schedule",
+      "do": "**End Wild Encounter schedule**.",
+      "expect": "Success ended."
+    },
+    {
+      "number": 7,
+      "name": "Future clear",
+      "do": "Future date check.",
+      "expect": "Cleared as designed."
+    },
+    {
+      "number": 8,
+      "name": "Duplicate time optional",
+      "do": "Optional duplicate-time validation Notes.",
+      "expect": "Optional."
+    },
+    {
+      "number": 9,
+      "name": "Cleanup",
+      "do": "No leftover test schedule.",
+      "expect": "Clean."
+    },
+    {
+      "number": 10,
+      "name": "Final map",
+      "do": "Map quiet/expected.",
+      "expect": "OK."
+    }
+  ]
+}

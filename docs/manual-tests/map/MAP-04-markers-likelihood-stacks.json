@@ -1,0 +1,69 @@
+{
+  "id": "MAP-04",
+  "title": "Markers, likelihood, stacks",
+  "preconditions": "Open `map.html` on **Specific Map**. Prefer a shoulder-season date (e.g. late March or November) for mixed likelihood tints.",
+  "dateUnderTest": "Record the Specific Map date used.",
+  "cleanup": "None.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Pick mixed-likelihood date",
+      "do": "Set Specific Map to a shoulder-season date.",
+      "expect": "Date applies; markers reload."
+    },
+    {
+      "number": 2,
+      "name": "Likelihood tint",
+      "do": "Compare an animal icon tint to a peak-summer date for the same species (toggle date).",
+      "expect": "Tint/likelihood styling differs where the seasonal curve is not flat — note species checked."
+    },
+    {
+      "number": 3,
+      "name": "Find stack or skip",
+      "do": "Look for a stacked/count marker at shared coordinates.",
+      "expect": "If none in seed: **Blocked** — stacking covered when shared coords exist; continue other steps."
+    },
+    {
+      "number": 4,
+      "name": "Click stack",
+      "do": "Click a stacked marker (if present).",
+      "expect": "Multi-item UI / carousel appears."
+    },
+    {
+      "number": 5,
+      "name": "Carousel UI",
+      "do": "Confirm multiple items are listed or carouseled.",
+      "expect": "More than one entity is represented."
+    },
+    {
+      "number": 6,
+      "name": "Advance carousel",
+      "do": "Use next/prev on the carousel if present.",
+      "expect": "Each item becomes identifiable (name/type)."
+    },
+    {
+      "number": 7,
+      "name": "Amenity styling spot-check",
+      "do": "Enable **Restaurants** or **Gift Shops** or **Attractions**; spot-check open/closed or likelihood styling.",
+      "expect": "Markers render with expected open/closed or likelihood treatment."
+    },
+    {
+      "number": 8,
+      "name": "Limited-viewing / alert badge",
+      "do": "If seed has limited viewing or alerts, find `marker-has-limited-viewing` / badge styling.",
+      "expect": "Badge visible if data exists; else **Blocked** → CON-02/CON-03."
+    },
+    {
+      "number": 9,
+      "name": "Zoom stability",
+      "do": "Zoom in/out around markers.",
+      "expect": "Markers stay anchored; not orphaned off-map incorrectly."
+    },
+    {
+      "number": 10,
+      "name": "Return to Specific Map",
+      "do": "Leave a mid-season Specific Map date selected.",
+      "expect": "Map remains usable."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "CON-13",
+  "title": "Updates CRUD",
+  "preconditions": "Console open.",
+  "dateUnderTest": "**D** inside update active range.",
+  "cleanup": "End update so it is inactive after test (or note leftover).",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Create update",
+      "do": "**Create update** with **Title**, **Description**, **Type** (e.g. New Arrival), **Start date** covering D, optional **No longer applies on**.",
+      "expect": "Success created."
+    },
+    {
+      "number": 2,
+      "name": "Map Updates shows it",
+      "do": "Map Explore → **Updates** on D.",
+      "expect": "Update visible."
+    },
+    {
+      "number": 3,
+      "name": "Edit update",
+      "do": "**Edit update** description/type/end.",
+      "expect": "Success edited."
+    },
+    {
+      "number": 4,
+      "name": "Map reflects edit",
+      "do": "Refresh Updates on D.",
+      "expect": "Edited content shown."
+    },
+    {
+      "number": 5,
+      "name": "End update",
+      "do": "**End update** effective on/before D as designed.",
+      "expect": "Success ended."
+    },
+    {
+      "number": 6,
+      "name": "Map inactive",
+      "do": "Updates on D.",
+      "expect": "No longer listed as active (or ended treatment)."
+    },
+    {
+      "number": 7,
+      "name": "Inside vs outside range",
+      "do": "Before ending, flip map date inside/outside range once.",
+      "expect": "Presence matches range."
+    },
+    {
+      "number": 8,
+      "name": "Cleanup",
+      "do": "Ensure test update ended.",
+      "expect": "Clean enough for other suites."
+    },
+    {
+      "number": 9,
+      "name": "No crash",
+      "do": "Carousel/collapse still works.",
+      "expect": "OK."
+    },
+    {
+      "number": 10,
+      "name": "Pass",
+      "do": "CRUD + map verify done.",
+      "expect": "Pass."
+    }
+  ]
+}

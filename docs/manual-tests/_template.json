@@ -1,0 +1,15 @@
+{
+  "id": "XXX-00",
+  "title": "Short title",
+  "preconditions": "npm run seed, npm start, …",
+  "dateUnderTest": "…",
+  "cleanup": "None or steps to restore.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Step name",
+      "do": "What to do.",
+      "expect": "What should happen."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "id": "CON-08",
+  "title": "Attraction closed / override / schedule / hours",
+  "preconditions": "Console open. Pick a named attraction with hours (e.g. Conservation Carousel or Zoomobile-related attraction).",
+  "dateUnderTest": "**D** = future date used for closed + itinerary checks.",
+  "cleanup": "Restore open state and sensible hours; remove test closures/overrides.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set attraction hours",
+      "do": "Open **Set attraction hours**. Set weekday and weekend/holiday start/end within zoo hours.",
+      "expect": "Form validates."
+    },
+    {
+      "number": 2,
+      "name": "Submit hours",
+      "do": "Submit.",
+      "expect": "Success “{name} attraction hours were saved.”"
+    },
+    {
+      "number": 3,
+      "name": "Itinerary hours snap",
+      "do": "On itinerary for a day those hours apply, schedule the attraction outside its open window.",
+      "expect": "UI snaps to nearest valid time or warns — note which."
+    },
+    {
+      "number": 4,
+      "name": "Set attraction closed",
+      "do": "Open **Set attraction as closed** for range covering D + message.",
+      "expect": "Submit success closed."
+    },
+    {
+      "number": 5,
+      "name": "Map closed",
+      "do": "Map on D with **Include closed attractions** unchecked then checked.",
+      "expect": "Hidden/closed without include; visible + message with include."
+    },
+    {
+      "number": 6,
+      "name": "Itinerary closed confirm",
+      "do": "Try adding the attraction on D.",
+      "expect": "**Attraction May Be Closed** / closed confirm appears."
+    },
+    {
+      "number": 7,
+      "name": "Override or reopen",
+      "do": "Use **Create attraction closure override** or set open / end closure so D is effectively open.",
+      "expect": "Success status."
+    },
+    {
+      "number": 8,
+      "name": "Opening schedule",
+      "do": "Open **Set attraction opening schedule**; set a weekly pattern.",
+      "expect": "Saves, or **Schedule conflict** dialog if overlapping (**Trim Old Schedules** / **Delete Old Schedules**)."
+    },
+    {
+      "number": 9,
+      "name": "Resolve overlap if shown",
+      "do": "If overlap dialog appears, choose Trim or Delete and confirm.",
+      "expect": "Schedule saves; note choice."
+    },
+    {
+      "number": 10,
+      "name": "Map open state",
+      "do": "Map on D.",
+      "expect": "Attraction appears open/normal without needing include-closed."
+    },
+    {
+      "number": 11,
+      "name": "Hours still valid",
+      "do": "Spot-check itinerary scheduling still respects hours.",
+      "expect": "Snap/hours behavior still coherent."
+    },
+    {
+      "number": 12,
+      "name": "Cleanup",
+      "do": "Remove test closure/override; leave attraction open.",
+      "expect": "Guest map clean for D."
+    }
+  ]
+}

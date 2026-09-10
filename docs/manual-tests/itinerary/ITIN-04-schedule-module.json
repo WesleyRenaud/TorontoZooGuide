@@ -1,0 +1,75 @@
+{
+  "id": "ITIN-04",
+  "title": "Schedule module",
+  "preconditions": "Complete a saved itinerary with several unscheduled animals (from ITIN-01 or new build).",
+  "dateUnderTest": "Same visit date as the itinerary.",
+  "cleanup": "Optional: **Unschedule all items** before leaving.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open schedule UI",
+      "do": "In the itinerary panel, open the schedule-an-item / scheduling controls.",
+      "expect": "Schedule module is visible (type, search, time)."
+    },
+    {
+      "number": 2,
+      "name": "Choose type",
+      "do": "Select animal (or matching type for an itinerary item).",
+      "expect": "Type filter applies to searchable items."
+    },
+    {
+      "number": 3,
+      "name": "Search item",
+      "do": "Search for an animal already on the itinerary.",
+      "expect": "Matching results appear."
+    },
+    {
+      "number": 4,
+      "name": "Only on my itinerary",
+      "do": "Enable **Only show items on my itinerary**.",
+      "expect": "Results restricted to itinerary items."
+    },
+    {
+      "number": 5,
+      "name": "Pick time",
+      "do": "Choose a valid time within arrival/departure if set.",
+      "expect": "Time accepted."
+    },
+    {
+      "number": 6,
+      "name": "Optional duration",
+      "do": "Set duration if the field is shown.",
+      "expect": "Duration accepted or defaults applied."
+    },
+    {
+      "number": 7,
+      "name": "Schedule succeeds",
+      "do": "Submit/schedule the item.",
+      "expect": "A scheduled pill appears on the Day Planner timeline."
+    },
+    {
+      "number": 8,
+      "name": "Unschedule via pill menu",
+      "do": "Open the pill menu and unschedule.",
+      "expect": "Pill removed; item remains on list unscheduled."
+    },
+    {
+      "number": 9,
+      "name": "Reschedule",
+      "do": "Schedule the same item again at a different time.",
+      "expect": "New pill appears at the new time."
+    },
+    {
+      "number": 10,
+      "name": "Remove if offered",
+      "do": "From pill/list menu, remove from itinerary if available.",
+      "expect": "Item leaves itinerary (or note if remove is list-only)."
+    },
+    {
+      "number": 11,
+      "name": "List vs planner sync",
+      "do": "Compare list view and Day Planner.",
+      "expect": "Scheduled vs unscheduled state matches across views."
+    }
+  ]
+}
