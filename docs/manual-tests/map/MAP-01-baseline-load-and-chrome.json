@@ -37,15 +37,15 @@
     },
     {
       "number": 6,
-      "name": "Show region/pavilion text on",
-      "do": "Enable **Show region/pavilion text** if it is not already on (it may default checked).",
-      "expect": "Region/pavilion labels appear on the map."
+      "name": "Show region/pavilion text default on",
+      "do": "Confirm **Show region/pavilion text** is checked (it defaults on) and look at the map.",
+      "expect": "Checkbox is checked; region/pavilion labels are visible on the map."
     },
     {
       "number": 7,
       "name": "Show region/pavilion text off",
-      "do": "Disable **Show region/pavilion text**.",
-      "expect": "Those labels hide again."
+      "do": "Uncheck **Show region/pavilion text**.",
+      "expect": "Those labels hide."
     },
     {
       "number": 8,
