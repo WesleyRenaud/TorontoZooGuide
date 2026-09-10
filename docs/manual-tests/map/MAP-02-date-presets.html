@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>MAP-02 — Date presets — Manual test</title>
+   <style>
+:root {
+   --mt-bg: #eef1ea;
+   --mt-ink: #1c2420;
+   --mt-muted: #5c6b63;
+   --mt-line: #c5cec4;
+   --mt-pass: #2f6b3a;
+   --mt-fail: #9b2f2f;
+   --mt-blocked: #6b5a2f;
+   --mt-pass-bg: #d9eadc;
+   --mt-fail-bg: #f3d6d6;
+   --mt-blocked-bg: #efe6c9;
+}
+* { box-sizing: border-box; }
+body {
+   margin: 0;
+   min-height: 100vh;
+   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+   color: var(--mt-ink);
+   background:
+      radial-gradient(circle at top left, #dfe8d8 0%, transparent 42%),
+      linear-gradient(180deg, #f4f6f1 0%, var(--mt-bg) 100%);
+}
+.page {
+   max-width: 46rem;
+   margin: 0 auto;
+   padding: 1.25rem 1.25rem 3rem;
+}
+.kicker {
+   margin: 0 0 0.2rem;
+   text-transform: uppercase;
+   letter-spacing: 0.08em;
+   font-size: 0.75rem;
+   color: var(--mt-muted);
+}
+h1 {
+   margin: 0 0 0.75rem;
+   font-size: 1.45rem;
+   font-weight: 650;
+}
+.meta p {
+   margin: 0.35rem 0;
+   line-height: 1.45;
+}
+.actions {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 0.5rem;
+   margin: 1rem 0 0.5rem;
+}
+.actions button,
+.result-btn {
+   font: inherit;
+   cursor: pointer;
+}
+.actions button {
+   border: 1px solid var(--mt-line);
+   background: #fff;
+   border-radius: 0.4rem;
+   padding: 0.4rem 0.7rem;
+}
+.summary {
+   margin: 0 0 1rem;
+   color: var(--mt-muted);
+}
+.step {
+   background: #fff;
+   border: 1px solid var(--mt-line);
+   border-radius: 0.65rem;
+   padding: 0.9rem 1rem 1rem;
+   margin-bottom: 0.75rem;
+}
+.step h2 {
+   margin: 0 0 0.55rem;
+   font-size: 1.05rem;
+}
+.step p {
+   margin: 0.35rem 0;
+   line-height: 1.45;
+}
+.step.result-pass {
+   background: var(--mt-pass-bg);
+   border-color: #b7d4bc;
+}
+.step.result-fail {
+   background: var(--mt-fail-bg);
+   border-color: #e0b4b4;
+}
+.step.result-blocked {
+   background: var(--mt-blocked-bg);
+   border-color: #ddd0a6;
+}
+.result-row {
+   display: flex;
+   align-items: center;
+   gap: 0.45rem;
+   margin: 0.75rem 0 0.5rem;
+}
+.result-label {
+   font-weight: 650;
+   margin-right: 0.25rem;
+}
+.result-btn {
+   width: 2.35rem;
+   height: 2.35rem;
+   border-radius: 999px;
+   border: 1.5px solid var(--mt-line);
+   background: #fff;
+   font-size: 1.15rem;
+   line-height: 1;
+}
+.result-btn.result-pass[aria-pressed="true"] {
+   background: var(--mt-pass);
+   border-color: var(--mt-pass);
+   color: #fff;
+}
+.result-btn.result-fail[aria-pressed="true"] {
+   background: var(--mt-fail);
+   border-color: var(--mt-fail);
+   color: #fff;
+}
+.result-btn.result-blocked[aria-pressed="true"] {
+   background: var(--mt-blocked);
+   border-color: var(--mt-blocked);
+   color: #fff;
+}
+.notes-label {
+   display: grid;
+   gap: 0.3rem;
+   font-weight: 650;
+   margin-top: 0.35rem;
+}
+.notes {
+   width: 100%;
+   font: inherit;
+   border: 1px solid var(--mt-line);
+   border-radius: 0.4rem;
+   padding: 0.45rem 0.55rem;
+   resize: vertical;
+   background: rgba(255, 255, 255, 0.85);
+}
+   </style>
+</head>
+<body>
+   <div class="page">
+      <p class="kicker">Toronto Zoo Guide · Manual test</p>
+      <header class="meta">
+         <h1>MAP-02 — Date presets</h1>
+         <p><strong>Preconditions:</strong> MAP-01 baseline OK. Open `map.html`.</p>
+         <p><strong>Date under test:</strong> Exercise **Summer Map**, **Winter Map**, and **Specific Map**.</p>
+         <p><strong>Cleanup:</strong> Leave preset on **Specific Map** when finished.</p>
+         <div class="actions">
+            <button type="button" id="clearResults">Clear suite results</button>
+            <button type="button" id="downloadResults">Download results JSON</button>
+         </div>
+      </header>
+      <p id="summary" class="summary"></p>
+
+      <article class="step" data-step="1">
+         <h2>Step 1 — Select Summer Map</h2>
+         <p><strong>Do:</strong> In the map controls dropdown, choose **Summer Map**.</p>
+         <p><strong>Expect:</strong> Preset switches to **Summer Map**.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="2">
+         <h2>Step 2 — Summer date control</h2>
+         <p><strong>Do:</strong> Observe `#mapDate` / date field.</p>
+         <p><strong>Expect:</strong> Date input is hidden or not used for free picking (summer uses fixed seasonal anchor).</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="3">
+         <h2>Step 3 — Summer markers context</h2>
+         <p><strong>Do:</strong> Note animal/amenity marker set and Explore **Updates** if shown.</p>
+         <p><strong>Expect:</strong> Map content reflects summer context (differs from mid-winter where species/amenities are seasonal).</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="4">
+         <h2>Step 4 — Select Winter Map</h2>
+         <p><strong>Do:</strong> Choose **Winter Map**.</p>
+         <p><strong>Expect:</strong> Preset switches to **Winter Map**.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="5">
+         <h2>Step 5 — Winter date control</h2>
+         <p><strong>Do:</strong> Observe the date field again.</p>
+         <p><strong>Expect:</strong> Date picking stays locked/hidden as designed for winter preset.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="6">
+         <h2>Step 6 — Winter vs summer difference</h2>
+         <p><strong>Do:</strong> Compare markers/Updates to what you saw on Summer Map.</p>
+         <p><strong>Expect:</strong> At least some seasonal difference is visible (animals, closed exhibits, updates, or Zoomobile season) — note what changed.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="7">
+         <h2>Step 7 — Select Specific Map</h2>
+         <p><strong>Do:</strong> Choose **Specific Map**.</p>
+         <p><strong>Expect:</strong> Preset switches; date field becomes available.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="8">
+         <h2>Step 8 — Open date picker</h2>
+         <p><strong>Do:</strong> Click the date input.</p>
+         <p><strong>Expect:</strong> Flatpickr (or date UI) opens.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="9">
+         <h2>Step 9 — Pick mid-season date</h2>
+         <p><strong>Do:</strong> Choose a mid-season date (e.g. a day in May or September).</p>
+         <p><strong>Expect:</strong> Date applies; map refetches.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+
+      <article class="step" data-step="10">
+         <h2>Step 10 — Refresh for that date</h2>
+         <p><strong>Do:</strong> Watch markers and Updates/Events after the date change.</p>
+         <p><strong>Expect:</strong> Markers and Updates/Events refresh for the selected date without requiring a full page reload.</p>
+         <div class="result-row">
+            <span class="result-label">Result:</span>
+            <button type="button" class="result-btn result-pass" data-result="pass" aria-label="Pass" title="Pass" aria-pressed="false">✓</button>
+            <button type="button" class="result-btn result-fail" data-result="fail" aria-label="Fail" title="Fail" aria-pressed="false">✗</button>
+            <button type="button" class="result-btn result-blocked" data-result="blocked" aria-label="Blocked" title="Blocked" aria-pressed="false">◌</button>
+         </div>
+         <label class="notes-label">Notes
+            <textarea class="notes" rows="2" placeholder="Optional notes…"></textarea>
+         </label>
+      </article>
+   </div>
+   <script>
+window.__SUITE__ = {"id":"MAP-02","title":"Date presets","preconditions":"MAP-01 baseline OK. Open `map.html`.","dateUnderTest":"Exercise **Summer Map**, **Winter Map**, and **Specific Map**.","cleanup":"Leave preset on **Specific Map** when finished.","steps":[{"number":1,"name":"Select Summer Map","do":"In the map controls dropdown, choose **Summer Map**.","expect":"Preset switches to **Summer Map**."},{"number":2,"name":"Summer date control","do":"Observe `#mapDate` / date field.","expect":"Date input is hidden or not used for free picking (summer uses fixed seasonal anchor)."},{"number":3,"name":"Summer markers context","do":"Note animal/amenity marker set and Explore **Updates** if shown.","expect":"Map content reflects summer context (differs from mid-winter where species/amenities are seasonal)."},{"number":4,"name":"Select Winter Map","do":"Choose **Winter Map**.","expect":"Preset switches to **Winter Map**."},{"number":5,"name":"Winter date control","do":"Observe the date field again.","expect":"Date picking stays locked/hidden as designed for winter preset."},{"number":6,"name":"Winter vs summer difference","do":"Compare markers/Updates to what you saw on Summer Map.","expect":"At least some seasonal difference is visible (animals, closed exhibits, updates, or Zoomobile season) — note what changed."},{"number":7,"name":"Select Specific Map","do":"Choose **Specific Map**.","expect":"Preset switches; date field becomes available."},{"number":8,"name":"Open date picker","do":"Click the date input.","expect":"Flatpickr (or date UI) opens."},{"number":9,"name":"Pick mid-season date","do":"Choose a mid-season date (e.g. a day in May or September).","expect":"Date applies; map refetches."},{"number":10,"name":"Refresh for that date","do":"Watch markers and Updates/Events after the date change.","expect":"Markers and Updates/Events refresh for the selected date without requiring a full page reload."}]};
+(function () {
+   var STORAGE_KEY = "tzg.manualTestResults.v1";
+   var suite = window.__SUITE__;
+
+   function loadAll() {
+      try {
+         var raw = localStorage.getItem( STORAGE_KEY );
+         return raw ? JSON.parse( raw ) : {};
+      } catch ( e ) {
+         return {};
+      }
+   }
+
+   function saveAll( all ) {
+      localStorage.setItem( STORAGE_KEY, JSON.stringify( all ) );
+   }
+
+   function getSuite() {
+      return loadAll()[ suite.id ] || { steps: {} };
+   }
+
+   function setStepResult( stepNumber, result ) {
+      var all = loadAll();
+      var saved = all[ suite.id ] || { steps: {} };
+      var step = saved.steps[ stepNumber ] || {};
+      if ( result ) {
+         step.result = result;
+      } else {
+         delete step.result;
+      }
+      if ( !step.result && !step.notes ) {
+         delete saved.steps[ stepNumber ];
+      } else {
+         saved.steps[ stepNumber ] = step;
+      }
+      all[ suite.id ] = saved;
+      saveAll( all );
+   }
+
+   function setStepNotes( stepNumber, notes ) {
+      var all = loadAll();
+      var saved = all[ suite.id ] || { steps: {} };
+      var step = saved.steps[ stepNumber ] || {};
+      step.notes = notes;
+      saved.steps[ stepNumber ] = step;
+      all[ suite.id ] = saved;
+      saveAll( all );
+   }
+
+   function clearSuite() {
+      var all = loadAll();
+      delete all[ suite.id ];
+      saveAll( all );
+   }
+
+   function updateSummary() {
+      var saved = getSuite();
+      var pass = 0;
+      var fail = 0;
+      var blocked = 0;
+      Object.keys( saved.steps || {} ).forEach( function ( key ) {
+         var result = saved.steps[ key ].result;
+         if ( result === 'pass' ) pass += 1;
+         else if ( result === 'fail' ) fail += 1;
+         else if ( result === 'blocked' ) blocked += 1;
+      } );
+      var total = suite.steps.length;
+      var answered = pass + fail + blocked;
+      document.getElementById( 'summary' ).textContent =
+         answered + '/' + total + ' recorded · ' + pass + ' pass · ' + fail + ' fail · ' + blocked + ' blocked';
+   }
+
+   function applyStepUi( article, savedStep ) {
+      article.classList.remove( 'result-pass', 'result-fail', 'result-blocked' );
+      if ( savedStep.result ) {
+         article.classList.add( 'result-' + savedStep.result );
+      }
+      var buttons = article.querySelectorAll( '.result-btn' );
+      for ( var i = 0; i < buttons.length; i += 1 ) {
+         var btn = buttons[ i ];
+         btn.setAttribute( 'aria-pressed', savedStep.result === btn.getAttribute( 'data-result' ) ? 'true' : 'false' );
+      }
+      article.querySelector( '.notes' ).value = savedStep.notes || '';
+   }
+
+   function bind() {
+      var saved = getSuite();
+      var articles = document.querySelectorAll( '.step' );
+      for ( var i = 0; i < articles.length; i += 1 ) {
+         (function ( article ) {
+            var stepNumber = Number( article.getAttribute( 'data-step' ) );
+            applyStepUi( article, saved.steps[ stepNumber ] || {} );
+
+            var buttons = article.querySelectorAll( '.result-btn' );
+            for ( var j = 0; j < buttons.length; j += 1 ) {
+               buttons[ j ].addEventListener( 'click', function ( event ) {
+                  var value = event.currentTarget.getAttribute( 'data-result' );
+                  var current = getSuite().steps[ stepNumber ] || {};
+                  var next = current.result === value ? null : value;
+                  setStepResult( stepNumber, next );
+                  applyStepUi( article, getSuite().steps[ stepNumber ] || {} );
+                  updateSummary();
+               } );
+            }
+
+            article.querySelector( '.notes' ).addEventListener( 'input', function ( event ) {
+               setStepNotes( stepNumber, event.target.value );
+            } );
+         })( articles[ i ] );
+      }
+
+      document.getElementById( 'clearResults' ).addEventListener( 'click', function () {
+         clearSuite();
+         var fresh = getSuite();
+         for ( var k = 0; k < articles.length; k += 1 ) {
+            applyStepUi( articles[ k ], fresh.steps[ Number( articles[ k ].getAttribute( 'data-step' ) ) ] || {} );
+         }
+         updateSummary();
+      } );
+
+      document.getElementById( 'downloadResults' ).addEventListener( 'click', function () {
+         var payload = {
+            suiteId: suite.id,
+            exportedAt: new Date().toISOString(),
+            results: getSuite()
+         };
+         var blob = new Blob( [ JSON.stringify( payload, null, 2 ) ], { type: 'application/json' } );
+         var url = URL.createObjectURL( blob );
+         var anchor = document.createElement( 'a' );
+         anchor.href = url;
+         anchor.download = suite.id + '-results.json';
+         anchor.click();
+         URL.revokeObjectURL( url );
+      } );
+
+      updateSummary();
+   }
+
+   bind();
+})();
+   </script>
+</body>
+</html>
