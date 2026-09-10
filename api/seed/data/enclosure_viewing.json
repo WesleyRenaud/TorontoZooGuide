@@ -231,17 +231,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Mimic Surgeonfish",
-    "exhibit": "Australasia Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 72.869,
-    "y_coord": 67.782,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Moon Jellyfish",
     "exhibit": "Australasia Pavilion",
     "name": null,
@@ -794,17 +783,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Black-Widow Spider",
-    "exhibit": "Americas Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 68.663,
-    "y_coord": 49.679,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Blanding's Turtle",
     "exhibit": "Americas Pavilion",
     "name": null,
@@ -956,17 +934,6 @@
     "x_coord": 68.663,
     "y_coord": 49.679,
     "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Ferocious Water Bug",
-    "exhibit": "Americas Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 68.663,
-    "y_coord": 49.679,
-    "default_itinerary_duration_minutes": 0.5,
     "is_zoomobile_only": false
   },
   {
@@ -1198,28 +1165,6 @@
     "x_coord": 68.663,
     "y_coord": 49.679,
     "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Puerto Rican Crested Toad",
-    "exhibit": "Americas Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 68.663,
-    "y_coord": 49.679,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Pumpkinseed Sunfish",
-    "exhibit": "Americas Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 68.663,
-    "y_coord": 49.679,
-    "default_itinerary_duration_minutes": 0.5,
     "is_zoomobile_only": false
   },
   {
@@ -1484,6 +1429,17 @@
     "x_coord": 30.393,
     "y_coord": 17.759,
     "default_itinerary_duration_minutes": 2,
+    "is_zoomobile_only": false
+  },
+  {
+    "species": "Trumpeter Swan",
+    "exhibit": "Canadian Domain",
+    "name": null,
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 17.865,
+    "y_coord": 8.826,
+    "default_itinerary_duration_minutes": 3,
     "is_zoomobile_only": false
   },
   {
@@ -1884,17 +1840,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "African Clawed Frog",
-    "exhibit": "African Rainforest Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 45.865,
-    "y_coord": 64.211,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
     "name": null,
@@ -2049,17 +1994,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Veiled Chameleon",
-    "exhibit": "African Rainforest Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 45.865,
-    "y_coord": 64.211,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Violaceous Plantain Eater",
     "exhibit": "African Rainforest Pavilion",
     "name": null,
@@ -2170,17 +2104,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Radiated Tortoise",
-    "exhibit": "African Rainforest Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 44.546,
-    "y_coord": 66.138,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Sacred Ibis",
     "exhibit": "African Rainforest Pavilion",
     "name": null,
@@ -2248,17 +2171,6 @@
   },
   {
     "species": "Bighead Carp",
-    "exhibit": "Indo-Malaya Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 46.391,
-    "y_coord": 75.269,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Black Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "name": null,
     "enclosure_type": "Indoor",
@@ -2369,17 +2281,6 @@
   },
   {
     "species": "Giant Gourami",
-    "exhibit": "Indo-Malaya Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 46.391,
-    "y_coord": 75.269,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Grass Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "name": null,
     "enclosure_type": "Indoor",
@@ -2731,17 +2632,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Gooty Sapphire Ornamental Tarantula",
-    "exhibit": "Malayan Woods Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 50.177,
-    "y_coord": 81.571,
-    "default_itinerary_duration_minutes": 0.5,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Malayan Walking Stick",
     "exhibit": "Malayan Woods Pavilion",
     "name": null,
@@ -2882,6 +2772,17 @@
     "x_coord": 66.827,
     "y_coord": 80.627,
     "default_itinerary_duration_minutes": 2,
+    "is_zoomobile_only": false
+  },
+  {
+    "species": "Radiated Tortoise",
+    "exhibit": "Kids Zoo",
+    "name": null,
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The radiated tortoise is most likely inside and off-display on this day due to cooler weather.",
+    "x_coord": 66.827,
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1,
     "is_zoomobile_only": false
   }
 ]

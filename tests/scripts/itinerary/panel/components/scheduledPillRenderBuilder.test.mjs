@@ -115,7 +115,7 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestLeavesNoGapBetweenConsecuti
    const slotSpanMinutes = 30;
    const groups = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Clouded Leopard', 570, 30, 570),
-      makeScheduledItem('Black Carp', 600, 4, 600),
+      makeScheduledItem('Bighead Carp', 600, 4, 600),
       makeScheduledItem('Crocodile Lizard', 604, 4, 600),
       makeScheduledItem('Luzon Bleeding-Heart Dove', 608, 4, 600),
       makeScheduledItem('Sumatran Orangutan', 612, 30, 600),
@@ -137,7 +137,7 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestLeavesNoGapBetweenConsecuti
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestMergesGappedUnderMinClustersIntoTheNextGroup_ExpectOk', () => {
    const groups = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Black Carp', 600, 1, 600),
+      makeScheduledItem('Bighead Carp', 600, 1, 600),
       makeScheduledItem('Black-Breasted Leaf Turtle', 601, 1, 600),
       makeScheduledItem('Burmese Star Tortoise', 603, 1, 600),
       makeScheduledItem('Crested Wood Partridge', 604, 2, 600),

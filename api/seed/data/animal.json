@@ -1,19 +1,5 @@
 [
   {
-    "species": "African Clawed Frog",
-    "latin_name": "Xenopus Laevis",
-    "min_temperature": null,
-    "general_viewing_tips": "The African clawed frog can be found in a terrarium in an enclosure between the dwarf crocodiles and Lake Malawai display and the gorillas.",
-    "seasonal_viewing_tips": null,
-    "identification": "The African clawed frog is a fully aquatic frog with a flattened body, smooth, slippery skin, and powerful hind legs. Its colouration ranges from olive-gray to brown, often mottled for camouflage. Unlike many frogs, it lacks a tongue and external eardrums. Each hind foot has three sharp, black claws, which give the species its common name. Adults typically measure 5–13 cm in length, with females larger than males.",
-    "habitat_and_range": "This species is native to sub-Saharan Africa, where it inhabits slow-moving rivers, ponds, lakes, and flooded forest pools, including rainforest environments. African clawed frogs are highly adaptable and can survive in both permanent and temporary water bodies. Due to introductions, they now occur in parts of Europe, North America, and South America, where they are considered invasive.",
-    "diet_and_feeding": "African clawed frogs are opportunistic carnivores. They feed on aquatic invertebrates, insects, worms, small fish, tadpoles, and carrion. Without a tongue, they use their clawed hind feet to tear food apart and push it into their mouths. Sensitive fingers and a keen sense of smell help them locate prey in murky water.",
-    "behaviour_and_social_life": "These frogs are mostly solitary and active both day and night. They spend nearly their entire lives underwater, surfacing only to breathe air. African clawed frogs are known for their vocalizations, especially during breeding, with males producing clicking sounds to attract females.",
-    "adaptations": "The African clawed frog shows strong adaptation to an aquatic lifestyle. Its flattened body and webbed feet allow efficient swimming, while its lateral line system—similar to that of fish—detects vibrations in the water. The claws aid in feeding and defense, and the ability to tolerate low oxygen levels allows survival in stagnant or temporary waters.",
-    "reproduction_and_life_cycle": "Breeding occurs in water, often triggered by rainfall or environmental changes. Females can lay hundreds to thousands of eggs, which are fertilized externally. Eggs hatch within a few days, and tadpoles undergo metamorphosis over several weeks. African clawed frogs are long-lived, with lifespans of 15–20 years, and sometimes longer in managed care.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "African Lion",
     "latin_name": "Panthera Leo",
     "min_temperature": -10,
@@ -266,20 +252,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "Black Carp",
-    "latin_name": "Mylopharyngodon Piceus",
-    "min_temperature": null,
-    "general_viewing_tips": "The black carp can be found in the carp tank just past the waterfall, found by taking the path on the left once you enter the pavilion. If you decide to go up to the elevated orangutan viewing, when you go down the stairs, you must backtrack slightly by going to the left.",
-    "seasonal_viewing_tips": null,
-    "identification": "Black carp are large freshwater fish, typically reaching 60–100 cm in length, with some individuals exceeding 1.2 meters and weighing over 20 kg. They have a long, cylindrical body with a dark, bluish-black to gray colouration and a broad, flattened head. Their jaws are strong, and their teeth are molariform, specialized for crushing mollusk shells, giving them a distinctive feeding adaptation.",
-    "habitat_and_range": "Black carp are native to eastern Asia, primarily China and Vietnam, inhabiting rivers, lakes, and reservoirs with slow-moving or still water. They prefer warm, vegetated freshwater habitats with abundant mollusks. Outside their native range, they have sometimes been introduced for aquaculture or invasive control, though such introductions can impact local ecosystems.",
-    "diet_and_feeding": "Black carp are molluscivorous, feeding mainly on snails, clams, and other shelled invertebrates. Their powerful molar-like pharyngeal teeth crush the hard shells, allowing them to consume prey that other fish cannot. In captivity, they are fed snails, clams, and mollusk substitutes to replicate natural feeding behaviour. Their specialized diet makes them important for controlling snail populations, including species that carry parasites such as the liver fluke.",
-    "behaviour_and_social_life": "These fish are largely solitary or found in loose aggregations, with minimal social interaction beyond feeding. They are diurnal and bottom-oriented, often foraging along riverbeds or the substrate of ponds and lakes. Their slow, deliberate movement and cryptic colouration help avoid predators in the wild.",
-    "adaptations": "Black carp have several adaptations for their specialized diet and freshwater habitat. Their molars crush hard-shelled prey, while strong jaws and a broad head facilitate feeding on mollusks. Streamlined bodies allow them to navigate rivers and ponds efficiently, and their dark colouration provides camouflage on the bottom of silty or vegetated waters. They are also long-lived and slow-growing, which supports survival in variable freshwater environments.",
-    "reproduction_and_life_cycle": "Spawning occurs in warm, flowing water, with females laying hundreds of thousands of eggs that drift downstream. Juveniles begin feeding on small invertebrates before transitioning to their mollusk-based diet. Sexual maturity is reached at 3–5 years, and lifespans can reach 15–20 years in natural conditions or slightly longer in captivity.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "Black Crake",
     "latin_name": "Amaurornis Flavirostra",
     "min_temperature": null,
@@ -361,20 +333,6 @@
     "behaviour_and_social_life": "These birds are social and often found in small groups, communicating through a variety of loud, musical calls, including the characteristic “laughing” calls that give the species its name. Group cohesion is maintained through vocalizations and cooperative foraging, and they are diurnal, most active during morning and late afternoon. They display territorial behaviours during breeding but are otherwise tolerant of conspecifics in their social group.",
     "adaptations": "Adaptations include strong legs and agile movements for ground foraging, a curved bill for probing leaf litter, and vocal abilities for communication within dense forests. Their colouration allows camouflage among shadows and leaf litter, reducing predation risk. Social foraging increases feeding efficiency and helps detect predators quickly.",
     "reproduction_and_life_cycle": "Breeding occurs primarily in the spring, with pairs constructing cup-shaped nests in shrubs or low trees. Females lay 2–4 eggs, which are incubated for about 14–16 days. Both parents participate in feeding and caring for the chicks, which fledge after approximately 14–18 days. Sexual maturity is reached at 1–2 years, and lifespan in captivity can reach 8–10 years, though wild lifespans are generally shorter due to predation.",
-    "animals_at_the_zoo": null
-  },
-  {
-    "species": "Black-Widow Spider",
-    "latin_name": "Latrodectus Mactans",
-    "min_temperature": null,
-    "general_viewing_tips": "The black-widow spider can be found in the bugs hallway, located before the Costa Rican area through the doors across from the river otter viewing.",
-    "seasonal_viewing_tips": null,
-    "identification": "Black Widow Spiders are small but highly distinctive arachnids. Adult females are glossy black with a characteristic red hourglass marking on the underside of the abdomen. Males are smaller, brownish, and less conspicuous. Adult females typically measure 1.5–2 cm in body length, while males are about half that size.",
-    "habitat_and_range": "Black Widows are native to much of North America, including Canada, the United States, and Mexico. They inhabit dark, undisturbed areas such as rock crevices, hollow logs, sheds, and under debris. They favour warm microhabitats with low human disturbance.",
-    "diet_and_feeding": "Black Widow Spiders are carnivorous, feeding primarily on insects, other arthropods, and occasionally small vertebrates that get trapped in their irregular, sticky webs. They inject venom to immobilize prey before consuming it. In zoo settings, they are fed small insects such as crickets and fruit flies to simulate natural feeding.",
-    "behaviour_and_social_life": "Black Widows are generally solitary. Females maintain a territory centred around their web and rarely leave it. Mating is risky for males, who may be eaten by the female. Communication is largely vibrational, transmitted through the web to detect prey, predators, or mates.",
-    "adaptations": "These spiders have potent neurotoxic venom used to subdue prey and deter predators. Their silk is strong and elastic, ideal for constructing irregular, tangled webs. Their small size and cryptic habits help them avoid detection, while their nocturnal activity reduces predation risk.",
-    "reproduction_and_life_cycle": "Mating occurs in summer. Females lay multiple small egg sacs containing hundreds of eggs each, which hatch into tiny spiderlings that disperse by “ballooning” on silk threads. Black Widow Spiders live 1–3 years, depending on environmental conditions and predation, with females typically outliving males.",
     "animals_at_the_zoo": null
   },
   {
@@ -938,20 +896,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "Ferocious Water Bug",
-    "latin_name": "Lethocerus Americanus",
-    "min_temperature": null,
-    "general_viewing_tips": "The Ferocious water bug can be found in the bugs hallway, located before the Costa Rican area through the doors across from the river otter viewing.",
-    "seasonal_viewing_tips": null,
-    "identification": "The Ferocious Water Bug is a large aquatic insect, often reaching 6–7 cm in length. Its body is flat, elongated, and dark brown, with raptorial front legs adapted for grasping prey. The insect has short antennae and prominent compound eyes, giving it excellent vision for hunting in water.",
-    "habitat_and_range": "Native to freshwater ponds, lakes, and slow-moving streams across North America, particularly in Canada and the United States, these insects prefer calm, vegetated waters. They are typically found near the surface or lurking among submerged plants, where they can ambush prey.",
-    "diet_and_feeding": "Ferocious Water Bugs are predatory and feed on a variety of aquatic organisms, including small fish, amphibians, tadpoles, and insect larvae. They capture prey with their strong front legs and inject digestive enzymes via a piercing beak, immobilizing and externally digesting their food. In captivity, they are fed small fish and aquatic invertebrates.",
-    "behaviour_and_social_life": "These insects are solitary ambush predators, spending most of their time motionless underwater, waiting for prey. They can fly short distances to colonize new water bodies. When threatened, they may bite defensively, delivering a painful, though non-lethal, sting to humans. Interaction with conspecifics is minimal outside mating.",
-    "adaptations": "Ferocious Water Bugs are adapted for aquatic hunting. Their flattened bodies and hydrofuge hairs allow them to remain submerged while breathing through a short siphon at the water surface. Their raptorial front legs and powerful beak allow them to seize and digest prey efficiently. Nocturnal activity reduces predation risk.",
-    "reproduction_and_life_cycle": "Mating occurs in late spring to summer. Females lay eggs on emergent vegetation above the water, which males may guard in some species. Nymphs undergo several moults before reaching adulthood, which takes about a year. Lifespan ranges from 1–2 years, depending on environmental conditions.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "Flame Angelfish",
     "latin_name": "Centropyge Loriculus",
     "min_temperature": null,
@@ -1033,34 +977,6 @@
     "behaviour_and_social_life": "Golden Lion Tamarins are highly social, living in family groups of 2–8 individuals. They communicate through vocalisations, facial expressions, and scent-marking. Grooming is an important social activity, strengthening bonds and reducing tension within the group.",
     "adaptations": "Golden Lion Tamarins are arboreal and well adapted to life in the forest canopy. Their long, claw-like nails allow them to cling to tree trunks and branches, and their agile bodies facilitate jumping between branches. Bright fur helps family members recognise each other and may play a role in territorial signalling.",
     "reproduction_and_life_cycle": "Breeding occurs once or twice a year. Females typically give birth to twins, with males playing a crucial role in carrying and caring for infants. Juveniles remain in the family group until maturity. Lifespan in the wild is about 10–15 years, while in captivity they can live up to 20 years.",
-    "animals_at_the_zoo": null
-  },
-  {
-    "species": "Gooty Sapphire Ornamental Tarantula",
-    "latin_name": "Poecilotheria Metallica",
-    "min_temperature": null,
-    "general_viewing_tips": "The gooty sapphire ornamental tarantula can be found in the bugs are of the Malayan Woods Pavilion, just before the clouded leopards.",
-    "seasonal_viewing_tips": null,
-    "identification": "The Gooty Sapphire Ornamental Tarantula is a small-to-medium arboreal spider, with a leg span of about 12–15 cm. Its most striking feature is the iridescent metallic blue colouration covering much of its body and legs, with contrasting black and white patterns on the abdomen and leg joints. Females are larger and more robust than males, which are slimmer and slightly more agile. Its body is covered in fine hairs that serve as sensory organs.",
-    "habitat_and_range": "This tarantula is endemic to a tiny forest patch in Karnataka, India, inhabiting moist deciduous forests. It is strictly arboreal, living in tree hollows and under bark, rarely descending to the forest floor. Its restricted range makes it highly sensitive to habitat disturbance.",
-    "diet_and_feeding": "The Gooty Sapphire is carnivorous, feeding on insects and other small invertebrates. It is a sit-and-wait predator, ambushing prey from tree cavities and using venom to immobilize captured insects before feeding. Its hunting strategy is highly efficient within its arboreal microhabitat.",
-    "behaviour_and_social_life": "Primarily solitary, these tarantulas defend their retreats and show little social interaction except during mating. They are nocturnal, emerging at night to hunt. If threatened, they can deliver a venomous bite, though they are generally non-aggressive toward humans unless provoked.",
-    "adaptations": "This species exhibits specialized adaptations for arboreal life. Its strong, spiny legs allow climbing and gripping smooth bark. Fine hairs on its body detect vibrations and air currents, alerting it to approaching prey or predators. Its venom efficiently immobilizes prey, while cryptic colouration within tree hollows provides camouflage from both predators and prey. Arboreal nesting behaviour minimizes competition and predation risk.",
-    "reproduction_and_life_cycle": "Females lay 50–200 eggs in silk sacs within tree cavities. Spiderlings hatch and disperse shortly after molting, remaining independent from birth. Females have a lifespan of 7–12 years, while males live 3–4 years, dying shortly after reaching sexual maturity and mating.",
-    "animals_at_the_zoo": null
-  },
-  {
-    "species": "Grass Carp",
-    "latin_name": "Ctenopharyngodon Idella",
-    "min_temperature": null,
-    "general_viewing_tips": "The grass carp can be found in the carp tank just past the waterfall, found by taking the path on the left once you enter the pavilion. If you decide to go up to the elevated orangutan viewing, when you go down the stairs, you must backtrack slightly by going to the left.",
-    "seasonal_viewing_tips": null,
-    "identification": "Grass carp are large, streamlined freshwater fish, commonly reaching 80–120 cm in length and weighing over 30 kg in exceptional individuals. They have an elongated, torpedo-shaped body with large, neatly edged scales that give them a crosshatched appearance. colouration is typically olive to gray-green on the back, fading to pale silver on the belly. The head is broad with a terminal mouth adapted for grazing.",
-    "habitat_and_range": "Native to eastern Asia, particularly major river systems of China and Siberia, grass carp inhabit large rivers, lakes, and floodplain waters. They prefer slow-moving or still freshwater with abundant vegetation. Due to their usefulness in vegetation control, grass carp have been widely introduced around the world, including North America, where their use is carefully regulated.",
-    "diet_and_feeding": "Grass carp are primarily herbivorous, feeding almost exclusively on aquatic plants. An adult can consume its own body weight in vegetation daily, making it one of the most efficient plant grazers among freshwater fish. This feeding behaviour has made grass carp valuable for managing invasive aquatic plants, but it can also dramatically alter ecosystems if not controlled.",
-    "behaviour_and_social_life": "These fish are generally non-aggressive and slow to moderately active swimmers. They often cruise steadily through open water or along vegetated edges while feeding. Grass carp are not strongly social but may be seen in loose groupings in suitable habitat.",
-    "adaptations": "Grass carp possess strong pharyngeal teeth that grind tough plant material, allowing them to digest fibrous vegetation efficiently. Their elongated body and powerful tail support sustained swimming in rivers. Rapid growth helps them quickly reach sizes that reduce vulnerability to predators.",
-    "reproduction_and_life_cycle": "In the wild, grass carp spawn in large, fast-flowing rivers, where eggs drift downstream before hatching. Females can release hundreds of thousands to over a million eggs during a single spawning event. Juveniles grow rapidly in their first few years. Grass carp may live 20–30 years, with longer lifespans more common in managed or protected environments.",
     "animals_at_the_zoo": null
   },
   {
@@ -1736,20 +1652,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "Mimic Surgeonfish",
-    "latin_name": "Acanthurus Pyroferus",
-    "min_temperature": null,
-    "general_viewing_tips": "The mimic surgeonfish is part of the main tank habitat in the Great Barrier Reef exhibit in the Australasia pavilion.",
-    "seasonal_viewing_tips": null,
-    "identification": "The mimic surgeonfish has a sleek, oval-shaped body with a pointed snout, continuous dorsal and anal fins, and a crescent- shaped tail. Adults are typically warm brown to golden-orange in colour with darker edging on the fins and a bold dark stripe running through the eye and across the face. Juveniles often resemble dwarf angelfish species, giving this fish its “mimic” name.",
-    "habitat_and_range": "This species is found throughout the tropical Indo-Pacific, especially around coral reefs, lagoons, and reef slopes near Indonesia, the Philippines, the Great Barrier Reef, and surrounding regions. It prefers shallow reef environments with plenty of algae growth and coral structures that provide shelter from predators.",
-    "diet_and_feeding": "Mimic surgeonfish primarily graze on algae growing on rocks and coral surfaces. They use their small mouths to nip filamentous algae and organic material from reef surfaces throughout the day. In aquariums, they are fed algae sheets, herbivore pellets, and vegetable-based marine diets to support healthy digestion and colouration.",
-    "behaviour_and_social_life": "This fish is active and constantly on the move, spending much of the day grazing and exploring reef surfaces. It is generally peaceful but may become territorial toward similar-shaped fish, especially other surgeonfish. Juveniles often remain close to coral shelter, while adults roam more openly through the reef habitat.",
-    "adaptations": "Its mimicry of dwarf angelfish species as a juvenile likely helps deter predators by resembling less vulnerable reef fish. Like other surgeonfish, it possesses a sharp retractable spine near the base of the tail, used for defense against threats. Its streamlined body and strong fins make it highly efficient at maneuvering through reef currents and narrow coral passages.",
-    "reproduction_and_life_cycle": "Mimic surgeonfish reproduce by broadcast spawning, where males and females release eggs and sperm into open water, usually at dusk. Fertilized eggs drift with currents before hatching into planktonic larvae. As they grow, juveniles develop their distinctive angelfish-like mimic coloration before gradually transitioning into the adult form.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "Monocled Cobra",
     "latin_name": "Naja Kaouthia",
     "min_temperature": null,
@@ -2058,34 +1960,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "Puerto Rican Crested Toad",
-    "latin_name": "Peltophryne Lemur",
-    "min_temperature": null,
-    "general_viewing_tips": "The Puerto Rican crested toad can be found in an enclosure just past the aquatic area and on the right.",
-    "seasonal_viewing_tips": null,
-    "identification": "The Puerto Rican Crested Toad is a small, stout amphibian, typically 3–5 cm in length. Its body is grey to brown with darker blotches, and it has distinctive raised crests over the eyes. The skin is rough and slightly warty, adapted for a terrestrial lifestyle.",
-    "habitat_and_range": "This species is endemic to Puerto Rico, inhabiting dry forests, coastal plains, and intermittent freshwater pools. It prefers areas with loose soil or leaf litter for burrowing and requires temporary water bodies for breeding.",
-    "diet_and_feeding": "Puerto Rican Crested Toads are insectivorous, feeding on ants, beetles, spiders, and other small invertebrates. They hunt at night, capturing prey with their sticky tongues. In zoos, their diet includes appropriately sized insects dusted with vitamins and minerals.",
-    "behaviour_and_social_life": "These toads are primarily nocturnal and fossorial, spending daylight hours buried or hidden under vegetation. They are generally solitary except during the breeding season. Males call near temporary pools to attract females, producing loud, distinctive croaks.",
-    "adaptations": "Raised cranial crests may deter predators or help shed water during rainfall. Burrowing behaviour allows them to survive dry periods and avoid predators. Their skin colouration and patterning provide camouflage in leaf litter and soil.",
-    "reproduction_and_life_cycle": "Breeding occurs during the rainy season when temporary pools form. Females lay eggs in water, and tadpoles develop rapidly to take advantage of ephemeral habitats. Juveniles are independent upon metamorphosis. Lifespan is typically 5–8 years, with longer lifespans possible in captivity.",
-    "animals_at_the_zoo": null
-  },
-  {
-    "species": "Pumpkinseed Sunfish",
-    "latin_name": "Lepomis Gibbosus",
-    "min_temperature": null,
-    "general_viewing_tips": "The pumpkinseed sunfish can be found in the underwater viewing habitat beside the river otters.",
-    "seasonal_viewing_tips": null,
-    "identification": "The Pumpkinseed Sunfish is a small, brightly coloured freshwater fish, typically 10–18 cm long. Its body is laterally compressed with an olive-green to yellow base, adorned with orange, red, and blue markings. A distinctive black spot is present at the base of the dorsal fin, and the gill cover often features an iridescent blue streak.",
-    "habitat_and_range": "Native to eastern North America, Pumpkinseed Sunfish inhabit lakes, ponds, rivers, and streams with clear water, abundant vegetation, and soft or sandy substrates. They prefer shallow, warm areas with plenty of cover from aquatic plants or submerged structures.",
-    "diet_and_feeding": "Pumpkinseed Sunfish are omnivorous, feeding on insects, crustaceans, molluscs, small fish, and aquatic vegetation. They forage actively along the bottom and among plants, using their small mouths to pick prey from surfaces. In zoos or aquaria, they are fed a diet of live or frozen invertebrates, supplemented with commercial fish food.",
-    "behaviour_and_social_life": "These sunfish are diurnal and territorial during the breeding season, with males defending nesting sites aggressively. They are often seen in loose groups outside of breeding periods. Their behaviour includes foraging among vegetation, darting quickly to capture prey, and basking in sunlit shallow areas.",
-    "adaptations": "Pumpkinseed Sunfish have a laterally compressed body for agile swimming among vegetation. Colouration provides camouflage against predators and signalling during courtship. Sharp spines on the dorsal and anal fins serve as a defence mechanism, deterring predators from swallowing them.",
-    "reproduction_and_life_cycle": "Breeding occurs in late spring and summer. Males construct shallow nests in sandy or muddy bottoms, where females lay eggs. Males guard the eggs and fry until they become independent. Lifespan is typically 6–10 years, with growth and reproduction influenced by water temperature and food availability.",
-    "animals_at_the_zoo": null
-  },
-  {
     "species": "Pygmy Hippopotamus",
     "latin_name": "Choeropsis Liberiensis",
     "min_temperature": null,
@@ -2130,9 +2004,9 @@
   {
     "species": "Radiated Tortoise",
     "latin_name": "Astrochelys Radiata",
-    "min_temperature": null,
-    "general_viewing_tips": "The radiated tortoises can be found in an enclosure in the hallway between the chameleons, iguanas, and naked mole rats, and the ramped pathway towards the pygmy hippos and lemurs.",
-    "seasonal_viewing_tips": null,
+    "min_temperature": 14,
+    "general_viewing_tips": "The radiated tortoise can be found in the Kids Zoo.",
+    "seasonal_viewing_tips": "The radiated tortoise is part of the Kids Zoo, which is open seasonally, roughly from May through October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
     "identification": "The radiated tortoise is a medium-sized land tortoise, typically measuring 35–45 cm in length and weighing 8–14 kg, with some individuals reaching over 20 kg. Its high-domed shell is dark brown or black with striking yellow or orange star-like patterns radiating from the center of each scute, giving the species its name. The head is relatively small, with a pointed beak for grazing, and the limbs are thick and sturdy, equipped with scales and claws for walking on rough terrain.",
     "habitat_and_range": "Radiated tortoises are native to southern Madagascar, where they inhabit dry forests, thorny scrublands, and spiny bush areas. They rely on open patches for basking and dense vegetation for cover from predators. Their habitat requires access to freshwater sources and seasonal vegetation, which sustains their herbivorous diet.",
     "diet_and_feeding": "These tortoises are strict herbivores, feeding on grasses, leaves, fruits, and succulent plants. They are well-adapted to dry, nutrient-poor environments, able to digest fibrous vegetation efficiently. In captivity, diets typically include a mix of leafy greens, vegetables, and hay, with occasional fruits to mimic natural food variety. Their grazing behaviour also helps seed dispersal in their native ecosystems.",
@@ -2814,6 +2688,20 @@
     "animals_at_the_zoo": null
   },
   {
+    "species": "Trumpeter Swan",
+    "latin_name": "Cygnus Buccinator",
+    "min_temperature": -25,
+    "general_viewing_tips": "The trumpeter swans can be found at the Weston Pond lookout at the bottom of the Canadian Domain hill, across from the grizzly bears.",
+    "seasonal_viewing_tips": "The trumpeter swans are part of the Canadian Domain exhibit, which closes for guest safety from about the start of January until sometime in March. When the domain is open, the swans are typically viewable year-round at Weston Pond, though winter ice cover can make them harder to spot or push them to open water elsewhere on the pond.",
+    "identification": "The Trumpeter Swan is the largest native waterfowl in North America. Adults are entirely white with a long, straight neck and a solid black bill that extends to the eye, lacking the yellow lore patch seen on similar species. They are heavy-bodied birds, often weighing 10–12 kg, with a wingspan that can exceed 2 m. Males and females look alike, though males average slightly larger.",
+    "habitat_and_range": "Trumpeter swans nest on lakes, ponds, and slow-moving rivers across Alaska, western Canada, and parts of the northern United States. They favour wetlands with abundant aquatic vegetation and secure nesting sites such as islands or beaver ponds. Outside the breeding season they use larger open-water wetlands and coastal estuaries.",
+    "diet_and_feeding": "These swans are primarily herbivorous, feeding on aquatic plants, roots, tubers, and submerged vegetation they reach by tipping up in shallow water. They also graze on grasses and waste grain in adjacent fields. In managed care they are offered leafy greens, aquatic plant matter, and formulated waterfowl diets.",
+    "behaviour_and_social_life": "Trumpeter swans are often seen in pairs or family groups and form long-term pair bonds. They are territorial on breeding territories but may gather in larger flocks on wintering wetlands. Their deep, horn-like calls carry long distances and give the species its common name. Aggression is usually displayed through posture, wing-spreading, and chasing rather than prolonged fighting.",
+    "adaptations": "A long neck and strong bill allow efficient foraging on underwater vegetation, while dense plumage and a thick down layer provide insulation in cold climates. Large webbed feet power swimming, and their heavy body is supported by powerful flight muscles for long migratory movements between breeding and wintering wetlands.",
+    "reproduction_and_life_cycle": "Pairs build large nest mounds of aquatic vegetation. Females typically lay 4–6 eggs, which are incubated for about a month. Cygnets leave the nest soon after hatching and feed themselves while remaining under parental protection. Families often stay together through the first winter. Trumpeter swans are long-lived, frequently surviving 15–20 years or more in the wild and longer under managed care.",
+    "animals_at_the_zoo": null
+  },
+  {
     "species": "Turkey Vulture",
     "latin_name": "Cathartes Aura",
     "min_temperature": 0,
@@ -2854,20 +2742,6 @@
     "adaptations": "Two-Toed Sloths possess a range of remarkable adaptations that allow them to thrive in the treetops. Their long, curved claws and strong limbs enable them to hang securely from branches and move through the canopy with careful, deliberate motions. The coarse fur often hosts algae, providing effective camouflage against predators, while their slow metabolism allows them to survive on a diet of tough, low-nutrient leaves. Reduced movement and energy-conserving behaviour decrease the risk of detection, and a flexible neck allows the sloth to survey its environment and feed efficiently without expending unnecessary energy. Together, these traits make the Two-Toed Sloth a highly specialized arboreal folivore, perfectly suited to the rainforest environment.",
     "reproduction_and_life_cycle": "Breeding occurs year-round, though timing may be influenced by food availability. Females give birth to a single offspring after a gestation period of 10–12 months. Newborns cling to the mother’s belly for several months, learning to navigate branches and forage for leaves. Sexual maturity is reached around three to four years of age. In the wild, Two-Toed Sloths can live 20–30 years, with individuals in captivity sometimes exceeding this lifespan due to regular feeding, veterinary care, and protection from predators.",
     "animals_at_the_zoo": "The Toronto Zoo has two female two-toed sloths, and younger sloth Sally, and an older sloth, Netta."
-  },
-  {
-    "species": "Veiled Chameleon",
-    "latin_name": "Chamaeleo Calyptratus",
-    "min_temperature": null,
-    "general_viewing_tips": "The veiled chameleon can be found in a habitat in the hallway in between the Lake Malawi exhibit and the stairs towards the pygmy hippos, waterfowl, and lemurs, and beside the Lau banded iguanas.",
-    "seasonal_viewing_tips": null,
-    "identification": "Veiled chameleons are medium-sized lizards, with males larger than females, measuring 40–60 cm in total length including the tail, and weighing 100–200 grams. They have laterally compressed bodies, zygodactylous feet, and prehensile tails adapted for climbing. Their most distinctive feature is the casque, a tall helmet-like structure on the head, especially pronounced in males. Skin colouration ranges from bright green to yellow, brown, or even blue, with patterns that change depending on mood, temperature, or social signals. Eyes are large and independently mobile, allowing nearly 360-degree vision.",
-    "habitat_and_range": "Veiled chameleons are native to Yemen and southwestern Saudi Arabia, inhabiting tropical and subtropical mountain regions, shrublands, and areas with scattered trees. They are primarily arboreal, spending most of their lives in trees and bushes, but can descend to forage on the ground. Adequate sunlight, humidity, and vertical structures are critical for thermoregulation, hydration, and mobility.",
-    "diet_and_feeding": "They are primarily insectivorous, feeding on crickets, locusts, flies, moths, and other small arthropods. Large adults may occasionally eat plant material such as leaves or fruits. They use a long, sticky tongue that can rapidly extend to capture prey, relying on precise visual targeting and lightning-fast reflexes. In captivity, diets are supplemented with gut-loaded insects and occasional leafy greens.",
-    "behaviour_and_social_life": "Veiled chameleons are largely solitary, interacting primarily during the breeding season. They exhibit territorial behaviours, with males displaying bright colours, head bobbing, and swaying to intimidate rivals or attract females. Despite their solitary nature, they are highly alert and visually oriented, constantly scanning the environment for prey and predators. Movement is slow and deliberate, using hand-over-hand climbing and tail-assisted balance.",
-    "adaptations": "Veiled chameleons possess extraordinary adaptations for arboreal life and predation. colour-changing skin allows camouflage, thermoregulation, and communication. Zygodactylous feet and prehensile tails enhance gripping and climbing stability, while independently mobile eyes provide nearly panoramic vision. The rapid, extendable tongue enables efficient prey capture, and their slow, deliberate movement reduces detection by predators.",
-    "reproduction_and_life_cycle": "Breeding occurs year-round in favorable conditions, though peaks often align with the rainy season. Females lay 20–70 eggs in a burrow dug into moist soil. Eggs incubate for 6–12 months, depending on temperature, before hatching as miniature replicas of adults. Sexual maturity is reached in 6–12 months, and lifespans in captivity typically reach 5–8 years, though wild lifespans are often shorter due to predation and environmental stressors.",
-    "animals_at_the_zoo": null
   },
   {
     "species": "Victoria Crowned Pigeon",

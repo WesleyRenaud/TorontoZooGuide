@@ -1,14 +1,5 @@
 [
   {
-    "species": "African Clawed Frog",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 45.865,
-    "y": 64.211,
-    "walk_node_id": "v-0255",
-    "snap_distance_px": 10.829
-  },
-  {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
@@ -225,15 +216,6 @@
     "snap_distance_px": 23.318
   },
   {
-    "species": "Black Carp",
-    "exhibit": "Indo-Malaya Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 46.391,
-    "y": 75.269,
-    "walk_node_id": "v-0127",
-    "snap_distance_px": 23.318
-  },
-  {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Indoor",
@@ -286,15 +268,6 @@
     "y": 75.269,
     "walk_node_id": "v-0127",
     "snap_distance_px": 23.318
-  },
-  {
-    "species": "Black-Widow Spider",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
   },
   {
     "species": "Blanding's Turtle",
@@ -666,15 +639,6 @@
     "snap_distance_px": 31.471
   },
   {
-    "species": "Ferocious Water Bug",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
-  },
-  {
     "species": "Flame Angelfish",
     "exhibit": "Australasia Pavilion",
     "enclosure_type": "Indoor",
@@ -745,24 +709,6 @@
     "y": 51.599,
     "walk_node_id": "v-0742",
     "snap_distance_px": 39.359
-  },
-  {
-    "species": "Gooty Sapphire Ornamental Tarantula",
-    "exhibit": "Malayan Woods Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 50.177,
-    "y": 81.571,
-    "walk_node_id": "v-0097",
-    "snap_distance_px": 26.626
-  },
-  {
-    "species": "Grass Carp",
-    "exhibit": "Indo-Malaya Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 46.391,
-    "y": 75.269,
-    "walk_node_id": "v-0127",
-    "snap_distance_px": 23.318
   },
   {
     "species": "Great Horned Owl",
@@ -1305,15 +1251,6 @@
     "snap_distance_px": 31.471
   },
   {
-    "species": "Mimic Surgeonfish",
-    "exhibit": "Australasia Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 72.869,
-    "y": 67.782,
-    "walk_node_id": "v-1139",
-    "snap_distance_px": 3.75
-  },
-  {
     "species": "Monocled Cobra",
     "exhibit": "Indo-Malaya Pavilion",
     "enclosure_type": "Indoor",
@@ -1566,24 +1503,6 @@
     "snap_distance_px": 3.75
   },
   {
-    "species": "Puerto Rican Crested Toad",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
-  },
-  {
-    "species": "Pumpkinseed Sunfish",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
-  },
-  {
     "species": "Pygmy Hippopotamus",
     "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Indoor",
@@ -1612,12 +1531,12 @@
   },
   {
     "species": "Radiated Tortoise",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 44.546,
-    "y": 66.138,
-    "walk_node_id": "v-0258",
-    "snap_distance_px": 6.537
+    "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
   },
   {
     "species": "Red Claw Yabby",
@@ -2088,6 +2007,15 @@
     "snap_distance_px": 23.318
   },
   {
+    "species": "Trumpeter Swan",
+    "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
+    "x": 17.865,
+    "y": 8.826,
+    "walk_node_id": "v-0623",
+    "snap_distance_px": 45.0
+  },
+  {
     "species": "Turkey Vulture",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "enclosure_type": "Outdoor",
@@ -2122,15 +2050,6 @@
     "y": 51.599,
     "walk_node_id": "v-0742",
     "snap_distance_px": 39.359
-  },
-  {
-    "species": "Veiled Chameleon",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 45.865,
-    "y": 64.211,
-    "walk_node_id": "v-0255",
-    "snap_distance_px": 10.829
   },
   {
     "species": "Victoria Crowned Pigeon",
