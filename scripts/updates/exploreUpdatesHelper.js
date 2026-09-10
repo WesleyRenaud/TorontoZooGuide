@@ -1,4 +1,5 @@
 import { ExploreFragment } from './exploreFragment.js';
+import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class ExploreUpdatesHelper {
    static buildDatePayload(dateCtx) {
@@ -6,6 +7,16 @@ export class ExploreUpdatesHelper {
          month: dateCtx.month,
          day: dateCtx.day,
          year: dateCtx.year,
+      };
+   }
+
+   static buildTodayDatePayload(referenceToday = VisitDateValidator.getToday()) {
+      const iso = VisitDateValidator.toISODate(referenceToday);
+
+      return {
+         month: VisitDateValidator.getMonth(iso),
+         day: VisitDateValidator.getDay(iso),
+         year: VisitDateValidator.getYear(iso),
       };
    }
 

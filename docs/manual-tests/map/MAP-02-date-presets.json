@@ -20,7 +20,7 @@
     {
       "number": 3,
       "name": "Summer markers context",
-      "do": "Note animal/amenity marker set and Explore **Updates** if shown.",
+      "do": "Note animal/amenity marker set (Explore **Updates** may still show — they follow today’s real date, not Summer).",
       "expect": "Map content reflects summer context (differs from mid-winter where species/amenities are seasonal)."
     },
     {
@@ -38,8 +38,8 @@
     {
       "number": 6,
       "name": "Winter vs summer difference",
-      "do": "Compare markers/Updates to what you saw on Summer Map.",
-      "expect": "At least some seasonal difference is visible (animals, closed exhibits, updates, or Zoomobile season) — note what changed."
+      "do": "Compare markers to what you saw on Summer Map (ignore Updates/Events — they stay on today’s date).",
+      "expect": "At least some seasonal difference is visible (animals, closed exhibits, or Zoomobile season) — note what changed."
     },
     {
       "number": 7,

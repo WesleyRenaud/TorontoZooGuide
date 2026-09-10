@@ -2,14 +2,14 @@
   "id": "MAP-08",
   "title": "Closed exhibits and Updates/Events",
   "preconditions": "Specific Map. Seed may include updates/events; closed exhibits may be Blocked → CON-04 / CON-13 / CON-14.",
-  "dateUnderTest": "Record Specific Map date; also change date mid-suite.",
+  "dateUnderTest": "Specific Map for closed-exhibit steps. Updates/Events use today’s real date (not the map preset).",
   "cleanup": "None.",
   "steps": [
     {
       "number": 1,
       "name": "Updates tab",
       "do": "In Explore, open **Updates** (under Updates and events).",
-      "expect": "Tab selected; list or empty state shown."
+      "expect": "Tab selected; list or empty state shown for today."
     },
     {
       "number": 2,
@@ -33,7 +33,7 @@
       "number": 5,
       "name": "Events tab",
       "do": "Select **Events**.",
-      "expect": "Events list or empty state shown."
+      "expect": "Events list or empty state shown for today."
     },
     {
       "number": 6,
@@ -45,24 +45,24 @@
       "number": 7,
       "name": "Change map date",
       "do": "On Specific Map, change the date.",
-      "expect": "Date applies."
+      "expect": "Date applies; map markers/context update."
     },
     {
       "number": 8,
-      "name": "Updates/Events refresh",
-      "do": "Recheck Updates and Events after date change.",
-      "expect": "Content refreshes for the new date."
+      "name": "Updates/Events stay on today",
+      "do": "Recheck Updates and Events after the map date change.",
+      "expect": "Updates and Events content is unchanged by the map date (still based on today’s real date)."
     },
     {
       "number": 9,
       "name": "Closed exhibit overlay",
-      "do": "If a closed exhibit exists for the date, find overlay.",
+      "do": "If a closed exhibit exists for the map date, find overlay.",
       "expect": "Overlay visible **or** Blocked → CON-04."
     },
     {
       "number": 10,
       "name": "Open date without overlay",
-      "do": "Pick a date without closure (or after noting Blocked).",
+      "do": "Pick a map date without closure (or after noting Blocked).",
       "expect": "No erroneous full-map closed overlay."
     }
   ]
