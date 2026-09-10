@@ -1,0 +1,69 @@
+{
+  "id": "MAP-08",
+  "title": "Closed exhibits and Updates/Events",
+  "preconditions": "Specific Map. Seed may include updates/events; closed exhibits may be Blocked → CON-04 / CON-13 / CON-14.",
+  "dateUnderTest": "Record Specific Map date; also change date mid-suite.",
+  "cleanup": "None.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Updates tab",
+      "do": "In Explore, open **Updates** (under Updates and events).",
+      "expect": "Tab selected; list or empty state shown."
+    },
+    {
+      "number": 2,
+      "name": "Updates content sanity",
+      "do": "Read empty state or update cards.",
+      "expect": "Sane content; no crash."
+    },
+    {
+      "number": 3,
+      "name": "Collapse/expand",
+      "do": "Use show/hide updates control (**Hide updates and events** / **Show updates and events**).",
+      "expect": "Section collapses and expands."
+    },
+    {
+      "number": 4,
+      "name": "Updates carousel",
+      "do": "If multiple updates, use previous/next update controls.",
+      "expect": "Carousel advances **or** N/A if only one/none."
+    },
+    {
+      "number": 5,
+      "name": "Events tab",
+      "do": "Select **Events**.",
+      "expect": "Events list or empty state shown."
+    },
+    {
+      "number": 6,
+      "name": "Events content sanity",
+      "do": "Read events content.",
+      "expect": "Sane empty/full state."
+    },
+    {
+      "number": 7,
+      "name": "Change map date",
+      "do": "On Specific Map, change the date.",
+      "expect": "Date applies."
+    },
+    {
+      "number": 8,
+      "name": "Updates/Events refresh",
+      "do": "Recheck Updates and Events after date change.",
+      "expect": "Content refreshes for the new date."
+    },
+    {
+      "number": 9,
+      "name": "Closed exhibit overlay",
+      "do": "If a closed exhibit exists for the date, find overlay.",
+      "expect": "Overlay visible **or** Blocked → CON-04."
+    },
+    {
+      "number": 10,
+      "name": "Open date without overlay",
+      "do": "Pick a date without closure (or after noting Blocked).",
+      "expect": "No erroneous full-map closed overlay."
+    }
+  ]
+}

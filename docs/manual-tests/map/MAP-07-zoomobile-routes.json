@@ -1,0 +1,63 @@
+{
+  "id": "MAP-07",
+  "title": "Zoomobile routes",
+  "preconditions": "Explore panel visible with transportation route radios.",
+  "dateUnderTest": "Specific Map (or Current route season).",
+  "cleanup": "Set route control back to **None**.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "None",
+      "do": "Select **None** under Zoomobile/transportation routes.",
+      "expect": "No Zoomobile route SVG/arrows shown."
+    },
+    {
+      "number": 2,
+      "name": "Current Route",
+      "do": "Select **Current Route**.",
+      "expect": "Route and/or stations appear per current season rules."
+    },
+    {
+      "number": 3,
+      "name": "Summer Route",
+      "do": "Select **Summer Route** (or summer-style option).",
+      "expect": "Summer route layer/markers visible."
+    },
+    {
+      "number": 4,
+      "name": "Winter Route",
+      "do": "Select **Winter Route**.",
+      "expect": "Winter route layer/markers visible; differs from summer where designed."
+    },
+    {
+      "number": 5,
+      "name": "Station tooltip",
+      "do": "Click a Zoomobile station marker.",
+      "expect": "Tooltip shows station info (e.g. Zoomobile Station naming)."
+    },
+    {
+      "number": 6,
+      "name": "Back to None",
+      "do": "Select **None** again.",
+      "expect": "Route layers clear."
+    },
+    {
+      "number": 7,
+      "name": "Animals still present",
+      "do": "Confirm **Animals** still checked.",
+      "expect": "Animal markers still present."
+    },
+    {
+      "number": 8,
+      "name": "No leftover arrows",
+      "do": "Pan around former route areas.",
+      "expect": "No orphaned route arrows/markers left behind."
+    },
+    {
+      "number": 9,
+      "name": "Repeat Current once",
+      "do": "Toggle Current → None once more.",
+      "expect": "Still cleans up reliably."
+    }
+  ]
+}

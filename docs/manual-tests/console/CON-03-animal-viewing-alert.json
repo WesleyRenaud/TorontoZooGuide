@@ -1,0 +1,57 @@
+{
+  "id": "CON-03",
+  "title": "Animal viewing alert",
+  "preconditions": "Console open. Species visible on map.",
+  "dateUnderTest": "**D** in alert range.",
+  "cleanup": "**Remove animal viewing alert**.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set alert",
+      "do": "Open **Set animal viewing alert**; species/exhibit, dates covering D, alert text.",
+      "expect": "Form valid."
+    },
+    {
+      "number": 2,
+      "name": "Submit alert",
+      "do": "Submit.",
+      "expect": "Success “… was given a viewing alert.”"
+    },
+    {
+      "number": 3,
+      "name": "Map shows alert",
+      "do": "Map tooltip/banner for that animal on D.",
+      "expect": "Alert text shown."
+    },
+    {
+      "number": 4,
+      "name": "Remove alert",
+      "do": "Open **Remove animal viewing alert**.",
+      "expect": "Form OK."
+    },
+    {
+      "number": 5,
+      "name": "Submit remove",
+      "do": "Submit.",
+      "expect": "Success “Viewing alert removed…”"
+    },
+    {
+      "number": 6,
+      "name": "Map clear",
+      "do": "Map on D.",
+      "expect": "Alert gone."
+    },
+    {
+      "number": 7,
+      "name": "Map-only impact OK",
+      "do": "No itinerary required for Pass if map verified.",
+      "expect": "Noted."
+    },
+    {
+      "number": 8,
+      "name": "Cleanup",
+      "do": "Confirm no alert remains.",
+      "expect": "Clean."
+    }
+  ]
+}

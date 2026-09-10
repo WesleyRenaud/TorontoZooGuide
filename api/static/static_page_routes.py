@@ -24,6 +24,7 @@ class StaticPageRoutes():
       '/animals.html': lambda handler: StaticPageRoutes.serve_page( handler, './pages/animals.html' ),
       '/itinerary.html': lambda handler: StaticPageRoutes.serve_page( handler, './pages/itinerary.html' ),
       '/console-operations.html': lambda handler: StaticPageRoutes.serve_page( handler, './pages/console-operations.html' ),
+      '/manual-tests.html': lambda handler: StaticPageRoutes.serve_page( handler, './pages/manual-tests.html' ),
    }
 
    PREFIX_ROUTES: ClassVar[ dict[ str, GetRouteHandler ] ] = {
@@ -31,4 +32,5 @@ class StaticPageRoutes():
       '/scripts/': serve_project_path,
       '/images/': serve_project_path,
       '/shared/': serve_project_path,
+      '/docs/manual-tests/': serve_project_path,
    }

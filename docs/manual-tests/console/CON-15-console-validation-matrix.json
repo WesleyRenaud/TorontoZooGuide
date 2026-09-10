@@ -1,0 +1,81 @@
+{
+  "id": "CON-15",
+  "title": "Console validation matrix",
+  "preconditions": "Console open. No guest map/itinerary verify required. Use any convenient entities.",
+  "dateUnderTest": "N/A.",
+  "cleanup": "Delete/revert the one successful submit at the end.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Missing entity",
+      "do": "Submit an op that requires an entity with it blank (e.g. closed restaurant without name).",
+      "expect": "Validation: entity required style message."
+    },
+    {
+      "number": 2,
+      "name": "End before start",
+      "do": "Enter end date before start date.",
+      "expect": "**End date cannot be before the start date.** (or Invalid start/end)."
+    },
+    {
+      "number": 3,
+      "name": "Daily viewing times",
+      "do": "Visibility schedule without start/end times.",
+      "expect": "**Daily viewing start and end times are required.**"
+    },
+    {
+      "number": 4,
+      "name": "Weekly preset locks",
+      "do": "Opening schedule: try **weekendsOnly** / holidays checkbox interaction.",
+      "expect": "Holidays checkbox locks/behaves per preset."
+    },
+    {
+      "number": 5,
+      "name": "Attraction hours inverted",
+      "do": "**Set attraction hours** with weekday start after end.",
+      "expect": "**Weekday start time must be before weekday end time.**"
+    },
+    {
+      "number": 6,
+      "name": "Hours outside zoo hours",
+      "do": "Set attraction hours outside zoo bounds.",
+      "expect": "Bounds validation or API invalid hours message."
+    },
+    {
+      "number": 7,
+      "name": "Duplicate encounter time",
+      "do": "Wild encounter schedule with duplicate time rows.",
+      "expect": "**Each encounter time can only be added once.**"
+    },
+    {
+      "number": 8,
+      "name": "Empty required message",
+      "do": "Closed op without required guest message if required.",
+      "expect": "Validation blocks submit."
+    },
+    {
+      "number": 9,
+      "name": "Overlap Cancel",
+      "do": "Trigger **Schedule conflict** and click Cancel.",
+      "expect": "No schedule change applied."
+    },
+    {
+      "number": 10,
+      "name": "Fix one form valid",
+      "do": "Correct one form to valid inputs.",
+      "expect": "Ready to submit."
+    },
+    {
+      "number": 11,
+      "name": "Success submit",
+      "do": "Submit successfully.",
+      "expect": "Success status shown."
+    },
+    {
+      "number": 12,
+      "name": "Cleanup success row",
+      "do": "Revert/end/delete that successful test row.",
+      "expect": "Clean."
+    }
+  ]
+}

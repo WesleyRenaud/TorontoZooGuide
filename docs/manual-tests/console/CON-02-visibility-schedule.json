@@ -1,0 +1,69 @@
+{
+  "id": "CON-02",
+  "title": "Visibility schedule",
+  "preconditions": "Console open. Pick species/exhibit used on map.",
+  "dateUnderTest": "**D** inside the visibility schedule date range.",
+  "cleanup": "Run **Remove visibility schedule** before ending.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open set schedule",
+      "do": "Select **Set animal visibility schedule**.",
+      "expect": "Form opens."
+    },
+    {
+      "number": 2,
+      "name": "Fill window",
+      "do": "Set daily viewing start/end, **Schedule start date** / **Last day of schedule** covering D, **Message**.",
+      "expect": "Fields valid."
+    },
+    {
+      "number": 3,
+      "name": "Submit",
+      "do": "Submit.",
+      "expect": "Success “… viewing schedule updated.”"
+    },
+    {
+      "number": 4,
+      "name": "Map limited-viewing cue",
+      "do": "Map on D; find animal marker badge/limited-viewing styling.",
+      "expect": "Limited-viewing cue present."
+    },
+    {
+      "number": 5,
+      "name": "Tooltip/message",
+      "do": "Open tooltip.",
+      "expect": "Viewing message visible."
+    },
+    {
+      "number": 6,
+      "name": "Itinerary window",
+      "do": "On itinerary for D, schedule the animal inside vs outside the daily window if practical.",
+      "expect": "Respects or warns — note behavior."
+    },
+    {
+      "number": 7,
+      "name": "Remove schedule",
+      "do": "Select **Remove visibility schedule** for same species/exhibit.",
+      "expect": "Form OK."
+    },
+    {
+      "number": 8,
+      "name": "Submit remove",
+      "do": "Submit.",
+      "expect": "Success “… no longer has a visibility schedule.”"
+    },
+    {
+      "number": 9,
+      "name": "Map cue gone",
+      "do": "Map on D.",
+      "expect": "Limited-viewing cue gone."
+    },
+    {
+      "number": 10,
+      "name": "Itinerary normal",
+      "do": "Scheduling behaves without limited-window constraint.",
+      "expect": "Normal."
+    }
+  ]
+}

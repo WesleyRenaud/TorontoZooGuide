@@ -1,0 +1,81 @@
+{
+  "id": "MAP-06",
+  "title": "Off-display and closed include toggles",
+  "preconditions": "Self-contained: use Specific Map dates where seed already yields off-display animals or closed amenities. **Do not use console.** If unreachable, mark steps **Blocked** → CON-01 / CON-05 / CON-06 / CON-07 / CON-08.",
+  "dateUnderTest": "Record date(s) attempted.",
+  "cleanup": "Leave include toggles unchecked.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Baseline",
+      "do": "Note marker set with all include-* toggles off.",
+      "expect": "Baseline recorded."
+    },
+    {
+      "number": 2,
+      "name": "Include off display animals on",
+      "do": "Enable **Include off display animals**.",
+      "expect": "Additional animals and/or off-display banners appear **or** Blocked if seed has none for this date."
+    },
+    {
+      "number": 3,
+      "name": "Off-display feedback",
+      "do": "If animals appeared, inspect tooltip/banner.",
+      "expect": "Off-display messaging present."
+    },
+    {
+      "number": 4,
+      "name": "Include off display off",
+      "do": "Disable the toggle.",
+      "expect": "Those animals hide again."
+    },
+    {
+      "number": 5,
+      "name": "Include closed restaurants",
+      "do": "Enable **Include closed restaurants**.",
+      "expect": "Closed restaurants appear **or** Blocked."
+    },
+    {
+      "number": 6,
+      "name": "Restaurants off",
+      "do": "Disable **Include closed restaurants**.",
+      "expect": "Extra closed restaurants hide."
+    },
+    {
+      "number": 7,
+      "name": "Include closed restrooms",
+      "do": "Enable then disable **Include closed restrooms**.",
+      "expect": "Show/hide works **or** Blocked."
+    },
+    {
+      "number": 8,
+      "name": "Include closed gift shops",
+      "do": "Enable then disable **Include closed gift shops**.",
+      "expect": "Show/hide works **or** Blocked."
+    },
+    {
+      "number": 9,
+      "name": "Include closed attractions",
+      "do": "Enable then disable **Include closed attractions**.",
+      "expect": "Show/hide works **or** Blocked."
+    },
+    {
+      "number": 10,
+      "name": "Banner readability",
+      "do": "With any include toggle that shows banners, read banner text.",
+      "expect": "Banners readable; layout not fully broken."
+    },
+    {
+      "number": 11,
+      "name": "No console used",
+      "do": "Confirm this suite did not open console-operations.",
+      "expect": "Self-contained requirement met."
+    },
+    {
+      "number": 12,
+      "name": "Reset toggles",
+      "do": "Uncheck all include-* toggles.",
+      "expect": "Map back to default inclusion behavior."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "id": "CON-10",
+  "title": "Guardians talks",
+  "preconditions": "Console open. Known talk location + talk name from seed.",
+  "dateUnderTest": "**D** included in schedule / occurrence.",
+  "cleanup": "End schedules; cancel leftover occurrences; map quiet for talk on D if intended.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set schedule",
+      "do": "**Set Meet the Guardians talk schedule** with **Location**, **Talk name**, recurring **Talk times**, range including D (**Stops being offered on** as needed).",
+      "expect": "Success schedule saved."
+    },
+    {
+      "number": 2,
+      "name": "Map talk visible",
+      "do": "Map D; enable **Meet The Guardians Talks** filter.",
+      "expect": "Talk marker/tooltip present."
+    },
+    {
+      "number": 3,
+      "name": "Itinerary lists talk",
+      "do": "Itinerary builder on D; Meet the Guardians step.",
+      "expect": "Talk offered."
+    },
+    {
+      "number": 4,
+      "name": "Add occurrence",
+      "do": "**Add Meet the Guardians talk occurrence** for a date/time.",
+      "expect": "Success added."
+    },
+    {
+      "number": 5,
+      "name": "Cancel occurrence",
+      "do": "**Cancel Meet the Guardians talk occurrence**.",
+      "expect": "Success cancelled."
+    },
+    {
+      "number": 6,
+      "name": "Cancelled absent",
+      "do": "Itinerary/map for cancelled slot.",
+      "expect": "Cancelled occurrence absent as designed."
+    },
+    {
+      "number": 7,
+      "name": "End schedule",
+      "do": "**End Meet the Guardians talk schedule**.",
+      "expect": "Success ended."
+    },
+    {
+      "number": 8,
+      "name": "Future clear",
+      "do": "Check a future date that was only covered by ended schedule.",
+      "expect": "Talks cleared as designed."
+    },
+    {
+      "number": 9,
+      "name": "Duplicate time Notes",
+      "do": "Optionally resubmit duplicate time to see error.",
+      "expect": "Error string noted (optional)."
+    },
+    {
+      "number": 10,
+      "name": "Cleanup",
+      "do": "No unintended live schedules left for test talk.",
+      "expect": "Clean."
+    },
+    {
+      "number": 11,
+      "name": "Final map",
+      "do": "Map filter talks on D.",
+      "expect": "Quiet/expected state."
+    },
+    {
+      "number": 12,
+      "name": "Record names",
+      "do": "Notes: talk + location + D.",
+      "expect": "Notes."
+    }
+  ]
+}

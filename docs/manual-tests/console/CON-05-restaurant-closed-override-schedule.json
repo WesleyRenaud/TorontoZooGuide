@@ -1,0 +1,81 @@
+{
+  "id": "CON-05",
+  "title": "Restaurant closed / override / schedule",
+  "preconditions": "Console open. Known restaurant on map.",
+  "dateUnderTest": "**D** for closed checks; may use alternate dates for override/schedule.",
+  "cleanup": "Restaurant open on D; remove test overrides/schedules as needed.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set closed",
+      "do": "**Set restaurant as closed** for range covering D + message.",
+      "expect": "Success closed."
+    },
+    {
+      "number": 2,
+      "name": "Map without include",
+      "do": "Map D; **Include closed restaurants** off.",
+      "expect": "Restaurant hidden/closed treatment."
+    },
+    {
+      "number": 3,
+      "name": "Map with include",
+      "do": "Enable **Include closed restaurants**.",
+      "expect": "Visible + closed message."
+    },
+    {
+      "number": 4,
+      "name": "Closure override",
+      "do": "**Create restaurant closure override** so D (or a sub-range) reopens.",
+      "expect": "Success override saved."
+    },
+    {
+      "number": 5,
+      "name": "Map reflects override",
+      "do": "Map on overridden open day.",
+      "expect": "Appears open/available as designed."
+    },
+    {
+      "number": 6,
+      "name": "Opening schedule conflict",
+      "do": "**Set restaurant opening schedule** overlapping an existing schedule.",
+      "expect": "**Schedule conflict** dialog if overlap exists."
+    },
+    {
+      "number": 7,
+      "name": "Resolve overlap",
+      "do": "Choose **Trim Old Schedules** or **Delete Old Schedules**.",
+      "expect": "Schedule saves; note choice."
+    },
+    {
+      "number": 8,
+      "name": "Map matches schedule",
+      "do": "Map on a day implied open by new schedule.",
+      "expect": "Open state correct."
+    },
+    {
+      "number": 9,
+      "name": "Cleanup closed",
+      "do": "Ensure D is not left closed unintentionally.",
+      "expect": "Open or intentionally documented."
+    },
+    {
+      "number": 10,
+      "name": "Verify map open",
+      "do": "Map D with include-closed off.",
+      "expect": "Normal open marker if intended open."
+    },
+    {
+      "number": 11,
+      "name": "Status messages",
+      "do": "Confirm each submit showed success status text.",
+      "expect": "Statuses OK."
+    },
+    {
+      "number": 12,
+      "name": "Notes",
+      "do": "Record overlap choice and restaurant name.",
+      "expect": "Notes filled."
+    }
+  ]
+}

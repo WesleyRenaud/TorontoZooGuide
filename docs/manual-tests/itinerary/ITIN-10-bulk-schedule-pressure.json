@@ -1,0 +1,63 @@
+{
+  "id": "ITIN-10",
+  "title": "Bulk schedule pressure",
+  "preconditions": "Clear itinerary. Plan to select many animals via regions and a short visit window.",
+  "dateUnderTest": "Busy in-season date.",
+  "cleanup": "Clear itinerary after.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Large animal set",
+      "do": "On **Add Animals by Region**, select multiple regions; keep many animals.",
+      "expect": "Large selection created."
+    },
+    {
+      "number": 2,
+      "name": "Short visit window",
+      "do": "After finish (or in planner), set arrival/departure to a short window (e.g. 2 hours).",
+      "expect": "Short window set."
+    },
+    {
+      "number": 3,
+      "name": "Build/finish",
+      "do": "Finish/build so bulk schedule runs.",
+      "expect": "Bulk scheduling runs."
+    },
+    {
+      "number": 4,
+      "name": "Unscheduled leftovers",
+      "do": "Inspect list vs planner.",
+      "expect": "Some animals remain list-only unscheduled."
+    },
+    {
+      "number": 5,
+      "name": "Not enough time messaging",
+      "do": "Look for not-enough-day-time / save-issues messaging.",
+      "expect": "Messaging present."
+    },
+    {
+      "number": 6,
+      "name": "Save issues Proceed",
+      "do": "If **Your Itinerary Has the Following Issues:** appears, click **Proceed**.",
+      "expect": "Proceed works."
+    },
+    {
+      "number": 7,
+      "name": "Lengthen day",
+      "do": "Widen arrival–departure substantially.",
+      "expect": "Window updated."
+    },
+    {
+      "number": 8,
+      "name": "Rebuild",
+      "do": "Click **Rebuild schedule**.",
+      "expect": "More items schedule successfully than before."
+    },
+    {
+      "number": 9,
+      "name": "Sanity",
+      "do": "Confirm no crash with large lists.",
+      "expect": "UI remains responsive enough to use."
+    }
+  ]
+}

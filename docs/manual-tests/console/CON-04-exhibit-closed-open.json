@@ -1,0 +1,69 @@
+{
+  "id": "CON-04",
+  "title": "Exhibit closed/open",
+  "preconditions": "Console open. Choose an exhibit with a visible map overlay (e.g. a pavilion/domain used by several animals).",
+  "dateUnderTest": "**D** = future date in the closure range.",
+  "cleanup": "End with exhibit **open** for D.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open close exhibit",
+      "do": "Select **Set exhibit as closed**.",
+      "expect": "Form opens."
+    },
+    {
+      "number": 2,
+      "name": "Fill closure",
+      "do": "Pick exhibit, date range covering D, guest message.",
+      "expect": "Fields valid."
+    },
+    {
+      "number": 3,
+      "name": "Submit closed",
+      "do": "Submit.",
+      "expect": "Success “{exhibit} was set as closed.” (or equivalent)."
+    },
+    {
+      "number": 4,
+      "name": "Map overlay",
+      "do": "Open map on Specific Map date D.",
+      "expect": "Closed-exhibit overlay/styling appears for that exhibit."
+    },
+    {
+      "number": 5,
+      "name": "Itinerary impact",
+      "do": "Build/edit itinerary for D involving animals in that exhibit.",
+      "expect": "Animals constrained, warned, or harder to plan as designed — note behavior."
+    },
+    {
+      "number": 6,
+      "name": "Open exhibit op",
+      "do": "Select **Set exhibit as open**.",
+      "expect": "Form opens."
+    },
+    {
+      "number": 7,
+      "name": "Submit open",
+      "do": "Re-open for range covering D.",
+      "expect": "Success open status."
+    },
+    {
+      "number": 8,
+      "name": "Overlay gone",
+      "do": "Refresh map for D.",
+      "expect": "Closed overlay absent."
+    },
+    {
+      "number": 9,
+      "name": "Itinerary normal",
+      "do": "Recheck itinerary animal availability for that exhibit on D.",
+      "expect": "Normal selection resumes."
+    },
+    {
+      "number": 10,
+      "name": "Cleanup",
+      "do": "Confirm exhibit open on D.",
+      "expect": "No leftover closure."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "MAP-05",
+  "title": "Tooltips and species overlay",
+  "preconditions": "Animals filter on. Know a searchable species (e.g. **African Lion**).",
+  "dateUnderTest": "Specific Map date where the species is shown.",
+  "cleanup": "Close any open overlay/tooltip.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Hover tooltip",
+      "do": "Hover an animal marker.",
+      "expect": "Hover tooltip (`#hoverTooltip`) appears with identifying text."
+    },
+    {
+      "number": 2,
+      "name": "Click tooltip",
+      "do": "Click the animal marker.",
+      "expect": "Click tooltip (`#tooltip`) opens."
+    },
+    {
+      "number": 3,
+      "name": "Tooltip essentials",
+      "do": "Read the click tooltip.",
+      "expect": "Shows species name and exhibit/essentials (likelihood line may appear)."
+    },
+    {
+      "number": 4,
+      "name": "More Info",
+      "do": "Click **More Info** (or equivalent) from the tooltip.",
+      "expect": "Species overlay (`#speciesOverlay`) opens."
+    },
+    {
+      "number": 5,
+      "name": "Overlay content",
+      "do": "Inspect overlay content.",
+      "expect": "Detail content loads (not blank/error-only)."
+    },
+    {
+      "number": 6,
+      "name": "Close overlay",
+      "do": "Click the overlay close control.",
+      "expect": "Overlay hides."
+    },
+    {
+      "number": 7,
+      "name": "Amenity or pavilion tooltip",
+      "do": "Enable **Restaurants** or **Pavilions**; click a non-animal marker.",
+      "expect": "Type-appropriate tooltip appears."
+    },
+    {
+      "number": 8,
+      "name": "Dismiss tooltip",
+      "do": "Click empty map or dismiss control.",
+      "expect": "Tooltip closes."
+    },
+    {
+      "number": 9,
+      "name": "Replace tooltip",
+      "do": "Quickly click another marker.",
+      "expect": "Tooltip content switches cleanly to the new target."
+    },
+    {
+      "number": 10,
+      "name": "Hover after click",
+      "do": "Hover a different marker after dismissing click tooltip.",
+      "expect": "Hover tooltip still works."
+    }
+  ]
+}

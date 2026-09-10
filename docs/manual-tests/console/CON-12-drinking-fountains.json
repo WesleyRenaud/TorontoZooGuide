@@ -1,0 +1,57 @@
+{
+  "id": "CON-12",
+  "title": "Drinking fountains",
+  "preconditions": "Console open.",
+  "dateUnderTest": "**D** inside close window.",
+  "cleanup": "**Open drinking fountains** so fountains are open again.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Close fountains",
+      "do": "**Close drinking fountains** for a window covering D; optional message.",
+      "expect": "Success closed."
+    },
+    {
+      "number": 2,
+      "name": "Map markers/banners",
+      "do": "Map D; enable **Drinking Fountains** filter.",
+      "expect": "Closed treatment and/or banners."
+    },
+    {
+      "number": 3,
+      "name": "Open fountains",
+      "do": "**Open drinking fountains**.",
+      "expect": "Success open."
+    },
+    {
+      "number": 4,
+      "name": "Map restored",
+      "do": "Map D.",
+      "expect": "Fountains restored/open treatment."
+    },
+    {
+      "number": 5,
+      "name": "Filter toggle",
+      "do": "Toggle Drinking Fountains filter off/on.",
+      "expect": "Markers show/hide."
+    },
+    {
+      "number": 6,
+      "name": "Seasonal Notes",
+      "do": "Note interaction with seed seasonal fountain curve if visible.",
+      "expect": "Notes."
+    },
+    {
+      "number": 7,
+      "name": "Cleanup",
+      "do": "Fountains open after suite.",
+      "expect": "Open."
+    },
+    {
+      "number": 8,
+      "name": "Pass",
+      "do": "Map matches final open state.",
+      "expect": "Pass."
+    }
+  ]
+}

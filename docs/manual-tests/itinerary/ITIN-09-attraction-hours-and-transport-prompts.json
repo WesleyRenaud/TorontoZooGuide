@@ -1,0 +1,69 @@
+{
+  "id": "ITIN-09",
+  "title": "Attraction hours and transport prompts",
+  "preconditions": "Seed attraction with hours; Zoomobile or dual-role attraction/transport if available.",
+  "dateUnderTest": "Visit date when attraction is open if possible.",
+  "cleanup": "Clear or leave a simple itinerary.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Add attraction",
+      "do": "Add an attraction in the wizard.",
+      "expect": "Attraction selected."
+    },
+    {
+      "number": 2,
+      "name": "Schedule outside hours",
+      "do": "After finish, schedule it outside operating hours.",
+      "expect": "Snap to nearest valid time and/or warning."
+    },
+    {
+      "number": 3,
+      "name": "Confirm snap",
+      "do": "Note the resulting time.",
+      "expect": "Time inside operating window or explicit override noted."
+    },
+    {
+      "number": 4,
+      "name": "Closed-day confirm",
+      "do": "If visit date is closed for that attraction, attempt add.",
+      "expect": "**Attraction May Be Closed** confirm **or** N/A."
+    },
+    {
+      "number": 5,
+      "name": "Attraction also transportation",
+      "do": "Add Zoomobile (or dual-role) via path that shows **Add as Attraction?**",
+      "expect": "Prompt appears with scenic vs transport messaging."
+    },
+    {
+      "number": 6,
+      "name": "Choose as attraction",
+      "do": "Confirm add-as-attraction path.",
+      "expect": "Listed as attraction."
+    },
+    {
+      "number": 7,
+      "name": "Add as transportation",
+      "do": "Use **Add as Transportation?** path (retry/alternate add).",
+      "expect": "Listed as transportation."
+    },
+    {
+      "number": 8,
+      "name": "List representations",
+      "do": "Inspect list sections.",
+      "expect": "Attraction vs transportation representations are distinct and correct."
+    },
+    {
+      "number": 9,
+      "name": "Hours validation bubble",
+      "do": "If manual time edit exists, enter invalid hours.",
+      "expect": "Validation bubble shown."
+    },
+    {
+      "number": 10,
+      "name": "Finish/save stable",
+      "do": "Save/finish remaining changes.",
+      "expect": "No crash; itinerary stable."
+    }
+  ]
+}

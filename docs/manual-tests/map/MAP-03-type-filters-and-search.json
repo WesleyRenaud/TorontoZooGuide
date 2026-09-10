@@ -1,0 +1,75 @@
+{
+  "id": "MAP-03",
+  "title": "Type filters and search",
+  "preconditions": "Open `map.html` on **Specific Map**. Pick a known seed animal (e.g. **African Lion** or **Raccoon**).",
+  "dateUnderTest": "Any Specific Map date where the chosen animal is in seed.",
+  "cleanup": "Re-check **Animals** in Filter before leaving.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Animals checked by default",
+      "do": "Open **Filter:** dropdown.",
+      "expect": "**Animals** checkbox is checked; other types are unchecked by default."
+    },
+    {
+      "number": 2,
+      "name": "Uncheck Animals",
+      "do": "Uncheck **Animals**.",
+      "expect": "Animal markers disappear from the map."
+    },
+    {
+      "number": 3,
+      "name": "Recheck Animals",
+      "do": "Check **Animals** again.",
+      "expect": "Animal markers return."
+    },
+    {
+      "number": 4,
+      "name": "Enable Restaurants",
+      "do": "Check **Restaurants**.",
+      "expect": "Restaurant markers appear (in addition to animals)."
+    },
+    {
+      "number": 5,
+      "name": "Disable Restaurants",
+      "do": "Uncheck **Restaurants**.",
+      "expect": "Restaurant markers hide; animals remain."
+    },
+    {
+      "number": 6,
+      "name": "Spot-check another type",
+      "do": "Briefly enable **Pavilions** or **Attractions**, then disable.",
+      "expect": "Corresponding markers show/hide without breaking Animals."
+    },
+    {
+      "number": 7,
+      "name": "Search query",
+      "do": "In **Search animals** / Search… field, type part of the known species name.",
+      "expect": "Results list under the search field populates."
+    },
+    {
+      "number": 8,
+      "name": "Select search result",
+      "do": "Click a search result.",
+      "expect": "Map pans/focuses to that animal’s marker."
+    },
+    {
+      "number": 9,
+      "name": "Focus feedback",
+      "do": "Observe tooltip or highlight after selection.",
+      "expect": "Click tooltip and/or focus styling appears for the target."
+    },
+    {
+      "number": 10,
+      "name": "Clear via uncheck Animals",
+      "do": "Uncheck **Animals** while search results are visible.",
+      "expect": "Search results clear or animal results are removed as designed."
+    },
+    {
+      "number": 11,
+      "name": "Restore search",
+      "do": "Recheck **Animals** and search again.",
+      "expect": "Search works again and can focus a marker."
+    }
+  ]
+}

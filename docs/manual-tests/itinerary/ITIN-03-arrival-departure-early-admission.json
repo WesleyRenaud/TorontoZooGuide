@@ -1,0 +1,69 @@
+{
+  "id": "ITIN-03",
+  "title": "Arrival, departure, early admission",
+  "preconditions": "Saved itinerary with ≥1 item (ITIN-01). Open Day Planner / time controls.",
+  "dateUnderTest": "Itinerary visit date.",
+  "cleanup": "Leave valid arrival/departure; Early Admission off unless you intend otherwise.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Valid times",
+      "do": "Set a sensible arrival before departure.",
+      "expect": "Times accepted; no blocking validation."
+    },
+    {
+      "number": 2,
+      "name": "Invalid order",
+      "do": "Set departure before arrival.",
+      "expect": "Validation bubble/error on arrival/departure."
+    },
+    {
+      "number": 3,
+      "name": "Short visit",
+      "do": "Set arrival and departure equal or nearly equal.",
+      "expect": "Short-visit handling appears (message or constraint) — note behavior."
+    },
+    {
+      "number": 4,
+      "name": "Fix window",
+      "do": "Restore a valid multi-hour window.",
+      "expect": "Validation clears; schedule usable."
+    },
+    {
+      "number": 5,
+      "name": "Enable Early Admission",
+      "do": "Turn on **Early Admission**.",
+      "expect": "**Early Admission Hours** / membership-sensory confirmation appears."
+    },
+    {
+      "number": 6,
+      "name": "Cancel early admission",
+      "do": "Cancel/dismiss the confirmation.",
+      "expect": "Early Admission not applied (or reverts) — note."
+    },
+    {
+      "number": 7,
+      "name": "Confirm early admission",
+      "do": "Enable again and confirm membership/sensory requirements.",
+      "expect": "Early Admission applied."
+    },
+    {
+      "number": 8,
+      "name": "Times after EA",
+      "do": "Check arrival bounds after Early Admission.",
+      "expect": "Times adjust or flag as designed."
+    },
+    {
+      "number": 9,
+      "name": "Schedule still coherent",
+      "do": "View Day Planner pills if any.",
+      "expect": "No crash; timeline still coherent."
+    },
+    {
+      "number": 10,
+      "name": "Toggle EA off",
+      "do": "Disable Early Admission if possible.",
+      "expect": "Returns to standard hours behavior."
+    }
+  ]
+}
