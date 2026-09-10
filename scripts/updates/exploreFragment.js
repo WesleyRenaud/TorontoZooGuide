@@ -125,8 +125,10 @@ export class ExploreFragment {
          });
       }
 
-      async function refresh(dateCtx) {
-         if (!dateCtx?.month || !dateCtx?.day) {
+      async function refresh() {
+         const todayPayload = ExploreUpdatesHelper.buildTodayDatePayload();
+
+         if (!todayPayload.month || !todayPayload.day) {
             renderItems({
                nextUpdates: [],
                nextEvents: [],
@@ -136,8 +138,8 @@ export class ExploreFragment {
 
          try {
             const [nextUpdates, nextEvents] = await Promise.all([
-               MapClient.getUpdates(ExploreUpdatesHelper.buildDatePayload(dateCtx)),
-               MapClient.getEvents(ExploreUpdatesHelper.buildDatePayload(dateCtx)),
+               MapClient.getUpdates(todayPayload),
+               MapClient.getEvents(todayPayload),
             ]);
 
             renderItems({

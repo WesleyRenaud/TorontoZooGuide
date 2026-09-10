@@ -34,7 +34,7 @@ test('Test_CreateExploreUpdates_TestRefreshStepAndTabs_ExpectRender', async () =
    const originalToggle = ExploreUpdatesView.getExploreToggleEl;
    const originalTab = ExploreUpdatesView.getExploreTabEl;
    const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
-   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalPayload = ExploreUpdatesHelper.buildTodayDatePayload;
    const originalUpdateCard = ExploreUpdateView.createUpdateCard;
    const originalEventCard = ExploreEventView.createEventCard;
    const originalUpdates = MapClient.getUpdates;
@@ -53,7 +53,7 @@ test('Test_CreateExploreUpdates_TestRefreshStepAndTabs_ExpectRender', async () =
    ExploreUpdatesHelper.resolveActiveTab = (_active, updates) => (
       updates.length ? ExploreFragment.EXPLORE_TAB.UPDATES : ExploreFragment.EXPLORE_TAB.EVENTS
    );
-   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: 'JUN', day: 1, year: 2026 });
    ExploreUpdateView.createUpdateCard = (update, active) => {
       const el = document.createElement('div');
       el.textContent = `${update.title}:${active}`;
@@ -72,10 +72,12 @@ test('Test_CreateExploreUpdates_TestRefreshStepAndTabs_ExpectRender', async () =
       const controller = ExploreFragment.createExploreUpdates({ listEl });
       assert.equal(typeof controller.refresh, 'function');
 
-      await controller.refresh({});
+      ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: null, day: null, year: null });
+      await controller.refresh();
       assert.ok(visibility.some((entry) => entry[1] === false));
 
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: 'JUN', day: 1, year: 2026 });
+      await controller.refresh();
       assert.equal(listEl.children.length, 3);
       assert.equal(tabs.at(-1).updatesCount, 2);
       assert.equal(navs.at(-1).itemCount, 2);
@@ -100,13 +102,13 @@ test('Test_CreateExploreUpdates_TestRefreshStepAndTabs_ExpectRender', async () =
       MapClient.getUpdates = async () => [];
       MapClient.getEvents = async () => [{ name: 'Show' }, { name: 'Parade' }];
       ExploreUpdatesHelper.resolveActiveTab = () => ExploreFragment.EXPLORE_TAB.EVENTS;
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      await controller.refresh();
       assert.equal(tabs.at(-1).activeTab, ExploreFragment.EXPLORE_TAB.EVENTS);
       navs.at(-1).onStep(1);
       assert.match(listEl.children[1].textContent, /Parade:true/);
 
       MapClient.getUpdates = async () => { throw new Error('fail'); };
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      await controller.refresh();
       assert.equal(listEl.children.length, 0);
    } finally {
       ExploreUpdatesView.setExploreSectionVisibility = originalVisibility;
@@ -118,7 +120,7 @@ test('Test_CreateExploreUpdates_TestRefreshStepAndTabs_ExpectRender', async () =
       ExploreUpdatesView.getExploreToggleEl = originalToggle;
       ExploreUpdatesView.getExploreTabEl = originalTab;
       ExploreUpdatesHelper.resolveActiveTab = originalResolve;
-      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdatesHelper.buildTodayDatePayload = originalPayload;
       ExploreUpdateView.createUpdateCard = originalUpdateCard;
       ExploreEventView.createEventCard = originalEventCard;
       MapClient.getUpdates = originalUpdates;
@@ -139,7 +141,7 @@ test('Test_CreateExploreUpdates_TestTabGuardsAndSingleStep_ExpectNoop', async ()
    const originalToggle = ExploreUpdatesView.getExploreToggleEl;
    const originalTab = ExploreUpdatesView.getExploreTabEl;
    const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
-   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalPayload = ExploreUpdatesHelper.buildTodayDatePayload;
    const originalUpdateCard = ExploreUpdateView.createUpdateCard;
    const originalEventCard = ExploreEventView.createEventCard;
    const originalUpdates = MapClient.getUpdates;
@@ -154,7 +156,7 @@ test('Test_CreateExploreUpdates_TestTabGuardsAndSingleStep_ExpectNoop', async ()
       tab === ExploreFragment.EXPLORE_TAB.UPDATES ? updatesTabEl : eventsTabEl
    );
    ExploreUpdatesHelper.resolveActiveTab = (tab) => tab;
-   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: 'JUN', day: 1, year: 2026 });
    ExploreUpdateView.createUpdateCard = () => document.createElement('div');
    ExploreEventView.createEventCard = () => document.createElement('div');
    MapClient.getUpdates = async () => [{ title: 'Only' }];
@@ -163,7 +165,7 @@ test('Test_CreateExploreUpdates_TestTabGuardsAndSingleStep_ExpectNoop', async ()
    try {
       const listEl = document.createElement('div');
       const controller = ExploreFragment.createExploreUpdates({ listEl });
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      await controller.refresh();
 
       const before = tabs.length;
       eventsTabEl.click();
@@ -181,7 +183,7 @@ test('Test_CreateExploreUpdates_TestTabGuardsAndSingleStep_ExpectNoop', async ()
       ExploreUpdatesView.getExploreToggleEl = originalToggle;
       ExploreUpdatesView.getExploreTabEl = originalTab;
       ExploreUpdatesHelper.resolveActiveTab = originalResolve;
-      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdatesHelper.buildTodayDatePayload = originalPayload;
       ExploreUpdateView.createUpdateCard = originalUpdateCard;
       ExploreEventView.createEventCard = originalEventCard;
       MapClient.getUpdates = originalUpdates;
@@ -201,7 +203,7 @@ test('Test_CreateExploreUpdates_TestEmptyUpdatesTab_ExpectNoop', async () => {
    const originalToggle = ExploreUpdatesView.getExploreToggleEl;
    const originalTab = ExploreUpdatesView.getExploreTabEl;
    const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
-   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalPayload = ExploreUpdatesHelper.buildTodayDatePayload;
    const originalUpdateCard = ExploreUpdateView.createUpdateCard;
    const originalEventCard = ExploreEventView.createEventCard;
    const originalUpdates = MapClient.getUpdates;
@@ -216,7 +218,7 @@ test('Test_CreateExploreUpdates_TestEmptyUpdatesTab_ExpectNoop', async () => {
       tab === ExploreFragment.EXPLORE_TAB.UPDATES ? updatesTabEl : eventsTabEl
    );
    ExploreUpdatesHelper.resolveActiveTab = () => ExploreFragment.EXPLORE_TAB.EVENTS;
-   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: 'JUN', day: 1, year: 2026 });
    ExploreUpdateView.createUpdateCard = () => document.createElement('div');
    ExploreEventView.createEventCard = () => document.createElement('div');
    MapClient.getUpdates = async () => [];
@@ -225,7 +227,7 @@ test('Test_CreateExploreUpdates_TestEmptyUpdatesTab_ExpectNoop', async () => {
    try {
       const listEl = document.createElement('div');
       const controller = ExploreFragment.createExploreUpdates({ listEl });
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      await controller.refresh();
 
       const before = tabs.length;
       updatesTabEl.click();
@@ -239,7 +241,7 @@ test('Test_CreateExploreUpdates_TestEmptyUpdatesTab_ExpectNoop', async () => {
       ExploreUpdatesView.getExploreToggleEl = originalToggle;
       ExploreUpdatesView.getExploreTabEl = originalTab;
       ExploreUpdatesHelper.resolveActiveTab = originalResolve;
-      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdatesHelper.buildTodayDatePayload = originalPayload;
       ExploreUpdateView.createUpdateCard = originalUpdateCard;
       ExploreEventView.createEventCard = originalEventCard;
       MapClient.getUpdates = originalUpdates;
@@ -275,7 +277,7 @@ test('Test_CreateExploreUpdates_TestInvalidTab_ExpectNoop', async () => {
    const originalToggle = ExploreUpdatesView.getExploreToggleEl;
    const originalTab = ExploreUpdatesView.getExploreTabEl;
    const originalResolve = ExploreUpdatesHelper.resolveActiveTab;
-   const originalPayload = ExploreUpdatesHelper.buildDatePayload;
+   const originalPayload = ExploreUpdatesHelper.buildTodayDatePayload;
    const originalUpdateCard = ExploreUpdateView.createUpdateCard;
    const originalEventCard = ExploreEventView.createEventCard;
    const originalUpdates = MapClient.getUpdates;
@@ -290,7 +292,7 @@ test('Test_CreateExploreUpdates_TestInvalidTab_ExpectNoop', async () => {
       tab === originalUpdatesTab ? updatesTabEl : eventsTabEl
    );
    ExploreUpdatesHelper.resolveActiveTab = () => ExploreFragment.EXPLORE_TAB.EVENTS;
-   ExploreUpdatesHelper.buildDatePayload = (ctx) => ctx;
+   ExploreUpdatesHelper.buildTodayDatePayload = () => ({ month: 'JUN', day: 1, year: 2026 });
    ExploreUpdateView.createUpdateCard = () => document.createElement('div');
    ExploreEventView.createEventCard = () => document.createElement('div');
    MapClient.getUpdates = async () => [{ title: 'Notice' }];
@@ -299,7 +301,7 @@ test('Test_CreateExploreUpdates_TestInvalidTab_ExpectNoop', async () => {
    try {
       const listEl = document.createElement('div');
       const controller = ExploreFragment.createExploreUpdates({ listEl });
-      await controller.refresh({ month: 6, day: 1, year: 2026 });
+      await controller.refresh();
 
       allowInvalidReads = true;
       updatesTabReads = 0;
@@ -320,7 +322,7 @@ test('Test_CreateExploreUpdates_TestInvalidTab_ExpectNoop', async () => {
       ExploreUpdatesView.getExploreToggleEl = originalToggle;
       ExploreUpdatesView.getExploreTabEl = originalTab;
       ExploreUpdatesHelper.resolveActiveTab = originalResolve;
-      ExploreUpdatesHelper.buildDatePayload = originalPayload;
+      ExploreUpdatesHelper.buildTodayDatePayload = originalPayload;
       ExploreUpdateView.createUpdateCard = originalUpdateCard;
       ExploreEventView.createEventCard = originalEventCard;
       MapClient.getUpdates = originalUpdates;
