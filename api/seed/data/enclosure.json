@@ -147,13 +147,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Mimic Surgeonfish",
-    "exhibit": "Australasia Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Moon Jellyfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -476,13 +469,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Black-Widow Spider",
-    "exhibit": "Americas Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Blanding's Turtle",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -575,13 +561,6 @@
   },
   {
     "species": "Eyelash Viper",
-    "exhibit": "Americas Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Ferocious Water Bug",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -735,20 +714,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Puerto Rican Crested Toad",
-    "exhibit": "Americas Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Pumpkinseed Sunfish",
-    "exhibit": "Americas Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Red Island Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -886,6 +851,13 @@
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Mar-Dec",
     "seasonal_viewing_information": "The raccoons are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To check whether the domain is open, consult the Toronto Zoo's official website. Raccoons thrive in all seasons, and if the domain is open, then the cougar will be viewable.",
+    "include_all_viewing_spots": null
+  },
+  {
+    "species": "Trumpeter Swan",
+    "exhibit": "Canadian Domain",
+    "seasonal_viewing_summary": "Mar-Dec",
+    "seasonal_viewing_information": "The trumpeter swans are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To check whether the domain is open, consult the Toronto Zoo's official website. Trumpeter swans are cold-hardy waterfowl and are typically viewable when the domain is open, though heavy ice on Weston Pond can reduce visibility.",
     "include_all_viewing_spots": null
   },
   {
@@ -1029,13 +1001,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "African Clawed Frog",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1134,13 +1099,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Veiled Chameleon",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Violaceous Plantain Eater",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1198,13 +1156,6 @@
   },
   {
     "species": "Pygmy Hippopotamus",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Radiated Tortoise",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -1288,13 +1239,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Black Carp",
-    "exhibit": "Indo-Malaya Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Black-Breasted Leaf Turtle",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1359,13 +1303,6 @@
   },
   {
     "species": "Giant Gourami",
-    "exhibit": "Indo-Malaya Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Grass Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -1568,13 +1505,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Gooty Sapphire Ornamental Tarantula",
-    "exhibit": "Malayan Woods Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Malayan Walking Stick",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1663,6 +1593,13 @@
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The rabbit is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable if the Kids Zoo is open.",
+    "include_all_viewing_spots": null
+  },
+  {
+    "species": "Radiated Tortoise",
+    "exhibit": "Kids Zoo",
+    "seasonal_viewing_summary": "May-Oct",
+    "seasonal_viewing_information": "The radiated tortoise is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
     "include_all_viewing_spots": null
   }
 ]

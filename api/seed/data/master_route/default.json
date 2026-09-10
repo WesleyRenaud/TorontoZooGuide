@@ -194,14 +194,6 @@
         {
           "kind": "animal",
           "key": [
-            "Mimic Surgeonfish",
-            "Australasia Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Moon Jellyfish",
             "Australasia Pavilion",
             null
@@ -681,14 +673,6 @@
         {
           "kind": "animal",
           "key": [
-            "Black-Widow Spider",
-            "Americas Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Blanding's Turtle",
             "Americas Pavilion",
             null
@@ -794,14 +778,6 @@
           "kind": "animal",
           "key": [
             "Eyelash Viper",
-            "Americas Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Ferocious Water Bug",
             "Americas Pavilion",
             null
           ]
@@ -970,22 +946,6 @@
           "kind": "animal",
           "key": [
             "Plush-Crested Jay",
-            "Americas Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Puerto Rican Crested Toad",
-            "Americas Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Pumpkinseed Sunfish",
             "Americas Pavilion",
             null
           ]
@@ -1193,6 +1153,14 @@
           "kind": "animal",
           "key": [
             "Cougar",
+            "Canadian Domain",
+            null
+          ]
+        },
+        {
+          "kind": "animal",
+          "key": [
+            "Trumpeter Swan",
             "Canadian Domain",
             null
           ]
@@ -1487,14 +1455,6 @@
         {
           "kind": "animal",
           "key": [
-            "Radiated Tortoise",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Sacred Ibis",
             "African Rainforest Pavilion",
             null
@@ -1504,14 +1464,6 @@
           "kind": "animal",
           "key": [
             "Straw Coloured Fruit Bat",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "African Clawed Frog",
             "African Rainforest Pavilion",
             null
           ]
@@ -1624,14 +1576,6 @@
           "kind": "animal",
           "key": [
             "Tomato Frog",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Veiled Chameleon",
             "African Rainforest Pavilion",
             null
           ]
@@ -1763,14 +1707,6 @@
         {
           "kind": "animal",
           "key": [
-            "Black Carp",
-            "Indo-Malaya Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Black-Breasted Leaf Turtle",
             "Indo-Malaya Pavilion",
             null
@@ -1844,14 +1780,6 @@
           "kind": "animal",
           "key": [
             "Giant Gourami",
-            "Indo-Malaya Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Grass Carp",
             "Indo-Malaya Pavilion",
             null
           ]
@@ -2036,14 +1964,6 @@
           "kind": "animal",
           "key": [
             "Giant Gourami",
-            "Malayan Woods Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Gooty Sapphire Ornamental Tarantula",
             "Malayan Woods Pavilion",
             null
           ]
@@ -2237,6 +2157,14 @@
           "kind": "animal",
           "key": [
             "Rabbit",
+            "Kids Zoo",
+            null
+          ]
+        },
+        {
+          "kind": "animal",
+          "key": [
+            "Radiated Tortoise",
             "Kids Zoo",
             null
           ]
