@@ -190,7 +190,9 @@ def stub_schedule_item_travel_time_calculator(
 
    def _for_map_location(
          kind: MapLocationKind,
-         name: str ) -> MapLocationWalkNode | None:
+         name: str,
+         *,
+         location: str = '' ) -> MapLocationWalkNode | None:
       if kind == MapLocationKind.ATTRACTION and name == CAROUSEL:
          return CAROUSEL_WALK_NODE
 
@@ -340,6 +342,48 @@ def Test_EntranceTravelSecondsFromLatestItem_TestEmptyItinerary_ExpectZero(
       stub_schedule_item_travel_time_calculator: None ) -> None:
    assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
       _empty_itinerary() ) == 0
+
+
+def Test_EntranceTravelSecondsFromLatestItem_TestGuardiansTalk_ExpectTravelToEntrance(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   itinerary = _empty_itinerary()
+   itinerary.guardians_talks = [
+      GuardiansTalk(
+         name=ZEBRA_TALK,
+         location='Africa Savanna',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='12:00 PM',
+         end_time='12:30 PM' ),
+   ]
+
+   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary ) == TALK_NODE_ID
+   # Talk is four edges from entrance in TEST_GRAPH.
+   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      itinerary ) == TRAVEL_SECONDS * 4
+
+
+def Test_EntranceTravelSecondsFromLatestItem_TestSeedAfricanPenguinTalk_ExpectNonZeroTravel(
+      ) -> None:
+   MapLocationWalkNodeLookup.by_key.cache_clear()
+   WalkGraphProvider.fetch.cache_clear()
+
+   itinerary = _empty_itinerary()
+   itinerary.guardians_talks = [
+      GuardiansTalk(
+         name='African Penguin',
+         location='Africa Savanna',
+         x_coord=0.0,
+         y_coord=0.0,
+         start_time='12:00 PM',
+         end_time='12:30 PM' ),
+   ]
+
+   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary ) is not None
+   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      itinerary ) > 0
 
 
 def Test_WalkNodeIdForLatestScheduledItem_TestTransportationOffboard_ExpectOffboardNode(
