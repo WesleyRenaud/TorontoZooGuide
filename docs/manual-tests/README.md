@@ -85,7 +85,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-04 | [json](itinerary/ITIN-04-schedule-module.json) | Schedule module + pills |
 | ITIN-05 | [json](itinerary/ITIN-05-rebuild-and-unschedule-all.json) | Rebuild / Unschedule all |
 | ITIN-06 | [json](itinerary/ITIN-06-off-display-low-likelihood-confirm.json) | Off-display / low likelihood confirm |
-| ITIN-07 | [json](itinerary/ITIN-07-talk-and-encounter-scheduling.json) | Talks + wild encounters |
+| ITIN-07 | [json](itinerary/ITIN-07-talk-and-encounter-scheduling.json) | Talks + wild encounters auto-schedule |
 | ITIN-08 | [json](itinerary/ITIN-08-conflict-and-overlap-flows.json) | Conflicts / overlaps |
 | ITIN-09 | [json](itinerary/ITIN-09-attraction-hours-and-transport-prompts.json) | Hours snap + transport prompts |
 | ITIN-10 | [json](itinerary/ITIN-10-bulk-schedule-pressure.json) | Short day bulk schedule |

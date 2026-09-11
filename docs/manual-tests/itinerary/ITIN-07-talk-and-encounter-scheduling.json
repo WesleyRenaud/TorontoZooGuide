@@ -1,66 +1,54 @@
 {
   "id": "ITIN-07",
-  "title": "Talk and encounter scheduling",
+  "title": "Talk and encounter auto-scheduling",
   "steps": [
     {
       "number": 1,
-      "name": "Add talk",
-      "do": "In wizard Meet the Guardians step, add a talk if listed.",
-      "expect": "Talk selected **or** Notes “none offered” and skip talk-specific steps."
+      "name": "Open builder",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**.",
+      "expect": "Builder opens (e.g. **Set Visit Date**)."
     },
     {
       "number": 2,
-      "name": "Add wild encounter",
-      "do": "On Wild Encounters, add one if listed.",
-      "expect": "Encounter selected **or** Notes none offered."
+      "name": "Visit date with offerings",
+      "do": "On **Set Visit Date**, pick a today-or-future date that offers Meet the Guardians talks and Wild Encounters, then continue through the wizard.",
+      "expect": "Meet the Guardians and Wild Encounters steps list at least one option each."
     },
     {
       "number": 3,
-      "name": "Finish",
-      "do": "Finish with talk and/or encounter (+ optional animal).",
-      "expect": "Itinerary saved."
+      "name": "Add talk",
+      "do": "On the Meet the Guardians step, add a listed talk (e.g. **African Penguin** if offered).",
+      "expect": "Talk is selected."
     },
     {
       "number": 4,
-      "name": "Schedule talk",
-      "do": "Schedule the talk at its offered time.",
-      "expect": "Pill appears at talk time."
+      "name": "Add wild encounter",
+      "do": "On **Wild Encounters**, add a listed encounter (e.g. **Kangaroo** if offered).",
+      "expect": "Encounter is selected."
     },
     {
       "number": 5,
-      "name": "Reschedule talk",
-      "do": "Change talk time / reschedule.",
-      "expect": "Confirm dialog if required; succeeds."
+      "name": "Finish",
+      "do": "Finish the itinerary (extra animals optional).",
+      "expect": "Itinerary saves."
     },
     {
       "number": 6,
-      "name": "Walk-route update prompt",
-      "do": "If prompted about walk-route update, confirm or cancel once each as separate Notes.",
-      "expect": "Prompt behavior recorded."
+      "name": "Talk already on planner",
+      "do": "Open **Day Planner View**.",
+      "expect": "The talk already has a timeline pill at its offered time (fixed-time items are auto-scheduled; do not use **Schedule an item** for them)."
     },
     {
       "number": 7,
-      "name": "Schedule encounter",
-      "do": "Schedule wild encounter at its time.",
-      "expect": "Pill appears."
+      "name": "Encounter already on planner",
+      "do": "Find the wild encounter on Day Planner.",
+      "expect": "The encounter already has a timeline pill at its offered time."
     },
     {
       "number": 8,
-      "name": "Force overlap if easy",
-      "do": "Schedule another item overlapping the encounter/talk.",
-      "expect": "Conflict/overlap flow begins **or** note unable to force."
-    },
-    {
-      "number": 9,
-      "name": "WE priority / shorten",
-      "do": "If wild-encounter overlap handling appears, follow adjust/shorten.",
-      "expect": "WE priority path works — or N/A."
-    },
-    {
-      "number": 10,
-      "name": "Cancel paths",
-      "do": "Document cancel/skip choices in Notes.",
-      "expect": "No crash; itinerary consistent."
+      "name": "List matches planner",
+      "do": "Switch to **List View**, then back to **Day Planner View**.",
+      "expect": "Talk and encounter appear on the list and stay scheduled on the planner."
     }
   ]
 }
