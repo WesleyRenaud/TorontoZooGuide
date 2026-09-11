@@ -10,57 +10,51 @@
     },
     {
       "number": 2,
-      "name": "Add attraction",
-      "do": "On **Itinerary**, build with that same visit date, add the attraction from step 1, then **Finish**.",
+      "name": "Build with that attraction",
+      "do": "On **Itinerary**, build with that same visit date, add the attraction from step 1, then **Finish**. Keep arrival/departure spanning the attraction hours (or clear them).",
       "expect": "Attraction is on the itinerary."
     },
     {
       "number": 3,
       "name": "Schedule outside hours",
-      "do": "In Day Planner, use **Schedule an item** and schedule it at **9:30 AM** (before the **11:00 AM** open from step 1).",
+      "do": "In Day Planner, use **Schedule an item** and schedule it at **10:00 AM** (after **Zoo Opens**, before the **11:00 AM** attraction open).",
       "expect": "**Outside Attraction Hours** appears with **Adjust** and **Cancel**."
     },
     {
       "number": 4,
       "name": "Confirm snap",
       "do": "Click **Adjust**.",
-      "expect": "Attraction schedules at the nearest valid time inside **11:00 AM–3:00 PM** (not **9:30 AM**)."
+      "expect": "Attraction schedules at the nearest valid time inside **11:00 AM–3:00 PM** (not **10:00 AM**)."
     },
     {
       "number": 5,
-      "name": "Attraction also transportation",
-      "do": "On **Add Attractions**, select **Zoomobile**.",
+      "name": "Edit for Zoomobile",
+      "do": "Use **Edit Itinerary**. On **Add Attractions**, select **Zoomobile**.",
       "expect": "**Add as Attraction?** appears (scenic trip vs transportation messaging)."
     },
     {
       "number": 6,
       "name": "Choose as attraction",
       "do": "Confirm **Add as Attraction?**.",
-      "expect": "**Zoomobile** is listed under attractions."
+      "expect": "**Zoomobile** is selected on **Add Attractions**."
     },
     {
       "number": 7,
       "name": "Add as transportation",
-      "do": "On **Add Transportation**, select **Zoomobile**.",
-      "expect": "**Add as Transportation?** appears; confirm it. **Zoomobile** is listed under transportation."
+      "do": "Continue to **Add Transportation** and select **Zoomobile**.",
+      "expect": "**Add as Transportation?** appears."
     },
     {
       "number": 8,
-      "name": "List representations",
-      "do": "Inspect list sections on the finished itinerary (or List View).",
-      "expect": "Attraction and transportation entries for **Zoomobile** are distinct and correct."
+      "name": "Confirm transportation",
+      "do": "Confirm **Add as Transportation?**, then **Finish**.",
+      "expect": "Itinerary saves."
     },
     {
       "number": 9,
-      "name": "Hours validation bubble",
-      "do": "If manual time edit exists, enter invalid hours.",
-      "expect": "Validation bubble shown."
-    },
-    {
-      "number": 10,
-      "name": "Finish/save stable",
-      "do": "Save/finish remaining changes.",
-      "expect": "No crash; itinerary stable."
+      "name": "List representations",
+      "do": "Open **List View**.",
+      "expect": "**Zoomobile** appears as both an attraction and a transportation entry, and they are distinct."
     }
   ]
 }
