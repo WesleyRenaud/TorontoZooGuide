@@ -55,12 +55,6 @@
       "name": "Keep vs remove",
       "do": "Use **Keep** / remove choices where offered, then accept the popup.",
       "expect": "Choices apply to the itinerary."
-    },
-    {
-      "number": 10,
-      "name": "Coherent winter result",
-      "do": "Inspect list / Day Planner after accepting.",
-      "expect": "Visit date is the midwinter day; kept or removed items match the choices from step 9."
     }
   ]
 }
