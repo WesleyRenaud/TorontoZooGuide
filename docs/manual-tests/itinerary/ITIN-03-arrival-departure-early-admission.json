@@ -4,60 +4,66 @@
   "steps": [
     {
       "number": 1,
+      "name": "Clear confirmation skips",
+      "do": "From the project root, run `npm run clear:itinerary-config`, then reload **Itinerary**.",
+      "expect": "Command reports no **Don't show this again** skips (or clears any that were on). Short Visit / Early Admission confirmations are no longer skipped."
+    },
+    {
+      "number": 2,
       "name": "Valid times",
       "do": "Set a sensible arrival before departure.",
       "expect": "Times accepted; no blocking validation."
     },
     {
-      "number": 2,
+      "number": 3,
       "name": "Invalid order",
       "do": "Set departure before arrival.",
       "expect": "Validation bubble/error on arrival/departure."
     },
     {
-      "number": 3,
+      "number": 4,
       "name": "Short visit",
-      "do": "Set departure within **120 minutes** after arrival.",
-      "expect": "**Short Visit?** confirmation appears (or equivalent short-visit handling)."
+      "do": "With both arrival and departure set, change them to a visit shorter than **2 hours** (e.g. arrival **10:00 AM**, departure **11:00 AM**).",
+      "expect": "**Short Visit?** confirmation appears."
     },
     {
-      "number": 4,
+      "number": 5,
       "name": "Fix window",
       "do": "Restore a valid multi-hour window.",
       "expect": "Validation clears; schedule usable."
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Enable Early Admission",
       "do": "Turn on **Early Admission**.",
       "expect": "**Early Admission Hours** / membership-sensory confirmation appears."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Cancel early admission",
       "do": "Cancel/dismiss the confirmation.",
       "expect": "Early Admission not applied (or reverts) — note."
     },
     {
-      "number": 7,
+      "number": 8,
       "name": "Confirm early admission",
       "do": "Enable again and confirm membership/sensory requirements.",
       "expect": "Early Admission applied."
     },
     {
-      "number": 8,
+      "number": 9,
       "name": "Times after EA",
       "do": "Check arrival bounds after Early Admission.",
       "expect": "Times adjust or flag as designed."
     },
     {
-      "number": 9,
+      "number": 10,
       "name": "Schedule still coherent",
       "do": "View Day Planner pills if any.",
       "expect": "No crash; timeline still coherent."
     },
     {
-      "number": 10,
+      "number": 11,
       "name": "Toggle EA off",
       "do": "Disable Early Admission if possible.",
       "expect": "Returns to standard hours behavior."
