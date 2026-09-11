@@ -95,7 +95,7 @@ export class RemovedItemsPopupSectionBuilder {
          },
          {
             items: safeRemoved.attractions ?? [],
-            title: strings.map.filter.attractions,
+            title: strings.itinerary.removedItems.attractionsRemovedTitle,
             subtitle: strings.itinerary.removedItems.attractionsSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildAttractionRows,
             stepKey: ScheduleItemKind.ATTRACTION.itemType,
@@ -103,14 +103,14 @@ export class RemovedItemsPopupSectionBuilder {
          },
          {
             items: safeRemoved.guardiansTalks ?? [],
-            title: strings.site.nav.meetTheGuardians,
+            title: strings.itinerary.removedItems.talksRemovedTitle,
             subtitle: strings.itinerary.removedItems.talksSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildGuardiansRows,
             stepKey: 'guardiansTalks',
          },
          {
             items: safeRemoved.wildEncounters ?? [],
-            title: strings.site.nav.wildEncounters,
+            title: strings.itinerary.removedItems.wildEncountersRemovedTitle,
             subtitle: strings.itinerary.removedItems.wildEncountersSubtitle,
             rowBuilder: ItineraryPanelRowsBuilder.buildWildRows,
             stepKey: 'wildEncounters',
