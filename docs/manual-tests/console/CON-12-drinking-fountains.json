@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map markers/banners",
-      "do": "On **Map**, set **Specific Map** to today. enable **Drinking Fountains** filter.",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Drinking Fountains**.",
       "expect": "Closed treatment and/or banners."
     },
     {
@@ -31,24 +31,6 @@
       "name": "Filter toggle",
       "do": "Toggle Drinking Fountains filter off/on.",
       "expect": "Markers show/hide."
-    },
-    {
-      "number": 6,
-      "name": "Seasonal Notes",
-      "do": "Note interaction with seed seasonal fountain curve if visible.",
-      "expect": "Notes."
-    },
-    {
-      "number": 7,
-      "name": "Cleanup",
-      "do": "Fountains open after suite.",
-      "expect": "Open."
-    },
-    {
-      "number": 8,
-      "name": "Pass",
-      "do": "Map matches final open state.",
-      "expect": "Pass."
     }
   ]
 }

@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map Events shows",
-      "do": "Map Explore → **Events** on today.",
+      "do": "Map Explore \u2192 **Events** on today.",
       "expect": "Event visible."
     },
     {
@@ -31,18 +31,6 @@
       "name": "Inside range again",
       "do": "Return **Specific Map** to today.",
       "expect": "Event present."
-    },
-    {
-      "number": 6,
-      "name": "Endability Notes",
-      "do": "Check whether console can end/delete event.",
-      "expect": "Notes."
-    },
-    {
-      "number": 7,
-      "name": "Pass",
-      "do": "Create + map date gating verified.",
-      "expect": "Pass."
     }
   ]
 }

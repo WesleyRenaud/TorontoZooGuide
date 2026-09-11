@@ -12,7 +12,7 @@
       "number": 2,
       "name": "Map without include",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Restaurants**. Leave **Include closed restaurants** unchecked.",
-      "expect": "The closed restaurant is absent (or not shown as a normal open marker)."
+      "expect": "The closed restaurant marker is absent."
     },
     {
       "number": 3,

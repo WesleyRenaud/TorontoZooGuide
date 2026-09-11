@@ -29,8 +29,8 @@
     {
       "number": 5,
       "name": "Map closed",
-      "do": "On **Map** with **Specific Map** set to today, with **Include closed attractions** unchecked then checked.",
-      "expect": "Hidden/closed without include; visible + message with include."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked, then check it and click the attraction marker.",
+      "expect": "With include off, the attraction marker is absent. With include on, the marker appears; tooltip/banner shows the closed message."
     },
     {
       "number": 6,
@@ -41,7 +41,7 @@
     {
       "number": 7,
       "name": "Closure override",
-      "do": "Open **Create attraction closure override** for the same attraction with a range covering today and a **Closure message**. Then on **Map** with **Include closed attractions** on, click the marker.",
+      "do": "Open **Create attraction closure override** for the same attraction with a range covering today and a **Closure message**. Then on **Map** with **Attractions** enabled and **Include closed attractions** on, click the marker.",
       "expect": "Override saves; attraction remains closed on the map; tooltip/banner shows the override **Closure message**."
     },
     {
@@ -59,7 +59,7 @@
     {
       "number": 10,
       "name": "Map open state",
-      "do": "On **Map**, set **Specific Map** to today.",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked.",
       "expect": "Attraction appears open/normal without needing include-closed."
     },
     {

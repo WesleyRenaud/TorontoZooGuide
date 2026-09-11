@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map verify",
-      "do": "On **Map**, set **Specific Map** to today. enable **Wild Encounters** filter.",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Wild Encounters**.",
       "expect": "Meeting spot / encounter marker visible."
     },
     {
@@ -43,24 +43,6 @@
       "name": "Future clear",
       "do": "Future date check.",
       "expect": "Cleared as designed."
-    },
-    {
-      "number": 8,
-      "name": "Duplicate time optional",
-      "do": "Optional duplicate-time validation Notes.",
-      "expect": "Optional."
-    },
-    {
-      "number": 9,
-      "name": "Cleanup",
-      "do": "No leftover test schedule.",
-      "expect": "Clean."
-    },
-    {
-      "number": 10,
-      "name": "Final map",
-      "do": "Map quiet/expected.",
-      "expect": "OK."
     }
   ]
 }

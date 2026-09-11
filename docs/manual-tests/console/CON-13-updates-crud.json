@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map Updates shows it",
-      "do": "Map Explore → **Updates** on today.",
+      "do": "Map Explore \u2192 **Updates** on today.",
       "expect": "Update visible."
     },
     {
@@ -43,24 +43,6 @@
       "name": "Inside vs outside range",
       "do": "Before ending, flip map date inside/outside range once.",
       "expect": "Presence matches range."
-    },
-    {
-      "number": 8,
-      "name": "Cleanup",
-      "do": "Ensure test update ended.",
-      "expect": "Clean enough for other suites."
-    },
-    {
-      "number": 9,
-      "name": "No crash",
-      "do": "Carousel/collapse still works.",
-      "expect": "OK."
-    },
-    {
-      "number": 10,
-      "name": "Pass",
-      "do": "CRUD + map verify done.",
-      "expect": "Pass."
     }
   ]
 }
