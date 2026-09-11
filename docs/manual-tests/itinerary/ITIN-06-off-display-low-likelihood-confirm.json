@@ -4,57 +4,57 @@
   "steps": [
     {
       "number": 1,
-      "name": "Open animal step",
-      "do": "In builder, reach **Add Animals**.",
-      "expect": "Animal selector visible."
+      "name": "Open builder",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**.",
+      "expect": "Builder opens (e.g. **Set Visit Date**)."
     },
     {
       "number": 2,
-      "name": "Include off-display",
-      "do": "Enable **Include off-display animals** if testing off-display.",
-      "expect": "Toggle on."
+      "name": "Midwinter visit date",
+      "do": "On **Set Visit Date**, pick a midwinter date (e.g. a day in January), then continue to **Add Animals**.",
+      "expect": "**Add Animals** is visible."
     },
     {
       "number": 3,
-      "name": "Select target animal",
-      "do": "Select an off-display or very low-likelihood animal.",
-      "expect": "Confirm dialog appears (off-display or below-threshold likelihood message)."
+      "name": "Include off-display",
+      "do": "Enable **Include off-display animals**.",
+      "expect": "Toggle is on."
     },
     {
       "number": 4,
-      "name": "Cancel confirm",
-      "do": "Cancel/dismiss without adding.",
-      "expect": "Animal not added."
+      "name": "Select off-display animal",
+      "do": "Select **Warthog** (or **River Hippopotamus**).",
+      "expect": "**Animal May Be Off Display** confirmation appears."
     },
     {
       "number": 5,
-      "name": "Select again",
-      "do": "Select the same animal again.",
-      "expect": "Confirm appears again."
+      "name": "Cancel confirm",
+      "do": "Cancel/dismiss without adding.",
+      "expect": "Animal is not added to the selection."
     },
     {
       "number": 6,
-      "name": "Confirm add",
-      "do": "Confirm add.",
-      "expect": "Animal added to selection."
+      "name": "Select again",
+      "do": "Select the same animal again.",
+      "expect": "**Animal May Be Off Display** appears again."
     },
     {
       "number": 7,
-      "name": "Finish",
-      "do": "Finish itinerary with that animal included.",
-      "expect": "Build succeeds."
+      "name": "Confirm add",
+      "do": "Confirm add.",
+      "expect": "Animal is added to the selection."
     },
     {
       "number": 8,
-      "name": "List cue",
-      "do": "Inspect list for status/likelihood cue if any.",
-      "expect": "Cue present or note absent."
+      "name": "Finish",
+      "do": "Finish the itinerary with that animal included.",
+      "expect": "Itinerary saves successfully."
     },
     {
       "number": 9,
-      "name": "Document Blocked path",
-      "do": "If no such animal existed for the date, mark suite Blocked.",
-      "expect": "Notes point to CON-01 or alternate date."
+      "name": "List cue",
+      "do": "In **List View**, find that animal.",
+      "expect": "Off-display / low-likelihood status cue is visible for it."
     }
   ]
 }
