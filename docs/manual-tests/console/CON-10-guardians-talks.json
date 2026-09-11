@@ -5,50 +5,56 @@
     {
       "number": 1,
       "name": "Set schedule",
-      "do": "**Set Meet the Guardians talk schedule** with **Location**, **Talk name**, recurring **Talk times**, range including today (**Stops being offered on** as needed).",
-      "expect": "Success schedule saved."
+      "do": "Open **Set Meet the Guardians talk schedule**. Choose a **Location** and **Talk name**, add recurring **Talk times**, and set a date range including today (**Stops being offered on** as needed). Submit.",
+      "expect": "Success that the schedule was saved."
     },
     {
       "number": 2,
       "name": "Map talk visible",
-      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Meet The Guardians Talks**.",
-      "expect": "Talk marker/tooltip present."
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Meet The Guardians Talks**, then open the talk marker.",
+      "expect": "Talk marker is present; tooltip/banner shows the scheduled **Talk times**."
     },
     {
       "number": 3,
       "name": "Itinerary lists talk",
-      "do": "Itinerary builder on today; Meet the Guardians step.",
-      "expect": "Talk offered."
+      "do": "From the bottom nav, open **Itinerary**. Use **Edit Itinerary** / **Build Itinerary**, set the visit date to today, and open the Meet the Guardians step.",
+      "expect": "The talk is offered with the scheduled **Talk times**."
     },
     {
       "number": 4,
       "name": "Add occurrence",
-      "do": "**Add Meet the Guardians talk occurrence** for a date/time.",
-      "expect": "Success added."
+      "do": "Open **Add Meet the Guardians talk occurrence**. Choose the same **Location** and **Talk name**, set **Date** to today, and enter a **Talk time** that is not already on the recurring schedule. Submit.",
+      "expect": "Success that the occurrence was added."
     },
     {
       "number": 5,
-      "name": "Cancel occurrence",
-      "do": "**Cancel Meet the Guardians talk occurrence**.",
-      "expect": "Success cancelled."
+      "name": "Added occurrence visible",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Meet The Guardians Talks**, then open the talk marker. On **Itinerary**, open the Meet the Guardians step for today.",
+      "expect": "The added **Talk time** appears on the map tooltip/banner and in the Meet the Guardians offerings."
     },
     {
       "number": 6,
-      "name": "Cancelled absent",
-      "do": "Itinerary/map for cancelled slot.",
-      "expect": "Cancelled occurrence is absent."
+      "name": "Cancel occurrence",
+      "do": "Open **Cancel Meet the Guardians talk occurrence**. Choose the same **Location**, **Talk name**, and **Date** as step 4, select the added **Talk time**, and submit.",
+      "expect": "Success that the occurrence was cancelled."
     },
     {
       "number": 7,
-      "name": "End schedule",
-      "do": "**End Meet the Guardians talk schedule**.",
-      "expect": "Success ended."
+      "name": "Cancelled occurrence absent",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Meet The Guardians Talks**, then open the talk marker. On **Itinerary**, open the Meet the Guardians step for today.",
+      "expect": "The cancelled **Talk time** is absent from the map tooltip/banner and from the Meet the Guardians offerings."
     },
     {
       "number": 8,
+      "name": "End schedule",
+      "do": "Open **End Meet the Guardians talk schedule** and end the schedule from step 1.",
+      "expect": "Success that the schedule was ended."
+    },
+    {
+      "number": 9,
       "name": "Future clear",
-      "do": "Check a future date that was only covered by ended schedule.",
-      "expect": "Talks are cleared for dates after the end."
+      "do": "On **Map**, set **Specific Map** to a future date that was only covered by the ended schedule. In **Filter:**, enable **Meet The Guardians Talks**. On **Itinerary**, open the Meet the Guardians step for that same future visit date.",
+      "expect": "The talk is absent on the map and in Meet the Guardians offerings for that future date."
     }
   ]
 }
