@@ -1,21 +1,21 @@
 {
   "id": "MAP-04",
   "title": "Markers, likelihood, stacks",
-  "preconditions": "Open `map.html` on **Specific Map**. Prefer a shoulder-season date for mixed likelihood tints.",
+  "preconditions": "Open `map.html` on **Specific Map**. For likelihood tint, use a spring shoulder date and check **Grevy's Zebra** (Africa Savanna).",
   "dateUnderTest": "Record the Specific Map date used.",
   "cleanup": "None.",
   "steps": [
     {
       "number": 1,
       "name": "Pick mixed-likelihood date",
-      "do": "Set Specific Map to a shoulder-season date (spring or fall, outside peak summer/winter).",
+      "do": "Set Specific Map to a spring shoulder date (so **Grevy's Zebra** still appears with a reduced tint).",
       "expect": "Date applies; markers reload."
     },
     {
       "number": 2,
       "name": "Likelihood tint",
-      "do": "Compare an animal icon tint to a peak-summer date for the same species (toggle date).",
-      "expect": "Tint/likelihood styling differs where the seasonal curve is not flat — note species checked."
+      "do": "Find **Grevy's Zebra**, note its icon tint, then switch to a peak-summer Specific Map date and compare the same marker.",
+      "expect": "Tint/likelihood styling is stronger on the summer date than on the spring shoulder date."
     },
     {
       "number": 3,
