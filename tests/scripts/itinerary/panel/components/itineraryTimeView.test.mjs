@@ -238,20 +238,21 @@ test('Test_MakeItineraryTimeInput_TestCancelledError_ExpectSilentReject', async 
    const deps = _installTimeInputDeps();
 
    try {
-      ItineraryTimeView.makeItineraryTimeInput({
-         label: 'Arrival',
-         value: '09:30 AM',
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Departure',
+         value: '',
          onChange: async () => {
             const error = new Error('cancelled');
             error.name = 'ItineraryTimeChangeCancelledError';
             throw error;
          },
-         invalidMessage: 'cancelled',
+         invalidMessage: 'Departure time must be between opening and closing.',
          clearAriaLabel: 'Clear',
       });
 
-      await deps.getPickerOptions().onClose([], '10:00 AM', deps.flatpickrInstance);
-      assert.deepEqual(deps.bubble.showCalls, ['cancelled']);
+      await deps.getPickerOptions().onClose([], '11:00 AM', deps.flatpickrInstance);
+      assert.deepEqual(deps.bubble.showCalls, []);
+      assert.equal(field.querySelector('.itinerary-day-time-input').value, '');
    } finally {
       deps.restore();
    }
