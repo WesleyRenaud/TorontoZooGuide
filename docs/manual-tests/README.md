@@ -55,9 +55,9 @@ npm run backdate:itinerary
 ## Conventions
 
 - One suite file = one focused scenario (~8–12 steps).
-- Suite JSON fields: `id`, `title`, and `steps[]` with `number`, `name`, `do`, `expect`. Optional suite meta (`preconditions`, `dateUnderTest`, `cleanup`) may be present and is shown in the hub only when non-empty.
+- Suite JSON fields: `id`, `title`, and `steps[]` with `number`, `name`, `do`, `expect`. Optional suite meta (`preconditions`, `cleanup`) may be present and is shown in the hub only when non-empty.
 - **Map** and **itinerary** suites are self-contained (seed + UI date/toggles). Do not use console to set up state. Exception: **ITIN-11** uses `npm run backdate:itinerary` because the date picker cannot select past days.
-- **Console** suites must verify map and/or itinerary on the same date **D**, then clean up.
+- **Console** suites must verify map and/or itinerary on today (unless a step names another date), then clean up.
 - If seed cannot produce a state, mark **Blocked** and point to the matching `CON-*` suite.
 
 ## Suite index

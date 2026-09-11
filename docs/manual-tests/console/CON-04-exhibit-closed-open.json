@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Fill closure",
-      "do": "Pick exhibit, date range covering D, guest message.",
+      "do": "Pick exhibit, date range covering today, guest message.",
       "expect": "Fields valid."
     },
     {
@@ -23,13 +23,13 @@
     {
       "number": 4,
       "name": "Map overlay",
-      "do": "From the bottom nav, open **Map**. On **Specific Map**, set date D.",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today.",
       "expect": "Closed-exhibit overlay/styling appears for that exhibit."
     },
     {
       "number": 5,
       "name": "Itinerary impact",
-      "do": "Build/edit itinerary for D involving animals in that exhibit.",
+      "do": "Build/edit itinerary for today involving animals in that exhibit.",
       "expect": "Animals constrained, warned, or harder to plan as designed — note behavior."
     },
     {
@@ -41,25 +41,25 @@
     {
       "number": 7,
       "name": "Submit open",
-      "do": "Re-open for range covering D.",
+      "do": "Re-open for a date range covering today.",
       "expect": "Success open status."
     },
     {
       "number": 8,
       "name": "Overlay gone",
-      "do": "From the bottom nav, return to **Map** on **Specific Map** date D.",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** today.",
       "expect": "Closed overlay absent."
     },
     {
       "number": 9,
       "name": "Itinerary normal",
-      "do": "Recheck itinerary animal availability for that exhibit on D.",
+      "do": "Recheck itinerary animal availability for that exhibit on today.",
       "expect": "Normal selection resumes."
     },
     {
       "number": 10,
       "name": "Cleanup",
-      "do": "Confirm exhibit open on D.",
+      "do": "Confirm exhibit open on today.",
       "expect": "No leftover closure."
     }
   ]

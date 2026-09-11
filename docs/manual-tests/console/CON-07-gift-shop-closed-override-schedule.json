@@ -5,7 +5,7 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "**Set gift shop as closed** covering D.",
+      "do": "**Set gift shop as closed** covering today.",
       "expect": "Success."
     },
     {
@@ -35,7 +35,7 @@
     {
       "number": 6,
       "name": "Map after change",
-      "do": "Map on D / open day.",
+      "do": "On **Map**, set **Specific Map** to today (or the open day).",
       "expect": "Matches intended open/closed."
     },
     {

@@ -1,8 +1,7 @@
 {
   "id": "XXX-00",
   "title": "Short title",
-  "preconditions": "npm run seed, npm start, …",
-  "dateUnderTest": "…",
+  "preconditions": "npm run seed, npm start, \u2026",
   "cleanup": "None or steps to restore.",
   "steps": [
     {

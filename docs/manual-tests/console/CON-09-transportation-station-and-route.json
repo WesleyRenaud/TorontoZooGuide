@@ -5,13 +5,13 @@
     {
       "number": 1,
       "name": "Close station",
-      "do": "**Set transportation station as closed** for D.",
+      "do": "**Set transportation station as closed** for today.",
       "expect": "Success."
     },
     {
       "number": 2,
       "name": "Map station closed",
-      "do": "Map D with Zoomobile route visible.",
+      "do": "On **Map** with **Specific Map** set to today, with Zoomobile route visible.",
       "expect": "Station closed/missing/messaged."
     },
     {
@@ -23,7 +23,7 @@
     {
       "number": 4,
       "name": "Set Summer route",
-      "do": "**Set current transportation route** — choose **Summer**, date range including D.",
+      "do": "**Set current transportation route** — choose **Summer**, date range including today.",
       "expect": "Success “Transportation route was set to …”"
     },
     {
@@ -59,7 +59,7 @@
     {
       "number": 10,
       "name": "Cleanup stations",
-      "do": "Confirm stations open on D.",
+      "do": "Confirm stations open on today.",
       "expect": "Open."
     }
   ]

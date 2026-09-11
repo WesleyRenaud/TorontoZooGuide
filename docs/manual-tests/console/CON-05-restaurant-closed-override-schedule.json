@@ -5,13 +5,13 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "**Set restaurant as closed** for range covering D + message.",
+      "do": "**Set restaurant as closed** for date range covering today, plus a guest message.",
       "expect": "Success closed."
     },
     {
       "number": 2,
       "name": "Map without include",
-      "do": "Map D; **Include closed restaurants** off.",
+      "do": "On **Map**, set **Specific Map** to today. **Include closed restaurants** off.",
       "expect": "Restaurant hidden/closed treatment."
     },
     {
@@ -23,7 +23,7 @@
     {
       "number": 4,
       "name": "Closure override",
-      "do": "**Create restaurant closure override** so D (or a sub-range) reopens.",
+      "do": "**Create restaurant closure override** so today (or a sub-range) reopens.",
       "expect": "Success override saved."
     },
     {
@@ -53,13 +53,13 @@
     {
       "number": 9,
       "name": "Cleanup closed",
-      "do": "Ensure D is not left closed unintentionally.",
+      "do": "Ensure today is not left closed unintentionally.",
       "expect": "Open or intentionally documented."
     },
     {
       "number": 10,
       "name": "Verify map open",
-      "do": "Map D with include-closed off.",
+      "do": "On **Map** with **Specific Map** set to today, with include-closed off.",
       "expect": "Normal open marker if intended open."
     },
     {
