@@ -47,8 +47,8 @@
     {
       "number": 8,
       "name": "Review seasonal removals",
-      "do": "In **Itinerary Updated**, open **Animals Removed** and attractions sections.",
-      "expect": "**Warthog** and **River Hippopotamus** are listed under **Animals Removed**; **Splash Island** is listed as unavailable on the new date."
+      "do": "In **Itinerary Updated**, open **Removed Animals** and **Removed Attractions**.",
+      "expect": "**Warthog** and **River Hippopotamus** are listed under **Removed Animals**; **Splash Island** is listed under **Removed Attractions**."
     },
     {
       "number": 9,

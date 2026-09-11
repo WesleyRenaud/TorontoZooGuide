@@ -319,7 +319,8 @@ export class ItineraryStrings {
          animalsRemovedSubtitle: (
             'The following animals are unavailable on your new date for the reasons listed below.'
          ),
-         animalsRemovedTitle: 'Animals Removed',
+         animalsRemovedTitle: 'Removed Animals',
+         attractionsRemovedTitle: 'Removed Attractions',
          attractionsSubtitle: 'The following attractions are unavailable on your new date.',
          // TO-DO: This string should be updated. It is not that the animals are easier to see, but rather that are more
          // likely to be on display.
@@ -352,9 +353,11 @@ export class ItineraryStrings {
          ),
          reducedAnimalVisibilityTitle: 'Reduced Animal Visibility',
          someDetailsChanged: 'Some itinerary details changed',
+         talksRemovedTitle: 'Removed Meet The Guardians',
          talksSubtitle: 'The following talks are not scheduled on your new date.',
          changedSubtitle: 'Some itinerary details changed for your new date. Review the updates below.',
          viewAlternatives: 'View Alternatives',
+         wildEncountersRemovedTitle: 'Removed Wild Encounters',
          wildEncountersSubtitle: 'The following encounters are not available on your new date.',
          emptyItineraryTitle: 'Your itinerary is now empty',
          keepInItinerary: 'Keep',

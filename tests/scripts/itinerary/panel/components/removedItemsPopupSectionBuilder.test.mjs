@@ -71,7 +71,7 @@ test('Test_GetRemovedItemsPopupSectionSpecs_TestIncludesKeepOverridesForRemovedR
       section => section.title === Strings.itinerary.removedItems.animalsRemovedTitle
    );
    const removedAttractionSection = sections.find(
-      section => section.title === Strings.map.filter.attractions
+      section => section.title === Strings.itinerary.removedItems.attractionsRemovedTitle
          && section.keepOverrideKey === 'attraction'
    );
 
