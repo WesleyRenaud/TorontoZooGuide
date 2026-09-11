@@ -131,6 +131,7 @@ export class ScheduleItemSearcher {
          return {
             query: normalizedQuery,
             includeAnimals: true,
+            includeOffDisplayAnimals: true,
             forItinerary: true,
          };
       }
@@ -139,6 +140,7 @@ export class ScheduleItemSearcher {
          return {
             query: normalizedQuery,
             includeAttractions: true,
+            includeClosedAttractions: true,
          };
       }
 
@@ -167,7 +169,9 @@ export class ScheduleItemSearcher {
          return {
             query: normalizedQuery,
             includeAnimals: true,
+            includeOffDisplayAnimals: true,
             includeAttractions: true,
+            includeClosedAttractions: true,
             includeGuardiansTalks: true,
             includeWildEncounters: true,
             forItinerary: true,

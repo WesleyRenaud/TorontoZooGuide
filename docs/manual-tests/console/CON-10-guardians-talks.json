@@ -36,7 +36,7 @@
       "number": 6,
       "name": "Cancelled absent",
       "do": "Itinerary/map for cancelled slot.",
-      "expect": "Cancelled occurrence absent as designed."
+      "expect": "Cancelled occurrence is absent."
     },
     {
       "number": 7,
@@ -48,13 +48,7 @@
       "number": 8,
       "name": "Future clear",
       "do": "Check a future date that was only covered by ended schedule.",
-      "expect": "Talks cleared as designed."
-    },
-    {
-      "number": 9,
-      "name": "Duplicate time Notes",
-      "do": "Optionally resubmit duplicate time to see error.",
-      "expect": "Error string noted (optional)."
+      "expect": "Talks are cleared for dates after the end."
     }
   ]
 }

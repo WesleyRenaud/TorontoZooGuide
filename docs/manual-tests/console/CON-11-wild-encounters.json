@@ -23,14 +23,14 @@
     {
       "number": 4,
       "name": "Cancel occurrence",
-      "do": "**Cancel Wild Encounter occurrence** (add occurrence first only if required to have something to cancel).",
+      "do": "Open **Cancel Wild Encounter occurrence**. Cancel an occurrence for today.",
       "expect": "Success cancelled."
     },
     {
       "number": 5,
       "name": "Cancelled absent",
       "do": "Itinerary/map for that slot.",
-      "expect": "Absent as designed."
+      "expect": "Cancelled occurrence is absent."
     },
     {
       "number": 6,
@@ -42,7 +42,7 @@
       "number": 7,
       "name": "Future clear",
       "do": "Future date check.",
-      "expect": "Cleared as designed."
+      "expect": "Encounter is cleared for dates after the end."
     }
   ]
 }

@@ -5,20 +5,20 @@
     {
       "number": 1,
       "name": "Create event",
-      "do": "**Create event** with name, location, description, optional link, dates covering today.",
+      "do": "Open **Create event**. Enter name, location, description, a link, and dates covering today. Submit.",
       "expect": "Success created."
     },
     {
       "number": 2,
       "name": "Map Events shows",
-      "do": "Map Explore \u2192 **Events** on today.",
+      "do": "Map Explore → **Events** on today.",
       "expect": "Event visible."
     },
     {
       "number": 3,
       "name": "Open link",
-      "do": "If link present, open/check it.",
-      "expect": "Link works or N/A."
+      "do": "Open the event link from the map.",
+      "expect": "The link opens successfully."
     },
     {
       "number": 4,

@@ -5,8 +5,8 @@
     {
       "number": 1,
       "name": "Baseline",
-      "do": "Confirm every **Include …** Explore toggle is unchecked (**Include off display animals**, **Include closed restaurants**, **Include closed restrooms**, **Include closed gift shops**, **Include closed attractions**). Note which markers are on the map.",
-      "expect": "Those toggles are all off, and you have a clear before-picture of visible markers for later comparison."
+      "do": "Confirm every **Include …** Explore toggle is unchecked (**Include off display animals**, **Include closed restaurants**, **Include closed restrooms**, **Include closed gift shops**, **Include closed attractions**).",
+      "expect": "Those toggles are all off."
     },
     {
       "number": 2,

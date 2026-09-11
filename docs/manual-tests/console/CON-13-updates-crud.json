@@ -29,14 +29,14 @@
     {
       "number": 5,
       "name": "End update",
-      "do": "**End update** effective on/before today as designed.",
+      "do": "Open **End update** and end the update effective on or before today.",
       "expect": "Success ended."
     },
     {
       "number": 6,
       "name": "Map inactive",
       "do": "Updates on today.",
-      "expect": "No longer listed as active (or ended treatment)."
+      "expect": "Update is no longer listed as active."
     },
     {
       "number": 7,

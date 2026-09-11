@@ -58,6 +58,7 @@ npm run backdate:itinerary
 - Suite JSON fields: `id`, `title`, and `steps[]` with `number`, `name`, `do`, `expect`. Optional suite meta (`preconditions`, `cleanup`) may be present and is shown in the hub only when non-empty.
 - **Map** and **itinerary** suites are self-contained (seed + UI date/toggles). Do not use console to set up state. Exception: **ITIN-11** uses `npm run backdate:itinerary` because the date picker cannot select past days.
 - **Console** suites must verify map and/or itinerary on today (unless a step names another date), then clean up.
+- **Set … as closed** (restaurants / gift shops) fails if another opening schedule overlaps the same dates and does not offer Trim/Delete. Use seed amenities with no opening schedules: **Africa Restaurant**, **Zootique**. Attractions: use **Create … closure override** for closed guest checks (every seeded attraction has opening-schedule rows).
 - If seed cannot produce a state, mark **Blocked** and point to the matching `CON-*` suite.
 
 ## Suite index
@@ -106,7 +107,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | CON-05 | [json](console/CON-05-restaurant-closed-override-schedule.json) | Restaurant ops |
 | CON-06 | [json](console/CON-06-restroom-closed-open-alert.json) | Restroom ops |
 | CON-07 | [json](console/CON-07-gift-shop-closed-override-schedule.json) | Gift shop ops |
-| CON-08 | [json](console/CON-08-attraction-closed-override-schedule-hours.json) | Attraction ops + hours |
+| CON-08 | [json](console/CON-08-attraction-closed-override-schedule-hours.json) | Attraction hours + closure override |
 | CON-09 | [json](console/CON-09-transportation-station-and-route.json) | Stations + route |
 | CON-10 | [json](console/CON-10-guardians-talks.json) | Guardians talk schedules |
 | CON-11 | [json](console/CON-11-wild-encounters.json) | Wild encounter schedules |

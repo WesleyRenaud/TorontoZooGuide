@@ -1,78 +1,48 @@
 {
   "id": "CON-08",
-  "title": "Attraction closed / override / schedule / hours",
+  "title": "Attraction hours / closure override",
   "steps": [
     {
       "number": 1,
       "name": "Set attraction hours",
-      "do": "Open **Set attraction hours**. Set weekday and weekend/holiday start/end within zoo hours.",
+      "do": "Open **Set attraction hours**. Choose **Conservation Carousel**. Set weekday and weekend/holiday start/end within zoo hours.",
       "expect": "Form validates."
     },
     {
       "number": 2,
       "name": "Submit hours",
       "do": "Submit.",
-      "expect": "Success “{name} attraction hours were saved.”"
+      "expect": "Success “Conservation Carousel attraction hours were saved.”"
     },
     {
       "number": 3,
-      "name": "Itinerary hours snap",
-      "do": "On itinerary for a day those hours apply, schedule the attraction outside its open window.",
-      "expect": "UI snaps to nearest valid time or warns — note which."
+      "name": "Itinerary outside hours",
+      "do": "On **Itinerary** for a day those hours apply, schedule **Conservation Carousel** outside its open window.",
+      "expect": "**Outside Attraction Hours** appears; choosing **Adjust** moves the time into the attraction’s hours."
     },
     {
       "number": 4,
-      "name": "Set attraction closed",
-      "do": "Open **Set attraction as closed**. Choose an attraction, set a date range covering today, and enter a **Closure message** (e.g. **Manual test attraction closed**).",
-      "expect": "Submit success closed."
+      "name": "Closure override",
+      "do": "Open **Create attraction closure override**. Choose **Conservation Carousel**, leave dates blank or covering today, and enter a **Closure message** (e.g. **Manual test attraction closed**).",
+      "expect": "Success that the **Conservation Carousel** closure override was saved."
     },
     {
       "number": 5,
       "name": "Map closed",
-      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked, then check it and click the attraction marker.",
-      "expect": "With include off, the attraction marker is absent. With include on, the marker appears; tooltip/banner shows the closed message."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked, then check it and click the **Conservation Carousel** marker.",
+      "expect": "With include off, the marker is absent. With include on, the marker appears; tooltip/banner shows the **Closure message**."
     },
     {
       "number": 6,
       "name": "Itinerary closed confirm",
-      "do": "Try adding the attraction on today.",
-      "expect": "**Attraction May Be Closed** / closed confirm appears."
+      "do": "Use **Edit Itinerary**. On **Add Attractions**, enable **Include closed attractions**, and add **Conservation Carousel**.",
+      "expect": "**The Conservation Carousel is closed on your visit date. Do you still want to add it to your itinerary?**"
     },
     {
       "number": 7,
-      "name": "Closure override",
-      "do": "Open **Create attraction closure override** for the same attraction with a range covering today and a **Closure message**. Then on **Map** with **Attractions** enabled and **Include closed attractions** on, click the marker.",
-      "expect": "Override saves; attraction remains closed on the map; tooltip/banner shows the override **Closure message**."
-    },
-    {
-      "number": 8,
-      "name": "Opening schedule",
-      "do": "Open **Set attraction opening schedule**; set a weekly pattern.",
-      "expect": "Saves, or **Schedule conflict** dialog if overlapping (**Trim Old Schedules** / **Delete Old Schedules**)."
-    },
-    {
-      "number": 9,
-      "name": "Resolve overlap if shown",
-      "do": "If overlap dialog appears, choose Trim or Delete and confirm.",
-      "expect": "Schedule saves; note choice."
-    },
-    {
-      "number": 10,
-      "name": "Map open state",
-      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked.",
-      "expect": "Attraction appears open/normal without needing include-closed."
-    },
-    {
-      "number": 11,
       "name": "Hours still valid",
-      "do": "Spot-check itinerary scheduling still respects hours.",
-      "expect": "Snap/hours behavior still coherent."
-    },
-    {
-      "number": 12,
-      "name": "Cleanup",
-      "do": "Remove test closure/override; leave attraction open.",
-      "expect": "Guest map clean for today."
+      "do": "On Day Planner, open **Schedule item**, choose **Attraction**, search **Conservation Carousel**, and schedule it outside its hours.",
+      "expect": "**Outside Attraction Hours** appears again."
     }
   ]
 }

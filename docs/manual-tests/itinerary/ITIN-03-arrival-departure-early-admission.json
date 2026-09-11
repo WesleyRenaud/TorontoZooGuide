@@ -36,7 +36,7 @@
       "number": 6,
       "name": "Early admission date",
       "do": "Via **Edit Itinerary** / **Set Visit Date**, pick a **today-or-future** visit date whose Day Planner shows **Early Admission** before **Zoo Opens** (seed weekends/holidays: Early Admission **9:00 AM**, Zoo Opens **9:30 AM**, through Labor Day). If no such date is selectable, mark **Blocked**.",
-      "expect": "**Early Admission** appears on the timeline before **Zoo Opens** — or suite **Blocked** if early-admission season has ended."
+      "expect": "**Early Admission** appears on the timeline before **Zoo Opens** \u2014 or suite **Blocked** if early-admission season has ended."
     },
     {
       "number": 7,
@@ -64,9 +64,9 @@
     },
     {
       "number": 11,
-      "name": "Schedule still coherent",
-      "do": "View Day Planner pills if any.",
-      "expect": "No crash; timeline still coherent."
+      "name": "Day Planner still usable",
+      "do": "Open Day Planner if items are scheduled.",
+      "expect": "Day Planner loads without error."
     }
   ]
 }

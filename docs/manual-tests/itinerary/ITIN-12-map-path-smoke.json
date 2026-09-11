@@ -5,7 +5,7 @@
     {
       "number": 1,
       "name": "Multi-stop planner",
-      "do": "Ensure Day Planner has ≥2 scheduled stops.",
+      "do": "Ensure Day Planner has \u22652 scheduled stops.",
       "expect": "Pills visible."
     },
     {
@@ -18,7 +18,7 @@
       "number": 3,
       "name": "Pan/zoom path",
       "do": "Pan/zoom the itinerary map.",
-      "expect": "Path remains visible/coherent."
+      "expect": "Path remains visible."
     },
     {
       "number": 4,
