@@ -4,69 +4,75 @@
   "steps": [
     {
       "number": 1,
-      "name": "Open schedule UI",
-      "do": "In the itinerary panel, open the schedule-an-item / scheduling controls.",
-      "expect": "Schedule module is visible (type, search, time)."
+      "name": "Build with an animal",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**, set a visit date, add at least one animal (e.g. **African Lion**), then **Finish**.",
+      "expect": "Itinerary saves with that animal on the list."
     },
     {
       "number": 2,
-      "name": "Choose type",
-      "do": "Select animal (or matching type for an itinerary item).",
-      "expect": "Type filter applies to searchable items."
+      "name": "Open schedule UI",
+      "do": "In Day Planner, click **Schedule an item**.",
+      "expect": "Schedule module is visible (type, search, time)."
     },
     {
       "number": 3,
-      "name": "Search item",
-      "do": "Search for an animal already on the itinerary.",
-      "expect": "Matching results appear."
+      "name": "Choose type",
+      "do": "Select **Animal** (or the type that matches the item you added).",
+      "expect": "Type filter applies to searchable items."
     },
     {
       "number": 4,
+      "name": "Search item",
+      "do": "Search for the animal already on the itinerary (e.g. **African Lion**).",
+      "expect": "Matching results appear."
+    },
+    {
+      "number": 5,
       "name": "Only on my itinerary",
       "do": "Enable **Only show items on my itinerary**.",
       "expect": "Results restricted to itinerary items."
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Pick time",
       "do": "Choose a valid time within arrival/departure if set.",
       "expect": "Time accepted."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Optional duration",
       "do": "Set duration if the field is shown.",
       "expect": "Duration accepted or defaults applied."
     },
     {
-      "number": 7,
+      "number": 8,
       "name": "Schedule succeeds",
       "do": "Submit/schedule the item.",
       "expect": "A scheduled pill appears on the Day Planner timeline."
     },
     {
-      "number": 8,
+      "number": 9,
       "name": "Unschedule via pill menu",
       "do": "Open the pill menu and unschedule.",
       "expect": "Pill removed; item remains on list unscheduled."
     },
     {
-      "number": 9,
+      "number": 10,
       "name": "Reschedule",
       "do": "Schedule the same item again at a different time.",
       "expect": "New pill appears at the new time."
     },
     {
-      "number": 10,
-      "name": "Remove if offered",
-      "do": "From pill/list menu, remove from itinerary if available.",
-      "expect": "Item leaves itinerary (or note if remove is list-only)."
+      "number": 11,
+      "name": "Remove from itinerary",
+      "do": "Open that animal’s timeline pill menu (or its row under **Scheduled Items** / **Unscheduled Items**), choose **Remove**, then confirm **Remove from Itinerary?**.",
+      "expect": "Animal is gone from the itinerary in both **List View** and **Day Planner View**."
     },
     {
-      "number": 11,
+      "number": 12,
       "name": "List vs planner sync",
-      "do": "Compare list view and Day Planner.",
-      "expect": "Scheduled vs unscheduled state matches across views."
+      "do": "Compare **List View** and **Day Planner View**.",
+      "expect": "Both views agree the animal is gone (and any other schedule state matches)."
     }
   ]
 }
