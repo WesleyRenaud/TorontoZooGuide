@@ -34,33 +34,21 @@
     },
     {
       "number": 6,
-      "name": "Open exhibit op",
-      "do": "Select **Set exhibit as open**.",
-      "expect": "Form opens."
+      "name": "Re-open exhibit",
+      "do": "In Console, open **Set exhibit as open**. Re-open **Canadian Domain** for a date range covering today and submit.",
+      "expect": "Success that **Canadian Domain** is open."
     },
     {
       "number": 7,
-      "name": "Submit open",
-      "do": "Re-open **Canadian Domain** for a date range covering today.",
-      "expect": "Success open status."
-    },
-    {
-      "number": 8,
       "name": "Overlay gone",
       "do": "From the bottom nav, return to **Map** on **Specific Map** today.",
       "expect": "Closed overlay absent over **Canadian Domain**."
     },
     {
-      "number": 9,
+      "number": 8,
       "name": "Itinerary normal",
       "do": "Return to **Itinerary** for today. With **Include off-display animals** unchecked, search for **Wood Bison** (or another **Canadian Domain** animal) and add it.",
       "expect": "Animal appears in results without needing include-off-display; adding does not show **Animal May Be Off Display**."
-    },
-    {
-      "number": 10,
-      "name": "Cleanup",
-      "do": "Confirm **Canadian Domain** is open on today.",
-      "expect": "No leftover closure."
     }
   ]
 }
