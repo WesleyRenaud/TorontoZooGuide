@@ -30,7 +30,7 @@
       "number": 5,
       "name": "Longer visit",
       "do": "Change arrival and departure so the visit is at least **2 hours** (e.g. arrival **10:00 AM**, departure **2:00 PM**).",
-      "expect": "Times are kept. **Short Visit?** does not appear (or is already dismissed)."
+      "expect": "Times are kept. **Short Visit?** does not appear."
     },
     {
       "number": 6,
