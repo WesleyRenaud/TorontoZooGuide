@@ -17,8 +17,8 @@
     {
       "number": 3,
       "name": "Path after rebuild",
-      "do": "Inspect itinerary map.",
-      "expect": "Walk path present if ≥2 scheduled stops."
+      "do": "Look at the itinerary map.",
+      "expect": "Walk path is still shown between the scheduled stops."
     },
     {
       "number": 4,
@@ -41,8 +41,8 @@
     {
       "number": 7,
       "name": "Schedule one again",
-      "do": "Schedule a single animal.",
-      "expect": "Pill returns; path may be absent with one stop."
+      "do": "Schedule a single animal on Day Planner.",
+      "expect": "That animal’s pill appears. The itinerary map shows a walk path from the entrance to that stop."
     },
     {
       "number": 8,
