@@ -74,7 +74,6 @@ export class ItineraryPageBootstrap {
             itinerary,
             onCleared: () => {
                void ItineraryPageBootstrap.refreshItineraryPageContent(mountEl, openWizard, {
-                  openBuilderWhenEmpty: true,
                   skipStaleCheck: true,
                });
             },

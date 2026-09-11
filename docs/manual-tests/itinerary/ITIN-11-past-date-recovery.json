@@ -30,7 +30,7 @@
       "number": 5,
       "name": "Alternate clear path",
       "do": "Save another itinerary, run `npm run backdate:itinerary` again, hard-refresh **Itinerary**, then click **Clear**.",
-      "expect": "Itinerary clears (empty plan / builder)."
+      "expect": "Itinerary clears to the empty panel; the builder does not open."
     },
     {
       "number": 6,
