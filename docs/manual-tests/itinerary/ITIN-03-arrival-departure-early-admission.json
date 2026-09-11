@@ -34,39 +34,39 @@
     },
     {
       "number": 6,
-      "name": "Enable Early Admission",
-      "do": "Turn on **Early Admission**.",
-      "expect": "**Early Admission Hours** / membership-sensory confirmation appears."
+      "name": "Early admission date",
+      "do": "Via **Edit Itinerary** / **Set Visit Date**, pick a **today-or-future** visit date whose Day Planner shows **Early Admission** before **Zoo Opens** (seed weekends/holidays: Early Admission **9:00 AM**, Zoo Opens **9:30 AM**, through Labor Day). If no such date is selectable, mark **Blocked**.",
+      "expect": "**Early Admission** appears on the timeline before **Zoo Opens** — or suite **Blocked** if early-admission season has ended."
     },
     {
       "number": 7,
-      "name": "Cancel early admission",
-      "do": "Cancel/dismiss the confirmation.",
-      "expect": "Early Admission not applied (or reverts) — note."
+      "name": "Arrival during early admission",
+      "do": "If not Blocked: set **Arrival time** to **9:00 AM** (before Zoo Opens). Keep departure at least **2 hours** later so **Short Visit?** does not appear.",
+      "expect": "**Early Admission Hours** confirmation appears (members/sensory message, with **Don't show this again**)."
     },
     {
       "number": 8,
-      "name": "Confirm early admission",
-      "do": "Enable again and confirm membership/sensory requirements.",
-      "expect": "Early Admission applied."
+      "name": "Cancel early admission",
+      "do": "If not Blocked: click **Cancel** on that confirmation.",
+      "expect": "Arrival is not saved; the field returns to the previous time (or empty)."
     },
     {
       "number": 9,
-      "name": "Times after EA",
-      "do": "Check arrival bounds after Early Admission.",
-      "expect": "Times adjust or flag as designed."
+      "name": "Confirm early admission",
+      "do": "If not Blocked: set **Arrival time** to **9:00 AM** again and click **Confirm**.",
+      "expect": "Arrival **9:00 AM** is kept."
     },
     {
       "number": 10,
-      "name": "Schedule still coherent",
-      "do": "View Day Planner pills if any.",
-      "expect": "No crash; timeline still coherent."
+      "name": "Arrival after open",
+      "do": "If not Blocked: set **Arrival time** to **10:00 AM** (at or after **Zoo Opens**).",
+      "expect": "Arrival is kept. **Early Admission Hours** does not appear."
     },
     {
       "number": 11,
-      "name": "Toggle EA off",
-      "do": "Disable Early Admission if possible.",
-      "expect": "Returns to standard hours behavior."
+      "name": "Schedule still coherent",
+      "do": "View Day Planner pills if any.",
+      "expect": "No crash; timeline still coherent."
     }
   ]
 }
