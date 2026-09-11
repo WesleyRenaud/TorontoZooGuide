@@ -41,26 +41,26 @@
     {
       "number": 7,
       "name": "Search query",
-      "do": "In **Search animals** / Search… field, type part of the known species name.",
+      "do": "In **Search animals** / Search\u2026 field, type part of the known species name.",
       "expect": "Results list under the search field populates."
     },
     {
       "number": 8,
       "name": "Select search result",
       "do": "Click **View on Map** on a search result.",
-      "expect": "Map pans/focuses to that animal’s marker."
+      "expect": "Map pans/focuses to that animal\u2019s marker."
     },
     {
       "number": 9,
       "name": "Tooltip opens on focus",
       "do": "Look at the focused animal marker after **View on Map**.",
-      "expect": "That animal’s tooltip opens on the focused marker."
+      "expect": "That animal\u2019s tooltip opens on the focused marker."
     },
     {
       "number": 10,
       "name": "Clear via uncheck Animals",
       "do": "Uncheck **Animals** while search results are visible.",
-      "expect": "Search results clear or animal results are removed as designed."
+      "expect": "Animal search results are cleared."
     },
     {
       "number": 11,

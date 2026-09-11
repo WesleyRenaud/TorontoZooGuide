@@ -16,6 +16,7 @@ test('Test_BuildScheduleItemSearchPayload_TestAnimalModule_ExpectAnimalsOnly', (
       {
          query: 'panda',
          includeAnimals: true,
+         includeOffDisplayAnimals: true,
          forItinerary: true,
       }
    );
@@ -27,6 +28,7 @@ test('Test_BuildScheduleItemSearchPayload_TestAttractionModule_ExpectAttractions
       {
          query: 'ride',
          includeAttractions: true,
+         includeClosedAttractions: true,
       }
    );
 });
@@ -92,7 +94,9 @@ test('Test_BuildScheduleItemSearchPayload_TestUnsetModule_ExpectCombinedIncludes
    assert.deepEqual(ScheduleItemSearcher.buildScheduleItemSearchPayload('', 'tiger'), {
       query: 'tiger',
       includeAnimals: true,
+      includeOffDisplayAnimals: true,
       includeAttractions: true,
+      includeClosedAttractions: true,
       includeGuardiansTalks: true,
       includeWildEncounters: true,
       forItinerary: true,

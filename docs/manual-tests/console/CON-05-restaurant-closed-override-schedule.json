@@ -5,8 +5,8 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "Open **Set restaurant as closed**. Choose a restaurant, set a date range covering today, and enter a **Closed message** (e.g. **Manual test restaurant closed**).",
-      "expect": "Success closed."
+      "do": "Open **Set restaurant as closed**. Choose **Africa Restaurant**, set a date range covering today, and enter a **Closed message** (e.g. **Manual test restaurant closed**).",
+      "expect": "Success that **Africa Restaurant** was set as closed."
     },
     {
       "number": 2,
@@ -23,26 +23,26 @@
     {
       "number": 4,
       "name": "Closure override",
-      "do": "Open **Create restaurant closure override**. Choose the same restaurant, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
-      "expect": "Success that the restaurant closure override was saved."
+      "do": "Open **Create restaurant closure override**. Choose **Africa Restaurant**, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
+      "expect": "Success that the **Africa Restaurant** closure override was saved."
     },
     {
       "number": 5,
       "name": "Map after override",
-      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the restaurant marker.",
-      "expect": "Restaurant still closed; tooltip/banner shows the override **Closed message**."
+      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the **Africa Restaurant** marker.",
+      "expect": "**Africa Restaurant** still closed; tooltip/banner shows the override **Closed message**."
     },
     {
       "number": 6,
       "name": "Opening schedule",
-      "do": "Open **Set restaurant opening schedule**. Choose the same restaurant, set a date range covering today, mark the applicable weekdays open, and submit.",
-      "expect": "Success that the restaurant opening schedule was saved."
+      "do": "Open **Set restaurant opening schedule**. Choose **Africa Restaurant**, set a date range covering today, mark the applicable weekdays open, and submit.",
+      "expect": "Success that the **Africa Restaurant** opening schedule was saved."
     },
     {
       "number": 7,
       "name": "Map after opening schedule",
-      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the restaurant marker.",
-      "expect": "Restaurant still closed; tooltip/banner still shows the override **Closed message**."
+      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the **Africa Restaurant** marker.",
+      "expect": "**Africa Restaurant** still closed; tooltip/banner still shows the override **Closed message**."
     }
   ]
 }

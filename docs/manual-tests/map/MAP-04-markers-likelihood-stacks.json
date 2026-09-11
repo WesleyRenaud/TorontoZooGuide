@@ -41,8 +41,8 @@
     {
       "number": 7,
       "name": "Amenity styling spot-check",
-      "do": "Enable **Restaurants** or **Gift Shops** or **Attractions**; spot-check open/closed or likelihood styling.",
-      "expect": "Markers render with expected open/closed or likelihood treatment."
+      "do": "In **Filter:**, enable **Restaurants**.",
+      "expect": "Restaurant markers appear on the map."
     },
     {
       "number": 8,

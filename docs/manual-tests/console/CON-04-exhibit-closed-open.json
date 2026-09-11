@@ -18,7 +18,7 @@
       "number": 3,
       "name": "Submit closed",
       "do": "Submit.",
-      "expect": "Success “Canadian Domain was set as closed.” (or equivalent)."
+      "expect": "Success “Canadian Domain was set as closed.”"
     },
     {
       "number": 4,
@@ -30,7 +30,7 @@
       "number": 5,
       "name": "Itinerary impact",
       "do": "From the bottom nav, open **Itinerary**. Build/edit for today. In the animal picker, leave **Include off-display animals** unchecked and search for a **Canadian Domain** animal (e.g. **Wood Bison**). Then enable **Include off-display animals** and try adding that animal.",
-      "expect": "With include off, the animal does not appear in results. With include on, it appears; adding it shows **Animal May Be Off Display** (likelihood 0% / may be off display)."
+      "expect": "With include off, the animal does not appear in results. With include on, it appears; adding it shows **Animal May Be Off Display**."
     },
     {
       "number": 6,

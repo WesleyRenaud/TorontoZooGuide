@@ -42,13 +42,13 @@
       "number": 7,
       "name": "Map with include",
       "do": "Enable **Include off display animals**.",
-      "expect": "**African Lion** appears and/or an off-display banner/message is shown."
+      "expect": "**African Lion** marker appears; click it and the off-display message is shown."
     },
     {
       "number": 8,
       "name": "Itinerary confirm",
       "do": "From the bottom nav, open **Itinerary**. Build for today, enable **Include off-display animals**, and try adding **African Lion**.",
-      "expect": "**Animal May Be Off Display** (or similar) appears."
+      "expect": "**Animal May Be Off Display** appears."
     },
     {
       "number": 9,

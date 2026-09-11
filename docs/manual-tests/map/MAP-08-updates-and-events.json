@@ -6,13 +6,13 @@
       "number": 1,
       "name": "Updates and events section",
       "do": "Look in Explore for the **Updates and events** heading and tabs.",
-      "expect": "Either the whole section is hidden (no updates or events for today), or it is visible with **Updates** and/or **Events** tabs."
+      "expect": "The Explore **Updates** / **Events** area reflects today’s content (section shown when there is content)."
     },
     {
       "number": 2,
       "name": "Updates card",
       "do": "If **Updates** is available, select it and read the visible card.",
-      "expect": "The active card shows a type label and a non-blank title. If **Updates** is unavailable or the section is hidden, that is the expected empty outcome for today."
+      "expect": "The active card shows a type label and a non-blank title."
     },
     {
       "number": 3,
@@ -24,13 +24,13 @@
       "number": 4,
       "name": "Updates carousel",
       "do": "If more than one update is loaded, use previous/next update controls.",
-      "expect": "The visible update card changes. If zero or one update, there is nothing to advance."
+      "expect": "The visible update card changes when more than one update exists."
     },
     {
       "number": 5,
       "name": "Events tab",
       "do": "If **Events** is available, select it.",
-      "expect": "The **Events** tab becomes active. If **Events** is unavailable or the section is hidden, that is the expected empty outcome for today."
+      "expect": "The **Events** tab becomes active."
     },
     {
       "number": 6,

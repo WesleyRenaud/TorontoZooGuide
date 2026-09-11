@@ -5,44 +5,44 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "Open **Set gift shop as closed**. Choose a gift shop, set a date range covering today, and enter a **Closed message** (e.g. **Manual test gift shop closed**).",
-      "expect": "Success that the gift shop was set as closed."
+      "do": "Open **Set gift shop as closed**. Choose **Zootique**, set a date range covering today, and enter a **Closed message** (e.g. **Manual test gift shop closed**).",
+      "expect": "Success that **Zootique** was set as closed."
     },
     {
       "number": 2,
       "name": "Map without include",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Gift Shops**. Leave **Include closed gift shops** unchecked.",
-      "expect": "The closed gift shop marker is absent."
+      "expect": "The **Zootique** marker is absent."
     },
     {
       "number": 3,
       "name": "Map with include",
-      "do": "With **Gift Shops** still enabled, check **Include closed gift shops**, then click the closed gift shop marker.",
-      "expect": "The closed gift shop marker appears; its tooltip/banner shows the **Closed message**."
+      "do": "With **Gift Shops** still enabled, check **Include closed gift shops**, then click the **Zootique** marker.",
+      "expect": "The **Zootique** marker appears; its tooltip/banner shows the **Closed message**."
     },
     {
       "number": 4,
       "name": "Closure override",
-      "do": "Open **Create gift shop closure override**. Choose the same gift shop, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
-      "expect": "Success that the gift shop closure override was saved."
+      "do": "Open **Create gift shop closure override**. Choose **Zootique**, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
+      "expect": "Success that the **Zootique** closure override was saved."
     },
     {
       "number": 5,
       "name": "Map after override",
-      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the gift shop marker.",
-      "expect": "Gift shop still closed; tooltip/banner shows the override **Closed message**."
+      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the **Zootique** marker.",
+      "expect": "**Zootique** still closed; tooltip/banner shows the override **Closed message**."
     },
     {
       "number": 6,
       "name": "Opening schedule",
-      "do": "Open **Set gift shop opening schedule**. Choose the same gift shop, set a date range covering today, mark the applicable weekdays open, and submit.",
-      "expect": "Success that the gift shop opening schedule was saved."
+      "do": "Open **Set gift shop opening schedule**. Choose **Zootique**, set a date range covering today, mark the applicable weekdays open, and submit.",
+      "expect": "Success that the **Zootique** opening schedule was saved."
     },
     {
       "number": 7,
       "name": "Map after opening schedule",
-      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the gift shop marker.",
-      "expect": "Gift shop still closed; tooltip/banner still shows the override **Closed message**."
+      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the **Zootique** marker.",
+      "expect": "**Zootique** still closed; tooltip/banner still shows the override **Closed message**."
     }
   ]
 }

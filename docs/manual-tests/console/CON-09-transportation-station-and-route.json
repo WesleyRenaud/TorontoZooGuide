@@ -12,7 +12,7 @@
       "number": 2,
       "name": "Map station closed",
       "do": "On **Map** with **Specific Map** set to today, with Zoomobile route visible.",
-      "expect": "Station closed/missing/messaged."
+      "expect": "The closed station is not shown as an open station on the route."
     },
     {
       "number": 3,
@@ -29,7 +29,7 @@
     {
       "number": 5,
       "name": "Map summer",
-      "do": "Map Explore → Summer/Current as applicable.",
+      "do": "On **Map**, confirm the Zoomobile **Current Route** / Summer treatment.",
       "expect": "Summer route layer/stations."
     },
     {
@@ -42,22 +42,16 @@
       "number": 7,
       "name": "Map winter",
       "do": "Map shows winter route treatment.",
-      "expect": "Winter differs from summer where designed."
+      "expect": "Winter route stations differ from the summer route."
     },
     {
       "number": 8,
-      "name": "Itinerary transport",
-      "do": "If itinerary transport options change with route, spot-check.",
-      "expect": "Noted or N/A."
+      "name": "Restore route",
+      "do": "Set the transportation route back to **Summer** for a range including today.",
+      "expect": "Success that the transportation route was set to Summer."
     },
     {
       "number": 9,
-      "name": "Restore route",
-      "do": "Set route back to the previous/current intended season.",
-      "expect": "Restored."
-    },
-    {
-      "number": 10,
       "name": "Cleanup stations",
       "do": "Confirm stations open on today.",
       "expect": "Open."

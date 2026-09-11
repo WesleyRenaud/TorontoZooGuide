@@ -29,7 +29,7 @@
     {
       "number": 5,
       "name": "Find a weekend with time conflicts",
-      "do": "Use **Edit Itinerary** / **Build Itinerary**. On **Set Visit Date**, try upcoming Saturdays/Sundays until Meet the Guardians and/or Wild Encounters list at least two offerings that share the same start time (talk+talk, talk+encounter, or encounter+encounter). Note the date and the two names.",
+      "do": "Use **Edit Itinerary** / **Build Itinerary**. On **Set Visit Date**, try upcoming Saturdays/Sundays until Meet the Guardians and/or Wild Encounters list at least two offerings that share the same start time (talk+talk, talk+encounter, or encounter+encounter).",
       "expect": "A weekend visit date is set and two same-time offerings are identified."
     },
     {

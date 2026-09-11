@@ -42,7 +42,7 @@
       "number": 7,
       "name": "Optional duration",
       "do": "Set duration if the field is shown.",
-      "expect": "Duration accepted or defaults applied."
+      "expect": "Duration is accepted."
     },
     {
       "number": 8,

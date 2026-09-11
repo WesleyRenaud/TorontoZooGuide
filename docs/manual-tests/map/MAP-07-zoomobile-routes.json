@@ -12,7 +12,7 @@
       "number": 2,
       "name": "Current Route",
       "do": "Select **Current Route**.",
-      "expect": "Route and/or stations appear per current season rules."
+      "expect": "The current Zoomobile route and its stations appear."
     },
     {
       "number": 3,
