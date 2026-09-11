@@ -55,9 +55,9 @@
     },
     {
       "number": 9,
-      "name": "Focus feedback",
-      "do": "Observe tooltip or highlight after selection.",
-      "expect": "Click tooltip and/or focus styling appears for the target."
+      "name": "Tooltip opens on focus",
+      "do": "Look at the focused animal marker after **View on Map**.",
+      "expect": "That animal’s tooltip opens on the focused marker."
     },
     {
       "number": 10,
