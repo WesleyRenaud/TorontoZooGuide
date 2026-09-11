@@ -5,50 +5,50 @@
     {
       "number": 1,
       "name": "Save an itinerary",
-      "do": "Build and **Finish** an itinerary with a today-or-future visit date and some animals.",
+      "do": "Build and **Finish** an itinerary with some animals.",
       "expect": "Saved itinerary present."
     },
     {
       "number": 2,
-      "name": "Trigger past-date recovery",
-      "do": "Cause past-date recovery (set visit date in the past if UI allows, or open app when saved date is past).",
-      "expect": "Past-date recovery UI appears."
+      "name": "Backdate visit day",
+      "do": "In a terminal at the repo root, run `npm run backdate:itinerary`.",
+      "expect": "Terminal prints that the itinerary date was backdated to yesterday."
     },
     {
       "number": 3,
-      "name": "Choose new date",
-      "do": "Choose a new future date.",
-      "expect": "Recovery continues."
+      "name": "Trigger past-date recovery",
+      "do": "Open or hard-refresh **Itinerary**.",
+      "expect": "**Itinerary Date Has Passed** appears with **Clear** and **Choose New Date**."
     },
     {
       "number": 4,
-      "name": "Removed-items popup",
-      "do": "Review animals added/removed, talks unavailable, times adjusted, etc.",
-      "expect": "Popup sections match changes."
+      "name": "Choose new date",
+      "do": "Click **Choose New Date**, pick an allowed visit date, then **Finish**.",
+      "expect": "**Choose a New Visit Date** runs; itinerary saves for the new date."
     },
     {
       "number": 5,
+      "name": "Removed-items popup",
+      "do": "If **Itinerary Updated** (or similar) appears, review animals added/removed, talks unavailable, times adjusted, etc.",
+      "expect": "Popup sections match changes, or no update popup if nothing changed."
+    },
+    {
+      "number": 6,
       "name": "Keep vs remove",
       "do": "Use **Keep** / remove choices where offered.",
       "expect": "Choices apply."
     },
     {
-      "number": 6,
-      "name": "Alternate clear path",
-      "do": "On another run, choose clear itinerary from recovery if available.",
-      "expect": "Empty itinerary result."
-    },
-    {
       "number": 7,
-      "name": "Don’t show again",
-      "do": "If suppression checkbox exists, note behavior.",
-      "expect": "Pass/N/A."
+      "name": "Alternate clear path",
+      "do": "Save another itinerary, run `npm run backdate:itinerary` again, hard-refresh **Itinerary**, then click **Clear**.",
+      "expect": "Itinerary clears (empty plan / builder)."
     },
     {
       "number": 8,
       "name": "Coherent result",
-      "do": "Inspect itinerary after accepting recovery.",
-      "expect": "New date itinerary coherent."
+      "do": "Inspect itinerary after accepting recovery (from the choose-new-date path).",
+      "expect": "Itinerary date and scheduled items match the recovered day."
     }
   ]
 }
