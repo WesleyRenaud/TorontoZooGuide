@@ -29,32 +29,32 @@
     {
       "number": 5,
       "name": "Closed-day confirm",
-      "do": "If visit date is closed for that attraction, attempt add.",
-      "expect": "**Attraction May Be Closed** confirm **or** N/A."
+      "do": "In Console, use **Set attraction as closed** for the attraction and a date range that includes your visit date. On **Itinerary**, edit/build with that visit date and try to add the closed attraction.",
+      "expect": "**Attraction May Be Closed** confirmation appears."
     },
     {
       "number": 6,
       "name": "Attraction also transportation",
-      "do": "Add Zoomobile (or dual-role) via path that shows **Add as Attraction?**",
-      "expect": "Prompt appears with scenic vs transport messaging."
+      "do": "On **Add Attractions**, select **Zoomobile**.",
+      "expect": "**Add as Attraction?** appears (scenic trip vs transportation messaging)."
     },
     {
       "number": 7,
       "name": "Choose as attraction",
-      "do": "Confirm add-as-attraction path.",
-      "expect": "Listed as attraction."
+      "do": "Confirm **Add as Attraction?**.",
+      "expect": "**Zoomobile** is listed under attractions."
     },
     {
       "number": 8,
       "name": "Add as transportation",
-      "do": "Use **Add as Transportation?** path (retry/alternate add).",
-      "expect": "Listed as transportation."
+      "do": "On **Add Transportation**, select **Zoomobile**.",
+      "expect": "**Add as Transportation?** appears; confirm it. **Zoomobile** is listed under transportation."
     },
     {
       "number": 9,
       "name": "List representations",
-      "do": "Inspect list sections.",
-      "expect": "Attraction vs transportation representations are distinct and correct."
+      "do": "Inspect list sections on the finished itinerary (or List View).",
+      "expect": "Attraction and transportation entries for **Zoomobile** are distinct and correct."
     },
     {
       "number": 10,
