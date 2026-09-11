@@ -6,7 +6,7 @@ export class NoticeFragment {
       title = Strings.common.headsUp,
       message = '',
       bodyContent = null,
-      buttonText = Strings.itinerary.noItemsSelected.button,
+      buttonText = Strings.itinerary.actions.ok,
       mountEl = ItineraryPanelFragment.getItineraryOverlayMountEl() ?? document.body,
       onConfirm = null,
       showCloseButton = false,

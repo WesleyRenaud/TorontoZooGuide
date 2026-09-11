@@ -11,7 +11,6 @@ import { Strings } from '../../strings.js';
 import { VisitDateResolver } from '../visitDateResolver.js';
 import { WizardControllerHelper } from './wizardControllerHelper.js';
 import { WizardDraft } from './wizardDraft.js';
-import { WizardFinalizePresenter } from './wizardFinalizePresenter.js';
 import { WizardFinalizer } from './wizardFinalizer.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 import { WizardStepDraftSynchronizer } from './wizardStepDraftSynchronizer.js';
@@ -89,17 +88,11 @@ export class WizardController {
          });
       }
 
-      async function finish(override = {}, options = {}) {
+      async function finish(override = {}) {
          await syncActiveStepDraft();
          applyFinishOverride(override);
 
-         if (
-            !wizard.hasUnsavedChanges()
-            && !WizardFinalizePresenter.shouldBlockEmptyFinish(
-               WizardDraft.buildWizardDraft(wizardState),
-               wizard.allowEmptyFinish(options.allowEmpty)
-            )
-         ) {
+         if (!wizard.hasUnsavedChanges()) {
             // Clear the overlay only. Do not remount the day planner — that jumps
             // scroll. Saved itinerary content is already on the page.
             WizardControllerHelper.clearWizard(mountEl);
@@ -111,7 +104,6 @@ export class WizardController {
             WizardDraft.buildWizardDraft(wizardState),
             mountEl,
             {
-               allowEmpty: wizard.allowEmptyFinish(options.allowEmpty),
                onDone: handleFinishDone,
             }
          );

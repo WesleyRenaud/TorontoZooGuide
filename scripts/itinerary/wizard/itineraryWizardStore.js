@@ -39,10 +39,6 @@ export class ItineraryWizardStore {
             return ItineraryWizardDraftMutator.consumePendingValidationState(state);
          },
 
-         allowEmptyFinish(allowEmpty = false) {
-            return state.pendingValidatedEmpty || allowEmpty === true;
-         },
-
          hasUnsavedChanges() {
             const snapshot = ItineraryWizardDraftMutator.buildWizardDraftSnapshot(state);
 

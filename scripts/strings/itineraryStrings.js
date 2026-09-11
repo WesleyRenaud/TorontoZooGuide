@@ -15,6 +15,7 @@ export class ItineraryStrings {
          editItinerary: 'Edit Itinerary',
          finish: 'Finish',
          next: 'Next',
+         ok: 'OK',
          previous: 'Previous',
          remove: '−',
          discard: 'Discard',
@@ -310,13 +311,6 @@ export class ItineraryStrings {
       },
       itemImage: title => `${title} image`,
       itemPhoto: title => `${title} photo`,
-      noItemsSelected: {
-         button: 'OK',
-         message: (
-            'Please add at least one Animal, Attraction, Meet the Guardians talk, Wild Encounter, or Transportation before finishing.'
-         ),
-         title: 'No Items Selected',
-      },
       removedItems: {
          animalsAddedSubtitle: (
             'The following animals from your selected exhibits are available on your new date and were added to your itinerary.'

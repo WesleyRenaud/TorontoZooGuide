@@ -14,7 +14,7 @@ export class WizardFinalizer {
    static async finalizeItineraryWizard(
    draft = {},
    mountEl,
-   { onDone, allowEmpty = false, deps = {} } = {},
+   { onDone, deps = {} } = {},
 ) {
       const {
          normalizeDraft = ItineraryShape.normalizeItineraryDraft,
@@ -24,16 +24,10 @@ export class WizardFinalizer {
          showNoticePopup = NoticeFragment.showItineraryNoticePopup,
          showProceedConfirmation = SaveIssuesProceedFragment.showSaveIssuesProceedConfirmation,
          showSaveIssuesPopup = WizardSaveIssuesFragment.showWizardSaveIssuesPopup,
-         shouldBlockEmpty = WizardFinalizePresenter.shouldBlockEmptyFinish,
          shouldShowSaveIssues = WizardFinalizePresenter.shouldShowSaveIssuesPopup,
       } = deps;
 
       const finalItinerary = WizardFinalizerHelper.createFinalItineraryDraft(draft, normalizeDraft);
-
-      if (shouldBlockEmpty(finalItinerary, allowEmpty)) {
-         WizardFinalizerHelper.showEmptySelectionPopup(mountEl, showWizardPopup);
-         return null;
-      }
 
       let savedItinerary;
 

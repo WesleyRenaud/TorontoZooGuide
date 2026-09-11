@@ -179,19 +179,6 @@ test('Test_UpdateSelection_TestPreserveOnInvalidRejected_ExpectNoPersist', () =>
    assert.equal(wizard.state.animals.length, 1);
 });
 
-test('Test_AllowEmptyFinish_TestPendingValidatedEmpty_ExpectTrue', () => {
-   const wizard = ItineraryWizardStore.createItineraryWizardState({
-      date: '',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   });
-
-   assert.equal(wizard.allowEmptyFinish(true), true);
-   assert.equal(wizard.allowEmptyFinish(false), false);
-});
-
 test('Test_DiscardChanges_TestRestoresInitialDraft_ExpectOk', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '2026-06-15',

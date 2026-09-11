@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { WizardFinalizer } from '../../../../scripts/itinerary/wizard/wizardFinalizer.js';
-import { Strings } from '../../../../scripts/strings.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -16,32 +15,6 @@ installDomTestHooks({
       document.querySelector('.tzg-popup')?.remove();
       delete globalThis.localStorage;
    },
-});
-
-test('Test_Shows_TestShowsTheEmptySelectionPopupWhenFinishIs_ExpectOk', async () => {
-   const mountEl = createDomNode('div', 'wizard-mount');
-   const popupCalls = [];
-
-   const result = await WizardFinalizer.finalizeItineraryWizard(
-      { date: '2026-06-15', animals: [] },
-      mountEl,
-      {
-         deps: {
-            normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => true,
-            showWizardPopup: (config) => {
-               popupCalls.push(config);
-            },
-         },
-      }
-   );
-
-   assert.equal(result, null);
-   assert.equal(popupCalls.length, 1);
-   assert.equal(
-      popupCalls[0].title,
-      Strings.itinerary.noItemsSelected.title
-   );
 });
 
 test('Test_Saves_TestSavesSyncsDraftStateClearsTheMountAnd_ExpectOk', async () => {
@@ -63,7 +36,6 @@ test('Test_Saves_TestSavesSyncsDraftStateClearsTheMountAnd_ExpectOk', async () =
          },
          deps: {
             normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => false,
             shouldShowSaveIssues: () => false,
             saveItineraryFn: async (draft) => draft,
             syncAnimalDraft: (itinerary) => {
@@ -89,7 +61,6 @@ test('Test_Shows_TestShowsAWizardErrorPopupWhenSaveFails_ExpectOk', async () => 
       {
          deps: {
             normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => false,
             saveItineraryFn: async () => {
                throw new Error('Save failed');
             },
@@ -117,7 +88,6 @@ test('Test_Returns_TestReturnsCancelledWhenSaveIsCancelledFromA_ExpectOk', async
       {
          deps: {
             normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => false,
             saveItineraryFn: async () => null,
             showWizardPopup: (config) => {
                popupCalls.push(config);
@@ -146,7 +116,6 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
       {
          deps: {
             normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => false,
             shouldShowSaveIssues: () => true,
             saveItineraryFn: async (draft, options) => {
                saveCalls.push({ draft, options });
@@ -184,11 +153,36 @@ test('Test_Returns_TestReturnsCancelledConfirmationResult_ExpectPassthrough', as
       {
          deps: {
             normalizeDraft: (draft) => draft,
-            shouldBlockEmpty: () => false,
             saveItineraryFn: async () => cancelled,
          },
       }
    );
 
    assert.equal(result, cancelled);
+});
+
+test('Test_Saves_TestSavesDateOnlyItineraryWithoutBlocking_ExpectOk', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const saved = [];
+   const draft = { date: '2026-06-15', animals: [] };
+
+   const result = await WizardFinalizer.finalizeItineraryWizard(
+      draft,
+      mountEl,
+      {
+         deps: {
+            normalizeDraft: (value) => value,
+            shouldShowSaveIssues: () => false,
+            saveItineraryFn: async (itinerary) => {
+               saved.push(itinerary);
+               return itinerary;
+            },
+            syncAnimalDraft: () => {},
+         },
+      }
+   );
+
+   assert.deepEqual(result, draft);
+   assert.deepEqual(saved, [draft]);
+   assert.equal(mountEl.children.length, 0);
 });
