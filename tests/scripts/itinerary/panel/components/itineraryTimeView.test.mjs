@@ -146,6 +146,51 @@ test('Test_MakeItineraryTimeInput_TestInvalidTime_ExpectReject', async () => {
    }
 });
 
+test('Test_MakeItineraryTimeInput_TestInvalidWhenEmpty_ExpectDashesNotNoon', async () => {
+   const deps = _installTimeInputDeps();
+   const rafQueue = [];
+   globalThis.requestAnimationFrame = (callback) => {
+      rafQueue.push(callback);
+      return rafQueue.length;
+   };
+
+   function flushAnimationFrames() {
+      const queued = rafQueue.splice(0);
+      queued.forEach((callback) => callback());
+   }
+
+   try {
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Departure',
+         value: '',
+         onChange: async () => {},
+         validateTime: () => false,
+         resolveInvalidMessage: () => 'Departure time must be after arrival.',
+         clearAriaLabel: 'Clear',
+      });
+      const input = field.querySelector('.itinerary-day-time-input');
+
+      deps.flatpickrInstance.clear = (trigger) => {
+         deps.flatpickrInstance.clearCalls += 1;
+         deps.flatpickrInstance.lastClearTrigger = trigger;
+         input.value = '';
+      };
+
+      await deps.getPickerOptions().onClose([], '9:45 AM', deps.flatpickrInstance);
+      // Flatpickr blur/updateTime after onClose writes defaultHour.
+      input.value = '12:00 PM';
+      flushAnimationFrames();
+      flushAnimationFrames();
+
+      assert.deepEqual(deps.bubble.showCalls, ['Departure time must be after arrival.']);
+      assert.equal(input.value, '');
+      assert.equal(input.placeholder, '--:-- --');
+      assert.equal(field.querySelector('.itinerary-day-time-clear-btn').disabled, true);
+   } finally {
+      deps.restore();
+   }
+});
+
 test('Test_MakeItineraryTimeInput_TestSameValue_ExpectDismissOnly', async () => {
    const deps = _installTimeInputDeps();
    const changes = [];

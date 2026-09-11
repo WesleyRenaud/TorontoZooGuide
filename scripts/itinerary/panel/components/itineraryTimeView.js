@@ -49,26 +49,34 @@ export class ItineraryTimeView {
       }
 
       function syncPickerToCommittedValue() {
-         if (!flatpickrInstance) {
-            return;
+         if (flatpickrInstance) {
+            if (committedValue) {
+               flatpickrInstance.setDate(committedValue, false);
+            }
+            else {
+               // Time-only flatpickr clear() resets the hour spinner to defaultHour
+               // (noon). A following blur/updateTime can then write "12:00 PM" into
+               // the input even though nothing is selected.
+               flatpickrInstance.clear(false);
+            }
          }
 
-         if (committedValue) {
-            flatpickrInstance.setDate(committedValue, false);
-            return;
-         }
-
-         flatpickrInstance.clear(false);
+         input.value = committedValue;
+         syncClearButtonState();
       }
 
       function rejectInvalidTime(nextValue) {
-         input.value = committedValue;
          latestPickerValue = committedValue;
          syncPickerToCommittedValue();
+         const message = resolveInvalidMessage?.(nextValue) ?? invalidMessage;
+         // Flatpickr runs updateTime on blur after onClose; with an empty
+         // selection that writes defaultHour (12:00 PM) into the input. Wait
+         // two frames so that write lands, then restore the committed display.
          requestAnimationFrame(() => {
-            validationBubble.show(
-               resolveInvalidMessage?.(nextValue) ?? invalidMessage
-            );
+            requestAnimationFrame(() => {
+               syncPickerToCommittedValue();
+               validationBubble.show(message);
+            });
          });
       }
 
@@ -120,7 +128,6 @@ export class ItineraryTimeView {
          await onChange('');
          committedValue = '';
          latestPickerValue = '';
-         input.value = '';
          syncPickerToCommittedValue();
          syncClearButtonState();
          input.disabled = !onChange;
