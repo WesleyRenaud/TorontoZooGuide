@@ -6,61 +6,55 @@
       "number": 1,
       "name": "Open set schedule",
       "do": "Select **Set animal visibility schedule**.",
-      "expect": "Form opens."
+      "expect": "Visibility schedule form opens."
     },
     {
       "number": 2,
-      "name": "Fill window",
-      "do": "Set daily viewing start/end, **Schedule start date** / **Last day of schedule** covering D, **Message**.",
-      "expect": "Fields valid."
+      "name": "Choose exhibit and species",
+      "do": "For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "**Africa Savanna** and **African Lion** are selected."
     },
     {
       "number": 3,
-      "name": "Submit",
-      "do": "Submit.",
-      "expect": "Success “… viewing schedule updated.”"
+      "name": "Fill window",
+      "do": "Leave **Schedule start date** blank. Leave **Last day of schedule** blank. Set **Daily viewing start time** to **11:00 AM** and **Daily viewing end time** to **2:00 PM**. In **Message**, enter a short note (e.g. **Manual test limited viewing**).",
+      "expect": "Form is ready to save (blank start applies immediately; blank last day keeps the schedule until removed)."
     },
     {
       "number": 4,
-      "name": "Map limited-viewing cue",
-      "do": "Map on D; find animal marker badge/limited-viewing styling.",
-      "expect": "Limited-viewing cue present."
+      "name": "Submit",
+      "do": "Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** viewing schedule updated."
     },
     {
       "number": 5,
-      "name": "Tooltip/message",
-      "do": "Open tooltip.",
-      "expect": "Viewing message visible."
+      "name": "Map limited-viewing cue",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to **today**. Find the **African Lion** marker.",
+      "expect": "Limited-viewing cue/styling is present on the marker."
     },
     {
       "number": 6,
-      "name": "Itinerary window",
-      "do": "On itinerary for D, schedule the animal inside vs outside the daily window if practical.",
-      "expect": "Respects or warns — note behavior."
+      "name": "Tooltip/message",
+      "do": "Open the **African Lion** click tooltip.",
+      "expect": "The viewing **Message** from step 3 is visible."
     },
     {
       "number": 7,
       "name": "Remove schedule",
-      "do": "Select **Remove visibility schedule** for same species/exhibit.",
-      "expect": "Form OK."
+      "do": "In Console, select **Remove visibility schedule**. Choose **Africa Savanna** and **African Lion**.",
+      "expect": "Remove form accepts those values."
     },
     {
       "number": 8,
       "name": "Submit remove",
-      "do": "Submit.",
-      "expect": "Success “… no longer has a visibility schedule.”"
+      "do": "Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** no longer has a visibility schedule."
     },
     {
       "number": 9,
       "name": "Map cue gone",
-      "do": "Map on D.",
-      "expect": "Limited-viewing cue gone."
-    },
-    {
-      "number": 10,
-      "name": "Itinerary normal",
-      "do": "Scheduling behaves without limited-window constraint.",
-      "expect": "Normal."
+      "do": "From the bottom nav, return to **Map** on **Specific Map** **today**. Find **African Lion**.",
+      "expect": "Limited-viewing cue is gone."
     }
   ]
 }
