@@ -5,44 +5,44 @@
     {
       "number": 1,
       "name": "Set schedule",
-      "do": "**Set Wild Encounter schedule** including today.",
-      "expect": "Success saved."
+      "do": "Open **Set Wild Encounter schedule**. Choose an encounter, set times, and include today in the date range. Submit.",
+      "expect": "Success that the schedule was saved."
     },
     {
       "number": 2,
       "name": "Map verify",
-      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Wild Encounters**.",
-      "expect": "Meeting spot / encounter marker visible."
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Wild Encounters**, then open the encounter / meeting-spot marker.",
+      "expect": "Meeting spot / encounter marker is visible; tooltip/banner shows the scheduled times."
     },
     {
       "number": 3,
       "name": "Itinerary selector",
-      "do": "Itinerary Wild Encounters step on today.",
-      "expect": "Encounter listed."
+      "do": "From the bottom nav, open **Itinerary**. Use **Edit Itinerary** / **Build Itinerary**, set the visit date to today, and open the **Wild Encounters** step.",
+      "expect": "The encounter is listed with the scheduled times."
     },
     {
       "number": 4,
       "name": "Cancel occurrence",
-      "do": "Open **Cancel Wild Encounter occurrence**. Cancel an occurrence for today.",
-      "expect": "Success cancelled."
+      "do": "Open **Cancel Wild Encounter occurrence**. Choose the encounter from step 1, set **Date** to today, select a scheduled time, and submit.",
+      "expect": "Success that the occurrence was cancelled."
     },
     {
       "number": 5,
-      "name": "Cancelled absent",
-      "do": "Itinerary/map for that slot.",
-      "expect": "Cancelled occurrence is absent."
+      "name": "Cancelled occurrence absent",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Wild Encounters**, then open the encounter marker. On **Itinerary**, open the **Wild Encounters** step for today.",
+      "expect": "The cancelled time is absent from the map tooltip/banner and from the Wild Encounters offerings."
     },
     {
       "number": 6,
       "name": "End schedule",
-      "do": "**End Wild Encounter schedule**.",
-      "expect": "Success ended."
+      "do": "Open **End Wild Encounter schedule** and end the schedule from step 1.",
+      "expect": "Success that the schedule was ended."
     },
     {
       "number": 7,
       "name": "Future clear",
-      "do": "Future date check.",
-      "expect": "Encounter is cleared for dates after the end."
+      "do": "On **Map**, set **Specific Map** to a future date that was only covered by the ended schedule. In **Filter:**, enable **Wild Encounters**. On **Itinerary**, open the **Wild Encounters** step for that same future visit date.",
+      "expect": "The encounter is absent on the map and in Wild Encounters offerings for that future date."
     }
   ]
 }
