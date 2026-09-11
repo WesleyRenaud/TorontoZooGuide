@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { mock, test } from 'node:test';
 
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
+import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -134,7 +135,12 @@ test('Test_Day_TestDayPlannerHeaderDisablesClearButtonsWhenTimes_ExpectOk', () =
    assert.ok(clearButtons.every((button) => button.disabled));
 });
 
-test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', async () => {
+test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', async (t) => {
+   mock.timers.enable({ apis: ['setTimeout'] });
+   t.after(() => {
+      mock.timers.reset();
+   });
+
    const departureChanges = [];
    const pickerInstances = [];
 
@@ -195,6 +201,8 @@ test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', 
    assert.deepEqual(departureChanges, []);
    assert.equal(pickerInstances[1]?.closeCalled, true);
    assert.equal(departureInput.value, '6:30 PM');
+
+   mock.timers.tick(TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS);
 });
 
 test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_ExpectOk', () => {
