@@ -193,3 +193,43 @@ test('Test_MakeDayPlannerPreview_TestInvalidHoursObject_ExpectUsesEmptyHours', (
       restore();
    }
 });
+
+test('Test_MakeDayPlannerPreview_TestNoItineraryDate_ExpectDoesNotUseHoursDate', () => {
+   const formatCalls = [];
+   const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
+   ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
+      formatCalls.push({ iso, fallback });
+      return iso ? `formatted:${iso}` : '';
+   };
+
+   try {
+      DayPlannerView.makeDayPlannerPreview(
+         { date: '2026-09-11', openTime: '09:30', closeTime: '16:30' },
+         { date: '' }
+      );
+
+      assert.deepEqual(formatCalls, [{ iso: '', fallback: undefined }]);
+   } finally {
+      restore();
+   }
+});
+
+test('Test_MakeDayPlannerPreview_TestItineraryDate_ExpectFormatsItineraryDate', () => {
+   const formatCalls = [];
+   const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
+   ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
+      formatCalls.push({ iso, fallback });
+      return `formatted:${iso}`;
+   };
+
+   try {
+      DayPlannerView.makeDayPlannerPreview(
+         { date: '2026-09-11', openTime: '09:30', closeTime: '16:30' },
+         { date: '2026-09-20' }
+      );
+
+      assert.deepEqual(formatCalls, [{ iso: '2026-09-20', fallback: undefined }]);
+   } finally {
+      restore();
+   }
+});

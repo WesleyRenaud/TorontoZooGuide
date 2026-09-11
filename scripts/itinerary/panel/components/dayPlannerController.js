@@ -17,7 +17,10 @@ export class DayPlannerController {
       const arrivalBounds = DayPlannerScheduleController.buildArrivalTimeBounds(zooHours);
       const departureBounds = DayPlannerScheduleController.buildDepartureTimeBounds(zooHours);
 
-      controls.appendChild(ItineraryPanelHelper.el('span', 'itinerary-day-module-date', date));
+      if (date) {
+         controls.appendChild(ItineraryPanelHelper.el('span', 'itinerary-day-module-date', date));
+      }
+
       controls.appendChild(
          ItineraryTimeView.makeItineraryTimeInput({
             label: strings.arrivalInputLabel,

@@ -72,3 +72,47 @@ test('Test_MakeDayPlannerControls_TestArrivalAndDeparture_ExpectWiredInputs', ()
       ItineraryTimeView.makeItineraryTimeInput = originalTimeInput;
    }
 });
+
+test('Test_MakeDayPlannerControls_TestEmptyDate_ExpectOmitsDateLabel', () => {
+   const originalEl = ItineraryPanelHelper.el;
+   const originalArrivalBounds = DayPlannerScheduleController.buildArrivalTimeBounds;
+   const originalDepartureBounds = DayPlannerScheduleController.buildDepartureTimeBounds;
+   const originalTimeInput = ItineraryTimeView.makeItineraryTimeInput;
+
+   ItineraryPanelHelper.el = (tag, className, text) => {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+   };
+   DayPlannerScheduleController.buildArrivalTimeBounds = () => null;
+   DayPlannerScheduleController.buildDepartureTimeBounds = () => null;
+   ItineraryTimeView.makeItineraryTimeInput = () => {
+      const el = document.createElement('div');
+      el.className = 'time-input';
+      return el;
+   };
+
+   try {
+      const controls = DayPlannerController.makeDayPlannerControls(
+         '',
+         {},
+         {},
+         {
+            arrivalInputLabel: 'Arrival',
+            departureInputLabel: 'Departure',
+            clearArrivalTimeAria: 'Clear arrival',
+            clearDepartureTimeAria: 'Clear departure',
+         },
+         {}
+      );
+
+      assert.equal(controls.querySelector('.itinerary-day-module-date'), null);
+      assert.equal(controls.querySelectorAll('.time-input').length, 2);
+   } finally {
+      ItineraryPanelHelper.el = originalEl;
+      DayPlannerScheduleController.buildArrivalTimeBounds = originalArrivalBounds;
+      DayPlannerScheduleController.buildDepartureTimeBounds = originalDepartureBounds;
+      ItineraryTimeView.makeItineraryTimeInput = originalTimeInput;
+   }
+});
