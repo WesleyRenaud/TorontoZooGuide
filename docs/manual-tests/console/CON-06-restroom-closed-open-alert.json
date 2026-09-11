@@ -5,62 +5,50 @@
     {
       "number": 1,
       "name": "Close restroom",
-      "do": "**Set restroom as closed** for today.",
-      "expect": "Success."
+      "do": "Open **Set restroom as closed**. Choose a restroom, set a date range covering today, and enter a **Closed message** (e.g. **Manual test restroom closed**).",
+      "expect": "Success that the restroom was set as closed."
     },
     {
       "number": 2,
       "name": "Map closed behavior",
-      "do": "On **Map**, set **Specific Map** to today. try with/without **Include closed restrooms**.",
-      "expect": "Show/hide matches toggles."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Restrooms**. Try with **Include closed restrooms** unchecked, then checked; with include on, click the restroom marker.",
+      "expect": "Absent with include off. With include on, marker appears; tooltip/banner shows the **Closed message**."
     },
     {
       "number": 3,
       "name": "Set alert",
-      "do": "**Set restroom alert** (same or another restroom) covering today.",
-      "expect": "Success alert."
+      "do": "Open **Set restroom alert**. Choose the same restroom, set dates covering today, and enter an alert message (e.g. **Manual test restroom alert**).",
+      "expect": "Success that the restroom was given an alert."
     },
     {
       "number": 4,
-      "name": "Map alert badge",
-      "do": "Map shows alert badge/styling.",
-      "expect": "Alert visible."
+      "name": "Map while closed with alert",
+      "do": "Return to **Map** on **Specific Map** today with **Restrooms** enabled and **Include closed restrooms** checked; click the restroom marker.",
+      "expect": "Tooltip/banner shows the **Closed message** only (no restroom alert badge)."
     },
     {
       "number": 5,
-      "name": "Remove alert",
-      "do": "**Remove restroom alert**.",
-      "expect": "Success removed."
+      "name": "Open restroom",
+      "do": "Open **Set restroom as open**. Choose the same restroom and submit.",
+      "expect": "Success that the restroom was set as open."
     },
     {
       "number": 6,
-      "name": "Open restroom",
-      "do": "**Set restroom as open**.",
-      "expect": "Success open."
+      "name": "Map alert after open",
+      "do": "Return to **Map** on **Specific Map** today with **Restrooms** enabled and **Include closed restrooms** unchecked. Find the restroom marker and click it.",
+      "expect": "Restroom alert badge/styling is present; tooltip/banner shows the alert message."
     },
     {
       "number": 7,
-      "name": "Map open",
-      "do": "On **Map**, set **Specific Map** to today.",
-      "expect": "Restroom open/normal."
+      "name": "Remove alert",
+      "do": "Open **Remove restroom alert**. Choose the same restroom and submit.",
+      "expect": "Success that the alert was removed."
     },
     {
       "number": 8,
-      "name": "Include-closed spot-check",
-      "do": "Toggle include closed restrooms once more.",
-      "expect": "Behaves."
-    },
-    {
-      "number": 9,
-      "name": "Cleanup",
-      "do": "No leftover closure/alert.",
-      "expect": "Clean."
-    },
-    {
-      "number": 10,
-      "name": "Pass criteria",
-      "do": "Marker state matches last ops.",
-      "expect": "Pass if matched."
+      "name": "Map clear",
+      "do": "Return to **Map** on **Specific Map** today with **Restrooms** enabled; click the restroom marker.",
+      "expect": "No alert badge; tooltip/banner has no closed or alert message."
     }
   ]
 }
