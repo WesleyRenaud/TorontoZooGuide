@@ -24,34 +24,28 @@
       "number": 4,
       "name": "Unschedule all",
       "do": "Click **Unschedule all items**.",
-      "expect": "Confirm prompt if shown."
+      "expect": "All schedule pills clear, and feedback like **All items unscheduled** appears."
     },
     {
       "number": 5,
-      "name": "Confirm unschedule all",
-      "do": "Confirm if prompted.",
-      "expect": "All schedule pills cleared."
+      "name": "Path cleared",
+      "do": "Look at the itinerary map.",
+      "expect": "Walk path is gone."
     },
     {
       "number": 6,
-      "name": "Path cleared",
-      "do": "Inspect map pane.",
-      "expect": "Walk path cleared."
+      "name": "List retained",
+      "do": "Switch to **List View**.",
+      "expect": "The animals are still on the itinerary, unscheduled."
     },
     {
       "number": 7,
-      "name": "List retained",
-      "do": "Check list view.",
-      "expect": "Items remain on itinerary as unscheduled."
-    },
-    {
-      "number": 8,
       "name": "Schedule one again",
       "do": "Schedule a single animal.",
       "expect": "Pill returns; path may be absent with one stop."
     },
     {
-      "number": 9,
+      "number": 8,
       "name": "Stable UI",
       "do": "Toggle list/planner.",
       "expect": "No crash after unschedule-all."
