@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from datetime import timedelta
 from pathlib import Path
+import runpy
 import sqlite3
 
 import pytest
@@ -106,3 +107,41 @@ def Test_Main_TestEmptyTable_ExpectPrintsNoRowMessage(
 
    assert 'No itinerary date row to backdate. Save an itinerary first.' in (
       capsys.readouterr().out )
+
+
+def Test_ModuleMain_TestDatabasePath_ExpectBackdatesAndPrints(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   path = tmp_path / 'animals.db'
+   conn = sqlite3.connect( path )
+   conn.executescript( BACKDATER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
+            VALUES ( '2026-06-15' );
+      """ )
+   conn.commit()
+   conn.close()
+
+   real_connect = sqlite3.connect
+
+   def connect_override( db_path: str ) -> sqlite3.Connection:
+      if db_path == 'animals.db':
+         return real_connect( str( path ) )
+
+      return real_connect( db_path )
+
+   monkeypatch.setattr(
+      'api.seed.user_itinerary_date_backdater.sqlite3.connect',
+      connect_override )
+
+   yesterday = ( date.today() - timedelta( days=1 ) ).isoformat()
+   runpy.run_module( 'api.seed.user_itinerary_date_backdater', run_name='__main__' )
+
+   conn = sqlite3.connect( path )
+   stored = conn.execute(
+      'SELECT ITINERARY_DATE FROM ItineraryDate;' ).fetchone()[ Position.FIRST ]
+   conn.close()
+
+   assert stored == yesterday
+   assert f'Itinerary date backdated to { yesterday }.' in capsys.readouterr().out
