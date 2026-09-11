@@ -39,7 +39,7 @@ export class DayPlannerView {
       const scheduleActions = ItineraryPanelHelper.el('div', 'itinerary-day-module-schedule-actions');
       const titleWrap = ItineraryPanelHelper.el('div');
       const title = ItineraryPanelHelper.el('h3', '', strings.title);
-      const date = ItineraryItemFormatter.formatISODateFull(hours.date, strings.date);
+      const dateLabel = ItineraryItemFormatter.formatISODateFull(itinerary.date);
       const timeline = ItineraryPanelHelper.el('div', 'itinerary-day-timeline');
 
       section.setAttribute('aria-label', strings.aria);
@@ -48,7 +48,7 @@ export class DayPlannerView {
       titleWrap.appendChild(title);
       header.appendChild(titleWrap);
       headerAside.appendChild(
-         DayPlannerController.makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
+         DayPlannerController.makeDayPlannerControls(dateLabel, itinerary, timeHandlers, strings, hours)
       );
       header.appendChild(headerAside);
 
