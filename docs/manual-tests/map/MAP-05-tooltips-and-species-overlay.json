@@ -5,8 +5,8 @@
     {
       "number": 1,
       "name": "Hover tooltip",
-      "do": "Hover an animal marker.",
-      "expect": "Hover tooltip appears with identifying text."
+      "do": "Hover an animal marker (e.g. **African Lion**).",
+      "expect": "Hover tooltip appears with the species name (e.g. **African Lion**)."
     },
     {
       "number": 2,
@@ -17,13 +17,13 @@
     {
       "number": 3,
       "name": "Tooltip essentials",
-      "do": "Read the click tooltip.",
-      "expect": "Shows species name and exhibit/essentials (likelihood line may appear)."
+      "do": "Read the click tooltip for **African Lion**.",
+      "expect": "Shows a detail image, the species name (**African Lion**), exhibit (**Africa Savanna**), and a **Likelihood:** line with a phrase and percent (e.g. `Likelihood: Very High (~100%)`)."
     },
     {
       "number": 4,
       "name": "More Info",
-      "do": "Click **More Info** (or equivalent) from the tooltip.",
+      "do": "Click the species name (**African Lion**) in the tooltip.",
       "expect": "Species overlay opens."
     },
     {

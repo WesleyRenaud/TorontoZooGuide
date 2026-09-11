@@ -1,0 +1,48 @@
+{
+  "id": "MAP-09",
+  "title": "View on Map from Animals",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open Animals",
+      "do": "From the bottom nav, open **Animals**.",
+      "expect": "Animals page loads."
+    },
+    {
+      "number": 2,
+      "name": "Open a species",
+      "do": "Open **African Lion** (or another known seed animal).",
+      "expect": "Species detail shows, including **View on Map**."
+    },
+    {
+      "number": 3,
+      "name": "View on Map",
+      "do": "Click **View on Map**.",
+      "expect": "You land on the map page."
+    },
+    {
+      "number": 4,
+      "name": "Map focuses the animal",
+      "do": "Watch the map after it loads.",
+      "expect": "The map pans/zooms to **African Lion**; its tooltip opens."
+    },
+    {
+      "number": 5,
+      "name": "Animals filter on",
+      "do": "Open **Filter:**.",
+      "expect": "**Animals** is checked."
+    },
+    {
+      "number": 6,
+      "name": "Stay usable after focus",
+      "do": "Dismiss the tooltip if needed, then pan/zoom the map.",
+      "expect": "Map remains usable."
+    },
+    {
+      "number": 7,
+      "name": "Bottom nav still works",
+      "do": "Use bottom nav to go to **Itinerary**, then back to **Map**.",
+      "expect": "Navigation works; map loads normally without forcing another focus."
+    }
+  ]
+}
