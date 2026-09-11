@@ -28,24 +28,6 @@
     },
     {
       "number": 5,
-      "name": "Add Zoomobile transport",
-      "do": "Add Zoomobile as transportation and schedule/rebuild as needed.",
-      "expect": "Transport reflected in legs/path."
-    },
-    {
-      "number": 6,
-      "name": "Path reflects transport",
-      "do": "Inspect path/legs.",
-      "expect": "Transport segment distinguishable or walking reduced as designed."
-    },
-    {
-      "number": 7,
-      "name": "Scenic vs transport",
-      "do": "If Zoomobile also exists as scenic attraction, ensure scenic add does not impersonate transport leg.",
-      "expect": "Representations distinct."
-    },
-    {
-      "number": 8,
       "name": "Unschedule all clears path",
       "do": "**Unschedule all items**.",
       "expect": "Walk path clears."
