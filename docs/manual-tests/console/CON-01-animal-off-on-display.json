@@ -17,62 +17,62 @@
     {
       "number": 3,
       "name": "Scope outdoor only",
-      "do": "Set viewing scope to **Outdoor only**.",
-      "expect": "Scope saved in the form."
+      "do": "Set **Viewing scope** to **Outdoor only**.",
+      "expect": "**Outdoor only** is selected."
     },
     {
       "number": 4,
       "name": "Date range + reason",
-      "do": "Set start ≤ D (**Last day** blank or ≥ D). Enter **Reason**.",
-      "expect": "Fields valid; blank **Last day** means until manually on-display."
+      "do": "Leave **Start date** blank. Leave **Last day** blank. In **Reason**, enter a short note (e.g. **Manual test off display**).",
+      "expect": "Form is ready to save (blank **Start date** starts immediately; blank **Last day** stays off display until set on display)."
     },
     {
       "number": 5,
       "name": "Submit off display",
-      "do": "Submit the form.",
-      "expect": "Success status like “{species} in {exhibit} was set as off display.”"
+      "do": "Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** was set as off display."
     },
     {
       "number": 6,
       "name": "Map without include",
-      "do": "From the bottom nav, open **Map**. On **Specific Map**, set date D. Leave **Include off display animals** unchecked.",
-      "expect": "Animal absent or not shown as normally on-display (per product rules)."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to **today**. Leave **Include off display animals** unchecked.",
+      "expect": "**African Lion** is absent (or not shown as a normal on-display marker)."
     },
     {
       "number": 7,
       "name": "Map with include",
       "do": "Enable **Include off display animals**.",
-      "expect": "Animal appears and/or off-display banner/message is shown."
+      "expect": "**African Lion** appears and/or an off-display banner/message is shown."
     },
     {
       "number": 8,
       "name": "Itinerary confirm",
-      "do": "From the bottom nav, open **Itinerary** for date D, then try adding the animal (enable **Include off-display animals** if needed).",
-      "expect": "Off-display / low-likelihood confirm appears, or animal listing reflects off-display — note which."
+      "do": "From the bottom nav, open **Itinerary**. Build for **today**, enable **Include off-display animals** if needed, and try adding **African Lion**.",
+      "expect": "**Animal May Be Off Display** (or similar) appears."
     },
     {
       "number": 9,
       "name": "Set on display",
-      "do": "In console, open **Set animal as on display** for the same species/exhibit/scope.",
-      "expect": "Form accepts the pair."
+      "do": "In Console, open **Set animal as on display**. Choose **Africa Savanna**, **African Lion**, and **Outdoor only**.",
+      "expect": "On-display form accepts those values."
     },
     {
       "number": 10,
       "name": "Submit on display",
-      "do": "Submit.",
-      "expect": "Success status like “… was set as on display.”"
+      "do": "Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** was set as on display."
     },
     {
       "number": 11,
       "name": "Map restored",
-      "do": "From the bottom nav, return to **Map** on date D with **Include off display animals** unchecked.",
-      "expect": "Animal shows as a normal on-display marker again."
+      "do": "From the bottom nav, return to **Map** on **Specific Map** **today** with **Include off display animals** unchecked.",
+      "expect": "**African Lion** shows as a normal on-display marker again."
     },
     {
       "number": 12,
       "name": "Cleanup confirmed",
-      "do": "Confirm no leftover off-display for D.",
-      "expect": "Guest map/itinerary behave as on-display."
+      "do": "Confirm no leftover off-display state for **African Lion** today.",
+      "expect": "Guest map/itinerary treat **African Lion** as on display."
     }
   ]
 }
