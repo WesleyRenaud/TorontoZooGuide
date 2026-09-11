@@ -1,9 +1,6 @@
 {
   "id": "ITIN-07",
   "title": "Talk and encounter scheduling",
-  "preconditions": "Visit date with ≥1 Meet the Guardians talk or Wild Encounter in seed. Clear itinerary first.",
-  "dateUnderTest": "Record date with offerings.",
-  "cleanup": "Clear itinerary.",
   "steps": [
     {
       "number": 1,

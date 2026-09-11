@@ -1,9 +1,6 @@
 {
   "id": "CON-10",
   "title": "Guardians talks",
-  "preconditions": "Console open. Known talk location + talk name from seed.",
-  "dateUnderTest": "**D** included in schedule / occurrence.",
-  "cleanup": "End schedules; cancel leftover occurrences; map quiet for talk on D if intended.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "ITIN-10",
   "title": "Bulk schedule pressure",
-  "preconditions": "Clear itinerary. Plan to select many animals via regions and a short visit window.",
-  "dateUnderTest": "Busy in-season date.",
-  "cleanup": "Clear itinerary after.",
   "steps": [
     {
       "number": 1,

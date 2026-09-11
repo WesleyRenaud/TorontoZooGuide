@@ -1,9 +1,6 @@
 {
   "id": "MAP-03",
   "title": "Type filters and search",
-  "preconditions": "Open `map.html` on **Specific Map**. Pick a known seed animal (e.g. **African Lion** or **Raccoon**).",
-  "dateUnderTest": "Any Specific Map date where the chosen animal is in seed.",
-  "cleanup": "Re-check **Animals** in Filter before leaving.",
   "steps": [
     {
       "number": 1,

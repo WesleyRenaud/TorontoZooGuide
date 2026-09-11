@@ -1,9 +1,6 @@
 {
   "id": "MAP-08",
   "title": "Closed exhibits and Updates/Events",
-  "preconditions": "Specific Map. Seed may include updates/events; closed exhibits may be Blocked → CON-04 / CON-13 / CON-14.",
-  "dateUnderTest": "Specific Map for closed-exhibit steps. Updates/Events use today’s real date (not the map preset).",
-  "cleanup": "None.",
   "steps": [
     {
       "number": 1,

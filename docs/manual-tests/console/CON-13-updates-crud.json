@@ -1,9 +1,6 @@
 {
   "id": "CON-13",
   "title": "Updates CRUD",
-  "preconditions": "Console open.",
-  "dateUnderTest": "**D** inside update active range.",
-  "cleanup": "End update so it is inactive after test (or note leftover).",
   "steps": [
     {
       "number": 1,

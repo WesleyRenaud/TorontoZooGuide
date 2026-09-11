@@ -1,9 +1,6 @@
 {
   "id": "CON-15",
   "title": "Console validation matrix",
-  "preconditions": "Console open. No guest map/itinerary verify required. Use any convenient entities.",
-  "dateUnderTest": "N/A.",
-  "cleanup": "Delete/revert the one successful submit at the end.",
   "steps": [
     {
       "number": 1,

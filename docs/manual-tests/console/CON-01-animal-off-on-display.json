@@ -1,9 +1,6 @@
 {
   "id": "CON-01",
   "title": "Animal off/on display",
-  "preconditions": "Seeded DB. Open `console-operations.html`. Pick an outdoor animal guests can find on the map (e.g. **Raccoon** / **Canadian Domain**).",
-  "dateUnderTest": "**D** = a specific future date (record YYYY-MM-DD). Use D on map and itinerary verifies.",
-  "cleanup": "End with animal **on display** for D (run **Set animal as on display** if needed).",
   "steps": [
     {
       "number": 1,

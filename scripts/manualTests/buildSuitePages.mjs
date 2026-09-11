@@ -390,9 +390,19 @@ function pageScript() {
       var html = '';
       html += '<header class="suite-header">';
       html += '<h1>' + escapeHtml( suite.id + ' — ' + suite.title ) + '</h1>';
-      html += '<p><strong>Preconditions:</strong> ' + escapeHtml( suite.preconditions ) + '</p>';
-      html += '<p><strong>Date under test:</strong> ' + escapeHtml( suite.dateUnderTest ) + '</p>';
-      html += '<p><strong>Cleanup:</strong> ' + escapeHtml( suite.cleanup ) + '</p>';
+      var metaFields = [
+         { label: 'Preconditions', value: suite.preconditions },
+         { label: 'Date under test', value: suite.dateUnderTest },
+         { label: 'Cleanup', value: suite.cleanup }
+      ];
+      for ( var m = 0; m < metaFields.length; m += 1 ) {
+         var metaValue = String( metaFields[ m ].value == null ? '' : metaFields[ m ].value ).trim();
+         if ( !metaValue || /^none\.?$/i.test( metaValue ) ) {
+            continue;
+         }
+         html += '<p><strong>' + escapeHtml( metaFields[ m ].label ) + ':</strong> '
+            + escapeHtml( metaFields[ m ].value ) + '</p>';
+      }
       html += '<div class="actions">';
       html += '<button type="button" id="clearResults">Clear suite results</button>';
       html += '<button type="button" id="downloadResults">Download results JSON</button>';

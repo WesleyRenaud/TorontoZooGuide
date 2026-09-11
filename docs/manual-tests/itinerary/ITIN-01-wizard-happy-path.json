@@ -1,9 +1,6 @@
 {
   "id": "ITIN-01",
   "title": "Wizard happy path",
-  "preconditions": "`npm run clear:itinerary` if needed. Open `itinerary.html`. Prefer a future in-season visit date with animals offered.",
-  "dateUnderTest": "Chosen future visit date (record it).",
-  "cleanup": "`npm run clear:itinerary` or **Clear Itinerary?** when done.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "MAP-06",
   "title": "Off-display and closed include toggles",
-  "preconditions": "Self-contained: use Specific Map dates where seed already yields off-display animals or closed amenities. **Do not use console.** If unreachable, mark steps **Blocked** → CON-01 / CON-05 / CON-06 / CON-07 / CON-08.",
-  "dateUnderTest": "Record date(s) attempted.",
-  "cleanup": "Leave include toggles unchecked.",
   "steps": [
     {
       "number": 1,

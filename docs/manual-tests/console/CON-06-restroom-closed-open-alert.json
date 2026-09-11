@@ -1,9 +1,6 @@
 {
   "id": "CON-06",
   "title": "Restroom closed/open + alert",
-  "preconditions": "Console open. Known restroom.",
-  "dateUnderTest": "**D** for closed/open.",
-  "cleanup": "Restroom open; alerts removed.",
   "steps": [
     {
       "number": 1,

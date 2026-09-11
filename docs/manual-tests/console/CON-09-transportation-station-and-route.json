@@ -1,9 +1,6 @@
 {
   "id": "CON-09",
   "title": "Transportation station + current route",
-  "preconditions": "Console open. Zoomobile stations exist on map.",
-  "dateUnderTest": "**D** for station closure; route range covering D.",
-  "cleanup": "Stations open; restore prior transportation route if known.",
   "steps": [
     {
       "number": 1,

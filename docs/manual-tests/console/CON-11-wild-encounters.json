@@ -1,9 +1,6 @@
 {
   "id": "CON-11",
   "title": "Wild encounters",
-  "preconditions": "Console open. Known wild encounter from seed.",
-  "dateUnderTest": "**D** in schedule.",
-  "cleanup": "End schedule; cancel test occurrences.",
   "steps": [
     {
       "number": 1,

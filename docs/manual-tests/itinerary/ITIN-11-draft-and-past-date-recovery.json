@@ -1,9 +1,6 @@
 {
   "id": "ITIN-11",
   "title": "Draft and past-date recovery",
-  "preconditions": "Ability to use localStorage draft and past-date recovery UI. May require setting visit date to a past day after save, or using recovery entry points the app provides.",
-  "dateUnderTest": "Start future; then exercise past recovery.",
-  "cleanup": "`npm run clear:itinerary` + clear itinerary-config if sticky.",
   "steps": [
     {
       "number": 1,

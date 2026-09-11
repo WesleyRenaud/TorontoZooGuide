@@ -1,9 +1,6 @@
 {
   "id": "CON-02",
   "title": "Visibility schedule",
-  "preconditions": "Console open. Pick species/exhibit used on map.",
-  "dateUnderTest": "**D** inside the visibility schedule date range.",
-  "cleanup": "Run **Remove visibility schedule** before ending.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "CON-05",
   "title": "Restaurant closed / override / schedule",
-  "preconditions": "Console open. Known restaurant on map.",
-  "dateUnderTest": "**D** for closed checks; may use alternate dates for override/schedule.",
-  "cleanup": "Restaurant open on D; remove test overrides/schedules as needed.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "CON-03",
   "title": "Animal viewing alert",
-  "preconditions": "Console open. Species visible on map.",
-  "dateUnderTest": "**D** in alert range.",
-  "cleanup": "**Remove animal viewing alert**.",
   "steps": [
     {
       "number": 1,

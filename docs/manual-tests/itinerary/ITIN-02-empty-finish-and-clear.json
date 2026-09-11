@@ -1,9 +1,6 @@
 {
   "id": "ITIN-02",
   "title": "Empty finish and clear",
-  "preconditions": "Clear any existing itinerary. Open `itinerary.html`.",
-  "dateUnderTest": "Any valid future date.",
-  "cleanup": "End with empty itinerary.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "ITIN-06",
   "title": "Off-display / low-likelihood confirm",
-  "preconditions": "Self-contained. Prefer winter/shoulder visit date for low likelihood, or enable **Include off-display animals**. If impossible from seed alone: Blocked → CON-01.",
-  "dateUnderTest": "Record visit date.",
-  "cleanup": "Clear itinerary if desired.",
   "steps": [
     {
       "number": 1,

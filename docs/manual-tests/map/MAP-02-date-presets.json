@@ -1,9 +1,6 @@
 {
   "id": "MAP-02",
   "title": "Date presets",
-  "preconditions": "MAP-01 baseline OK. Open `map.html`. Use default Explore filters (**Animals** on; leave **Include off display animals** and **Include closed *** unchecked). Explore **Updates**/**Events** follow today’s real date — ignore them for seasonal checks.",
-  "dateUnderTest": "Exercise **Summer Map**, **Winter Map**, and **Specific Map**.",
-  "cleanup": "Leave preset on **Specific Map** when finished. Set Zoomobile route back to **None** if you changed it.",
   "steps": [
     {
       "number": 1,
