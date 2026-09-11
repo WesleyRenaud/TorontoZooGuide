@@ -1,6 +1,6 @@
 {
   "id": "ITIN-11",
-  "title": "Past-date recovery",
+  "title": "Past-date recovery and seasonal date change",
   "steps": [
     {
       "number": 1,
@@ -40,33 +40,27 @@
     },
     {
       "number": 7,
-      "name": "Backdate summer visit",
-      "do": "Run `npm run backdate:itinerary` again.",
-      "expect": "Terminal prints that the itinerary date was backdated to yesterday."
-    },
-    {
-      "number": 8,
-      "name": "Recover onto midwinter",
-      "do": "Hard-refresh **Itinerary**, click **Choose New Date**, pick a midwinter date (e.g. a day in **January**), then **Finish**.",
+      "name": "Change date to midwinter",
+      "do": "Use **Edit Itinerary**, open **Set Visit Date**, pick a midwinter date (e.g. a day in **January**), then **Finish**.",
       "expect": "**Itinerary Updated** appears."
     },
     {
-      "number": 9,
+      "number": 8,
       "name": "Review seasonal removals",
       "do": "In **Itinerary Updated**, open **Animals Removed** and attractions sections.",
       "expect": "**Warthog** and **River Hippopotamus** are listed under **Animals Removed**; **Splash Island** is listed as unavailable on the new date."
     },
     {
-      "number": 10,
+      "number": 9,
       "name": "Keep vs remove",
       "do": "Use **Keep** / remove choices where offered, then accept the popup.",
-      "expect": "Choices apply to the recovered itinerary."
+      "expect": "Choices apply to the itinerary."
     },
     {
-      "number": 11,
+      "number": 10,
       "name": "Coherent winter result",
       "do": "Inspect list / Day Planner after accepting.",
-      "expect": "Visit date is the midwinter day; kept or removed items match the choices from step 10."
+      "expect": "Visit date is the midwinter day; kept or removed items match the choices from step 9."
     }
   ]
 }
