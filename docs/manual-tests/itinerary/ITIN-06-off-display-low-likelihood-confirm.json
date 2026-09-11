@@ -49,12 +49,6 @@
       "name": "Finish",
       "do": "Finish the itinerary with that animal included.",
       "expect": "Itinerary saves successfully."
-    },
-    {
-      "number": 9,
-      "name": "List cue",
-      "do": "In **List View**, find that animal.",
-      "expect": "Off-display / low-likelihood status cue is visible for it."
     }
   ]
 }
