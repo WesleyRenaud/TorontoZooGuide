@@ -18,11 +18,20 @@ class UserItineraryConfigCleaner():
       cursor = conn.cursor()
 
       try:
+         suppressed_before = ItineraryStatusProvider.fetch_suppressed_status_values( conn )
          cls.clear( cursor )
          conn.commit()
       finally:
          cursor.close()
          conn.close()
+
+      if suppressed_before:
+         print(
+            "Cleared Don't show this again for: "
+            + ', '.join( suppressed_before )
+            + '.' )
+      else:
+         print( "No Don't show this again suppressions were enabled." )
 
       print( 'User itinerary config cleared successfully.' )
 

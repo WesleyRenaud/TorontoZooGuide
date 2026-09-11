@@ -23,6 +23,26 @@ CREATE TABLE ItineraryStatusSuppression (
 """
 
 
+class _SharedConnection:
+   def __init__( self, conn: sqlite3.Connection ) -> None:
+      self._conn = conn
+      self.calls: list[ str ] = []
+
+
+   def cursor( self ) -> sqlite3.Cursor:
+      self.calls.append( 'cursor' )
+      return self._conn.cursor()
+
+
+   def commit( self ) -> None:
+      self.calls.append( 'commit' )
+      self._conn.commit()
+
+
+   def close( self ) -> None:
+      self.calls.append( 'close' )
+
+
 @pytest.fixture
 def config_cleaner_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
@@ -58,39 +78,47 @@ def Test_Clear_TestSuppressedWarning_ExpectCleared(
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
 
-def Test_Main_TestMonkeypatchedConnect_ExpectClearCommitAndClose(
+def Test_Main_TestNoneSuppressed_ExpectReportsNoneEnabled(
       monkeypatch: pytest.MonkeyPatch,
-      capsys: pytest.CaptureFixture[ str ] ) -> None:
-   calls: list[ str ] = []
-   conn = sqlite3.connect( ':memory:' )
-   cursor = conn.cursor()
-
-   class _Conn:
-      def cursor( self ) -> sqlite3.Cursor:
-         calls.append( 'cursor' )
-         return cursor
-
-
-      def commit( self ) -> None:
-         calls.append( 'commit' )
-
-
-      def close( self ) -> None:
-         calls.append( 'close' )
-
+      capsys: pytest.CaptureFixture[ str ],
+      config_cleaner_conn: sqlite3.Connection ) -> None:
+   shared = _SharedConnection( config_cleaner_conn )
    monkeypatch.setattr(
       'api.seed.user_itinerary_config_cleaner.sqlite3.connect',
-      lambda db_path: _Conn() )
-   monkeypatch.setattr(
-      UserItineraryConfigCleaner,
-      'clear',
-      classmethod( lambda cls, cur: calls.append( 'clear' ) ) )
+      lambda db_path: shared )
 
    UserItineraryConfigCleaner.main( db_path=':memory:' )
 
-   assert calls == [ 'cursor', 'clear', 'commit', 'close' ]
-   assert 'User itinerary config cleared successfully.' in capsys.readouterr().out
-   conn.close()
+   assert shared.calls == [ 'cursor', 'cursor', 'commit', 'close' ]
+   out = capsys.readouterr().out
+   assert "No Don't show this again suppressions were enabled." in out
+   assert 'User itinerary config cleared successfully.' in out
+
+
+def Test_Main_TestSuppressedWarning_ExpectReportsClearedStatuses(
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ],
+      config_cleaner_conn: sqlite3.Connection ) -> None:
+   ItineraryStatusProvider.suppress_itinerary_status(
+      config_cleaner_conn,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+   shared = _SharedConnection( config_cleaner_conn )
+   monkeypatch.setattr(
+      'api.seed.user_itinerary_config_cleaner.sqlite3.connect',
+      lambda db_path: shared )
+
+   UserItineraryConfigCleaner.main( db_path=':memory:' )
+
+   out = capsys.readouterr().out
+   assert (
+      "Cleared Don't show this again for: "
+      + ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value
+      + '.' ) in out
+   assert 'User itinerary config cleared successfully.' in out
+   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
+      config_cleaner_conn,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
 
 def Test_ModuleMain_TestMonkeypatchedConnect_ExpectClearCommitAndClose(
@@ -112,4 +140,6 @@ def Test_ModuleMain_TestMonkeypatchedConnect_ExpectClearCommitAndClose(
 
    runpy.run_module( 'api.seed.user_itinerary_config_cleaner', run_name='__main__' )
 
-   assert 'User itinerary config cleared successfully.' in capsys.readouterr().out
+   out = capsys.readouterr().out
+   assert "No Don't show this again suppressions were enabled." in out
+   assert 'User itinerary config cleared successfully.' in out

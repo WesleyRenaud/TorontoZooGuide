@@ -47,6 +47,8 @@ npm run clear:itinerary
 npm run clear:itinerary-config
 ```
 
+`clear:itinerary-config` clears **Don't show this again** for itinerary confirmations (Short Visit, Early Admission, item-not-on-itinerary, etc.). Reload the itinerary page after running it.
+
 ## Conventions
 
 - One suite file = one focused scenario (~8–12 steps).
