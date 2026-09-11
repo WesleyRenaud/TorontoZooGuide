@@ -1,4 +1,5 @@
 import { ItineraryPanelHelper } from './itinerary/panel/itineraryPanelHelper.js';
+import { TimelineLayoutConstants } from './shared/timelineLayoutConstants.js';
 import { ValidationBubbleHelper } from './validationBubbleHelper.js';
 
 export class ValidationBubbleFragment {
@@ -6,10 +7,21 @@ export class ValidationBubbleFragment {
       anchorEl,
       classNames = {},
       iconText = '!',
+      dismissMs = TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS,
    } = {}) {
       const classes = ValidationBubbleHelper.resolveClassNames(classNames);
       let bubbleEl = null;
       let repositionHandler = null;
+      let dismissTimeoutId = null;
+
+      function clearDismissTimer() {
+         if (dismissTimeoutId === null) {
+            return;
+         }
+
+         clearTimeout(dismissTimeoutId);
+         dismissTimeoutId = null;
+      }
 
       function unbindRepositionListeners() {
          if (!repositionHandler) {
@@ -34,9 +46,23 @@ export class ValidationBubbleFragment {
       }
 
       function dismiss() {
+         clearDismissTimer();
          unbindRepositionListeners();
-         bubbleEl?.remove();
+
+         const el = bubbleEl;
          bubbleEl = null;
+
+         if (!el) {
+            return;
+         }
+
+         if (typeof el.remove === 'function') {
+            el.remove();
+            return;
+         }
+
+         el.parentElement?.removeChild?.(el);
+         el.parent?.removeChild?.(el);
       }
 
       function show(message) {
@@ -56,6 +82,13 @@ export class ValidationBubbleFragment {
          document.body.appendChild(bubbleEl);
          ValidationBubbleHelper.positionValidationBubble(bubbleEl, anchorEl);
          bindRepositionListeners();
+
+         if (dismissMs > 0) {
+            dismissTimeoutId = setTimeout(() => {
+               dismissTimeoutId = null;
+               dismiss();
+            }, dismissMs);
+         }
       }
 
       return {

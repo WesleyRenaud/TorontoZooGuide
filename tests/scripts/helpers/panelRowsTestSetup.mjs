@@ -130,6 +130,10 @@ function createNode(tagName, className = '', textContent = '') {
 
          return child;
       },
+      remove() {
+         const parent = node.parentElement ?? node.parent;
+         parent?.removeChild?.(node);
+      },
       closest(selector) {
          let current = node;
 
