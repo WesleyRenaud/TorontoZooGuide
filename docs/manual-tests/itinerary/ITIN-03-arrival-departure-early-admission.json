@@ -28,9 +28,9 @@
     },
     {
       "number": 5,
-      "name": "Fix window",
-      "do": "Restore a valid multi-hour window.",
-      "expect": "Validation clears; schedule usable."
+      "name": "Longer visit",
+      "do": "Change arrival and departure so the visit is at least **2 hours** (e.g. arrival **10:00 AM**, departure **2:00 PM**).",
+      "expect": "Times are kept. **Short Visit?** does not appear (or is already dismissed)."
     },
     {
       "number": 6,

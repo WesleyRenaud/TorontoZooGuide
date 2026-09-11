@@ -65,18 +65,24 @@ export class ItineraryTimeView {
          syncClearButtonState();
       }
 
-      function rejectInvalidTime(nextValue) {
+      function restoreCommittedTimeDisplay(afterRestore = null) {
          latestPickerValue = committedValue;
          syncPickerToCommittedValue();
-         const message = resolveInvalidMessage?.(nextValue) ?? invalidMessage;
          // Flatpickr runs updateTime on blur after onClose; with an empty
          // selection that writes defaultHour (12:00 PM) into the input. Wait
          // two frames so that write lands, then restore the committed display.
          requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                syncPickerToCommittedValue();
-               validationBubble.show(message);
+               afterRestore?.();
             });
+         });
+      }
+
+      function rejectInvalidTime(nextValue) {
+         const message = resolveInvalidMessage?.(nextValue) ?? invalidMessage;
+         restoreCommittedTimeDisplay(() => {
+            validationBubble.show(message);
          });
       }
 
@@ -107,10 +113,12 @@ export class ItineraryTimeView {
             syncClearButtonState();
          }
          catch (error) {
-            if (error?.name !== 'ItineraryTimeChangeCancelledError') {
-               console.error('Failed to update itinerary time:', error);
+            if (error?.name === 'ItineraryTimeChangeCancelledError') {
+               restoreCommittedTimeDisplay();
+               return;
             }
 
+            console.error('Failed to update itinerary time:', error);
             rejectInvalidTime(nextValue);
          }
          finally {
