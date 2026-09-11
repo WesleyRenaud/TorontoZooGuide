@@ -23,7 +23,7 @@
     {
       "number": 4,
       "name": "Set attraction closed",
-      "do": "Open **Set attraction as closed** for date range covering today, plus a guest message.",
+      "do": "Open **Set attraction as closed**. Choose an attraction, set a date range covering today, and enter a **Closure message** (e.g. **Manual test attraction closed**).",
       "expect": "Submit success closed."
     },
     {
@@ -40,9 +40,9 @@
     },
     {
       "number": 7,
-      "name": "Override or reopen",
-      "do": "Use **Create attraction closure override** or set open / end closure so today is effectively open.",
-      "expect": "Success status."
+      "name": "Closure override",
+      "do": "Open **Create attraction closure override** for the same attraction with a range covering today and a **Closure message**. Then on **Map** with **Include closed attractions** on, click the marker.",
+      "expect": "Override saves; attraction remains closed on the map; tooltip/banner shows the override **Closure message**."
     },
     {
       "number": 8,

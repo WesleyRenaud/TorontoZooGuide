@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Fill closure",
-      "do": "Pick **Canadian Domain** (map closed overlay exists only for **Canadian Domain**, **Kids Zoo**, and **Americas Outdoor Mayan Temple Ruins**). Set a date range covering today, plus a guest message.",
+      "do": "Pick **Canadian Domain** (map closed overlay exists only for **Canadian Domain**, **Kids Zoo**, and **Americas Outdoor Mayan Temple Ruins**). Set a date range covering today, and enter a **Closure message** (e.g. **Manual test exhibit closed**).",
       "expect": "Fields valid."
     },
     {

@@ -5,74 +5,44 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "**Set restaurant as closed** for date range covering today, plus a guest message.",
+      "do": "Open **Set restaurant as closed**. Choose a restaurant, set a date range covering today, and enter a **Closed message** (e.g. **Manual test restaurant closed**).",
       "expect": "Success closed."
     },
     {
       "number": 2,
       "name": "Map without include",
-      "do": "On **Map**, set **Specific Map** to today. **Include closed restaurants** off.",
-      "expect": "Restaurant hidden/closed treatment."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Restaurants**. Leave **Include closed restaurants** unchecked.",
+      "expect": "The closed restaurant is absent (or not shown as a normal open marker)."
     },
     {
       "number": 3,
       "name": "Map with include",
-      "do": "Enable **Include closed restaurants**.",
-      "expect": "Visible + closed message."
+      "do": "With **Restaurants** still enabled, check **Include closed restaurants**, then click the closed restaurant marker.",
+      "expect": "The closed restaurant marker appears; its tooltip/banner shows the closed message."
     },
     {
       "number": 4,
       "name": "Closure override",
-      "do": "**Create restaurant closure override** so today (or a sub-range) reopens.",
-      "expect": "Success override saved."
+      "do": "Open **Create restaurant closure override**. Choose the same restaurant, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
+      "expect": "Success that the restaurant closure override was saved."
     },
     {
       "number": 5,
-      "name": "Map reflects override",
-      "do": "Map on overridden open day.",
-      "expect": "Appears open/available as designed."
+      "name": "Map after override",
+      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the restaurant marker.",
+      "expect": "Restaurant still closed; tooltip/banner shows the override **Closed message**."
     },
     {
       "number": 6,
-      "name": "Opening schedule conflict",
-      "do": "**Set restaurant opening schedule** overlapping an existing schedule.",
-      "expect": "**Schedule conflict** dialog if overlap exists."
+      "name": "Opening schedule",
+      "do": "Open **Set restaurant opening schedule**. Choose the same restaurant, set a date range covering today, mark the applicable weekdays open, and submit.",
+      "expect": "Success that the restaurant opening schedule was saved."
     },
     {
       "number": 7,
-      "name": "Resolve overlap",
-      "do": "Choose **Trim Old Schedules** or **Delete Old Schedules**.",
-      "expect": "Schedule saves; note choice."
-    },
-    {
-      "number": 8,
-      "name": "Map matches schedule",
-      "do": "Map on a day implied open by new schedule.",
-      "expect": "Open state correct."
-    },
-    {
-      "number": 9,
-      "name": "Cleanup closed",
-      "do": "Ensure today is not left closed unintentionally.",
-      "expect": "Open or intentionally documented."
-    },
-    {
-      "number": 10,
-      "name": "Verify map open",
-      "do": "On **Map** with **Specific Map** set to today, with include-closed off.",
-      "expect": "Normal open marker if intended open."
-    },
-    {
-      "number": 11,
-      "name": "Status messages",
-      "do": "Confirm each submit showed success status text.",
-      "expect": "Statuses OK."
-    },
-    {
-      "number": 12,
-      "name": "Notes",
-      "do": "Record overlap choice and restaurant name.",
-      "expect": "Notes filled."
+      "name": "Map after opening schedule",
+      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** checked; click the restaurant marker.",
+      "expect": "Restaurant still closed; tooltip/banner still shows the override **Closed message**."
     }
   ]
 }
