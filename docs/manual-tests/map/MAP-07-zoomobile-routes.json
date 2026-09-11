@@ -17,20 +17,20 @@
     {
       "number": 3,
       "name": "Summer Route",
-      "do": "Select **Summer Route** (or summer-style option).",
-      "expect": "Summer route layer/markers visible."
+      "do": "Select **Summer Route**.",
+      "expect": "Summer Zoomobile stations appear, including **Canadian Domain Zoomobile Station** and **Africa Zoomobile Station** (also **Main**, **Tundra**, and **Eurasia**)."
     },
     {
       "number": 4,
       "name": "Winter Route",
       "do": "Select **Winter Route**.",
-      "expect": "Winter route layer/markers visible; differs from summer where designed."
+      "expect": "Winter Zoomobile stations appear, including **Indo-Malaya Zoomobile Station**; **Canadian Domain Zoomobile Station** and **Africa Zoomobile Station** do not (Main / Tundra / Eurasia may still appear)."
     },
     {
       "number": 5,
       "name": "Station tooltip",
-      "do": "Click a Zoomobile station marker.",
-      "expect": "Tooltip shows station info (e.g. Zoomobile Station naming)."
+      "do": "Click **Main Zoomobile Station** (or another visible Zoomobile station marker).",
+      "expect": "Tooltip shows that station’s name and description."
     },
     {
       "number": 6,
