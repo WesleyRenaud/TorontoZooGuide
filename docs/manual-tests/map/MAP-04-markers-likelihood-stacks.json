@@ -20,7 +20,7 @@
     {
       "number": 3,
       "name": "Find Kids Zoo stack",
-      "do": "Still on peak summer, search **Rabbit** or **African Spurred Tortoise** and **View on Map** (seed places multiple **Kids Zoo** animals on one pin).",
+      "do": "Still on peak summer, search **Rabbit** or **African Spurred Tortoise** and **View on Map**.",
       "expect": "A count marker appears for the shared **Kids Zoo** location (more than one animal)."
     },
     {
@@ -33,7 +33,7 @@
       "number": 5,
       "name": "Carousel lists several animals",
       "do": "Look through the carousel entries.",
-      "expect": "Several **Kids Zoo** animals appear (e.g. **Rabbit**, **African Spurred Tortoise**, **Common Raven** — seed has nine on that pin)."
+      "expect": "Several **Kids Zoo** animals appear (e.g. **Rabbit**, **African Spurred Tortoise**, **Common Raven**)."
     },
     {
       "number": 6,
@@ -49,18 +49,12 @@
     },
     {
       "number": 8,
-      "name": "Limited-viewing / alert badge",
-      "do": "If seed has limited viewing or alerts, find `marker-has-limited-viewing` / badge styling.",
-      "expect": "Badge visible if data exists; else **Blocked** → CON-02/CON-03."
-    },
-    {
-      "number": 9,
       "name": "Zoom stability",
       "do": "Zoom in/out around markers.",
       "expect": "Markers stay anchored; not orphaned off-map incorrectly."
     },
     {
-      "number": 10,
+      "number": 9,
       "name": "Return to Specific Map",
       "do": "Leave a mid-season Specific Map date selected.",
       "expect": "Map remains usable."
