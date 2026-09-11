@@ -17,8 +17,8 @@
     {
       "number": 3,
       "name": "Short visit",
-      "do": "Set arrival and departure equal or nearly equal.",
-      "expect": "Short-visit handling appears (message or constraint) — note behavior."
+      "do": "Set departure within **120 minutes** after arrival.",
+      "expect": "**Short Visit?** confirmation appears (or equivalent short-visit handling)."
     },
     {
       "number": 4,
