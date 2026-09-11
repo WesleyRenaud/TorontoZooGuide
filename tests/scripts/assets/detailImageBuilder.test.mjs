@@ -5,8 +5,8 @@ import { DetailImageBuilder } from '../../../scripts/assets/detailImageBuilder.j
 
 test('Test_BuildDetailImageSrc_TestNamedAsset_ExpectNormalizedPath', () => {
    assert.equal(
-      DetailImageBuilder.buildDetailImageSrc('restaurants', 'Wolf\'s Den'),
-      'images/details/restaurants/wolfs-den.png'
+      DetailImageBuilder.buildDetailImageSrc('restaurants', 'Wolf\'s Den Café'),
+      'images/details/restaurants/wolfs-den-cafe.png'
    );
 });
 
