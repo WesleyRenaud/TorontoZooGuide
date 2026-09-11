@@ -92,7 +92,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-08 | [json](itinerary/ITIN-08-conflict-and-overlap-flows.json) | Conflicts / overlaps |
 | ITIN-09 | [json](itinerary/ITIN-09-attraction-hours-and-transport-prompts.json) | Hours snap + transport prompts |
 | ITIN-10 | [json](itinerary/ITIN-10-bulk-schedule-pressure.json) | Short day bulk schedule |
-| ITIN-11 | [json](itinerary/ITIN-11-past-date-recovery.json) | Past-date recovery |
+| ITIN-11 | [json](itinerary/ITIN-11-past-date-recovery.json) | Past-date recovery + seasonal **Itinerary Updated** |
 | ITIN-12 | [json](itinerary/ITIN-12-map-path-smoke.json) | Walk path on itinerary map |
 
 ### Console (`console/`)
