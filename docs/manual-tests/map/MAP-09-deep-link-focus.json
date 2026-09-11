@@ -1,9 +1,6 @@
 {
   "id": "MAP-09",
   "title": "Deep link focus",
-  "preconditions": "Know a seed species (+ optional exhibit), e.g. `African Lion` / Africa Savanna. URL-encode spaces as needed.",
-  "dateUnderTest": "N/A (focus query).",
-  "cleanup": "End on plain `map.html` without query.",
   "steps": [
     {
       "number": 1,

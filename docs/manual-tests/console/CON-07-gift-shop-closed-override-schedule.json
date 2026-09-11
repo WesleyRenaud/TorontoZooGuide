@@ -1,9 +1,6 @@
 {
   "id": "CON-07",
   "title": "Gift shop closed / override / schedule",
-  "preconditions": "Console open. Known gift shop. Prefer either override **or** full schedule depth to keep ~10 steps.",
-  "dateUnderTest": "**D** for closed verify.",
-  "cleanup": "Gift shop open; test overrides/schedules cleaned.",
   "steps": [
     {
       "number": 1,

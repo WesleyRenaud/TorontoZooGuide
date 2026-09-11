@@ -1,9 +1,6 @@
 {
   "id": "ITIN-08",
   "title": "Conflict and overlap flows",
-  "preconditions": "Itinerary with enough timed items to create overlaps (animals + talk/attraction).",
-  "dateUnderTest": "Visit date.",
-  "cleanup": "Resolve to a coherent timeline before leaving.",
   "steps": [
     {
       "number": 1,

@@ -1,9 +1,6 @@
 {
   "id": "CON-04",
   "title": "Exhibit closed/open",
-  "preconditions": "Console open. Choose an exhibit with a visible map overlay (e.g. a pavilion/domain used by several animals).",
-  "dateUnderTest": "**D** = future date in the closure range.",
-  "cleanup": "End with exhibit **open** for D.",
   "steps": [
     {
       "number": 1,

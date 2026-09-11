@@ -1,9 +1,6 @@
 {
   "id": "MAP-04",
   "title": "Markers, likelihood, stacks",
-  "preconditions": "Open `map.html` on **Specific Map**. For likelihood colour, use early/mid March and check **Grevy's Zebra** (Africa Savanna). Stack steps use peak summer and the shared **Kids Zoo** pin.",
-  "dateUnderTest": "Record the Specific Map dates used.",
-  "cleanup": "None.",
   "steps": [
     {
       "number": 1,

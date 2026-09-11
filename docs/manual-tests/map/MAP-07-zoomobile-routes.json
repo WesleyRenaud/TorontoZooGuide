@@ -1,9 +1,6 @@
 {
   "id": "MAP-07",
   "title": "Zoomobile routes",
-  "preconditions": "Explore panel visible with transportation route radios.",
-  "dateUnderTest": "Specific Map (or Current route season).",
-  "cleanup": "Set route control back to **None**.",
   "steps": [
     {
       "number": 1,

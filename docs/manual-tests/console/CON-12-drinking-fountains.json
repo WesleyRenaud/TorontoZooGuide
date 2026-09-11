@@ -1,9 +1,6 @@
 {
   "id": "CON-12",
   "title": "Drinking fountains",
-  "preconditions": "Console open.",
-  "dateUnderTest": "**D** inside close window.",
-  "cleanup": "**Open drinking fountains** so fountains are open again.",
   "steps": [
     {
       "number": 1,

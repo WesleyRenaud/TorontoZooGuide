@@ -50,7 +50,7 @@ npm run clear:itinerary-config
 ## Conventions
 
 - One suite file = one focused scenario (~8–12 steps).
-- Suite JSON fields: `id`, `title`, `preconditions`, `dateUnderTest`, `cleanup`, and `steps[]` with `number`, `name`, `do`, `expect`.
+- Suite JSON fields: `id`, `title`, and `steps[]` with `number`, `name`, `do`, `expect`. Optional suite meta (`preconditions`, `dateUnderTest`, `cleanup`) may be present and is shown in the hub only when non-empty.
 - **Map** and **itinerary** suites are self-contained (seed + UI date/toggles). Do not use console to set up state.
 - **Console** suites must verify map and/or itinerary on the same date **D**, then clean up.
 - If seed cannot produce a state, mark **Blocked** and point to the matching `CON-*` suite.

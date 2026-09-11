@@ -1,9 +1,6 @@
 {
   "id": "ITIN-03",
   "title": "Arrival, departure, early admission",
-  "preconditions": "Saved itinerary with ≥1 item (ITIN-01). Open Day Planner / time controls.",
-  "dateUnderTest": "Itinerary visit date.",
-  "cleanup": "Leave valid arrival/departure; Early Admission off unless you intend otherwise.",
   "steps": [
     {
       "number": 1,

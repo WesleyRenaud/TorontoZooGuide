@@ -1,9 +1,6 @@
 {
   "id": "CON-08",
   "title": "Attraction closed / override / schedule / hours",
-  "preconditions": "Console open. Pick a named attraction with hours (e.g. Conservation Carousel or Zoomobile-related attraction).",
-  "dateUnderTest": "**D** = future date used for closed + itinerary checks.",
-  "cleanup": "Restore open state and sensible hours; remove test closures/overrides.",
   "steps": [
     {
       "number": 1,

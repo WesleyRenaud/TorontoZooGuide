@@ -1,9 +1,6 @@
 {
   "id": "ITIN-09",
   "title": "Attraction hours and transport prompts",
-  "preconditions": "Seed attraction with hours; Zoomobile or dual-role attraction/transport if available.",
-  "dateUnderTest": "Visit date when attraction is open if possible.",
-  "cleanup": "Clear or leave a simple itinerary.",
   "steps": [
     {
       "number": 1,

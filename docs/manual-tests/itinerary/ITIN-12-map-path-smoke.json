@@ -1,9 +1,6 @@
 {
   "id": "ITIN-12",
   "title": "Map path smoke on itinerary",
-  "preconditions": "Scheduled multi-stop day (≥2 scheduled animals/stops).",
-  "dateUnderTest": "Visit date.",
-  "cleanup": "**Unschedule all items** or clear itinerary.",
   "steps": [
     {
       "number": 1,

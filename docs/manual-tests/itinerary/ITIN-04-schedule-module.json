@@ -1,9 +1,6 @@
 {
   "id": "ITIN-04",
   "title": "Schedule module",
-  "preconditions": "Complete a saved itinerary with several unscheduled animals (from ITIN-01 or new build).",
-  "dateUnderTest": "Same visit date as the itinerary.",
-  "cleanup": "Optional: **Unschedule all items** before leaving.",
   "steps": [
     {
       "number": 1,

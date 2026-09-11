@@ -1,9 +1,6 @@
 {
   "id": "MAP-01",
   "title": "Baseline load and chrome",
-  "preconditions": "`npm run seed`, `npm start`. Open `http://localhost:8000/map.html`.",
-  "dateUnderTest": "Default **Specific Map** (whatever date the picker shows after load).",
-  "cleanup": "None.",
   "steps": [
     {
       "number": 1,

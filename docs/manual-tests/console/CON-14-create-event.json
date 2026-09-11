@@ -1,9 +1,6 @@
 {
   "id": "CON-14",
   "title": "Create event",
-  "preconditions": "Console open. Note: ending events may be unavailable — document in Notes.",
-  "dateUnderTest": "**D** inside event dates; also test a date outside range.",
-  "cleanup": "Note leftover event if it cannot be ended from console.",
   "steps": [
     {
       "number": 1,

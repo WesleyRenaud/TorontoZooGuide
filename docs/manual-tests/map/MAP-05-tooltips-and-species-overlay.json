@@ -1,9 +1,6 @@
 {
   "id": "MAP-05",
   "title": "Tooltips and species overlay",
-  "preconditions": "Animals filter on. Know a searchable species (e.g. **African Lion**).",
-  "dateUnderTest": "Specific Map date where the species is shown.",
-  "cleanup": "Close any open overlay/tooltip.",
   "steps": [
     {
       "number": 1,

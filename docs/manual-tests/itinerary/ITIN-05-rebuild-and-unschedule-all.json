@@ -1,9 +1,6 @@
 {
   "id": "ITIN-05",
   "title": "Rebuild and unschedule all",
-  "preconditions": "Itinerary with multiple scheduled items and a visible walk path on the itinerary map.",
-  "dateUnderTest": "Visit date.",
-  "cleanup": "Optional reschedule one item so the itinerary is not empty of schedule.",
   "steps": [
     {
       "number": 1,
