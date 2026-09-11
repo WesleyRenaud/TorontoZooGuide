@@ -4,9 +4,9 @@
   "steps": [
     {
       "number": 1,
-      "name": "Note baseline",
-      "do": "Note existing pills and walk path.",
-      "expect": "Baseline recorded."
+      "name": "Two scheduled stops",
+      "do": "From the bottom nav, open **Itinerary**. Build with a visit date and at least **two** animals, **Finish**, then schedule both on Day Planner.",
+      "expect": "Day Planner shows at least two scheduled pills, and the itinerary map shows a walk path between them."
     },
     {
       "number": 2,
