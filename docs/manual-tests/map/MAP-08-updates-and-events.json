@@ -1,0 +1,54 @@
+{
+  "id": "MAP-08",
+  "title": "Updates and Events",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Updates and events section",
+      "do": "Look in Explore for the **Updates and events** heading and tabs.",
+      "expect": "Either the whole section is hidden (no updates or events for today), or it is visible with **Updates** and/or **Events** tabs."
+    },
+    {
+      "number": 2,
+      "name": "Updates card",
+      "do": "If **Updates** is available, select it and read the visible card.",
+      "expect": "The active card shows a type label and a non-blank title. If **Updates** is unavailable or the section is hidden, that is the expected empty outcome for today."
+    },
+    {
+      "number": 3,
+      "name": "Collapse/expand",
+      "do": "If the section is visible, click the triangle/chevron button beside the **Updates** / **Events** tabs (points down when open, up when collapsed).",
+      "expect": "The updates/events cards hide when collapsed and return when expanded. If the section was hidden in step 1, that button is not available."
+    },
+    {
+      "number": 4,
+      "name": "Updates carousel",
+      "do": "If more than one update is loaded, use previous/next update controls.",
+      "expect": "The visible update card changes. If zero or one update, there is nothing to advance."
+    },
+    {
+      "number": 5,
+      "name": "Events tab",
+      "do": "If **Events** is available, select it.",
+      "expect": "The **Events** tab becomes active. If **Events** is unavailable or the section is hidden, that is the expected empty outcome for today."
+    },
+    {
+      "number": 6,
+      "name": "Events card",
+      "do": "If an event card is shown, read it.",
+      "expect": "The active card shows an event name (title) and may include a date range and description. If no event card is shown, that matches the empty outcome above."
+    },
+    {
+      "number": 7,
+      "name": "Change map date",
+      "do": "On Specific Map, change the date.",
+      "expect": "Date applies; map markers/context update."
+    },
+    {
+      "number": 8,
+      "name": "Updates/Events stay on today",
+      "do": "Recheck Updates and Events after the map date change.",
+      "expect": "Updates and Events content is unchanged by the map date (still based on today’s real date)."
+    }
+  ]
+}

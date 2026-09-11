@@ -70,8 +70,8 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | MAP-05 | [json](map/MAP-05-tooltips-and-species-overlay.json) | Tooltips + More Info overlay |
 | MAP-06 | [json](map/MAP-06-off-display-and-closed-toggles.json) | Include off-display / closed toggles |
 | MAP-07 | [json](map/MAP-07-zoomobile-routes.json) | Zoomobile route radios |
-| MAP-08 | [json](map/MAP-08-closed-exhibits-updates-events.json) | Updates, Events, closed exhibits |
-| MAP-09 | [json](map/MAP-09-deep-link-focus.json) | `?focus=` deep link |
+| MAP-08 | [json](map/MAP-08-updates-and-events.json) | Updates and Events |
+| MAP-09 | [json](map/MAP-09-view-on-map-from-animals.json) | **View on Map** from Animals |
 
 ### Itinerary (`itinerary/`)
 

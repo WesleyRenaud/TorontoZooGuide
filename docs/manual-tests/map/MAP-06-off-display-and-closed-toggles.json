@@ -5,74 +5,68 @@
     {
       "number": 1,
       "name": "Baseline",
-      "do": "Note marker set with all include-* toggles off.",
-      "expect": "Baseline recorded."
+      "do": "Confirm every **Include …** Explore toggle is unchecked (**Include off display animals**, **Include closed restaurants**, **Include closed restrooms**, **Include closed gift shops**, **Include closed attractions**). Note which markers are on the map.",
+      "expect": "Those toggles are all off, and you have a clear before-picture of visible markers for later comparison."
     },
     {
       "number": 2,
-      "name": "Include off display animals on",
-      "do": "Enable **Include off display animals**.",
-      "expect": "Additional animals and/or off-display banners appear **or** Blocked if seed has none for this date."
+      "name": "Midwinter without off-display animals",
+      "do": "Set Specific Map to a midwinter weekday. Keep **Animals** checked in **Filter:**. Search **Warthog** (or **River Hippopotamus**).",
+      "expect": "That animal is not on the map while **Include off display animals** is off."
     },
     {
       "number": 3,
-      "name": "Off-display feedback",
-      "do": "If animals appeared, inspect tooltip/banner.",
-      "expect": "Off-display messaging present."
+      "name": "Include off display animals on",
+      "do": "Enable **Include off display animals**, then search **Warthog** (or **River Hippopotamus**) again and **View on Map**.",
+      "expect": "The animal marker appears (off-display)."
     },
     {
       "number": 4,
-      "name": "Include off display off",
-      "do": "Disable the toggle.",
-      "expect": "Those animals hide again."
+      "name": "Off-display feedback",
+      "do": "Open that animal’s click tooltip (and any banner on the marker).",
+      "expect": "Off-display messaging is visible."
     },
     {
       "number": 5,
-      "name": "Include closed restaurants",
-      "do": "Enable **Include closed restaurants**.",
-      "expect": "Closed restaurants appear **or** Blocked."
+      "name": "Include off display off",
+      "do": "Disable **Include off display animals**.",
+      "expect": "That off-display animal hides again."
     },
     {
       "number": 6,
-      "name": "Restaurants off",
-      "do": "Disable **Include closed restaurants**.",
-      "expect": "Extra closed restaurants hide."
+      "name": "Include closed restaurants",
+      "do": "Still on midwinter, check **Restaurants** in **Filter:**. Confirm **Tundra Tacos** (or **Eurasia Pizza Pizza**) is missing, then enable **Include closed restaurants** and find it.",
+      "expect": "The closed restaurant marker appears only after **Include closed restaurants** is on (and **Restaurants** is checked)."
     },
     {
       "number": 7,
-      "name": "Include closed restrooms",
-      "do": "Enable then disable **Include closed restrooms**.",
-      "expect": "Show/hide works **or** Blocked."
+      "name": "Restaurants off",
+      "do": "Disable **Include closed restaurants**.",
+      "expect": "That closed restaurant hides again."
     },
     {
       "number": 8,
       "name": "Include closed gift shops",
-      "do": "Enable then disable **Include closed gift shops**.",
-      "expect": "Show/hide works **or** Blocked."
+      "do": "Check **Gift Shops** in **Filter:**. Confirm **Twiga Market** (or **Courtyard Kiosk**) is missing on midwinter, enable **Include closed gift shops**, then disable it.",
+      "expect": "The closed gift shop appears with the include toggle on, and hides when it is off."
     },
     {
       "number": 9,
       "name": "Include closed attractions",
-      "do": "Enable then disable **Include closed attractions**.",
-      "expect": "Show/hide works **or** Blocked."
+      "do": "Set Specific Map to early October. Check **Attractions** in **Filter:**. Confirm **Splash Island** is missing, enable **Include closed attractions**, find it, then disable the toggle.",
+      "expect": "Closed **Splash Island** appears with the include toggle on, and hides when it is off."
     },
     {
       "number": 10,
       "name": "Banner readability",
-      "do": "With any include toggle that shows banners, read banner text.",
-      "expect": "Banners readable; layout not fully broken."
+      "do": "With an include toggle that shows banners or closed/off-display cues, read that text.",
+      "expect": "Wording is readable; layout is not fully broken."
     },
     {
       "number": 11,
-      "name": "No console used",
-      "do": "Confirm this suite did not open console-operations.",
-      "expect": "Self-contained requirement met."
-    },
-    {
-      "number": 12,
       "name": "Reset toggles",
-      "do": "Uncheck all include-* toggles.",
-      "expect": "Map back to default inclusion behavior."
+      "do": "Uncheck every **Include …** Explore toggle.",
+      "expect": "Map matches default inclusion (closed/off-display extras gone)."
     }
   ]
 }
