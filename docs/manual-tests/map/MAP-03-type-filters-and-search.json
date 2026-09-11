@@ -50,7 +50,7 @@
     {
       "number": 8,
       "name": "Select search result",
-      "do": "Click a search result.",
+      "do": "Click **View on Map** on a search result.",
       "expect": "Map pans/focuses to that animal’s marker."
     },
     {

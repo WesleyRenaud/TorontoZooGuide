@@ -45,15 +45,6 @@
     "y_coord": 56.193
   },
   {
-    "name": "BeaverTails Lodge",
-    "location": "Tundra Trek",
-    "sub_location": null,
-    "description": "Delicious whole-wheat deep fried pastry with a variety of toppings plus cold drinks.",
-    "menu_link": "https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf",
-    "x_coord": 78.454,
-    "y_coord": 56.532
-  },
-  {
     "name": "Thorntree Café",
     "location": "Africa",
     "sub_location": null,
@@ -70,6 +61,15 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf",
     "x_coord": 78.302,
     "y_coord": 72.147
+  },
+  {
+    "name": "Cocoa Flow",
+    "location": "Eurasia Wilds",
+    "sub_location": null,
+    "description": "CocoaFlow brings a sweet twist to fresh fruit! We serve freshly prepared strawberries, bananas, and other fruits topped with smooth Belgian chocolate, pistachio, Biscoff, and other delicious toppings. From our signature Dubai Chocolate cups to refreshing fruit creations, CocoaFlow is the perfect sweet stop during your day at the Toronto Zoo.",
+    "menu_link": null,
+    "x_coord": 78.292,
+    "y_coord": 71.063
   },
   {
     "name": "Souvlaki Bros",
@@ -99,6 +99,15 @@
     "y_coord": 56.303
   },
   {
+    "name": "Singh's Trini Vibes",
+    "location": "Tundra Trek",
+    "sub_location": "Tundra Zoomobile Station",
+    "description": "Authentic Caribbean cuisine at the Tundra Zoomobile Station. Open Wednesday to Sunday, weather permitting.",
+    "menu_link": null,
+    "x_coord": 79.709,
+    "y_coord": 55.642
+  },
+  {
     "name": "Savanna Snack Bar",
     "location": "Africa Savanna",
     "sub_location": null,
@@ -126,10 +135,10 @@
     "y_coord": 74.56
   },
   {
-    "name": "Wolf's Den",
+    "name": "Wolf's Den Café",
     "location": "Tundra Trek",
     "sub_location": null,
-    "description": "Grab a quick beverage or snack including coffee and tea.",
+    "description": "Birch Bark Indigenous coffee, Cold Beverages, Jamaican Beef Patties, Samosas, Egg rolls, Jumbo Warm Pretzels, Sushi, Bubble tea and Snacks!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf",
     "x_coord": 79.073,
     "y_coord": 56.207
