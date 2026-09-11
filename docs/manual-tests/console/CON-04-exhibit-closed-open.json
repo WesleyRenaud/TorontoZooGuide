@@ -11,26 +11,26 @@
     {
       "number": 2,
       "name": "Fill closure",
-      "do": "Pick exhibit, date range covering today, guest message.",
+      "do": "Pick **Canadian Domain** (map closed overlay exists only for **Canadian Domain**, **Kids Zoo**, and **Americas Outdoor Mayan Temple Ruins**). Set a date range covering today, plus a guest message.",
       "expect": "Fields valid."
     },
     {
       "number": 3,
       "name": "Submit closed",
       "do": "Submit.",
-      "expect": "Success “{exhibit} was set as closed.” (or equivalent)."
+      "expect": "Success “Canadian Domain was set as closed.” (or equivalent)."
     },
     {
       "number": 4,
       "name": "Map overlay",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today.",
-      "expect": "Closed-exhibit overlay/styling appears for that exhibit."
+      "expect": "Gray closed-exhibit overlay appears over **Canadian Domain**."
     },
     {
       "number": 5,
       "name": "Itinerary impact",
-      "do": "Build/edit itinerary for today involving animals in that exhibit.",
-      "expect": "Animals constrained, warned, or harder to plan as designed — note behavior."
+      "do": "From the bottom nav, open **Itinerary**. Build/edit for today. In the animal picker, leave **Include off-display animals** unchecked and search for a **Canadian Domain** animal (e.g. **Wood Bison**). Then enable **Include off-display animals** and try adding that animal.",
+      "expect": "With include off, the animal does not appear in results. With include on, it appears; adding it shows **Animal May Be Off Display** (likelihood 0% / may be off display)."
     },
     {
       "number": 6,
@@ -41,25 +41,25 @@
     {
       "number": 7,
       "name": "Submit open",
-      "do": "Re-open for a date range covering today.",
+      "do": "Re-open **Canadian Domain** for a date range covering today.",
       "expect": "Success open status."
     },
     {
       "number": 8,
       "name": "Overlay gone",
       "do": "From the bottom nav, return to **Map** on **Specific Map** today.",
-      "expect": "Closed overlay absent."
+      "expect": "Closed overlay absent over **Canadian Domain**."
     },
     {
       "number": 9,
       "name": "Itinerary normal",
-      "do": "Recheck itinerary animal availability for that exhibit on today.",
-      "expect": "Normal selection resumes."
+      "do": "Return to **Itinerary** for today. With **Include off-display animals** unchecked, search for **Wood Bison** (or another **Canadian Domain** animal) and add it.",
+      "expect": "Animal appears in results without needing include-off-display; adding does not show **Animal May Be Off Display**."
     },
     {
       "number": 10,
       "name": "Cleanup",
-      "do": "Confirm exhibit open on today.",
+      "do": "Confirm **Canadian Domain** is open on today.",
       "expect": "No leftover closure."
     }
   ]
