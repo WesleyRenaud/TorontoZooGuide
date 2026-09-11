@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map station closed",
-      "do": "On **Map** with **Specific Map** set to today, with Zoomobile route visible.",
+      "do": "On **Map**, set **Specific Map** to today. Select Zoomobile **Current Route**.",
       "expect": "The closed station is not shown as an open station on the route."
     },
     {
@@ -22,39 +22,39 @@
     },
     {
       "number": 4,
+      "name": "Map station open",
+      "do": "On **Map**, set **Specific Map** to today. Select Zoomobile **Current Route**.",
+      "expect": "The station closed in step 1 is shown on the route again."
+    },
+    {
+      "number": 5,
       "name": "Set Summer route",
       "do": "**Set current transportation route** — choose **Summer**, date range including today.",
       "expect": "Success “Transportation route was set to …”"
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Map summer",
       "do": "On **Map**, confirm the Zoomobile **Current Route** / Summer treatment.",
       "expect": "Summer route layer/stations."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Set Winter route",
       "do": "Set route to **Winter** for a range.",
       "expect": "Success."
     },
     {
-      "number": 7,
+      "number": 8,
       "name": "Map winter",
-      "do": "Map shows winter route treatment.",
+      "do": "On **Map**, confirm the Zoomobile **Current Route** / Winter treatment.",
       "expect": "Winter route stations differ from the summer route."
     },
     {
-      "number": 8,
-      "name": "Restore route",
-      "do": "Set the transportation route back to **Summer** for a range including today.",
-      "expect": "Success that the transportation route was set to Summer."
-    },
-    {
       "number": 9,
-      "name": "Cleanup stations",
-      "do": "Confirm stations open on today.",
-      "expect": "Open."
+      "name": "Restore Summer route",
+      "do": "Set the transportation route back to **Summer** for a range including today. On **Map**, select Zoomobile **Current Route**.",
+      "expect": "Success that the transportation route was set to Summer. Summer route stations match step 6."
     }
   ]
 }

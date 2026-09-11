@@ -17,7 +17,7 @@
     {
       "number": 3,
       "name": "Map shows alert",
-      "do": "On **Map** with **Specific Map** set to today, open that animal’s tooltip/banner.",
+      "do": "On **Map**, set **Specific Map** to today. Open that animal’s tooltip/banner.",
       "expect": "Alert text shown."
     },
     {
