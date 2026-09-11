@@ -36,7 +36,7 @@
       "number": 6,
       "name": "Map without include",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Leave **Include off display animals** unchecked.",
-      "expect": "**African Lion** is absent (or not shown as a normal on-display marker)."
+      "expect": "**African Lion** marker is absent."
     },
     {
       "number": 7,

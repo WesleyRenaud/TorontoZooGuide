@@ -5,62 +5,44 @@
     {
       "number": 1,
       "name": "Set closed",
-      "do": "**Set gift shop as closed** covering today.",
-      "expect": "Success."
+      "do": "Open **Set gift shop as closed**. Choose a gift shop, set a date range covering today, and enter a **Closed message** (e.g. **Manual test gift shop closed**).",
+      "expect": "Success that the gift shop was set as closed."
     },
     {
       "number": 2,
       "name": "Map without include",
-      "do": "Map; **Include closed gift shops** off.",
-      "expect": "Hidden/closed."
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Gift Shops**. Leave **Include closed gift shops** unchecked.",
+      "expect": "The closed gift shop marker is absent."
     },
     {
       "number": 3,
       "name": "Map with include",
-      "do": "Enable include closed gift shops.",
-      "expect": "Visible + message."
+      "do": "With **Gift Shops** still enabled, check **Include closed gift shops**, then click the closed gift shop marker.",
+      "expect": "The closed gift shop marker appears; its tooltip/banner shows the **Closed message**."
     },
     {
       "number": 4,
-      "name": "Override or schedule",
-      "do": "Either **Create gift shop closure override** OR **Set gift shop opening schedule**.",
-      "expect": "Success path chosen — note which."
+      "name": "Closure override",
+      "do": "Open **Create gift shop closure override**. Choose the same gift shop, set a date range covering today, and enter a different **Closed message** (e.g. **Manual test override closed**).",
+      "expect": "Success that the gift shop closure override was saved."
     },
     {
       "number": 5,
-      "name": "Overlap if schedule",
-      "do": "If schedule overlaps, resolve **Schedule conflict**.",
-      "expect": "Trim/Delete/Cancel noted."
+      "name": "Map after override",
+      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the gift shop marker.",
+      "expect": "Gift shop still closed; tooltip/banner shows the override **Closed message**."
     },
     {
       "number": 6,
-      "name": "Map after change",
-      "do": "On **Map**, set **Specific Map** to today (or the open day).",
-      "expect": "Matches intended open/closed."
+      "name": "Opening schedule",
+      "do": "Open **Set gift shop opening schedule**. Choose the same gift shop, set a date range covering today, mark the applicable weekdays open, and submit.",
+      "expect": "Success that the gift shop opening schedule was saved."
     },
     {
       "number": 7,
-      "name": "Cleanup closed",
-      "do": "Re-open if still closed.",
-      "expect": "Open."
-    },
-    {
-      "number": 8,
-      "name": "Verify map",
-      "do": "Include-closed off.",
-      "expect": "Normal marker if open."
-    },
-    {
-      "number": 9,
-      "name": "Statuses",
-      "do": "Each submit showed success.",
-      "expect": "OK."
-    },
-    {
-      "number": 10,
-      "name": "Notes",
-      "do": "Record gift shop name and path used.",
-      "expect": "Notes."
+      "name": "Map after opening schedule",
+      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** checked; click the gift shop marker.",
+      "expect": "Gift shop still closed; tooltip/banner still shows the override **Closed message**."
     }
   ]
 }

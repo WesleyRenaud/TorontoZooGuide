@@ -12,7 +12,7 @@
       "number": 2,
       "name": "Map closed behavior",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Restrooms**. Try with **Include closed restrooms** unchecked, then checked; with include on, click the restroom marker.",
-      "expect": "Absent with include off. With include on, marker appears; tooltip/banner shows the **Closed message**."
+      "expect": "With include off, the restroom marker is absent. With include on, the marker appears; tooltip/banner shows the **Closed message**."
     },
     {
       "number": 3,

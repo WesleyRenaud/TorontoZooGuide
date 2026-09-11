@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Map talk visible",
-      "do": "On **Map**, set **Specific Map** to today. enable **Meet The Guardians Talks** filter.",
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Meet The Guardians Talks**.",
       "expect": "Talk marker/tooltip present."
     },
     {
@@ -55,24 +55,6 @@
       "name": "Duplicate time Notes",
       "do": "Optionally resubmit duplicate time to see error.",
       "expect": "Error string noted (optional)."
-    },
-    {
-      "number": 10,
-      "name": "Cleanup",
-      "do": "No unintended live schedules left for test talk.",
-      "expect": "Clean."
-    },
-    {
-      "number": 11,
-      "name": "Final map",
-      "do": "Map filter talks on today.",
-      "expect": "Quiet/expected state."
-    },
-    {
-      "number": 12,
-      "name": "Record names",
-      "do": "Notes: talk name and location.",
-      "expect": "Notes."
     }
   ]
 }
