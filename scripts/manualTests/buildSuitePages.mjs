@@ -321,6 +321,33 @@ function pageScript() {
       saveAll( all );
    }
 
+   function currentStepNumbers( suite ) {
+      var numbers = {};
+      for ( var i = 0; i < suite.steps.length; i += 1 ) {
+         numbers[ String( suite.steps[ i ].number ) ] = true;
+      }
+      return numbers;
+   }
+
+   function pruneOrphanStepResults( suite ) {
+      var all = loadAll();
+      var saved = all[ suite.id ];
+      if ( !saved || !saved.steps ) return getSuiteResults( suite.id );
+      var allowed = currentStepNumbers( suite );
+      var changed = false;
+      Object.keys( saved.steps ).forEach( function ( key ) {
+         if ( !allowed[ key ] ) {
+            delete saved.steps[ key ];
+            changed = true;
+         }
+      } );
+      if ( changed ) {
+         all[ suite.id ] = saved;
+         saveAll( all );
+      }
+      return saved;
+   }
+
    function escapeHtml( value ) {
       return String( value == null ? '' : value )
          .replace(/&/g, '&amp;')
@@ -338,8 +365,10 @@ function pageScript() {
          if ( suite && suite.id === activeId ) button.classList.add( 'is-active' );
          if ( !suite ) continue;
          var saved = getSuiteResults( suite.id );
+         var allowed = currentStepNumbers( suite );
          var results = [];
          Object.keys( saved.steps || {} ).forEach( function ( key ) {
+            if ( !allowed[ key ] ) return;
             if ( saved.steps[ key ].result ) results.push( saved.steps[ key ].result );
          } );
          if ( results.length === 0 ) continue;
@@ -355,8 +384,10 @@ function pageScript() {
 
    function updateSummary( suite ) {
       var saved = getSuiteResults( suite.id );
+      var allowed = currentStepNumbers( suite );
       var pass = 0, fail = 0, blocked = 0;
       Object.keys( saved.steps || {} ).forEach( function ( key ) {
+         if ( !allowed[ key ] ) return;
          var result = saved.steps[ key ].result;
          if ( result === 'pass' ) pass += 1;
          else if ( result === 'fail' ) fail += 1;
@@ -385,7 +416,7 @@ function pageScript() {
       var suite = byId( suiteId );
       if ( !suite ) return;
       activeId = suiteId;
-      var saved = getSuiteResults( suite.id );
+      var saved = pruneOrphanStepResults( suite );
       var main = document.getElementById( 'main' );
       var html = '';
       html += '<header class="suite-header">';
