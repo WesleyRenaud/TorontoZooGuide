@@ -8,4 +8,8 @@ export class SpeciesSourceNormalizer {
             .filter(Boolean)
       )].sort((a, b) => a.localeCompare(b));
    }
+
+   static normalizeExhibitKey(exhibit) {
+      return ValueNormalizer.asTrimmedString(exhibit);
+   }
 }

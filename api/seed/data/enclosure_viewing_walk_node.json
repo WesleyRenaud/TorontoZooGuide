@@ -2268,6 +2268,15 @@
     "snap_distance_px": 31.471
   },
   {
+    "species": "Yellow-Vented Bulbul",
+    "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
     "species": "Zebra Finch",
     "exhibit": "Americas Pavilion",
     "enclosure_type": "Indoor",

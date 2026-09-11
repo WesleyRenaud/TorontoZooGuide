@@ -2982,6 +2982,20 @@
     "animals_at_the_zoo": null
   },
   {
+    "species": "Yellow-Vented Bulbul",
+    "latin_name": "Pycnonotus Goiavier",
+    "min_temperature": null,
+    "general_viewing_tips": "The yellow-vented bulbul shares the small aviary area between the gorillas and dwarf crocodiles with the black crake.",
+    "seasonal_viewing_tips": null,
+    "identification": "The yellow-vented bulbul is a medium-sized songbird, roughly 20–22 cm in length. Adults have brown upperparts, whitish underparts, a short crest, and a distinctive yellow patch under the tail that gives the species its name. A dark eye stripe contrasts with a pale face, and the bill is relatively short and slender. Both sexes look alike; juveniles are duller with less pronounced yellow vent colouration.",
+    "habitat_and_range": "This species is a resident breeder across southeastern Asia, from Indochina through the Malay Peninsula and into the Philippines. It favours open and semi-open habitats—gardens, scrub, forest edges, and cultivated land—rather than deep closed-canopy forest. Highly adaptable to human-altered landscapes, it is one of the most familiar bulbuls in towns and farmland within its range.",
+    "diet_and_feeding": "Yellow-vented bulbuls feed mainly on berries and small fruits, and they also take nectar, young shoots, and insects. They forage in bushes and trees, often in pairs or loose groups, moving actively through foliage as they search for food. Their fruit-eating habits help disperse seeds in the habitats they occupy.",
+    "behaviour_and_social_life": "These bulbuls are vocal, conspicuous birds that adapt readily to busy environments. They are often seen in pairs or small parties and may appear somewhat nomadic, shifting locally as food becomes available. Nesting can occur in gardens as well as wild scrub, from low shrubs to taller trees, and both parents typically help raise the young.",
+    "adaptations": "A generalist diet and comfort around people allow yellow-vented bulbuls to thrive in fragmented and urban green spaces. Strong legs and feet support agile perching while picking fruit, and their alert, crest-raising posture helps with communication and vigilance. The bright yellow vent may aid species recognition among closely related bulbuls.",
+    "reproduction_and_life_cycle": "Breeding often runs from about February through June, depending on local conditions. The nest is a loose but deep cup of grass, leaves, roots, and twigs, neatly lined inside and well camouflaged outside. Clutches usually contain 2–5 eggs. Chicks are altricial and remain dependent until they fledge; lifespan in managed care can exceed that typically seen in the wild.",
+    "animals_at_the_zoo": null
+  },
+  {
     "species": "Zebra Finch",
     "latin_name": "Taeniopygia Guttata",
     "min_temperature": null,
