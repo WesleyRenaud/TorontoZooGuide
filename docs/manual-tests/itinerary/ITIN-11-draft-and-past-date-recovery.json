@@ -11,7 +11,7 @@
     {
       "number": 2,
       "name": "Refresh",
-      "do": "Reload `itinerary.html`.",
+      "do": "Reload the page (browser refresh).",
       "expect": "Page reloads."
     },
     {

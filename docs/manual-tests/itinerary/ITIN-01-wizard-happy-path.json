@@ -5,7 +5,7 @@
     {
       "number": 1,
       "name": "Open itinerary",
-      "do": "Open `itinerary.html`. Use **Edit Itinerary** / **Build Itinerary** to open the builder if needed.",
+      "do": "From the bottom nav, open **Itinerary**. Use **Edit Itinerary** / **Build Itinerary** to open the builder if needed.",
       "expect": "Itinerary page loads; builder can be opened."
     },
     {

@@ -5,7 +5,7 @@
     {
       "number": 1,
       "name": "Open map page",
-      "do": "Navigate to `map.html`.",
+      "do": "With the app open, use the bottom nav to open **Map**.",
       "expect": "Page loads; zoo map SVG appears in the map mount; no hard failure / blank page."
     },
     {
