@@ -22,39 +22,9 @@
     },
     {
       "number": 4,
-      "name": "Unscheduled leftovers",
-      "do": "Inspect list vs planner.",
-      "expect": "Some animals remain list-only unscheduled."
-    },
-    {
-      "number": 5,
-      "name": "Not enough time messaging",
-      "do": "Look for not-enough-day-time / save-issues messaging.",
-      "expect": "Messaging present."
-    },
-    {
-      "number": 6,
-      "name": "Save issues Proceed",
-      "do": "If **Your Itinerary Has the Following Issues:** appears, click **Proceed**.",
-      "expect": "Proceed works."
-    },
-    {
-      "number": 7,
-      "name": "Lengthen day",
-      "do": "Widen arrival–departure substantially.",
-      "expect": "Window updated."
-    },
-    {
-      "number": 8,
-      "name": "Rebuild",
-      "do": "Click **Rebuild schedule**.",
-      "expect": "More items schedule successfully than before."
-    },
-    {
-      "number": 9,
-      "name": "Sanity",
-      "do": "Confirm no crash with large lists.",
-      "expect": "UI remains responsive enough to use."
+      "name": "Visit window expands to fit",
+      "do": "Inspect **Arrival time**, **Departure time**, list view, and Day Planner.",
+      "expect": "Bulk scheduling adjusts arrival/departure to fit the day; animals are scheduled (not left list-only unscheduled)."
     }
   ]
 }
