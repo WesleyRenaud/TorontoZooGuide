@@ -28,27 +28,45 @@
     },
     {
       "number": 5,
-      "name": "Removed-items popup",
-      "do": "If **Itinerary Updated** (or similar) appears, review animals added/removed, talks unavailable, times adjusted, etc.",
-      "expect": "Popup sections match changes, or no update popup if nothing changed."
-    },
-    {
-      "number": 6,
-      "name": "Keep vs remove",
-      "do": "Use **Keep** / remove choices where offered.",
-      "expect": "Choices apply."
-    },
-    {
-      "number": 7,
       "name": "Alternate clear path",
       "do": "Save another itinerary, run `npm run backdate:itinerary` again, hard-refresh **Itinerary**, then click **Clear**.",
       "expect": "Itinerary clears (empty plan / builder)."
     },
     {
+      "number": 6,
+      "name": "Save a summer itinerary",
+      "do": "Build and **Finish** an itinerary on a peak-summer visit date (e.g. a day in **July**). Include **Warthog** and **River Hippopotamus**, and add **Splash Island** on **Add Attractions**.",
+      "expect": "Summer itinerary saved with those animals and **Splash Island**."
+    },
+    {
+      "number": 7,
+      "name": "Backdate summer visit",
+      "do": "Run `npm run backdate:itinerary` again.",
+      "expect": "Terminal prints that the itinerary date was backdated to yesterday."
+    },
+    {
       "number": 8,
-      "name": "Coherent result",
-      "do": "Inspect itinerary after accepting recovery (from the choose-new-date path).",
-      "expect": "Itinerary date and scheduled items match the recovered day."
+      "name": "Recover onto midwinter",
+      "do": "Hard-refresh **Itinerary**, click **Choose New Date**, pick a midwinter date (e.g. a day in **January**), then **Finish**.",
+      "expect": "**Itinerary Updated** appears."
+    },
+    {
+      "number": 9,
+      "name": "Review seasonal removals",
+      "do": "In **Itinerary Updated**, open **Animals Removed** and attractions sections.",
+      "expect": "**Warthog** and **River Hippopotamus** are listed under **Animals Removed**; **Splash Island** is listed as unavailable on the new date."
+    },
+    {
+      "number": 10,
+      "name": "Keep vs remove",
+      "do": "Use **Keep** / remove choices where offered, then accept the popup.",
+      "expect": "Choices apply to the recovered itinerary."
+    },
+    {
+      "number": 11,
+      "name": "Coherent winter result",
+      "do": "Inspect list / Day Planner after accepting.",
+      "expect": "Visit date is the midwinter day; kept or removed items match the choices from step 10."
     }
   ]
 }
