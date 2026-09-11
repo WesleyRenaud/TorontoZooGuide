@@ -1,0 +1,36 @@
+{
+  "id": "ITIN-02",
+  "title": "Date-only finish and clear",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open builder",
+      "do": "From the bottom nav, open **Itinerary**. Use **Edit Itinerary** / **Build Itinerary** to open the builder if needed.",
+      "expect": "Wizard opens (e.g. **Set Visit Date**)."
+    },
+    {
+      "number": 2,
+      "name": "Finish with date only",
+      "do": "On **Set Visit Date**, pick a date and click **Finish** without adding animals, attractions, talks, encounters, or transport.",
+      "expect": "Itinerary saves with that visit date and no selected items."
+    },
+    {
+      "number": 3,
+      "name": "Clear itinerary",
+      "do": "Click **Clear**.",
+      "expect": "**Clear Itinerary?** confirmation appears with the remove-all message."
+    },
+    {
+      "number": 4,
+      "name": "Confirm clear",
+      "do": "Confirm the clear.",
+      "expect": "Itinerary returns to empty state."
+    },
+    {
+      "number": 5,
+      "name": "Wizard usable again",
+      "do": "Open **Edit Itinerary** / **Build Itinerary** again.",
+      "expect": "Wizard starts cleanly (e.g. **Set Visit Date**)."
+    }
+  ]
+}

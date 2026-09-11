@@ -54,7 +54,7 @@
       "number": 9,
       "name": "Finish with items",
       "do": "Click **Finish** with ≥1 total selected item.",
-      "expect": "Finish succeeds (not **No Items Selected**)."
+      "expect": "Finish succeeds; itinerary is saved."
     },
     {
       "number": 10,

@@ -6,7 +6,7 @@ export class WizardFragment {
       mountEl,
       title = Strings.common.headsUp,
       message = '',
-      buttonText = Strings.itinerary.noItemsSelected.button,
+      buttonText = Strings.itinerary.actions.ok,
    } = {}) {
       if (!mountEl) return;
 

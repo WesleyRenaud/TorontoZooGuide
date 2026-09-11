@@ -28,7 +28,7 @@ test('Test_ShowScheduleItemNotice_TestPanelMount_ExpectNoticePopup', () => {
    assert.equal(message?.textContent, 'Could not schedule item.');
    assert.equal(
       button?.textContent,
-      Strings.itinerary.noItemsSelected.button
+      Strings.itinerary.actions.ok
    );
 });
 

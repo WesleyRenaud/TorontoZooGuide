@@ -78,7 +78,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ID | Edit | Focus |
 |----|------|-------|
 | ITIN-01 | [json](itinerary/ITIN-01-wizard-happy-path.json) | Full wizard Finish |
-| ITIN-02 | [json](itinerary/ITIN-02-empty-finish-and-clear.json) | Empty finish + Clear |
+| ITIN-02 | [json](itinerary/ITIN-02-date-only-finish-and-clear.json) | Date-only finish + Clear |
 | ITIN-03 | [json](itinerary/ITIN-03-arrival-departure-early-admission.json) | Times + Early Admission |
 | ITIN-04 | [json](itinerary/ITIN-04-schedule-module.json) | Schedule module + pills |
 | ITIN-05 | [json](itinerary/ITIN-05-rebuild-and-unschedule-all.json) | Rebuild / Unschedule all |

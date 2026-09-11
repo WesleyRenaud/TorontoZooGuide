@@ -4,7 +4,6 @@ import test from 'node:test';
 import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js';
 import { RegionStorageStore } from '../../../../scripts/itinerary/selectors/regionSelector/regionStorageStore.js';
 import { WizardFinalizerHelper } from '../../../../scripts/itinerary/wizard/wizardFinalizerHelper.js';
-import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -37,22 +36,6 @@ test('Test_CreateFinalItineraryDraft_TestNormalize_ExpectNormalized', () => {
    } finally {
       ItineraryShape.normalizeItineraryDraft = original;
    }
-});
-
-test('Test_ShowEmptySelectionPopup_TestConfig_ExpectPopupArgs', () => {
-   const calls = [];
-   const mountEl = document.createElement('div');
-
-   WizardFinalizerHelper.showEmptySelectionPopup(mountEl, (args) => {
-      calls.push(args);
-   });
-
-   assert.deepEqual(calls, [{
-      mountEl,
-      title: Strings.itinerary.noItemsSelected.title,
-      message: Strings.itinerary.noItemsSelected.message,
-      buttonText: Strings.itinerary.noItemsSelected.button,
-   }]);
 });
 
 test('Test_SaveFinalItinerary_TestOptions_ExpectSaverCalled', () => {

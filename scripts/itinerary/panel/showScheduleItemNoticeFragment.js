@@ -11,7 +11,7 @@ export class ShowScheduleItemNoticeFragment {
       showNoticePopup({
          title: Strings.itinerary.scheduleItem.errorTitle,
          message,
-         buttonText: Strings.itinerary.noItemsSelected.button,
+         buttonText: Strings.itinerary.actions.ok,
          mountEl: getMountEl() ?? document.body,
       });
    }
