@@ -1,14 +1,14 @@
 {
   "id": "MAP-04",
   "title": "Markers, likelihood, stacks",
-  "preconditions": "Open `map.html` on **Specific Map**. Prefer a shoulder-season date (e.g. late March or November) for mixed likelihood tints.",
+  "preconditions": "Open `map.html` on **Specific Map**. Prefer a shoulder-season date for mixed likelihood tints.",
   "dateUnderTest": "Record the Specific Map date used.",
   "cleanup": "None.",
   "steps": [
     {
       "number": 1,
       "name": "Pick mixed-likelihood date",
-      "do": "Set Specific Map to a shoulder-season date.",
+      "do": "Set Specific Map to a shoulder-season date (spring or fall, outside peak summer/winter).",
       "expect": "Date applies; markers reload."
     },
     {
