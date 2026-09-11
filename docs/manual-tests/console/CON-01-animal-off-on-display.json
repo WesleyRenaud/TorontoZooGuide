@@ -47,7 +47,7 @@
     {
       "number": 8,
       "name": "Itinerary confirm",
-      "do": "From the bottom nav, open **Itinerary**. Build for **today**, enable **Include off-display animals** if needed, and try adding **African Lion**.",
+      "do": "From the bottom nav, open **Itinerary**. Build for **today**, enable **Include off-display animals**, and try adding **African Lion**.",
       "expect": "**Animal May Be Off Display** (or similar) appears."
     },
     {
