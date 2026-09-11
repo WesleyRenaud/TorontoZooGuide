@@ -6,13 +6,13 @@
       "number": 1,
       "name": "Open off-display op",
       "do": "Select **Set animal as off display**.",
-      "expect": "Form opens with species/exhibit fields."
+      "expect": "Off-display form opens."
     },
     {
       "number": 2,
-      "name": "Choose species/exhibit",
-      "do": "Autocomplete species + exhibit.",
-      "expect": "Valid pair selected."
+      "name": "Choose exhibit and species",
+      "do": "For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "**Africa Savanna** and **African Lion** are selected."
     },
     {
       "number": 3,
