@@ -7,6 +7,7 @@ import { ItineraryPathFragment } from './itineraryPathFragment.js';
 import { LayerRequest } from './layerRequest.js';
 import { SourceHelper } from './sourceHelper.js';
 import { TransportationRouteFragment } from './transportationRouteFragment.js';
+import { TransportationRouteSourceFactory } from './transportationRouteSourceFactory.js';
 
 export class MapUpdater {
    static buildUniqueTypes(types = []) {
@@ -44,6 +45,11 @@ export class MapUpdater {
          markers.render([]);
          ItineraryPathFragment.clearItineraryPathOverlay();
          TransportationRouteFragment.hideTransportationRouteLayers();
+      }
+
+      function clearTransportationRouteSelection(storeRef) {
+         TransportationRouteFragment.hideTransportationRouteLayers();
+         TransportationRouteSourceFactory.clearTransportationRouteRows(storeRef);
       }
 
       function resolvePendingUpdateOptions(options) {
@@ -179,6 +185,10 @@ export class MapUpdater {
 
          await ClosedExhibitFragment.syncClosedExhibitOverlays(sources, ctx);
          ItineraryPathFragment.clearItineraryPathOverlay();
+
+         if (ctx.transportationRoute === 'none') {
+            clearTransportationRouteSelection(store);
+         }
 
          if (selectedTypes.length === 0) {
             clearRenderedMarkers();
