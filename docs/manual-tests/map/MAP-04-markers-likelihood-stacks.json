@@ -1,8 +1,8 @@
 {
   "id": "MAP-04",
   "title": "Markers, likelihood, stacks",
-  "preconditions": "Open `map.html` on **Specific Map**. For likelihood colour, use early/mid March and check **Grevy's Zebra** (Africa Savanna).",
-  "dateUnderTest": "Record the Specific Map date used.",
+  "preconditions": "Open `map.html` on **Specific Map**. For likelihood colour, use early/mid March and check **Grevy's Zebra** (Africa Savanna). Stack steps use peak summer and the shared **Kids Zoo** pin.",
+  "dateUnderTest": "Record the Specific Map dates used.",
   "cleanup": "None.",
   "steps": [
     {
@@ -19,27 +19,27 @@
     },
     {
       "number": 3,
-      "name": "Find stack or skip",
-      "do": "Look for a stacked/count marker at shared coordinates.",
-      "expect": "If none in seed: **Blocked** — stacking covered when shared coords exist; continue other steps."
+      "name": "Find Kids Zoo stack",
+      "do": "Still on peak summer, search **Rabbit** or **African Spurred Tortoise** and **View on Map** (seed places multiple **Kids Zoo** animals on one pin).",
+      "expect": "A count marker appears for the shared **Kids Zoo** location (more than one animal)."
     },
     {
       "number": 4,
       "name": "Click stack",
-      "do": "Click a stacked marker (if present).",
-      "expect": "Multi-item UI / carousel appears."
+      "do": "Click that **Kids Zoo** count marker.",
+      "expect": "Tooltip opens with a multi-item carousel."
     },
     {
       "number": 5,
-      "name": "Carousel UI",
-      "do": "Confirm multiple items are listed or carouseled.",
-      "expect": "More than one entity is represented."
+      "name": "Carousel lists several animals",
+      "do": "Look through the carousel entries.",
+      "expect": "Several **Kids Zoo** animals appear (e.g. **Rabbit**, **African Spurred Tortoise**, **Common Raven** — seed has nine on that pin)."
     },
     {
       "number": 6,
       "name": "Advance carousel",
-      "do": "Use next/prev on the carousel if present.",
-      "expect": "Each item becomes identifiable (name/type)."
+      "do": "Use next/prev on the carousel.",
+      "expect": "Each step shows a different animal name."
     },
     {
       "number": 7,
