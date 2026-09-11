@@ -17,62 +17,56 @@
     {
       "number": 3,
       "name": "Schedule overlapping Zebra",
-      "do": "Schedule **Grevy's Zebra** at **11:00 AM** as well (same start, overlapping duration).",
-      "expect": "Conflict picker or overlap warning appears."
+      "do": "Open **Schedule an item** again, select **Grevy's Zebra**, set the same overlapping start (**11:00 AM**), then click **Schedule**.",
+      "expect": "**Unable to Schedule** appears with **That time is not available. Select another start time and try again.** and **OK**. Zebra is not scheduled."
     },
     {
       "number": 4,
-      "name": "Conflict picker",
-      "do": "Use multi-select non-overlapping resolution if shown.",
-      "expect": "Can choose a non-overlapping set."
+      "name": "Dismiss and keep Lion",
+      "do": "Click **OK**, then cancel out of **Schedule item** if it is still open.",
+      "expect": "**African Lion** remains scheduled; **Grevy's Zebra** stays unscheduled."
     },
     {
       "number": 5,
-      "name": "Proceed without selection",
-      "do": "Find **Proceed Anyway** / proceed-without-selection if offered; try once.",
-      "expect": "Behavior recorded (allowed or blocked)."
+      "name": "Find a weekend with time conflicts",
+      "do": "Use **Edit Itinerary** / **Build Itinerary**. On **Set Visit Date**, try upcoming Saturdays/Sundays until Meet the Guardians and/or Wild Encounters list at least two offerings that share the same start time (talk+talk, talk+encounter, or encounter+encounter). Note the date and the two names.",
+      "expect": "A weekend visit date is set and two same-time offerings are identified."
     },
     {
       "number": 6,
-      "name": "Unresolved messaging",
-      "do": "Leave a conflict unresolved if UI allows, then try save.",
-      "expect": "Clear messaging."
+      "name": "Finish with both conflicting offerings",
+      "do": "Add both same-time offerings (extra animals optional), then **Finish**.",
+      "expect": "**Your Itinerary Has the Following Issues:** appears, including **Schedule Conflicts** listing both activities."
     },
     {
       "number": 7,
-      "name": "Add more activities prompt",
-      "do": "If “add more activities?” style prompt appears, note it.",
-      "expect": "Pass/N/A."
+      "name": "Proceed with no selection",
+      "do": "Leave both unselected and click **Proceed**.",
+      "expect": "**Proceed Without Selecting an Activity?** appears (confirm uses **Proceed Anyway**)."
     },
     {
       "number": 8,
-      "name": "WE overlap if needed",
-      "do": "If ITIN-07 did not cover WE overlap, force WE vs animal overlap.",
-      "expect": "WE overlap message appears."
+      "name": "Cancel proceed-without-selection",
+      "do": "Dismiss that confirmation without confirming (Cancel / close).",
+      "expect": "Still on **Your Itinerary Has the Following Issues:** / **Schedule Conflicts**."
     },
     {
       "number": 9,
-      "name": "Save issues summary",
-      "do": "Trigger **Your Itinerary Has the Following Issues:** if applicable.",
-      "expect": "Summary lists issues."
+      "name": "Select one activity",
+      "do": "Select only one of the two conflicting activities, then click **Proceed**.",
+      "expect": "Issues dialog closes and the itinerary saves with that resolution."
     },
     {
       "number": 10,
-      "name": "Proceed from save issues",
-      "do": "Click **Proceed**.",
-      "expect": "Save continues."
+      "name": "Only selected activity scheduled",
+      "do": "Open **Day Planner View**.",
+      "expect": "Timeline shows a pill for the activity you selected; the other conflicting offering is not scheduled."
     },
     {
       "number": 11,
-      "name": "No silent double-book",
-      "do": "Inspect final timeline.",
-      "expect": "No silent double-booking without prior warning."
-    },
-    {
-      "number": 12,
       "name": "Stable after conflicts",
-      "do": "Reload itinerary panel.",
-      "expect": "State matches last save."
+      "do": "Reload the itinerary panel / refresh the page and reopen **Itinerary**.",
+      "expect": "Scheduled state matches the last successful conflict resolution."
     }
   ]
 }
