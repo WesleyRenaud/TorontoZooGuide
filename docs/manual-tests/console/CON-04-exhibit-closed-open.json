@@ -23,7 +23,7 @@
     {
       "number": 4,
       "name": "Map overlay",
-      "do": "Open map on Specific Map date D.",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set date D.",
       "expect": "Closed-exhibit overlay/styling appears for that exhibit."
     },
     {
@@ -47,7 +47,7 @@
     {
       "number": 8,
       "name": "Overlay gone",
-      "do": "Refresh map for D.",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** date D.",
       "expect": "Closed overlay absent."
     },
     {

@@ -35,7 +35,7 @@
     {
       "number": 6,
       "name": "Map without include",
-      "do": "Open `map.html`, **Specific Map**, date D. Leave **Include off display animals** unchecked.",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set date D. Leave **Include off display animals** unchecked.",
       "expect": "Animal absent or not shown as normally on-display (per product rules)."
     },
     {
@@ -47,7 +47,7 @@
     {
       "number": 8,
       "name": "Itinerary confirm",
-      "do": "On `itinerary.html` for date D, try adding the animal (enable **Include off-display animals** if needed).",
+      "do": "From the bottom nav, open **Itinerary** for date D, then try adding the animal (enable **Include off-display animals** if needed).",
       "expect": "Off-display / low-likelihood confirm appears, or animal listing reflects off-display — note which."
     },
     {
@@ -65,7 +65,7 @@
     {
       "number": 11,
       "name": "Map restored",
-      "do": "On map for D with include-off-display **off**.",
+      "do": "From the bottom nav, return to **Map** on date D with **Include off display animals** unchecked.",
       "expect": "Animal shows as a normal on-display marker again."
     },
     {
