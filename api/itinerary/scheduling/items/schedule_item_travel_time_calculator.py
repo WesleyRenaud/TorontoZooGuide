@@ -193,7 +193,8 @@ class ScheduleItemTravelTimeCalculator():
 
          walk_node = MapLocationWalkNodeLookup.for_map_location(
             MapLocationKind.GUARDIANS_TALK,
-            talk.name )
+            talk.name,
+            location=talk.location )
 
          cls._append_scheduled_stop_with_walk_node(
             stops,
