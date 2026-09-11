@@ -4,66 +4,72 @@
   "steps": [
     {
       "number": 1,
-      "name": "Schedule item A",
-      "do": "Schedule first timed item.",
-      "expect": "Pill A on timeline."
+      "name": "Build with two animals",
+      "do": "From the bottom nav, open **Itinerary**. Build with a visit date, add **African Lion** and **Grevy's Zebra**, then **Finish**.",
+      "expect": "Both animals are on the itinerary."
     },
     {
       "number": 2,
-      "name": "Schedule overlapping B",
-      "do": "Schedule second item at overlapping time.",
-      "expect": "Conflict picker or overlap warning appears."
+      "name": "Schedule African Lion",
+      "do": "In Day Planner, use **Schedule an item** to schedule **African Lion** at **11:00 AM** (keep a normal duration).",
+      "expect": "**African Lion** pill appears on the timeline at **11:00 AM**."
     },
     {
       "number": 3,
+      "name": "Schedule overlapping Zebra",
+      "do": "Schedule **Grevy's Zebra** at **11:00 AM** as well (same start, overlapping duration).",
+      "expect": "Conflict picker or overlap warning appears."
+    },
+    {
+      "number": 4,
       "name": "Conflict picker",
       "do": "Use multi-select non-overlapping resolution if shown.",
       "expect": "Can choose a non-overlapping set."
     },
     {
-      "number": 4,
+      "number": 5,
       "name": "Proceed without selection",
       "do": "Find **Proceed Anyway** / proceed-without-selection if offered; try once.",
       "expect": "Behavior recorded (allowed or blocked)."
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Unresolved messaging",
       "do": "Leave a conflict unresolved if UI allows, then try save.",
       "expect": "Clear messaging."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Add more activities prompt",
       "do": "If “add more activities?” style prompt appears, note it.",
       "expect": "Pass/N/A."
     },
     {
-      "number": 7,
+      "number": 8,
       "name": "WE overlap if needed",
       "do": "If ITIN-07 did not cover WE overlap, force WE vs animal overlap.",
       "expect": "WE overlap message appears."
     },
     {
-      "number": 8,
+      "number": 9,
       "name": "Save issues summary",
       "do": "Trigger **Your Itinerary Has the Following Issues:** if applicable.",
       "expect": "Summary lists issues."
     },
     {
-      "number": 9,
+      "number": 10,
       "name": "Proceed from save issues",
       "do": "Click **Proceed**.",
       "expect": "Save continues."
     },
     {
-      "number": 10,
+      "number": 11,
       "name": "No silent double-book",
       "do": "Inspect final timeline.",
       "expect": "No silent double-booking without prior warning."
     },
     {
-      "number": 11,
+      "number": 12,
       "name": "Stable after conflicts",
       "do": "Reload itinerary panel.",
       "expect": "State matches last save."
