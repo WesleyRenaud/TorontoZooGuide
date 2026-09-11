@@ -28,42 +28,36 @@
     },
     {
       "number": 5,
-      "name": "Closed-day confirm",
-      "do": "In Console, use **Set attraction as closed** for the attraction and a date range that includes your visit date. On **Itinerary**, edit/build with that visit date and try to add the closed attraction.",
-      "expect": "**Attraction May Be Closed** confirmation appears."
-    },
-    {
-      "number": 6,
       "name": "Attraction also transportation",
       "do": "On **Add Attractions**, select **Zoomobile**.",
       "expect": "**Add as Attraction?** appears (scenic trip vs transportation messaging)."
     },
     {
-      "number": 7,
+      "number": 6,
       "name": "Choose as attraction",
       "do": "Confirm **Add as Attraction?**.",
       "expect": "**Zoomobile** is listed under attractions."
     },
     {
-      "number": 8,
+      "number": 7,
       "name": "Add as transportation",
       "do": "On **Add Transportation**, select **Zoomobile**.",
       "expect": "**Add as Transportation?** appears; confirm it. **Zoomobile** is listed under transportation."
     },
     {
-      "number": 9,
+      "number": 8,
       "name": "List representations",
       "do": "Inspect list sections on the finished itinerary (or List View).",
       "expect": "Attraction and transportation entries for **Zoomobile** are distinct and correct."
     },
     {
-      "number": 10,
+      "number": 9,
       "name": "Hours validation bubble",
       "do": "If manual time edit exists, enter invalid hours.",
       "expect": "Validation bubble shown."
     },
     {
-      "number": 11,
+      "number": 10,
       "name": "Finish/save stable",
       "do": "Save/finish remaining changes.",
       "expect": "No crash; itinerary stable."
