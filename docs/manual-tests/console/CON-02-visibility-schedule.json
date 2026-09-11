@@ -29,7 +29,7 @@
     {
       "number": 5,
       "name": "Map limited-viewing cue",
-      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to **today**. Find the **African Lion** marker.",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Find the **African Lion** marker.",
       "expect": "A yellow ring/halo appears around the **African Lion** marker."
     },
     {
@@ -53,7 +53,7 @@
     {
       "number": 9,
       "name": "Map cue gone",
-      "do": "From the bottom nav, return to **Map** on **Specific Map** **today**. Find **African Lion**.",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** today. Find **African Lion**.",
       "expect": "The yellow ring/halo around the **African Lion** marker is gone."
     }
   ]

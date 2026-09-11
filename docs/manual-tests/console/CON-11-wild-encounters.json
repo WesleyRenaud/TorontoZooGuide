@@ -5,19 +5,19 @@
     {
       "number": 1,
       "name": "Set schedule",
-      "do": "**Set Wild Encounter schedule** including D.",
+      "do": "**Set Wild Encounter schedule** including today.",
       "expect": "Success saved."
     },
     {
       "number": 2,
       "name": "Map verify",
-      "do": "Map D; enable **Wild Encounters** filter.",
+      "do": "On **Map**, set **Specific Map** to today. enable **Wild Encounters** filter.",
       "expect": "Meeting spot / encounter marker visible."
     },
     {
       "number": 3,
       "name": "Itinerary selector",
-      "do": "Itinerary Wild Encounters step on D.",
+      "do": "Itinerary Wild Encounters step on today.",
       "expect": "Encounter listed."
     },
     {

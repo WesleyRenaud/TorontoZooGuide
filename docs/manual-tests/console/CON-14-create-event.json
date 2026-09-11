@@ -5,13 +5,13 @@
     {
       "number": 1,
       "name": "Create event",
-      "do": "**Create event** with name, location, description, optional link, dates covering D.",
+      "do": "**Create event** with name, location, description, optional link, dates covering today.",
       "expect": "Success created."
     },
     {
       "number": 2,
       "name": "Map Events shows",
-      "do": "Map Explore → **Events** on D.",
+      "do": "Map Explore → **Events** on today.",
       "expect": "Event visible."
     },
     {
@@ -29,23 +29,17 @@
     {
       "number": 5,
       "name": "Inside range again",
-      "do": "Return map date to D.",
+      "do": "Return **Specific Map** to today.",
       "expect": "Event present."
     },
     {
       "number": 6,
-      "name": "No itinerary required",
-      "do": "Skip itinerary.",
-      "expect": "Map-only verify OK."
-    },
-    {
-      "number": 7,
       "name": "Endability Notes",
       "do": "Check whether console can end/delete event.",
       "expect": "Notes."
     },
     {
-      "number": 8,
+      "number": 7,
       "name": "Pass",
       "do": "Create + map date gating verified.",
       "expect": "Pass."

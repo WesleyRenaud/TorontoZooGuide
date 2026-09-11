@@ -5,13 +5,13 @@
     {
       "number": 1,
       "name": "Close fountains",
-      "do": "**Close drinking fountains** for a window covering D; optional message.",
+      "do": "**Close drinking fountains** for a window covering today; optional message.",
       "expect": "Success closed."
     },
     {
       "number": 2,
       "name": "Map markers/banners",
-      "do": "Map D; enable **Drinking Fountains** filter.",
+      "do": "On **Map**, set **Specific Map** to today. enable **Drinking Fountains** filter.",
       "expect": "Closed treatment and/or banners."
     },
     {
@@ -23,7 +23,7 @@
     {
       "number": 4,
       "name": "Map restored",
-      "do": "Map D.",
+      "do": "On **Map**, set **Specific Map** to today.",
       "expect": "Fountains restored/open treatment."
     },
     {

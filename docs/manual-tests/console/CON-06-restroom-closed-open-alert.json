@@ -5,19 +5,19 @@
     {
       "number": 1,
       "name": "Close restroom",
-      "do": "**Set restroom as closed** for D.",
+      "do": "**Set restroom as closed** for today.",
       "expect": "Success."
     },
     {
       "number": 2,
       "name": "Map closed behavior",
-      "do": "Map D; try with/without **Include closed restrooms**.",
+      "do": "On **Map**, set **Specific Map** to today. try with/without **Include closed restrooms**.",
       "expect": "Show/hide matches toggles."
     },
     {
       "number": 3,
       "name": "Set alert",
-      "do": "**Set restroom alert** (same or another restroom) covering D.",
+      "do": "**Set restroom alert** (same or another restroom) covering today.",
       "expect": "Success alert."
     },
     {
@@ -41,7 +41,7 @@
     {
       "number": 7,
       "name": "Map open",
-      "do": "Map D.",
+      "do": "On **Map**, set **Specific Map** to today.",
       "expect": "Restroom open/normal."
     },
     {

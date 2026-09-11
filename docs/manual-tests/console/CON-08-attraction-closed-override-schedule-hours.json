@@ -23,25 +23,25 @@
     {
       "number": 4,
       "name": "Set attraction closed",
-      "do": "Open **Set attraction as closed** for range covering D + message.",
+      "do": "Open **Set attraction as closed** for date range covering today, plus a guest message.",
       "expect": "Submit success closed."
     },
     {
       "number": 5,
       "name": "Map closed",
-      "do": "Map on D with **Include closed attractions** unchecked then checked.",
+      "do": "On **Map** with **Specific Map** set to today, with **Include closed attractions** unchecked then checked.",
       "expect": "Hidden/closed without include; visible + message with include."
     },
     {
       "number": 6,
       "name": "Itinerary closed confirm",
-      "do": "Try adding the attraction on D.",
+      "do": "Try adding the attraction on today.",
       "expect": "**Attraction May Be Closed** / closed confirm appears."
     },
     {
       "number": 7,
       "name": "Override or reopen",
-      "do": "Use **Create attraction closure override** or set open / end closure so D is effectively open.",
+      "do": "Use **Create attraction closure override** or set open / end closure so today is effectively open.",
       "expect": "Success status."
     },
     {
@@ -59,7 +59,7 @@
     {
       "number": 10,
       "name": "Map open state",
-      "do": "Map on D.",
+      "do": "On **Map**, set **Specific Map** to today.",
       "expect": "Attraction appears open/normal without needing include-closed."
     },
     {
@@ -72,7 +72,7 @@
       "number": 12,
       "name": "Cleanup",
       "do": "Remove test closure/override; leave attraction open.",
-      "expect": "Guest map clean for D."
+      "expect": "Guest map clean for today."
     }
   ]
 }

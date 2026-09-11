@@ -5,7 +5,7 @@
     {
       "number": 1,
       "name": "Set alert",
-      "do": "Open **Set animal viewing alert**; species/exhibit, dates covering D, alert text.",
+      "do": "Open **Set animal viewing alert**. Choose an exhibit and species, leave dates blank or set them to cover today, and enter alert text.",
       "expect": "Form valid."
     },
     {
@@ -17,7 +17,7 @@
     {
       "number": 3,
       "name": "Map shows alert",
-      "do": "Map tooltip/banner for that animal on D.",
+      "do": "On **Map** with **Specific Map** set to today, open that animal’s tooltip/banner.",
       "expect": "Alert text shown."
     },
     {
@@ -35,20 +35,8 @@
     {
       "number": 6,
       "name": "Map clear",
-      "do": "Map on D.",
+      "do": "On **Map**, set **Specific Map** to today.",
       "expect": "Alert gone."
-    },
-    {
-      "number": 7,
-      "name": "Map-only impact OK",
-      "do": "No itinerary required for Pass if map verified.",
-      "expect": "Noted."
-    },
-    {
-      "number": 8,
-      "name": "Cleanup",
-      "do": "Confirm no alert remains.",
-      "expect": "Clean."
     }
   ]
 }

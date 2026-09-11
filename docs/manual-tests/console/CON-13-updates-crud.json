@@ -5,13 +5,13 @@
     {
       "number": 1,
       "name": "Create update",
-      "do": "**Create update** with **Title**, **Description**, **Type** (e.g. New Arrival), **Start date** covering D, optional **No longer applies on**.",
+      "do": "**Create update** with **Title**, **Description**, **Type** (e.g. New Arrival), **Start date** covering today, optional **No longer applies on**.",
       "expect": "Success created."
     },
     {
       "number": 2,
       "name": "Map Updates shows it",
-      "do": "Map Explore → **Updates** on D.",
+      "do": "Map Explore → **Updates** on today.",
       "expect": "Update visible."
     },
     {
@@ -23,19 +23,19 @@
     {
       "number": 4,
       "name": "Map reflects edit",
-      "do": "Refresh Updates on D.",
+      "do": "Refresh Updates on today.",
       "expect": "Edited content shown."
     },
     {
       "number": 5,
       "name": "End update",
-      "do": "**End update** effective on/before D as designed.",
+      "do": "**End update** effective on/before today as designed.",
       "expect": "Success ended."
     },
     {
       "number": 6,
       "name": "Map inactive",
-      "do": "Updates on D.",
+      "do": "Updates on today.",
       "expect": "No longer listed as active (or ended treatment)."
     },
     {

@@ -5,19 +5,19 @@
     {
       "number": 1,
       "name": "Set schedule",
-      "do": "**Set Meet the Guardians talk schedule** with **Location**, **Talk name**, recurring **Talk times**, range including D (**Stops being offered on** as needed).",
+      "do": "**Set Meet the Guardians talk schedule** with **Location**, **Talk name**, recurring **Talk times**, range including today (**Stops being offered on** as needed).",
       "expect": "Success schedule saved."
     },
     {
       "number": 2,
       "name": "Map talk visible",
-      "do": "Map D; enable **Meet The Guardians Talks** filter.",
+      "do": "On **Map**, set **Specific Map** to today. enable **Meet The Guardians Talks** filter.",
       "expect": "Talk marker/tooltip present."
     },
     {
       "number": 3,
       "name": "Itinerary lists talk",
-      "do": "Itinerary builder on D; Meet the Guardians step.",
+      "do": "Itinerary builder on today; Meet the Guardians step.",
       "expect": "Talk offered."
     },
     {
@@ -65,13 +65,13 @@
     {
       "number": 11,
       "name": "Final map",
-      "do": "Map filter talks on D.",
+      "do": "Map filter talks on today.",
       "expect": "Quiet/expected state."
     },
     {
       "number": 12,
       "name": "Record names",
-      "do": "Notes: talk + location + D.",
+      "do": "Notes: talk name and location.",
       "expect": "Notes."
     }
   ]

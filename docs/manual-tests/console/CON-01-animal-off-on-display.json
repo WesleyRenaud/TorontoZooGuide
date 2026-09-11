@@ -35,7 +35,7 @@
     {
       "number": 6,
       "name": "Map without include",
-      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to **today**. Leave **Include off display animals** unchecked.",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Leave **Include off display animals** unchecked.",
       "expect": "**African Lion** is absent (or not shown as a normal on-display marker)."
     },
     {
@@ -47,7 +47,7 @@
     {
       "number": 8,
       "name": "Itinerary confirm",
-      "do": "From the bottom nav, open **Itinerary**. Build for **today**, enable **Include off-display animals**, and try adding **African Lion**.",
+      "do": "From the bottom nav, open **Itinerary**. Build for today, enable **Include off-display animals**, and try adding **African Lion**.",
       "expect": "**Animal May Be Off Display** (or similar) appears."
     },
     {
@@ -65,7 +65,7 @@
     {
       "number": 11,
       "name": "Map restored",
-      "do": "From the bottom nav, return to **Map** on **Specific Map** **today** with **Include off display animals** unchecked.",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** today with **Include off display animals** unchecked.",
       "expect": "**African Lion** shows as a normal on-display marker again."
     },
     {
