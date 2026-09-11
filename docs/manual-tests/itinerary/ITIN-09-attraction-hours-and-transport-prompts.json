@@ -4,60 +4,66 @@
   "steps": [
     {
       "number": 1,
-      "name": "Add attraction",
-      "do": "Add an attraction in the wizard.",
-      "expect": "Attraction selected."
+      "name": "Set a known hours window",
+      "do": "In Console, open **Set attraction hours**. For **Kangaroo Walk-Thru** (or **Conservation Carousel**), set weekday and weekend/holiday hours to **11:00 AM–3:00 PM** for a today-or-future visit date, then save.",
+      "expect": "Success that the attraction hours were saved."
     },
     {
       "number": 2,
-      "name": "Schedule outside hours",
-      "do": "After finish, schedule it outside operating hours.",
-      "expect": "Snap to nearest valid time and/or warning."
+      "name": "Add attraction",
+      "do": "On **Itinerary**, build with that same visit date, add the attraction from step 1, then **Finish**.",
+      "expect": "Attraction is on the itinerary."
     },
     {
       "number": 3,
-      "name": "Confirm snap",
-      "do": "Note the resulting time.",
-      "expect": "Time inside operating window or explicit override noted."
+      "name": "Schedule outside hours",
+      "do": "In Day Planner, use **Schedule an item** and schedule it at **9:30 AM** (before the **11:00 AM** open from step 1).",
+      "expect": "**Outside Attraction Hours** appears with **Adjust** and **Cancel**."
     },
     {
       "number": 4,
+      "name": "Confirm snap",
+      "do": "Click **Adjust**.",
+      "expect": "Attraction schedules at the nearest valid time inside **11:00 AM–3:00 PM** (not **9:30 AM**)."
+    },
+    {
+      "number": 5,
       "name": "Closed-day confirm",
       "do": "If visit date is closed for that attraction, attempt add.",
       "expect": "**Attraction May Be Closed** confirm **or** N/A."
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Attraction also transportation",
       "do": "Add Zoomobile (or dual-role) via path that shows **Add as Attraction?**",
       "expect": "Prompt appears with scenic vs transport messaging."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Choose as attraction",
       "do": "Confirm add-as-attraction path.",
       "expect": "Listed as attraction."
     },
     {
-      "number": 7,
+      "number": 8,
       "name": "Add as transportation",
       "do": "Use **Add as Transportation?** path (retry/alternate add).",
       "expect": "Listed as transportation."
     },
     {
-      "number": 8,
+      "number": 9,
       "name": "List representations",
       "do": "Inspect list sections.",
       "expect": "Attraction vs transportation representations are distinct and correct."
     },
     {
-      "number": 9,
+      "number": 10,
       "name": "Hours validation bubble",
       "do": "If manual time edit exists, enter invalid hours.",
       "expect": "Validation bubble shown."
     },
     {
-      "number": 10,
+      "number": 11,
       "name": "Finish/save stable",
       "do": "Save/finish remaining changes.",
       "expect": "No crash; itinerary stable."
