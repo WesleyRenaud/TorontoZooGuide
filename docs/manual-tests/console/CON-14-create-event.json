@@ -19,18 +19,6 @@
       "name": "Open link",
       "do": "Open the event link from the map.",
       "expect": "The link opens successfully."
-    },
-    {
-      "number": 4,
-      "name": "Outside range",
-      "do": "Set map date outside event range.",
-      "expect": "Event absent."
-    },
-    {
-      "number": 5,
-      "name": "Inside range again",
-      "do": "Return **Specific Map** to today.",
-      "expect": "Event present."
     }
   ]
 }

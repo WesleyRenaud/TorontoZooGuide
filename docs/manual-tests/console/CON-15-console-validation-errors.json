@@ -1,0 +1,54 @@
+{
+  "id": "CON-15",
+  "title": "Console validation errors",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Missing entity",
+      "do": "Open **Set restaurant as closed**. Leave the restaurant blank, fill the other required fields, and submit.",
+      "expect": "**Restaurant is required.**"
+    },
+    {
+      "number": 2,
+      "name": "Daily viewing times",
+      "do": "Open **Set animal visibility schedule**. Choose an exhibit and species, leave the daily viewing start and end times blank, and submit.",
+      "expect": "**Daily viewing start and end times are required.**"
+    },
+    {
+      "number": 3,
+      "name": "Weekly preset locks",
+      "do": "Open a restaurant or gift shop opening-schedule form. Choose **Weekends only**, then try the **Holidays** checkbox.",
+      "expect": "The **Holidays** checkbox locks or otherwise follows the preset rules for **Weekends only**."
+    },
+    {
+      "number": 4,
+      "name": "Attraction hours inverted",
+      "do": "Open **Set attraction hours**. Set the weekday start time after the weekday end time, then submit.",
+      "expect": "**Weekday start time must be before weekday end time.**"
+    },
+    {
+      "number": 5,
+      "name": "Hours outside zoo hours",
+      "do": "Open **Set attraction hours**. Enter weekday or weekend hours outside regular zoo hours for the selected date range, then submit.",
+      "expect": "**Attraction hours must fall within regular zoo hours for the selected date range.** or **Weekday hours must fall within regular zoo hours.**"
+    },
+    {
+      "number": 6,
+      "name": "Duplicate encounter time",
+      "do": "Open **Set Wild Encounter schedule**. Add the same encounter time twice, then submit.",
+      "expect": "**Each encounter time can only be added once.**"
+    },
+    {
+      "number": 7,
+      "name": "Empty required message",
+      "do": "Open **Set restroom alert**. Choose a restroom, leave **Alert message** blank, and submit.",
+      "expect": "**Alert message is required.**"
+    },
+    {
+      "number": 8,
+      "name": "Overlap Cancel",
+      "do": "Open an opening-schedule or hours form that overlaps an existing schedule so **Schedule conflict** appears, then click **Cancel**.",
+      "expect": "No schedule change is applied."
+    }
+  ]
+}

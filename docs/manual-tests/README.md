@@ -114,7 +114,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | CON-12 | [json](console/CON-12-drinking-fountains.json) | Drinking fountains |
 | CON-13 | [json](console/CON-13-updates-crud.json) | Updates CRUD |
 | CON-14 | [json](console/CON-14-create-event.json) | Create event |
-| CON-15 | [json](console/CON-15-console-validation-matrix.json) | Validation errors |
+| CON-15 | [json](console/CON-15-console-validation-errors.json) | Validation errors |
 
 ## Recommended run order
 
