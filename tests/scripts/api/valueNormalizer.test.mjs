@@ -59,6 +59,15 @@ test('Test_NormalizeNumber_TestValidAndInvalid_ExpectNumberOrNull', () => {
    assert.equal(ValueNormalizer.normalizeNumber(undefined), null);
 });
 
+test('Test_AsPositiveFiniteNumber_TestValidAndInvalid_ExpectPositiveOrNull', () => {
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber(30), 30);
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber('15'), 15);
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber(0), null);
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber(-5), null);
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber('abc'), null);
+   assert.equal(ValueNormalizer.asPositiveFiniteNumber(null), null);
+});
+
 test('Test_AsTrimmedStringList_TestMixedValues_ExpectTrimmedNonEmpty', () => {
    assert.deepEqual(
       ValueNormalizer.asTrimmedStringList([ ' 2:00 PM ', '', null, '3:30 PM', 42 ]),

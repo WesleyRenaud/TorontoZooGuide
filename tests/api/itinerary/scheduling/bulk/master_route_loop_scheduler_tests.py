@@ -31,12 +31,15 @@ from api.walk_graph.domain.walk_graph_node import WalkGraphNode
 
 ENTRANCE_NODE_ID = 'n-1'
 GIRAFFE_NODE_ID = 'n-giraffe'
+AMERICAS_NODE_ID = 'n-americas'
 AFRICA_SAVANNA_LOOP_ID = 'africa_savanna'
 ZEBRA_TALK_LOOP_ID = 'africa_savanna_zebra_talk'
+AMERICAS_TALK_LOOP_ID = 'americas_otter_talk'
 SPLASH_ISLAND = 'Splash Island'
 TALK_START_SECONDS = 11 * 3600
 GIRAFFE_DWELL_SECONDS = 8 * 60
 GIRAFFE_APPROACH_SECONDS = 6 * 60
+AMERICAS_APPROACH_SECONDS = 10 * 60
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
 AUSTRALASIA_LOOP_ID = 'australasia'
 ZOOMOBILE_LOOP_ID = 'zoomobile'
@@ -71,12 +74,18 @@ TEST_GRAPH: WalkGraph = {
    'nodes': [
       _node( ENTRANCE_NODE_ID, 0.0, 0.0 ),
       _node( GIRAFFE_NODE_ID, 10.0, 0.0 ),
+      _node( AMERICAS_NODE_ID, 30.0, 0.0 ),
    ],
    'edges': [
       {
          'from': ENTRANCE_NODE_ID,
          'to': GIRAFFE_NODE_ID,
          'length_px': _edge_length_px( 6 ),
+      },
+      {
+         'from': GIRAFFE_NODE_ID,
+         'to': AMERICAS_NODE_ID,
+         'length_px': _edge_length_px( 10 ),
       },
    ],
 }
@@ -138,6 +147,19 @@ def _zebra_talk_prepared_unit() -> PreparedLoopScheduleUnit:
          stops=[],
          entry_walk_node_id=None,
          exit_walk_node_id=None,
+         side_cluster_id=None,
+         loop_index_in_side_cluster=None,
+         traversal=None ),
+      occupied_seconds=0 )
+
+
+def _americas_talk_prepared_unit() -> PreparedLoopScheduleUnit:
+   return PreparedLoopScheduleUnit(
+      unit=LoopScheduleUnit(
+         loop_id=AMERICAS_TALK_LOOP_ID,
+         stops=[],
+         entry_walk_node_id=AMERICAS_NODE_ID,
+         exit_walk_node_id=AMERICAS_NODE_ID,
          side_cluster_id=None,
          loop_index_in_side_cluster=None,
          traversal=None ),
@@ -428,6 +450,96 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestFreeLoopBeforeTalk_ExpectRig
    assert next_cursor_seconds == TALK_START_SECONDS
    assert scheduled_starts == [ TALK_START_SECONDS - GIRAFFE_DWELL_SECONDS ]
    assert remaining_units == [ zebra_talk ]
+
+
+def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestApproachToPinnedLoop_ExpectTravelGap(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   giraffe = _giraffe_prepared_unit()
+   americas_talk = _americas_talk_prepared_unit()
+   later_talk = PreparedLoopScheduleUnit(
+      unit=LoopScheduleUnit(
+         loop_id=AMERICAS_TALK_LOOP_ID,
+         stops=[],
+         entry_walk_node_id=AMERICAS_NODE_ID,
+         exit_walk_node_id=AMERICAS_NODE_ID,
+         side_cluster_id=None,
+         loop_index_in_side_cluster=None,
+         traversal=None ),
+      occupied_seconds=0 )
+   remaining_units = [ giraffe, later_talk, americas_talk ]
+   pinned_cache = {
+      id( later_talk ): TALK_START_SECONDS + 3600,
+      id( americas_talk ): TALK_START_SECONDS,
+   }
+   scheduled_starts: list[ int ] = []
+
+   monkeypatch.setattr(
+      MasterRouteLoopScheduler,
+      '_schedule_prepared_loop_unit',
+      lambda conn, prepared_unit, **kwargs: (
+         scheduled_starts.append( kwargs[ 'start_seconds' ] ) or [] ) )
+
+   next_cursor_seconds, should_abort = (
+      MasterRouteLoopScheduler._pack_non_pinned_loops_before_pinned_deadline(
+         sqlite3.connect( ':memory:' ),
+         remaining_units=remaining_units,
+         schedule_window=ItineraryScheduleWindow(
+            start_seconds=9 * 3600,
+            end_seconds=17 * 3600 ),
+         pinned_loop_ids={ AMERICAS_TALK_LOOP_ID },
+         pinned_earliest_start_cache=pinned_cache,
+         hours_by_attraction_name={},
+         blockers=[],
+         walk_graph=TEST_GRAPH,
+         window_state=LoopScheduleWindowState(
+            cursor_seconds=9 * 3600,
+            current_node_id=ENTRANCE_NODE_ID,
+            departure_side_cluster_id=None ),
+         remaining_animals=[] ) )
+
+   assert not should_abort
+   assert next_cursor_seconds == TALK_START_SECONDS
+   assert scheduled_starts == [
+      TALK_START_SECONDS - AMERICAS_APPROACH_SECONDS - GIRAFFE_DWELL_SECONDS
+   ]
+   assert remaining_units == [ later_talk, americas_talk ]
+
+
+def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestMissingUntilUnit_ExpectUnchangedCursor(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   giraffe = _giraffe_prepared_unit()
+   americas_talk = _americas_talk_prepared_unit()
+   remaining_units = [ giraffe, americas_talk ]
+   window_state = LoopScheduleWindowState(
+      cursor_seconds=9 * 3600,
+      current_node_id=ENTRANCE_NODE_ID,
+      departure_side_cluster_id=None )
+
+   monkeypatch.setattr(
+      MasterRouteLoopScheduler,
+      '_earliest_pinned_loop_wait_seconds',
+      lambda *_args, **_kwargs: TALK_START_SECONDS )
+
+   next_cursor_seconds, should_abort = (
+      MasterRouteLoopScheduler._pack_non_pinned_loops_before_pinned_deadline(
+         sqlite3.connect( ':memory:' ),
+         remaining_units=remaining_units,
+         schedule_window=ItineraryScheduleWindow(
+            start_seconds=9 * 3600,
+            end_seconds=17 * 3600 ),
+         pinned_loop_ids={ AMERICAS_TALK_LOOP_ID },
+         pinned_earliest_start_cache={
+            id( americas_talk ): TALK_START_SECONDS + 3600,
+         },
+         hours_by_attraction_name={},
+         blockers=[],
+         walk_graph=TEST_GRAPH,
+         window_state=window_state,
+         remaining_animals=[] ) )
+
+   assert not should_abort
+   assert next_cursor_seconds == 9 * 3600
+   assert remaining_units == [ giraffe, americas_talk ]
 
 
 def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestNoPinnedDeadline_ExpectUnchangedCursor() -> None:

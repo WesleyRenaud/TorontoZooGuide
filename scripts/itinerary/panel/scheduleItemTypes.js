@@ -36,16 +36,16 @@ export class ScheduleItemTypes {
             label: Strings.entityLabels.attraction,
          },
          {
-            value: ScheduleItemKind.TRANSPORTATION.itemType,
-            label: Strings.entityLabels.transportation,
-         },
-         {
             value: ScheduleItemKind.GUARDIANS_TALK.itemType,
             label: Strings.entityLabels.guardiansTalk,
          },
          {
             value: ScheduleItemKind.WILD_ENCOUNTER.itemType,
             label: Strings.entityLabels.wildEncounter,
+         },
+         {
+            value: ScheduleItemKind.TRANSPORTATION.itemType,
+            label: Strings.entityLabels.transportation,
          },
       ];
    }

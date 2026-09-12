@@ -1,0 +1,72 @@
+{
+  "id": "ITIN-14",
+  "title": "Zoomobile as transportation rides",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open builder",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**.",
+      "expect": "The itinerary builder opens on **Set Visit Date**."
+    },
+    {
+      "number": 2,
+      "name": "Visit date and distant animals",
+      "do": "On **Set Visit Date**, pick a date on the Zoomobile summer route. On **Add Animals**, add **African Lion** and **Grizzly Bear**.",
+      "expect": "**African Lion** and **Grizzly Bear** are selected."
+    },
+    {
+      "number": 3,
+      "name": "Skip Zoomobile as attraction",
+      "do": "On **Add Attractions**, do not add **Zoomobile** as an attraction (leave it unselected).",
+      "expect": "**Zoomobile** is not selected on **Add Attractions**."
+    },
+    {
+      "number": 4,
+      "name": "Add Zoomobile as transportation",
+      "do": "Continue to **Add Transportation** and select **Zoomobile**.",
+      "expect": "**Add as Transportation?** appears with messaging that the Zoomobile will be used to reduce walking distance when bulk scheduling."
+    },
+    {
+      "number": 5,
+      "name": "Confirm transportation and finish",
+      "do": "Confirm **Add as Transportation?**, then click **Finish**.",
+      "expect": "The itinerary saves successfully. **African Lion** and **Grizzly Bear** are on the plan but unscheduled."
+    },
+    {
+      "number": 6,
+      "name": "List shows transportation only",
+      "do": "Open **List View** and find **Zoomobile**.",
+      "expect": "**Zoomobile** appears under **Transportation** and does not appear as an attraction entry from this path."
+    },
+    {
+      "number": 7,
+      "name": "Rebuild to place rides",
+      "do": "Open **Day Planner View** and click **Rebuild schedule**.",
+      "expect": "Feedback such as **Schedule rebuilt** appears. Animals are scheduled on the timeline."
+    },
+    {
+      "number": 8,
+      "name": "Transit ride pills",
+      "do": "Look for Zoomobile ride rows on Day Planner (timed pills with a station subtitle).",
+      "expect": "At least one Zoomobile transit ride appears with a from→to station subtitle."
+    },
+    {
+      "number": 9,
+      "name": "No manual schedule actions",
+      "do": "Inspect the Zoomobile transportation / transit row actions on Day Planner and List View.",
+      "expect": "Transit-mode **Zoomobile** does not offer the same manual **Schedule** / **Unschedule** controls used for ordinary attractions."
+    },
+    {
+      "number": 10,
+      "name": "Remove transit transportation",
+      "do": "Remove **Zoomobile** transportation from the itinerary (List View remove / section remove).",
+      "expect": "**Remove from Itinerary?** appears with message that remaining items will be rescheduled without it."
+    },
+    {
+      "number": 11,
+      "name": "Day plan after remove",
+      "do": "Confirm the remove, then check **Day Planner View**.",
+      "expect": "Zoomobile transit rides are gone and the remaining animal schedule updates without them."
+    }
+  ]
+}

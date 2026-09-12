@@ -16,14 +16,20 @@ import { SpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 export class DayPlannerScheduledItems {
    static getScheduledMaximumDuration(item) {
-      const maximumDuration = Number(item?.maximum_duration);
-      return Number.isFinite(maximumDuration) && maximumDuration > 0 ? maximumDuration : null;
+      return ValueNormalizer.asPositiveFiniteNumber(item?.maximum_duration);
    }
 
    static getDurationMinutesFromScheduleTimes(item) {
       return (
-         DayPlannerScheduleController.parseClockTimeMinutes(item.end_time) - DayPlannerScheduleController.parseClockTimeMinutes(item.start_time)
+         DayPlannerScheduleController.parseClockTimeMinutes(item.end_time)
+         - DayPlannerScheduleController.parseClockTimeMinutes(item.start_time)
       );
+   }
+
+   static getScheduledOccurrenceDurationMinutes(item) {
+      return ValueNormalizer.asPositiveFiniteNumber(
+         DayPlannerScheduledItems.getDurationMinutesFromScheduleTimes(item)
+      ) ?? DayPlannerScheduledItems.getScheduledMaximumDuration(item);
    }
 
    static isCoveredByTalk(item) {
@@ -247,7 +253,7 @@ export class DayPlannerScheduledItems {
       const guardiansTalkRows = DayPlannerScheduledItems.buildScheduledItemRows(
          guardiansTalks.filter(DayPlannerScheduledItems.isActiveScheduledOccurrence),
          ItineraryPanelRowsBuilder.buildGuardiansRows,
-         DayPlannerScheduledItems.getScheduledMaximumDuration
+         DayPlannerScheduledItems.getScheduledOccurrenceDurationMinutes
       ).map((scheduledItem) => ({
          ...scheduledItem,
          scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
@@ -256,7 +262,7 @@ export class DayPlannerScheduledItems {
       const wildEncounterRows = DayPlannerScheduledItems.buildScheduledItemRows(
          wildEncounters.filter(DayPlannerScheduledItems.isActiveScheduledOccurrence),
          ItineraryPanelRowsBuilder.buildWildRows,
-         DayPlannerScheduledItems.getScheduledMaximumDuration
+         DayPlannerScheduledItems.getScheduledOccurrenceDurationMinutes
       ).map((scheduledItem) => ({
          ...scheduledItem,
          scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,

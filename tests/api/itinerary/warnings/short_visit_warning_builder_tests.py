@@ -66,10 +66,15 @@ def Test_IsRequired_TestSuppressed_ExpectFalseAndTracked(
    ]
 
 
-def Test_IsRequired_TestInvalidTimes_ExpectFalse(
+def Test_IsRequired_TestMissingTimes_ExpectFalse(
       stub_no_suppressed_status: None ) -> None:
    assert not ShortVisitWarningBuilder.is_required(
       object(),  # type: ignore[arg-type]
       None,
       '5:00 PM',
+      confirming_short_visit=False )
+   assert not ShortVisitWarningBuilder.is_required(
+      object(),  # type: ignore[arg-type]
+      None,
+      None,
       confirming_short_visit=False )

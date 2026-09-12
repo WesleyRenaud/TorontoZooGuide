@@ -150,6 +150,18 @@ def _indo_prepared_unit() -> PreparedLoopScheduleUnit:
       occupied_seconds=CHEETAH_DWELL_SECONDS )
 
 
+def _deadline_until_unit() -> LoopScheduleUnit:
+   """Pin target with no entry node so approach-to-pin is 0 in pack fitness tests."""
+   return LoopScheduleUnit(
+      loop_id='deadline_pin',
+      stops=[],
+      entry_walk_node_id=None,
+      exit_walk_node_id=None,
+      side_cluster_id=None,
+      loop_index_in_side_cluster=None,
+      traversal=None )
+
+
 def _seconds( schedule_time: str | None ) -> int:
    value = DateValues.time_value_in_seconds( schedule_time )
    assert value is not None
@@ -607,7 +619,8 @@ def Test_PackAllBeforeDeadline_TestSavannaLoopBeforeRhinoEncounter_ExpectPacked(
       prepared_units=[ savanna_unit ],
       window_start_seconds=_seconds( '9:00 AM' ),
       deadline_seconds=RHINO_ENCOUNTER_START_SECONDS,
-      current_node_id=ENTRANCE_NODE_ID )
+      current_node_id=ENTRANCE_NODE_ID,
+      until_unit=_deadline_until_unit() )
 
    assert packed_units is not None
    assert [ unit.unit.loop_id for unit in packed_units ] == [ SAVANNA_LOOP_ID ]
@@ -653,7 +666,8 @@ def Test_PackAllBeforeDeadline_TestUnitsFitBeforePinnedTalk_ExpectAllPacked() ->
       prepared_units=[ indo_unit ],
       window_start_seconds=window_start_seconds,
       deadline_seconds=ZEBRA_TALK_START_SECONDS,
-      current_node_id=ENTRANCE_NODE_ID )
+      current_node_id=ENTRANCE_NODE_ID ,
+      until_unit=_deadline_until_unit() )
 
    assert packed_units is not None
    assert [ unit.unit.loop_id for unit in packed_units ] == [ INDO_LOOP_ID ]
@@ -668,7 +682,8 @@ def Test_PackAllBeforeDeadline_TestUnitsTooLarge_ExpectNone() -> None:
       prepared_units=[ indo_unit ],
       window_start_seconds=window_start_seconds,
       deadline_seconds=ZEBRA_TALK_START_SECONDS,
-      current_node_id=ENTRANCE_NODE_ID )
+      current_node_id=ENTRANCE_NODE_ID ,
+      until_unit=_deadline_until_unit() )
 
    assert packed_units is None
 
@@ -682,7 +697,8 @@ def Test_PackAllBeforeDeadline_TestUnpinnedAfternoonEncounter_ExpectPackedToEnco
       prepared_units=[ indo_unit ],
       window_start_seconds=window_start_seconds,
       deadline_seconds=BACTRIAN_CAMELS_START_SECONDS,
-      current_node_id=ENTRANCE_NODE_ID )
+      current_node_id=ENTRANCE_NODE_ID ,
+      until_unit=_deadline_until_unit() )
 
    assert packed_units is not None
    assert [ unit.unit.loop_id for unit in packed_units ] == [ INDO_LOOP_ID ]
@@ -944,14 +960,16 @@ def Test_PackAllBeforeDeadline_TestEmptyOrClosedWindow_ExpectNone() -> None:
       prepared_units=[],
       window_start_seconds=_seconds( '9:00 AM' ),
       deadline_seconds=_seconds( '12:00 PM' ),
-      current_node_id=ENTRANCE_NODE_ID ) is None
+      current_node_id=ENTRANCE_NODE_ID,
+      until_unit=_deadline_until_unit() ) is None
 
    assert LoopWindowPacker.pack_all_before_deadline(
       TEST_GRAPH,
       prepared_units=[ _indo_prepared_unit() ],
       window_start_seconds=_seconds( '12:00 PM' ),
       deadline_seconds=_seconds( '12:00 PM' ),
-      current_node_id=ENTRANCE_NODE_ID ) is None
+      current_node_id=ENTRANCE_NODE_ID,
+      until_unit=_deadline_until_unit() ) is None
 
 
 def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
@@ -961,7 +979,7 @@ def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
    monkeypatch.setattr(
       LoopUnitTravelTimeCalculator,
       'packed_units_occupied_seconds',
-      lambda walk_graph, units, *, from_node_id: 60 )
+      lambda walk_graph, units, *, from_node_id, until_unit=None: 60 )
    monkeypatch.setattr(
       LoopWindowPacker,
       '_pack_loops_for_open_window',
@@ -972,7 +990,8 @@ def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
       prepared_units=prepared_units,
       window_start_seconds=_seconds( '9:00 AM' ),
       deadline_seconds=_seconds( '5:00 PM' ),
-      current_node_id=ENTRANCE_NODE_ID ) is None
+      current_node_id=ENTRANCE_NODE_ID,
+      until_unit=_deadline_until_unit() ) is None
 
 
 def Test_TravelDistanceToUnitEntry_TestMissingEntry_ExpectInfinity() -> None:

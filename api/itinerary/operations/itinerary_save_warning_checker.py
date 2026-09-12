@@ -15,7 +15,6 @@ from ..warnings.early_admission_warning_builder import EarlyAdmissionWarningBuil
 from ..warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLongWaitWarningBuilder
 from ..warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from ..warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
-from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
@@ -60,25 +59,6 @@ class ItinerarySaveWarningChecker():
             ItinerarySaveContextBuilder.error_result(
                context.conn,
                ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-               controller_kwargs,
-               suppressed_warnings=suppressed_warnings ),
-         )
-
-      if (
-            save_input.arrival_time is not None
-            and save_input.departure_time is not None
-            and ShortVisitWarningBuilder.is_required(
-               context.conn,
-               save_input.arrival_time,
-               save_input.departure_time,
-               confirming_short_visit=confirming_short_visit,
-               suppressed_warnings=suppressed_warnings )
-      ):
-         return (
-            replace( context, suppressed_warnings=suppressed_warnings ),
-            ItinerarySaveContextBuilder.error_result(
-               context.conn,
-               ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
                controller_kwargs,
                suppressed_warnings=suppressed_warnings ),
          )

@@ -1,0 +1,66 @@
+{
+  "id": "ITIN-18",
+  "title": "Closed attraction confirm",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open Console",
+      "do": "Open **Console Operations** (`console-operations.html`).",
+      "expect": "The console ops page loads."
+    },
+    {
+      "number": 2,
+      "name": "Close Splash Island for today",
+      "do": "Open **Create attraction closure override**. Choose **Splash Island**, leave dates blank or covering **today**, and enter a **Closure message** (e.g. **Manual test Splash Island closed**), then submit.",
+      "expect": "Success that the **Splash Island** closure override was saved."
+    },
+    {
+      "number": 3,
+      "name": "Open builder for today",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**, and on **Set Visit Date** choose **today**.",
+      "expect": "Visit date is set to today."
+    },
+    {
+      "number": 4,
+      "name": "Open attractions without include",
+      "do": "Continue to **Add Attractions**. Leave **Include closed attractions** unchecked and search for **Splash Island**.",
+      "expect": "**Splash Island** is absent from results while the include toggle is off."
+    },
+    {
+      "number": 5,
+      "name": "Include closed attractions",
+      "do": "Enable **Include closed attractions**, then select **Splash Island**.",
+      "expect": "**Attraction May Be Closed** appears with message **The Splash Island is closed on your visit date. Do you still want to add it to your itinerary?**"
+    },
+    {
+      "number": 6,
+      "name": "Cancel confirm",
+      "do": "Click **Cancel**.",
+      "expect": "**Splash Island** is not added to the selection."
+    },
+    {
+      "number": 7,
+      "name": "Select again",
+      "do": "Select **Splash Island** again.",
+      "expect": "**Attraction May Be Closed** appears again."
+    },
+    {
+      "number": 8,
+      "name": "Confirm add",
+      "do": "Click **Add**.",
+      "expect": "**Splash Island** is added to the attraction selection."
+    },
+    {
+      "number": 9,
+      "name": "Finish with closed attraction",
+      "do": "Click **Finish** (other selections optional).",
+      "expect": "The itinerary saves with **Splash Island** on the plan."
+    },
+    {
+      "number": 10,
+      "name": "List shows attraction",
+      "do": "Open **List View**.",
+      "expect": "**Splash Island** appears under attractions."
+    }
+  ]
+}

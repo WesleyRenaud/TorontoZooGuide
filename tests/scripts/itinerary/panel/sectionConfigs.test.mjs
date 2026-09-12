@@ -64,10 +64,15 @@ test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
 });
 
 test('Test_SectionKeyConstants_TestSets_ExpectMembership', () => {
-   assert.ok(
-      SectionConfigs.SCHEDULED_DAY_PLANNER_SECTION_KEYS.includes(
-         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters
-      )
+   assert.deepEqual(
+      SectionConfigs.SCHEDULED_DAY_PLANNER_SECTION_KEYS,
+      [
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
+      ]
    );
    assert.ok(
       !SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS.includes(

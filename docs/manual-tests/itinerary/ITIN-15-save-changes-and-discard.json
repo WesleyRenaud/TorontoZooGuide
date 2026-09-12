@@ -1,0 +1,48 @@
+{
+  "id": "ITIN-15",
+  "title": "Save Changes and Discard",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Start from a saved plan",
+      "do": "From the bottom nav, open **Itinerary**. If no plan exists, **Build Itinerary**, set a visit date, add **African Lion**, and **Finish** so a saved itinerary exists.",
+      "expect": "A saved itinerary is visible in the panel."
+    },
+    {
+      "number": 2,
+      "name": "Edit and change selection",
+      "do": "Click **Edit Itinerary**. Add another animal (for example **Grevy's Zebra**) so the builder has unsaved changes versus the saved plan.",
+      "expect": "The new animal is selected in the builder."
+    },
+    {
+      "number": 3,
+      "name": "Close builder",
+      "do": "Click the **×** close control on the itinerary builder.",
+      "expect": "**Save Changes?** appears with message **You have unsaved itinerary changes. Would you like to save them before closing?** Buttons include **Save** and **Discard**."
+    },
+    {
+      "number": 4,
+      "name": "Discard changes",
+      "do": "Click **Discard**.",
+      "expect": "The builder closes without saving the new animal."
+    },
+    {
+      "number": 5,
+      "name": "Discarded state confirmed",
+      "do": "Open **List View** (or reopen **Edit Itinerary**) and check which animals are on the plan.",
+      "expect": "**African Lion** remains; **Grevy's Zebra** (or the animal added in step 2) is not on the saved itinerary."
+    },
+    {
+      "number": 6,
+      "name": "Edit again and save",
+      "do": "Click **Edit Itinerary**, add **Grevy's Zebra** again, close the builder, and on **Save Changes?** click **Save**.",
+      "expect": "The builder closes and the save finishes (same path as **Finish**)."
+    },
+    {
+      "number": 7,
+      "name": "Saved state confirmed",
+      "do": "Open **List View**.",
+      "expect": "Both **African Lion** and **Grevy's Zebra** are on the itinerary."
+    }
+  ]
+}

@@ -83,6 +83,7 @@ class LoopUnitTravelTimeCalculator():
          prepared_units: list,
          *,
          from_node_id: str,
+         until_unit: LoopScheduleUnit | None = None,
          adjacency: WalkGraphAdjacency | None = None ) -> int:
       total_seconds = 0
       current_node_id = from_node_id
@@ -97,5 +98,12 @@ class LoopUnitTravelTimeCalculator():
 
          if prepared_unit.unit.exit_walk_node_id is not None:
             current_node_id = prepared_unit.unit.exit_walk_node_id
+
+      if until_unit is not None:
+         total_seconds += cls.approach_seconds_to_unit(
+            walk_graph,
+            current_node_id,
+            until_unit,
+            adjacency=adjacency )
 
       return total_seconds

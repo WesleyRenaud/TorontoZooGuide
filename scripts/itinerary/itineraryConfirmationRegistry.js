@@ -55,6 +55,12 @@ export class ItineraryConfirmationRegistry {
    });
 
    static SET_ITINERARY_CONFIRMATIONS = Object.freeze({
+      [ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP]: Object.freeze({
+         requiresMethod: 'requiresEarlyAdmissionConfirmation',
+         showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
+         confirmFlag: 'confirmingEarlyAdmission',
+         suppressKey: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+      }),
       [ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS]: Object.freeze({
          requiresMethod: 'requiresGuardiansTalkUnscheduleConfirmation',
          showConfirmation: GuardiansTalkUnscheduleFragment.showGuardiansTalkUnscheduleConfirmation,

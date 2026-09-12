@@ -31,12 +31,6 @@ class ShortVisitWarningBuilder():
 
          return False
 
-      arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
-      departure_minutes = DateValues.time_value_in_minutes( departure_time )
-
-      if arrival_minutes is None or departure_minutes is None:
-         return False
-
       return ItineraryVisitDurationValidator.is_shorter_than_minimum(
          arrival_time,
          departure_time )
