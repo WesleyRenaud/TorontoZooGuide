@@ -1028,12 +1028,22 @@ class MasterRouteLoopScheduler():
       window_start_seconds = cls._packed_units_start_seconds(
          schedule_window,
          cursor_seconds=window_state.cursor_seconds )
+      until_unit = cls._loop_unit_at_pinned_deadline(
+         remaining_units,
+         pinned_loop_ids,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         pinned_deadline_seconds=pinned_deadline_seconds )
+
+      if until_unit is None:
+         return window_state.cursor_seconds, False
+
       packed_units = LoopWindowPacker.pack_all_before_deadline(
          walk_graph,
          prepared_units=non_pinned_units,
          window_start_seconds=window_start_seconds,
          deadline_seconds=pinned_deadline_seconds,
          current_node_id=window_state.current_node_id,
+         until_unit=until_unit,
          departure_side_cluster_id=window_state.departure_side_cluster_id )
 
       if packed_units is None:
@@ -1042,7 +1052,8 @@ class MasterRouteLoopScheduler():
       occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
          walk_graph,
          packed_units,
-         from_node_id=window_state.current_node_id )
+         from_node_id=window_state.current_node_id,
+         until_unit=until_unit )
 
       if schedule_window.opens_after_fixed_time_stop:
          schedule_cursor_seconds = window_start_seconds
@@ -1529,6 +1540,29 @@ class MasterRouteLoopScheduler():
          return False
 
       return cursor_seconds >= earliest_start_seconds
+
+
+   @classmethod
+   def _loop_unit_at_pinned_deadline(
+         cls,
+         remaining_units: list[ PreparedLoopScheduleUnit ],
+         pinned_loop_ids: set[ str ],
+         *,
+         pinned_earliest_start_cache: dict[ int, int | None ],
+         pinned_deadline_seconds: int,
+      ) -> LoopScheduleUnit | None:
+      for prepared_unit in remaining_units:
+         if prepared_unit.unit.loop_id not in pinned_loop_ids:
+            continue
+
+         if (
+               pinned_earliest_start_cache.get( id( prepared_unit ) )
+               != pinned_deadline_seconds ):
+            continue
+
+         return prepared_unit.unit
+
+      return None
 
 
    @classmethod

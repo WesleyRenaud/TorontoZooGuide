@@ -11,9 +11,13 @@ class ItineraryVisitDurationValidator():
          cls,
          arrival_time: Types.ScheduleTimeKey,
          departure_time: Types.ScheduleTimeKey ) -> bool:
-      visit_duration_minutes = (
-         DateValues.time_value_in_minutes( departure_time )
-         - DateValues.time_value_in_minutes( arrival_time )
-      )
+      arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
+      departure_minutes = DateValues.time_value_in_minutes( departure_time )
 
-      return visit_duration_minutes < Constants.MIN_ITINERARY_VISIT_DURATION_MINUTES
+      if arrival_minutes is None or departure_minutes is None:
+         return False
+
+      return (
+         departure_minutes - arrival_minutes
+         < Constants.MIN_ITINERARY_VISIT_DURATION_MINUTES
+      )

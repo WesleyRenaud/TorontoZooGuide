@@ -146,6 +146,7 @@ class LoopWindowPacker():
          window_start_seconds: int,
          deadline_seconds: int,
          current_node_id: str,
+         until_unit: LoopScheduleUnit,
          departure_side_cluster_id: str | None = None ) -> list[ PreparedLoopScheduleUnit ] | None:
       if not prepared_units or window_start_seconds >= deadline_seconds:
          return None
@@ -153,7 +154,8 @@ class LoopWindowPacker():
       occupied_seconds = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
          walk_graph,
          prepared_units,
-         from_node_id=current_node_id )
+         from_node_id=current_node_id,
+         until_unit=until_unit )
 
       if window_start_seconds + occupied_seconds > deadline_seconds:
          return None

@@ -7,6 +7,7 @@ import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTy
 import { ItineraryServiceSaveConfirmer } from '../../../scripts/itinerary/itineraryServiceSaveConfirmer.js';
 import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
 import { AttractionWithoutAnimalFragment } from '../../../scripts/itinerary/panel/attractionWithoutAnimalFragment.js';
+import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { FixedTimeItemLongWaitFragment } from '../../../scripts/itinerary/panel/fixedTimeItemLongWaitFragment.js';
 import { GuardiansTalkUnscheduleFragment } from '../../../scripts/itinerary/panel/guardiansTalkUnscheduleFragment.js';
 import { GuardiansTalkWithoutAnimalFragment } from '../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
@@ -14,6 +15,7 @@ import { ItineraryBuildWarningsFragment } from '../../../scripts/itinerary/panel
 import { ScheduleTimeConflictFragment } from '../../../scripts/itinerary/panel/scheduleTimeConflictFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { WildEncounterConflictResolver } from '../../../scripts/itinerary/wizard/wildEncounterConflictResolver.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 
 function _stubErrorTypeChecks(activeType) {
    const originals = {
@@ -24,6 +26,8 @@ function _stubErrorTypeChecks(activeType) {
       attractionWithout: ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation,
       longWait: ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation,
       wildUnschedule: ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation,
+      shortVisit: ItineraryErrorTypes.requiresShortVisitConfirmation,
+      earlyAdmission: ItineraryErrorTypes.requiresEarlyAdmissionConfirmation,
       multiWarnings: ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings,
    };
 
@@ -46,6 +50,12 @@ function _stubErrorTypeChecks(activeType) {
    ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = (type) => (
       type === 'wildUnschedule' && activeType === 'wildUnschedule'
    );
+   ItineraryErrorTypes.requiresShortVisitConfirmation = (type) => (
+      type === 'shortVisit' && activeType === 'shortVisit'
+   );
+   ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = (type) => (
+      type === 'earlyAdmission' && activeType === 'earlyAdmission'
+   );
    ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = (issues) => (
       activeType === 'multiWarnings' && Boolean(issues?.length)
    );
@@ -58,6 +68,8 @@ function _stubErrorTypeChecks(activeType) {
       ItineraryErrorTypes.requiresAttractionWithoutAnimalConfirmation = originals.attractionWithout;
       ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = originals.longWait;
       ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = originals.wildUnschedule;
+      ItineraryErrorTypes.requiresShortVisitConfirmation = originals.shortVisit;
+      ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originals.earlyAdmission;
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = originals.multiWarnings;
    };
 }
@@ -139,6 +151,7 @@ test('Test_RequestSetItineraryConfirmation_TestConfirmAndCancel_ExpectResults', 
    });
 
    try {
+      const beforeConfirmCalls = [];
       const confirmedPromise = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation({
          showConfirmation: ({ onConfirm }) => {
             confirmHandler = onConfirm;
@@ -147,8 +160,13 @@ test('Test_RequestSetItineraryConfirmation_TestConfirmAndCancel_ExpectResults', 
          payload: { date: '2026-06-15' },
          diffBaseline: { base: true },
          buildConfirmedPayload: () => ({ date: '2026-06-15', confirmed: true }),
+         beforeConfirm: async (...args) => {
+            beforeConfirmCalls.push(args);
+         },
       });
-      await confirmHandler();
+      await confirmHandler({ doNotShowAgain: true });
+      assert.equal(beforeConfirmCalls.length, 1);
+      assert.deepEqual(beforeConfirmCalls[Position.FIRST], [{ doNotShowAgain: true }]);
       assert.deepEqual(await confirmedPromise, {
          result: {
             confirmed: true,
@@ -305,6 +323,16 @@ test('Test_RequestSetItineraryWithConfirmations_TestWildUnschedule_ExpectFlag', 
       fragment: WildEncounterUnscheduleFragment,
       showMethod: 'showWildEncounterUnscheduleConfirmation',
       expectedFlag: 'confirmingWildEncounterUnschedule',
+   });
+});
+
+test('Test_RequestSetItineraryWithConfirmations_TestEarlyAdmission_ExpectFlag', async () => {
+   await _assertConfirmationFlagPath({
+      activeType: 'earlyAdmission',
+      errorType: 'earlyAdmission',
+      fragment: EarlyAdmissionFragment,
+      showMethod: 'showEarlyAdmissionConfirmation',
+      expectedFlag: 'confirmingEarlyAdmission',
    });
 });
 

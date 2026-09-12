@@ -8,16 +8,16 @@ export class SectionConfigs {
    static ITINERARY_PANEL_SECTION_KEYS = {
       animals: ScheduleItemKind.ANIMAL.itemType,
       attractions: ScheduleItemKind.ATTRACTION.itemType,
-      transportations: ScheduleItemKind.TRANSPORTATION.itemType,
       guardiansTalks: 'guardiansTalks',
       wildEncounters: 'wildEncounters',
+      transportations: ScheduleItemKind.TRANSPORTATION.itemType,
    };
    static SCHEDULED_DAY_PLANNER_SECTION_KEYS = [
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
-      SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
       SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
+      SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
    ];
 
    static UNSCHEDULED_DAY_PLANNER_SECTION_KEYS = [
@@ -86,13 +86,6 @@ export class SectionConfigs {
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
          },
          {
-            key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
-            title: Strings.entityLabels.transportation,
-            count: transportationRows.length,
-            children: transportationRows,
-            stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
-         },
-         {
             key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
             title: Strings.site.nav.meetTheGuardians,
             count: guardiansRows.length,
@@ -105,6 +98,13 @@ export class SectionConfigs {
             count: wildRows.length,
             children: wildRows,
             stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
+         },
+         {
+            key: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
+            title: Strings.entityLabels.transportation,
+            count: transportationRows.length,
+            children: transportationRows,
+            stepKey: SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
          },
       ];
 

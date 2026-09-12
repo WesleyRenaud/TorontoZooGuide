@@ -17,9 +17,10 @@ const PAGE_CSS = `
    --mt-muted: #5c6b63;
    --mt-line: #c5cec4;
    --mt-accent: #3d5c45;
-   --mt-pass: #2f6b3a;
+   --mt-pass: #2ea043;
    --mt-fail: #9b2f2f;
    --mt-blocked: #6b5a2f;
+   --mt-progress: #f0c000;
    --mt-pass-bg: #d9eadc;
    --mt-fail-bg: #f3d6d6;
    --mt-blocked-bg: #efe6c9;
@@ -101,7 +102,7 @@ body {
    border-color: var(--mt-accent);
    background: #e2ebdf;
 }
-.suite-link.is-partial { box-shadow: inset 3px 0 0 var(--mt-blocked); }
+.suite-link.is-partial { box-shadow: inset 3px 0 0 var(--mt-progress); }
 .suite-link.is-failed { box-shadow: inset 3px 0 0 var(--mt-fail); }
 .suite-link.is-complete { box-shadow: inset 3px 0 0 var(--mt-pass); }
 .main {

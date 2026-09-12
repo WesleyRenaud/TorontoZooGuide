@@ -1,0 +1,72 @@
+{
+  "id": "ITIN-13",
+  "title": "Adjust Activity Times trim",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open Console",
+      "do": "Open **Console Operations** (`console-operations.html`).",
+      "expect": "The console ops page loads."
+    },
+    {
+      "number": 2,
+      "name": "Schedule the Wild Encounter",
+      "do": "Open **Set Wild Encounter schedule**. Choose **Masai Giraffe**, set the date range to include **today**, add a recurring row with **today’s weekday** and encounter time **1:00 PM**, then submit.",
+      "expect": "Success that the schedule was saved."
+    },
+    {
+      "number": 3,
+      "name": "Schedule the overlapping talk",
+      "do": "Open **Add Meet the Guardians talk occurrence**. Choose **Location** **Africa Savanna** and **Talk name** **African Penguin**, set **Date** to today, enter **Talk time** **1:30 PM**, then submit.",
+      "expect": "Success that the occurrence was added."
+    },
+    {
+      "number": 4,
+      "name": "Build for today",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**, set the visit date to **today**, add **Masai Giraffe** and **African Penguin** on **Add Animals**, then on Meet the Guardians and **Wild Encounters** add the **African Penguin** **1:30 PM** talk and the **Masai Giraffe** **1:00 PM** encounter.",
+      "expect": "Both animals and both timed activities are selected on the builder."
+    },
+    {
+      "number": 5,
+      "name": "Finish into conflicts",
+      "do": "Click **Finish**.",
+      "expect": "**Your Itinerary Has the Following Issues:** appears, including **Schedule Conflicts** listing both activities."
+    },
+    {
+      "number": 6,
+      "name": "Select the encounter",
+      "do": "In **Schedule Conflicts**, select the **Masai Giraffe** Wild Encounter with **+**.",
+      "expect": "The Wild Encounter is marked selected."
+    },
+    {
+      "number": 7,
+      "name": "Select the overlapping talk",
+      "do": "Select the **African Penguin** Meet the Guardians talk with **+** as well.",
+      "expect": "**Adjust Activity Times?** appears with message **These selections overlap in time. We’ll fit them into your day by shortening some activities, with Wild Encounters taking priority.** and **Proceed** / **Cancel**."
+    },
+    {
+      "number": 8,
+      "name": "Cancel trim",
+      "do": "Click **Cancel** on **Adjust Activity Times?**.",
+      "expect": "The Meet the Guardians talk is not selected; you remain on **Your Itinerary Has the Following Issues:** / **Schedule Conflicts**."
+    },
+    {
+      "number": 9,
+      "name": "Proceed with trim",
+      "do": "Select the **African Penguin** talk again, click **Proceed** on **Adjust Activity Times?**, then click **Proceed** on **Your Itinerary Has the Following Issues:**.",
+      "expect": "The issues dialog closes and the itinerary saves with both activities kept."
+    },
+    {
+      "number": 10,
+      "name": "Day Planner shows shortened talk",
+      "do": "Open **Day Planner View** and find both activities.",
+      "expect": "Both pills are on the timeline. **Masai Giraffe** keeps **1:00 PM–1:45 PM**. **African Penguin** is shortened to **1:45 PM–2:00 PM** (still ending at the original **2:00 PM**, not stretched past it)."
+    },
+    {
+      "number": 11,
+      "name": "Trim persists",
+      "do": "Reload the page, open **Itinerary**, and return to **Day Planner View**.",
+      "expect": "Both activities remain scheduled with the same trimmed talk timing."
+    }
+  ]
+}

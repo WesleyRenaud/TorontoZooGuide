@@ -95,6 +95,12 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-10 | [json](itinerary/ITIN-10-bulk-schedule-pressure.json) | Short day bulk schedule |
 | ITIN-11 | [json](itinerary/ITIN-11-past-date-recovery.json) | Past-date recovery + seasonal **Itinerary Updated** |
 | ITIN-12 | [json](itinerary/ITIN-12-map-path-smoke.json) | Walk path on itinerary map |
+| ITIN-13 | [json](itinerary/ITIN-13-adjust-activity-times-trim.json) | **Adjust Activity Times?** talk trim |
+| ITIN-14 | [json](itinerary/ITIN-14-zoomobile-as-transportation-rides.json) | Zoomobile transit rides after rebuild |
+| ITIN-15 | [json](itinerary/ITIN-15-save-changes-and-discard.json) | **Save Changes?** / **Discard** |
+| ITIN-16 | [json](itinerary/ITIN-16-add-talk-to-existing-scheduled-day.json) | Add overlapping talk → **Update Plan** |
+| ITIN-17 | [json](itinerary/ITIN-17-schedule-item-not-on-itinerary.json) | **Add to Itinerary?** from Schedule item |
+| ITIN-18 | [json](itinerary/ITIN-18-closed-attraction-confirm.json) | **Attraction May Be Closed** |
 
 ### Console (`console/`)
 
@@ -118,4 +124,4 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 
 ## Recommended run order
 
-MAP-01 → MAP-09, then ITIN-01 → ITIN-12, then CON-01 → CON-15.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-18, then CON-01 → CON-15.

@@ -36,4 +36,9 @@ export class ValueNormalizer {
       const number = Number(value);
       return Number.isFinite(number) ? number : null;
    }
+
+   static asPositiveFiniteNumber(value) {
+      const number = ValueNormalizer.normalizeNumber(value);
+      return number != null && number > 0 ? number : null;
+   }
 }

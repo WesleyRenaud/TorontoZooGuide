@@ -116,16 +116,16 @@ test('Test_ScheduleItemTypes_TestTypeDropdownOrder_ExpectPlaceholderFirst', () =
       { value: 'animals', label: Strings.entityLabels.animal },
       { value: 'attractions', label: Strings.entityLabels.attraction },
       {
-         value: 'transportations',
-         label: Strings.entityLabels.transportation,
-      },
-      {
          value: 'guardians_talks',
          label: Strings.entityLabels.guardiansTalk,
       },
       {
          value: 'wild_encounters',
          label: Strings.entityLabels.wildEncounter,
+      },
+      {
+         value: 'transportations',
+         label: Strings.entityLabels.transportation,
       },
    ]);
 });

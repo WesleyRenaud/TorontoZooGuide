@@ -410,6 +410,70 @@ test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills
    );
 });
 
+test('Test_BuildScheduledItemRowsContext_TestTrimmedGuardiansTalk_ExpectScheduledDurationNotCatalogMaximum', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'African Penguin',
+               location: 'Africa Savanna',
+               start_time: '12:15 PM',
+               end_time: '12:30 PM',
+               maximum_duration: 30,
+            },
+         ],
+         wildEncounters: [
+            {
+               name: 'Masai Giraffe',
+               meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+               start_time: '11:30 AM',
+               end_time: '12:15 PM',
+               maximum_duration: 45,
+            },
+         ],
+         events: [],
+      },
+      [690, 720, 735, 750],
+      1140
+   );
+
+   const items = [...context.itemsByStart.values()].flat();
+   const talk = items.find((item) => item.label === 'African Penguin');
+   const encounter = items.find((item) => item.label === 'Masai Giraffe');
+
+   assert.equal(talk?.maximumDuration, 15);
+   assert.equal(encounter?.maximumDuration, 45);
+});
+
+test('Test_BuildScheduledItemRowsContext_TestMissingScheduledDuration_ExpectCatalogMaximum', () => {
+   const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'African Penguin',
+               location: 'Africa Savanna',
+               start_time: '12:15 PM',
+               end_time: '12:15 PM',
+               maximum_duration: 30,
+            },
+         ],
+         wildEncounters: [],
+         events: [],
+      },
+      [735, 750],
+      1140
+   );
+
+   const talk = [...context.itemsByStart.values()].flat()
+      .find((item) => item.label === 'African Penguin');
+
+   assert.equal(talk?.maximumDuration, 30);
+});
+
 test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {

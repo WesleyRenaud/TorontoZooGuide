@@ -27,3 +27,10 @@ def Test_IsShorterThanMinimum_TestCoordinatorShortVisitExamples_ExpectThreshold(
    assert ItineraryVisitDurationValidator.is_shorter_than_minimum( '17:15', '18:00' )
    assert not ItineraryVisitDurationValidator.is_shorter_than_minimum( '09:30', '11:30' )
    assert ItineraryVisitDurationValidator.is_shorter_than_minimum( '17:00', '18:00' )
+
+
+def Test_IsShorterThanMinimum_TestMissingTimes_ExpectFalse() -> None:
+   assert not ItineraryVisitDurationValidator.is_shorter_than_minimum( None, None )
+   assert not ItineraryVisitDurationValidator.is_shorter_than_minimum( None, '17:00' )
+   assert not ItineraryVisitDurationValidator.is_shorter_than_minimum( '09:30', None )
+   assert not ItineraryVisitDurationValidator.is_shorter_than_minimum( '', '' )

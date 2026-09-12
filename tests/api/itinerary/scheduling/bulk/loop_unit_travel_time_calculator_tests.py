@@ -195,6 +195,36 @@ def Test_PackedUnitsOccupiedSeconds_TestTwoUnits_ExpectApproachAndDwell() -> Non
    assert occupied > 300 + 480
 
 
+def Test_PackedUnitsOccupiedSeconds_TestUntilUnit_ExpectFinalApproachIncluded() -> None:
+   indo_unit = _prepared_loop_unit(
+      loop_id='indo_malaya',
+      stops=[ _animal_record( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) ],
+      entry_walk_node_id=CHEETAH_NODE_ID,
+      exit_walk_node_id=CHEETAH_NODE_ID,
+      duration_seconds=300 )
+   africa_unit = _loop_unit(
+      loop_id='africa_savanna',
+      stops=[ _animal_record( species='African Lion', exhibit='Africa Savanna' ) ],
+      entry_walk_node_id=LION_NODE_ID,
+      exit_walk_node_id=LION_NODE_ID )
+
+   occupied = LoopUnitTravelTimeCalculator.packed_units_occupied_seconds(
+      TEST_GRAPH,
+      [ indo_unit ],
+      from_node_id=ENTRANCE_NODE_ID,
+      until_unit=africa_unit )
+   approach_to_indo = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
+      TEST_GRAPH,
+      ENTRANCE_NODE_ID,
+      indo_unit.unit )
+   approach_to_africa = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
+      TEST_GRAPH,
+      CHEETAH_NODE_ID,
+      africa_unit )
+
+   assert occupied == approach_to_indo + 300 + approach_to_africa
+
+
 def Test_InterStopSeconds_TestEmptyStops_ExpectEmpty() -> None:
    assert LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, [] ) == []
 

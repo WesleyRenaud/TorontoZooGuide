@@ -52,6 +52,45 @@ test('Test_CreateValidationBubbleController_TestShowAndDismiss_ExpectBubble', ()
    }
 });
 
+test('Test_CreateValidationBubbleController_TestDismissWithoutRemove_ExpectParentFallback', () => {
+   const originalPosition = ValidationBubbleHelper.positionValidationBubble;
+   ValidationBubbleHelper.positionValidationBubble = () => {};
+
+   const removed = [];
+   const parent = {
+      removeChild(child) {
+         removed.push(child);
+      },
+   };
+   const originalCreate = document.createElement;
+   document.createElement = (tagName) => {
+      const node = originalCreate(tagName);
+      if (String(tagName).toLowerCase() === 'div') {
+         node.remove = undefined;
+         Object.defineProperty(node, 'parentElement', {
+            configurable: true,
+            get: () => parent,
+         });
+      }
+      return node;
+   };
+
+   const anchorEl = document.createElement('button');
+   const controller = ValidationBubbleFragment.createValidationBubbleController({
+      anchorEl,
+      dismissMs: 0,
+   });
+
+   try {
+      controller.show('Required');
+      controller.dismiss();
+      assert.equal(removed.length, 1);
+   } finally {
+      document.createElement = originalCreate;
+      ValidationBubbleHelper.positionValidationBubble = originalPosition;
+   }
+});
+
 test('Test_CreateValidationBubbleController_TestAutoDismiss_ExpectRemoved', async () => {
    const originalPosition = ValidationBubbleHelper.positionValidationBubble;
    ValidationBubbleHelper.positionValidationBubble = () => {};

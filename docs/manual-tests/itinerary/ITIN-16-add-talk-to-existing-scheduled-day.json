@@ -1,0 +1,60 @@
+{
+  "id": "ITIN-16",
+  "title": "Add talk to an existing scheduled day",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open Console",
+      "do": "Open **Console Operations** (`console-operations.html`).",
+      "expect": "The console ops page loads."
+    },
+    {
+      "number": 2,
+      "name": "Add a talk occurrence",
+      "do": "Open **Add Meet the Guardians talk occurrence**. Choose **Location** **Africa Savanna** and **Talk name** **African Penguin**, set **Date** to today, enter **Talk time** **11:00 AM**, then submit.",
+      "expect": "Success that the occurrence was added."
+    },
+    {
+      "number": 3,
+      "name": "Build animals first",
+      "do": "From the bottom nav, open **Itinerary**. **Build Itinerary** / **Edit Itinerary**, set the visit date to **today**, add **African Lion** and **African Penguin** without adding talks yet, then **Finish**.",
+      "expect": "Both animals are on the itinerary."
+    },
+    {
+      "number": 4,
+      "name": "Schedule Lion over the talk window",
+      "do": "Open **Day Planner View**. Use **Schedule an item** to schedule **African Lion** at **11:00 AM** (keep a normal duration). Leave **African Penguin** unscheduled.",
+      "expect": "**African Lion** has a timeline pill starting at **11:00 AM**. **African Penguin** stays unscheduled."
+    },
+    {
+      "number": 5,
+      "name": "Edit and add the overlapping talk",
+      "do": "Click **Edit Itinerary**. Continue to Meet the Guardians and add the **African Penguin** **11:00 AM** talk.",
+      "expect": "The talk is selected in the builder."
+    },
+    {
+      "number": 6,
+      "name": "Finish triggers update plan",
+      "do": "Click **Finish**.",
+      "expect": "**Add Guardians Talk?** appears (confirm uses **Update Plan**), with messaging that the talk will be placed at its offered time and other items will be rescheduled around it."
+    },
+    {
+      "number": 7,
+      "name": "Confirm update plan",
+      "do": "Click **Update Plan**.",
+      "expect": "The itinerary saves successfully."
+    },
+    {
+      "number": 8,
+      "name": "Talk on Day Planner",
+      "do": "Open **Day Planner View** and find the talk.",
+      "expect": "The talk already has a timeline pill at **11:00 AM**. **African Lion** has shifted off that slot and is scheduled around the talk."
+    },
+    {
+      "number": 9,
+      "name": "List matches",
+      "do": "Open **List View**, then return to **Day Planner View**.",
+      "expect": "The talk appears on the list and remains scheduled on the planner."
+    }
+  ]
+}

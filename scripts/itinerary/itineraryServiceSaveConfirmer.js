@@ -28,11 +28,16 @@ export class ItineraryServiceSaveConfirmer {
       diffBaseline,
       buildConfirmedPayload,
       getConfirmedDiffBaseline = () => diffBaseline,
+      beforeConfirm = null,
    }) {
       return new Promise((resolve) => {
          showConfirmation({
             issues: initialResult.issues,
             onConfirm: async (...confirmationArgs) => {
+               if (beforeConfirm) {
+                  await beforeConfirm(...confirmationArgs);
+               }
+
                const confirmedPayload = buildConfirmedPayload(...confirmationArgs);
                const confirmedResult = await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations(
                   confirmedPayload,
@@ -114,6 +119,7 @@ export class ItineraryServiceSaveConfirmer {
                payload,
                diffBaseline,
                buildConfirmedPayload: ItineraryConfirmationRegistry.buildConfirmedPayload(entry, payload),
+               beforeConfirm: ItineraryConfirmationRegistry.buildBeforeConfirm(entry),
             });
          }
       }

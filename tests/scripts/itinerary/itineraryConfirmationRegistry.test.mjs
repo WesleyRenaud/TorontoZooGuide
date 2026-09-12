@@ -90,6 +90,7 @@ test('Test_GetSetItineraryConfirmationEntries_TestFlags_ExpectConfirmFlags', () 
    assert.deepEqual(
       ItineraryConfirmationRegistry.getSetItineraryConfirmationEntries().map((entry) => entry.confirmFlag),
       [
+         'confirmingEarlyAdmission',
          'confirmingGuardiansTalkUnschedule',
          'confirmingGuardiansTalkWithoutAnimal',
          'confirmingAttractionWithoutAnimal',

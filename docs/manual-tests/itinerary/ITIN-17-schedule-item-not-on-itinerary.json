@@ -1,0 +1,48 @@
+{
+  "id": "ITIN-17",
+  "title": "Schedule an item not on the itinerary",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Start with a small plan",
+      "do": "From the bottom nav, open **Itinerary**. Build with a visit date, add **African Lion** only, then **Finish**.",
+      "expect": "**African Lion** is on the itinerary; **Grevy's Zebra** is not."
+    },
+    {
+      "number": 2,
+      "name": "Open Schedule an item",
+      "do": "Open **Day Planner View** and click **Schedule an item**.",
+      "expect": "The **Schedule item** dialog opens."
+    },
+    {
+      "number": 3,
+      "name": "Search outside itinerary",
+      "do": "Set **Item type** to **Animal**. Leave **Only show items on my itinerary** unchecked. Search for **Grevy's Zebra** and select it.",
+      "expect": "**Grevy's Zebra** appears in search results and can be selected."
+    },
+    {
+      "number": 4,
+      "name": "Choose a time and schedule",
+      "do": "Set a **Schedule time** inside zoo hours (for example **11:00 AM**), then click **Schedule**.",
+      "expect": "**Add to Itinerary?** appears with message **This item is not on your itinerary yet. Do you want to add it and schedule a time?** Confirm uses **Add to Schedule**."
+    },
+    {
+      "number": 5,
+      "name": "Confirm add to schedule",
+      "do": "Click **Add to Schedule**.",
+      "expect": "The dialog closes and scheduling succeeds."
+    },
+    {
+      "number": 6,
+      "name": "Timeline shows the new item",
+      "do": "Look at **Day Planner View**.",
+      "expect": "**Grevy's Zebra** has a timeline pill at the scheduled time."
+    },
+    {
+      "number": 7,
+      "name": "List includes the animal",
+      "do": "Open **List View**.",
+      "expect": "**Grevy's Zebra** appears under animals alongside **African Lion**."
+    }
+  ]
+}
