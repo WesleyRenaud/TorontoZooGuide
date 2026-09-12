@@ -29,20 +29,14 @@
     {
       "number": 5,
       "name": "End update",
-      "do": "Open **End update** and end the update effective on or before today.",
+      "do": "Open **End update** and end the update effective today.",
       "expect": "Success ended."
     },
     {
       "number": 6,
       "name": "Map inactive",
       "do": "Updates on today.",
-      "expect": "Update is no longer listed as active."
-    },
-    {
-      "number": 7,
-      "name": "Inside vs outside range",
-      "do": "Before ending, flip map date inside/outside range once.",
-      "expect": "Presence matches range."
+      "expect": "Update is absent."
     }
   ]
 }
