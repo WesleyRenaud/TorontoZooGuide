@@ -19,6 +19,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadOffDisplayExhibits() {
+      const result = await ConsoleOperationsClient.getOffDisplayExhibitOptions();
+      return result.exhibits;
+   }
+
    static async loadRestaurants() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'restaurants',

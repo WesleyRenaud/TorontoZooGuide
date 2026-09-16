@@ -34,3 +34,20 @@ test('Test_LoadOptionsMethods_TestDelegation_ExpectCachedLoaderArgs', async () =
       ConsoleOptionsLoaderHelper.loadCachedOptions = original;
    }
 });
+
+test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
+   const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
+
+   ConsoleOperationsClient.getOffDisplayExhibitOptions = async () => ({
+      exhibits: ['Africa Savanna', 'Eurasia Wilds'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadOffDisplayExhibits(),
+         ['Africa Savanna', 'Eurasia Wilds']
+      );
+   } finally {
+      ConsoleOperationsClient.getOffDisplayExhibitOptions = originalGet;
+   }
+});

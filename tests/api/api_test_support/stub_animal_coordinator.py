@@ -87,6 +87,11 @@ class StubAnimalCoordinator():
       return list( self.species_names )
 
 
+   def get_off_display_exhibit_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_off_display_exhibit_options', {} ) )
+      return [ self.animal_exhibit ]
+
+
    def set_animal_as_off_display( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_animal_as_off_display', kwargs ) )
       return StubAnimalCoordinator.default_success
