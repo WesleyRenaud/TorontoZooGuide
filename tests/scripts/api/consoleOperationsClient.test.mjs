@@ -7,6 +7,7 @@ import { ApiClient } from '../../../scripts/api/apiClient.js';
 const _NO_ARG_GETTERS = [
    ['getSpeciesOptions', '/get-animal-species-names'],
    ['getExhibitOptions', '/get-exhibits'],
+   ['getClosedExhibitOptions', '/get-closed-exhibit-options'],
    ['getRestaurantNameOptions', '/get-restaurant-names'],
    ['getRestroomNameOptions', '/get-restroom-names'],
    ['getGiftShopNameOptions', '/get-gift-shop-names'],

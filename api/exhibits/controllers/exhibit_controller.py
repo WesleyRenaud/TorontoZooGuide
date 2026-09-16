@@ -54,6 +54,15 @@ class ExhibitController():
 
 
    @staticmethod
+   def get_closed_exhibit_options( handler: JsonRequestHandler ) -> None:
+      exhibits = ExhibitCoordinator.get_closed_exhibit_options()
+
+      handler._write_json( {
+         'exhibits': exhibits,
+      } )
+
+
+   @staticmethod
    def get_exhibits_by_region( handler: JsonRequestHandler ) -> None:
       regions = ExhibitCoordinator.get_regions_with_exhibits()
 

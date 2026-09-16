@@ -171,6 +171,32 @@ def Test_GetExhibits_TestDirectCall_ExpectWritesExhibitsFromCoordinator(
    assert stub_exhibit_coordinator.calls == [ ( 'get_exhibits', {} ) ]
 
 
+def Test_GetClosedExhibitOptions_TestDirectCall_ExpectWritesExhibitsFromCoordinator(
+      stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   ExhibitController.get_closed_exhibit_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'exhibits': [ EXHIBIT_NAME ],
+   }
+   assert stub_exhibit_coordinator.calls == [ ( 'get_closed_exhibit_options', {} ) ]
+
+
+def Test_GetClosedExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
+      stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
+   handler = make_handler( '/get-closed-exhibit-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ EXHIBIT_NAME ],
+   }
+   assert stub_exhibit_coordinator.calls == [ ( 'get_closed_exhibit_options', {} ) ]
+
+
 def Test_SetExhibitClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
       stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
    handler = make_handler(

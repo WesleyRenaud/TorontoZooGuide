@@ -6,6 +6,7 @@ from datetime import date
 import pytest
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
+from api.exhibits.data_access.closed_exhibit_name_provider import ClosedExhibitNameProvider
 from api.exhibits.data_access.exhibit_provider import ExhibitProvider
 from api.exhibits.data_access.exhibit_status_provider import ExhibitStatusProvider
 from api.exhibits.domain.region_options_builder import RegionOptionsBuilder
@@ -149,6 +150,30 @@ def Test_GetClosedExhibitsForVisitDate_TestProviderAndBuilder_ExpectNames(
       year=VISIT_YEAR ) == [ EXHIBIT_NAME ]
    assert captured[ 'records' ] is closure_records
    assert captured[ 'target_date' ] == VISIT_DATE
+
+
+def Test_GetClosedExhibitOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_closed_exhibit_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ EXHIBIT_NAME ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      ClosedExhibitNameProvider,
+      'fetch_closed_exhibit_names',
+      fetch_closed_exhibit_names )
+
+   assert ExhibitCoordinator.get_closed_exhibit_options() == [ EXHIBIT_NAME ]
+   assert captured == { 'today': '2026-09-16' }
 
 
 def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
