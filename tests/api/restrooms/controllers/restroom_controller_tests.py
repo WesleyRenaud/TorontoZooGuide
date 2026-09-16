@@ -45,6 +45,7 @@ def stub_restroom_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestroom
    stub = StubRestroomCoordinator(
       restroom_names=[ RESTROOM_NAME, OTHER_RESTROOM_NAME ],
       closed_restroom_names=[ RESTROOM_NAME ],
+      alert_restroom_names=[ OTHER_RESTROOM_NAME ],
       restrooms=[ _sample_restroom() ] )
 
    monkeypatch.setattr( connection.DatabaseConnectionProvider, 'open', lambda db_path='animals.db': None )
@@ -130,6 +131,32 @@ def Test_GetClosedRestroomOptions_TestHttpRequest_ExpectWritesRestroomsFromCoord
       'restrooms': [ RESTROOM_NAME ],
    }
    assert stub_restroom_coordinator.calls == [ ( 'get_closed_restroom_options', {} ) ]
+
+
+def Test_GetRestroomAlertOptions_TestDirectCall_ExpectWritesRestroomsFromCoordinator(
+      stub_restroom_coordinator: StubRestroomCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   RestroomController.get_restroom_alert_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'restrooms': [ OTHER_RESTROOM_NAME ],
+   }
+   assert stub_restroom_coordinator.calls == [ ( 'get_restroom_alert_options', {} ) ]
+
+
+def Test_GetRestroomAlertOptions_TestHttpRequest_ExpectWritesRestroomsFromCoordinator(
+      stub_restroom_coordinator: StubRestroomCoordinator ) -> None:
+   handler = make_handler( '/get-restroom-alert-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'restrooms': [ OTHER_RESTROOM_NAME ],
+   }
+   assert stub_restroom_coordinator.calls == [ ( 'get_restroom_alert_options', {} ) ]
 
 
 def Test_SetRestroomClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

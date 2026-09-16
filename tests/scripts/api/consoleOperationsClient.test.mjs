@@ -11,6 +11,7 @@ const _NO_ARG_GETTERS = [
    ['getRestaurantNameOptions', '/get-restaurant-names'],
    ['getRestroomNameOptions', '/get-restroom-names'],
    ['getClosedRestroomOptions', '/get-closed-restroom-options'],
+   ['getRestroomAlertOptions', '/get-restroom-alert-options'],
    ['getGiftShopNameOptions', '/get-gift-shop-names'],
    ['getAttractionNameOptions', '/get-attraction-names'],
    ['getTransportationStationNameOptions', '/get-transportation-station-names'],

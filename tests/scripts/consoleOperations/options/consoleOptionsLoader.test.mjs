@@ -69,6 +69,23 @@ test('Test_LoadClosedRestrooms_TestClientResult_ExpectRestrooms', async () => {
    }
 });
 
+test('Test_LoadAlertRestrooms_TestClientResult_ExpectRestrooms', async () => {
+   const originalGet = ConsoleOperationsClient.getRestroomAlertOptions;
+
+   ConsoleOperationsClient.getRestroomAlertOptions = async () => ({
+      restrooms: ['Entrance Restroom', 'Splash Island Restroom'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadAlertRestrooms(),
+         ['Entrance Restroom', 'Splash Island Restroom']
+      );
+   } finally {
+      ConsoleOperationsClient.getRestroomAlertOptions = originalGet;
+   }
+});
+
 test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
 

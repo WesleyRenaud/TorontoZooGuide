@@ -60,6 +60,11 @@ export class ConsoleOptionsLoader {
       return result.restrooms;
    }
 
+   static async loadAlertRestrooms() {
+      const result = await ConsoleOperationsClient.getRestroomAlertOptions();
+      return result.restrooms;
+   }
+
    static async loadGiftShops() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'giftShops',
