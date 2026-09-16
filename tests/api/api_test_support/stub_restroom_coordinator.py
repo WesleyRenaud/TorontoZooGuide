@@ -14,8 +14,10 @@ class StubRestroomCoordinator():
          self,
          *,
          restroom_names: list[ str ],
+         closed_restroom_names: list[ str ],
          restrooms: list[ Restroom ] ) -> None:
       self.restroom_names = restroom_names
+      self.closed_restroom_names = closed_restroom_names
       self.restrooms = restrooms
       self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
       self.closed = False
@@ -29,6 +31,11 @@ class StubRestroomCoordinator():
    def get_restroom_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_restroom_names', {} ) )
       return list( self.restroom_names )
+
+
+   def get_closed_restroom_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_restroom_options', {} ) )
+      return list( self.closed_restroom_names )
 
 
    def get_restrooms(

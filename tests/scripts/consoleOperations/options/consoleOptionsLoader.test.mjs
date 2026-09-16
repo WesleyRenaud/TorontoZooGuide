@@ -52,6 +52,23 @@ test('Test_LoadClosedExhibits_TestClientResult_ExpectExhibits', async () => {
    }
 });
 
+test('Test_LoadClosedRestrooms_TestClientResult_ExpectRestrooms', async () => {
+   const originalGet = ConsoleOperationsClient.getClosedRestroomOptions;
+
+   ConsoleOperationsClient.getClosedRestroomOptions = async () => ({
+      restrooms: ['Entrance Restroom', 'Africa Restaurant Restroom'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadClosedRestrooms(),
+         ['Entrance Restroom', 'Africa Restaurant Restroom']
+      );
+   } finally {
+      ConsoleOperationsClient.getClosedRestroomOptions = originalGet;
+   }
+});
+
 test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
 

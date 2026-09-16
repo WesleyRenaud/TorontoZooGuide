@@ -32,6 +32,15 @@ class RestroomController():
 
 
    @staticmethod
+   def get_closed_restroom_options( handler: JsonRequestHandler ) -> None:
+      restrooms = RestroomCoordinator.get_closed_restroom_options()
+
+      handler._write_json( {
+         'restrooms': restrooms,
+      } )
+
+
+   @staticmethod
    def set_restroom_closed( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

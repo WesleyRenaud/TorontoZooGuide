@@ -55,6 +55,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadClosedRestrooms() {
+      const result = await ConsoleOperationsClient.getClosedRestroomOptions();
+      return result.restrooms;
+   }
+
    static async loadGiftShops() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'giftShops',
