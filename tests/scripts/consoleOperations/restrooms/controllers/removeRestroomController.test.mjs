@@ -24,7 +24,7 @@ test('Test_CreateRemoveRestroomAlertController_TestShowAndSubmitSuccess_ExpectSt
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
-      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadRestrooms);
+      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadAlertRestrooms);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateRestroomDropdown);
    };
    ConsoleStatusPresenter.setStatus = (...args) => {

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..data_access.closed_restroom_name_provider import ClosedRestroomNameProvider
+from ..data_access.restroom_alert_name_provider import RestroomAlertNameProvider
 from ..data_access.restroom_alert_provider import RestroomAlertProvider
 from ..data_access.restroom_provider import RestroomProvider
 from ..data_access.restroom_status_provider import RestroomStatusProvider
@@ -24,6 +25,13 @@ class RestroomCoordinator():
    @classmethod
    def get_closed_restroom_options( cls ) -> list[ str ]:
       return ClosedRestroomNameProvider.fetch_closed_restroom_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def get_restroom_alert_options( cls ) -> list[ str ]:
+      return RestroomAlertNameProvider.fetch_restroom_alert_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
 

@@ -23,7 +23,7 @@ export class RemoveRestroomController {
          statusEl,
          formFieldEls: [restroomEl],
          activatePanel,
-         loadOptions: ConsoleOptionsLoader.loadRestrooms,
+         loadOptions: ConsoleOptionsLoader.loadAlertRestrooms,
          populateOptions: ConsoleDropdownPopulator.populateRestroomDropdown,
          targetEl: restroomEl,
          loadErrorMessage: Strings.loadErrors.restrooms,

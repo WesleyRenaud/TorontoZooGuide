@@ -6,6 +6,7 @@ from api.models.date_range import DateRange
 from api.models.restroom import Restroom
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.restrooms.data_access.closed_restroom_name_provider import ClosedRestroomNameProvider
+from api.restrooms.data_access.restroom_alert_name_provider import RestroomAlertNameProvider
 from api.restrooms.data_access.restroom_alert_provider import RestroomAlertProvider
 from api.restrooms.data_access.restroom_provider import RestroomProvider
 from api.restrooms.data_access.restroom_status_provider import RestroomStatusProvider
@@ -74,6 +75,29 @@ def Test_GetClosedRestroomOptions_TestProviderNames_ExpectReturned(
       fetch_closed_restroom_names )
 
    assert RestroomCoordinator.get_closed_restroom_options() == [ RESTROOM_TITLE ]
+   assert captured == { 'today': '2026-09-16' }
+
+def Test_GetRestroomAlertOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_restroom_alert_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ RESTROOM_TITLE ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      RestroomAlertNameProvider,
+      'fetch_restroom_alert_names',
+      fetch_restroom_alert_names )
+
+   assert RestroomCoordinator.get_restroom_alert_options() == [ RESTROOM_TITLE ]
    assert captured == { 'today': '2026-09-16' }
 
 def Test_GetRestrooms_TestProvidersAndBuilder_ExpectRestrooms(
