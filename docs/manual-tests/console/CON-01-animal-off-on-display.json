@@ -53,8 +53,8 @@
     {
       "number": 9,
       "name": "Set on display",
-      "do": "In Console, open **Set animal as on display**. Choose **Africa Savanna**, **African Lion**, and **Outdoor only**.",
-      "expect": "On-display form accepts those values."
+      "do": "In Console, open **Set animal as on display**. For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions. Set **Viewing scope** to **Outdoor only**.",
+      "expect": "Suggestions include **African Lion** because it is off display now. **Africa Savanna**, **African Lion**, and **Outdoor only** are selected."
     },
     {
       "number": 10,
@@ -67,12 +67,6 @@
       "name": "Map restored",
       "do": "From the bottom nav, return to **Map** on **Specific Map** today with **Include off display animals** unchecked.",
       "expect": "**African Lion** shows as a normal on-display marker again."
-    },
-    {
-      "number": 12,
-      "name": "Cleanup confirmed",
-      "do": "Confirm no leftover off-display state for **African Lion** today.",
-      "expect": "Guest map/itinerary treat **African Lion** as on display."
     }
   ]
 }

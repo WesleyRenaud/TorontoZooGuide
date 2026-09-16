@@ -94,6 +94,18 @@ class AnimalController():
 
 
    @staticmethod
+   def get_off_display_animal_options( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      species = AnimalCoordinator.get_off_display_animal_options(
+         exhibit=data.get( 'exhibit' ) )
+
+      handler._write_json( {
+         'species': species,
+      } )
+
+
+   @staticmethod
    def set_animal_off_display( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

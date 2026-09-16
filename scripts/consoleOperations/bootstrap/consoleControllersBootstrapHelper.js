@@ -1,3 +1,4 @@
+import { SpeciesProvider } from '../animals/autocomplete/speciesProvider.js';
 import { AnimalOffController } from '../animals/controllers/animalOffController.js';
 import { AnimalOnController } from '../animals/controllers/animalOnController.js';
 import { AnimalSpeciesController } from '../animals/controllers/animalSpeciesController.js';
@@ -40,13 +41,16 @@ import { WildEncounterController } from '../wildEncounters/controllers/wildEncou
 
 export class ConsoleControllersBootstrapHelper {
    static ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
-   'offDisplay',
-   'onDisplay',
-   'visibilitySchedule',
-   'removeVisibilitySchedule',
-   'viewingAlert',
-   'removeViewingAlert',
-];
+      'offDisplay',
+      'onDisplay',
+      'visibilitySchedule',
+      'removeVisibilitySchedule',
+      'viewingAlert',
+      'removeViewingAlert',
+   ];
+   static ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY = {
+      onDisplay: 'createOffDisplayAnimalSpeciesSource',
+   };
    static CONTROLLER_BINDINGS = [
    {
       createController: AnimalOffController.createAnimalOffDisplayController,
@@ -230,6 +234,16 @@ export class ConsoleControllersBootstrapHelper {
    },
 ];
 
+   static createAnimalSpeciesSourceForKey(key) {
+      const methodName = ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY[key];
+
+      if (methodName) {
+         return SpeciesProvider[methodName]();
+      }
+
+      return SpeciesProvider.createAnimalSpeciesSource();
+   }
+
    static initAnimalSpeciesAutocompletes(animals) {
       ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_AUTOCOMPLETE_KEYS.forEach(key => {
          const { speciesEl, speciesResultsEl, exhibitEl } = animals[key];
@@ -238,6 +252,7 @@ export class ConsoleControllersBootstrapHelper {
             inputEl: speciesEl,
             resultsEl: speciesResultsEl,
             exhibitEl,
+            speciesSource: ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey(key),
          });
       });
    }

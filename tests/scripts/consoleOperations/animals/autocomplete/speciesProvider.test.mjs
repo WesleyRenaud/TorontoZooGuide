@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { SpeciesProvider } from '../../../../../scripts/consoleOperations/animals/autocomplete/speciesProvider.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
+import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { AnimalsClient } from '../../../../../scripts/api/animalsClient.js';
 import { SpeciesSourceNormalizer } from '../../../../../scripts/consoleOperations/animals/autocomplete/speciesSourceNormalizer.js';
 
@@ -36,3 +37,96 @@ test('Test_CreateAnimalSpeciesSource_TestLoadForExhibit_ExpectCachedLists', asyn
       SpeciesSourceNormalizer.normalizeExhibitKey = originalNormalizeKey;
    }
 });
+
+test('Test_CreateAnimalSpeciesSource_TestInjectedFetchersWithoutCache_ExpectRefetch', async () => {
+   let allLoads = 0;
+   let exhibitLoads = 0;
+
+   const source = SpeciesProvider.createAnimalSpeciesSource({
+      fetchAllSpecies: async () => {
+         allLoads += 1;
+         return ['Lion'];
+      },
+      fetchSpeciesForExhibit: async (exhibit) => {
+         exhibitLoads += 1;
+         assert.equal(exhibit, 'Savanna');
+         if (exhibitLoads === 1) {
+            return undefined;
+         }
+
+         return [null, 'Giraffe'];
+      },
+      cacheLists: false,
+   });
+
+   assert.deepEqual(await source.loadForExhibit(''), ['Lion']);
+   assert.deepEqual(await source.loadForExhibit(''), ['Lion']);
+   assert.equal(allLoads, 2);
+
+   assert.deepEqual(await source.loadForExhibit('Savanna'), []);
+   assert.deepEqual(await source.loadForExhibit('Savanna'), ['Giraffe']);
+   assert.equal(exhibitLoads, 2);
+});
+
+test('Test_FetchOffDisplaySpecies_TestClientResult_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getOffDisplayAnimalOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getOffDisplayAnimalOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(await SpeciesProvider.fetchOffDisplaySpecies(), ['Lion']);
+      assert.deepEqual(payloads, [undefined]);
+   } finally {
+      ConsoleOperationsClient.getOffDisplayAnimalOptions = originalGet;
+   }
+});
+
+test('Test_FetchOffDisplaySpeciesInExhibit_TestClientPayload_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getOffDisplayAnimalOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getOffDisplayAnimalOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(
+         await SpeciesProvider.fetchOffDisplaySpeciesInExhibit('Savanna'),
+         ['Lion']
+      );
+      assert.deepEqual(payloads, [{ exhibit: 'Savanna' }]);
+   } finally {
+      ConsoleOperationsClient.getOffDisplayAnimalOptions = originalGet;
+   }
+});
+
+test('Test_CreateOffDisplayAnimalSpeciesSource_TestLoaders_ExpectOffDisplayFetchers', async () => {
+   const originalAll = SpeciesProvider.fetchOffDisplaySpecies;
+   const originalExhibit = SpeciesProvider.fetchOffDisplaySpeciesInExhibit;
+   const calls = [];
+
+   SpeciesProvider.fetchOffDisplaySpecies = async () => {
+      calls.push('all');
+      return ['Lion'];
+   };
+   SpeciesProvider.fetchOffDisplaySpeciesInExhibit = async (exhibit) => {
+      calls.push(exhibit);
+      return ['Giraffe'];
+   };
+
+   try {
+      const source = SpeciesProvider.createOffDisplayAnimalSpeciesSource();
+      assert.deepEqual(await source.loadForExhibit(''), ['Lion']);
+      assert.deepEqual(await source.loadForExhibit('Savanna'), ['Giraffe']);
+      assert.deepEqual(calls, ['all', 'Savanna']);
+   } finally {
+      SpeciesProvider.fetchOffDisplaySpecies = originalAll;
+      SpeciesProvider.fetchOffDisplaySpeciesInExhibit = originalExhibit;
+   }
+});
+
