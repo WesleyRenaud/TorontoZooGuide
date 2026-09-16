@@ -45,6 +45,14 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-off-display-exhibit-options', {});
    }
 
+   static getAnimalVisibilityScheduleOptions(payload = {}) {
+      return ApiClient.postJson('/get-animal-visibility-schedule-options', payload);
+   }
+
+   static getAnimalVisibilityScheduleExhibitOptions() {
+      return ApiClient.postJson('/get-animal-visibility-schedule-exhibit-options', {});
+   }
+
    static getActiveUpdateOptions() {
       return ApiClient.postJson('/get-active-update-options', {});
    }

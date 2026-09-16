@@ -24,7 +24,7 @@ export class RemoveVisibilityController {
          statusEl,
          formFieldEls: [speciesEl, exhibitEl],
          activatePanel,
-         loadOptions: ConsoleOptionsLoader.loadExhibits,
+         loadOptions: ConsoleOptionsLoader.loadVisibilityScheduleExhibits,
          populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
          targetEl: exhibitEl,
          loadErrorMessage: Strings.loadErrors.exhibits,

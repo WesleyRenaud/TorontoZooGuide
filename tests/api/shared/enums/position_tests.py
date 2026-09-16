@@ -15,9 +15,10 @@ def Test_Position_TestSharedJson_ExpectSingleSourceOfTruth() -> None:
 
 
 def Test_Position_TestListIndexing_ExpectElements() -> None:
-   items = [ 'a', 'b', 'c' ]
+   items = [ 'a', 'b', 'c', 'd' ]
 
    assert items[ Position.FIRST ] == 'a'
    assert items[ Position.SECOND ] == 'b'
    assert items[ Position.THIRD ] == 'c'
-   assert items[ Position.LAST ] == 'c'
+   assert items[ Position.FOURTH ] == 'd'
+   assert items[ Position.LAST ] == 'd'

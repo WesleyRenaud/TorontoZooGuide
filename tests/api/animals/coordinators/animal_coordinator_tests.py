@@ -16,7 +16,9 @@ from api.animals.data_access.animal_status_provider import AnimalStatusProvider
 from api.animals.data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
 from api.animals.data_access.animal_viewing_alert_provider import AnimalViewingAlertProvider
 from api.animals.data_access.animal_viewing_scope_provider import AnimalViewingScopeProvider
+from api.animals.data_access.animal_visibility_schedule_exhibit_name_provider import AnimalVisibilityScheduleExhibitNameProvider
 from api.animals.data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
+from api.animals.data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
 from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuilder
 from api.animals.domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
@@ -1159,6 +1161,83 @@ def Test_GetOffDisplayExhibitOptions_TestProviderNames_ExpectReturned(
       fetch_off_display_exhibit_names )
 
    assert AnimalCoordinator.get_off_display_exhibit_options() == [ EXHIBIT ]
+   assert captured == { 'today': '2026-09-16' }
+
+
+def Test_GetAnimalVisibilityScheduleOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_visibility_schedule_species_names_in_exhibit(
+         _conn: Types.Connection,
+         today: str,
+         exhibit: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      captured[ 'exhibit' ] = exhibit
+      return [ SPECIES ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      AnimalVisibilityScheduleSpeciesNameProvider,
+      'fetch_visibility_schedule_species_names_in_exhibit',
+      fetch_visibility_schedule_species_names_in_exhibit )
+
+   assert AnimalCoordinator.get_animal_visibility_schedule_options( exhibit=EXHIBIT ) == [ SPECIES ]
+   assert captured == {
+      'today': '2026-09-16',
+      'exhibit': EXHIBIT,
+   }
+
+
+def Test_GetAnimalVisibilityScheduleOptions_TestBlankExhibit_ExpectProviderCalledWithoutExhibit(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_visibility_schedule_species_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return []
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      AnimalVisibilityScheduleSpeciesNameProvider,
+      'fetch_visibility_schedule_species_names',
+      fetch_visibility_schedule_species_names )
+
+   assert AnimalCoordinator.get_animal_visibility_schedule_options() == []
+   assert captured == { 'today': '2026-09-16' }
+
+
+def Test_GetAnimalVisibilityScheduleExhibitOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_visibility_schedule_exhibit_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ EXHIBIT ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      AnimalVisibilityScheduleExhibitNameProvider,
+      'fetch_visibility_schedule_exhibit_names',
+      fetch_visibility_schedule_exhibit_names )
+
+   assert AnimalCoordinator.get_animal_visibility_schedule_exhibit_options() == [ EXHIBIT ]
    assert captured == { 'today': '2026-09-16' }
 
 

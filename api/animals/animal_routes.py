@@ -13,6 +13,8 @@ class AnimalRoutes():
    '/get-animal-species-names': AnimalController.get_animal_species_names,
    '/get-off-display-animal-options': AnimalController.get_off_display_animal_options,
    '/get-off-display-exhibit-options': AnimalController.get_off_display_exhibit_options,
+   '/get-animal-visibility-schedule-options': AnimalController.get_animal_visibility_schedule_options,
+   '/get-animal-visibility-schedule-exhibit-options': AnimalController.get_animal_visibility_schedule_exhibit_options,
    '/set-animal-off-display': AnimalController.set_animal_off_display,
    '/set-animal-on-display': AnimalController.set_animal_on_display,
    '/set-animal-visibility-schedule': AnimalController.set_animal_visibility_schedule,

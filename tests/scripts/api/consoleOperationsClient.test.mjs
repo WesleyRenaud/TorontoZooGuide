@@ -15,6 +15,7 @@ const _NO_ARG_GETTERS = [
    ['getGuardiansTalkNameOptions', '/get-guardians-talk-names'],
    ['getWildEncounterNameOptions', '/get-wild-encounter-names'],
    ['getOffDisplayExhibitOptions', '/get-off-display-exhibit-options'],
+   ['getAnimalVisibilityScheduleExhibitOptions', '/get-animal-visibility-schedule-exhibit-options'],
    ['getActiveUpdateOptions', '/get-active-update-options'],
    ['getGuardiansTalkLocations', '/get-guardians-talk-locations'],
 ];
@@ -23,6 +24,7 @@ const _PAYLOAD_METHODS = [
    ['setAnimalOffDisplay', '/set-animal-off-display'],
    ['setAnimalOnDisplay', '/set-animal-on-display'],
    ['getOffDisplayAnimalOptions', '/get-off-display-animal-options'],
+   ['getAnimalVisibilityScheduleOptions', '/get-animal-visibility-schedule-options'],
    ['setAnimalViewingAlert', '/set-animal-viewing-alert'],
    ['removeAnimalViewingAlert', '/remove-animal-viewing-alert'],
    ['setAnimalVisibilitySchedule', '/set-animal-visibility-schedule'],
@@ -124,9 +126,18 @@ test('Test_ConsoleOperationsClient', async () => {
          }
       );
 
+      assert.deepEqual(
+         await ConsoleOperationsClient.getAnimalVisibilityScheduleOptions(),
+         {
+            ok: true,
+            url: '/get-animal-visibility-schedule-options',
+            payload: {},
+         }
+      );
+
       assert.equal(
          calls.length,
-         _NO_ARG_GETTERS.length + _PAYLOAD_METHODS.length + 2
+         _NO_ARG_GETTERS.length + _PAYLOAD_METHODS.length + 3
       );
    } finally {
       ApiClient.postJson = originalPost;

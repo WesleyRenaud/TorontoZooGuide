@@ -130,3 +130,65 @@ test('Test_CreateOffDisplayAnimalSpeciesSource_TestLoaders_ExpectOffDisplayFetch
    }
 });
 
+test('Test_FetchVisibilityScheduleSpecies_TestClientResult_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getAnimalVisibilityScheduleOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getAnimalVisibilityScheduleOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(await SpeciesProvider.fetchVisibilityScheduleSpecies(), ['Lion']);
+      assert.deepEqual(payloads, [undefined]);
+   } finally {
+      ConsoleOperationsClient.getAnimalVisibilityScheduleOptions = originalGet;
+   }
+});
+
+test('Test_FetchVisibilityScheduleSpeciesInExhibit_TestClientPayload_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getAnimalVisibilityScheduleOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getAnimalVisibilityScheduleOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(
+         await SpeciesProvider.fetchVisibilityScheduleSpeciesInExhibit('Savanna'),
+         ['Lion']
+      );
+      assert.deepEqual(payloads, [{ exhibit: 'Savanna' }]);
+   } finally {
+      ConsoleOperationsClient.getAnimalVisibilityScheduleOptions = originalGet;
+   }
+});
+
+test('Test_CreateVisibilityScheduleAnimalSpeciesSource_TestLoaders_ExpectVisibilityScheduleFetchers', async () => {
+   const originalAll = SpeciesProvider.fetchVisibilityScheduleSpecies;
+   const originalExhibit = SpeciesProvider.fetchVisibilityScheduleSpeciesInExhibit;
+   const calls = [];
+
+   SpeciesProvider.fetchVisibilityScheduleSpecies = async () => {
+      calls.push('all');
+      return ['Lion'];
+   };
+   SpeciesProvider.fetchVisibilityScheduleSpeciesInExhibit = async (exhibit) => {
+      calls.push(exhibit);
+      return ['Giraffe'];
+   };
+
+   try {
+      const source = SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource();
+      assert.deepEqual(await source.loadForExhibit(''), ['Lion']);
+      assert.deepEqual(await source.loadForExhibit('Savanna'), ['Giraffe']);
+      assert.deepEqual(calls, ['all', 'Savanna']);
+   } finally {
+      SpeciesProvider.fetchVisibilityScheduleSpecies = originalAll;
+      SpeciesProvider.fetchVisibilityScheduleSpeciesInExhibit = originalExhibit;
+   }
+});
+

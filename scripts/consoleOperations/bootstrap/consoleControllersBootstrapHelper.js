@@ -50,6 +50,7 @@ export class ConsoleControllersBootstrapHelper {
    ];
    static ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY = {
       onDisplay: 'createOffDisplayAnimalSpeciesSource',
+      removeVisibilitySchedule: 'createVisibilityScheduleAnimalSpeciesSource',
    };
    static CONTROLLER_BINDINGS = [
    {
