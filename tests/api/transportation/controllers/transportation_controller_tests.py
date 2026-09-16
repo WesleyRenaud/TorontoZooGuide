@@ -59,7 +59,8 @@ def stub_transportation_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubTr
       transportations=[ _sample_transportation() ],
       transportation_routes=[ { 'name': ROUTE_NAME } ],
       transportation_route=_sample_route(),
-      transportation_station_names=[ STATION_NAME ] )
+      transportation_station_names=[ STATION_NAME ],
+      closed_transportation_station_names=[ STATION_NAME ] )
 
    monkeypatch.setattr( connection.DatabaseConnectionProvider, 'open', lambda db_path='animals.db': None )
 
@@ -153,6 +154,32 @@ def Test_GetTransportationStationNames_TestHttpRequest_ExpectDefaultsTransportat
       'get_transportation_station_names',
       { 'transportation': TransportationName.ZOOMOBILE },
    )
+
+
+def Test_GetClosedTransportationStationOptions_TestDirectCall_ExpectWritesStationsFromCoordinator(
+      stub_transportation_coordinator: StubTransportationCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   TransportationController.get_closed_transportation_station_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'transportation_stations': [ STATION_NAME ],
+   }
+   assert stub_transportation_coordinator.calls == [ ( 'get_closed_transportation_station_options', {} ) ]
+
+
+def Test_GetClosedTransportationStationOptions_TestHttpRequest_ExpectWritesStationsFromCoordinator(
+      stub_transportation_coordinator: StubTransportationCoordinator ) -> None:
+   handler = make_handler( '/get-closed-transportation-station-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'transportation_stations': [ STATION_NAME ],
+   }
+   assert stub_transportation_coordinator.calls == [ ( 'get_closed_transportation_station_options', {} ) ]
 
 
 def Test_SetTransportationStationClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

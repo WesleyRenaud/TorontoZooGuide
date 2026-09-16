@@ -10,10 +10,12 @@ from api.models.active_transportation_route import ActiveTransportationRoute
 from api.models.transportation import Transportation
 from api.models.transportation_station import TransportationStation
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.transportation_name import TransportationName
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from api.shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 from api.transportation.coordinators.transportation_coordinator import TransportationCoordinator
+from api.transportation.data_access.closed_transportation_station_name_provider import ClosedTransportationStationNameProvider
 from api.transportation.data_access.transportation_active_route_provider import TransportationActiveRouteProvider
 from api.transportation.data_access.transportation_provider import TransportationProvider
 from api.transportation.data_access.transportation_record import TransportationRecord
@@ -165,6 +167,35 @@ def Test_GetTransportationStationNames_TestProviderNames_ExpectReturned(
       else [] )
 
    assert TransportationCoordinator.get_transportation_station_names() == [ STATION_NAME ]
+
+
+def Test_GetClosedTransportationStationOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_closed_transportation_station_names(
+         _conn: Types.Connection,
+         transportation: str,
+         today: str ) -> list[ str ]:
+      captured[ 'transportation' ] = transportation
+      captured[ 'today' ] = today
+      return [ STATION_NAME ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      ClosedTransportationStationNameProvider,
+      'fetch_closed_transportation_station_names',
+      fetch_closed_transportation_station_names )
+
+   assert TransportationCoordinator.get_closed_transportation_station_options() == [ STATION_NAME ]
+   assert captured == {
+      'transportation': TransportationName.ZOOMOBILE,
+      'today': '2026-09-16',
+   }
 
 
 def Test_GetTransportationRouteIds_TestProviderIds_ExpectReturned(

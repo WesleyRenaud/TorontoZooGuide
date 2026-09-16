@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.closed_transportation_station_name_provider import ClosedTransportationStationNameProvider
 from ..data_access.transportation_active_route_provider import TransportationActiveRouteProvider
 from ..data_access.transportation_provider import TransportationProvider
 from ..data_access.transportation_route_provider import TransportationRouteProvider
@@ -19,6 +20,7 @@ from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.transportation_current_route_schedule_builder import TransportationCurrentRouteScheduleBuilder
 from ..search.transportation_stations_matching_query_builder import TransportationStationsMatchingQueryBuilder
 from ..search.transportations_matching_query_builder import TransportationsMatchingQueryBuilder
+from ...shared.calendar_dates import DateValues
 from ...shared.enums.transportation_name import TransportationName
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 from ..status.transportation_station_status_builder import TransportationStationStatusBuilder
@@ -73,6 +75,16 @@ class TransportationCoordinator():
       return TransportationStationProvider.fetch_transportation_station_names(
          RequestConnectionProvider.get(),
          transportation )
+
+
+   @classmethod
+   def get_closed_transportation_station_options(
+         cls,
+         transportation: str = TransportationName.ZOOMOBILE ) -> list[ str ]:
+      return ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+         RequestConnectionProvider.get(),
+         transportation,
+         today=DateValues.today_date_key() )
 
 
    @classmethod

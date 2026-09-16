@@ -27,7 +27,7 @@ test('Test_CreateTransportationStationOpenController_TestWiring_ExpectOpenForm',
       );
       assert.equal(captured.entityEl, entityEl);
       assert.equal(captured.extra, 1);
-      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadTransportationStations);
+      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedTransportationStations);
       assert.equal(captured.populateOptions, ConsoleDropdownPopulator.populateTransportationStationDropdown);
       assert.equal(captured.entityLabel, Strings.entityLabels.transportationStation);
 

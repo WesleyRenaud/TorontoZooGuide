@@ -61,6 +61,15 @@ class TransportationController():
 
 
    @staticmethod
+   def get_closed_transportation_station_options( handler: JsonRequestHandler ) -> None:
+      transportation_stations = TransportationCoordinator.get_closed_transportation_station_options()
+
+      handler._write_json( {
+         'transportation_stations': transportation_stations,
+      } )
+
+
+   @staticmethod
    def set_transportation_station_closed( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
       transportation = data.get( 'transportation' ) or TransportationName.ZOOMOBILE

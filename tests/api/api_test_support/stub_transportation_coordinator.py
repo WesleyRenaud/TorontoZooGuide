@@ -18,11 +18,13 @@ class StubTransportationCoordinator():
          transportations: list[ Transportation ],
          transportation_routes: list[ dict[ str, object ] ],
          transportation_route: ActiveTransportationRoute,
-         transportation_station_names: list[ str ] ) -> None:
+         transportation_station_names: list[ str ],
+         closed_transportation_station_names: list[ str ] ) -> None:
       self.transportations = transportations
       self.transportation_routes = transportation_routes
       self.transportation_route = transportation_route
       self.transportation_station_names = transportation_station_names
+      self.closed_transportation_station_names = closed_transportation_station_names
       self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
       self.closed = False
       StubTransportationCoordinator.instances.append( self )
@@ -92,6 +94,11 @@ class StubTransportationCoordinator():
          )
       )
       return list( self.transportation_station_names )
+
+
+   def get_closed_transportation_station_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_transportation_station_options', {} ) )
+      return list( self.closed_transportation_station_names )
 
 
    def set_transportation_station_as_closed( self, **kwargs: Any ) -> bool:
