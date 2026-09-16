@@ -10,3 +10,4 @@
 - **Set exhibit as open** lists only exhibits that are closed now or in the future. **Set exhibit as closed** still uses the full catalog.
 - **Set restroom as open** lists only restrooms that are closed now or in the future. **Set restroom as closed** still uses the full catalog.
 - **Remove restroom alert** lists only restrooms that have an alert now or in the future. **Set restroom alert** still uses the full catalog.
+- **Set transportation station as open** lists only stations that are closed now or in the future. **Set transportation station as closed** still uses the full catalog.

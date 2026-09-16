@@ -17,8 +17,8 @@
     {
       "number": 3,
       "name": "Open station",
-      "do": "**Set transportation station as open**.",
-      "expect": "Success."
+      "do": "Open **Set transportation station as open**. For **Transportation Station**, choose the station you closed in step 1 and submit.",
+      "expect": "Station options include that station because it is closed now. Success."
     },
     {
       "number": 4,

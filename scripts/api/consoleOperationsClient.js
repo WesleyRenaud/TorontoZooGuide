@@ -41,6 +41,10 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-transportation-station-names', {});
    }
 
+   static getClosedTransportationStationOptions() {
+      return ApiClient.postJson('/get-closed-transportation-station-options', {});
+   }
+
    static getGuardiansTalkNameOptions() {
       return ApiClient.postJson('/get-guardians-talk-names', {});
    }

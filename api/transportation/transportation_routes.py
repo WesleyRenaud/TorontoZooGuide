@@ -10,6 +10,7 @@ class TransportationRoutes():
    '/get-transportation-routes': TransportationController.get_transportation_routes,
    '/get-transportation-route': TransportationController.get_transportation_route,
    '/get-transportation-station-names': TransportationController.get_transportation_station_names,
+   '/get-closed-transportation-station-options': TransportationController.get_closed_transportation_station_options,
    '/set-transportation-station-closed': TransportationController.set_transportation_station_closed,
    '/set-transportation-station-open': TransportationController.set_transportation_station_open,
    '/set-current-transportation-route': TransportationController.set_current_transportation_route,

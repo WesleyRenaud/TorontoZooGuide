@@ -12,7 +12,7 @@ export class TransportationStationOpenController {
       return AmenityOpenControllerFactory.createAmenityOpenController({
          ...controllerOptions,
          entityEl: transportationStationEl,
-         loadOptions: ConsoleOptionsLoader.loadTransportationStations,
+         loadOptions: ConsoleOptionsLoader.loadClosedTransportationStations,
          populateOptions: ConsoleDropdownPopulator.populateTransportationStationDropdown,
          submitOpenStatus: ({ entity }) => ConsoleOperationsClient.setTransportationStationOpen({
             transportationStation: entity,

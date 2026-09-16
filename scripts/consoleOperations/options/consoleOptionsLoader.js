@@ -89,6 +89,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadClosedTransportationStations() {
+      const result = await ConsoleOperationsClient.getClosedTransportationStationOptions();
+      return result.transportation_stations;
+   }
+
    static async loadGuardiansTalks() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'guardiansTalks',

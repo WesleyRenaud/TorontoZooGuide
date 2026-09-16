@@ -86,6 +86,23 @@ test('Test_LoadAlertRestrooms_TestClientResult_ExpectRestrooms', async () => {
    }
 });
 
+test('Test_LoadClosedTransportationStations_TestClientResult_ExpectStations', async () => {
+   const originalGet = ConsoleOperationsClient.getClosedTransportationStationOptions;
+
+   ConsoleOperationsClient.getClosedTransportationStationOptions = async () => ({
+      transportation_stations: ['Africa Zoomobile Station', 'Main Zoomobile Station'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadClosedTransportationStations(),
+         ['Africa Zoomobile Station', 'Main Zoomobile Station']
+      );
+   } finally {
+      ConsoleOperationsClient.getClosedTransportationStationOptions = originalGet;
+   }
+});
+
 test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
 

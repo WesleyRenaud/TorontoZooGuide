@@ -15,6 +15,7 @@ const _NO_ARG_GETTERS = [
    ['getGiftShopNameOptions', '/get-gift-shop-names'],
    ['getAttractionNameOptions', '/get-attraction-names'],
    ['getTransportationStationNameOptions', '/get-transportation-station-names'],
+   ['getClosedTransportationStationOptions', '/get-closed-transportation-station-options'],
    ['getGuardiansTalkNameOptions', '/get-guardians-talk-names'],
    ['getWildEncounterNameOptions', '/get-wild-encounter-names'],
    ['getOffDisplayExhibitOptions', '/get-off-display-exhibit-options'],
