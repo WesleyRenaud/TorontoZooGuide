@@ -10,6 +10,7 @@ export class AnimalSpeciesController {
       inputEl,
       resultsEl,
       exhibitEl = null,
+      speciesSource = null,
    } = {}) {
       if (!inputEl || !resultsEl) {
          return {
@@ -17,7 +18,7 @@ export class AnimalSpeciesController {
          };
       }
 
-      const speciesSource = SpeciesProvider.createAnimalSpeciesSource();
+      const resolvedSpeciesSource = speciesSource ?? SpeciesProvider.createAnimalSpeciesSource();
       const resultsView = AnimalSpeciesResultsView.createAnimalSpeciesResultsView({
          inputEl,
          resultsEl,
@@ -36,7 +37,7 @@ export class AnimalSpeciesController {
          }
 
          try {
-            const speciesList = await speciesSource.loadForExhibit(exhibit);
+            const speciesList = await resolvedSpeciesSource.loadForExhibit(exhibit);
 
             if (requestId !== searchRequestId) {
                return;

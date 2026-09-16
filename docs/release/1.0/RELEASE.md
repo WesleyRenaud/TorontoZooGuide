@@ -7,7 +7,7 @@ Release cycle notes for the first guest-ready cut of the Toronto Zoo Guide: map 
 - **Map** — date presets (Summer / Winter / Specific Map), type filters, search, likelihood markers, stacks, tooltips, Zoomobile routes, Updates / Events, off-display and closed toggles.
 - **Animals** — browse / search and **View on Map**.
 - **Itinerary** — wizard (date, animals, attractions, talks, wild encounters, transportation), List / Day Planner, schedule module, rebuild / unschedule, conflict resolution including **Adjust Activity Times?** trim, Zoomobile as attraction vs transportation (including transit rides after rebuild), save / discard dirty builder close, past-date recovery.
-- **Console** — off/on display, visibility schedules, viewing alerts, exhibit/amenity open-closed and overrides, attraction hours / closure overrides, transportation stations and routes, guardians talks, wild encounters, drinking fountains, updates CRUD, create event, form validation errors.
+- **Console** — off/on display, visibility schedules, viewing alerts, exhibit/amenity open-closed and overrides, attraction hours / closure overrides, transportation stations and routes, guardians talks, wild encounters, drinking fountains, updates CRUD, create event, form validation errors. **Set animal as on display** species suggestions are limited to animals that are off display now or in the future.
 
 ## Manual test map
 

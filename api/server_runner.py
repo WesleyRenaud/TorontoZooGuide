@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from http.server import HTTPServer
+from http.server import ThreadingHTTPServer
 
 from .http_request_handler import HttpRequestHandler
 
@@ -9,6 +9,6 @@ class ServerRunner():
 
    @classmethod
    def run( cls, port: int = DEFAULT_PORT ) -> None:
-      httpd = HTTPServer( ( 'localhost', port ), HttpRequestHandler )
+      httpd = ThreadingHTTPServer( ( 'localhost', port ), HttpRequestHandler )
       print( 'Server listening on port: ', port )
       httpd.serve_forever()

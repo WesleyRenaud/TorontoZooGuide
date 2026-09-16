@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { ConsoleControllersBootstrapHelper } from '../../../../scripts/consoleOperations/bootstrap/consoleControllersBootstrapHelper.js';
 import { AnimalSpeciesController } from '../../../../scripts/consoleOperations/animals/controllers/animalSpeciesController.js';
+import { SpeciesProvider } from '../../../../scripts/consoleOperations/animals/autocomplete/speciesProvider.js';
 
 test('Test_AnimalSpeciesAutocompleteKeys_TestRegistry_ExpectKnownKeys', () => {
    assert.deepEqual(ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_AUTOCOMPLETE_KEYS, [
@@ -13,6 +14,9 @@ test('Test_AnimalSpeciesAutocompleteKeys_TestRegistry_ExpectKnownKeys', () => {
       'viewingAlert',
       'removeViewingAlert',
    ]);
+   assert.deepEqual(ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY, {
+      onDisplay: 'createOffDisplayAnimalSpeciesSource',
+   });
 });
 
 test('Test_ControllerBindings_TestRegistry_ExpectCreateFunctions', () => {
@@ -64,14 +68,44 @@ test('Test_ControllerBindings_TestGetExtraOptions_ExpectSpecialControllersMapped
    ]);
 });
 
+test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchingSources', () => {
+   const originalDefault = SpeciesProvider.createAnimalSpeciesSource;
+   const originalOffDisplay = SpeciesProvider.createOffDisplayAnimalSpeciesSource;
+   const defaultSource = { kind: 'default' };
+   const offDisplaySource = { kind: 'off-display' };
+
+   SpeciesProvider.createAnimalSpeciesSource = () => defaultSource;
+   SpeciesProvider.createOffDisplayAnimalSpeciesSource = () => offDisplaySource;
+
+   try {
+      assert.equal(
+         ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('onDisplay'),
+         offDisplaySource
+      );
+      assert.equal(
+         ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('offDisplay'),
+         defaultSource
+      );
+   } finally {
+      SpeciesProvider.createAnimalSpeciesSource = originalDefault;
+      SpeciesProvider.createOffDisplayAnimalSpeciesSource = originalOffDisplay;
+   }
+});
+
 test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreated', () => {
    const originalCreate = AnimalSpeciesController.createAnimalSpeciesAutocompleteController;
+   const originalDefault = SpeciesProvider.createAnimalSpeciesSource;
+   const originalOffDisplay = SpeciesProvider.createOffDisplayAnimalSpeciesSource;
    const calls = [];
+   const defaultSource = { kind: 'default' };
+   const offDisplaySource = { kind: 'off-display' };
 
    AnimalSpeciesController.createAnimalSpeciesAutocompleteController = (options) => {
       calls.push(options);
       return { created: true };
    };
+   SpeciesProvider.createAnimalSpeciesSource = () => defaultSource;
+   SpeciesProvider.createOffDisplayAnimalSpeciesSource = () => offDisplaySource;
 
    try {
       const animals = Object.fromEntries(
@@ -92,9 +126,13 @@ test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreat
          inputEl: animals.offDisplay.speciesEl,
          resultsEl: animals.offDisplay.speciesResultsEl,
          exhibitEl: animals.offDisplay.exhibitEl,
+         speciesSource: defaultSource,
       });
+      assert.equal(calls[1].speciesSource, offDisplaySource);
    } finally {
       AnimalSpeciesController.createAnimalSpeciesAutocompleteController = originalCreate;
+      SpeciesProvider.createAnimalSpeciesSource = originalDefault;
+      SpeciesProvider.createOffDisplayAnimalSpeciesSource = originalOffDisplay;
    }
 });
 

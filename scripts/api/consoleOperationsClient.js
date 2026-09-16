@@ -2,7 +2,7 @@ import { ApiClient } from './apiClient.js';
 
 export class ConsoleOperationsClient {
    static getSpeciesOptions() {
-      return ApiClient.postJson('/get-species', {});
+      return ApiClient.postJson('/get-animal-species-names', {});
    }
 
    static getExhibitOptions() {
@@ -35,6 +35,10 @@ export class ConsoleOperationsClient {
 
    static getWildEncounterNameOptions() {
       return ApiClient.postJson('/get-wild-encounter-names', {});
+   }
+
+   static getOffDisplayAnimalOptions(payload = {}) {
+      return ApiClient.postJson('/get-off-display-animal-options', payload);
    }
 
    static getActiveUpdateOptions() {

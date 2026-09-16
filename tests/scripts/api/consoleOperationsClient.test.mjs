@@ -5,7 +5,7 @@ import { ConsoleOperationsClient } from '../../../scripts/api/consoleOperationsC
 import { ApiClient } from '../../../scripts/api/apiClient.js';
 
 const _NO_ARG_GETTERS = [
-   ['getSpeciesOptions', '/get-species'],
+   ['getSpeciesOptions', '/get-animal-species-names'],
    ['getExhibitOptions', '/get-exhibits'],
    ['getRestaurantNameOptions', '/get-restaurant-names'],
    ['getRestroomNameOptions', '/get-restroom-names'],
@@ -21,6 +21,7 @@ const _NO_ARG_GETTERS = [
 const _PAYLOAD_METHODS = [
    ['setAnimalOffDisplay', '/set-animal-off-display'],
    ['setAnimalOnDisplay', '/set-animal-on-display'],
+   ['getOffDisplayAnimalOptions', '/get-off-display-animal-options'],
    ['setAnimalViewingAlert', '/set-animal-viewing-alert'],
    ['removeAnimalViewingAlert', '/remove-animal-viewing-alert'],
    ['setAnimalVisibilitySchedule', '/set-animal-visibility-schedule'],
@@ -113,9 +114,18 @@ test('Test_ConsoleOperationsClient', async () => {
          }
       );
 
+      assert.deepEqual(
+         await ConsoleOperationsClient.getOffDisplayAnimalOptions(),
+         {
+            ok: true,
+            url: '/get-off-display-animal-options',
+            payload: {},
+         }
+      );
+
       assert.equal(
          calls.length,
-         _NO_ARG_GETTERS.length + _PAYLOAD_METHODS.length + 1
+         _NO_ARG_GETTERS.length + _PAYLOAD_METHODS.length + 2
       );
    } finally {
       ApiClient.postJson = originalPost;

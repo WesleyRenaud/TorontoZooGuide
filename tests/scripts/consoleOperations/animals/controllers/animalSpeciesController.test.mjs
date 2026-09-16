@@ -94,6 +94,61 @@ test('Test_CreateAnimalSpeciesAutocompleteController_TestSearchAndEvents_ExpectR
    }
 });
 
+test('Test_CreateAnimalSpeciesAutocompleteController_TestInjectedSpeciesSource_ExpectUsed', async () => {
+   const originalSource = SpeciesProvider.createAnimalSpeciesSource;
+   const originalResultsView = AnimalSpeciesResultsView.createAnimalSpeciesResultsView;
+   const originalFilter = SpeciesMatcher.filterSpeciesMatches;
+   const originalDebounce = AnimalSpeciesAutocompleteHelper.debounce;
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalTrim = ValueNormalizer.asTrimmedString;
+   const renders = [];
+   let defaultSourceCalls = 0;
+   let injectedLoads = 0;
+
+   SpeciesProvider.createAnimalSpeciesSource = () => {
+      defaultSourceCalls += 1;
+      return { loadForExhibit: async () => [] };
+   };
+   AnimalSpeciesResultsView.createAnimalSpeciesResultsView = () => ({
+      clear: () => {},
+      render: (matches) => { renders.push(matches); },
+      handleKeydown: () => {},
+   });
+   SpeciesMatcher.filterSpeciesMatches = (list) => list;
+   AnimalSpeciesAutocompleteHelper.debounce = (fn) => fn;
+   ControllerHelper.getFieldValue = () => 'Savanna';
+   ValueNormalizer.asTrimmedString = (value) => String(value || '').trim();
+
+   try {
+      const inputEl = document.createElement('input');
+      AnimalSpeciesController.createAnimalSpeciesAutocompleteController({
+         inputEl,
+         resultsEl: document.createElement('div'),
+         exhibitEl: document.createElement('select'),
+         speciesSource: {
+            loadForExhibit: async () => {
+               injectedLoads += 1;
+               return ['Lion'];
+            },
+         },
+      });
+
+      inputEl.value = 'Li';
+      await inputEl.listeners.input();
+
+      assert.equal(defaultSourceCalls, 0);
+      assert.equal(injectedLoads, 1);
+      assert.deepEqual(renders.at(-1), ['Lion']);
+   } finally {
+      SpeciesProvider.createAnimalSpeciesSource = originalSource;
+      AnimalSpeciesResultsView.createAnimalSpeciesResultsView = originalResultsView;
+      SpeciesMatcher.filterSpeciesMatches = originalFilter;
+      AnimalSpeciesAutocompleteHelper.debounce = originalDebounce;
+      ControllerHelper.getFieldValue = originalGetField;
+      ValueNormalizer.asTrimmedString = originalTrim;
+   }
+});
+
 test('Test_CreateAnimalSpeciesAutocompleteController_TestStaleErrorAndEmptyFocus_ExpectIgnored', async () => {
    const originalSource = SpeciesProvider.createAnimalSpeciesSource;
    const originalResultsView = AnimalSpeciesResultsView.createAnimalSpeciesResultsView;

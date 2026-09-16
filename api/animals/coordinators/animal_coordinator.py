@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..data_access.animal_information_provider import AnimalInformationProvider
+from ..data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
 from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from ..data_access.animal_status_provider import AnimalStatusProvider
 from ..data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
@@ -16,6 +17,7 @@ from ...models import Animal
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
 from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
+from ...shared.date_values import DateValues
 from ...shared.enums import AnimalViewingScope
 from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
@@ -74,6 +76,19 @@ class AnimalCoordinator():
    @classmethod
    def get_animal_species_names( cls ) -> list[ str ]:
       return AnimalSpeciesNameProvider.fetch_animal_species_names( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_off_display_animal_options( cls, exhibit: str | None = None ) -> list[ str ]:
+      if exhibit:
+         return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
+            RequestConnectionProvider.get(),
+            today=DateValues.today_date_key(),
+            exhibit=exhibit )
+
+      return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
 
 
    @classmethod
