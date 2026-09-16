@@ -41,8 +41,8 @@
     {
       "number": 7,
       "name": "Remove schedule",
-      "do": "In Console, select **Remove visibility schedule**. Choose **Africa Savanna** and **African Lion**.",
-      "expect": "Remove form accepts those values."
+      "do": "In Console, select **Remove visibility schedule**. For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "Exhibit options include **Africa Savanna** because it has a visibility schedule. Suggestions include **African Lion** because it has a visibility schedule. **Africa Savanna** and **African Lion** are selected."
     },
     {
       "number": 8,

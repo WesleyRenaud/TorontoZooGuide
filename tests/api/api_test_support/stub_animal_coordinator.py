@@ -92,6 +92,23 @@ class StubAnimalCoordinator():
       return [ self.animal_exhibit ]
 
 
+   def get_animal_visibility_schedule_options( self, exhibit: str | None = None ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_animal_visibility_schedule_options',
+            {
+               'exhibit': exhibit,
+            }
+         )
+      )
+      return list( self.species_names )
+
+
+   def get_animal_visibility_schedule_exhibit_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_animal_visibility_schedule_exhibit_options', {} ) )
+      return [ self.animal_exhibit ]
+
+
    def set_animal_as_off_display( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_animal_as_off_display', kwargs ) )
       return StubAnimalCoordinator.default_success

@@ -21,10 +21,11 @@ test('Test_Position_TestSharedJson_ExpectSingleSourceOfTruth', () => {
 });
 
 test('Test_Position_TestListIndexing_ExpectElements', () => {
-   const items = ['a', 'b', 'c'];
+   const items = ['a', 'b', 'c', 'd'];
 
    assert.equal(items[Position.FIRST], 'a');
    assert.equal(items[Position.SECOND], 'b');
    assert.equal(items[Position.THIRD], 'c');
-   assert.equal(items.at(Position.LAST), 'c');
+   assert.equal(items[Position.FOURTH], 'd');
+   assert.equal(items.at(Position.LAST), 'd');
 });

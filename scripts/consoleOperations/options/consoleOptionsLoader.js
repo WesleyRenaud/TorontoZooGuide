@@ -24,6 +24,11 @@ export class ConsoleOptionsLoader {
       return result.exhibits;
    }
 
+   static async loadVisibilityScheduleExhibits() {
+      const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions();
+      return result.exhibits;
+   }
+
    static async loadRestaurants() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'restaurants',
