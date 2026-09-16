@@ -68,3 +68,20 @@ test('Test_LoadVisibilityScheduleExhibits_TestClientResult_ExpectExhibits', asyn
       ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions = originalGet;
    }
 });
+
+test('Test_LoadViewingAlertExhibits_TestClientResult_ExpectExhibits', async () => {
+   const originalGet = ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions;
+
+   ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions = async () => ({
+      exhibits: ['Africa Savanna', 'Eurasia Wilds'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadViewingAlertExhibits(),
+         ['Africa Savanna', 'Eurasia Wilds']
+      );
+   } finally {
+      ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions = originalGet;
+   }
+});

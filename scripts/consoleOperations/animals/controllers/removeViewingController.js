@@ -24,7 +24,7 @@ export class RemoveViewingController {
          statusEl,
          formFieldEls: [speciesEl, exhibitEl],
          activatePanel,
-         loadOptions: ConsoleOptionsLoader.loadExhibits,
+         loadOptions: ConsoleOptionsLoader.loadViewingAlertExhibits,
          populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
          targetEl: exhibitEl,
          loadErrorMessage: Strings.loadErrors.exhibits,

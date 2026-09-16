@@ -25,7 +25,7 @@ test('Test_CreateRemoveViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
-      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadExhibits);
+      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadViewingAlertExhibits);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
    };
    ConsoleStatusPresenter.setStatus = (...args) => {

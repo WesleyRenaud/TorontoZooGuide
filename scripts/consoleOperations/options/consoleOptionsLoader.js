@@ -29,6 +29,11 @@ export class ConsoleOptionsLoader {
       return result.exhibits;
    }
 
+   static async loadViewingAlertExhibits() {
+      const result = await ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions();
+      return result.exhibits;
+   }
+
    static async loadRestaurants() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'restaurants',

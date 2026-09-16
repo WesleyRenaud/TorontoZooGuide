@@ -53,6 +53,14 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-animal-visibility-schedule-exhibit-options', {});
    }
 
+   static getAnimalViewingAlertOptions(payload = {}) {
+      return ApiClient.postJson('/get-animal-viewing-alert-options', payload);
+   }
+
+   static getAnimalViewingAlertExhibitOptions() {
+      return ApiClient.postJson('/get-animal-viewing-alert-exhibit-options', {});
+   }
+
    static getActiveUpdateOptions() {
       return ApiClient.postJson('/get-active-update-options', {});
    }

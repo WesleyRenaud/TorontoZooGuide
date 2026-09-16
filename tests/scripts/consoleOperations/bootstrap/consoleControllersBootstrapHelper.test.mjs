@@ -18,6 +18,7 @@ test('Test_AnimalSpeciesAutocompleteKeys_TestRegistry_ExpectKnownKeys', () => {
    assert.deepEqual(ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY, {
       onDisplay: 'createOffDisplayAnimalSpeciesSource',
       removeVisibilitySchedule: 'createVisibilityScheduleAnimalSpeciesSource',
+      removeViewingAlert: 'createViewingAlertAnimalSpeciesSource',
    });
 });
 
@@ -74,13 +75,16 @@ test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchin
    const originalDefault = SpeciesProvider.createAnimalSpeciesSource;
    const originalOffDisplay = SpeciesProvider.createOffDisplayAnimalSpeciesSource;
    const originalVisibilitySchedule = SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource;
+   const originalViewingAlert = SpeciesProvider.createViewingAlertAnimalSpeciesSource;
    const defaultSource = { kind: 'default' };
    const offDisplaySource = { kind: 'off-display' };
    const visibilityScheduleSource = { kind: 'visibility-schedule' };
+   const viewingAlertSource = { kind: 'viewing-alert' };
 
    SpeciesProvider.createAnimalSpeciesSource = () => defaultSource;
    SpeciesProvider.createOffDisplayAnimalSpeciesSource = () => offDisplaySource;
    SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource = () => visibilityScheduleSource;
+   SpeciesProvider.createViewingAlertAnimalSpeciesSource = () => viewingAlertSource;
 
    try {
       assert.equal(
@@ -92,6 +96,10 @@ test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchin
          visibilityScheduleSource
       );
       assert.equal(
+         ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('removeViewingAlert'),
+         viewingAlertSource
+      );
+      assert.equal(
          ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('offDisplay'),
          defaultSource
       );
@@ -99,10 +107,15 @@ test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchin
          ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('visibilitySchedule'),
          defaultSource
       );
+      assert.equal(
+         ConsoleControllersBootstrapHelper.createAnimalSpeciesSourceForKey('viewingAlert'),
+         defaultSource
+      );
    } finally {
       SpeciesProvider.createAnimalSpeciesSource = originalDefault;
       SpeciesProvider.createOffDisplayAnimalSpeciesSource = originalOffDisplay;
       SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource = originalVisibilitySchedule;
+      SpeciesProvider.createViewingAlertAnimalSpeciesSource = originalViewingAlert;
    }
 });
 
@@ -111,10 +124,12 @@ test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreat
    const originalDefault = SpeciesProvider.createAnimalSpeciesSource;
    const originalOffDisplay = SpeciesProvider.createOffDisplayAnimalSpeciesSource;
    const originalVisibilitySchedule = SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource;
+   const originalViewingAlert = SpeciesProvider.createViewingAlertAnimalSpeciesSource;
    const calls = [];
    const defaultSource = { kind: 'default' };
    const offDisplaySource = { kind: 'off-display' };
    const visibilityScheduleSource = { kind: 'visibility-schedule' };
+   const viewingAlertSource = { kind: 'viewing-alert' };
 
    AnimalSpeciesController.createAnimalSpeciesAutocompleteController = (options) => {
       calls.push(options);
@@ -123,6 +138,7 @@ test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreat
    SpeciesProvider.createAnimalSpeciesSource = () => defaultSource;
    SpeciesProvider.createOffDisplayAnimalSpeciesSource = () => offDisplaySource;
    SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource = () => visibilityScheduleSource;
+   SpeciesProvider.createViewingAlertAnimalSpeciesSource = () => viewingAlertSource;
 
    try {
       const animals = Object.fromEntries(
@@ -148,11 +164,13 @@ test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreat
       assert.equal(calls[Position.SECOND].speciesSource, offDisplaySource);
       assert.equal(calls[Position.THIRD].speciesSource, defaultSource);
       assert.equal(calls[Position.FOURTH].speciesSource, visibilityScheduleSource);
+      assert.equal(calls.at(Position.LAST).speciesSource, viewingAlertSource);
    } finally {
       AnimalSpeciesController.createAnimalSpeciesAutocompleteController = originalCreate;
       SpeciesProvider.createAnimalSpeciesSource = originalDefault;
       SpeciesProvider.createOffDisplayAnimalSpeciesSource = originalOffDisplay;
       SpeciesProvider.createVisibilityScheduleAnimalSpeciesSource = originalVisibilitySchedule;
+      SpeciesProvider.createViewingAlertAnimalSpeciesSource = originalViewingAlert;
    }
 });
 
