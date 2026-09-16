@@ -12,7 +12,7 @@ export class RestroomOpenController {
       return AmenityOpenControllerFactory.createAmenityOpenController({
          ...controllerOptions,
          entityEl: restroomEl,
-         loadOptions: ConsoleOptionsLoader.loadRestrooms,
+         loadOptions: ConsoleOptionsLoader.loadClosedRestrooms,
          populateOptions: ConsoleDropdownPopulator.populateRestroomDropdown,
          submitOpenStatus: ({ entity, startDate, endDate }) => ConsoleOperationsClient.setRestroomOpen({
             restroom: entity,

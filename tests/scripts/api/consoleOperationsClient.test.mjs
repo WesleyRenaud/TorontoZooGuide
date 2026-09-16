@@ -10,6 +10,7 @@ const _NO_ARG_GETTERS = [
    ['getClosedExhibitOptions', '/get-closed-exhibit-options'],
    ['getRestaurantNameOptions', '/get-restaurant-names'],
    ['getRestroomNameOptions', '/get-restroom-names'],
+   ['getClosedRestroomOptions', '/get-closed-restroom-options'],
    ['getGiftShopNameOptions', '/get-gift-shop-names'],
    ['getAttractionNameOptions', '/get-attraction-names'],
    ['getTransportationStationNameOptions', '/get-transportation-station-names'],

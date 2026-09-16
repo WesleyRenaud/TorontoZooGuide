@@ -8,6 +8,7 @@ class RestroomRoutes():
    ROUTES: dict[ str, PostRouteHandler ] = {
    '/get-restrooms': RestroomController.get_restrooms,
    '/get-restroom-names': RestroomController.get_restroom_names,
+   '/get-closed-restroom-options': RestroomController.get_closed_restroom_options,
    '/set-restroom-closed': RestroomController.set_restroom_closed,
    '/set-restroom-open': RestroomController.set_restroom_open,
    '/set-restroom-alert': RestroomController.set_restroom_alert,

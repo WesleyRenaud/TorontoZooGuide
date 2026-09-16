@@ -44,6 +44,7 @@ def stub_restroom_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestroom
    StubRestroomCoordinator.default_success = True
    stub = StubRestroomCoordinator(
       restroom_names=[ RESTROOM_NAME, OTHER_RESTROOM_NAME ],
+      closed_restroom_names=[ RESTROOM_NAME ],
       restrooms=[ _sample_restroom() ] )
 
    monkeypatch.setattr( connection.DatabaseConnectionProvider, 'open', lambda db_path='animals.db': None )
@@ -103,6 +104,32 @@ def Test_GetRestroomNames_TestDirectCall_ExpectWritesRestroomNamesFromCoordinato
    assert handler.json_response() == {
       'restrooms': [ RESTROOM_NAME, OTHER_RESTROOM_NAME ],
    }
+
+
+def Test_GetClosedRestroomOptions_TestDirectCall_ExpectWritesRestroomsFromCoordinator(
+      stub_restroom_coordinator: StubRestroomCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   RestroomController.get_closed_restroom_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'restrooms': [ RESTROOM_NAME ],
+   }
+   assert stub_restroom_coordinator.calls == [ ( 'get_closed_restroom_options', {} ) ]
+
+
+def Test_GetClosedRestroomOptions_TestHttpRequest_ExpectWritesRestroomsFromCoordinator(
+      stub_restroom_coordinator: StubRestroomCoordinator ) -> None:
+   handler = make_handler( '/get-closed-restroom-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'restrooms': [ RESTROOM_NAME ],
+   }
+   assert stub_restroom_coordinator.calls == [ ( 'get_closed_restroom_options', {} ) ]
 
 
 def Test_SetRestroomClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

@@ -17,7 +17,7 @@ test('Test_CreateRestroomOpenController_TestWiring_ExpectOpenForm', async () => 
 
    try {
       RestroomOpenController.createRestroomOpenController({ restroomEl: { id: 'rr' } });
-      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadRestrooms);
+      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedRestrooms);
 
       const originalSet = ConsoleOperationsClient.setRestroomOpen;
       ConsoleOperationsClient.setRestroomOpen = async (payload) => payload;

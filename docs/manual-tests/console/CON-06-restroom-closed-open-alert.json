@@ -29,8 +29,8 @@
     {
       "number": 5,
       "name": "Open restroom",
-      "do": "Open **Set restroom as open**. Choose the same restroom and submit.",
-      "expect": "Success that the restroom was set as open."
+      "do": "Open **Set restroom as open**. For **Restroom**, choose the restroom you closed in step 1 and submit.",
+      "expect": "Restroom options include that restroom because it is closed now. Success that the restroom was set as open."
     },
     {
       "number": 6,

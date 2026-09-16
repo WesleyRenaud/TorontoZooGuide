@@ -21,6 +21,10 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-restroom-names', {});
    }
 
+   static getClosedRestroomOptions() {
+      return ApiClient.postJson('/get-closed-restroom-options', {});
+   }
+
    static getGiftShopNameOptions() {
       return ApiClient.postJson('/get-gift-shop-names', {});
    }
