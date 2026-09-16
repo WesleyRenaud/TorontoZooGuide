@@ -23,6 +23,7 @@ export class AnimalDisplayStatusControllerFactory {
       activatePanel,
       submitDisplayStatus,
       successMessage,
+      loadExhibits = ConsoleOptionsLoader.loadExhibits,
    } = {}) {
       const hasDateRange = Boolean(startDateEl || endDateEl);
       const formFieldEls = [
@@ -94,7 +95,7 @@ export class AnimalDisplayStatusControllerFactory {
          await ControllerHelper.loadOptionsAndShowPanel({
             statusEl,
             setStatus: ConsoleStatusPresenter.setStatus,
-            loadOptions: ConsoleOptionsLoader.loadExhibits,
+            loadOptions: loadExhibits,
             populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
             targetEl: exhibitEl,
             resetForm,

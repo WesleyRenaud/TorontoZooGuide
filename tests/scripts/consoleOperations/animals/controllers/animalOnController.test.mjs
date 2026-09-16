@@ -29,7 +29,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
-      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadExhibits);
+      assert.equal(options.loadOptions, ConsoleOptionsLoader.loadOffDisplayExhibits);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
    };
    ConsoleStatusPresenter.setStatus = (...args) => {

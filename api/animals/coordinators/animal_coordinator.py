@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..data_access.animal_information_provider import AnimalInformationProvider
+from ..data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
 from ..data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
 from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from ..data_access.animal_status_provider import AnimalStatusProvider
@@ -87,6 +88,13 @@ class AnimalCoordinator():
             exhibit=exhibit )
 
       return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def get_off_display_exhibit_options( cls ) -> list[ str ]:
+      return AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
 

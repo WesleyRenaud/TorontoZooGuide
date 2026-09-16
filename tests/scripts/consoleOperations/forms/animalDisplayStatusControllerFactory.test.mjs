@@ -229,3 +229,46 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidati
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
    }
 });
+
+test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUsed', async () => {
+   const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+   const loadExhibits = async () => ['Africa Savanna'];
+   let usedLoader;
+
+   ControllerHelper.loadOptionsAndShowPanel = async (options) => {
+      usedLoader = options.loadOptions;
+   };
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.resetFormFields = () => {};
+   ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+   });
+
+   try {
+      const controller = AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         panelEl: {},
+         statusEl: {},
+         speciesEl: document.createElement('input'),
+         exhibitEl: document.createElement('select'),
+         viewingScopeEl: document.createElement('select'),
+         activatePanel: () => {},
+         submitDisplayStatus: async () => ({ success: true }),
+         successMessage: () => 'ok',
+         loadExhibits,
+      });
+
+      await controller.show();
+      assert.equal(usedLoader, loadExhibits);
+   } finally {
+      ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.bindResetValueOnChange = originalBind;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});

@@ -261,6 +261,32 @@ def Test_GetOffDisplayAnimalOptions_TestDirectCallWithoutExhibit_ExpectCoordinat
    ]
 
 
+def Test_GetOffDisplayExhibitOptions_TestDirectCall_ExpectWritesExhibitsFromCoordinator(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   AnimalController.get_off_display_exhibit_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', {} ) ]
+
+
+def Test_GetOffDisplayExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler( '/get-off-display-exhibit-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', {} ) ]
+
+
 def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(

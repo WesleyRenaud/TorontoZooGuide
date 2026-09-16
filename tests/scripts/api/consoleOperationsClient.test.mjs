@@ -14,6 +14,7 @@ const _NO_ARG_GETTERS = [
    ['getTransportationStationNameOptions', '/get-transportation-station-names'],
    ['getGuardiansTalkNameOptions', '/get-guardians-talk-names'],
    ['getWildEncounterNameOptions', '/get-wild-encounter-names'],
+   ['getOffDisplayExhibitOptions', '/get-off-display-exhibit-options'],
    ['getActiveUpdateOptions', '/get-active-update-options'],
    ['getGuardiansTalkLocations', '/get-guardians-talk-locations'],
 ];

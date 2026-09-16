@@ -9,6 +9,7 @@ import pytest
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.data_access.animal_information_provider import AnimalInformationProvider
+from api.animals.data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
 from api.animals.data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
 from api.animals.data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from api.animals.data_access.animal_status_provider import AnimalStatusProvider
@@ -1134,6 +1135,30 @@ def Test_GetOffDisplayAnimalOptions_TestBlankExhibit_ExpectProviderCalledWithout
       fetch_off_display_species_names )
 
    assert AnimalCoordinator.get_off_display_animal_options() == []
+   assert captured == { 'today': '2026-09-16' }
+
+
+def Test_GetOffDisplayExhibitOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_off_display_exhibit_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ EXHIBIT ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      AnimalOffDisplayExhibitNameProvider,
+      'fetch_off_display_exhibit_names',
+      fetch_off_display_exhibit_names )
+
+   assert AnimalCoordinator.get_off_display_exhibit_options() == [ EXHIBIT ]
    assert captured == { 'today': '2026-09-16' }
 
 

@@ -1,5 +1,6 @@
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { AnimalDisplayStatusControllerFactory } from '../../forms/animalDisplayStatusControllerFactory.js';
+import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class AnimalOnController {
@@ -32,6 +33,7 @@ export class AnimalOnController {
             })
          ),
          successMessage: result => Strings.status.animalOnDisplay(result),
+         loadExhibits: ConsoleOptionsLoader.loadOffDisplayExhibits,
       });
    }
 }
