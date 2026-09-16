@@ -40,6 +40,24 @@ export class SpeciesProvider {
       });
    }
 
+   static async fetchViewingAlertSpecies() {
+      const result = await ConsoleOperationsClient.getAnimalViewingAlertOptions();
+      return result.species;
+   }
+
+   static async fetchViewingAlertSpeciesInExhibit(exhibit) {
+      const result = await ConsoleOperationsClient.getAnimalViewingAlertOptions({ exhibit });
+      return result.species;
+   }
+
+   static createViewingAlertAnimalSpeciesSource() {
+      return SpeciesProvider.createAnimalSpeciesSource({
+         fetchAllSpecies: SpeciesProvider.fetchViewingAlertSpecies,
+         fetchSpeciesForExhibit: SpeciesProvider.fetchViewingAlertSpeciesInExhibit,
+         cacheLists: false,
+      });
+   }
+
    static createAnimalSpeciesSource({
       fetchAllSpecies = ConsoleOptionsLoader.loadSpecies,
       fetchSpeciesForExhibit = AnimalsClient.getAnimalsInExhibit,

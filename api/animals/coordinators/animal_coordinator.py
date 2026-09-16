@@ -6,7 +6,9 @@ from ..data_access.animal_off_display_species_name_provider import AnimalOffDisp
 from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from ..data_access.animal_status_provider import AnimalStatusProvider
 from ..data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
+from ..data_access.animal_viewing_alert_exhibit_name_provider import AnimalViewingAlertExhibitNameProvider
 from ..data_access.animal_viewing_alert_provider import AnimalViewingAlertProvider
+from ..data_access.animal_viewing_alert_species_name_provider import AnimalViewingAlertSpeciesNameProvider
 from ..data_access.animal_viewing_scope_provider import AnimalViewingScopeProvider
 from ..data_access.animal_visibility_schedule_exhibit_name_provider import AnimalVisibilityScheduleExhibitNameProvider
 from ..data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
@@ -117,6 +119,26 @@ class AnimalCoordinator():
    @classmethod
    def get_animal_visibility_schedule_exhibit_options( cls ) -> list[ str ]:
       return AnimalVisibilityScheduleExhibitNameProvider.fetch_visibility_schedule_exhibit_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def get_animal_viewing_alert_options( cls, exhibit: str | None = None ) -> list[ str ]:
+      if exhibit:
+         return AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names_in_exhibit(
+            RequestConnectionProvider.get(),
+            today=DateValues.today_date_key(),
+            exhibit=exhibit )
+
+      return AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def get_animal_viewing_alert_exhibit_options( cls ) -> list[ str ]:
+      return AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
 

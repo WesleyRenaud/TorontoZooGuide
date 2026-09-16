@@ -192,3 +192,65 @@ test('Test_CreateVisibilityScheduleAnimalSpeciesSource_TestLoaders_ExpectVisibil
    }
 });
 
+test('Test_FetchViewingAlertSpecies_TestClientResult_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getAnimalViewingAlertOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getAnimalViewingAlertOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(await SpeciesProvider.fetchViewingAlertSpecies(), ['Lion']);
+      assert.deepEqual(payloads, [undefined]);
+   } finally {
+      ConsoleOperationsClient.getAnimalViewingAlertOptions = originalGet;
+   }
+});
+
+test('Test_FetchViewingAlertSpeciesInExhibit_TestClientPayload_ExpectSpecies', async () => {
+   const originalGet = ConsoleOperationsClient.getAnimalViewingAlertOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getAnimalViewingAlertOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: ['Lion'] };
+   };
+
+   try {
+      assert.deepEqual(
+         await SpeciesProvider.fetchViewingAlertSpeciesInExhibit('Savanna'),
+         ['Lion']
+      );
+      assert.deepEqual(payloads, [{ exhibit: 'Savanna' }]);
+   } finally {
+      ConsoleOperationsClient.getAnimalViewingAlertOptions = originalGet;
+   }
+});
+
+test('Test_CreateViewingAlertAnimalSpeciesSource_TestLoaders_ExpectViewingAlertFetchers', async () => {
+   const originalAll = SpeciesProvider.fetchViewingAlertSpecies;
+   const originalExhibit = SpeciesProvider.fetchViewingAlertSpeciesInExhibit;
+   const calls = [];
+
+   SpeciesProvider.fetchViewingAlertSpecies = async () => {
+      calls.push('all');
+      return ['Lion'];
+   };
+   SpeciesProvider.fetchViewingAlertSpeciesInExhibit = async (exhibit) => {
+      calls.push(exhibit);
+      return ['Giraffe'];
+   };
+
+   try {
+      const source = SpeciesProvider.createViewingAlertAnimalSpeciesSource();
+      assert.deepEqual(await source.loadForExhibit(''), ['Lion']);
+      assert.deepEqual(await source.loadForExhibit('Savanna'), ['Giraffe']);
+      assert.deepEqual(calls, ['all', 'Savanna']);
+   } finally {
+      SpeciesProvider.fetchViewingAlertSpecies = originalAll;
+      SpeciesProvider.fetchViewingAlertSpeciesInExhibit = originalExhibit;
+   }
+});
+

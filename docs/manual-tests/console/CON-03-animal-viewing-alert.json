@@ -23,8 +23,8 @@
     {
       "number": 4,
       "name": "Remove alert",
-      "do": "Open **Remove animal viewing alert**.",
-      "expect": "Form OK."
+      "do": "Open **Remove animal viewing alert**. For **Exhibit**, choose the same exhibit from step 1. In **Species**, type the same species and select it from the suggestions.",
+      "expect": "Exhibit options include that exhibit because it has a viewing alert. Suggestions include that species because it has a viewing alert. Exhibit and species are selected."
     },
     {
       "number": 5,
