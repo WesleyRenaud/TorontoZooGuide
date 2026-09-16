@@ -10,6 +10,7 @@ class ExhibitRoutes():
    '/get-regions': ExhibitController.get_regions,
    '/get-animal-names-by-exhibit': ExhibitController.get_animal_names_by_exhibit,
    '/get-closed-exhibits': ExhibitController.get_closed_exhibits,
+   '/get-closed-exhibit-options': ExhibitController.get_closed_exhibit_options,
    '/get-exhibits-by-region': ExhibitController.get_exhibits_by_region,
    '/get-exhibits': ExhibitController.get_exhibits,
    '/set-exhibit-closed': ExhibitController.set_exhibit_closed,

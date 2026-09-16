@@ -35,8 +35,8 @@
     {
       "number": 6,
       "name": "Re-open exhibit",
-      "do": "In Console, open **Set exhibit as open**. Re-open **Canadian Domain** for a date range covering today and submit.",
-      "expect": "Success that **Canadian Domain** is open."
+      "do": "In Console, open **Set exhibit as open**. For **Exhibit**, choose **Canadian Domain**. Re-open it for a date range covering today and submit.",
+      "expect": "Exhibit options include **Canadian Domain** because it is closed now. Success that **Canadian Domain** is open."
     },
     {
       "number": 7,

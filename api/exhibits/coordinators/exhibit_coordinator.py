@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..data_access.closed_exhibit_name_provider import ClosedExhibitNameProvider
 from ..data_access.exhibit_provider import ExhibitProvider
 from ..data_access.exhibit_status_provider import ExhibitStatusProvider
 from ..domain.region_options_builder import RegionOptionsBuilder
@@ -59,6 +60,13 @@ class ExhibitCoordinator():
       return ExhibitStatusBuilder.exhibit_names_closed_on_visit_date(
          ExhibitStatusProvider.fetch_closure_records( RequestConnectionProvider.get() ),
          target_date )
+
+
+   @classmethod
+   def get_closed_exhibit_options( cls ) -> list[ str ]:
+      return ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
 
 
    @classmethod

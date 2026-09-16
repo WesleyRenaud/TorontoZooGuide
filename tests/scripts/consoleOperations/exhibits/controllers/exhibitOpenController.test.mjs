@@ -17,7 +17,7 @@ test('Test_CreateExhibitOpenController_TestWiring_ExpectOpenForm', async () => {
 
    try {
       ExhibitOpenController.createExhibitOpenController({ exhibitEl: { id: 'exhibit' } });
-      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadExhibits);
+      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedExhibits);
       assert.equal(captured.entityLabel, Strings.entityLabels.exhibit);
 
       const originalSet = ConsoleOperationsClient.setExhibitOpen;

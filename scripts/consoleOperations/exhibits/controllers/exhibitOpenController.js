@@ -12,7 +12,7 @@ export class ExhibitOpenController {
       return AmenityOpenControllerFactory.createAmenityOpenController({
          ...controllerOptions,
          entityEl: exhibitEl,
-         loadOptions: ConsoleOptionsLoader.loadExhibits,
+         loadOptions: ConsoleOptionsLoader.loadClosedExhibits,
          populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
          submitOpenStatus: ({ entity, startDate, endDate }) => ConsoleOperationsClient.setExhibitOpen({
             exhibit: entity,

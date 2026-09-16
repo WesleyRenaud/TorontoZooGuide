@@ -9,6 +9,10 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-exhibits', {});
    }
 
+   static getClosedExhibitOptions() {
+      return ApiClient.postJson('/get-closed-exhibit-options', {});
+   }
+
    static getRestaurantNameOptions() {
       return ApiClient.postJson('/get-restaurant-names', {});
    }

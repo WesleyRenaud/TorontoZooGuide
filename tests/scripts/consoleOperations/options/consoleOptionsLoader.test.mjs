@@ -35,6 +35,23 @@ test('Test_LoadOptionsMethods_TestDelegation_ExpectCachedLoaderArgs', async () =
    }
 });
 
+test('Test_LoadClosedExhibits_TestClientResult_ExpectExhibits', async () => {
+   const originalGet = ConsoleOperationsClient.getClosedExhibitOptions;
+
+   ConsoleOperationsClient.getClosedExhibitOptions = async () => ({
+      exhibits: ['Canadian Domain', 'Kids Zoo'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadClosedExhibits(),
+         ['Canadian Domain', 'Kids Zoo']
+      );
+   } finally {
+      ConsoleOperationsClient.getClosedExhibitOptions = originalGet;
+   }
+});
+
 test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
 
