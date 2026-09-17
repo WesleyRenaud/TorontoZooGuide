@@ -52,6 +52,8 @@ export class RemoveVisibilityController {
             sourceEl: exhibitEl,
             targetEl: speciesEl,
          },
+         speciesEl,
+         loadOptionsForSpecies: ConsoleOptionsLoader.loadVisibilityScheduleExhibits,
       });
    }
 }

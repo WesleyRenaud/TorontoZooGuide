@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosureExhibitNameProvider
 from ..data_access.animal_information_provider import AnimalInformationProvider
 from ..data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
 from ..data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
@@ -84,6 +85,13 @@ class AnimalCoordinator():
 
 
    @classmethod
+   def get_exhibits_for_species( cls, species: str ) -> list[ str ]:
+      return AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
+         RequestConnectionProvider.get(),
+         species=species )
+
+
+   @classmethod
    def get_off_display_animal_options( cls, exhibit: str | None = None ) -> list[ str ]:
       if exhibit:
          return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
@@ -97,7 +105,13 @@ class AnimalCoordinator():
 
 
    @classmethod
-   def get_off_display_exhibit_options( cls ) -> list[ str ]:
+   def get_off_display_exhibit_options( cls, species: str ) -> list[ str ]:
+      if species:
+         return AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names_for_species(
+            RequestConnectionProvider.get(),
+            today=DateValues.today_date_key(),
+            species=species )
+
       return AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
@@ -117,7 +131,13 @@ class AnimalCoordinator():
 
 
    @classmethod
-   def get_animal_visibility_schedule_exhibit_options( cls ) -> list[ str ]:
+   def get_animal_visibility_schedule_exhibit_options( cls, species: str ) -> list[ str ]:
+      if species:
+         return AnimalVisibilityScheduleExhibitNameProvider.fetch_visibility_schedule_exhibit_names_for_species(
+            RequestConnectionProvider.get(),
+            today=DateValues.today_date_key(),
+            species=species )
+
       return AnimalVisibilityScheduleExhibitNameProvider.fetch_visibility_schedule_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
@@ -137,7 +157,13 @@ class AnimalCoordinator():
 
 
    @classmethod
-   def get_animal_viewing_alert_exhibit_options( cls ) -> list[ str ]:
+   def get_animal_viewing_alert_exhibit_options( cls, species: str ) -> list[ str ]:
+      if species:
+         return AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names_for_species(
+            RequestConnectionProvider.get(),
+            today=DateValues.today_date_key(),
+            species=species )
+
       return AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )

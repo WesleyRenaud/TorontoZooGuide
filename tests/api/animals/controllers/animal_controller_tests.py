@@ -218,6 +218,29 @@ def Test_GetAnimalSpeciesNames_TestDirectCall_ExpectWritesSpeciesFromCoordinator
    assert stub_animal_coordinator.calls == [ ( 'get_animal_species_names', {} ) ]
 
 
+def Test_GetExhibitsForSpecies_TestHttpRequest_ExpectMapsSpeciesAndExhibitsResponse(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-exhibits-for-species',
+      { 'species': ANIMAL_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [
+      (
+         'get_exhibits_for_species',
+         {
+            'species': ANIMAL_NAME,
+         }
+      )
+   ]
+
+
 def Test_GetOffDisplayAnimalOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesResponse(
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(
@@ -271,7 +294,7 @@ def Test_GetOffDisplayExhibitOptions_TestDirectCall_ExpectWritesExhibitsFromCoor
    assert handler.json_response() == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', { 'species': None } ) ]
 
 
 def Test_GetOffDisplayExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
@@ -284,7 +307,30 @@ def Test_GetOffDisplayExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoo
    assert response_json( handler ) == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', { 'species': None } ) ]
+
+
+def Test_GetOffDisplayExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecies(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-off-display-exhibit-options',
+      { 'species': ANIMAL_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [
+      (
+         'get_off_display_exhibit_options',
+         {
+            'species': ANIMAL_NAME,
+         }
+      )
+   ]
 
 
 def Test_GetAnimalVisibilityScheduleOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesResponse(
@@ -340,7 +386,7 @@ def Test_GetAnimalVisibilityScheduleExhibitOptions_TestDirectCall_ExpectWritesEx
    assert handler.json_response() == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_animal_visibility_schedule_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_animal_visibility_schedule_exhibit_options', { 'species': None } ) ]
 
 
 def Test_GetAnimalVisibilityScheduleExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
@@ -353,7 +399,30 @@ def Test_GetAnimalVisibilityScheduleExhibitOptions_TestHttpRequest_ExpectWritesE
    assert response_json( handler ) == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_animal_visibility_schedule_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_animal_visibility_schedule_exhibit_options', { 'species': None } ) ]
+
+
+def Test_GetAnimalVisibilityScheduleExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecies(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-animal-visibility-schedule-exhibit-options',
+      { 'species': ANIMAL_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [
+      (
+         'get_animal_visibility_schedule_exhibit_options',
+         {
+            'species': ANIMAL_NAME,
+         }
+      )
+   ]
 
 
 def Test_GetAnimalViewingAlertOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesResponse(
@@ -409,7 +478,7 @@ def Test_GetAnimalViewingAlertExhibitOptions_TestDirectCall_ExpectWritesExhibits
    assert handler.json_response() == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_animal_viewing_alert_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_animal_viewing_alert_exhibit_options', { 'species': None } ) ]
 
 
 def Test_GetAnimalViewingAlertExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
@@ -422,7 +491,30 @@ def Test_GetAnimalViewingAlertExhibitOptions_TestHttpRequest_ExpectWritesExhibit
    assert response_json( handler ) == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_animal_viewing_alert_exhibit_options', {} ) ]
+   assert stub_animal_coordinator.calls == [ ( 'get_animal_viewing_alert_exhibit_options', { 'species': None } ) ]
+
+
+def Test_GetAnimalViewingAlertExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecies(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-animal-viewing-alert-exhibit-options',
+      { 'species': ANIMAL_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'exhibits': [ ANIMAL_EXHIBIT ],
+   }
+   assert stub_animal_coordinator.calls == [
+      (
+         'get_animal_viewing_alert_exhibit_options',
+         {
+            'species': ANIMAL_NAME,
+         }
+      )
+   ]
 
 
 def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

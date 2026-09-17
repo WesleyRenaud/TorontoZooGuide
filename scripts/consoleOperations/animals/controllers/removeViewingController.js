@@ -52,6 +52,8 @@ export class RemoveViewingController {
             sourceEl: exhibitEl,
             targetEl: speciesEl,
          },
+         speciesEl,
+         loadOptionsForSpecies: ConsoleOptionsLoader.loadViewingAlertExhibits,
       });
    }
 }

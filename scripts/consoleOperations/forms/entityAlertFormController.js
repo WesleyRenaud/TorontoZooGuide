@@ -1,3 +1,4 @@
+import { AnimalExhibitAutofillController } from '../animals/controllers/animalExhibitAutofillController.js';
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
@@ -21,9 +22,26 @@ export class EntityAlertFormController {
       submitAlert,
       successMessage,
       bindResetValueOnChange = null,
+      speciesEl = null,
+      loadOptionsForSpecies = null,
+      onUniqueFill = null,
    } = {}) {
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions,
+               populateOptions,
+               targetEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       async function show() {
@@ -33,7 +51,7 @@ export class EntityAlertFormController {
             loadOptions,
             populateOptions,
             targetEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: loadErrorMessage,
@@ -48,7 +66,7 @@ export class EntityAlertFormController {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             typeof successMessage === 'function'
@@ -57,7 +75,7 @@ export class EntityAlertFormController {
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function onSubmitClick() {
@@ -76,7 +94,7 @@ export class EntityAlertFormController {
             const result = await submitAlert(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
@@ -92,6 +110,17 @@ export class EntityAlertFormController {
             bindResetValueOnChange.sourceEl,
             bindResetValueOnChange.targetEl
          );
+      }
+
+      if (speciesEl && loadOptionsForSpecies) {
+         AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
+            speciesEl,
+            exhibitEl: targetEl,
+            loadExhibits: loadOptions,
+            loadExhibitsForSpecies: loadOptionsForSpecies,
+            populateExhibits: populateOptions,
+            onUniqueFill,
+         });
       }
 
       showButtonEl?.addEventListener('click', show);

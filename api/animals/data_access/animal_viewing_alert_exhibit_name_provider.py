@@ -27,3 +27,31 @@ class AnimalViewingAlertExhibitNameProvider():
 
       finally:
          cur.close()
+
+
+   @classmethod
+   def fetch_viewing_alert_exhibit_names_for_species(
+         cls,
+         conn: Types.Connection,
+         today: Types.DateKey,
+         species: str ) -> list[ str ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT DISTINCT
+                     EXHIBIT
+                  FROM AnimalViewingAlert
+                  WHERE (
+                        ALERT_END_DATE IS NULL
+                        OR ALERT_END_DATE >= ?
+                     )
+                     AND SPECIES = ?
+                  ORDER BY EXHIBIT;
+            """,
+            ( today, species ) )
+
+         return [ row[ Position.FIRST ] for row in data.fetchall() ]
+
+      finally:
+         cur.close()

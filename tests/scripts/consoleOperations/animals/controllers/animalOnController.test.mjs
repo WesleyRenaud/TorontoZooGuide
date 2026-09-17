@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AnimalOnController } from '../../../../../scripts/consoleOperations/animals/controllers/animalOnController.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
@@ -9,6 +10,7 @@ import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpe
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
@@ -27,6 +29,8 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
    const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
    const originalSet = ConsoleOperationsClient.setAnimalOnDisplay;
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -46,7 +50,12 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       reset: () => {
          resets.push(true);
       },
+      refresh: async () => {},
    });
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
    ConsoleOperationsClient.setAnimalOnDisplay = async (payload) => {
       assert.deepEqual(payload, {
          species: 'Lion',
@@ -78,6 +87,8 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'animal-on' }]);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadOffDisplayExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadOffDisplayExhibits);
 
       await submitButtonEl.listeners.click();
       assert.ok(
@@ -96,6 +107,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       ControllerHelper.bindResetValueOnChange = originalBind;
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
       ConsoleOperationsClient.setAnimalOnDisplay = originalSet;
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
    }
 });
 
@@ -121,6 +133,7 @@ test('Test_CreateAnimalOnDisplayController_TestValidationAndFailures_ExpectError
    };
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
+      refresh: async () => {},
    });
    ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
 

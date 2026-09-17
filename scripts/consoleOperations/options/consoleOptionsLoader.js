@@ -19,23 +19,34 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadExhibitsForSpecies(species) {
+      const result = await ConsoleOperationsClient.getExhibitsForSpecies({ species });
+      return result.exhibits;
+   }
+
    static async loadClosedExhibits() {
       const result = await ConsoleOperationsClient.getClosedExhibitOptions();
       return result.exhibits;
    }
 
-   static async loadOffDisplayExhibits() {
-      const result = await ConsoleOperationsClient.getOffDisplayExhibitOptions();
+   static async loadOffDisplayExhibits(species) {
+      const result = await ConsoleOperationsClient.getOffDisplayExhibitOptions(
+         species ? { species } : {}
+      );
       return result.exhibits;
    }
 
-   static async loadVisibilityScheduleExhibits() {
-      const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions();
+   static async loadVisibilityScheduleExhibits(species) {
+      const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions(
+         species ? { species } : {}
+      );
       return result.exhibits;
    }
 
-   static async loadViewingAlertExhibits() {
-      const result = await ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions();
+   static async loadViewingAlertExhibits(species) {
+      const result = await ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions(
+         species ? { species } : {}
+      );
       return result.exhibits;
    }
 
