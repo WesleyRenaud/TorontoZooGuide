@@ -2533,28 +2533,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Babirusa",
-    "exhibit": "Indo-Malaya Outdoor",
-    "name": "Outdoor",
-    "enclosure_type": "Outdoor",
-    "seasonally_off_display_message": "The babirusas can most likely be seen inside on this day due to cold weather.",
-    "x_coord": 54.631,
-    "y_coord": 83.101,
-    "default_itinerary_duration_minutes": 3,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Babirusa",
-    "exhibit": "Indo-Malaya Outdoor",
-    "name": "Indoor",
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 53.679,
-    "y_coord": 84.485,
-    "default_itinerary_duration_minutes": 3,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
     "name": "Outdoor",

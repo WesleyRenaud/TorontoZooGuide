@@ -162,24 +162,6 @@
     "snap_distance_px": 31.471
   },
   {
-    "species": "Babirusa",
-    "exhibit": "Indo-Malaya Outdoor",
-    "enclosure_type": "Outdoor",
-    "x": 54.631,
-    "y": 83.101,
-    "walk_node_id": "v-0078",
-    "snap_distance_px": 44.19
-  },
-  {
-    "species": "Babirusa",
-    "exhibit": "Indo-Malaya Outdoor",
-    "enclosure_type": "Indoor",
-    "x": 53.679,
-    "y": 84.485,
-    "walk_node_id": "v-0079",
-    "snap_distance_px": 67.179
-  },
-  {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
     "enclosure_type": "Outdoor",

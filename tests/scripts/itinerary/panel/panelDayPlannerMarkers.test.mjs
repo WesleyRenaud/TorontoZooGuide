@@ -248,7 +248,7 @@ test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () =>
          ...EMPTY_ITINERARY,
          animals: [
             {
-               species: 'Babirusa',
+               species: 'Capybara',
                exhibit: 'Indo-Malaya',
                start_time: '09:30',
                end_time: '09:45',
@@ -257,17 +257,17 @@ test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () =>
       }
    );
    const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
-   const babirusaPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-      allTextFor(pill).includes('Babirusa')
+   const capybaraPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('Capybara')
    ));
-   const babirusaStrip = babirusaPill?.parentElement;
+   const capybaraStrip = capybaraPill?.parentElement;
 
    assert.ok(arrivalStrip);
-   assert.ok(babirusaPill);
-   assert.equal(babirusaStrip?.attributes?.['data-scheduled-column'], 'true');
-   assert.equal(babirusaStrip?.attributes?.['data-offset-fraction'], undefined);
+   assert.ok(capybaraPill);
+   assert.equal(capybaraStrip?.attributes?.['data-scheduled-column'], 'true');
+   assert.equal(capybaraStrip?.attributes?.['data-offset-fraction'], undefined);
    assert.equal(arrivalStrip?.attributes?.['data-visit-boundary-placement'], 'ends-at-anchor');
-   assert.notEqual(arrivalStrip, babirusaStrip);
+   assert.notEqual(arrivalStrip, capybaraStrip);
 });
 
 test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () => {

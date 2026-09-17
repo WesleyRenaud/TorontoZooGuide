@@ -13,9 +13,9 @@ const COVERAGE_COMMANDS = [
       parseCoverage: parseBackendCoverage,
    },
    {
-      label: 'Frontend',
+      label: 'Scripts',
       script: 'coverage:js',
-      parseCoverage: parseFrontendCoverage,
+      parseCoverage: parseScriptsCoverage,
    },
 ];
 
@@ -50,7 +50,7 @@ function parseBackendCoverage(output) {
    return parseCoveragePercent(lastMatch?.[1] ?? null);
 }
 
-function parseFrontendCoverage(output) {
+function parseScriptsCoverage(output) {
    const matches = [...output.matchAll(/all files\s+\|\s+([\d.]+)\s+\|/g)];
    const lastMatch = matches.at(-1);
 
