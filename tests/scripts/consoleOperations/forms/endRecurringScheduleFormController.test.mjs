@@ -14,6 +14,7 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
    const statuses = [];
    const activations = [];
    const resets = [];
+   const prepareCalls = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalGet = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -44,7 +45,9 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
          },
          getSelectionValues: () => ({ entity: 'Giraffe' }),
          validateSelection: () => null,
-         prepareForm: async () => {},
+         prepareForm: async () => {
+            prepareCalls.push(true);
+         },
          submitEndSchedule: async (values) => ({ success: true, ...values }),
          successMessage: (result) => Strings.status.scheduleEnded(result.entity),
       });
@@ -59,6 +62,7 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
             entry[1] === Strings.status.scheduleEnded('Giraffe') && entry[2] === 'is-success'
          ))
       );
+      assert.equal(prepareCalls.length, 2);
 
       controller.show();
       assert.equal(activations.length, 2);

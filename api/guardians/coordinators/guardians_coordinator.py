@@ -8,6 +8,7 @@ from ..cancellations.guardians_talk_cancellation_builder import GuardiansTalkCan
 from ..data_access.guardians_talk_cancellation_provider import GuardiansTalkCancellationProvider
 from ..data_access.guardians_talk_day_schedule_provider import GuardiansTalkDayScheduleProvider
 from ..data_access.guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
+from ..data_access.guardians_talk_schedule_name_provider import GuardiansTalkScheduleNameProvider
 from ..data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from ..data_access.meet_the_guardians_talk_provider import MeetTheGuardiansTalkProvider
 from ..domain.guardians_talk_builder import GuardiansTalkBuilder
@@ -100,6 +101,21 @@ class GuardiansCoordinator():
       return MeetTheGuardiansTalkProvider.fetch_guardians_talk_names_at_location(
          RequestConnectionProvider.get(),
          location=location )
+
+
+   @classmethod
+   def get_guardians_talk_schedule_options( cls, location: str ) -> list[ str ]:
+      return GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key(),
+         location=location )
+
+
+   @classmethod
+   def get_guardians_talk_schedule_location_options( cls ) -> list[ str ]:
+      return GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
 
 
    @classmethod

@@ -68,9 +68,23 @@ export class AnimalDisplayStatusControllerFactory {
          return ControllerHelper.validateOptionalDateRange(startDate, endDate);
       }
 
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
          viewingScopeControl.reset();
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions: loadExhibits,
+               populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
+               targetEl: exhibitEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       function hide() {
@@ -81,14 +95,14 @@ export class AnimalDisplayStatusControllerFactory {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             successMessage(result),
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function show() {
@@ -98,7 +112,7 @@ export class AnimalDisplayStatusControllerFactory {
             loadOptions: loadExhibits,
             populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
             targetEl: exhibitEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: Strings.loadErrors.exhibits,
@@ -121,7 +135,7 @@ export class AnimalDisplayStatusControllerFactory {
             const result = await submitDisplayStatus(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(

@@ -21,8 +21,22 @@ export class UpdateEditController {
       const formFieldEls = [updateEl, descriptionEl, typeEl, endDateEl];
 
 
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions: UpdateOptions.loadActiveUpdates,
+               populateOptions: UpdateOptions.populateUpdateDropdown,
+               targetEl: updateEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       function setFieldValue(fieldEl, value) {
@@ -48,7 +62,7 @@ export class UpdateEditController {
             loadOptions: UpdateOptions.loadActiveUpdates,
             populateOptions: UpdateOptions.populateUpdateDropdown,
             targetEl: updateEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: Strings.loadErrors.updates,
@@ -100,7 +114,7 @@ export class UpdateEditController {
 
             if (result.success) {
                ConsoleStatusPresenter.setStatus(statusEl, Strings.status.updateEdited, 'is-success');
-               resetForm();
+               await resetForm();
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');

@@ -12,6 +12,12 @@ class GuardiansRoutes():
    '/get-guardians-talk-names-at-location': (
       GuardiansController.get_guardians_talk_names_at_location
    ),
+   '/get-guardians-talk-schedule-options': (
+      GuardiansController.get_guardians_talk_schedule_options
+   ),
+   '/get-guardians-talk-schedule-location-options': (
+      GuardiansController.get_guardians_talk_schedule_location_options
+   ),
    '/get-guardians-talk-occurrences': GuardiansController.get_guardians_talk_occurrences,
    '/get-guardians-talk-schedule-times': GuardiansController.get_guardians_talk_schedule_times,
    '/set-guardians-talk-schedule': GuardiansController.set_guardians_talk_schedule,

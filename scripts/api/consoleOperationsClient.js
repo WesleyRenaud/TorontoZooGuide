@@ -241,6 +241,14 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-guardians-talk-names-at-location', payload);
    }
 
+   static getGuardiansTalkScheduleOptions(payload) {
+      return ApiClient.postJson('/get-guardians-talk-schedule-options', payload);
+   }
+
+   static getGuardiansTalkScheduleLocationOptions() {
+      return ApiClient.postJson('/get-guardians-talk-schedule-location-options', {});
+   }
+
    static setGuardiansTalkSchedule(payload) {
       return ApiClient.postJson('/set-guardians-talk-schedule', payload);
    }

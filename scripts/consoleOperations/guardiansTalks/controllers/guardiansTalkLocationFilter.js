@@ -9,6 +9,8 @@ export class GuardiansTalkLocationFilter {
    static createGuardiansTalkLocationFilterController({
       locationEl,
       talkNameEl,
+      loadLocations = ConsoleOperationsClient.getGuardiansTalkLocations,
+      loadTalks = ConsoleOperationsClient.getGuardiansTalkNamesAtLocation,
    } = {}) {
 
       function getLocationName(location) {
@@ -40,7 +42,7 @@ export class GuardiansTalkLocationFilter {
          }
 
          try {
-            const result = await ConsoleOperationsClient.getGuardiansTalkLocations();
+            const result = await loadLocations();
             const guardiansTalkLocations = result?.guardians_talk_locations ?? [];
             populateLocationDropdown(guardiansTalkLocations);
          }
@@ -58,7 +60,7 @@ export class GuardiansTalkLocationFilter {
          }
 
          try {
-            const result = await ConsoleOperationsClient.getGuardiansTalkNamesAtLocation({
+            const result = await loadTalks({
                location
             });
 

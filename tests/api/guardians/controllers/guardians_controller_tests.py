@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api_test_support.json_handler_test_double import JsonHandlerTestDouble
 from api_test_support.patch_coordinator import patch_coordinator_with_stub
 from api_test_support.post_handler import make_handler
 from api_test_support.post_handler import response_json
@@ -7,6 +8,7 @@ from api_test_support.stub_guardians_coordinator import StubGuardiansCoordinator
 import pytest
 
 from api import database_connection_provider as connection
+from api.guardians.controllers.guardians_controller import GuardiansController
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 import api.http_request_handler as server
 from api.models.guardians_talk import GuardiansTalk
@@ -209,6 +211,54 @@ def Test_GetGuardiansTalkNamesAtLocation_TestHttpRequest_ExpectMapsLocation(
       { 'location': TALK_LOCATION },
    )
    assert result[ 'guardians_talks' ] == [ TALK_NAME ]
+
+
+def Test_GetGuardiansTalkScheduleOptions_TestHttpRequest_ExpectMapsLocation(
+      stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
+   handler = make_handler(
+      '/get-guardians-talk-schedule-options',
+      { 'location': TALK_LOCATION }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert stub_guardians_coordinator.calls[ Position.LAST ] == (
+      'get_guardians_talk_schedule_options',
+      { 'location': TALK_LOCATION },
+   )
+   assert result[ 'guardians_talks' ] == [ TALK_NAME ]
+
+
+def Test_GetGuardiansTalkScheduleLocationOptions_TestDirectCall_ExpectWritesLocationsFromCoordinator(
+      stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   GuardiansController.get_guardians_talk_schedule_location_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'guardians_talk_locations': [ TALK_LOCATION ],
+   }
+   assert stub_guardians_coordinator.calls == [
+      ( 'get_guardians_talk_schedule_location_options', {} )
+   ]
+
+
+def Test_GetGuardiansTalkScheduleLocationOptions_TestHttpRequest_ExpectWritesLocationsFromCoordinator(
+      stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
+   handler = make_handler( '/get-guardians-talk-schedule-location-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'guardians_talk_locations': [ TALK_LOCATION ],
+   }
+   assert stub_guardians_coordinator.calls == [
+      ( 'get_guardians_talk_schedule_location_options', {} )
+   ]
 
 
 def Test_GetGuardiansTalkOccurrences_TestHttpRequest_ExpectMapsTalkAndLocation(

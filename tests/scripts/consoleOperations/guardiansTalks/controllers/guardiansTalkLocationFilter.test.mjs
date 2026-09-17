@@ -5,6 +5,7 @@ import { GuardiansTalkLocationFilter } from '../../../../../scripts/consoleOpera
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -83,6 +84,53 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestRefreshTalks_ExpectPo
    } finally {
       ControllerHelper.getFieldValue = originalGetField;
       ConsoleOperationsClient.getGuardiansTalkNamesAtLocation = originalGetTalks;
+      ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulateTalks;
+   }
+});
+
+test('Test_CreateGuardiansTalkLocationFilterController_TestInjectedLoaders_ExpectUsed', async () => {
+   const locationEl = document.createElement('select');
+   const talkNameEl = document.createElement('select');
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalPopulateLocations = ConsoleDropdownPopulator.populateValueDropdown;
+   const originalPopulateTalks = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
+   const locationCalls = [];
+   const talkCalls = [];
+
+   ControllerHelper.getFieldValue = () => 'Africa Savanna';
+   ConsoleDropdownPopulator.populateValueDropdown = (el, names) => {
+      locationCalls.push({ el, names });
+   };
+   ConsoleDropdownPopulator.populateGuardiansTalkDropdown = (el, talks) => {
+      talkCalls.push({ el, talks });
+   };
+
+   try {
+      const controller = GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+         locationEl,
+         talkNameEl,
+         loadLocations: async () => ({
+            guardians_talk_locations: ['Africa Savanna'],
+         }),
+         loadTalks: async ({ location }) => ({
+            guardians_talks: [`${location} Talk`],
+         }),
+      });
+
+      await controller.refreshLocations();
+      await controller.refresh();
+
+      assert.deepEqual(locationCalls.at(Position.LAST), {
+         el: locationEl,
+         names: ['Africa Savanna'],
+      });
+      assert.deepEqual(talkCalls.at(Position.LAST), {
+         el: talkNameEl,
+         talks: ['Africa Savanna Talk'],
+      });
+   } finally {
+      ControllerHelper.getFieldValue = originalGetField;
+      ConsoleDropdownPopulator.populateValueDropdown = originalPopulateLocations;
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulateTalks;
    }
 });
