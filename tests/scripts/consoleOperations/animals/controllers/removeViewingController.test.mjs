@@ -2,12 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { RemoveViewingController } from '../../../../../scripts/consoleOperations/animals/controllers/removeViewingController.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -23,6 +25,8 @@ test('Test_CreateRemoveViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
    const originalReset = ControllerHelper.resetFormFields;
    const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalRemove = ConsoleOperationsClient.removeAnimalViewingAlert;
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -36,6 +40,10 @@ test('Test_CreateRemoveViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
    ConsoleOperationsClient.removeAnimalViewingAlert = async (payload) => {
       assert.deepEqual(payload, { species: 'Lion', exhibit: 'Savanna' });
       return { success: true, species: 'Lion', exhibit: 'Savanna' };
@@ -62,6 +70,8 @@ test('Test_CreateRemoveViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'remove-viewing' }]);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadViewingAlertExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadViewingAlertExhibits);
 
       await submitButtonEl.listeners.click();
       assert.ok(
@@ -78,6 +88,7 @@ test('Test_CreateRemoveViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.bindResetValueOnChange = originalBind;
       ConsoleOperationsClient.removeAnimalViewingAlert = originalRemove;
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
    }
 });
 

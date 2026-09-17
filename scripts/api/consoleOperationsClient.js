@@ -61,24 +61,28 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-off-display-animal-options', payload);
    }
 
-   static getOffDisplayExhibitOptions() {
-      return ApiClient.postJson('/get-off-display-exhibit-options', {});
+   static getExhibitsForSpecies(payload = {}) {
+      return ApiClient.postJson('/get-exhibits-for-species', payload);
+   }
+
+   static getOffDisplayExhibitOptions(payload = {}) {
+      return ApiClient.postJson('/get-off-display-exhibit-options', payload);
    }
 
    static getAnimalVisibilityScheduleOptions(payload = {}) {
       return ApiClient.postJson('/get-animal-visibility-schedule-options', payload);
    }
 
-   static getAnimalVisibilityScheduleExhibitOptions() {
-      return ApiClient.postJson('/get-animal-visibility-schedule-exhibit-options', {});
+   static getAnimalVisibilityScheduleExhibitOptions(payload = {}) {
+      return ApiClient.postJson('/get-animal-visibility-schedule-exhibit-options', payload);
    }
 
    static getAnimalViewingAlertOptions(payload = {}) {
       return ApiClient.postJson('/get-animal-viewing-alert-options', payload);
    }
 
-   static getAnimalViewingAlertExhibitOptions() {
-      return ApiClient.postJson('/get-animal-viewing-alert-exhibit-options', {});
+   static getAnimalViewingAlertExhibitOptions(payload = {}) {
+      return ApiClient.postJson('/get-animal-viewing-alert-exhibit-options', payload);
    }
 
    static getActiveUpdateOptions() {

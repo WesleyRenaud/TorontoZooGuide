@@ -2,12 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AnimalViewingController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingController.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -17,18 +19,22 @@ test('Test_CreateAnimalViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
    const statuses = [];
    const activations = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalGet = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
    const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalValidate = ControllerHelper.validateOptionalDateRange;
    const originalSet = ConsoleOperationsClient.setAnimalViewingAlert;
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
       assert.equal(options.loadOptions, ConsoleOptionsLoader.loadExhibits);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
    };
+   ControllerHelper.reloadOptions = async () => {};
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
@@ -36,6 +42,10 @@ test('Test_CreateAnimalViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
    ControllerHelper.validateOptionalDateRange = () => null;
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
    ConsoleOperationsClient.setAnimalViewingAlert = async (payload) => {
       assert.deepEqual(payload, {
          species: 'Lion',
@@ -75,6 +85,8 @@ test('Test_CreateAnimalViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'viewing-alert' }]);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadExhibitsForSpecies);
 
       await submitButtonEl.listeners.click();
       assert.ok(
@@ -85,12 +97,14 @@ test('Test_CreateAnimalViewingAlertController_TestShowAndSubmitSuccess_ExpectSta
       );
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ControllerHelper.reloadOptions = originalReload;
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.getFieldValue = originalGet;
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.bindResetValueOnChange = originalBind;
       ControllerHelper.validateOptionalDateRange = originalValidate;
       ConsoleOperationsClient.setAnimalViewingAlert = originalSet;
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
    }
 });
 

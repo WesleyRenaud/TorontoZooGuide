@@ -160,3 +160,24 @@ def Test_FetchOffDisplayExhibitNames_TestDuplicateScopes_ExpectDistinctExhibit(
    assert AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names(
       off_display_exhibit_conn,
       TODAY ) == [ SAVANNA ]
+
+
+def Test_FetchOffDisplayExhibitNamesForSpecies_TestMatchingSpecies_ExpectThoseExhibits(
+      off_display_exhibit_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      off_display_exhibit_conn,
+      species=LION,
+      exhibit=SAVANNA,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_status(
+      off_display_exhibit_conn,
+      species=TIGER,
+      exhibit=EURASIA,
+      start_date='2026-09-01',
+      end_date=None )
+
+   assert AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names_for_species(
+      off_display_exhibit_conn,
+      TODAY,
+      LION ) == [ SAVANNA ]

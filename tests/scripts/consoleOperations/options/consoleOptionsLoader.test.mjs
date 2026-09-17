@@ -105,16 +105,25 @@ test('Test_LoadClosedTransportationStations_TestClientResult_ExpectStations', as
 
 test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
+   const payloads = [];
 
-   ConsoleOperationsClient.getOffDisplayExhibitOptions = async () => ({
-      exhibits: ['Africa Savanna', 'Eurasia Wilds'],
-   });
+   ConsoleOperationsClient.getOffDisplayExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return {
+         exhibits: ['Africa Savanna', 'Eurasia Wilds'],
+      };
+   };
 
    try {
       assert.deepEqual(
          await ConsoleOptionsLoader.loadOffDisplayExhibits(),
          ['Africa Savanna', 'Eurasia Wilds']
       );
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadOffDisplayExhibits('African Lion'),
+         ['Africa Savanna', 'Eurasia Wilds']
+      );
+      assert.deepEqual(payloads, [{}, { species: 'African Lion' }]);
    } finally {
       ConsoleOperationsClient.getOffDisplayExhibitOptions = originalGet;
    }
@@ -122,16 +131,25 @@ test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => 
 
 test('Test_LoadVisibilityScheduleExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions;
+   const payloads = [];
 
-   ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions = async () => ({
-      exhibits: ['Africa Savanna', 'Eurasia Wilds'],
-   });
+   ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return {
+         exhibits: ['Africa Savanna', 'Eurasia Wilds'],
+      };
+   };
 
    try {
       assert.deepEqual(
          await ConsoleOptionsLoader.loadVisibilityScheduleExhibits(),
          ['Africa Savanna', 'Eurasia Wilds']
       );
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadVisibilityScheduleExhibits('African Lion'),
+         ['Africa Savanna', 'Eurasia Wilds']
+      );
+      assert.deepEqual(payloads, [{}, { species: 'African Lion' }]);
    } finally {
       ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions = originalGet;
    }
@@ -156,17 +174,46 @@ test('Test_LoadScheduledWildEncounters_TestClientResult_ExpectEncounters', async
 
 test('Test_LoadViewingAlertExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions;
+   const payloads = [];
 
-   ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions = async () => ({
-      exhibits: ['Africa Savanna', 'Eurasia Wilds'],
-   });
+   ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return {
+         exhibits: ['Africa Savanna', 'Eurasia Wilds'],
+      };
+   };
 
    try {
       assert.deepEqual(
          await ConsoleOptionsLoader.loadViewingAlertExhibits(),
          ['Africa Savanna', 'Eurasia Wilds']
       );
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadViewingAlertExhibits('African Lion'),
+         ['Africa Savanna', 'Eurasia Wilds']
+      );
+      assert.deepEqual(payloads, [{}, { species: 'African Lion' }]);
    } finally {
       ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions = originalGet;
+   }
+});
+
+test('Test_LoadExhibitsForSpecies_TestClientResult_ExpectExhibits', async () => {
+   const originalGet = ConsoleOperationsClient.getExhibitsForSpecies;
+
+   ConsoleOperationsClient.getExhibitsForSpecies = async (payload) => {
+      assert.deepEqual(payload, { species: 'African Lion' });
+      return {
+         exhibits: ['Africa Savanna'],
+      };
+   };
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadExhibitsForSpecies('African Lion'),
+         ['Africa Savanna']
+      );
+   } finally {
+      ConsoleOperationsClient.getExhibitsForSpecies = originalGet;
    }
 });

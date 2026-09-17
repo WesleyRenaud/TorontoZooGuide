@@ -11,6 +11,7 @@ class AnimalRoutes():
    '/get-animal-information': AnimalController.get_animal_information,
    '/get-animals-by-exhibit': AnimalController.get_animals_by_exhibit,
    '/get-animal-species-names': AnimalController.get_animal_species_names,
+   '/get-exhibits-for-species': AnimalController.get_exhibits_for_species,
    '/get-off-display-animal-options': AnimalController.get_off_display_animal_options,
    '/get-off-display-exhibit-options': AnimalController.get_off_display_exhibit_options,
    '/get-animal-visibility-schedule-options': AnimalController.get_animal_visibility_schedule_options,

@@ -2,12 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { RemoveVisibilityController } from '../../../../../scripts/consoleOperations/animals/controllers/removeVisibilityController.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -23,6 +25,8 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
    const originalReset = ControllerHelper.resetFormFields;
    const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalRemove = ConsoleOperationsClient.removeAnimalVisibilitySchedule;
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -36,6 +40,10 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
    ConsoleOperationsClient.removeAnimalVisibilitySchedule = async (payload) => {
       assert.deepEqual(payload, { species: 'Lion', exhibit: 'Savanna' });
       return { success: true, species: 'Lion', exhibit: 'Savanna' };
@@ -62,6 +70,8 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'remove-visibility' }]);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadVisibilityScheduleExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadVisibilityScheduleExhibits);
 
       await submitButtonEl.listeners.click();
       assert.ok(
@@ -78,6 +88,7 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.bindResetValueOnChange = originalBind;
       ConsoleOperationsClient.removeAnimalVisibilitySchedule = originalRemove;
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
    }
 });
 

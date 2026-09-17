@@ -1,3 +1,4 @@
+import { AnimalExhibitAutofillController } from '../animals/controllers/animalExhibitAutofillController.js';
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
@@ -21,6 +22,9 @@ export class EntityRemovalFormController {
       submitRemoval,
       successMessage,
       bindResetValueOnChange = null,
+      speciesEl = null,
+      loadOptionsForSpecies = null,
+      onUniqueFill = null,
    } = {}) {
       function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
@@ -106,6 +110,17 @@ export class EntityRemovalFormController {
             bindResetValueOnChange.sourceEl,
             bindResetValueOnChange.targetEl
          );
+      }
+
+      if (speciesEl && loadOptionsForSpecies) {
+         AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
+            speciesEl,
+            exhibitEl: targetEl,
+            loadExhibits: loadOptions,
+            loadExhibitsForSpecies: loadOptionsForSpecies,
+            populateExhibits: populateOptions,
+            onUniqueFill,
+         });
       }
 
       showButtonEl?.addEventListener('click', show);

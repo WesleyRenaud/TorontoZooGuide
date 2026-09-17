@@ -1,3 +1,4 @@
+import { AnimalExhibitAutofillController } from '../animals/controllers/animalExhibitAutofillController.js';
 import { AnimalViewingScopeController } from '../animals/controllers/animalViewingScopeController.js';
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../helpers/controllerHelper.js';
@@ -24,6 +25,7 @@ export class AnimalDisplayStatusControllerFactory {
       submitDisplayStatus,
       successMessage,
       loadExhibits = ConsoleOptionsLoader.loadExhibits,
+      loadExhibitsForSpecies = ConsoleOptionsLoader.loadExhibitsForSpecies,
    } = {}) {
       const hasDateRange = Boolean(startDateEl || endDateEl);
       const formFieldEls = [
@@ -157,6 +159,14 @@ export class AnimalDisplayStatusControllerFactory {
       });
 
       ControllerHelper.bindResetValueOnChange(exhibitEl, speciesEl);
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
+         speciesEl,
+         exhibitEl,
+         loadExhibits,
+         loadExhibitsForSpecies,
+         populateExhibits: ConsoleDropdownPopulator.populateExhibitDropdown,
+         onUniqueFill: () => viewingScopeControl.refresh(),
+      });
 
       showButtonEl?.addEventListener('click', show);
       cancelButtonEl?.addEventListener('click', hide);

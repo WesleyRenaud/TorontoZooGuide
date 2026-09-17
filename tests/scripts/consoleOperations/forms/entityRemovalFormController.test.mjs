@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { EntityRemovalFormController } from '../../../../scripts/consoleOperations/forms/entityRemovalFormController.js';
+import { AnimalExhibitAutofillController } from '../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { ApiErrorMessageResolver } from '../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -191,5 +193,63 @@ test('Test_CreateEntityRemovalFormController_TestReloadOptionsThrows_ExpectClear
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.reloadOptions = originalReload;
       ControllerHelper.resetFormFields = originalReset;
+   }
+});
+
+test('Test_CreateEntityRemovalFormController_TestSpeciesLoaders_ExpectAutofillWired', () => {
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
+   const speciesEl = document.createElement('input');
+   const exhibitEl = document.createElement('select');
+   const loadOptions = async () => ['Africa Savanna'];
+   const loadOptionsForSpecies = async () => ['Africa Savanna'];
+
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
+
+   try {
+      EntityRemovalFormController.createEntityRemovalFormController({
+         showButtonEl: document.createElement('button'),
+         panelEl: {},
+         statusEl: {},
+         formFieldEls: [speciesEl, exhibitEl],
+         activatePanel: () => {},
+         loadOptions,
+         populateOptions: () => {},
+         targetEl: exhibitEl,
+         loadErrorMessage: 'load failed',
+         getFormValues: () => ({}),
+         validateForm: () => null,
+         submitRemoval: async () => ({ success: true }),
+         successMessage: 'done',
+         speciesEl,
+         loadOptionsForSpecies,
+      });
+
+      assert.equal(autofillArgs.length, 1);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, loadOptions);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, loadOptionsForSpecies);
+
+      autofillArgs.length = 0;
+      EntityRemovalFormController.createEntityRemovalFormController({
+         showButtonEl: document.createElement('button'),
+         panelEl: {},
+         statusEl: {},
+         formFieldEls: [],
+         activatePanel: () => {},
+         loadOptions,
+         populateOptions: () => {},
+         targetEl: exhibitEl,
+         loadErrorMessage: 'load failed',
+         getFormValues: () => ({}),
+         validateForm: () => null,
+         submitRemoval: async () => ({ success: true }),
+         successMessage: 'done',
+      });
+      assert.equal(autofillArgs.length, 0);
+   } finally {
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
    }
 });

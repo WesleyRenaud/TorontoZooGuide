@@ -123,3 +123,24 @@ def Test_FetchViewingAlertExhibitNames_TestEndingToday_ExpectIncluded(
    assert AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names(
       viewing_alert_exhibit_conn,
       TODAY ) == [ SAVANNA ]
+
+
+def Test_FetchViewingAlertExhibitNamesForSpecies_TestMatchingSpecies_ExpectThoseExhibits(
+      viewing_alert_exhibit_conn: sqlite3.Connection ) -> None:
+   _insert_alert(
+      viewing_alert_exhibit_conn,
+      species=LION,
+      exhibit=SAVANNA,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_alert(
+      viewing_alert_exhibit_conn,
+      species=TIGER,
+      exhibit=EURASIA,
+      start_date='2026-09-01',
+      end_date=None )
+
+   assert AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names_for_species(
+      viewing_alert_exhibit_conn,
+      TODAY,
+      LION ) == [ SAVANNA ]

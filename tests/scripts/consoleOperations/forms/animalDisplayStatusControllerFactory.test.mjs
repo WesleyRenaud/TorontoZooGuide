@@ -48,6 +48,7 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
       reset: () => {
          resets.push(true);
       },
+      refresh: async () => {},
    });
 
    try {
@@ -130,6 +131,7 @@ test('Test_CreateAnimalDisplayStatusController_TestDateRangeAndFailures_ExpectEr
    };
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
+      refresh: async () => {},
    });
    ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
 
@@ -200,6 +202,7 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidati
    ControllerHelper.bindResetValueOnChange = () => {};
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
+      refresh: async () => {},
    });
 
    try {
@@ -252,6 +255,7 @@ test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUs
    ControllerHelper.bindResetValueOnChange = () => {};
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
+      refresh: async () => {},
    });
 
    try {
@@ -272,6 +276,100 @@ test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUs
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
       ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.bindResetValueOnChange = originalBind;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});
+
+test('Test_CreateAnimalDisplayStatusController_TestUniqueSpecies_ExpectFillsExhibitAndRefreshesScope', async () => {
+   const refreshes = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+      refresh: async () => {
+         refreshes.push(true);
+      },
+   });
+
+   try {
+      const speciesEl = document.createElement('input');
+      const exhibitEl = document.createElement('select');
+      speciesEl.value = 'African Lion';
+
+      AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         panelEl: {},
+         statusEl: {},
+         speciesEl,
+         exhibitEl,
+         viewingScopeEl: document.createElement('select'),
+         activatePanel: () => {},
+         submitDisplayStatus: async () => ({ success: true }),
+         successMessage: () => 'ok',
+         loadExhibits: async () => ['Africa Savanna', 'Eurasia Wilds'],
+         loadExhibitsForSpecies: async (species) => {
+            assert.equal(species, 'African Lion');
+            return ['Africa Savanna'];
+         },
+      });
+
+      await speciesEl.listeners.change();
+      assert.equal(exhibitEl.value, 'Africa Savanna');
+      assert.equal(speciesEl.value, 'African Lion');
+      assert.deepEqual(refreshes, [true]);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});
+
+test('Test_CreateAnimalDisplayStatusController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ControllerHelper.resetFormFields = (...args) => {
+      resets.push(args);
+   };
+   ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+      refresh: async () => {},
+   });
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const speciesEl = document.createElement('input');
+      const exhibitEl = document.createElement('select');
+      speciesEl.value = 'Lion';
+      exhibitEl.value = 'Savanna';
+
+      AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         speciesEl,
+         exhibitEl,
+         viewingScopeEl: document.createElement('select'),
+         submitDisplayStatus: async () => ({ success: true, species: 'Lion' }),
+         successMessage: () => 'ok',
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.equal(resets.length, 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.reloadOptions = originalReload;
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.bindResetValueOnChange = originalBind;
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;

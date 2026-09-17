@@ -4,36 +4,48 @@
   "steps": [
     {
       "number": 1,
-      "name": "Set alert",
-      "do": "Open **Set animal viewing alert**. Choose an exhibit and species, leave dates blank or set them to cover today, and enter alert text.",
-      "expect": "Form valid."
+      "name": "Open set alert",
+      "do": "Open **Set animal viewing alert**.",
+      "expect": "Viewing alert form opens."
     },
     {
       "number": 2,
+      "name": "Multi-exhibit species narrows exhibit list",
+      "do": "Leave **Exhibit** empty. In **Species**, type **Cheetah** and select it from the suggestions.",
+      "expect": "The exhibit list is limited to **Africa Savanna** and **Indo-Malaya Outdoor**. **Exhibit** stays unselected (the form does not pick one)."
+    },
+    {
+      "number": 3,
+      "name": "Unique species fills exhibit",
+      "do": "In **Species**, type **African Lion** and select it from the suggestions. Leave dates blank or set them to cover today, and enter alert text.",
+      "expect": "**African Lion** stays selected. **Exhibit** fills with **Africa Savanna**. Form valid."
+    },
+    {
+      "number": 4,
       "name": "Submit alert",
       "do": "Submit.",
       "expect": "Success “… was given a viewing alert.”"
     },
     {
-      "number": 3,
+      "number": 5,
       "name": "Map shows alert",
       "do": "On **Map**, set **Specific Map** to today. Open that animal’s tooltip/banner.",
       "expect": "Alert text shown."
     },
     {
-      "number": 4,
+      "number": 6,
       "name": "Remove alert",
-      "do": "Open **Remove animal viewing alert**. For **Exhibit**, choose the same exhibit from step 1. In **Species**, type the same species and select it from the suggestions.",
-      "expect": "Exhibit options include that exhibit because it has a viewing alert. Suggestions include that species because it has a viewing alert. Exhibit and species are selected."
+      "do": "Open **Remove animal viewing alert**. Leave **Exhibit** empty. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "Exhibit options include **Africa Savanna** because it has a viewing alert. Suggestions include **African Lion** because it has a viewing alert. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**."
     },
     {
-      "number": 5,
+      "number": 7,
       "name": "Submit remove",
       "do": "Submit.",
       "expect": "Success “Viewing alert removed…”"
     },
     {
-      "number": 6,
+      "number": 8,
       "name": "Map clear",
       "do": "On **Map**, set **Specific Map** to today.",
       "expect": "Alert gone."

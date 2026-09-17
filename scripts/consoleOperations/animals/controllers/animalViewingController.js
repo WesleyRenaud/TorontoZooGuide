@@ -77,6 +77,8 @@ export class AnimalViewingController {
             sourceEl: exhibitEl,
             targetEl: speciesEl,
          },
+         speciesEl,
+         loadOptionsForSpecies: ConsoleOptionsLoader.loadExhibitsForSpecies,
       });
    }
 }

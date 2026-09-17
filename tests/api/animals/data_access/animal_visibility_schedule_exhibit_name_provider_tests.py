@@ -129,3 +129,24 @@ def Test_FetchVisibilityScheduleExhibitNames_TestEndingToday_ExpectIncluded(
    assert AnimalVisibilityScheduleExhibitNameProvider.fetch_visibility_schedule_exhibit_names(
       visibility_schedule_exhibit_conn,
       TODAY ) == [ SAVANNA ]
+
+
+def Test_FetchVisibilityScheduleExhibitNamesForSpecies_TestMatchingSpecies_ExpectThoseExhibits(
+      visibility_schedule_exhibit_conn: sqlite3.Connection ) -> None:
+   _insert_schedule(
+      visibility_schedule_exhibit_conn,
+      species=LION,
+      exhibit=SAVANNA,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_schedule(
+      visibility_schedule_exhibit_conn,
+      species=TIGER,
+      exhibit=EURASIA,
+      start_date='2026-09-01',
+      end_date=None )
+
+   assert AnimalVisibilityScheduleExhibitNameProvider.fetch_visibility_schedule_exhibit_names_for_species(
+      visibility_schedule_exhibit_conn,
+      TODAY,
+      LION ) == [ SAVANNA ]

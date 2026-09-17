@@ -1,3 +1,4 @@
+import { AnimalExhibitAutofillController } from './animalExhibitAutofillController.js';
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
@@ -68,8 +69,22 @@ export class AnimalVisibilityController {
          return ControllerHelper.validateOptionalDateRange(startDate, endDate);
       }
 
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions: ConsoleOptionsLoader.loadExhibits,
+               populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
+               targetEl: exhibitEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       function hide() {
@@ -100,14 +115,14 @@ export class AnimalVisibilityController {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             Strings.status.animalVisibilityScheduleSaved(result),
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function show() {
@@ -117,7 +132,7 @@ export class AnimalVisibilityController {
             loadOptions: ConsoleOptionsLoader.loadExhibits,
             populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
             targetEl: exhibitEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: Strings.loadErrors.exhibits,
@@ -140,7 +155,7 @@ export class AnimalVisibilityController {
             const result = await submitVisibilitySchedule(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');
@@ -152,6 +167,13 @@ export class AnimalVisibilityController {
       }
 
       ControllerHelper.bindResetValueOnChange(exhibitEl, speciesEl);
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
+         speciesEl,
+         exhibitEl,
+         loadExhibits: ConsoleOptionsLoader.loadExhibits,
+         loadExhibitsForSpecies: ConsoleOptionsLoader.loadExhibitsForSpecies,
+         populateExhibits: ConsoleDropdownPopulator.populateExhibitDropdown,
+      });
 
       showButtonEl?.addEventListener('click', show);
       cancelButtonEl?.addEventListener('click', hide);

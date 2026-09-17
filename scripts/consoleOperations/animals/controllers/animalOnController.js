@@ -34,6 +34,7 @@ export class AnimalOnController {
          ),
          successMessage: result => Strings.status.animalOnDisplay(result),
          loadExhibits: ConsoleOptionsLoader.loadOffDisplayExhibits,
+         loadExhibitsForSpecies: ConsoleOptionsLoader.loadOffDisplayExhibits,
       });
    }
 }

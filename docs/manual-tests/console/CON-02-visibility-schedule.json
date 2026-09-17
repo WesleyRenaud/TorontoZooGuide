@@ -10,48 +10,54 @@
     },
     {
       "number": 2,
-      "name": "Choose exhibit and species",
-      "do": "For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions.",
-      "expect": "**Africa Savanna** and **African Lion** are selected."
+      "name": "Multi-exhibit species narrows exhibit list",
+      "do": "Leave **Exhibit** empty. In **Species**, type **Cheetah** and select it from the suggestions.",
+      "expect": "The exhibit list is limited to **Africa Savanna** and **Indo-Malaya Outdoor**. **Exhibit** stays unselected (the form does not pick one)."
     },
     {
       "number": 3,
+      "name": "Unique species fills exhibit",
+      "do": "In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "**African Lion** stays selected. **Exhibit** fills with **Africa Savanna**."
+    },
+    {
+      "number": 4,
       "name": "Fill window",
       "do": "Leave **Schedule start date** blank. Leave **Last day of schedule** blank. Set **Daily viewing start time** to **11:00 AM** and **Daily viewing end time** to **2:00 PM**. In **Message**, enter a short note (e.g. **Manual test limited viewing**).",
       "expect": "Form is ready to save (blank start applies immediately; blank last day keeps the schedule until removed)."
     },
     {
-      "number": 4,
+      "number": 5,
       "name": "Submit",
       "do": "Click **Save**.",
       "expect": "Success that **African Lion** in **Africa Savanna** viewing schedule updated."
     },
     {
-      "number": 5,
+      "number": 6,
       "name": "Map limited-viewing cue",
       "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Find the **African Lion** marker.",
       "expect": "A yellow ring/halo appears around the **African Lion** marker."
     },
     {
-      "number": 6,
+      "number": 7,
       "name": "Tooltip/message",
       "do": "Open the **African Lion** click tooltip.",
-      "expect": "The viewing **Message** from step 3 is visible."
-    },
-    {
-      "number": 7,
-      "name": "Remove schedule",
-      "do": "In Console, select **Remove visibility schedule**. For **Exhibit**, choose **Africa Savanna**. In **Species**, type **African Lion** and select it from the suggestions.",
-      "expect": "Exhibit options include **Africa Savanna** because it has a visibility schedule. Suggestions include **African Lion** because it has a visibility schedule. **Africa Savanna** and **African Lion** are selected."
+      "expect": "The viewing **Message** from step 4 is visible."
     },
     {
       "number": 8,
+      "name": "Remove schedule",
+      "do": "In Console, select **Remove visibility schedule**. Leave **Exhibit** empty. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "Exhibit options include **Africa Savanna** because it has a visibility schedule. Suggestions include **African Lion** because it has a visibility schedule. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**."
+    },
+    {
+      "number": 9,
       "name": "Submit remove",
       "do": "Click **Save**.",
       "expect": "Success that **African Lion** in **Africa Savanna** no longer has a visibility schedule."
     },
     {
-      "number": 9,
+      "number": 10,
       "name": "Map cue gone",
       "do": "From the bottom nav, return to **Map** on **Specific Map** today. Find **African Lion**.",
       "expect": "The yellow ring/halo around the **African Lion** marker is gone."

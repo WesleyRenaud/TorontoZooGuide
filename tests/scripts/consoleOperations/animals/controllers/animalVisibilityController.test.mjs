@@ -3,15 +3,20 @@ import test from 'node:test';
 
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { AnimalVisibilityController } from '../../../../../scripts/consoleOperations/animals/controllers/animalVisibilityController.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
 function _createField(value = '') {
-   return { value };
+   return {
+      value,
+      addEventListener() {},
+   };
 }
 
 function _createButton() {
@@ -78,6 +83,7 @@ test('Test_CreateAnimalVisibilityScheduleController_TestValidationAndSubmit_Expe
    const originalReset = ControllerHelper.resetFormFields;
    const originalHide = ControllerHelper.hideConsolePanel;
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalReload = ControllerHelper.reloadOptions;
    const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalSetStatus = ConsoleStatusPresenter.setStatus;
    const originalClient = ConsoleOperationsClient.setAnimalVisibilitySchedule;
@@ -90,6 +96,9 @@ test('Test_CreateAnimalVisibilityScheduleController_TestValidationAndSubmit_Expe
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       options.resetForm();
       options.activatePanel?.(options.panelEl);
+   };
+   ControllerHelper.reloadOptions = async (options) => {
+      options.resetForm?.();
    };
    ControllerHelper.bindResetValueOnChange = () => {};
    ConsoleStatusPresenter.setStatus = (_el, message, tone) => {
@@ -162,6 +171,7 @@ test('Test_CreateAnimalVisibilityScheduleController_TestValidationAndSubmit_Expe
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.hideConsolePanel = originalHide;
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ControllerHelper.reloadOptions = originalReload;
       ControllerHelper.bindResetValueOnChange = originalBind;
       ConsoleStatusPresenter.setStatus = originalSetStatus;
       ConsoleOperationsClient.setAnimalVisibilitySchedule = originalClient;
@@ -172,12 +182,18 @@ test('Test_CreateAnimalVisibilityScheduleController_TestValidationAndSubmit_Expe
 test('Test_CreateAnimalVisibilityScheduleController_TestShow_ExpectExhibitLoaders', async () => {
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
+   const autofillArgs = [];
    let captured;
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       captured = options;
    };
    ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originalAutofill(args);
+   };
 
    try {
       const { showButtonEl } = _createController();
@@ -186,8 +202,47 @@ test('Test_CreateAnimalVisibilityScheduleController_TestShow_ExpectExhibitLoader
       assert.equal(captured.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
       assert.equal(captured.setStatus, ConsoleStatusPresenter.setStatus);
       assert.equal(captured.errorMessage, Strings.loadErrors.exhibits);
+      assert.equal(autofillArgs.length, 1);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadExhibitsForSpecies);
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
       ControllerHelper.bindResetValueOnChange = originalBind;
+      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
+   }
+});
+
+test('Test_CreateAnimalVisibilityScheduleController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalClient = ConsoleOperationsClient.setAnimalVisibilitySchedule;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ControllerHelper.resetFormFields = () => {
+      resets.push(true);
+   };
+   ControllerHelper.bindResetValueOnChange = () => {};
+   ConsoleOperationsClient.setAnimalVisibilitySchedule = async () => ({
+      success: true,
+      species: 'Lion',
+      exhibit: 'Savanna',
+   });
+
+   try {
+      const { submitButtonEl } = _createController();
+      await submitButtonEl.listeners.click();
+      assert.ok(resets.length >= 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.reloadOptions = originalReload;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.bindResetValueOnChange = originalBind;
+      ConsoleOperationsClient.setAnimalVisibilitySchedule = originalClient;
    }
 });

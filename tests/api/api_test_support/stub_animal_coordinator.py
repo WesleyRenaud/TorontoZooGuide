@@ -75,6 +75,18 @@ class StubAnimalCoordinator():
       return list( self.species_names )
 
 
+   def get_exhibits_for_species( self, species: str ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_exhibits_for_species',
+            {
+               'species': species,
+            }
+         )
+      )
+      return [ self.animal_exhibit ]
+
+
    def get_off_display_animal_options( self, exhibit: str | None = None ) -> list[ str ]:
       self.calls.append(
          (
@@ -87,8 +99,15 @@ class StubAnimalCoordinator():
       return list( self.species_names )
 
 
-   def get_off_display_exhibit_options( self ) -> list[ str ]:
-      self.calls.append( ( 'get_off_display_exhibit_options', {} ) )
+   def get_off_display_exhibit_options( self, species: str ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_off_display_exhibit_options',
+            {
+               'species': species,
+            }
+         )
+      )
       return [ self.animal_exhibit ]
 
 
@@ -104,8 +123,15 @@ class StubAnimalCoordinator():
       return list( self.species_names )
 
 
-   def get_animal_visibility_schedule_exhibit_options( self ) -> list[ str ]:
-      self.calls.append( ( 'get_animal_visibility_schedule_exhibit_options', {} ) )
+   def get_animal_visibility_schedule_exhibit_options( self, species: str ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_animal_visibility_schedule_exhibit_options',
+            {
+               'species': species,
+            }
+         )
+      )
       return [ self.animal_exhibit ]
 
 
@@ -121,8 +147,15 @@ class StubAnimalCoordinator():
       return list( self.species_names )
 
 
-   def get_animal_viewing_alert_exhibit_options( self ) -> list[ str ]:
-      self.calls.append( ( 'get_animal_viewing_alert_exhibit_options', {} ) )
+   def get_animal_viewing_alert_exhibit_options( self, species: str ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_animal_viewing_alert_exhibit_options',
+            {
+               'species': species,
+            }
+         )
+      )
       return [ self.animal_exhibit ]
 
 

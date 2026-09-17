@@ -94,6 +94,18 @@ class AnimalController():
 
 
    @staticmethod
+   def get_exhibits_for_species( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      exhibits = AnimalCoordinator.get_exhibits_for_species(
+         species=data.get( 'species' ) )
+
+      handler._write_json( {
+         'exhibits': exhibits,
+      } )
+
+
+   @staticmethod
    def get_off_display_animal_options( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
@@ -107,7 +119,10 @@ class AnimalController():
 
    @staticmethod
    def get_off_display_exhibit_options( handler: JsonRequestHandler ) -> None:
-      exhibits = AnimalCoordinator.get_off_display_exhibit_options()
+      data = handler._read_json_body()
+
+      exhibits = AnimalCoordinator.get_off_display_exhibit_options(
+         species=data.get( 'species' ) )
 
       handler._write_json( {
          'exhibits': exhibits,
@@ -128,7 +143,10 @@ class AnimalController():
 
    @staticmethod
    def get_animal_visibility_schedule_exhibit_options( handler: JsonRequestHandler ) -> None:
-      exhibits = AnimalCoordinator.get_animal_visibility_schedule_exhibit_options()
+      data = handler._read_json_body()
+
+      exhibits = AnimalCoordinator.get_animal_visibility_schedule_exhibit_options(
+         species=data.get( 'species' ) )
 
       handler._write_json( {
          'exhibits': exhibits,
@@ -149,7 +167,10 @@ class AnimalController():
 
    @staticmethod
    def get_animal_viewing_alert_exhibit_options( handler: JsonRequestHandler ) -> None:
-      exhibits = AnimalCoordinator.get_animal_viewing_alert_exhibit_options()
+      data = handler._read_json_body()
+
+      exhibits = AnimalCoordinator.get_animal_viewing_alert_exhibit_options(
+         species=data.get( 'species' ) )
 
       handler._write_json( {
          'exhibits': exhibits,
