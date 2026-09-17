@@ -36,7 +36,7 @@ test('Test_GetScheduledItemTimeRange_TestReturnsStartAndEndMinutes_ExpectOk', ()
 
 test('Test_GetScheduledPillVisualBand_TestExpandsShortVisitsToTheMinimumDisplaySpan_ExpectOk', () => {
    const band = ScheduledPillChecker.getScheduledPillVisualBand(
-      makeScheduledItem('Babirusa', 570, 2, 570)
+      makeScheduledItem('Capybara', 570, 2, 570)
    );
 
    assert.equal(band.endMinutes - band.startMinutes, ScheduledPillChecker.getScheduledPillMinDisplayMinutes());
@@ -45,7 +45,7 @@ test('Test_GetScheduledPillVisualBand_TestExpandsShortVisitsToTheMinimumDisplayS
 test('Test_GetScheduledPillVisualBand_TestSpansClusteredSummaryItems_ExpectOk', () => {
    const band = ScheduledPillChecker.getScheduledPillVisualBand({
       summaryItems: [
-         makeScheduledItem('Babirusa', 570, 2, 570),
+         makeScheduledItem('Capybara', 570, 2, 570),
          makeScheduledItem('Cheetah', 575, 2, 570),
       ],
    });
@@ -74,7 +74,7 @@ test('Test_DoScheduledTimeRangesOverlap_TestUsesStrictBoundsForTouchingWindows_E
 test('Test_ScheduledPillsOverlapInDefaultPosition_TestDetectsOverlapWithinASlot_ExpectOk', () => {
    assert.equal(
       ScheduledPillChecker.scheduledPillsOverlapInDefaultPosition(
-         makeScheduledItem('Babirusa', 570, 30),
+         makeScheduledItem('Capybara', 570, 30),
          makeScheduledItem('Cheetah', 575, 30)
       ),
       true
@@ -84,7 +84,7 @@ test('Test_ScheduledPillsOverlapInDefaultPosition_TestDetectsOverlapWithinASlot_
 test('Test_ScheduledPillsOverlapInDefaultPosition_TestIgnoresBackToBackSlotBoundaries_ExpectOk', () => {
    assert.equal(
       ScheduledPillChecker.scheduledPillsOverlapInDefaultPosition(
-         makeScheduledItem('Babirusa', 570, 30, 570),
+         makeScheduledItem('Capybara', 570, 30, 570),
          makeScheduledItem('Greater One-Horned Rhinoceros', 600, 30, 600)
       ),
       false
@@ -93,7 +93,7 @@ test('Test_ScheduledPillsOverlapInDefaultPosition_TestIgnoresBackToBackSlotBound
 
 test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReusesOpenColumns_ExpectOk', () => {
    const placedItems = [
-      { ...makeScheduledItem('Babirusa', 570, 30), horizontalOffsetIndex: 0 },
+      { ...makeScheduledItem('Capybara', 570, 30), horizontalOffsetIndex: 0 },
       { ...makeScheduledItem('Red Panda', 630, 30), horizontalOffsetIndex: 2 },
    ];
 
@@ -109,7 +109,7 @@ test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReusesOpenColumns_ExpectOk'
 test('Test_ComputeFirstFreeHorizontalOffsetIndex_TestReturnsPastMaxColumnWhenAllColumnsAreBlocked_ExpectOk', () => {
    const candidate = makeScheduledItem('Cheetah', 575, 30);
    const placedItems = [
-      { ...makeScheduledItem('Babirusa', 570, 30), horizontalOffsetIndex: 0 },
+      { ...makeScheduledItem('Capybara', 570, 30), horizontalOffsetIndex: 0 },
       { ...makeScheduledItem('Red Panda', 576, 30), horizontalOffsetIndex: 1 },
    ];
 

@@ -9,7 +9,7 @@ import { ScheduledPillRenderBuilder } from '../../../../../scripts/itinerary/pan
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsSequentialVisitsInColumnZero_ExpectOk', () => {
    const groupsByAnchor = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Babirusa', 570, 30, 570),
+      makeScheduledItem('Capybara', 570, 30, 570),
       makeScheduledItem('Greater One-Horned Rhinoceros', 600, 30, 600),
       makeScheduledItem('Indian Peafowl', 630, 30, 630),
    ]);
@@ -26,12 +26,12 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsSequentialVisitsInColu
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestClustersShortVisitsInTheSameSlot_ExpectOk', () => {
    const groupsByAnchor = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Babirusa', 570, 2, 570),
+      makeScheduledItem('Capybara', 570, 2, 570),
       makeScheduledItem('Cheetah', 572, 2, 570),
    ]);
 
    assert.equal(groupsByAnchor.get(570)?.length, 1);
-   assert.equal(groupsByAnchor.get(570)?.[0]?.label, 'Babirusa + 1');
+   assert.equal(groupsByAnchor.get(570)?.[0]?.label, 'Capybara + 1');
    assert.deepEqual(
       groupsByAnchor.get(570)?.map((group) => group.horizontalOffsetIndex),
       [ 0 ]
@@ -199,7 +199,7 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestUsesStartTimesForPillPositi
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestPlacesEachSlotAtItsNaturalStartOffset_ExpectOk', () => {
    const groupsByAnchor = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Babirusa', 570, 30, 570),
+      makeScheduledItem('Capybara', 570, 30, 570),
       makeScheduledItem('Cheetah', 571, 30, 570),
       makeScheduledItem('Red Panda', 600, 2, 600),
    ]);
@@ -211,14 +211,14 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestPlacesEachSlotAtItsNaturalS
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestKeepsFullLengthOverlappingVisitsSeparate_ExpectOk', () => {
    const groupsByAnchor = ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Babirusa', 570, 30, 570),
+      makeScheduledItem('Capybara', 570, 30, 570),
       makeScheduledItem('Cheetah', 576, 30, 570),
    ]);
 
    assert.equal(groupsByAnchor.get(570)?.length, 2);
    assert.deepEqual(
       groupsByAnchor.get(570)?.map((group) => group.label ?? group.items[0].label),
-      [ 'Babirusa', 'Cheetah' ]
+      [ 'Capybara', 'Cheetah' ]
    );
    assert.deepEqual(
       groupsByAnchor.get(570)?.map((group) => group.horizontalOffsetIndex),
@@ -302,7 +302,7 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestMergesOverlappingVisitsInto
 
 test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGivesEachFullLengthVisitItsOwnPill_ExpectOk', () => {
    const scheduledItems = [
-      'Babirusa',
+      'Capybara',
       'Cheetah',
       'Red Panda',
       'Masai Giraffe',
@@ -318,7 +318,7 @@ test('Test_PlanScheduledPillRenderGroupsByAnchor_TestGivesEachFullLengthVisitIts
    assert.deepEqual(
       groups.map((group) => group.label ?? group.items[0].label),
       [
-         'Babirusa',
+         'Capybara',
          'Cheetah',
          'Red Panda',
          'Masai Giraffe',

@@ -2027,14 +2027,6 @@
         {
           "kind": "animal",
           "key": [
-            "Babirusa",
-            "Indo-Malaya Outdoor",
-            "Indoor"
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Greater One-Horned Rhinoceros",
             "Indo-Malaya Outdoor",
             "Indoor"
@@ -2046,14 +2038,6 @@
             "Asian Brown Tortoise",
             "Indo-Malaya Outdoor",
             null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Babirusa",
-            "Indo-Malaya Outdoor",
-            "Outdoor"
           ]
         },
         {

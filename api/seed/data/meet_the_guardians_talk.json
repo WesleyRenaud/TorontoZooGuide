@@ -217,13 +217,6 @@
     "maximum_duration": 30
   },
   {
-    "name": "Babirusa",
-    "location": "Indo-Malaya Outdoor",
-    "x_coord": 54.145,
-    "y_coord": 82.451,
-    "maximum_duration": 30
-  },
-  {
     "name": "Cheetah",
     "location": "Africa Savanna",
     "x_coord": 42.404,
