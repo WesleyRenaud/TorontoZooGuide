@@ -9,6 +9,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.guardians.data_access.guardians_talk_cancellation_provider import GuardiansTalkCancellationProvider
 from api.guardians.data_access.guardians_talk_day_schedule_provider import GuardiansTalkDayScheduleProvider
 from api.guardians.data_access.guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
+from api.guardians.data_access.guardians_talk_schedule_name_provider import GuardiansTalkScheduleNameProvider
 from api.guardians.data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
 from api.guardians.data_access.meet_the_guardians_talk_provider import MeetTheGuardiansTalkProvider
 from api.guardians.data_access.meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
@@ -28,6 +29,7 @@ from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryG
 from api.models import GuardiansTalk
 from api.models import ScheduledOccurrence
 from api.shared.api_operation_failure import ApiOperationFailure
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.api_error_type import ApiErrorType
 from api.types import Types
 
@@ -122,6 +124,60 @@ def Test_GetGuardiansTalkNamesAtLocation_TestProviderNames_ExpectReturned(
    assert GuardiansCoordinator.get_guardians_talk_names_at_location(
       TALK_LOCATION ) == [ TALK_NAME ]
    assert captured[ 'location' ] == TALK_LOCATION
+
+
+def Test_GetGuardiansTalkScheduleOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_scheduled_talk_names(
+         _conn: Types.Connection,
+         today: str,
+         location: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      captured[ 'location' ] = location
+      return [ TALK_NAME ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      GuardiansTalkScheduleNameProvider,
+      'fetch_scheduled_talk_names',
+      fetch_scheduled_talk_names )
+
+   assert GuardiansCoordinator.get_guardians_talk_schedule_options(
+      TALK_LOCATION ) == [ TALK_NAME ]
+   assert captured == {
+      'today': '2026-09-16',
+      'location': TALK_LOCATION,
+   }
+
+
+def Test_GetGuardiansTalkScheduleLocationOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_scheduled_talk_locations(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ TALK_LOCATION ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      GuardiansTalkScheduleNameProvider,
+      'fetch_scheduled_talk_locations',
+      fetch_scheduled_talk_locations )
+
+   assert GuardiansCoordinator.get_guardians_talk_schedule_location_options() == [ TALK_LOCATION ]
+   assert captured == { 'today': '2026-09-16' }
 
 
 def Test_GetGuardiansTalkDetails_TestBuilderResult_ExpectReturned(

@@ -23,9 +23,10 @@ export class EndRecurringScheduleFormController {
       const formFieldEls = [endDateEl];
 
 
-      function resetForm() {
+      async function resetForm() {
          ControllerHelper.resetFormFields(formFieldEls);
          resetSelection?.();
+         await prepareForm?.();
       }
 
       function getFormValues() {
@@ -54,22 +55,21 @@ export class EndRecurringScheduleFormController {
          return validateSelection?.(formValues) ?? null;
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             successMessage(result),
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function onShowClick() {
          ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
-            resetForm();
-            await prepareForm?.();
+            await resetForm();
             show();
          }
          catch (err) {
@@ -94,7 +94,7 @@ export class EndRecurringScheduleFormController {
             const result = await submitEndSchedule(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');

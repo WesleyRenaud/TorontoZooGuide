@@ -57,6 +57,29 @@ class GuardiansController():
 
 
    @staticmethod
+   def get_guardians_talk_schedule_options( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      location = data.get( 'location' )
+
+      guardians_talks = GuardiansCoordinator.get_guardians_talk_schedule_options(
+         location=location )
+
+      handler._write_json( {
+         'guardians_talks': guardians_talks,
+      } )
+
+
+   @staticmethod
+   def get_guardians_talk_schedule_location_options( handler: JsonRequestHandler ) -> None:
+      guardians_talk_locations = GuardiansCoordinator.get_guardians_talk_schedule_location_options()
+
+      handler._write_json( {
+         'guardians_talk_locations': guardians_talk_locations,
+      } )
+
+
+   @staticmethod
    def get_guardians_talk_occurrences( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

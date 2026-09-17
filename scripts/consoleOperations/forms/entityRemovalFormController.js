@@ -22,8 +22,22 @@ export class EntityRemovalFormController {
       successMessage,
       bindResetValueOnChange = null,
    } = {}) {
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions,
+               populateOptions,
+               targetEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       async function show() {
@@ -33,7 +47,7 @@ export class EntityRemovalFormController {
             loadOptions,
             populateOptions,
             targetEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: loadErrorMessage,
@@ -48,7 +62,7 @@ export class EntityRemovalFormController {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             typeof successMessage === 'function'
@@ -57,7 +71,7 @@ export class EntityRemovalFormController {
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function onSubmitClick() {
@@ -76,7 +90,7 @@ export class EntityRemovalFormController {
             const result = await submitRemoval(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');

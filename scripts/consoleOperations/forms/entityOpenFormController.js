@@ -46,8 +46,22 @@ export class EntityOpenFormController {
          return ControllerHelper.validateOptionalDateRange(startDate, endDate);
       }
 
-      function resetForm() {
+      function clearFields() {
          ControllerHelper.resetFormFields(formFieldEls);
+      }
+
+      async function resetForm() {
+         try {
+            await ControllerHelper.reloadOptions({
+               loadOptions,
+               populateOptions,
+               targetEl: entityEl,
+               resetForm: clearFields,
+            });
+         }
+         catch (err) {
+            clearFields();
+         }
       }
 
       function show() {
@@ -63,14 +77,14 @@ export class EntityOpenFormController {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             successMessage(result),
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function onShowClick() {
@@ -80,7 +94,7 @@ export class EntityOpenFormController {
             loadOptions,
             populateOptions,
             targetEl: entityEl,
-            resetForm,
+            resetForm: clearFields,
             activatePanel,
             panelEl,
             errorMessage: loadErrorMessage,
@@ -103,7 +117,7 @@ export class EntityOpenFormController {
             const result = await submitOpenStatus(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');

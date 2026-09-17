@@ -47,8 +47,8 @@
     {
       "number": 8,
       "name": "End schedule",
-      "do": "Open **End Meet the Guardians talk schedule** and end the schedule from step 1.",
-      "expect": "Success that the schedule was ended."
+      "do": "Open **End Meet the Guardians talk schedule**. For **Location** and **Talk name**, choose the talk from step 1, select its **Talk times**, and end the schedule.",
+      "expect": "Location and talk options include that talk because it has a schedule now. Success that the schedule was ended."
     },
     {
       "number": 9,

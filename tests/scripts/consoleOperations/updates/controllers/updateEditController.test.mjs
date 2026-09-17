@@ -16,6 +16,7 @@ test('Test_CreateEditUpdateController_TestShowAndSubmitSuccess_ExpectStatus', as
    const statuses = [];
    const activations = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalIdentity = UpdateOptions.getSelectedUpdateData;
    const originalGetField = ControllerHelper.getFieldValue;
@@ -26,6 +27,9 @@ test('Test_CreateEditUpdateController_TestShowAndSubmitSuccess_ExpectStatus', as
       activations.push(options.panelEl);
       assert.equal(options.loadOptions, UpdateOptions.loadActiveUpdates);
       assert.equal(options.populateOptions, UpdateOptions.populateUpdateDropdown);
+   };
+   ControllerHelper.reloadOptions = async (options) => {
+      options.resetForm?.();
    };
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
@@ -93,6 +97,7 @@ test('Test_CreateEditUpdateController_TestShowAndSubmitSuccess_ExpectStatus', as
       );
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ControllerHelper.reloadOptions = originalReload;
       ConsoleStatusPresenter.setStatus = originalStatus;
       UpdateOptions.getSelectedUpdateData = originalIdentity;
       ControllerHelper.getFieldValue = originalGetField;

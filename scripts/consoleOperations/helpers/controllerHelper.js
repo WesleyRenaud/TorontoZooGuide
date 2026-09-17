@@ -57,9 +57,12 @@ export class ControllerHelper {
       setStatus?.(statusEl, '');
 
       try {
-         const options = await loadOptions();
-         populateOptions?.(targetEl, options);
-         resetForm?.();
+         await ControllerHelper.reloadOptions({
+            loadOptions,
+            populateOptions,
+            targetEl,
+            resetForm,
+         });
          activatePanel?.(panelEl);
       }
       catch(err) {
@@ -67,6 +70,17 @@ export class ControllerHelper {
          activatePanel?.(panelEl);
       }
 
+   }
+
+   static async reloadOptions({
+      loadOptions,
+      populateOptions,
+      targetEl,
+      resetForm,
+   } = {}) {
+      const options = await loadOptions();
+      populateOptions?.(targetEl, options);
+      resetForm?.();
    }
 
    static validateOptionalDateRange(startDate, endDate) {

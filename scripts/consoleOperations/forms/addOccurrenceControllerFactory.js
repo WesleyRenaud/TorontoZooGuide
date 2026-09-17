@@ -21,9 +21,10 @@ export class AddOccurrenceControllerFactory {
       successMessage,
    } = {}) {
 
-      function resetForm() {
+      async function resetForm() {
          ControllerHelper.resetFormFields(formFieldEls);
          resetSelection?.();
+         await prepareForm?.();
       }
 
       function show() {
@@ -39,22 +40,21 @@ export class AddOccurrenceControllerFactory {
          });
       }
 
-      function handleSubmitSuccess(result) {
+      async function handleSubmitSuccess(result) {
          ConsoleStatusPresenter.setStatus(
             statusEl,
             successMessage(result),
             'is-success'
          );
 
-         resetForm();
+         await resetForm();
       }
 
       async function onShowClick() {
          ConsoleStatusPresenter.setStatus(statusEl, '');
 
          try {
-            resetForm();
-            await prepareForm?.();
+            await resetForm();
             show();
          }
          catch (err) {
@@ -81,7 +81,7 @@ export class AddOccurrenceControllerFactory {
             const result = await submitOccurrence(formValues);
 
             if (result.success) {
-               handleSubmitSuccess(result);
+               await handleSubmitSuccess(result);
             }
             else {
                ConsoleStatusPresenter.setStatus(statusEl, ApiErrorMessageResolver.resolveConsoleMutationError(result), 'is-error');

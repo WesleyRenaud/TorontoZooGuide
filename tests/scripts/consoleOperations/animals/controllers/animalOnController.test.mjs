@@ -20,6 +20,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
    const activations = [];
    const resets = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalGet = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -31,6 +32,9 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       activations.push(options.panelEl);
       assert.equal(options.loadOptions, ConsoleOptionsLoader.loadOffDisplayExhibits);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
+   };
+   ControllerHelper.reloadOptions = async (options) => {
+      options.resetForm?.();
    };
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
@@ -85,6 +89,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       assert.ok(resets.length >= 1);
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ControllerHelper.reloadOptions = originalReload;
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.getFieldValue = originalGet;
       ControllerHelper.resetFormFields = originalReset;

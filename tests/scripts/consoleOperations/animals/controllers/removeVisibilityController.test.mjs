@@ -17,6 +17,7 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
    const statuses = [];
    const activations = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalGet = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -28,6 +29,7 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
       assert.equal(options.loadOptions, ConsoleOptionsLoader.loadVisibilityScheduleExhibits);
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
    };
+   ControllerHelper.reloadOptions = async () => {};
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
@@ -70,6 +72,7 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
       );
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      ControllerHelper.reloadOptions = originalReload;
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.getFieldValue = originalGet;
       ControllerHelper.resetFormFields = originalReset;

@@ -79,6 +79,24 @@ class StubGuardiansCoordinator():
       return list( self.guardians_talk_names_at_location )
 
 
+   def get_guardians_talk_schedule_options(
+         self,
+         *,
+         location: str ) -> list[ str ]:
+      self.calls.append(
+         (
+            'get_guardians_talk_schedule_options',
+            { 'location': location },
+         )
+      )
+      return list( self.guardians_talk_names_at_location )
+
+
+   def get_guardians_talk_schedule_location_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_guardians_talk_schedule_location_options', {} ) )
+      return list( self.guardians_talk_locations )
+
+
    def get_guardians_talk_occurrences(
          self,
          *,

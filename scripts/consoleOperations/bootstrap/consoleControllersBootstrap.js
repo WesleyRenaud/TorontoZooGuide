@@ -1,3 +1,4 @@
+import { ConsoleOperationsClient } from '../../api/consoleOperationsClient.js';
 import { ConsoleControllersBootstrapHelper } from './consoleControllersBootstrapHelper.js';
 import { GuardiansTalkLocationFilter } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
 import { GuardiansTalkOccurrenceFilter } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
@@ -17,6 +18,8 @@ export class ConsoleControllersBootstrap {
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
                locationEl: guardiansTalks.endSchedule.locationEl,
                talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+               loadLocations: ConsoleOperationsClient.getGuardiansTalkScheduleLocationOptions,
+               loadTalks: ConsoleOperationsClient.getGuardiansTalkScheduleOptions,
             }),
          addGuardiansTalkOccurrenceLocationFilterController:
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({

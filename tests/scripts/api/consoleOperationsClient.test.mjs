@@ -23,6 +23,7 @@ const _NO_ARG_GETTERS = [
    ['getAnimalViewingAlertExhibitOptions', '/get-animal-viewing-alert-exhibit-options'],
    ['getActiveUpdateOptions', '/get-active-update-options'],
    ['getGuardiansTalkLocations', '/get-guardians-talk-locations'],
+   ['getGuardiansTalkScheduleLocationOptions', '/get-guardians-talk-schedule-location-options'],
 ];
 
 const _PAYLOAD_METHODS = [
@@ -68,6 +69,7 @@ const _PAYLOAD_METHODS = [
    ['setTransportationStationClosed', '/set-transportation-station-closed'],
    ['setCurrentTransportationRoute', '/set-current-transportation-route'],
    ['getGuardiansTalkNamesAtLocation', '/get-guardians-talk-names-at-location'],
+   ['getGuardiansTalkScheduleOptions', '/get-guardians-talk-schedule-options'],
    ['setGuardiansTalkSchedule', '/set-guardians-talk-schedule'],
    ['replaceGuardiansTalkScheduleOverlaps', '/replace-guardians-talk-schedule-overlaps'],
    ['trimGuardiansTalkScheduleOverlaps', '/trim-guardians-talk-schedule-overlaps'],

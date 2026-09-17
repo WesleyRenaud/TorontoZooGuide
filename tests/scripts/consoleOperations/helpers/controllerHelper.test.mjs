@@ -94,6 +94,28 @@ test('Test_LoadOptionsAndShowPanel_TestSuccessAndError_ExpectStatus', async () =
    assert.ok(statuses.some((entry) => entry.value === 'boom' && entry.tone === 'is-error'));
 });
 
+test('Test_ReloadOptions_TestLoadSucceeds_ExpectPopulatedAndReset', async () => {
+   const populated = [];
+   const resets = [];
+
+   await ControllerHelper.reloadOptions({
+      loadOptions: async () => ['Africa Savanna'],
+      populateOptions: (target, options) => {
+         populated.push({ target, options });
+      },
+      targetEl: { id: 'exhibit' },
+      resetForm: () => {
+         resets.push(true);
+      },
+   });
+
+   assert.deepEqual(populated, [{
+      target: { id: 'exhibit' },
+      options: ['Africa Savanna'],
+   }]);
+   assert.deepEqual(resets, [true]);
+});
+
 test('Test_ValidateOptionalDateRange_TestBounds_ExpectMessageOrNull', () => {
    const original = VisitDateValidator.resolveOptionalStartDate;
    VisitDateValidator.resolveOptionalStartDate = (value) => value || '2026-06-15';
