@@ -46,15 +46,6 @@
   },
   {
     "kind": "guardians_talk",
-    "name": "Babirusa",
-    "location": "Indo-Malaya Outdoor",
-    "x": 54.145,
-    "y": 82.451,
-    "walk_node_id": "v-0078",
-    "snap_distance_px": 18.804
-  },
-  {
-    "kind": "guardians_talk",
     "name": "Bactrian Camel",
     "location": "Eurasia Wilds",
     "x": 82.038,

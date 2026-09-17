@@ -149,3 +149,46 @@ test('Test_CreateEntityRemovalFormController_TestValidationAndFailures_ExpectErr
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
    }
 });
+
+test('Test_CreateEntityRemovalFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalReload = ControllerHelper.reloadOptions;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.resetFormFields = (fields) => {
+      resets.push(fields);
+   };
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const formFieldEls = [{}];
+      EntityRemovalFormController.createEntityRemovalFormController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         formFieldEls,
+         activatePanel: () => {},
+         loadOptions: async () => [],
+         populateOptions: () => {},
+         targetEl: {},
+         loadErrorMessage: 'load failed',
+         getFormValues: () => ({ restroom: 'Near Cafe' }),
+         validateForm: () => null,
+         submitRemoval: async () => ({ success: true }),
+         successMessage: 'done',
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.deepEqual(resets, [formFieldEls]);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.reloadOptions = originalReload;
+   }
+});

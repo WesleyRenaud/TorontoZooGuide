@@ -157,3 +157,50 @@ test('Test_CreateEndUpdateController_TestValidationAndFailures_ExpectErrorStatus
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
    }
 });
+
+test('Test_CreateEndUpdateController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalIdentity = UpdateOptions.getSelectedUpdateIdentity;
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalEnd = ConsoleOperationsClient.endUpdate;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   UpdateOptions.getSelectedUpdateIdentity = () => ({
+      title: 'Notice',
+      startDate: '2026-01-01',
+   });
+   ControllerHelper.getFieldValue = () => '2026-02-01';
+   ControllerHelper.resetFormFields = (fields) => {
+      resets.push(fields);
+   };
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ConsoleOperationsClient.endUpdate = async () => ({ success: true });
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      UpdateEndController.createEndUpdateController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         updateEl: document.createElement('select'),
+         endDateEl: document.createElement('input'),
+         activatePanel: () => {},
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.equal(resets.length, 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      UpdateOptions.getSelectedUpdateIdentity = originalIdentity;
+      ControllerHelper.getFieldValue = originalGetField;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.reloadOptions = originalReload;
+      ConsoleOperationsClient.endUpdate = originalEnd;
+   }
+});

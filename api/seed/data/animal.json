@@ -196,20 +196,6 @@
     "animals_at_the_zoo": null
   },
   {
-    "species": "Babirusa",
-    "latin_name": "Babyrousa Babyrussa",
-    "min_temperature": 10,
-    "general_viewing_tips": "The babirusa has an outdoor and indoor habitat. The outdoor habitat can be found outside the greater one-horned rhinoceros building and on the left. If you don't see the babirusa outside, check inside the Indian rhino building. The babirusa shares this space with the rhino, and is sometimes viewable inside.",
-    "seasonal_viewing_tips": "Babirusa are a tropical species of pig and thus can only be outside in the warmer months, mostly from May to October, plus other warmer days. The rest of the time they can be viewed inside the greater one-horned rhino building.",
-    "identification": "The babirusa, often called the “deer-pig,” is a unique wild pig native to Sulawesi and nearby Indonesian islands. Adults typically weigh 50–100 kg, with males slightly larger than females. Their most striking feature is the long, upward-curving tusks of the upper canines, which grow through the skin of the snout and may even curve back toward the forehead. Their body is sparsely haired, with coarse brown to gray skin, long legs, and a stocky frame adapted for walking through dense forest and wet areas.",
-    "habitat_and_range": "Babirusas inhabit tropical rainforests, swamps, and riverbanks in Sulawesi and surrounding islands. They prefer areas with dense vegetation, soft soil for rooting, and access to freshwater, which they use for wallowing and cooling. They are generally shy and avoid human settlements.",
-    "diet_and_feeding": "Babirusas are omnivorous, feeding on roots, fruits, leaves, and small invertebrates. They use their strong jaws and tusks to dig and root in the soil for edible items. Their foraging contributes to seed dispersal and soil turnover, playing an important ecological role in their habitats.",
-    "behaviour_and_social_life": "Babirusas are solitary or live in small groups, typically composed of a female and her offspring. Males are often solitary outside of the breeding season. They are diurnal to crepuscular, foraging mostly in the early morning and late afternoon. When threatened, they rely on stealth and dense cover to evade predators. Vocalizations are rare but can include grunts and squeals during social interactions or displays.",
-    "adaptations": "The babirusa has several adaptations for life in dense tropical forests. Its strong, curved tusks are used in male–male competition during mating displays, though they are less effective as weapons than for visual signaling. Strong legs and hooves allow movement through muddy forest floors, while sparse hair and tough skin provide protection against undergrowth. Its omnivorous diet and flexible foraging behaviour allow it to exploit a wide range of food sources, making it well-suited to seasonal variations in fruit and root availability.",
-    "reproduction_and_life_cycle": "Breeding occurs year-round but often peaks during periods of food abundance. Females give birth to 1–3 piglets after a gestation of about 4 months. Piglets are born with striped coats for camouflage and stay with the mother for several months before becoming independent. Babirusas can live 15–20 years in the wild and slightly longer in captivity, with slow reproduction emphasizing survival of fewer offspring.",
-    "animals_at_the_zoo": "The Toronto Zoo is home to one female babirusa named Olive."
-  },
-  {
     "species": "Bactrian Camel",
     "latin_name": "Camelus Bactrianus",
     "min_temperature": -30,
@@ -1011,7 +997,7 @@
     "species": "Greater One-Horned Rhinoceros",
     "latin_name": "Rhinoceros Unicornis",
     "min_temperature": 10,
-    "general_viewing_tips": "The greater one-horned rhinoceros shares its indoor space with the babirusa. They rotate between the on-exhibit and off-exhibit spaces, and thus the rhino may not always be viewable. Your best chance of spotting him involves visiting the rhino house in the afternoon, and checking both sides of the indoor habitat.",
+    "general_viewing_tips": "The greater one-horned rhinoceros rotates between his outdoor and indoor habitats throughout the day, so be sure to check both areas when you visit.",
     "seasonal_viewing_tips": "Greater one-horned rhinoceroses are warm-weather animals and are only viewable outside during the warmer months of the year. They can be reliably seen from May through October, and on other warm spring or fall days.",
     "identification": "The Greater One-Horned Rhinoceros is a massive, heavily armored herbivore, with adult males weighing 2,000–3,000 kg and females slightly smaller at 1,600–2,500 kg. Its most recognizable feature is a single black horn on the snout, which can reach 60–100 cm in length. The thick, gray skin forms large, folded plates, giving an appearance of natural armor. Short, strong legs support its heavy body, and a prehensile upper lip aids in grasping grasses and aquatic vegetation.",
     "habitat_and_range": "This species is native to northern India and Nepal, inhabiting floodplains, tall grasslands, and riverine forests. They prefer areas with shallow water or swampy regions, which they use for wallowing to regulate body temperature and protect against parasites. Historically widespread, populations are now concentrated in protected national parks due to habitat loss and poaching.",

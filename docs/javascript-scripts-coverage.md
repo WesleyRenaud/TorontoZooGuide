@@ -1,4 +1,4 @@
-# Frontend scripts coverage
+# Scripts coverage
 
 CI runs `npm run coverage:js` (via `npm run coverage` / `build`). Target is **100% line coverage** of included scripts, each with a mirrored test file (`scripts/foo/bar.js` → `tests/scripts/foo/bar.test.mjs`).
 
