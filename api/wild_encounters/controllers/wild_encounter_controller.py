@@ -34,6 +34,15 @@ class WildEncounterController():
 
 
    @staticmethod
+   def get_wild_encounter_schedule_options( handler: JsonRequestHandler ) -> None:
+      wild_encounters = WildEncounterCoordinator.get_wild_encounter_schedule_options()
+
+      handler._write_json( {
+         'wild_encounters': wild_encounters,
+      } )
+
+
+   @staticmethod
    def get_wild_encounter_occurrences( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

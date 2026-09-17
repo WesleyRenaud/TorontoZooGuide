@@ -18,6 +18,7 @@ const _NO_ARG_GETTERS = [
    ['getClosedTransportationStationOptions', '/get-closed-transportation-station-options'],
    ['getGuardiansTalkNameOptions', '/get-guardians-talk-names'],
    ['getWildEncounterNameOptions', '/get-wild-encounter-names'],
+   ['getWildEncounterScheduleOptions', '/get-wild-encounter-schedule-options'],
    ['getOffDisplayExhibitOptions', '/get-off-display-exhibit-options'],
    ['getAnimalVisibilityScheduleExhibitOptions', '/get-animal-visibility-schedule-exhibit-options'],
    ['getAnimalViewingAlertExhibitOptions', '/get-animal-viewing-alert-exhibit-options'],

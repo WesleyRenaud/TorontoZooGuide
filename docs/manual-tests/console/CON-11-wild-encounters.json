@@ -35,8 +35,8 @@
     {
       "number": 6,
       "name": "End schedule",
-      "do": "Open **End Wild Encounter schedule** and end the schedule from step 1.",
-      "expect": "Success that the schedule was ended."
+      "do": "Open **End Wild Encounter schedule**. Choose the encounter from step 1, select its scheduled times, and end the schedule.",
+      "expect": "Encounter options include that encounter because it has a schedule now. Success that the schedule was ended."
     },
     {
       "number": 7,

@@ -246,3 +246,58 @@ test('Test_CreateEditUpdateController_TestValidationAndFailures_ExpectErrorStatu
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
    }
 });
+
+test('Test_CreateEditUpdateController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalIdentity = UpdateOptions.getSelectedUpdateData;
+   const originalGetField = ControllerHelper.getFieldValue;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalEdit = ConsoleOperationsClient.editUpdate;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   UpdateOptions.getSelectedUpdateData = () => ({
+      title: 'Notice',
+      startDate: '2026-01-01',
+   });
+   ControllerHelper.getFieldValue = (el) => el?.value ?? '';
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ControllerHelper.resetFormFields = (...args) => {
+      resets.push(args);
+   };
+   ConsoleOperationsClient.editUpdate = async () => ({ success: true });
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const descriptionEl = document.createElement('input');
+      const typeEl = document.createElement('input');
+      descriptionEl.value = 'Details';
+      typeEl.value = 'info';
+
+      UpdateEditController.createEditUpdateController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl,
+         cancelButtonEl: document.createElement('button'),
+         panelEl: {},
+         statusEl: {},
+         updateEl: document.createElement('select'),
+         descriptionEl,
+         typeEl,
+         endDateEl: document.createElement('input'),
+         activatePanel: () => {},
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.equal(resets.length, 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      UpdateOptions.getSelectedUpdateData = originalIdentity;
+      ControllerHelper.getFieldValue = originalGetField;
+      ControllerHelper.reloadOptions = originalReload;
+      ControllerHelper.resetFormFields = originalReset;
+      ConsoleOperationsClient.editUpdate = originalEdit;
+   }
+});

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api_test_support.json_handler_test_double import JsonHandlerTestDouble
 from api_test_support.patch_coordinator import patch_coordinator_with_stub
 from api_test_support.post_handler import make_handler
 from api_test_support.post_handler import response_json
@@ -15,6 +16,7 @@ from api.shared.enums.api_error_type import ApiErrorType
 from api.shared.enums.opening_schedule_overlap_error_type import OpeningScheduleOverlapErrorType
 from api.shared.enums.position import Position
 from api.types import Types
+from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -160,6 +162,36 @@ def Test_GetWildEncounterNames_TestHttpRequest_ExpectReturnsEncounterNames(
    result = response_json( handler )
 
    assert result[ 'wild_encounters' ] == [ WILD_ENCOUNTER_NAME ]
+
+
+def Test_GetWildEncounterScheduleOptions_TestDirectCall_ExpectWritesEncountersFromCoordinator(
+      stub_wild_encounter_coordinator: StubWildEncounterCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   WildEncounterController.get_wild_encounter_schedule_options( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'wild_encounters': [ WILD_ENCOUNTER_NAME ],
+   }
+   assert stub_wild_encounter_coordinator.calls == [
+      ( 'get_wild_encounter_schedule_options', {} )
+   ]
+
+
+def Test_GetWildEncounterScheduleOptions_TestHttpRequest_ExpectWritesEncountersFromCoordinator(
+      stub_wild_encounter_coordinator: StubWildEncounterCoordinator ) -> None:
+   handler = make_handler( '/get-wild-encounter-schedule-options', {} )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'wild_encounters': [ WILD_ENCOUNTER_NAME ],
+   }
+   assert stub_wild_encounter_coordinator.calls == [
+      ( 'get_wild_encounter_schedule_options', {} )
+   ]
 
 
 def Test_GetWildEncounterOccurrences_TestHttpRequest_ExpectMapsWildEncounter(

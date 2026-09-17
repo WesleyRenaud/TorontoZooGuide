@@ -53,6 +53,10 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-wild-encounter-names', {});
    }
 
+   static getWildEncounterScheduleOptions() {
+      return ApiClient.postJson('/get-wild-encounter-schedule-options', {});
+   }
+
    static getOffDisplayAnimalOptions(payload = {}) {
       return ApiClient.postJson('/get-off-display-animal-options', payload);
    }

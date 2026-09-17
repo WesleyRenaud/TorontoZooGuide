@@ -10,6 +10,7 @@ from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryW
 from api.models import ScheduledOccurrence
 from api.models import WildEncounter
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.calendar_dates import DateValues
 from api.types import Types
 from api.wild_encounters.cancellations.wild_encounter_cancellation_input import WildEncounterCancellationInput
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -17,6 +18,7 @@ from api.wild_encounters.data_access.wild_encounter_cancellation_provider import
 from api.wild_encounters.data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from api.wild_encounters.data_access.wild_encounter_provider import WildEncounterProvider
 from api.wild_encounters.data_access.wild_encounter_record import WildEncounterRecord
+from api.wild_encounters.data_access.wild_encounter_schedule_name_provider import WildEncounterScheduleNameProvider
 from api.wild_encounters.data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from api.wild_encounters.data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from api.wild_encounters.domain.wild_encounter_builder import WildEncounterBuilder
@@ -98,6 +100,30 @@ def Test_GetWildEncounterNames_TestProviderNames_ExpectReturned(
       lambda _conn: [ WILD_ENCOUNTER_NAME ] )
 
    assert WildEncounterCoordinator.get_wild_encounter_names() == [ WILD_ENCOUNTER_NAME ]
+
+
+def Test_GetWildEncounterScheduleOptions_TestProviderNames_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_scheduled_wild_encounter_names(
+         _conn: Types.Connection,
+         today: str ) -> list[ str ]:
+      captured[ 'today' ] = today
+      return [ WILD_ENCOUNTER_NAME ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      WildEncounterScheduleNameProvider,
+      'fetch_scheduled_wild_encounter_names',
+      fetch_scheduled_wild_encounter_names )
+
+   assert WildEncounterCoordinator.get_wild_encounter_schedule_options() == [ WILD_ENCOUNTER_NAME ]
+   assert captured == { 'today': '2026-09-16' }
 
 
 def Test_GetWildEncounterDetails_TestBuilderResult_ExpectReturned(
