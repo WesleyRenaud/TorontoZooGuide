@@ -12,3 +12,4 @@
 - **Remove restroom alert** lists only restrooms that have an alert now or in the future. **Set restroom alert** still uses the full catalog.
 - **Set transportation station as open** lists only stations that are closed now or in the future. **Set transportation station as closed** still uses the full catalog.
 - **End Meet the Guardians talk schedule** lists only locations that have a talk schedule now or in the future, and talks at the selected location that have such a schedule. **Set Meet the Guardians talk schedule** still uses the full catalog.
+- **End Wild Encounter schedule** lists only encounters that have a schedule now or in the future. **Set Wild Encounter schedule** still uses the full catalog.

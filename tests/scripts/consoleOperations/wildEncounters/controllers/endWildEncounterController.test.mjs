@@ -16,7 +16,7 @@ installDomTestHooks();
 test('Test_CreateEndWildEncounterScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = EndRecurringScheduleFormController.createEndRecurringScheduleFormController;
    const originalGetTimes = ScheduleTimesCheckboxField.getSelectedScheduleTimes;
-   const originalLoad = ConsoleOptionsLoader.loadWildEncounters;
+   const originalLoad = ConsoleOptionsLoader.loadScheduledWildEncounters;
    const originalPopulate = ConsoleDropdownPopulator.populateWildEncounterDropdown;
    const originalGetField = ControllerHelper.getFieldValue;
    const originalReset = ControllerHelper.resetFormFields;
@@ -29,7 +29,7 @@ test('Test_CreateEndWildEncounterScheduleController_TestWiring_ExpectFormCallbac
       return { controller: true };
    };
    ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => ['11:00 AM'];
-   ConsoleOptionsLoader.loadWildEncounters = async () => [{ name: 'Giraffe' }];
+   ConsoleOptionsLoader.loadScheduledWildEncounters = async () => [{ name: 'Giraffe' }];
    ConsoleDropdownPopulator.populateWildEncounterDropdown = (...args) => {
       filterCalls.push(['populate', ...args]);
    };
@@ -107,7 +107,7 @@ test('Test_CreateEndWildEncounterScheduleController_TestWiring_ExpectFormCallbac
    } finally {
       EndRecurringScheduleFormController.createEndRecurringScheduleFormController = originalCreate;
       ScheduleTimesCheckboxField.getSelectedScheduleTimes = originalGetTimes;
-      ConsoleOptionsLoader.loadWildEncounters = originalLoad;
+      ConsoleOptionsLoader.loadScheduledWildEncounters = originalLoad;
       ConsoleDropdownPopulator.populateWildEncounterDropdown = originalPopulate;
       ControllerHelper.getFieldValue = originalGetField;
       ControllerHelper.resetFormFields = originalReset;

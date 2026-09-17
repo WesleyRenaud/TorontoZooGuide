@@ -149,3 +149,47 @@ test('Test_CreateEntityRemovalFormController_TestValidationAndFailures_ExpectErr
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
    }
 });
+
+test('Test_CreateEntityRemovalFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ControllerHelper.resetFormFields = (...args) => {
+      resets.push(args);
+   };
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const exhibitEl = { id: 'exhibit' };
+
+      EntityRemovalFormController.createEntityRemovalFormController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         formFieldEls: [exhibitEl],
+         activatePanel: () => {},
+         loadOptions: async () => [],
+         populateOptions: () => {},
+         targetEl: exhibitEl,
+         loadErrorMessage: 'load failed',
+         getFormValues: () => ({ exhibit: 'Savanna' }),
+         validateForm: () => null,
+         submitRemoval: async () => ({ success: true, exhibit: 'Savanna' }),
+         successMessage: 'done',
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.equal(resets.length, 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.reloadOptions = originalReload;
+      ControllerHelper.resetFormFields = originalReset;
+   }
+});

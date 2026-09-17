@@ -5,6 +5,7 @@ from collections.abc import Callable
 from ..cancellations.wild_encounter_cancellation_builder import WildEncounterCancellationBuilder
 from ..data_access.wild_encounter_cancellation_provider import WildEncounterCancellationProvider
 from ..data_access.wild_encounter_provider import WildEncounterProvider
+from ..data_access.wild_encounter_schedule_name_provider import WildEncounterScheduleNameProvider
 from ..data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from ..domain.wild_encounter_builder import WildEncounterBuilder
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
@@ -78,6 +79,13 @@ class WildEncounterCoordinator():
    @classmethod
    def get_wild_encounter_names( cls ) -> list[ str ]:
       return WildEncounterProvider.fetch_wild_encounter_names( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_wild_encounter_schedule_options( cls ) -> list[ str ]:
+      return WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
 
 
    @classmethod

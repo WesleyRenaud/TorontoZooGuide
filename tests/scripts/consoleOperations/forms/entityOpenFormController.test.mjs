@@ -199,3 +199,45 @@ test('Test_CreateEntityOpenFormController_TestNoDateRange_ExpectSkipsDateValidat
       ControllerHelper.validateOptionalDateRange = originalValidate;
    }
 });
+
+test('Test_CreateEntityOpenFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
+   const resets = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalGet = ControllerHelper.getFieldValue;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+
+   ConsoleStatusPresenter.setStatus = () => {};
+   ControllerHelper.getFieldValue = () => 'Near Cafe';
+   ControllerHelper.reloadOptions = async () => {
+      throw new Error('reload failed');
+   };
+   ControllerHelper.resetFormFields = (...args) => {
+      resets.push(args);
+   };
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const entityEl = document.createElement('select');
+
+      EntityOpenFormController.createEntityOpenFormController({
+         showButtonEl: document.createElement('button'),
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         entityEl,
+         activatePanel: () => {},
+         loadOptions: async () => [],
+         populateOptions: () => {},
+         submitOpenStatus: async () => ({ success: true, entity: 'Near Cafe' }),
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.equal(resets.length, 1);
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.getFieldValue = originalGet;
+      ControllerHelper.reloadOptions = originalReload;
+      ControllerHelper.resetFormFields = originalReset;
+   }
+});

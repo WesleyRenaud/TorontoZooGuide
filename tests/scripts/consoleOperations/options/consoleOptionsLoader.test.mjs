@@ -137,6 +137,23 @@ test('Test_LoadVisibilityScheduleExhibits_TestClientResult_ExpectExhibits', asyn
    }
 });
 
+test('Test_LoadScheduledWildEncounters_TestClientResult_ExpectEncounters', async () => {
+   const originalGet = ConsoleOperationsClient.getWildEncounterScheduleOptions;
+
+   ConsoleOperationsClient.getWildEncounterScheduleOptions = async () => ({
+      wild_encounters: ['Giraffe Encounter', 'Kangaroo Encounter'],
+   });
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadScheduledWildEncounters(),
+         ['Giraffe Encounter', 'Kangaroo Encounter']
+      );
+   } finally {
+      ConsoleOperationsClient.getWildEncounterScheduleOptions = originalGet;
+   }
+});
+
 test('Test_LoadViewingAlertExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getAnimalViewingAlertExhibitOptions;
 

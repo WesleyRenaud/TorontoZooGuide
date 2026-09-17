@@ -55,6 +55,11 @@ class StubWildEncounterCoordinator():
       return list( self.wild_encounter_names )
 
 
+   def get_wild_encounter_schedule_options( self ) -> list[ str ]:
+      self.calls.append( ( 'get_wild_encounter_schedule_options', {} ) )
+      return list( self.wild_encounter_names )
+
+
    def get_wild_encounter_occurrences(
          self,
          *,

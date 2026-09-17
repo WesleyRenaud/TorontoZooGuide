@@ -109,4 +109,9 @@ export class ConsoleOptionsLoader {
          resultKey: ScheduleItemKind.WILD_ENCOUNTER.itemType,
       });
    }
+
+   static async loadScheduledWildEncounters() {
+      const result = await ConsoleOperationsClient.getWildEncounterScheduleOptions();
+      return result.wild_encounters;
+   }
 }

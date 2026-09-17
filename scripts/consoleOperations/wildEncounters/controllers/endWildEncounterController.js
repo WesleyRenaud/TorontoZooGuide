@@ -41,7 +41,7 @@ export class EndWildEncounterController {
 
       async function prepareForm() {
          if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await ConsoleOptionsLoader.loadWildEncounters();
+            const wildEncounters = await ConsoleOptionsLoader.loadScheduledWildEncounters();
             ConsoleDropdownPopulator.populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
 
